@@ -1,118 +1,1321 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClaimNavigatorAI - AI-Powered Claim Documentation Tools</title>
-  <meta name="description" content="AI-powered documentation tools for property and business interruption insurance claims. Save time and maximize your claim potential." />
-
-  <!-- SEO: OG + Twitter -->
-  <meta property="og:title" content="ClaimNavigatorAI - Maximize Your Claim" />
-  <meta property="og:description" content="AI-powered claim toolkit with smart document generation and compliance checks." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://claimnavigatorai.com/" />
-  <meta property="og:image" content="https://claimnavigatorai.com/og-image.png" />
-  <meta name="twitter:card" content="summary_large_image" />
-
-  <!-- JSON-LD Schema -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": "ClaimNavigatorAI Toolkit",
-    "description": "AI-powered claim documentation package with insurer-ready responses and compliance checks.",
-    "brand": { "@type": "Organization", "name": "ClaimNavigatorAI" },
-    "offers": {
-      "@type": "Offer",
-      "price": "499",
-      "priceCurrency": "USD",
-      "availability": "http://schema.org/InStock"
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClaimNavigator - AI-Powered Claim Documentation Tools</title>
+  <meta name="description" content="AI-powered documentation tools for property and business interruption insurance claims. Save time and maximize your claim potential.">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #1e40af;
+      --primary-dark: #0f172a;
+      --primary-header: #0f172a;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --bg-white: #ffffff;
+      --bg-light: #f9fafb;
+      --bg-gray: #f3f4f6;
+      --border: #e5e7eb;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
     }
-  }
-  </script>
-
-  <!-- Google Analytics Placeholder -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'GA_MEASUREMENT_ID');
-  </script>
-
-  <!-- Facebook Pixel Placeholder -->
-  <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', 'FB_PIXEL_ID');
-    fbq('track', 'PageView');
-  </script>
-
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-white);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header */
+    header {
+      background: var(--primary-header);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: white;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      display: inline-block;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .btn-primary:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .btn-primary:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-secondary {
+      background: var(--bg-light);
+      color: var(--primary);
+      padding: 0.5rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 500;
+      border: 1px solid var(--primary);
+      transition: all 0.2s;
+      display: inline-block;
+    }
+    
+    .btn-secondary:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    /* Hero Section */
+    .hero {
+      padding: 4rem 0;
+      background: var(--primary-header);
+      color: white;
+    }
+    
+    .hero h1 {
+      color: white;
+      font-weight: 700;
+    }
+    
+    .hero .subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+    }
+    
+    .hero .credential strong {
+      color: white;
+    }
+    
+    .hero .credential p {
+      color: rgba(255, 255, 255, 0.85);
+    }
+    
+    .hero-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      line-height: 1.2;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+    }
+    
+    .subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+    
+    .credentials {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+    
+    .credential {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    /* Value Proposition */
+    .value-props {
+      padding: 4rem 0;
+      background: var(--bg-white);
+    }
+    
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    
+    .value-card {
+      padding: 2rem;
+      background: var(--bg-light);
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+    }
+    
+    .value-card h3 {
+      color: var(--primary-dark);
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+    }
+    
+    .value-card p {
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    
+    /* Process Section */
+    .process {
+      padding: 4rem 0;
+      background: var(--bg-gray);
+    }
+    
+    .process-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    
+    .step-card {
+      background: var(--bg-white);
+      padding: 2rem;
+      border-radius: 0.75rem;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .step-number {
+      width: 3rem;
+      height: 3rem;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-weight: 600;
+    }
+    
+    /* Services Section */
+    .services {
+      padding: 4rem 0;
+      background: var(--bg-white);
+    }
+    
+    .service-list {
+      margin-top: 3rem;
+    }
+    
+    .service-item {
+      padding: 2rem;
+      background: var(--bg-light);
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+    }
+    
+    .service-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    
+    .service-header h3 {
+      color: var(--text-primary);
+      font-size: 1.1rem;
+    }
+    
+    .service-content {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-secondary);
+      display: none;
+    }
+    
+    .service-content.active {
+      display: block;
+    }
+    
+    /* Resources Section */
+    .resources {
+      padding: 4rem 0;
+      background: var(--bg-gray);
+    }
+    
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    
+    .resource-card {
+      background: var(--bg-white);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+      transition: transform 0.2s;
+    }
+    
+    .resource-card:hover {
+      transform: translateY(-2px);
+    }
+    
+    .resource-badge {
+      display: inline-block;
+      background: var(--success);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    
+    .resource-card h4 {
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .resource-card p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    
+    .affiliate-disclosure {
+      background: var(--bg-light);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border-left: 4px solid var(--primary);
+      margin: 2rem 0;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    
+    /* Blog Section */
+    .blog {
+      padding: 4rem 0;
+      background: var(--bg-white);
+    }
+    
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    
+    .blog-card {
+      background: var(--bg-light);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    
+    .blog-card:hover {
+      transform: translateY(-2px);
+    }
+    
+    .blog-image {
+      height: 200px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 3rem;
+    }
+    
+    .blog-content {
+      padding: 1.5rem;
+    }
+    
+    .blog-content h3 {
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .blog-content p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    
+    /* Case Studies */
+    .case-studies {
+      padding: 4rem 0;
+      background: var(--bg-gray);
+    }
+    
+    .case-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    
+    .case-card {
+      background: var(--bg-white);
+      padding: 2rem;
+      border-radius: 0.75rem;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .case-type {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: var(--bg-light);
+      color: var(--primary);
+      border-radius: 999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+    
+    .case-metrics {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+    }
+    
+    .metric-label {
+      color: var(--text-secondary);
+    }
+    
+    .metric-value {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .tools-used {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    
+    .tools-used h4 {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .tools-used a {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+    
+    .tools-used a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Pricing */
+    .pricing {
+      padding: 4rem 0;
+      background: var(--bg-white);
+    }
+    
+    .pricing-card {
+      max-width: 600px;
+      margin: 3rem auto;
+      padding: 3rem;
+      background: var(--bg-light);
+      border-radius: 1rem;
+      border: 2px solid var(--primary);
+    }
+    
+    .price-amount {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin: 1rem 0;
+    }
+    
+    .price-description {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+    
+    .price-features {
+      list-style: none;
+      margin: 2rem 0;
+    }
+    
+    .price-features li {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+    
+    /* FAQ */
+    .faq {
+      padding: 4rem 0;
+      background: var(--bg-gray);
+    }
+    
+    .faq-item {
+      background: var(--bg-white);
+      margin-bottom: 1rem;
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+    
+    .faq-question {
+      padding: 1.5rem;
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    
+    .faq-question:hover {
+      background: var(--bg-light);
+    }
+    
+    .faq-answer {
+      padding: 0 1.5rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      color: var(--text-secondary);
+    }
+    
+    .faq-answer.active {
+      padding: 1.5rem;
+      max-height: 500px;
+    }
+    
+    .faq-answer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    .faq-answer a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Footer */
+    footer {
+      background: var(--text-primary);
+      color: white;
+      padding: 3rem 0;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 3rem;
+    }
+    
+    .footer-section h4 {
+      margin-bottom: 1rem;
+      color: white;
+    }
+    
+    .footer-section a {
+      color: #9ca3af;
+      text-decoration: none;
+      display: block;
+      padding: 0.25rem 0;
+      transition: color 0.2s;
+    }
+    
+    .footer-section a:hover {
+      color: white;
+    }
+    
+    .footer-disclosure {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #374151;
+      color: #9ca3af;
+      font-size: 0.875rem;
+    }
+    
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    h2 {
+      font-size: 2rem;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+    
+    .section-subtitle {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+    
+    .services-columns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+      align-items: start;
+    }
+    
+    .service-col {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    
+    .service-col h3 {
+      color: #1E3A8A;
+      font-size: 18px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    
+    .service-col ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      text-align: left;
+    }
+    
+    .service-col ul li {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 6px;
+    }
+    
+    .service-col ul li strong {
+      color: #111;
+    }
+    
+    @media (max-width: 768px) {
+      .hero-content {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .footer-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
+
+  <!-- Header -->
   <header>
-    <h1>ClaimNavigatorAI</h1>
-    <nav>
-      <a href="#services">Services</a>
-      <a href="#pricing">Pricing</a>
-      <a href="terms.html">Terms</a>
-      <a href="privacy.html">Privacy</a>
-      <a href="disclaimer.html">Disclaimer</a>
-    </nav>
+    <div class="container">
+      <nav>
+        <div class="logo">ClaimNavigatorAI</div>
+        <div class="nav-links">
+          <a href="#services">Services</a>
+          <a href="#resources">Resources</a>
+          <a href="#blog">Guides</a>
+          <a href="#process">Process</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#" onclick="toggleLanguage()" style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 0.25rem;">ES/EN</a>
+          <a href="#pricing" class="btn-primary checkout-btn">Get My AI-Powered Claim Toolkit</a>
+        </div>
+      </nav>
+    </div>
   </header>
 
-  <main>
-    <section id="hero">
-      <h2>AI-Powered Claim Tools to Maximize Your Settlement</h2>
-      <p>Get insurer-ready documentation, compliance checks, and instant responses.</p>
-      <button onclick="startCheckout()">Get My AI-Powered Claim Toolkit ($499)</button>
-    </section>
-
-    <section id="ads">
-      <!-- AdSense Placeholder -->
-      <div style="width:100%;height:90px;background:#f0f0f0;text-align:center;line-height:90px;">
-        [Ad Slot]
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div style="grid-column: 1 / -1;">
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <p style="color: #60a5fa; font-size: 32px; font-weight: 700; font-style: italic; margin: 0; padding: 0.75rem 1.5rem; background: #0f172a; display: inline-block; border-radius: 0.5rem;">Don't leave money on the table - we can help with your insurance claim!</p>
+          </div>
+          <h1 style="text-align: center; color: white; margin-bottom: 0.5rem;">AI-Powered Claim Tools to Properly Manage and Maximize Your Claim</h1>
+          <p style="text-align: center; color: rgba(255, 255, 255, 0.9); margin: 0; padding-bottom: 1rem;">Get the critical claim documents you need — from polished responses to organized files —<br>to save you time, stay in control, and successfully collect the settlement you deserve.</p>
+          <p style="text-align: center; color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; margin-top: 0.5rem;">
+            <em>Full bilingual support • Soporte completo bilingüe (English/Español)</em>
+          </p>
+        </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section id="services">
-      <h2>Our AI Services</h2>
-      <ul>
-        <li>Smart Letter Analysis</li>
-        <li>AI-Generated Responses</li>
-        <li>Coverage Clarity</li>
-        <li>Compliance Checks</li>
-      </ul>
-    </section>
+  <!-- Features Grid Section -->
+  <section style="background: #f3f4f6; padding: 3rem 0;">
+    <div class="container">
+      <div style="background: #f3f4f6; padding: 1.5rem; border-radius: 1rem; margin: 0;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div style="text-align: center; padding: 0.25rem;">
+            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;">✔ Smart Letter Analysis</strong>
+            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;">
+              Upload insurer letters → AI pinpoints key issues, gaps, and opportunities to strengthen your position.
+            </p>
+          </div>
+          <div style="text-align: center; padding: 0.25rem;">
+            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;">✔ AI-Generated Responses</strong>
+            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;">
+              One click → professional letters ready to send that properly address insurer communications.
+            </p>
+          </div>
+          <div style="text-align: center; padding: 0.25rem;">
+            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;">✔ Coverage Clarity</strong>
+            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;">
+              AI helps you understand your policy coverage to properly manage your claim.
+            </p>
+          </div>
+          <div style="text-align: center; padding: 0.25rem;">
+            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;">✔ Time-Saving Organization</strong>
+            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;">
+              Smart tools organize your claim documents efficiently, saving you hours of work.
+            </p>
+          </div>
+          <div style="text-align: center; padding: 0.25rem;">
+            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;">✔ AI Appeal Builder</strong>
+            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;">
+              Build a complete, formatted appeal package instantly with AI-powered templates.
+            </p>
+          </div>
+          <div style="text-align: center; padding: 0.25rem;">
+            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;">✔ Compliance Checks</strong>
+            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;">
+              Built-in state-specific compliance checks ensure your documents meet requirements.
+            </p>
+          </div>
+        </div>
+        <div style="text-align: center; padding-top: 2rem;">
+          <button onclick="startCheckout()" class="btn-primary checkout-btn" style="font-size: 1.1rem; padding: 1rem 2rem;">Get My AI-Powered Claim Toolkit</button>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <section id="pricing">
-      <h2>Pricing</h2>
-      <p>$499 includes 20 AI responses. Additional responses: $29 each.</p>
-      <button onclick="startCheckout()">Start Checkout</button>
-    </section>
+  <!-- Critical Facts Section -->
+  <section class="value-props" style="background: #fafafa; padding: 3rem 0;">
+    <div class="container">
+      <div style="max-width: 800px; margin: 0 auto;">
+        <h2 style="color: #dc2626; text-align: center; margin-bottom: 2rem; white-space: nowrap; font-size: 1.5rem;">YOU Must PROVE Your Loss - They Won't Do It For You!</h2>
+        
+        <div style="background: white; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
+          <p style="margin-bottom: 1rem;"><strong style="color: #dc2626;">FACT #1:</strong> <span style="background: #fef3c7; padding: 0.1rem 0.3rem;">YOU have the burden of proof.</span> The insurer only pays what YOU can prove.</p>
+          
+          <p style="margin-bottom: 1rem;"><strong style="color: #dc2626;">FACT #2:</strong> Their adjuster works for THEM. <span style="background: #fef3c7; padding: 0.1rem 0.3rem;">Their estimate is just an opening offer.</span></p>
+          
+          <p style="margin-bottom: 0.75rem;"><strong style="color: #dc2626;">FACT #3:</strong> Without proper documentation you'll: ❌ Accept lowball offers ❌ Miss deadlines ❌ Leave money on the table</p>
+        </div>
+        
+        <div style="background: #fef3c7; padding: 1.25rem; border-radius: 0.5rem; border: 1px solid #f59e0b; text-align: center;">
+          <strong style="color: #92400e; display: block; margin-bottom: 0.5rem; font-size: 1.1rem;">Successful Claimants:</strong>
+          <span style="color: #92400e;">Document everything • Get independent estimates • Challenge every line • Know their coverage • Never accept first offers</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <section id="downloads">
-      <h2>Sample Toolkit</h2>
-      <a href="downloads/toolkit-sample.pdf" target="_blank">Download Sample PDF</a>
-    </section>
-  </main>
+  <!-- Insurance Reality Check -->
+  <section class="value-props" style="padding: 3rem 0;">
+    <div class="container">
+      <h2 style="text-align: center; margin-bottom: 2rem;">The Insurance Company Is NOT On Your Side</h2>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; max-width: 700px; margin: 0 auto 2rem;">
+        <div style="background: white; padding: 1rem; text-align: center; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
+          <div style="font-size: 2rem; color: #dc2626; font-weight: 700;">73%</div>
+          <p style="color: var(--text-secondary); font-size: 0.85rem;">claims underpaid</p>
+        </div>
+        <div style="background: white; padding: 1rem; text-align: center; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
+          <div style="font-size: 2rem; color: #dc2626; font-weight: 700;">40%</div>
+          <p style="color: var(--text-secondary); font-size: 0.85rem;">avg underpayment</p>
+        </div>
+        <div style="background: white; padding: 1rem; text-align: center; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
+          <div style="font-size: 2rem; color: #dc2626; font-weight: 700;">14 days</div>
+          <p style="color: var(--text-secondary); font-size: 0.85rem;">to accept lowball</p>
+        </div>
+        <div style="background: white; padding: 1rem; text-align: center; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
+          <div style="font-size: 2rem; color: #dc2626; font-weight: 700;">92%</div>
+          <p style="color: var(--text-secondary); font-size: 0.85rem;">never challenge</p>
+        </div>
+      </div>
+      
+      <div style="text-align: center;">
+        <button onclick="startCheckout()" class="btn-primary checkout-btn">Get Your AI Claim Toolkit →</button>
+      </div>
+    </div>
+  </section>
 
+  <!-- Comparison Section -->
+  <section style="background: #ffffff; padding: 2.5rem 0;">
+    <div class="container">
+      <h2 style="text-align: center; color: #1e3a8a; margin-bottom: 2rem; font-size: 2.5rem;">Compare Your Options</h2>
+      
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; max-width: 800px; margin: 0 auto; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 2px solid #e5e7eb;">
+              <th style="text-align: left; padding: 0.75rem; color: #6b7280; font-weight: 600; font-size: 0.95rem;">Option</th>
+              <th style="text-align: left; padding: 0.75rem; color: #6b7280; font-weight: 600; font-size: 0.95rem;">Keeps % of Recovery</th>
+              <th style="text-align: left; padding: 0.75rem; color: #6b7280; font-weight: 600; font-size: 0.95rem;">Documentation Strength</th>
+              <th style="text-align: left; padding: 0.75rem; color: #6b7280; font-weight: 600; font-size: 0.95rem;">Settlement Outcome</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+              <td style="padding: 1rem 0.75rem; color: #111827; font-weight: 500;">DIY Alone</td>
+              <td style="padding: 1rem 0.75rem; color: #6b7280;">0%</td>
+              <td style="padding: 1rem 0.75rem; color: #dc2626;">Weak or Incomplete</td>
+              <td style="padding: 1rem 0.75rem; color: #dc2626;">Often underpaid; limited recovery</td>
+            </tr>
+            <tr style="background: #f0f9ff;">
+              <td style="padding: 1rem 0.75rem; color: #111827; font-weight: 600;">ClaimNavigatorAI</td>
+              <td style="padding: 1rem 0.75rem; color: #10b981; font-weight: 600;">0%</td>
+              <td style="padding: 1rem 0.75rem; color: #10b981; font-weight: 600;">Airtight, insurer-ready package</td>
+              <td style="padding: 1rem 0.75rem; color: #10b981; font-weight: 600;">Fair, full settlement collected</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="process" id="process" style="background: var(--primary-header); padding: 4rem 0;">
+    <div class="container">
+      <div class="section-header">
+        <h2 style="color: white;">Our AI-Powered Process</h2>
+        <p class="section-subtitle" style="color: rgba(255, 255, 255, 0.9);">A smarter approach to preparing and managing your claim</p>
+      </div>
+      <div class="process-steps">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h3>Upload</h3>
+          <p>Upload your policy documents, correspondence, and initial claim materials for AI-powered analysis.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h3>Gap Check</h3>
+          <p>AI identifies missing documentation and opportunities to strengthen your claim presentation.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h3>Generate Documents</h3>
+          <p>AI generates complete documentation package including forms, templates, and supporting materials.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <h3>Organize & Deliver</h3>
+          <p>Receive your organized claim toolkit with filing instructions and time-saving guidance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="services" id="services">
+    <div class="container">
+      <div class="section-header">
+        <h2>AI-Powered Documentation Services</h2>
+        <p class="section-subtitle">Every essential claim document + AI capability you need to save time and maximize your settlement potential</p>
+      </div>
+
+      <div class="services-columns">
+
+        <div class="service-col" style="background: #f3f4f6;">
+          <h3>Documentation</h3>
+          <ul>
+            <li><strong>✔ Proof of Loss Forms (Property & Business)</strong></li>
+            <li><strong>✔ Valuation Spreadsheets (Repair, Replacement, BI Loss)</strong></li>
+            <li><strong>✔ Repair & Replacement Estimate Templates</strong></li>
+            <li><strong>✔ Depreciation & Overhead Worksheets</strong></li>
+            <li><strong>✔ Scope of Loss Reports</strong></li>
+            <li><strong>✔ Inventory & Contents Worksheets</strong></li>
+            <li><strong>✔ Expert Report Templates</strong></li>
+          </ul>
+        </div>
+
+        <div class="service-col" style="background: #f3f4f6;">
+          <h3>Letters & Appeals</h3>
+          <ul>
+            <li><strong>✔ Demand Letters</strong></li>
+            <li><strong>✔ Complaint Letters</strong></li>
+            <li><strong>✔ Bad Faith Allegation Notices</strong></li>
+            <li><strong>✔ Non-Compliance Notices</strong></li>
+            <li><strong>✔ Dispute Letters</strong></li>
+            <li><strong>✔ Appraisal Demand Letters</strong></li>
+            <li><strong>✔ Mediation/Arbitration Request Letters</strong></li>
+            <li><strong>✔ Appeal Packages (structured templates)</strong></li>
+          </ul>
+        </div>
+
+        <div class="service-col" style="background: #f3f4f6;">
+          <h3>Compliance & Planning</h3>
+          <ul>
+            <li><strong>✔ State-Specific Filing Forms</strong></li>
+            <li><strong>✔ Regulatory Notices</strong></li>
+            <li><strong>✔ Compliance Certifications</strong></li>
+            <li><strong>✔ Adjuster Communication Logs</strong></li>
+            <li><strong>✔ Claim Documentation Checklists</strong></li>
+            <li><strong>✔ 30-Day Action Plan</strong></li>
+            <li><strong>✔ Policyholder Claim Guide</strong></li>
+          </ul>
+        </div>
+
+        <div class="service-col" style="background: #f3f4f6;">
+          <h3>AI Services</h3>
+          <ul>
+            <li><strong>✔ Smart Letter Analysis</strong></li>
+            <li><strong>✔ AI-Generated Professional Responses (English/Spanish)</strong></li>
+            <li><strong>✔ Policy Review & Coverage Analysis</strong></li>
+            <li><strong>✔ AI Compliance Checks</strong></li>
+            <li><strong>✔ AI Appeal Package Builder</strong></li>
+            <li><strong>✔ Data Extraction & Summarization</strong></li>
+            <li><strong>✔ AI Trend & Settlement Forecasting</strong></li>
+            <li><strong>✔ Smart Policyholder Guidance (Bilingual)</strong></li>
+            <li><strong>✔ Fraud/Bad Faith Detection Alerts</strong></li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Case Studies -->
+  <section class="case-studies" id="case-studies" style="background: var(--primary-header); padding: 4rem 0;">
+    <div class="container">
+      <div class="section-header">
+        <h2 style="color: white;">Documentation Impact</h2>
+        <p class="section-subtitle" style="color: rgba(255, 255, 255, 0.9);">Examples of how AI-prepared documentation strengthens claims</p>
+      </div>
+      <div class="case-grid">
+        <div class="case-card">
+          <span class="case-type">Residential Property</span>
+          <h3>Storm Damage Claim - Texas</h3>
+          <p style="color: var(--text-secondary); margin-top: 1rem;">Homeowner's initial claim was undervalued due to incomplete documentation. After AI-powered preparation, all damage was properly documented.</p>
+          <div class="case-metrics">
+            <div class="metric-row">
+              <span class="metric-label">Initial Assessment</span>
+              <span class="metric-value">$12,000</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Documented Value</span>
+              <span class="metric-value">$28,000</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Documentation Investment</span>
+              <span class="metric-value">$499</span>
+            </div>
+          </div>
+          <div class="tools-used">
+            <h4>Tools Used:</h4>
+            <a href="#">Adobe Scan for damage photos</a> • 
+            <a href="#">Encircle for inventory</a>
+          </div>
+        </div>
+        <div class="case-card">
+          <span class="case-type">Business Interruption</span>
+          <h3>Restaurant Closure - Florida</h3>
+          <p style="color: var(--text-secondary); margin-top: 1rem;">Business interruption claim required detailed revenue documentation and loss calculations to demonstrate full impact.</p>
+          <div class="case-metrics">
+            <div class="metric-row">
+              <span class="metric-label">Initial Offer</span>
+              <span class="metric-value">$35,000</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Documented Losses</span>
+              <span class="metric-value">$72,000</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Documentation Investment</span>
+              <span class="metric-value">$499</span>
+            </div>
+          </div>
+          <div class="tools-used">
+            <h4>Tools Used:</h4>
+            <a href="#">QuickBooks for financial records</a> • 
+            <a href="#">Dropbox for document storage</a>
+          </div>
+        </div>
+      </div>
+      <p style="text-align: center; margin-top: 2rem; color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;">
+        Results vary. ClaimNavigatorAI provides documentation tools only — not legal advice.
+      </p>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <div class="pricing-card" style="text-align: center;">
+        <h3>AI Claim Toolkit</h3>
+        <div class="price-amount">$499</div>
+        <p class="price-description">Fixed fee regardless of claim size or complexity<br>
+        <strong>Includes 20 AI-generated insurer responses</strong><br>
+        Each additional AI response: $29</p>
+        <ul class="price-features" style="text-align: center;">
+          <li>✔ Complete AI-powered documentation package</li>
+          <li>✔ 20 AI-generated insurer responses included</li>
+          <li>✔ All necessary forms and templates</li>
+          <li>✔ State-specific compliance documents</li>
+          <li>✔ Spanish language support for all documents</li>
+          <li>✔ Appeal and escalation templates</li>
+          <li>✔ 30-day action plan and timeline</li>
+          <li>✔ Bonus: Recommended tools guide with exclusive discounts</li>
+        </ul>
+        <button onclick="startCheckout()" class="btn-primary checkout-btn" style="display: block; margin: 0 auto; max-width: 400px;">Get My AI-Powered Claim Toolkit</button>
+        <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary); font-size: 0.875rem;">
+          Digital products are delivered immediately. All sales are final.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Resources Section -->
+  <section class="resources" id="resources">
+    <div class="container">
+      <div class="section-header">
+        <h2>Recommended Tools & Resources</h2>
+        <p class="section-subtitle">Essential tools to complement your AI claim toolkit and strengthen your documentation</p>
+      </div>
+      
+      <div class="affiliate-disclosure">
+        <strong>Affiliate Disclosure:</strong> This page contains affiliate links. We may earn a commission at no extra cost to you if you purchase through these links. We only recommend tools we believe add value to your claim process.
+      </div>
+      
+      <div class="resource-grid">
+        <div class="resource-card">
+          <span class="resource-badge">DOCUMENTATION</span>
+          <h4>Adobe Scan</h4>
+          <p>Professional document scanning app to digitize all your claim paperwork and receipts instantly.</p>
+          <a href="#" class="btn-secondary">Learn More →</a>
+        </div>
+        
+        <div class="resource-card">
+          <span class="resource-badge">STORAGE</span>
+          <h4>Dropbox Business</h4>
+          <p>Secure cloud storage to backup and organize all claim documents with version history.</p>
+          <a href="#" class="btn-secondary">Learn More →</a>
+        </div>
+        
+        <div class="resource-card">
+          <span class="resource-badge">ACCOUNTING</span>
+          <h4>QuickBooks</h4>
+          <p>Essential for business interruption claims - track revenue, expenses, and generate reports.</p>
+          <a href="#" class="btn-secondary">Learn More →</a>
+        </div>
+        
+        <div class="resource-card">
+          <span class="resource-badge">INVENTORY</span>
+          <h4>Encircle</h4>
+          <p>Professional home inventory app to document personal property before and after loss.</p>
+          <a href="#" class="btn-secondary">Learn More →</a>
+        </div>
+        
+        <div class="resource-card">
+          <span class="resource-badge">CONTRACTORS</span>
+          <h4>Angie's List</h4>
+          <p>Find vetted contractors for repair estimates and documentation of damage scope.</p>
+          <a href="#" class="btn-secondary">Learn More →</a>
+        </div>
+        
+        <div class="resource-card">
+          <span class="resource-badge">PHOTOGRAPHY</span>
+          <h4>Photo Evidence Kit</h4>
+          <p>Professional photography tools including moisture meters and measurement tools.</p>
+          <a href="#" class="btn-secondary">Shop on Amazon →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog Section -->
+  <section class="blog" id="blog">
+    <div class="container">
+      <div class="section-header">
+        <h2>Claim Documentation Guides</h2>
+        <p class="section-subtitle">Expert guidance and recommended tools for every stage of your claim</p>
+      </div>
+      
+      <div class="blog-grid">
+        <div class="blog-card">
+          <div class="blog-image">📱</div>
+          <div class="blog-content">
+            <h3>10 Essential Apps Every Policyholder Needs</h3>
+            <p>From document scanning to photo evidence, these apps will help you build a stronger claim. Includes our top picks for iOS and Android.</p>
+            <a href="#" class="btn-secondary">Read Guide →</a>
+          </div>
+        </div>
+        
+        <div class="blog-card">
+          <div class="blog-image">📸</div>
+          <div class="blog-content">
+            <h3>How to Properly Photograph Property Damage</h3>
+            <p>Professional techniques and equipment recommendations to document damage effectively. Plus our recommended photography kit.</p>
+            <a href="#" class="btn-secondary">Read Guide →</a>
+          </div>
+        </div>
+        
+        <div class="blog-card">
+          <div class="blog-image">💼</div>
+          <div class="blog-content">
+            <h3>Business Interruption Documentation Tools</h3>
+            <p>Essential accounting software and financial tools to prove your business losses. Compare QuickBooks, Xero, and more.</p>
+            <a href="#" class="btn-secondary">Read Guide →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <h2>Frequently Asked Questions</h2>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          What types of claims do you support?
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>We specialize in property damage claims and business interruption claims. Our AI-powered documentation tools are designed specifically for these claim types where proper documentation has the most significant impact on settlement outcomes.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          What tools help organize claim documents?
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>We recommend several excellent tools for document organization: <a href="#">Dropbox Business</a> or <a href="#">Google Drive</a> for secure cloud storage with version history, <a href="#">Adobe Scan</a> for digitizing paper documents, and <a href="#">Evernote Business</a> for creating a searchable claim journal. These tools ensure your documents are backed up, organized, and easily accessible throughout your claim process.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          How should I photograph property damage?
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>Proper photo documentation is crucial. Use a good quality camera or smartphone, and consider these tools: A <a href="#">moisture meter from Amazon</a> to document water damage readings, a <a href="#">measuring tape</a> to show scale, and good lighting equipment. Take wide shots for context and close-ups for detail. We have a complete photography guide available in our <a href="#blog">resources section</a>.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          What accounting software works best for business interruption claims?
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>For business interruption claims, we recommend <a href="#">QuickBooks Online</a> for comprehensive financial reporting, <a href="#">Xero</a> for cloud-based accounting with excellent reporting features, or <a href="#">FreshBooks</a> for smaller businesses. These platforms can generate the revenue reports, profit/loss statements, and trend analyses insurers require. Choose based on your business size and complexity.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          Are you a law firm or public adjuster?
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>No. ClaimNavigatorAI provides documentation tools only. We do not provide legal advice, expert reports, or adjusting services. Our service focuses on helping policyholders prepare complete, organized claim documentation with AI-powered efficiency. For legal representation, we recommend consulting with an attorney. You can find qualified attorneys through <a href="#">LegalZoom</a> or your state bar association.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          How quickly will I receive my documentation?
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>Most packages delivered within 48 hours. While you wait, we recommend starting to gather your existing documents using tools like <a href="#">Adobe Scan</a> to digitize paperwork and <a href="#">Dropbox</a> to organize files.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          What if my claim has already been denied?
+          <span>▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>We provide AI-powered appeal templates and letters to help you structure responses to denials or underpayments. You may also want to consider consulting with an attorney through services like <a href="#">Rocket Lawyer</a> for legal advice specific to your situation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
   <footer>
-    <p>© 2025 ClaimNavigatorAI | Documentation tools only — not legal advice.</p>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>ClaimNavigatorAI</h4>
+          <p style="color: #9ca3af; margin-top: 1rem;">AI-powered claim documentation tools for property owners and businesses. Properly manage, save time, and maximize your claim with confidence.</p>
+        </div>
+        <div class="footer-section">
+          <h4>Services</h4>
+          <a href="#services">Documentation Services</a>
+          <a href="#resources">Recommended Tools</a>
+          <a href="#blog">Guides & Resources</a>
+          <a href="#process">Our Process</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#case-studies">Case Studies</a>
+        </div>
+        <div class="footer-section">
+          <h4>Information</h4>
+          <a href="terms.html">Terms of Service</a>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="disclaimer.html">Legal Disclaimer</a>
+          <a href="#affiliate">Affiliate Disclosure</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </div>
+      <div class="footer-disclosure">
+        <p><strong>Affiliate Disclosure:</strong> ClaimNavigatorAI participates in affiliate programs. We may earn commissions from qualifying purchases through links on this site at no additional cost to you. We only recommend products and services we believe will add value to your claim documentation process.</p>
+      </div>
+      <div style="text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid #374151; color: #9ca3af;">
+        <p>© 2025 ClaimNavigatorAI. All rights reserved. | Documentation tools only — not legal advice or adjusting.</p>
+      </div>
+    </div>
   </footer>
 
   <script>
-    async function startCheckout(){
-      const res = await fetch('/.netlify/functions/checkout', {method:'POST'});
-      const data = await res.json();
-      window.location.href = data.url;
+    // Stripe Checkout Integration
+    async function startCheckout() {
+      // Get all checkout buttons
+      const buttons = document.querySelectorAll('.checkout-btn');
+      const originalTexts = new Map();
+      
+      try {
+        // Disable all checkout buttons and update text
+        buttons.forEach(btn => {
+          originalTexts.set(btn, btn.textContent);
+          btn.disabled = true;
+          btn.textContent = 'Loading checkout...';
+        });
+        
+        // Call serverless function
+        const response = await fetch('/.netlify/functions/checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({})
+        });
+        
+        const data = await response.json();
+        
+        if (data.url) {
+          // Redirect to Stripe Checkout
+          window.location.href = data.url;
+        } else {
+          throw new Error(data.error || 'Checkout failed');
+        }
+      } catch (error) {
+        console.error('Checkout error:', error);
+        alert('Sorry, checkout is temporarily unavailable. Please try again in a moment.');
+        
+        // Reset all buttons
+        buttons.forEach(btn => {
+          btn.disabled = false;
+          btn.textContent = originalTexts.get(btn) || 'Get My AI-Powered Claim Toolkit';
+        });
+      }
     }
+    
+    // Add click handlers to all checkout buttons when DOM loads
+    document.addEventListener('DOMContentLoaded', function() {
+      // Find all buttons with checkout-related text
+      const checkoutButtons = document.querySelectorAll('.btn-primary');
+      checkoutButtons.forEach(btn => {
+        if (btn.textContent.includes('Toolkit') || btn.classList.contains('checkout-btn')) {
+          btn.onclick = startCheckout;
+        }
+      });
+    });
+
+    // FAQ Toggle
+    function toggleFAQ(question) {
+      const answer = question.nextElementSibling;
+      const icon = question.querySelector('span');
+      answer.classList.toggle('active');
+      icon.textContent = answer.classList.contains('active') ? '▲' : '▼';
+    }
+
+    // Language toggle functionality
+    function toggleLanguage() {
+      alert('Spanish version coming soon! / ¡Versión en español próximamente!\n\nAll AI services and documents are fully bilingual.\nTodos los servicios de IA y documentos son completamente bilingües.');
+    }
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
   </script>
+
 </body>
 </html>

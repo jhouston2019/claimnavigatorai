@@ -1,9 +1,46 @@
-
 [build]
+  functions = "netlify/functions"
   publish = "."
-  functions = "functions"
+
+[build.environment]
+  NODE_VERSION = "18"
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
   status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Redirect www to non-www
+[[redirects]]
+  from = "https://www.claimnavigatorai.netlify.app/*"
+  to = "https://claimnavigatorai.netlify.app/:splat"
+  status = 301
+  force = true
+
+# Function settings
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["pdfkit", "docx"]
