@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ClaimNavigator - AI-Powered Claim Documentation Tools</title>
-  <meta name="description" content="AI-powered documentation tools for property and business interruption insurance claims. Save time and maximize your claim potential.">
+  <title>ClaimNavigatorAI - AI-Powered Claim Documentation Tools</title>
+  <meta name="description" content="AI-powered documentation tools for property and business interruption insurance claims. Save time and maximize your claim potential. Herramientas de documentación con IA para reclamos de seguros.">
   
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -37,6 +37,21 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 20px;
+    }
+    
+    /* Language Toggle Button */
+    .lang-toggle {
+      background: rgba(255,255,255,0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      border: 1px solid rgba(255,255,255,0.3);
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+    
+    .lang-toggle:hover {
+      background: rgba(255,255,255,0.3);
     }
     
     /* Header */
@@ -677,13 +692,13 @@
       <nav>
         <div class="logo">ClaimNavigatorAI</div>
         <div class="nav-links">
-          <a href="#services">Services</a>
-          <a href="#resources">Resources</a>
-          <a href="#blog">Guides</a>
-          <a href="#process">Process</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#" onclick="toggleLanguage()" style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 0.25rem;">ES/EN</a>
-          <a href="#pricing" class="btn-primary checkout-btn">Get My AI-Powered Claim Toolkit</a>
+          <a href="#services" data-en="Services" data-es="Servicios">Services</a>
+          <a href="#resources" data-en="Resources" data-es="Recursos">Resources</a>
+          <a href="#blog" data-en="Guides" data-es="Guías">Guides</a>
+          <a href="#process" data-en="Process" data-es="Proceso">Process</a>
+          <a href="#pricing" data-en="Pricing" data-es="Precios">Pricing</a>
+          <button onclick="toggleLanguage()" class="lang-toggle">ES/EN</button>
+          <a href="#pricing" class="btn-primary checkout-btn" data-en="Get My AI-Powered Claim Toolkit" data-es="Obtener Mi Kit de Herramientas IA">Get My AI-Powered Claim Toolkit</a>
         </div>
       </nav>
     </div>
@@ -695,12 +710,27 @@
       <div class="hero-content">
         <div style="grid-column: 1 / -1;">
           <div style="text-align: center; margin-bottom: 1.5rem;">
-            <p style="color: #60a5fa; font-size: 32px; font-weight: 700; font-style: italic; margin: 0; padding: 0.75rem 1.5rem; background: #0f172a; display: inline-block; border-radius: 0.5rem;">Don't leave money on the table - we can help with your insurance claim!</p>
+            <p style="color: #60a5fa; font-size: 32px; font-weight: 700; font-style: italic; margin: 0; padding: 0.75rem 1.5rem; background: #0f172a; display: inline-block; border-radius: 0.5rem;" 
+               data-en="Don't leave money on the table - we can help with your insurance claim!" 
+               data-es="¡No deje dinero sobre la mesa - podemos ayudar con su reclamo de seguro!">
+               Don't leave money on the table - we can help with your insurance claim!
+            </p>
           </div>
-          <h1 style="text-align: center; color: white; margin-bottom: 0.5rem;">AI-Powered Claim Tools to Properly Manage and Maximize Your Claim</h1>
-          <p style="text-align: center; color: rgba(255, 255, 255, 0.9); margin: 0; padding-bottom: 1rem;">Get the critical claim documents you need — from polished responses to organized files —<br>to save you time, stay in control, and successfully collect the settlement you deserve.</p>
+          <h1 style="text-align: center; color: white; margin-bottom: 0.5rem;" 
+              data-en="AI-Powered Claim Tools to Properly Manage and Maximize Your Claim" 
+              data-es="Herramientas IA para Gestionar y Maximizar su Reclamo Correctamente">
+              AI-Powered Claim Tools to Properly Manage and Maximize Your Claim
+          </h1>
+          <p style="text-align: center; color: rgba(255, 255, 255, 0.9); margin: 0; padding-bottom: 1rem;" 
+             data-en="Get the critical claim documents you need — from polished responses to organized files — to save you time, stay in control, and successfully collect the settlement you deserve." 
+             data-es="Obtenga los documentos críticos que necesita — desde respuestas pulidas hasta archivos organizados — para ahorrar tiempo, mantener el control y cobrar exitosamente el acuerdo que merece.">
+             Get the critical claim documents you need — from polished responses to organized files —<br>to save you time, stay in control, and successfully collect the settlement you deserve.
+          </p>
           <p style="text-align: center; color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; margin-top: 0.5rem;">
-            <em>Full bilingual support • Soporte completo bilingüe (English/Español)</em>
+            <em data-en="Full bilingual support • Complete bilingual support (English/Español)" 
+                data-es="Soporte bilingüe completo • Full bilingual support (Español/English)">
+                Full bilingual support • Soporte completo bilingüe (English/Español)
+            </em>
           </p>
         </div>
       </div>
@@ -713,44 +743,70 @@
       <div style="background: #f3f4f6; padding: 1.5rem; border-radius: 1rem; margin: 0;">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
           <div style="text-align: center; padding: 0.25rem;">
-            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;">✔ Smart Letter Analysis</strong>
-            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;">
+            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;" 
+                    data-en="✓ Smart Letter Analysis" 
+                    data-es="✓ Análisis Inteligente de Cartas">✓ Smart Letter Analysis</strong>
+            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;" 
+               data-en="Upload insurer letters → AI pinpoints key issues, gaps, and opportunities to strengthen your position." 
+               data-es="Suba cartas de aseguradoras → IA identifica problemas clave, brechas y oportunidades para fortalecer su posición.">
               Upload insurer letters → AI pinpoints key issues, gaps, and opportunities to strengthen your position.
             </p>
           </div>
           <div style="text-align: center; padding: 0.25rem;">
-            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;">✔ AI-Generated Responses</strong>
-            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;">
+            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;" 
+                    data-en="✓ AI-Generated Responses" 
+                    data-es="✓ Respuestas Generadas por IA">✓ AI-Generated Responses</strong>
+            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;" 
+               data-en="One click → professional letters ready to send that properly address insurer communications." 
+               data-es="Un clic → cartas profesionales listas para enviar que abordan adecuadamente las comunicaciones del asegurador.">
               One click → professional letters ready to send that properly address insurer communications.
             </p>
           </div>
           <div style="text-align: center; padding: 0.25rem;">
-            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;">✔ Coverage Clarity</strong>
-            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;">
+            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;" 
+                    data-en="✓ Coverage Clarity" 
+                    data-es="✓ Claridad de Cobertura">✓ Coverage Clarity</strong>
+            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;" 
+               data-en="AI helps you understand your policy coverage to properly manage your claim." 
+               data-es="IA le ayuda a entender su cobertura de póliza para gestionar adecuadamente su reclamo.">
               AI helps you understand your policy coverage to properly manage your claim.
             </p>
           </div>
           <div style="text-align: center; padding: 0.25rem;">
-            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;">✔ Time-Saving Organization</strong>
-            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;">
+            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;" 
+                    data-en="✓ Time-Saving Organization" 
+                    data-es="✓ Organización que Ahorra Tiempo">✓ Time-Saving Organization</strong>
+            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;" 
+               data-en="Smart tools organize your claim documents efficiently, saving you hours of work." 
+               data-es="Herramientas inteligentes organizan sus documentos de reclamo eficientemente, ahorrándole horas de trabajo.">
               Smart tools organize your claim documents efficiently, saving you hours of work.
             </p>
           </div>
           <div style="text-align: center; padding: 0.25rem;">
-            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;">✔ AI Appeal Builder</strong>
-            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;">
+            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;" 
+                    data-en="✓ AI Appeal Builder" 
+                    data-es="✓ Constructor de Apelaciones IA">✓ AI Appeal Builder</strong>
+            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;" 
+               data-en="Build a complete, formatted appeal package instantly with AI-powered templates." 
+               data-es="Construya un paquete de apelación completo y formateado instantáneamente con plantillas potenciadas por IA.">
               Build a complete, formatted appeal package instantly with AI-powered templates.
             </p>
           </div>
           <div style="text-align: center; padding: 0.25rem;">
-            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;">✔ Compliance Checks</strong>
-            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;">
+            <strong style="color: #1e40af; font-size: 26px; display: block; margin-bottom: 0.5rem; font-weight: 700;" 
+                    data-en="✓ Compliance Checks" 
+                    data-es="✓ Verificaciones de Cumplimiento">✓ Compliance Checks</strong>
+            <p style="font-size: 14px; color: #111827; line-height: 1.4; font-weight: 400; margin: 0;" 
+               data-en="Built-in state-specific compliance checks ensure your documents meet requirements." 
+               data-es="Verificaciones de cumplimiento específicas del estado aseguran que sus documentos cumplan los requisitos.">
               Built-in state-specific compliance checks ensure your documents meet requirements.
             </p>
           </div>
         </div>
         <div style="text-align: center; padding-top: 2rem;">
-          <button onclick="startCheckout()" class="btn-primary checkout-btn" style="font-size: 1.1rem; padding: 1rem 2rem;">Get My AI-Powered Claim Toolkit</button>
+          <button onclick="startCheckout()" class="btn-primary checkout-btn" style="font-size: 1.1rem; padding: 1rem 2rem;" 
+                  data-en="Get My AI-Powered Claim Toolkit" 
+                  data-es="Obtener Mi Kit de Herramientas IA">Get My AI-Powered Claim Toolkit</button>
         </div>
       </div>
     </div>
@@ -760,19 +816,38 @@
   <section class="value-props" style="background: #fafafa; padding: 3rem 0;">
     <div class="container">
       <div style="max-width: 800px; margin: 0 auto;">
-        <h2 style="color: #dc2626; text-align: center; margin-bottom: 2rem; white-space: nowrap; font-size: 1.5rem;">YOU Must PROVE Your Loss - They Won't Do It For You!</h2>
+        <h2 style="color: #dc2626; text-align: center; margin-bottom: 2rem; font-size: 1.5rem;" 
+            data-en="YOU Must PROVE Your Loss - They Won't Do It For You!" 
+            data-es="USTED Debe PROBAR Su Pérdida - ¡Ellos No Lo Harán Por Usted!">
+            YOU Must PROVE Your Loss - They Won't Do It For You!
+        </h2>
         
         <div style="background: white; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
-          <p style="margin-bottom: 1rem;"><strong style="color: #dc2626;">FACT #1:</strong> <span style="background: #fef3c7; padding: 0.1rem 0.3rem;">YOU have the burden of proof.</span> The insurer only pays what YOU can prove.</p>
+          <p style="margin-bottom: 1rem;" data-en="FACT #1: YOU have the burden of proof. The insurer only pays what YOU can prove." 
+             data-es="HECHO #1: USTED tiene la carga de la prueba. El asegurador solo paga lo que USTED puede probar.">
+            <strong style="color: #dc2626;">FACT #1:</strong> <span style="background: #fef3c7; padding: 0.1rem 0.3rem;">YOU have the burden of proof.</span> The insurer only pays what YOU can prove.
+          </p>
           
-          <p style="margin-bottom: 1rem;"><strong style="color: #dc2626;">FACT #2:</strong> Their adjuster works for THEM. <span style="background: #fef3c7; padding: 0.1rem 0.3rem;">Their estimate is just an opening offer.</span></p>
+          <p style="margin-bottom: 1rem;" data-en="FACT #2: Their adjuster works for THEM. Their estimate is just an opening offer." 
+             data-es="HECHO #2: Su ajustador trabaja para ELLOS. Su estimado es solo una oferta inicial.">
+            <strong style="color: #dc2626;">FACT #2:</strong> Their adjuster works for THEM. <span style="background: #fef3c7; padding: 0.1rem 0.3rem;">Their estimate is just an opening offer.</span>
+          </p>
           
-          <p style="margin-bottom: 0.75rem;"><strong style="color: #dc2626;">FACT #3:</strong> Without proper documentation you'll: ❌ Accept lowball offers ❌ Miss deadlines ❌ Leave money on the table</p>
+          <p style="margin-bottom: 0.75rem;" data-en="FACT #3: Without proper documentation you'll: ❌ Accept lowball offers ❌ Miss deadlines ❌ Leave money on the table" 
+             data-es="HECHO #3: Sin documentación adecuada usted: ❌ Aceptará ofertas bajas ❌ Perderá fechas límite ❌ Dejará dinero sobre la mesa">
+            <strong style="color: #dc2626;">FACT #3:</strong> Without proper documentation you'll: ❌ Accept lowball offers ❌ Miss deadlines ❌ Leave money on the table
+          </p>
         </div>
         
         <div style="background: #fef3c7; padding: 1.25rem; border-radius: 0.5rem; border: 1px solid #f59e0b; text-align: center;">
-          <strong style="color: #92400e; display: block; margin-bottom: 0.5rem; font-size: 1.1rem;">Successful Claimants:</strong>
-          <span style="color: #92400e;">Document everything • Get independent estimates • Challenge every line • Know their coverage • Never accept first offers</span>
+          <strong style="color: #92400e; display: block; margin-bottom: 0.5rem; font-size: 1.1rem;" 
+                  data-en="Successful Claimants:" 
+                  data-es="Reclamantes Exitosos:">Successful Claimants:</strong>
+          <span style="color: #92400e;" 
+                data-en="Document everything • Get independent estimates • Challenge every line • Know their coverage • Never accept first offers" 
+                data-es="Documentan todo • Obtienen estimados independientes • Desafían cada línea • Conocen su cobertura • Nunca aceptan primeras ofertas">
+            Document everything • Get independent estimates • Challenge every line • Know their coverage • Never accept first offers
+          </span>
         </div>
       </div>
     </div>
@@ -846,29 +921,171 @@
   <section class="process" id="process" style="background: var(--primary-header); padding: 4rem 0;">
     <div class="container">
       <div class="section-header">
-        <h2 style="color: white;">Our AI-Powered Process</h2>
-        <p class="section-subtitle" style="color: rgba(255, 255, 255, 0.9);">A smarter approach to preparing and managing your claim</p>
+        <h2 style="color: white;" data-en="Our AI-Powered Process" data-es="Nuestro Proceso Potenciado por IA">Our AI-Powered Process</h2>
+        <p class="section-subtitle" style="color: rgba(255, 255, 255, 0.9);" 
+           data-en="A smarter approach to preparing and managing your claim" 
+           data-es="Un enfoque más inteligente para preparar y gestionar su reclamo">
+           A smarter approach to preparing and managing your claim
+        </p>
       </div>
       <div class="process-steps">
         <div class="step-card">
           <div class="step-number">1</div>
-          <h3>Upload</h3>
-          <p>Upload your policy documents, correspondence, and initial claim materials for AI-powered analysis.</p>
+          <h3 data-en="Upload" data-es="Subir">Upload</h3>
+          <p data-en="Upload your policy documents, correspondence, and initial claim materials for AI-powered analysis." 
+             data-es="Suba sus documentos de póliza, correspondencia y materiales iniciales del reclamo para análisis con IA.">
+             Upload your policy documents, correspondence, and initial claim materials for AI-powered analysis.
+          </p>
         </div>
         <div class="step-card">
           <div class="step-number">2</div>
-          <h3>Gap Check</h3>
-          <p>AI identifies missing documentation and opportunities to strengthen your claim presentation.</p>
+          <h3 data-en="Gap Check" data-es="Verificación de Brechas">Gap Check</h3>
+          <p data-en="AI identifies missing documentation and opportunities to strengthen your claim presentation." 
+             data-es="IA identifica documentación faltante y oportunidades para fortalecer la presentación de su reclamo.">
+             AI identifies missing documentation and opportunities to strengthen your claim presentation.
+          </p>
         </div>
         <div class="step-card">
           <div class="step-number">3</div>
-          <h3>Generate Documents</h3>
-          <p>AI generates complete documentation package including forms, templates, and supporting materials.</p>
+          <h3 data-en="Generate Documents" data-es="Generar Documentos">Generate Documents</h3>
+          <p data-en="AI generates complete documentation package including forms, templates, and supporting materials." 
+             data-es="IA genera paquete completo de documentación incluyendo formularios, plantillas y materiales de apoyo.">
+             AI generates complete documentation package including forms, templates, and supporting materials.
+          </p>
         </div>
         <div class="step-card">
           <div class="step-number">4</div>
-          <h3>Organize & Deliver</h3>
-          <p>Receive your organized claim toolkit with filing instructions and time-saving guidance.</p>
+          <h3 data-en="Organize & Deliver" data-es="Organizar y Entregar">Organize & Deliver</h3>
+          <p data-en="Receive your organized claim toolkit with filing instructions and time-saving guidance." 
+             data-es="Reciba su kit de herramientas organizado con instrucciones de presentación y orientación para ahorrar tiempo.">
+             Receive your organized claim toolkit with filing instructions and time-saving guidance.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Policy Analysis Section -->
+  <section style="background: white; padding: 4rem 0;">
+    <div class="container">
+      <div style="max-width: 1000px; margin: 0 auto;">
+        <h2 style="font-size: 2.5rem; text-align: center; margin-bottom: 1rem; color: var(--text-primary);"
+            data-en="AI-Powered Policy Analysis Included"
+            data-es="Análisis de Póliza con IA Incluido">
+            AI-Powered Policy Analysis Included
+        </h2>
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; font-size: 1.1rem;"
+           data-en="Upload your insurance policy for instant AI analysis and customized documentation"
+           data-es="Suba su póliza de seguro para análisis instantáneo con IA y documentación personalizada">
+           Upload your insurance policy for instant AI analysis and customized documentation
+        </p>
+        
+        <div style="background: #e0f2fe; border: 2px solid #0891b2; border-radius: 1rem; padding: 3rem; margin-bottom: 3rem;">
+          <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 3rem; align-items: center;">
+            <div>
+              <h3 style="color: #0c4a6e; font-size: 1.75rem; margin-bottom: 1rem;"
+                  data-en="Your Policy, Decoded"
+                  data-es="Su Póliza, Decodificada">
+                  Your Policy, Decoded
+              </h3>
+              <p style="color: #475569; margin-bottom: 2rem; line-height: 1.6;"
+                 data-en="Our advanced AI analyzes your actual insurance policy to provide personalized claim strategies. No more guessing about coverage or missing critical requirements."
+                 data-es="Nuestra IA avanzada analiza su póliza de seguro actual para proporcionar estrategias de reclamo personalizadas. No más adivinanzas sobre cobertura o requisitos críticos perdidos.">
+                 Our advanced AI analyzes your actual insurance policy to provide personalized claim strategies. No more guessing about coverage or missing critical requirements.
+              </p>
+              
+              <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                  <span style="background: #14b8a6; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold;">✓</span>
+                  <span style="color: #1e293b;" data-en="Identifies your specific coverages and exclusions" data-es="Identifica sus coberturas y exclusiones específicas">Identifies your specific coverages and exclusions</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                  <span style="background: #14b8a6; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold;">✓</span>
+                  <span style="color: #1e293b;" data-en="Finds hidden endorsements and sub-limits" data-es="Encuentra endosos ocultos y sublímites">Finds hidden endorsements and sub-limits</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                  <span style="background: #14b8a6; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold;">✓</span>
+                  <span style="color: #1e293b;" data-en="Calculates your actual deductibles" data-es="Calcula sus deducibles reales">Calculates your actual deductibles</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                  <span style="background: #14b8a6; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold;">✓</span>
+                  <span style="color: #1e293b;" data-en="Generates custom documentation for your policy" data-es="Genera documentación personalizada para su póliza">Generates custom documentation for your policy</span>
+                </div>
+              </div>
+            </div>
+            
+            <div style="background: white; border-radius: 0.75rem; padding: 2rem; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+              <div style="background: #0891b2; color: white; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 2.5rem;">
+                📄
+              </div>
+              <h4 style="color: #0c4a6e; margin-bottom: 1rem;"
+                  data-en="Secure Policy Upload"
+                  data-es="Carga Segura de Póliza">
+                  Secure Policy Upload
+              </h4>
+              <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1.5rem;"
+                 data-en="256-bit encryption • GDPR compliant • Auto-deleted after analysis"
+                 data-es="Encriptación de 256-bit • Cumple GDPR • Auto-eliminado después del análisis">
+                 256-bit encryption • GDPR compliant • Auto-deleted after analysis
+              </p>
+              <p style="color: #94a3b8; font-size: 0.875rem;"
+                 data-en="Available immediately after purchase"
+                 data-es="Disponible inmediatamente después de la compra">
+                 Available immediately after purchase
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Process Steps -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; text-align: center;">
+          <div>
+            <div style="background: #0c4a6e; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem; font-weight: bold;">
+              1
+            </div>
+            <h4 style="color: #0c4a6e; margin-bottom: 0.5rem;"
+                data-en="Upload Policy"
+                data-es="Subir Póliza">
+                Upload Policy
+            </h4>
+            <p style="color: #64748b; font-size: 0.9rem;"
+               data-en="Secure upload of your insurance documents"
+               data-es="Carga segura de sus documentos de seguro">
+               Secure upload of your insurance documents
+            </p>
+          </div>
+          
+          <div>
+            <div style="background: #0c4a6e; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem; font-weight: bold;">
+              2
+            </div>
+            <h4 style="color: #0c4a6e; margin-bottom: 0.5rem;"
+                data-en="AI Analysis"
+                data-es="Análisis IA">
+                AI Analysis
+            </h4>
+            <p style="color: #64748b; font-size: 0.9rem;"
+               data-en="Instant parsing of coverage, limits, and requirements"
+               data-es="Análisis instantáneo de cobertura, límites y requisitos">
+               Instant parsing of coverage, limits, and requirements
+            </p>
+          </div>
+          
+          <div>
+            <div style="background: #0c4a6e; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem; font-weight: bold;">
+              3
+            </div>
+            <h4 style="color: #0c4a6e; margin-bottom: 0.5rem;"
+                data-en="Custom Documents"
+                data-es="Documentos Personalizados">
+                Custom Documents
+            </h4>
+            <p style="color: #64748b; font-size: 0.9rem;"
+               data-en="Receive personalized claim documentation tailored to your policy"
+               data-es="Reciba documentación de reclamo personalizada para su póliza">
+               Receive personalized claim documentation tailored to your policy
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -887,55 +1104,55 @@
         <div class="service-col" style="background: #f3f4f6;">
           <h3>Documentation</h3>
           <ul>
-            <li><strong>✔ Proof of Loss Forms (Property & Business)</strong></li>
-            <li><strong>✔ Valuation Spreadsheets (Repair, Replacement, BI Loss)</strong></li>
-            <li><strong>✔ Repair & Replacement Estimate Templates</strong></li>
-            <li><strong>✔ Depreciation & Overhead Worksheets</strong></li>
-            <li><strong>✔ Scope of Loss Reports</strong></li>
-            <li><strong>✔ Inventory & Contents Worksheets</strong></li>
-            <li><strong>✔ Expert Report Templates</strong></li>
+            <li><strong>✓ Proof of Loss Forms (Property & Business)</strong></li>
+            <li><strong>✓ Valuation Spreadsheets (Repair, Replacement, BI Loss)</strong></li>
+            <li><strong>✓ Repair & Replacement Estimate Templates</strong></li>
+            <li><strong>✓ Depreciation & Overhead Worksheets</strong></li>
+            <li><strong>✓ Scope of Loss Reports</strong></li>
+            <li><strong>✓ Inventory & Contents Worksheets</strong></li>
+            <li><strong>✓ Expert Report Templates</strong></li>
           </ul>
         </div>
 
         <div class="service-col" style="background: #f3f4f6;">
           <h3>Letters & Appeals</h3>
           <ul>
-            <li><strong>✔ Demand Letters</strong></li>
-            <li><strong>✔ Complaint Letters</strong></li>
-            <li><strong>✔ Bad Faith Allegation Notices</strong></li>
-            <li><strong>✔ Non-Compliance Notices</strong></li>
-            <li><strong>✔ Dispute Letters</strong></li>
-            <li><strong>✔ Appraisal Demand Letters</strong></li>
-            <li><strong>✔ Mediation/Arbitration Request Letters</strong></li>
-            <li><strong>✔ Appeal Packages (structured templates)</strong></li>
+            <li><strong>✓ Demand Letters</strong></li>
+            <li><strong>✓ Complaint Letters</strong></li>
+            <li><strong>✓ Bad Faith Allegation Notices</strong></li>
+            <li><strong>✓ Non-Compliance Notices</strong></li>
+            <li><strong>✓ Dispute Letters</strong></li>
+            <li><strong>✓ Appraisal Demand Letters</strong></li>
+            <li><strong>✓ Mediation/Arbitration Request Letters</strong></li>
+            <li><strong>✓ Appeal Packages (structured templates)</strong></li>
           </ul>
         </div>
 
         <div class="service-col" style="background: #f3f4f6;">
           <h3>Compliance & Planning</h3>
           <ul>
-            <li><strong>✔ State-Specific Filing Forms</strong></li>
-            <li><strong>✔ Regulatory Notices</strong></li>
-            <li><strong>✔ Compliance Certifications</strong></li>
-            <li><strong>✔ Adjuster Communication Logs</strong></li>
-            <li><strong>✔ Claim Documentation Checklists</strong></li>
-            <li><strong>✔ 30-Day Action Plan</strong></li>
-            <li><strong>✔ Policyholder Claim Guide</strong></li>
+            <li><strong>✓ State-Specific Filing Forms</strong></li>
+            <li><strong>✓ Regulatory Notices</strong></li>
+            <li><strong>✓ Compliance Certifications</strong></li>
+            <li><strong>✓ Adjuster Communication Logs</strong></li>
+            <li><strong>✓ Claim Documentation Checklists</strong></li>
+            <li><strong>✓ 30-Day Action Plan</strong></li>
+            <li><strong>✓ Policyholder Claim Guide</strong></li>
           </ul>
         </div>
 
         <div class="service-col" style="background: #f3f4f6;">
           <h3>AI Services</h3>
           <ul>
-            <li><strong>✔ Smart Letter Analysis</strong></li>
-            <li><strong>✔ AI-Generated Professional Responses (English/Spanish)</strong></li>
-            <li><strong>✔ Policy Review & Coverage Analysis</strong></li>
-            <li><strong>✔ AI Compliance Checks</strong></li>
-            <li><strong>✔ AI Appeal Package Builder</strong></li>
-            <li><strong>✔ Data Extraction & Summarization</strong></li>
-            <li><strong>✔ AI Trend & Settlement Forecasting</strong></li>
-            <li><strong>✔ Smart Policyholder Guidance (Bilingual)</strong></li>
-            <li><strong>✔ Fraud/Bad Faith Detection Alerts</strong></li>
+            <li><strong>✓ Smart Letter Analysis</strong></li>
+            <li><strong>✓ AI-Generated Professional Responses (English/Spanish)</strong></li>
+            <li><strong>✓ Policy Review & Coverage Analysis</strong></li>
+            <li><strong>✓ AI Compliance Checks</strong></li>
+            <li><strong>✓ AI Appeal Package Builder</strong></li>
+            <li><strong>✓ Data Extraction & Summarization</strong></li>
+            <li><strong>✓ AI Trend & Settlement Forecasting</strong></li>
+            <li><strong>✓ Smart Policyholder Guidance (Bilingual)</strong></li>
+            <li><strong>✓ Fraud/Bad Faith Detection Alerts</strong></li>
           </ul>
         </div>
 
@@ -1001,7 +1218,7 @@
         </div>
       </div>
       <p style="text-align: center; margin-top: 2rem; color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;">
-        Results vary. ClaimNavigatorAI provides documentation tools only — not legal advice.
+        Results vary. ClaimNavigatorAI provides documentation tools only – not legal advice.
       </p>
     </div>
   </section>
@@ -1010,23 +1227,31 @@
   <section class="pricing" id="pricing">
     <div class="container">
       <div class="pricing-card" style="text-align: center;">
-        <h3>AI Claim Toolkit</h3>
+        <h3 data-en="AI Claim Toolkit" data-es="Kit de Herramientas IA para Reclamos">AI Claim Toolkit</h3>
         <div class="price-amount">$499</div>
-        <p class="price-description">Fixed fee regardless of claim size or complexity<br>
-        <strong>Includes 20 AI-generated insurer responses</strong><br>
-        Each additional AI response: $29</p>
+        <p class="price-description" 
+           data-en="Fixed fee regardless of claim size or complexity. Includes 20 AI-generated insurer responses. Each additional AI response: $29" 
+           data-es="Tarifa fija sin importar el tamaño o complejidad del reclamo. Incluye 20 respuestas generadas por IA. Cada respuesta adicional: $29">
+           Fixed fee regardless of claim size or complexity<br>
+           <strong>Includes 20 AI-generated insurer responses</strong><br>
+           Each additional AI response: $29
+        </p>
         <ul class="price-features" style="text-align: center;">
-          <li>✔ Complete AI-powered documentation package</li>
-          <li>✔ 20 AI-generated insurer responses included</li>
-          <li>✔ All necessary forms and templates</li>
-          <li>✔ State-specific compliance documents</li>
-          <li>✔ Spanish language support for all documents</li>
-          <li>✔ Appeal and escalation templates</li>
-          <li>✔ 30-day action plan and timeline</li>
-          <li>✔ Bonus: Recommended tools guide with exclusive discounts</li>
+          <li data-en="✓ Complete AI-powered documentation package" data-es="✓ Paquete completo de documentación con IA">✓ Complete AI-powered documentation package</li>
+          <li data-en="✓ 20 AI-generated insurer responses included" data-es="✓ 20 respuestas generadas por IA incluidas">✓ 20 AI-generated insurer responses included</li>
+          <li data-en="✓ All necessary forms and templates" data-es="✓ Todos los formularios y plantillas necesarios">✓ All necessary forms and templates</li>
+          <li data-en="✓ State-specific compliance documents" data-es="✓ Documentos de cumplimiento específicos del estado">✓ State-specific compliance documents</li>
+          <li data-en="✓ Spanish language support for all documents" data-es="✓ Soporte en español para todos los documentos">✓ Spanish language support for all documents</li>
+          <li data-en="✓ Appeal and escalation templates" data-es="✓ Plantillas de apelación y escalamiento">✓ Appeal and escalation templates</li>
+          <li data-en="✓ 30-day action plan and timeline" data-es="✓ Plan de acción y cronograma de 30 días">✓ 30-day action plan and timeline</li>
+          <li data-en="✓ Bonus: Recommended tools guide with exclusive discounts" data-es="✓ Bono: Guía de herramientas recomendadas con descuentos exclusivos">✓ Bonus: Recommended tools guide with exclusive discounts</li>
         </ul>
-        <button onclick="startCheckout()" class="btn-primary checkout-btn" style="display: block; margin: 0 auto; max-width: 400px;">Get My AI-Powered Claim Toolkit</button>
-        <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary); font-size: 0.875rem;">
+        <button onclick="startCheckout()" class="btn-primary checkout-btn" style="display: block; margin: 0 auto; max-width: 400px;" 
+                data-en="Get My AI-Powered Claim Toolkit" 
+                data-es="Obtener Mi Kit de Herramientas IA">Get My AI-Powered Claim Toolkit</button>
+        <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary); font-size: 0.875rem;" 
+           data-en="Digital products are delivered immediately. All sales are final." 
+           data-es="Los productos digitales se entregan inmediatamente. Todas las ventas son finales.">
           Digital products are delivered immediately. All sales are final.
         </p>
       </div>
@@ -1208,90 +1433,116 @@
       <div class="footer-content">
         <div class="footer-section">
           <h4>ClaimNavigatorAI</h4>
-          <p style="color: #9ca3af; margin-top: 1rem;">AI-powered claim documentation tools for property owners and businesses. Properly manage, save time, and maximize your claim with confidence.</p>
+          <p style="color: #9ca3af; margin-top: 1rem;" 
+             data-en="AI-powered claim documentation tools for property owners and businesses. Properly manage, save time, and maximize your claim with confidence." 
+             data-es="Herramientas de documentación con IA para propietarios y empresas. Gestione adecuadamente, ahorre tiempo y maximice su reclamo con confianza.">
+             AI-powered claim documentation tools for property owners and businesses. Properly manage, save time, and maximize your claim with confidence.
+          </p>
         </div>
         <div class="footer-section">
-          <h4>Services</h4>
-          <a href="#services">Documentation Services</a>
-          <a href="#resources">Recommended Tools</a>
-          <a href="#blog">Guides & Resources</a>
-          <a href="#process">Our Process</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#case-studies">Case Studies</a>
+          <h4 data-en="Services" data-es="Servicios">Services</h4>
+          <a href="#services" data-en="Documentation Services" data-es="Servicios de Documentación">Documentation Services</a>
+          <a href="#resources" data-en="Recommended Tools" data-es="Herramientas Recomendadas">Recommended Tools</a>
+          <a href="#process" data-en="Our Process" data-es="Nuestro Proceso">Our Process</a>
+          <a href="#pricing" data-en="Pricing" data-es="Precios">Pricing</a>
         </div>
         <div class="footer-section">
-          <h4>Information</h4>
-          <a href="terms.html">Terms of Service</a>
-          <a href="privacy.html">Privacy Policy</a>
-          <a href="disclaimer.html">Legal Disclaimer</a>
-          <a href="#affiliate">Affiliate Disclosure</a>
-          <a href="#contact">Contact</a>
+          <h4 data-en="Information" data-es="Información">Information</h4>
+          <a href="terms.html" data-en="Terms of Service" data-es="Términos de Servicio">Terms of Service</a>
+          <a href="privacy.html" data-en="Privacy Policy" data-es="Política de Privacidad">Privacy Policy</a>
+          <a href="disclaimer.html" data-en="Legal Disclaimer" data-es="Aviso Legal">Legal Disclaimer</a>
+          <a href="#contact" data-en="Contact" data-es="Contacto">Contact</a>
         </div>
-      </div>
-      <div class="footer-disclosure">
-        <p><strong>Affiliate Disclosure:</strong> ClaimNavigatorAI participates in affiliate programs. We may earn commissions from qualifying purchases through links on this site at no additional cost to you. We only recommend products and services we believe will add value to your claim documentation process.</p>
       </div>
       <div style="text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid #374151; color: #9ca3af;">
-        <p>© 2025 ClaimNavigatorAI. All rights reserved. | Documentation tools only — not legal advice or adjusting.</p>
+        <p data-en="© 2025 ClaimNavigatorAI. All rights reserved. | Documentation tools only – not legal advice or adjusting." 
+           data-es="© 2025 ClaimNavigatorAI. Todos los derechos reservados. | Solo herramientas de documentación – no asesoría legal o ajuste.">
+           © 2025 ClaimNavigatorAI. All rights reserved. | Documentation tools only – not legal advice or adjusting.
+        </p>
       </div>
     </div>
   </footer>
 
   <script>
+    // Language toggle functionality
+    let currentLang = 'en';
+    
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'es' : 'en';
+      document.documentElement.lang = currentLang;
+      
+      // Update all elements with data-en and data-es attributes
+      const elements = document.querySelectorAll('[data-en][data-es]');
+      elements.forEach(element => {
+        const text = element.getAttribute(`data-${currentLang}`);
+        if (text) {
+          // Check if element is input/button or regular element
+          if (element.tagName === 'INPUT' || element.tagName === 'BUTTON') {
+            element.textContent = text;
+          } else {
+            element.innerHTML = text;
+          }
+        }
+      });
+      
+      // Update page title
+      document.title = currentLang === 'es' 
+        ? 'ClaimNavigatorAI - Herramientas de Documentación con IA para Reclamos' 
+        : 'ClaimNavigatorAI - AI-Powered Claim Documentation Tools';
+      
+      // Store preference
+      localStorage.setItem('preferredLanguage', currentLang);
+    }
+    
+    // Load preferred language on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedLang = localStorage.getItem('preferredLanguage');
+      if (savedLang && savedLang !== 'en') {
+        toggleLanguage();
+      }
+    });
+    
     // Stripe Checkout Integration
     async function startCheckout() {
-      // Get all checkout buttons
       const buttons = document.querySelectorAll('.checkout-btn');
       const originalTexts = new Map();
       
       try {
-        // Disable all checkout buttons and update text
         buttons.forEach(btn => {
           originalTexts.set(btn, btn.textContent);
           btn.disabled = true;
-          btn.textContent = 'Loading checkout...';
+          btn.textContent = currentLang === 'es' ? 'Cargando pago...' : 'Loading checkout...';
         });
         
-        // Call serverless function
         const response = await fetch('/.netlify/functions/checkout', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({})
+          body: JSON.stringify({ language: currentLang })
         });
         
         const data = await response.json();
         
         if (data.url) {
-          // Redirect to Stripe Checkout
           window.location.href = data.url;
         } else {
           throw new Error(data.error || 'Checkout failed');
         }
       } catch (error) {
         console.error('Checkout error:', error);
-        alert('Sorry, checkout is temporarily unavailable. Please try again in a moment.');
+        const message = currentLang === 'es' 
+          ? 'Lo sentimos, el pago no está disponible temporalmente. Por favor intente de nuevo.'
+          : 'Sorry, checkout is temporarily unavailable. Please try again in a moment.';
+        alert(message);
         
-        // Reset all buttons
         buttons.forEach(btn => {
           btn.disabled = false;
-          btn.textContent = originalTexts.get(btn) || 'Get My AI-Powered Claim Toolkit';
+          btn.textContent = originalTexts.get(btn) || (currentLang === 'es' ? 'Obtener Mi Kit de Herramientas IA' : 'Get My AI-Powered Claim Toolkit');
         });
       }
     }
     
-    // Add click handlers to all checkout buttons when DOM loads
-    document.addEventListener('DOMContentLoaded', function() {
-      // Find all buttons with checkout-related text
-      const checkoutButtons = document.querySelectorAll('.btn-primary');
-      checkoutButtons.forEach(btn => {
-        if (btn.textContent.includes('Toolkit') || btn.classList.contains('checkout-btn')) {
-          btn.onclick = startCheckout;
-        }
-      });
-    });
-
     // FAQ Toggle
     function toggleFAQ(question) {
       const answer = question.nextElementSibling;
@@ -1299,12 +1550,7 @@
       answer.classList.toggle('active');
       icon.textContent = answer.classList.contains('active') ? '▲' : '▼';
     }
-
-    // Language toggle functionality
-    function toggleLanguage() {
-      alert('Spanish version coming soon! / ¡Versión en español próximamente!\n\nAll AI services and documents are fully bilingual.\nTodos los servicios de IA y documentos son completamente bilingües.');
-    }
-
+    
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
