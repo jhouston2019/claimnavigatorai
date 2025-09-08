@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - ClaimNavigatorAI</title>
+  <meta name="description" content="Login to your ClaimNavigatorAI account to access your AI-powered claim tools.">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #1e40af;
+      --primary-dark: #0f172a;
+      --primary-header: #0f172a;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --bg-white: #ffffff;
+      --bg-light: #f9fafb;
+      --bg-gray: #f3f4f6;
+      --border: #e5e7eb;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-white);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header */
+    header {
+      background: var(--primary-header);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: white;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      display: inline-block;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .btn-primary:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .btn-primary:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-secondary {
+      background: var(--bg-light);
+      color: var(--primary);
+      padding: 0.5rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 500;
+      border: 1px solid var(--primary);
+      transition: all 0.2s;
+      display: inline-block;
+    }
+    
+    .btn-secondary:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    /* Main Content */
+    .main-content {
+      padding: 4rem 0;
+      min-height: calc(100vh - 200px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .login-container {
+      max-width: 400px;
+      width: 100%;
+      background: var(--bg-white);
+      border-radius: 1rem;
+      box-shadow: var(--shadow-lg);
+      padding: 3rem;
+    }
+    
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .login-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .login-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .form-group input.error {
+      border-color: #dc2626;
+    }
+    
+    .error-message {
+      color: #dc2626;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+    
+    .error-message.active {
+      display: block;
+    }
+    
+    .login-form {
+      margin-bottom: 2rem;
+    }
+    
+    .login-button {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .forgot-password {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .forgot-password a {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+    
+    .forgot-password a:hover {
+      text-decoration: underline;
+    }
+    
+    .divider {
+      text-align: center;
+      margin: 2rem 0;
+      position: relative;
+    }
+    
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--border);
+    }
+    
+    .divider span {
+      background: var(--bg-white);
+      padding: 0 1rem;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+    
+    .register-link {
+      text-align: center;
+    }
+    
+    .register-link p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    
+    .register-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 1rem;
+      color: var(--text-secondary);
+    }
+    
+    .loading.active {
+      display: block;
+    }
+    
+    .spinner {
+      border: 3px solid var(--border);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 0.5rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .success-message {
+      background: #f0fdf4;
+      color: #166534;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid #bbf7d0;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    
+    .success-message.active {
+      display: block;
+    }
+    
+    .alert-message {
+      background: #fef2f2;
+      color: #dc2626;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid #fecaca;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    
+    .alert-message.active {
+      display: block;
+    }
+    
+    /* Footer */
+    footer {
+      background: var(--text-primary);
+      color: white;
+      padding: 3rem 0;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 3rem;
+    }
+    
+    .footer-section h4 {
+      margin-bottom: 1rem;
+      color: white;
+    }
+    
+    .footer-section a {
+      color: #9ca3af;
+      text-decoration: none;
+      display: block;
+      padding: 0.25rem 0;
+      transition: color 0.2s;
+    }
+    
+    .footer-section a:hover {
+      color: white;
+    }
+    
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      
+      .login-container {
+        padding: 2rem;
+        margin: 1rem;
+      }
+      
+      .footer-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">ClaimNavigatorAI</div>
+        <div class="nav-links">
+          <a href="../index.html">Home</a>
+          <a href="../product.html">Product</a>
+          <a href="register.html">Register</a>
+          <a href="login.html" class="btn-primary">Login</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="login-container">
+        <div class="login-header">
+          <h1 class="login-title">Welcome Back</h1>
+          <p class="login-subtitle">Sign in to access your AI-powered claim tools</p>
+        </div>
+        
+        <div class="success-message" id="success-message">
+          <strong>Success!</strong> <span id="success-text"></span>
+        </div>
+        
+        <div class="alert-message" id="alert-message">
+          <strong>Error:</strong> <span id="alert-text"></span>
+        </div>
+        
+        <form class="login-form" id="login-form">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required>
+            <div class="error-message" id="email-error">Please enter a valid email address</div>
+          </div>
+          
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+            <div class="error-message" id="password-error">Password is required</div>
+          </div>
+          
+          <button type="submit" class="btn-primary login-button" id="login-button">
+            Login
+          </button>
+          
+          <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Signing you in...</p>
+          </div>
+        </form>
+        
+        <div class="forgot-password">
+          <a href="#" onclick="forgotPassword()">Forgot your password?</a>
+        </div>
+        
+        <div class="divider">
+          <span>New to ClaimNavigatorAI?</span>
+        </div>
+        
+        <div class="register-link">
+          <p>Don't have an account?</p>
+          <a href="register.html">Create an account</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>ClaimNavigatorAI</h4>
+          <p style="color: #9ca3af; margin-top: 1rem;">
+            AI-powered claim documentation tools for property owners and businesses. Properly manage, save time, and maximize your claim with confidence.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h4>Services</h4>
+          <a href="../product.html">Documentation Services</a>
+          <a href="response-center.html">Response Center</a>
+          <a href="../product.html#pricing">Pricing</a>
+          <a href="../product.html#faq">FAQ</a>
+        </div>
+        <div class="footer-section">
+          <h4>Information</h4>
+          <a href="../terms.html">Terms of Service</a>
+          <a href="../privacy.html">Privacy Policy</a>
+          <a href="../disclaimer.html">Legal Disclaimer</a>
+          <a href="../index.html">Home</a>
+        </div>
+      </div>
+      <div style="text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid #374151; color: #9ca3af;">
+        <p>© 2025 ClaimNavigatorAI. All rights reserved. | Documentation tools only – not legal advice or adjusting.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Form validation
+    function validateForm() {
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      const emailError = document.getElementById('email-error');
+      const passwordError = document.getElementById('password-error');
+      
+      let isValid = true;
+      
+      // Clear previous errors
+      email.classList.remove('error');
+      password.classList.remove('error');
+      emailError.classList.remove('active');
+      passwordError.classList.remove('active');
+      
+      // Validate email
+      if (!email.value || !isValidEmail(email.value)) {
+        email.classList.add('error');
+        emailError.classList.add('active');
+        isValid = false;
+      }
+      
+      // Validate password
+      if (!password.value) {
+        password.classList.add('error');
+        passwordError.classList.add('active');
+        isValid = false;
+      }
+      
+      return isValid;
+    }
+    
+    function isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+    
+    // Show/hide messages
+    function showMessage(type, text) {
+      const successMessage = document.getElementById('success-message');
+      const alertMessage = document.getElementById('alert-message');
+      const successText = document.getElementById('success-text');
+      const alertText = document.getElementById('alert-text');
+      
+      // Hide all messages first
+      successMessage.classList.remove('active');
+      alertMessage.classList.remove('active');
+      
+      if (type === 'success') {
+        successText.textContent = text;
+        successMessage.classList.add('active');
+      } else if (type === 'error') {
+        alertText.textContent = text;
+        alertMessage.classList.add('active');
+      }
+    }
+    
+    // Login form submission
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      if (!validateForm()) {
+        return;
+      }
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const loginButton = document.getElementById('login-button');
+      const loading = document.getElementById('loading');
+      
+      // Show loading state
+      loginButton.disabled = true;
+      loading.classList.add('active');
+      
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showMessage('success', 'Login successful! Redirecting...');
+          
+          // Store user session (in a real app, this would be handled by the server)
+          localStorage.setItem('user_session', JSON.stringify(data.user));
+          
+          // Redirect to response center after a short delay
+          setTimeout(() => {
+            window.location.href = 'response-center.html';
+          }, 1500);
+        } else {
+          throw new Error(data.error || 'Login failed');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        showMessage('error', error.message || 'Login failed. Please check your credentials and try again.');
+      } finally {
+        loginButton.disabled = false;
+        loading.classList.remove('active');
+      }
+    });
+    
+    // Forgot password function
+    function forgotPassword() {
+      const email = document.getElementById('email').value;
+      
+      if (!email || !isValidEmail(email)) {
+        showMessage('error', 'Please enter a valid email address first.');
+        return;
+      }
+      
+      // In a real app, this would send a password reset email
+      showMessage('success', 'Password reset instructions have been sent to your email address.');
+    }
+    
+    // Check for URL parameters (e.g., from registration success)
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const message = urlParams.get('message');
+      const type = urlParams.get('type');
+      
+      if (message && type) {
+        showMessage(type, decodeURIComponent(message));
+      }
+      
+      // Pre-fill email if provided
+      const email = urlParams.get('email');
+      if (email) {
+        document.getElementById('email').value = email;
+      }
+    });
+  </script>
+
+</body>
+</html>

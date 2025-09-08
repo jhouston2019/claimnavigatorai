@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - ClaimNavigatorAI</title>
+  <meta name="description" content="Create your ClaimNavigatorAI account to access AI-powered claim documentation tools.">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #1e40af;
+      --primary-dark: #0f172a;
+      --primary-header: #0f172a;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --bg-white: #ffffff;
+      --bg-light: #f9fafb;
+      --bg-gray: #f3f4f6;
+      --border: #e5e7eb;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-white);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header */
+    header {
+      background: var(--primary-header);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: white;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      display: inline-block;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .btn-primary:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .btn-primary:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-secondary {
+      background: var(--bg-light);
+      color: var(--primary);
+      padding: 0.5rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 500;
+      border: 1px solid var(--primary);
+      transition: all 0.2s;
+      display: inline-block;
+    }
+    
+    .btn-secondary:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    /* Main Content */
+    .main-content {
+      padding: 4rem 0;
+      min-height: calc(100vh - 200px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .register-container {
+      max-width: 450px;
+      width: 100%;
+      background: var(--bg-white);
+      border-radius: 1rem;
+      box-shadow: var(--shadow-lg);
+      padding: 3rem;
+    }
+    
+    .register-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .register-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .register-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .form-group input.error {
+      border-color: #dc2626;
+    }
+    
+    .error-message {
+      color: #dc2626;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+    
+    .error-message.active {
+      display: block;
+    }
+    
+    .register-form {
+      margin-bottom: 2rem;
+    }
+    
+    .register-button {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .password-requirements {
+      background: var(--bg-light);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    
+    .password-requirements ul {
+      margin: 0.5rem 0 0 1rem;
+    }
+    
+    .password-requirements li {
+      margin-bottom: 0.25rem;
+    }
+    
+    .password-requirements li.valid {
+      color: var(--success);
+    }
+    
+    .password-requirements li.invalid {
+      color: #dc2626;
+    }
+    
+    .divider {
+      text-align: center;
+      margin: 2rem 0;
+      position: relative;
+    }
+    
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--border);
+    }
+    
+    .divider span {
+      background: var(--bg-white);
+      padding: 0 1rem;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+    
+    .login-link {
+      text-align: center;
+    }
+    
+    .login-link p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    
+    .login-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 1rem;
+      color: var(--text-secondary);
+    }
+    
+    .loading.active {
+      display: block;
+    }
+    
+    .spinner {
+      border: 3px solid var(--border);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 0.5rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .success-message {
+      background: #f0fdf4;
+      color: #166534;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid #bbf7d0;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    
+    .success-message.active {
+      display: block;
+    }
+    
+    .alert-message {
+      background: #fef2f2;
+      color: #dc2626;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid #fecaca;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    
+    .alert-message.active {
+      display: block;
+    }
+    
+    .terms-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .terms-checkbox input[type="checkbox"] {
+      margin-top: 0.25rem;
+      flex-shrink: 0;
+    }
+    
+    .terms-checkbox label {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+    
+    .terms-checkbox a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    .terms-checkbox a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Footer */
+    footer {
+      background: var(--text-primary);
+      color: white;
+      padding: 3rem 0;
+    }
+    
+    .footer-content {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 3rem;
+    }
+    
+    .footer-section h4 {
+      margin-bottom: 1rem;
+      color: white;
+    }
+    
+    .footer-section a {
+      color: #9ca3af;
+      text-decoration: none;
+      display: block;
+      padding: 0.25rem 0;
+      transition: color 0.2s;
+    }
+    
+    .footer-section a:hover {
+      color: white;
+    }
+    
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      
+      .register-container {
+        padding: 2rem;
+        margin: 1rem;
+      }
+      
+      .footer-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">ClaimNavigatorAI</div>
+        <div class="nav-links">
+          <a href="../index.html">Home</a>
+          <a href="../product.html">Product</a>
+          <a href="login.html">Login</a>
+          <a href="register.html" class="btn-primary">Register</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="register-container">
+        <div class="register-header">
+          <h1 class="register-title">Create Account</h1>
+          <p class="register-subtitle">Get started with your AI-powered claim toolkit</p>
+        </div>
+        
+        <div class="success-message" id="success-message">
+          <strong>Success!</strong> <span id="success-text"></span>
+        </div>
+        
+        <div class="alert-message" id="alert-message">
+          <strong>Error:</strong> <span id="alert-text"></span>
+        </div>
+        
+        <form class="register-form" id="register-form">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required>
+            <div class="error-message" id="email-error">Please enter a valid email address</div>
+          </div>
+          
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+            <div class="error-message" id="password-error">Password must meet all requirements</div>
+            <div class="password-requirements" id="password-requirements">
+              <strong>Password must contain:</strong>
+              <ul>
+                <li id="req-length">At least 8 characters</li>
+                <li id="req-uppercase">One uppercase letter</li>
+                <li id="req-lowercase">One lowercase letter</li>
+                <li id="req-number">One number</li>
+                <li id="req-special">One special character</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="confirm-password">Confirm Password</label>
+            <input type="password" id="confirm-password" name="confirm-password" required>
+            <div class="error-message" id="confirm-password-error">Passwords do not match</div>
+          </div>
+          
+          <div class="terms-checkbox">
+            <input type="checkbox" id="terms" name="terms" required>
+            <label for="terms">
+              I agree to the <a href="../terms.html" target="_blank">Terms of Service</a> and <a href="../privacy.html" target="_blank">Privacy Policy</a>
+            </label>
+          </div>
+          
+          <button type="submit" class="btn-primary register-button" id="register-button">
+            Create Account
+          </button>
+          
+          <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Creating your account...</p>
+          </div>
+        </form>
+        
+        <div class="divider">
+          <span>Already have an account?</span>
+        </div>
+        
+        <div class="login-link">
+          <p>Already have an account?</p>
+          <a href="login.html">Sign in here</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>ClaimNavigatorAI</h4>
+          <p style="color: #9ca3af; margin-top: 1rem;">
+            AI-powered claim documentation tools for property owners and businesses. Properly manage, save time, and maximize your claim with confidence.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h4>Services</h4>
+          <a href="../product.html">Documentation Services</a>
+          <a href="response-center.html">Response Center</a>
+          <a href="../product.html#pricing">Pricing</a>
+          <a href="../product.html#faq">FAQ</a>
+        </div>
+        <div class="footer-section">
+          <h4>Information</h4>
+          <a href="../terms.html">Terms of Service</a>
+          <a href="../privacy.html">Privacy Policy</a>
+          <a href="../disclaimer.html">Legal Disclaimer</a>
+          <a href="../index.html">Home</a>
+        </div>
+      </div>
+      <div style="text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid #374151; color: #9ca3af;">
+        <p>© 2025 ClaimNavigatorAI. All rights reserved. | Documentation tools only – not legal advice or adjusting.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Password validation
+    function validatePassword(password) {
+      const requirements = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /\d/.test(password),
+        special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+      };
+      
+      return requirements;
+    }
+    
+    function updatePasswordRequirements(password) {
+      const requirements = validatePassword(password);
+      const elements = {
+        length: document.getElementById('req-length'),
+        uppercase: document.getElementById('req-uppercase'),
+        lowercase: document.getElementById('req-lowercase'),
+        number: document.getElementById('req-number'),
+        special: document.getElementById('req-special')
+      };
+      
+      Object.keys(requirements).forEach(key => {
+        const element = elements[key];
+        if (requirements[key]) {
+          element.classList.add('valid');
+          element.classList.remove('invalid');
+        } else {
+          element.classList.add('invalid');
+          element.classList.remove('valid');
+        }
+      });
+      
+      return Object.values(requirements).every(req => req);
+    }
+    
+    // Form validation
+    function validateForm() {
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      const confirmPassword = document.getElementById('confirm-password');
+      const terms = document.getElementById('terms');
+      
+      const emailError = document.getElementById('email-error');
+      const passwordError = document.getElementById('password-error');
+      const confirmPasswordError = document.getElementById('confirm-password-error');
+      
+      let isValid = true;
+      
+      // Clear previous errors
+      email.classList.remove('error');
+      password.classList.remove('error');
+      confirmPassword.classList.remove('error');
+      emailError.classList.remove('active');
+      passwordError.classList.remove('active');
+      confirmPasswordError.classList.remove('active');
+      
+      // Validate email
+      if (!email.value || !isValidEmail(email.value)) {
+        email.classList.add('error');
+        emailError.classList.add('active');
+        isValid = false;
+      }
+      
+      // Validate password
+      const passwordValid = updatePasswordRequirements(password.value);
+      if (!password.value || !passwordValid) {
+        password.classList.add('error');
+        passwordError.classList.add('active');
+        isValid = false;
+      }
+      
+      // Validate password confirmation
+      if (!confirmPassword.value || password.value !== confirmPassword.value) {
+        confirmPassword.classList.add('error');
+        confirmPasswordError.classList.add('active');
+        isValid = false;
+      }
+      
+      // Validate terms
+      if (!terms.checked) {
+        alert('Please accept the Terms of Service and Privacy Policy to continue.');
+        isValid = false;
+      }
+      
+      return isValid;
+    }
+    
+    function isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+    
+    // Show/hide messages
+    function showMessage(type, text) {
+      const successMessage = document.getElementById('success-message');
+      const alertMessage = document.getElementById('alert-message');
+      const successText = document.getElementById('success-text');
+      const alertText = document.getElementById('alert-text');
+      
+      // Hide all messages first
+      successMessage.classList.remove('active');
+      alertMessage.classList.remove('active');
+      
+      if (type === 'success') {
+        successText.textContent = text;
+        successMessage.classList.add('active');
+      } else if (type === 'error') {
+        alertText.textContent = text;
+        alertMessage.classList.add('active');
+      }
+    }
+    
+    // Register form submission
+    document.getElementById('register-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      if (!validateForm()) {
+        return;
+      }
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const registerButton = document.getElementById('register-button');
+      const loading = document.getElementById('loading');
+      
+      // Show loading state
+      registerButton.disabled = true;
+      loading.classList.add('active');
+      
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showMessage('success', 'Account created successfully! Redirecting to login...');
+          
+          // Redirect to login page after a short delay
+          setTimeout(() => {
+            window.location.href = `login.html?message=${encodeURIComponent('Account created successfully! Please sign in.')}&type=success&email=${encodeURIComponent(email)}`;
+          }, 2000);
+        } else {
+          throw new Error(data.error || 'Registration failed');
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        showMessage('error', error.message || 'Registration failed. Please try again.');
+      } finally {
+        registerButton.disabled = false;
+        loading.classList.remove('active');
+      }
+    });
+    
+    // Real-time password validation
+    document.getElementById('password').addEventListener('input', function() {
+      updatePasswordRequirements(this.value);
+    });
+    
+    // Real-time password confirmation validation
+    document.getElementById('confirm-password').addEventListener('input', function() {
+      const password = document.getElementById('password').value;
+      const confirmPassword = this.value;
+      const errorElement = document.getElementById('confirm-password-error');
+      
+      if (confirmPassword && password !== confirmPassword) {
+        this.classList.add('error');
+        errorElement.classList.add('active');
+      } else {
+        this.classList.remove('error');
+        errorElement.classList.remove('active');
+      }
+    });
+    
+    // Check for URL parameters (e.g., from login redirect)
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const message = urlParams.get('message');
+      const type = urlParams.get('type');
+      
+      if (message && type) {
+        showMessage(type, decodeURIComponent(message));
+      }
+      
+      // Pre-fill email if provided
+      const email = urlParams.get('email');
+      if (email) {
+        document.getElementById('email').value = email;
+      }
+    });
+  </script>
+
+</body>
+</html>

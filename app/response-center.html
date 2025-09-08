@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Response Center - ClaimNavigatorAI</title>
+  <meta name="description" content="AI-powered claim response center with document library, AI response generation, and estimate tools.">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #1e40af;
+      --primary-dark: #0f172a;
+      --primary-header: #0f172a;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --bg-white: #ffffff;
+      --bg-light: #f9fafb;
+      --bg-gray: #f3f4f6;
+      --border: #e5e7eb;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-white);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header */
+    header {
+      background: var(--primary-header);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: white;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      display: inline-block;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .btn-primary:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .btn-primary:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-secondary {
+      background: var(--bg-light);
+      color: var(--primary);
+      padding: 0.5rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 500;
+      border: 1px solid var(--primary);
+      transition: all 0.2s;
+      display: inline-block;
+    }
+    
+    .btn-secondary:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    /* Main Content */
+    .main-content {
+      padding: 2rem 0;
+      min-height: calc(100vh - 200px);
+    }
+    
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .page-header h1 {
+      font-size: 2.5rem;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+    
+    .page-header p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 2rem;
+      background: var(--bg-white);
+      border-radius: 0.5rem 0.5rem 0 0;
+    }
+    
+    .tab {
+      padding: 1rem 2rem;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: var(--bg-light);
+    }
+    
+    .tab:hover {
+      color: var(--primary);
+      background: var(--bg-light);
+    }
+    
+    .tab-content {
+      display: none;
+      padding: 2rem;
+      background: var(--bg-white);
+      border-radius: 0 0 0.5rem 0.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .file-upload {
+      border: 2px dashed var(--border);
+      border-radius: 0.5rem;
+      padding: 2rem;
+      text-align: center;
+      transition: border-color 0.2s;
+      cursor: pointer;
+    }
+    
+    .file-upload:hover {
+      border-color: var(--primary);
+    }
+    
+    .file-upload input[type="file"] {
+      display: none;
+    }
+    
+    .file-upload-label {
+      display: block;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    
+    /* Document Grid */
+    .document-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .document-card {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .document-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .document-title {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .document-description {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+    
+    .document-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .document-actions .btn-secondary {
+      flex: 1;
+      text-align: center;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+    }
+    
+    .category-header {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin: 2rem 0 1rem 0;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--primary);
+    }
+    
+    /* Estimate Tools */
+    .estimate-section {
+      background: var(--bg-light);
+      padding: 2rem;
+      border-radius: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    
+    .estimate-section h3 {
+      color: var(--primary-dark);
+      margin-bottom: 1rem;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    
+    /* Settings */
+    .settings-section {
+      background: var(--bg-light);
+      padding: 2rem;
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    
+    .settings-section h3 {
+      color: var(--primary-dark);
+      margin-bottom: 1rem;
+    }
+    
+    .account-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .info-item {
+      background: var(--bg-white);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+    }
+    
+    .info-label {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+    }
+    
+    .info-value {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    
+    /* Loading States */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+    }
+    
+    .loading.active {
+      display: block;
+    }
+    
+    .spinner {
+      border: 3px solid var(--border);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      
+      .tabs {
+        flex-wrap: wrap;
+      }
+      
+      .tab {
+        flex: 1;
+        min-width: 120px;
+      }
+      
+      .document-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">ClaimNavigatorAI</div>
+        <div class="nav-links">
+          <a href="../index.html">Home</a>
+          <a href="../product.html">Product</a>
+          <a href="response-center.html">Response Center</a>
+          <a href="settings.html">Settings</a>
+          <a href="#" onclick="logout()">Logout</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="page-header">
+        <h1>Response Center</h1>
+        <p>AI-powered tools to strengthen your claim and generate professional responses</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('new-response')">New Response</button>
+        <button class="tab" onclick="switchTab('my-documents')">My Documents</button>
+        <button class="tab" onclick="switchTab('estimate-tools')">Estimate Tools</button>
+        <button class="tab" onclick="switchTab('settings')">Settings</button>
+      </div>
+
+      <!-- New Response Tab -->
+      <div id="new-response" class="tab-content active">
+        <h2>Generate AI Response</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Upload your denial letter or claim correspondence to get a professional AI-generated response.</p>
+        
+        <form id="response-form">
+          <div class="form-group">
+            <label for="file-upload">Upload Document</label>
+            <div class="file-upload" onclick="document.getElementById('file-input').click()">
+              <input type="file" id="file-input" accept=".pdf,.doc,.docx,.txt" onchange="handleFileUpload(this)">
+              <div class="file-upload-label">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📄</div>
+                <div>Click to upload or drag and drop</div>
+                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                  PDF, DOC, DOCX, or TXT files
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="additional-context">Additional Context (Optional)</label>
+            <textarea id="additional-context" placeholder="Provide any additional context about your claim, policy details, or specific points you want addressed in the response..."></textarea>
+          </div>
+          
+          <button type="submit" class="btn-primary" style="width: 100%; max-width: 400px;">
+            Generate AI Response
+          </button>
+        </form>
+        
+        <div id="response-loading" class="loading">
+          <div class="spinner"></div>
+          <p>Generating your AI response...</p>
+        </div>
+        
+        <div id="response-result" style="display: none; margin-top: 2rem; padding: 2rem; background: var(--bg-light); border-radius: 0.75rem;">
+          <h3>Generated Response</h3>
+          <div id="response-content" style="margin: 1rem 0; padding: 1rem; background: var(--bg-white); border-radius: 0.5rem; border: 1px solid var(--border);"></div>
+          <button class="btn-secondary" onclick="copyResponse()">Copy Response</button>
+          <button class="btn-primary" onclick="downloadResponse()">Download as DOCX</button>
+        </div>
+      </div>
+
+      <!-- My Documents Tab -->
+      <div id="my-documents" class="tab-content">
+        <h2>Document Library</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Download professional claim documents and templates.</p>
+        
+        <!-- Core Claim Documents -->
+        <div class="category-header">Core Claim Documents</div>
+        <div class="document-grid">
+          <div class="document-card">
+            <div class="document-title">Claim Form</div>
+            <div class="document-description">Standard claim form for property damage and business interruption claims.</div>
+            <div class="document-actions">
+              <a href="../assets/docs/claims/claim-form.docx" class="btn-secondary" download>Download DOCX</a>
+              <a href="../assets/docs/claims/claim-form.pdf" class="btn-secondary" download>Download PDF</a>
+            </div>
+          </div>
+          
+          <div class="document-card">
+            <div class="document-title">Proof of Loss</div>
+            <div class="document-description">Comprehensive proof of loss documentation template.</div>
+            <div class="document-actions">
+              <a href="../assets/docs/claims/proof-of-loss.docx" class="btn-secondary" download>Download DOCX</a>
+              <a href="../assets/docs/claims/proof-of-loss.pdf" class="btn-secondary" download>Download PDF</a>
+            </div>
+          </div>
+          
+          <div class="document-card">
+            <div class="document-title">Damage Assessment</div>
+            <div class="document-description">Professional damage assessment and documentation form.</div>
+            <div class="document-actions">
+              <a href="../assets/docs/claims/damage-assessment.docx" class="btn-secondary" download>Download DOCX</a>
+              <a href="../assets/docs/claims/damage-assessment.pdf" class="btn-secondary" download>Download PDF</a>
+            </div>
+          </div>
+          
+          <div class="document-card">
+            <div class="document-title">Evidence Log</div>
+            <div class="document-description">Systematic evidence tracking and documentation log.</div>
+            <div class="document-actions">
+              <a href="../assets/docs/claims/evidence-log.docx" class="btn-secondary" download>Download DOCX</a>
+              <a href="../assets/docs/claims/evidence-log.pdf" class="btn-secondary" download>Download PDF</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Correspondence Documents -->
+        <div class="category-header">Correspondence</div>
+        <div class="document-grid">
+          <div class="document-card">
+            <div class="document-title">Demand Letter</div>
+            <div class="document-description">Professional demand letter template for payment requests.</div>
+            <div class="document-actions">
+              <a href="../assets/docs/legal/demand-letter.docx" class="btn-secondary" download>Download DOCX</a>
+              <a href="../assets/docs/legal/demand-letter.pdf" class="btn-secondary" download>Download PDF</a>
+            </div>
+          </div>
+          
+          <div class="document-card">
+            <div class="document-title">Complaint Letter</div>
+            <div class="document-description">Formal complaint letter for claim disputes.</div>
+            <div class="document-actions">
+              <a href="../assets/docs/legal/complaint-letter.docx" class="btn-secondary" download>Download DOCX</a>
+              <a href="../assets/docs/legal/complaint-letter.pdf" class="btn-secondary" download>Download PDF</a>
+            </div>
+          </div>
+          
+          <div class="document-card">
+            <div class="document-title">Appeal Letter</div>
+            <div class="document-description">Professional appeal letter for denied claims.</div>
+            <div class="document-actions">
+              <a href="../assets/docs/legal/appeal-letter.docx" class="btn-secondary" download>Download DOCX</a>
+              <a href="../assets/docs/legal/appeal-letter.pdf" class="btn-secondary" download>Download PDF</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial Documents -->
+        <div class="category-header">Financial</div>
+        <div class="document-grid">
+          <div class="document-card">
+            <div class="document-title">Payment Demand</div>
+            <div class="document-description">Formal payment demand with timeline requirements.</div>
+            <div class="document-actions">
+              <a href="../assets/docs/demands/payment-demand.docx" class="btn-secondary" download>Download DOCX</a>
+              <a href="../assets/docs/demands/payment-demand.pdf" class="btn-secondary" download>Download PDF</a>
+            </div>
+          </div>
+          
+          <div class="document-card">
+            <div class="document-title">Coverage Demand</div>
+            <div class="document-description">Coverage demand letter for policy interpretation disputes.</div>
+            <div class="document-actions">
+              <a href="../assets/docs/demands/coverage-demand.docx" class="btn-secondary" download>Download DOCX</a>
+              <a href="../assets/docs/demands/coverage-demand.pdf" class="btn-secondary" download>Download PDF</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Forms -->
+        <div class="category-header">Forms</div>
+        <div class="document-grid">
+          <div class="document-card">
+            <div class="document-title">Document Request</div>
+            <div class="document-description">Formal request for additional documentation from insurer.</div>
+            <div class="document-actions">
+              <a href="../assets/docs/forms/document-request.docx" class="btn-secondary" download>Download DOCX</a>
+              <a href="../assets/docs/forms/document-request.pdf" class="btn-secondary" download>Download PDF</a>
+            </div>
+          </div>
+          
+          <div class="document-card">
+            <div class="document-title">Estimate Request</div>
+            <div class="document-description">Request for independent estimate or appraisal.</div>
+            <div class="document-actions">
+              <a href="../assets/docs/forms/estimate-request.docx" class="btn-secondary" download>Download DOCX</a>
+              <a href="../assets/docs/forms/estimate-request.pdf" class="btn-secondary" download>Download PDF</a>
+            </div>
+          </div>
+          
+          <div class="document-card">
+            <div class="document-title">Inspection Request</div>
+            <div class="document-description">Request for property inspection or re-inspection.</div>
+            <div class="document-actions">
+              <a href="../assets/docs/forms/inspection-request.docx" class="btn-secondary" download>Download DOCX</a>
+              <a href="../assets/docs/forms/inspection-request.pdf" class="btn-secondary" download>Download PDF</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Appeals -->
+        <div class="category-header">Appeals</div>
+        <div class="document-grid">
+          <div class="document-card">
+            <div class="document-title">Internal Appeal</div>
+            <div class="document-description">Internal appeal process documentation and templates.</div>
+            <div class="document-actions">
+              <a href="../assets/docs/appeals/internal-appeal.docx" class="btn-secondary" download>Download DOCX</a>
+              <a href="../assets/docs/appeals/internal-appeal.pdf" class="btn-secondary" download>Download PDF</a>
+            </div>
+          </div>
+          
+          <div class="document-card">
+            <div class="document-title">External Appeal</div>
+            <div class="document-description">External appeal and regulatory complaint templates.</div>
+            <div class="document-actions">
+              <a href="../assets/docs/appeals/external-appeal.docx" class="btn-secondary" download>Download DOCX</a>
+              <a href="../assets/docs/appeals/external-appeal.pdf" class="btn-secondary" download>Download PDF</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Specialty -->
+        <div class="category-header">Specialty</div>
+        <div class="document-grid">
+          <div class="document-card">
+            <div class="document-title">Evidence Log (Excel)</div>
+            <div class="document-description">Comprehensive evidence tracking spreadsheet with formulas.</div>
+            <div class="document-actions">
+              <a href="../assets/docs/specialty/evidence-log.xlsx" class="btn-secondary" download>Download XLSX</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estimate Tools Tab -->
+      <div id="estimate-tools" class="tab-content">
+        <h2>Estimate Tools</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Calculate rough estimates and analyze claim values.</p>
+        
+        <!-- ROM Calculator -->
+        <div class="estimate-section">
+          <h3>Rough Order of Magnitude (ROM) Calculator</h3>
+          <form id="rom-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="loss-type">Type of Loss</label>
+                <select id="loss-type" required>
+                  <option value="">Select loss type</option>
+                  <option value="water">Water Damage</option>
+                  <option value="fire">Fire Damage</option>
+                  <option value="wind">Wind Damage</option>
+                  <option value="hail">Hail Damage</option>
+                  <option value="theft">Theft</option>
+                  <option value="vandalism">Vandalism</option>
+                  <option value="business-interruption">Business Interruption</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="square-feet">Square Feet</label>
+                <input type="number" id="square-feet" placeholder="Enter square footage" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="property-type">Property Type</label>
+                <select id="property-type" required>
+                  <option value="">Select property type</option>
+                  <option value="residential">Residential</option>
+                  <option value="commercial">Commercial</option>
+                  <option value="industrial">Industrial</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="severity">Damage Severity</label>
+                <select id="severity" required>
+                  <option value="">Select severity</option>
+                  <option value="minor">Minor (10-25%)</option>
+                  <option value="moderate">Moderate (25-50%)</option>
+                  <option value="major">Major (50-75%)</option>
+                  <option value="severe">Severe (75-100%)</option>
+                </select>
+              </div>
+            </div>
+            
+            <button type="submit" class="btn-primary">Calculate ROM Estimate</button>
+          </form>
+          
+          <div id="rom-result" style="display: none; margin-top: 2rem; padding: 1.5rem; background: var(--bg-white); border-radius: 0.5rem; border: 1px solid var(--border);">
+            <h4>ROM Estimate Result</h4>
+            <div id="rom-content"></div>
+          </div>
+        </div>
+        
+        <!-- Reserve Inquiry -->
+        <div class="estimate-section">
+          <h3>Reserve Inquiry</h3>
+          <form id="reserve-form">
+            <div class="form-group">
+              <label for="reserve-prompt">Describe your claim situation for reserve analysis</label>
+              <textarea id="reserve-prompt" placeholder="Provide details about your claim, including type of loss, property details, timeline, and any specific concerns about reserve adequacy..." required></textarea>
+            </div>
+            
+            <button type="submit" class="btn-primary">Analyze Reserve Adequacy</button>
+          </form>
+          
+          <div id="reserve-result" style="display: none; margin-top: 2rem; padding: 1.5rem; background: var(--bg-white); border-radius: 0.5rem; border: 1px solid var(--border);">
+            <h4>Reserve Analysis</h4>
+            <div id="reserve-content"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Tab -->
+      <div id="settings" class="tab-content">
+        <h2>Account Settings</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Manage your account information and subscription.</p>
+        
+        <div class="settings-section">
+          <h3>Account Information</h3>
+          <div class="account-info">
+            <div class="info-item">
+              <div class="info-label">Email Address</div>
+              <div class="info-value" id="user-email">user@example.com</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">Subscription Status</div>
+              <div class="info-value" id="subscription-status">Active</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">AI Responses Remaining</div>
+              <div class="info-value" id="responses-remaining">18</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">Account Created</div>
+              <div class="info-value" id="account-created">January 15, 2025</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="settings-section">
+          <h3>Actions</h3>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button class="btn-secondary" onclick="updateProfile()">Update Profile</button>
+            <button class="btn-secondary" onclick="changePassword()">Change Password</button>
+            <button class="btn-primary" onclick="purchaseTopUp()">Purchase Top-Up ($29)</button>
+            <button class="btn-secondary" onclick="logout()" style="background: #dc2626; color: white; border-color: #dc2626;">Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Tab switching
+    function switchTab(tabName) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      // Remove active class from all tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show selected tab content
+      document.getElementById(tabName).classList.add('active');
+      
+      // Add active class to clicked tab
+      event.target.classList.add('active');
+    }
+    
+    // File upload handling
+    function handleFileUpload(input) {
+      const file = input.files[0];
+      if (file) {
+        const label = input.parentElement.querySelector('.file-upload-label');
+        label.innerHTML = `
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">✅</div>
+          <div>${file.name}</div>
+          <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+            ${(file.size / 1024 / 1024).toFixed(2)} MB
+          </div>
+        `;
+      }
+    }
+    
+    // Response form submission
+    document.getElementById('response-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const fileInput = document.getElementById('file-input');
+      const contextInput = document.getElementById('additional-context');
+      const loading = document.getElementById('response-loading');
+      const result = document.getElementById('response-result');
+      
+      if (!fileInput.files[0]) {
+        alert('Please upload a document first.');
+        return;
+      }
+      
+      loading.classList.add('active');
+      result.style.display = 'none';
+      
+      try {
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        formData.append('context', contextInput.value);
+        
+        const response = await fetch('/.netlify/functions/ai-generate-response', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          document.getElementById('response-content').innerHTML = data.response.replace(/\n/g, '<br>');
+          result.style.display = 'block';
+        } else {
+          throw new Error(data.error || 'Failed to generate response');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to generate response. Please try again.');
+      } finally {
+        loading.classList.remove('active');
+      }
+    });
+    
+    // ROM form submission
+    document.getElementById('rom-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+      
+      try {
+        const response = await fetch('/.netlify/functions/estimate-rom', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          document.getElementById('rom-content').innerHTML = `
+            <p><strong>Estimated Range:</strong> $${result.estimate.min.toLocaleString()} - $${result.estimate.max.toLocaleString()}</p>
+            <p><strong>Confidence Level:</strong> ${result.estimate.confidence}%</p>
+            <p><strong>Notes:</strong> ${result.estimate.notes}</p>
+          `;
+          document.getElementById('rom-result').style.display = 'block';
+        } else {
+          throw new Error(result.error || 'Failed to calculate estimate');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to calculate estimate. Please try again.');
+      }
+    });
+    
+    // Reserve form submission
+    document.getElementById('reserve-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const prompt = document.getElementById('reserve-prompt').value;
+      
+      try {
+        const response = await fetch('/.netlify/functions/reserve-inquiry', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ prompt })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          document.getElementById('reserve-content').innerHTML = result.analysis.replace(/\n/g, '<br>');
+          document.getElementById('reserve-result').style.display = 'block';
+        } else {
+          throw new Error(result.error || 'Failed to analyze reserves');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to analyze reserves. Please try again.');
+      }
+    });
+    
+    // Utility functions
+    function copyResponse() {
+      const content = document.getElementById('response-content').textContent;
+      navigator.clipboard.writeText(content).then(() => {
+        alert('Response copied to clipboard!');
+      });
+    }
+    
+    function downloadResponse() {
+      const content = document.getElementById('response-content').textContent;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ai-response.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        window.location.href = '../index.html';
+      }
+    }
+    
+    function updateProfile() {
+      alert('Profile update functionality coming soon!');
+    }
+    
+    function changePassword() {
+      alert('Password change functionality coming soon!');
+    }
+    
+    function purchaseTopUp() {
+      window.location.href = '../product.html';
+    }
+    
+    // Load user data on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // This would typically load from an API
+      // For now, we'll use placeholder data
+    });
+  </script>
+
+</body>
+</html>
