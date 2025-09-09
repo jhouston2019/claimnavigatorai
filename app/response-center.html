@@ -250,6 +250,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 1.5rem;
+      margin-bottom: 2rem;
     }
     
     .document-card {
@@ -400,6 +401,21 @@
       
       .document-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .document-card {
+        padding: 1rem;
+      }
+      
+      .document-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      
+      .document-actions .btn-secondary {
+        flex: none;
+        text-align: center;
       }
       
       .form-row {
@@ -490,162 +506,21 @@
         <h2>Document Library</h2>
         <p style="color: var(--text-secondary); margin-bottom: 2rem;">Download professional claim documents and templates.</p>
         
-        <!-- Core Claim Documents -->
-        <div class="category-header">Core Claim Documents</div>
-        <div class="document-grid">
-          <div class="document-card">
-            <div class="document-title">Claim Form</div>
-            <div class="document-description">Standard claim form for property damage and business interruption claims.</div>
-            <div class="document-actions">
-              <a href="../assets/docs/claims/claim-form.docx" class="btn-secondary" download>Download DOCX</a>
-              <a href="../assets/docs/claims/claim-form.pdf" class="btn-secondary" download>Download PDF</a>
-            </div>
-          </div>
-          
-          <div class="document-card">
-            <div class="document-title">Proof of Loss</div>
-            <div class="document-description">Comprehensive proof of loss documentation template.</div>
-            <div class="document-actions">
-              <a href="../assets/docs/claims/proof-of-loss.docx" class="btn-secondary" download>Download DOCX</a>
-              <a href="../assets/docs/claims/proof-of-loss.pdf" class="btn-secondary" download>Download PDF</a>
-            </div>
-          </div>
-          
-          <div class="document-card">
-            <div class="document-title">Damage Assessment</div>
-            <div class="document-description">Professional damage assessment and documentation form.</div>
-            <div class="document-actions">
-              <a href="../assets/docs/claims/damage-assessment.docx" class="btn-secondary" download>Download DOCX</a>
-              <a href="../assets/docs/claims/damage-assessment.pdf" class="btn-secondary" download>Download PDF</a>
-            </div>
-          </div>
-          
-          <div class="document-card">
-            <div class="document-title">Evidence Log</div>
-            <div class="document-description">Systematic evidence tracking and documentation log.</div>
-            <div class="document-actions">
-              <a href="../assets/docs/claims/evidence-log.docx" class="btn-secondary" download>Download DOCX</a>
-              <a href="../assets/docs/claims/evidence-log.pdf" class="btn-secondary" download>Download PDF</a>
-            </div>
-          </div>
+        <!-- Loading State -->
+        <div id="documents-loading" class="loading">
+          <div class="spinner"></div>
+          <p>Loading documents...</p>
         </div>
-
-        <!-- Correspondence Documents -->
-        <div class="category-header">Correspondence</div>
-        <div class="document-grid">
-          <div class="document-card">
-            <div class="document-title">Demand Letter</div>
-            <div class="document-description">Professional demand letter template for payment requests.</div>
-            <div class="document-actions">
-              <a href="../assets/docs/legal/demand-letter.docx" class="btn-secondary" download>Download DOCX</a>
-              <a href="../assets/docs/legal/demand-letter.pdf" class="btn-secondary" download>Download PDF</a>
-            </div>
-          </div>
-          
-          <div class="document-card">
-            <div class="document-title">Complaint Letter</div>
-            <div class="document-description">Formal complaint letter for claim disputes.</div>
-            <div class="document-actions">
-              <a href="../assets/docs/legal/complaint-letter.docx" class="btn-secondary" download>Download DOCX</a>
-              <a href="../assets/docs/legal/complaint-letter.pdf" class="btn-secondary" download>Download PDF</a>
-            </div>
-          </div>
-          
-          <div class="document-card">
-            <div class="document-title">Appeal Letter</div>
-            <div class="document-description">Professional appeal letter for denied claims.</div>
-            <div class="document-actions">
-              <a href="../assets/docs/legal/appeal-letter.docx" class="btn-secondary" download>Download DOCX</a>
-              <a href="../assets/docs/legal/appeal-letter.pdf" class="btn-secondary" download>Download PDF</a>
-            </div>
-          </div>
+        
+        <!-- Error State -->
+        <div id="documents-error" style="display: none; text-align: center; padding: 2rem; color: var(--text-secondary);">
+          <p>Unable to load documents at this time. Please try again later.</p>
+          <button class="btn-primary" onclick="loadDocuments()" style="margin-top: 1rem;">Retry</button>
         </div>
-
-        <!-- Financial Documents -->
-        <div class="category-header">Financial</div>
-        <div class="document-grid">
-          <div class="document-card">
-            <div class="document-title">Payment Demand</div>
-            <div class="document-description">Formal payment demand with timeline requirements.</div>
-            <div class="document-actions">
-              <a href="../assets/docs/demands/payment-demand.docx" class="btn-secondary" download>Download DOCX</a>
-              <a href="../assets/docs/demands/payment-demand.pdf" class="btn-secondary" download>Download PDF</a>
-            </div>
-          </div>
-          
-          <div class="document-card">
-            <div class="document-title">Coverage Demand</div>
-            <div class="document-description">Coverage demand letter for policy interpretation disputes.</div>
-            <div class="document-actions">
-              <a href="../assets/docs/demands/coverage-demand.docx" class="btn-secondary" download>Download DOCX</a>
-              <a href="../assets/docs/demands/coverage-demand.pdf" class="btn-secondary" download>Download PDF</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Forms -->
-        <div class="category-header">Forms</div>
-        <div class="document-grid">
-          <div class="document-card">
-            <div class="document-title">Document Request</div>
-            <div class="document-description">Formal request for additional documentation from insurer.</div>
-            <div class="document-actions">
-              <a href="../assets/docs/forms/document-request.docx" class="btn-secondary" download>Download DOCX</a>
-              <a href="../assets/docs/forms/document-request.pdf" class="btn-secondary" download>Download PDF</a>
-            </div>
-          </div>
-          
-          <div class="document-card">
-            <div class="document-title">Estimate Request</div>
-            <div class="document-description">Request for independent estimate or appraisal.</div>
-            <div class="document-actions">
-              <a href="../assets/docs/forms/estimate-request.docx" class="btn-secondary" download>Download DOCX</a>
-              <a href="../assets/docs/forms/estimate-request.pdf" class="btn-secondary" download>Download PDF</a>
-            </div>
-          </div>
-          
-          <div class="document-card">
-            <div class="document-title">Inspection Request</div>
-            <div class="document-description">Request for property inspection or re-inspection.</div>
-            <div class="document-actions">
-              <a href="../assets/docs/forms/inspection-request.docx" class="btn-secondary" download>Download DOCX</a>
-              <a href="../assets/docs/forms/inspection-request.pdf" class="btn-secondary" download>Download PDF</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Appeals -->
-        <div class="category-header">Appeals</div>
-        <div class="document-grid">
-          <div class="document-card">
-            <div class="document-title">Internal Appeal</div>
-            <div class="document-description">Internal appeal process documentation and templates.</div>
-            <div class="document-actions">
-              <a href="../assets/docs/appeals/internal-appeal.docx" class="btn-secondary" download>Download DOCX</a>
-              <a href="../assets/docs/appeals/internal-appeal.pdf" class="btn-secondary" download>Download PDF</a>
-            </div>
-          </div>
-          
-          <div class="document-card">
-            <div class="document-title">External Appeal</div>
-            <div class="document-description">External appeal and regulatory complaint templates.</div>
-            <div class="document-actions">
-              <a href="../assets/docs/appeals/external-appeal.docx" class="btn-secondary" download>Download DOCX</a>
-              <a href="../assets/docs/appeals/external-appeal.pdf" class="btn-secondary" download>Download PDF</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Specialty -->
-        <div class="category-header">Specialty</div>
-        <div class="document-grid">
-          <div class="document-card">
-            <div class="document-title">Evidence Log (Excel)</div>
-            <div class="document-description">Comprehensive evidence tracking spreadsheet with formulas.</div>
-            <div class="document-actions">
-              <a href="../assets/docs/specialty/evidence-log.xlsx" class="btn-secondary" download>Download XLSX</a>
-            </div>
-          </div>
+        
+        <!-- Documents Container -->
+        <div id="documents-container" style="display: none;">
+          <!-- Documents will be dynamically loaded here -->
         </div>
       </div>
 
@@ -949,10 +824,129 @@
       window.location.href = '../product.html';
     }
     
+    // Load documents dynamically
+    async function loadDocuments() {
+      const loading = document.getElementById('documents-loading');
+      const error = document.getElementById('documents-error');
+      const container = document.getElementById('documents-container');
+      
+      // Show loading state
+      loading.classList.add('active');
+      error.style.display = 'none';
+      container.style.display = 'none';
+      
+      try {
+        const response = await fetch('../assets/data/documents.json');
+        if (!response.ok) {
+          throw new Error('Failed to fetch documents');
+        }
+        
+        const documents = await response.json();
+        renderDocuments(documents);
+        
+        // Hide loading, show documents
+        loading.classList.remove('active');
+        container.style.display = 'block';
+        
+      } catch (err) {
+        console.error('Error loading documents:', err);
+        
+        // Show error state
+        loading.classList.remove('active');
+        error.style.display = 'block';
+      }
+    }
+    
+    // Render documents in organized categories
+    function renderDocuments(documents) {
+      const container = document.getElementById('documents-container');
+      
+      // Group documents by category based on their slug patterns
+      const categories = {
+        'Core Claim Documents': [],
+        'Legal & Correspondence': [],
+        'Financial & Demands': [],
+        'Forms & Requests': [],
+        'Appeals & Complaints': [],
+        'Specialty Documents': []
+      };
+      
+      // Categorize documents
+      Object.entries(documents).forEach(([slug, doc]) => {
+        if (slug.includes('claim-form') || slug.includes('proof-of-loss') || 
+            slug.includes('damage-assessment') || slug.includes('evidence-log') ||
+            slug.includes('first-notice') || slug.includes('claim-sequence') ||
+            slug.includes('loss-notice') || slug.includes('claim-summary')) {
+          categories['Core Claim Documents'].push(doc);
+        } else if (slug.includes('demand-letter') || slug.includes('complaint-letter') ||
+                   slug.includes('appeal-letter') || slug.includes('mediation-request') ||
+                   slug.includes('settlement-offer') || slug.includes('arbitration-request') ||
+                   slug.includes('cease-desist') || slug.includes('breach-notice') ||
+                   slug.includes('bad-faith-letter') || slug.includes('coverage-opinion') ||
+                   slug.includes('subrogation-notice') || slug.includes('liability-demand') ||
+                   slug.includes('declaratory-judgment') || slug.includes('class-action-notice') ||
+                   slug.includes('regulatory-filing')) {
+          categories['Legal & Correspondence'].push(doc);
+        } else if (slug.includes('payment-demand') || slug.includes('coverage-demand') ||
+                   slug.includes('timeline-demand') || slug.includes('ale-reimbursement') ||
+                   slug.includes('business-interruption') || slug.includes('lost-income') ||
+                   slug.includes('expense-reimbursement') || slug.includes('depreciation-schedule') ||
+                   slug.includes('replacement-cost') || slug.includes('contingent-business') ||
+                   slug.includes('extra-expense') || slug.includes('rental-income')) {
+          categories['Financial & Demands'].push(doc);
+        } else if (slug.includes('document-request') || slug.includes('estimate-request') ||
+                   slug.includes('expert-opinion-request') || slug.includes('inspection-request') ||
+                   slug.includes('medical-records-request') || slug.includes('repair-authorization') ||
+                   slug.includes('witness-statement') || slug.includes('police-report') ||
+                   slug.includes('fire-department') || slug.includes('weather-service') ||
+                   slug.includes('contractor-estimate') || slug.includes('appraisal-request') ||
+                   slug.includes('umpire-selection') || slug.includes('examination-under-oath') ||
+                   slug.includes('recorded-statement') || slug.includes('surveillance-notice') ||
+                   slug.includes('independent-medical') || slug.includes('functional-capacity') ||
+                   slug.includes('vocational-assessment') || slug.includes('life-care-plan')) {
+          categories['Forms & Requests'].push(doc);
+        } else if (slug.includes('internal-appeal') || slug.includes('external-appeal') ||
+                   slug.includes('regulatory-complaint') || slug.includes('ombudsman-complaint') ||
+                   slug.includes('department-of-insurance') || slug.includes('naic-complaint') ||
+                   slug.includes('better-business-bureau') || slug.includes('consumer-protection') ||
+                   slug.includes('attorney-general') || slug.includes('federal-trade-commission')) {
+          categories['Appeals & Complaints'].push(doc);
+        } else {
+          categories['Specialty Documents'].push(doc);
+        }
+      });
+      
+      // Render each category
+      let html = '';
+      Object.entries(categories).forEach(([categoryName, docs]) => {
+        if (docs.length > 0) {
+          html += `<div class="category-header">${categoryName}</div>`;
+          html += '<div class="document-grid">';
+          
+          docs.forEach(doc => {
+            html += `
+              <div class="document-card">
+                <div class="document-title">${doc.label}</div>
+                <div class="document-description">${doc.description}</div>
+                <div class="document-actions">
+                  <a href="${doc.templatePath}" class="btn-secondary" download>Download Template</a>
+                  <a href="${doc.samplePath}" class="btn-secondary" download>Download Sample</a>
+                </div>
+              </div>
+            `;
+          });
+          
+          html += '</div>';
+        }
+      });
+      
+      container.innerHTML = html;
+    }
+    
     // Load user data on page load
     document.addEventListener('DOMContentLoaded', function() {
-      // This would typically load from an API
-      // For now, we'll use placeholder data
+      // Load documents when the page loads
+      loadDocuments();
     });
   </script>
 
