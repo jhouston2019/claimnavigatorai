@@ -7,7 +7,46 @@
   <meta name="description" content="AI-powered claim response center with document library, AI response generation, and estimate tools.">
 
   <style>
-    /* keep all your original CSS exactly as-is */
+    /* keep all your existing CSS exactly as-is */
+    .response-input {
+      width: 100%;
+      min-height: 120px;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+    .response-output {
+      width: 100%;
+      min-height: 200px;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      background: var(--bg-light);
+      font-size: 1rem;
+      white-space: pre-wrap;
+      margin-top: 1rem;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .btn-primary:disabled {
+      background: var(--text-secondary);
+      cursor: not-allowed;
+    }
+    .action-buttons {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -37,16 +76,29 @@
 
       <!-- Tabs -->
       <div class="tabs">
-        <button class="tab active" onclick="switchTab('new-response')">New Response</button>
+        <button class="tab active" onclick="switchTab('ai-agent')">AI Response & Analysis Agent</button>
         <button class="tab" onclick="switchTab('my-documents')">My Documents</button>
         <button class="tab" onclick="switchTab('estimate-tools')">Estimate Tools</button>
         <button class="tab" onclick="switchTab('settings')">Settings</button>
       </div>
 
-      <!-- New Response -->
-      <div id="new-response" class="tab-content active">
-        <h2>New Response</h2>
-        <p>Upload your insurer correspondence to generate AI-powered drafts.</p>
+      <!-- AI Response & Analysis Agent -->
+      <div id="ai-agent" class="tab-content active">
+        <h2>AI Response & Analysis Agent</h2>
+        <p>Paste or upload your insurer correspondence below to generate a professional AI-powered reply.</p>
+
+        <textarea id="input-text" class="response-input" placeholder="Paste your denial letter, insurer email, or claim text here..."></textarea>
+        
+        <button id="generate-btn" class="btn-primary">Generate AI Response</button>
+
+        <div id="output-container" style="display:none;">
+          <h3 style="margin-top:1.5rem;">AI Draft</h3>
+          <div id="ai-output" class="response-output"></div>
+          <div class="action-buttons">
+            <button class="btn-primary" onclick="copyResponse()">Copy</button>
+            <button class="btn-primary" onclick="downloadResponse()">Download</button>
+          </div>
+        </div>
       </div>
 
       <!-- My Documents -->
@@ -97,41 +149,86 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: localStorage.getItem('userEmail') })
         });
-
         const data = await response.json();
-
         if (response.ok && data.credits !== undefined) {
           userCredits = data.credits;
           document.getElementById('credits-count').textContent = userCredits;
         } else {
-          userCredits = 0;
           document.getElementById('credits-count').textContent = '0';
         }
       } catch (err) {
         console.error('Entitlement fetch error:', err);
-        userCredits = 0;
         document.getElementById('credits-count').textContent = '0';
       }
     }
 
-    async function downloadDocument(filePath) {
+    async function generateResponse() {
+      const btn = document.getElementById('generate-btn');
+      const inputText = document.getElementById('input-text').value.trim();
+      if (!inputText) {
+        alert("Please paste some text first.");
+        return;
+      }
+      if (userCredits <= 0) {
+        alert("You have no credits left. Please purchase a top-up.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Generating...";
+
       try {
-        const response = await fetch('/.netlify/functions/generate-signed-url', {
+        const res = await fetch('/.netlify/functions/generate-response', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ fileName: filePath, email: localStorage.getItem('userEmail') })
+          body: JSON.stringify({
+            email: localStorage.getItem('userEmail'),
+            inputText
+          })
         });
 
-        const data = await response.json();
+        const data = await res.json();
 
-        if (data.url) {
-          window.location.href = data.url;
+        if (res.ok && data.draft) {
+          document.getElementById('ai-output').textContent = data.draft;
+          document.getElementById('output-container').style.display = 'block';
+          userCredits = data.credits_remaining;
+          document.getElementById('credits-count').textContent = userCredits;
         } else {
-          alert('Download failed. Please try again.');
+          alert(data.error || "Failed to generate response.");
         }
       } catch (err) {
-        console.error('Download error:', err);
-        alert('Error downloading file.');
+        console.error("AI Response error:", err);
+        alert("Error generating response.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Generate AI Response";
+      }
+    }
+
+    function copyResponse() {
+      const text = document.getElementById('ai-output').textContent;
+      navigator.clipboard.writeText(text);
+      alert("Copied to clipboard!");
+    }
+
+    function downloadResponse() {
+      const text = document.getElementById('ai-output').textContent;
+      const blob = new Blob([text], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'AI-Response.txt';
+      link.click();
+    }
+
+    async function loadDocuments() {
+      try {
+        const response = await fetch('../assets/data/documents.json');
+        if (!response.ok) throw new Error('Failed to fetch documents');
+        const documents = await response.json();
+        renderDocuments(documents);
+      } catch (err) {
+        console.error('Error loading documents:', err);
       }
     }
 
@@ -154,20 +251,29 @@
       container.style.display = 'block';
     }
 
-    async function loadDocuments() {
+    async function downloadDocument(filePath) {
       try {
-        const response = await fetch('../assets/data/documents.json');
-        if (!response.ok) throw new Error('Failed to fetch documents');
-        const documents = await response.json();
-        renderDocuments(documents);
+        const response = await fetch('/.netlify/functions/generate-signed-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fileName: filePath, email: localStorage.getItem('userEmail') })
+        });
+        const data = await response.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert('Download failed. Please try again.');
+        }
       } catch (err) {
-        console.error('Error loading documents:', err);
+        console.error('Download error:', err);
+        alert('Error downloading file.');
       }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       loadEntitlement();
       loadDocuments();
+      document.getElementById('generate-btn').addEventListener('click', generateResponse);
     });
   </script>
 </body>
