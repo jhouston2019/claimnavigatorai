@@ -1,178 +1,60 @@
-const { createClient } = require('@supabase/supabase-js');
-const Stripe = require('stripe');
+const Stripe = require("stripe");
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-exports.handler = async (event, context) => {
-  // Only allow POST requests
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
-      },
-      body: JSON.stringify({ error: 'Method not allowed' })
-    };
-  }
+const { createClient } = require("@supabase/supabase-js");
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
-  // Handle CORS preflight requests
-  if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
-      },
-      body: ''
-    };
-  }
-
+exports.handler = async (event) => {
   try {
-    // Parse request body
     const { fileName, userEmail } = JSON.parse(event.body);
 
-    // Validate required fields
-    if (!fileName || !userEmail) {
-      return {
-        statusCode: 400,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify({ error: 'fileName and userEmail are required' })
-      };
+    if (!userEmail) {
+      return { statusCode: 401, body: "Unauthorized" };
     }
 
-    // Initialize Supabase client
-    const supabaseUrl = process.env.SUPABASE_URL || 'https://bnxvfxtpsxgfpltflyrr.supabase.co';
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseServiceKey) {
-      console.error('SUPABASE_SERVICE_ROLE_KEY environment variable is not set');
-      return {
-        statusCode: 500,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify({ error: 'Server configuration error' })
-      };
+    const customers = await stripe.customers.list({ email: userEmail });
+    if (customers.data.length === 0) {
+      return { statusCode: 403, body: "Access denied. No Stripe customer found." };
     }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Initialize Stripe
-    const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-
-    // Check Stripe entitlement
-    try {
-      // Look up customer by email
-      const customers = await stripe.customers.list({
-        email: userEmail,
-        limit: 1
-      });
-
-      if (customers.data.length === 0) {
-        return {
-          statusCode: 403,
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          },
-          body: JSON.stringify({ error: 'Access denied. No Stripe customer found.' })
-        };
-      }
-
-      const customer = customers.data[0];
-
-      // Check for active subscriptions
-      const subscriptions = await stripe.subscriptions.list({
-        customer: customer.id,
-        status: 'active',
-        limit: 1
-      });
-
-      if (subscriptions.data.length === 0) {
-        return {
-          statusCode: 403,
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          },
-          body: JSON.stringify({ error: 'Access denied. No active subscription.' })
-        };
-      }
-
-    } catch (stripeError) {
-      console.error('Stripe entitlement check error:', stripeError);
-      return {
-        statusCode: 500,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify({ error: 'Internal server error' })
-      };
+    const subscriptions = await stripe.subscriptions.list({
+      customer: customers.data[0].id,
+      status: "active"
+    });
+    if (subscriptions.data.length === 0) {
+      return { statusCode: 403, body: "Access denied. No active subscription." };
     }
 
-    // Generate signed URL from Supabase storage
-    const bucketName = 'claimnavigatorai-docs';
-    const expiresIn = 300; // 5 minutes
+    const { data: entitlement, error } = await supabase
+      .from("entitlements")
+      .select("*")
+      .eq("email", userEmail)
+      .single();
 
-    const { data, error } = await supabase.storage
-      .from(bucketName)
-      .createSignedUrl(fileName, expiresIn);
-
-    if (error) {
-      console.error('Error generating signed URL:', error);
-      return {
-        statusCode: 500,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify({ error: 'Failed to generate download link' })
-      };
+    if (error || !entitlement || entitlement.credits <= 0) {
+      return { statusCode: 403, body: "No credits left. Please purchase more." };
     }
 
-    if (!data || !data.signedUrl) {
-      console.error('No signed URL returned from Supabase');
-      return {
-        statusCode: 500,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify({ error: 'Failed to generate download link' })
-      };
-    }
+    await supabase
+      .from("entitlements")
+      .update({ credits: entitlement.credits - 1 })
+      .eq("email", userEmail);
 
-    // Log successful generation
-    console.log(`Generated signed URL for ${fileName} for user ${userEmail}`);
+    const { data: signedUrl, error: signError } = await supabase.storage
+      .from("documents")
+      .createSignedUrl(fileName, 300);
+
+    if (signError) throw signError;
 
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({
-        url: data.signedUrl
-      })
+      body: JSON.stringify({ url: signedUrl.signedUrl })
     };
-
-  } catch (error) {
-    console.error('Unexpected error in generate-signed-url:', error);
-    
-    return {
-      statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({ error: 'Internal server error' })
-    };
+  } catch (err) {
+    console.error(err);
+    return { statusCode: 500, body: "Error generating signed URL" };
   }
 };
