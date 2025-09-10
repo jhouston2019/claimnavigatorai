@@ -1,11 +1,14 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
+const Stripe = require('stripe');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+// Important: Netlify automatically gives you the raw body for webhook verification
 exports.handler = async (event) => {
   const sig = event.headers['stripe-signature'];
 
@@ -21,54 +24,26 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: `Webhook Error: ${err.message}` };
   }
 
-  if (stripeEvent.type === 'checkout.session.completed') {
-    const session = stripeEvent.data.object;
+  try {
+    if (stripeEvent.type === 'checkout.session.completed') {
+      const session = stripeEvent.data.object;
 
-    const email = session.customer_details?.email;
-    const creditsPurchased = 20; // default package size
-    const product = 'AI Claim Toolkit';
-    const amount = session.amount_total / 100; // Stripe uses cents
-    const currency = session.currency.toUpperCase();
-
-    if (email) {
-      try {
-        // 1. Insert into orders table
-        const { error: orderError } = await supabase
-          .from('orders')
-          .insert([
-            {
-              email,
-              session_id: session.id,
-              product,
-              amount,
-              currency,
-              credits_added: creditsPurchased
-            }
-          ]);
-
-        if (orderError) {
-          console.error('Supabase insert order error:', orderError);
-        }
-
-        // 2. Update entitlements table
-        const { data, error } = await supabase
-          .from('entitlements')
-          .upsert(
-            { email, credits: creditsPurchased },
-            { onConflict: 'email' }
-          )
-          .select();
-
-        if (error) {
-          console.error('Supabase entitlement error:', error);
-        } else {
-          console.log('Entitlement updated:', data);
-        }
-      } catch (err) {
-        console.error('Error handling checkout.session.completed:', err);
+      // You should store the user's email in metadata at checkout
+      const email = session.customer_email || session.metadata?.email;
+      if (!email) {
+        console.error('No email found on checkout session');
+        return { statusCode: 400, body: 'Missing email' };
       }
-    }
-  }
 
-  return { statusCode: 200, body: 'Webhook processed' };
-};
+      // Decide how many credits to add (base vs top-up)
+      let creditsToAdd = 20; // default for main package
+      if (session.metadata?.type === 'topup') {
+        creditsToAdd = 1; // $29 = 1 credit top-up
+      }
+
+      // Upsert entitlement
+      const { data, error } = await supabase
+        .from('entitlements')
+        .upsert(
+          { email, credits: creditsToAdd },
+          { onConflict:
