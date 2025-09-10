@@ -35,7 +35,7 @@ exports.handler = async (event) => {
 
     // 2. Generate signed URL (15 min expiry)
     const { data: signedUrl, error: urlError } = await supabase.storage
-      .from('documents')  // <-- your Supabase bucket name
+      .from('claimnavigatorai-docs')  // <-- your Supabase bucket name
       .createSignedUrl(fileName, 900);
 
     if (urlError || !signedUrl) {
