@@ -7,78 +7,36 @@ const supabase = createClient(
 
 exports.handler = async (event) => {
   try {
-    const { session_id, order_id, email } = JSON.parse(event.body);
+    const { email } = JSON.parse(event.body);
 
-    if (!session_id && !email) {
+    if (!email) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: 'Missing session_id or email' })
+        body: JSON.stringify({ error: 'Missing email' })
       };
     }
 
-    let userEmail = email;
-
-    // 1. Lookup email by session_id if not provided
-    if (!userEmail && session_id) {
-      const { data: orderData, error: orderError } = await supabase
-        .from('orders')
-        .select('email')
-        .eq('session_id', session_id)
-        .single();
-
-      if (orderError || !orderData) {
-        console.error('Order lookup error:', orderError);
-        return {
-          statusCode: 404,
-          body: JSON.stringify({ error: 'Order not found' })
-        };
-      }
-
-      userEmail = orderData.email;
-    }
-
-    // 2. Get entitlement info
-    const { data: entitlementData, error: entitlementError } = await supabase
+    const { data: entitlement, error } = await supabase
       .from('entitlements')
       .select('credits')
-      .eq('email', userEmail)
+      .eq('email', email)
       .single();
 
-    if (entitlementError || !entitlementData) {
-      console.error('Entitlement lookup error:', entitlementError);
+    if (error || !entitlement) {
       return {
-        statusCode: 404,
-        body: JSON.stringify({ error: 'No entitlements found for user' })
+        statusCode: 403,
+        body: JSON.stringify({ error: 'No entitlement found' })
       };
     }
 
-    // 3. Get most recent order
-    const { data: latestOrder, error: latestOrderError } = await supabase
-      .from('orders')
-      .select('id, session_id, product, amount, currency, created_at')
-      .eq('email', userEmail)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
-
-    if (latestOrderError) {
-      console.error('Order fetch error:', latestOrderError);
-    }
-
-    // 4. Return combined info
     return {
       statusCode: 200,
       body: JSON.stringify({
         success: true,
-        email: userEmail,
-        credits_remaining: entitlementData.credits,
-        order_id: latestOrder?.id || order_id || null,
-        purchase_date: latestOrder?.created_at || null,
-        product: latestOrder?.product || 'AI Claim Toolkit',
-        amount: latestOrder?.amount || 499,
-        currency: latestOrder?.currency || 'USD'
+        credits: entitlement.credits
       })
     };
+
   } catch (err) {
     console.error('verify-entitlement error:', err);
     return {
