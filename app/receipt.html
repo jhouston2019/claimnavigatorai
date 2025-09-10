@@ -89,58 +89,63 @@
     <!-- keep your footer unchanged -->
   </footer>
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    const supabase = createClient(
-      "SUPABASE_URL",       // replace with your Supabase project URL
-      "SUPABASE_ANON_KEY"   // replace with your anon key
-    );
+  const supabase = createClient(
+    "SUPABASE_URL",       // replace with your Supabase project URL
+    "SUPABASE_ANON_KEY"   // replace with your anon key
+  );
 
-    async function loadUserData() {
-      const loading = document.getElementById("loading");
-      const content = document.getElementById("receipt-content");
-      const errorBox = document.getElementById("error-message");
-      const errorText = document.getElementById("error-text");
+  async function loadUserData() {
+    const loading = document.getElementById("loading");
+    const content = document.getElementById("receipt-content");
+    const errorBox = document.getElementById("error-message");
+    const errorText = document.getElementById("error-text");
 
-      loading.classList.add("active");
+    loading.classList.add("active");
 
-      try {
-        // 1. Confirm logged-in user
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          throw new Error("You must log in to view your receipt.");
-        }
+    try {
+      // Ensure logged in
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("You must log in to view your receipt.");
 
-        // 2. Lookup credits from entitlements
-        const { data, error } = await supabase
-          .from("entitlements")
-          .select("credits, updated_at")
-          .eq("email", user.email)
-          .single();
+      // Get Stripe session ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get("session_id");
+      if (!sessionId) throw new Error("No session_id found in URL.");
 
-        if (error || !data) {
-          throw new Error("Unable to load credits. Please contact support.");
-        }
+      // Fetch session details from Netlify function
+      const res = await fetch("/.netlify/functions/get-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: sessionId }),
+      });
 
-        // 3. Fill UI
-        document.getElementById("order-id").textContent = `#CN-${Date.now()}`;
-        document.getElementById("purchase-date").textContent = new Date(data.updated_at).toLocaleDateString();
-        document.getElementById("credits-count").textContent = data.credits;
+      const session = await res.json();
+      if (!res.ok) throw new Error(session.error || "Failed to fetch receipt.");
 
-        content.style.display = "block";
-      } catch (err) {
-        console.error(err);
-        errorText.textContent = err.message;
-        errorBox.classList.add("active");
-        content.style.display = "block";
-      } finally {
-        loading.classList.remove("active");
-      }
+      // Fill receipt UI
+      document.getElementById("order-id").textContent = session.id;
+      document.getElementById("purchase-date").textContent = new Date(session.created).toLocaleDateString();
+      document.getElementById("credits-count").textContent = session.product.includes("Top-Up") ? 1 : 20;
+
+      // Fill static details
+      document.querySelector(".detail-value:nth-child(2)").textContent = `${session.currency} ${session.amount_total}`;
+      content.style.display = "block";
+    } catch (err) {
+      console.error(err);
+      errorText.textContent = err.message;
+      errorBox.classList.add("active");
+      content.style.display = "block";
+    } finally {
+      loading.classList.remove("active");
     }
+  }
 
-    document.addEventListener("DOMContentLoaded", loadUserData);
-  </script>
+  document.addEventListener("DOMContentLoaded", loadUserData);
+</script>
+
 
 </body>
 </html>
