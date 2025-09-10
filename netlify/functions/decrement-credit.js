@@ -7,16 +7,17 @@ const supabase = createClient(
 
 exports.handler = async (event) => {
   try {
+    if (event.httpMethod !== 'POST') {
+      return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
+    }
+
     const { email } = JSON.parse(event.body);
 
     if (!email) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Missing email' })
-      };
+      return { statusCode: 400, body: JSON.stringify({ error: 'Missing email' }) };
     }
 
-    // Get current credits
+    // Fetch current credits
     const { data: entitlement, error: fetchError } = await supabase
       .from('entitlements')
       .select('credits')
@@ -24,30 +25,25 @@ exports.handler = async (event) => {
       .single();
 
     if (fetchError || !entitlement) {
-      console.error('Entitlement fetch error:', fetchError);
-      return {
-        statusCode: 404,
-        body: JSON.stringify({ error: 'Entitlement not found' })
-      };
+      console.error('Fetch error:', fetchError);
+      return { statusCode: 404, body: JSON.stringify({ error: 'User entitlement not found' }) };
     }
 
-    // Prevent negative credits
-    const newCredits = Math.max(0, (entitlement.credits || 0) - 1);
+    if (entitlement.credits <= 0) {
+      return { statusCode: 400, body: JSON.stringify({ error: 'No credits remaining' }) };
+    }
 
-    // Update record
+    // Decrement credits
     const { data: updated, error: updateError } = await supabase
       .from('entitlements')
-      .update({ credits: newCredits })
+      .update({ credits: entitlement.credits - 1 })
       .eq('email', email)
       .select('credits')
       .single();
 
     if (updateError) {
-      console.error('Entitlement update error:', updateError);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'Failed to update entitlement' })
-      };
+      console.error('Update error:', updateError);
+      return { statusCode: 500, body: JSON.stringify({ error: 'Failed to update credits' }) };
     }
 
     return {
@@ -57,6 +53,7 @@ exports.handler = async (event) => {
         credits_remaining: updated.credits
       })
     };
+
   } catch (err) {
     console.error('decrement-credit error:', err);
     return {
