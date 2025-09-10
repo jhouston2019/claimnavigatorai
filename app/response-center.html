@@ -7,46 +7,23 @@
   <meta name="description" content="AI-powered claim response center with document library, AI response generation, and estimate tools.">
 
   <style>
-    /* keep all your existing CSS exactly as-is */
-    .response-input {
-      width: 100%;
-      min-height: 120px;
-      padding: 1rem;
-      border: 1px solid var(--border);
-      border-radius: 0.5rem;
-      margin-bottom: 1rem;
-      font-size: 1rem;
-    }
-    .response-output {
-      width: 100%;
-      min-height: 200px;
-      padding: 1rem;
-      border: 1px solid var(--border);
-      border-radius: 0.5rem;
-      background: var(--bg-light);
-      font-size: 1rem;
-      white-space: pre-wrap;
-      margin-top: 1rem;
-    }
-    .btn-primary {
-      background: var(--primary);
-      color: #fff;
-      padding: 0.75rem 1.5rem;
-      border: none;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 600;
-    }
-    .btn-primary:disabled {
-      background: var(--text-secondary);
-      cursor: not-allowed;
-    }
-    .action-buttons {
-      margin-top: 1rem;
-      display: flex;
-      gap: 1rem;
-    }
+    /* keep all your existing CSS */
+    .response-input { width: 100%; min-height: 120px; padding: 1rem; border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 1rem; font-size: 1rem; }
+    .file-upload { margin: 1rem 0; }
+    .btn-primary { background: var(--primary); color: #fff; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem; font-weight: 600; }
+    .btn-primary:disabled { background: var(--text-secondary); cursor: not-allowed; }
+    .action-buttons { margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    /* Comparison Grid */
+    .comparison-container { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+    .comparison-box { border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; background: var(--bg-light); min-height: 300px; overflow-y: auto; white-space: pre-wrap; }
+    .comparison-header { font-weight: 600; margin-bottom: 0.5rem; }
+    @media (max-width: 768px) { .comparison-container { grid-template-columns: 1fr; } }
+
+    /* Analysis Summary */
+    .summary-container { margin-top: 2rem; padding: 1rem; border: 1px solid var(--border); border-radius: 0.5rem; background: #fefce8; }
+    .summary-header { font-weight: 600; margin-bottom: 0.5rem; }
+    .summary-text { white-space: pre-wrap; }
   </style>
 </head>
 <body>
@@ -85,48 +62,56 @@
       <!-- AI Response & Analysis Agent -->
       <div id="ai-agent" class="tab-content active">
         <h2>AI Response & Analysis Agent</h2>
-        <p>Paste or upload your insurer correspondence below to generate a professional AI-powered reply.</p>
+        <p>Paste or upload your insurer correspondence below to generate a professional AI-powered reply, compare side-by-side, and receive a plain-English analysis.</p>
 
         <textarea id="input-text" class="response-input" placeholder="Paste your denial letter, insurer email, or claim text here..."></textarea>
-        
+
+        <div class="file-upload">
+          <label for="file-input">Or upload a document (PDF, DOCX, TXT):</label>
+          <input type="file" id="file-input" accept=".pdf,.docx,.txt" />
+        </div>
+
         <button id="generate-btn" class="btn-primary">Generate AI Response</button>
 
-        <div id="output-container" style="display:none;">
-          <h3 style="margin-top:1.5rem;">AI Draft</h3>
-          <div id="ai-output" class="response-output"></div>
-          <div class="action-buttons">
-            <button class="btn-primary" onclick="copyResponse()">Copy</button>
-            <button class="btn-primary" onclick="downloadResponse()">Download</button>
+        <!-- Comparison view -->
+        <div id="comparison-container" class="comparison-container" style="display:none;">
+          <div>
+            <div class="comparison-header">📄 Insurer Letter</div>
+            <div id="original-text" class="comparison-box"></div>
+          </div>
+          <div>
+            <div class="comparison-header">
+              🤖 AI Draft Response 
+              <span id="view-mode-label">(Redline View)</span>
+            </div>
+            <div id="ai-output" class="comparison-box"></div>
+            <div class="action-buttons">
+              <button class="btn-primary" onclick="toggleView()">Toggle View</button>
+              <button class="btn-primary" onclick="copyResponse()">Copy</button>
+              <button class="btn-primary" onclick="downloadResponse()">Download</button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- My Documents -->
-      <div id="my-documents" class="tab-content">
-        <h2>Document Library</h2>
-        <div id="credits-banner">
-          <span>AI Responses Available:</span>
-          <span id="credits-count">Loading...</span>
+        <!-- Analysis summary -->
+        <div id="summary-container" class="summary-container" style="display:none;">
+          <div class="summary-header">📊 Analysis Summary</div>
+          <div id="summary-text" class="summary-text">Generating summary...</div>
         </div>
-        <div id="documents-container" style="display:none;"></div>
-      </div>
-
-      <!-- Estimate Tools -->
-      <div id="estimate-tools" class="tab-content">
-        <h2>Estimate Tools</h2>
-        <p>Use AI-powered tools to calculate rough order of magnitude and reserve inquiries.</p>
-      </div>
-
-      <!-- Settings -->
-      <div id="settings" class="tab-content">
-        <h2>Settings</h2>
-        <p>Manage your account, update preferences, and view usage history.</p>
       </div>
     </div>
   </main>
 
+  <!-- External libs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff-match-patch/1.0.5/diff_match_patch.js"></script>
+
   <script>
     let userCredits = 0;
+    let cleanDraft = ""; 
+    let redlineDraft = "";
+    let showingRedline = true;
 
     function switchTab(tabName) {
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -162,11 +147,55 @@
       }
     }
 
+    // File parsing
+    async function handleFileUpload(file) {
+      if (!file) return "";
+      if (file.type === "text/plain") return await file.text();
+      if (file.type === "application/pdf") {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let text = "";
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          text += content.items.map(item => item.str).join(" ") + "\n";
+        }
+        return text.trim();
+      }
+      if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await window.mammoth.extractRawText({ arrayBuffer });
+        return result.value.trim();
+      }
+      alert("Unsupported file type. Please upload PDF, DOCX, or TXT.");
+      return "";
+    }
+
+    // Highlight differences
+    function highlightDifferences(original, aiDraft) {
+      const dmp = new diff_match_patch();
+      const diffs = dmp.diff_main(original, aiDraft);
+      dmp.diff_cleanupSemantic(diffs);
+      return diffs.map(([op, text]) => {
+        if (op === 1) return `<ins>${text}</ins>`; 
+        if (op === -1) return `<del>${text}</del>`;
+        return text;
+      }).join('');
+    }
+
     async function generateResponse() {
       const btn = document.getElementById('generate-btn');
-      const inputText = document.getElementById('input-text').value.trim();
+      const inputTextArea = document.getElementById('input-text');
+      const fileInput = document.getElementById('file-input');
+
+      let inputText = inputTextArea.value.trim();
+      if (!inputText && fileInput.files.length > 0) {
+        inputText = await handleFileUpload(fileInput.files[0]);
+        inputTextArea.value = inputText;
+      }
+
       if (!inputText) {
-        alert("Please paste some text first.");
+        alert("Please paste text or upload a document first.");
         return;
       }
       if (userCredits <= 0) {
@@ -181,19 +210,25 @@
         const res = await fetch('/.netlify/functions/generate-response', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: localStorage.getItem('userEmail'),
-            inputText
-          })
+          body: JSON.stringify({ email: localStorage.getItem('userEmail'), inputText })
         });
-
         const data = await res.json();
 
         if (res.ok && data.draft) {
-          document.getElementById('ai-output').textContent = data.draft;
-          document.getElementById('output-container').style.display = 'block';
+          cleanDraft = data.draft;
+          redlineDraft = highlightDifferences(inputText, data.draft);
+
+          document.getElementById('original-text').textContent = inputText;
+          document.getElementById('ai-output').innerHTML = redlineDraft;
+          document.getElementById('view-mode-label').textContent = "(Redline View)";
+          showingRedline = true;
+
+          document.getElementById('comparison-container').style.display = 'grid';
           userCredits = data.credits_remaining;
           document.getElementById('credits-count').textContent = userCredits;
+
+          // Generate plain-English summary
+          generateSummary(inputText, data.draft);
         } else {
           alert(data.error || "Failed to generate response.");
         }
@@ -206,14 +241,57 @@
       }
     }
 
+    async function generateSummary(original, draft) {
+      const summaryBox = document.getElementById('summary-container');
+      const summaryText = document.getElementById('summary-text');
+      summaryBox.style.display = 'block';
+      summaryText.textContent = "Analyzing differences...";
+
+      try {
+        const res = await fetch('/.netlify/functions/generate-response', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: localStorage.getItem('userEmail'),
+            inputText: `Insurer Letter:\n${original}\n\nAI Draft Response:\n${draft}\n\nPlease summarize the key differences, strengths, and changes in plain English for the policyholder.`
+          })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.draft) {
+          summaryText.textContent = data.draft;
+        } else {
+          summaryText.textContent = "Failed to generate analysis.";
+        }
+      } catch (err) {
+        console.error("Summary error:", err);
+        summaryText.textContent = "Error generating analysis.";
+      }
+    }
+
+    function toggleView() {
+      if (showingRedline) {
+        document.getElementById('ai-output').textContent = cleanDraft;
+        document.getElementById('view-mode-label').textContent = "(Clean View)";
+      } else {
+        document.getElementById('ai-output').innerHTML = redlineDraft;
+        document.getElementById('view-mode-label').textContent = "(Redline View)";
+      }
+      showingRedline = !showingRedline;
+    }
+
     function copyResponse() {
-      const text = document.getElementById('ai-output').textContent;
+      const text = showingRedline 
+        ? document.getElementById('ai-output').innerText 
+        : cleanDraft;
       navigator.clipboard.writeText(text);
       alert("Copied to clipboard!");
     }
 
     function downloadResponse() {
-      const text = document.getElementById('ai-output').textContent;
+      const text = showingRedline 
+        ? document.getElementById('ai-output').innerText 
+        : cleanDraft;
       const blob = new Blob([text], { type: 'text/plain' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
@@ -221,58 +299,8 @@
       link.click();
     }
 
-    async function loadDocuments() {
-      try {
-        const response = await fetch('../assets/data/documents.json');
-        if (!response.ok) throw new Error('Failed to fetch documents');
-        const documents = await response.json();
-        renderDocuments(documents);
-      } catch (err) {
-        console.error('Error loading documents:', err);
-      }
-    }
-
-    function renderDocuments(documents) {
-      const container = document.getElementById('documents-container');
-      let html = '<div class="document-grid">';
-      Object.values(documents).forEach(doc => {
-        html += `
-          <div class="document-card">
-            <div class="document-title">${doc.label}</div>
-            <div class="document-description">${doc.description}</div>
-            <div class="document-actions">
-              <button class="btn-secondary" onclick="downloadDocument('${doc.templatePath}')">Download Template</button>
-              ${doc.samplePath ? `<button class="btn-secondary" onclick="downloadDocument('${doc.samplePath}')">Download Sample</button>` : ''}
-            </div>
-          </div>`;
-      });
-      html += '</div>';
-      container.innerHTML = html;
-      container.style.display = 'block';
-    }
-
-    async function downloadDocument(filePath) {
-      try {
-        const response = await fetch('/.netlify/functions/generate-signed-url', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ fileName: filePath, email: localStorage.getItem('userEmail') })
-        });
-        const data = await response.json();
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          alert('Download failed. Please try again.');
-        }
-      } catch (err) {
-        console.error('Download error:', err);
-        alert('Error downloading file.');
-      }
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
       loadEntitlement();
-      loadDocuments();
       document.getElementById('generate-btn').addEventListener('click', generateResponse);
     });
   </script>
