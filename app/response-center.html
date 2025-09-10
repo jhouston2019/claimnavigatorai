@@ -5,116 +5,147 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Response Center - ClaimNavigatorAI</title>
   <meta name="description" content="AI-powered claim response center with document library, AI response generation, and estimate tools.">
+
   <style>
-    /* Keep your existing CSS styles */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #1e40af;
+      --primary-dark: #0f172a;
+      --primary-header: #0f172a;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --bg-white: #ffffff;
+      --bg-light: #f9fafb;
+      --bg-gray: #f3f4f6;
+      --border: #e5e7eb;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+    
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-      background: #fff;
-      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-white);
     }
-    header {
-      background: #0f172a;
-      color: white;
-      padding: 1rem 0;
-    }
+    
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 20px;
     }
+    
+    header {
+      background: var(--primary-header);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    
     nav {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
     }
+    
     .logo {
       font-size: 1.5rem;
-      font-weight: bold;
+      font-weight: 700;
+      color: white;
     }
+    
     .nav-links {
       display: flex;
-      gap: 1.5rem;
+      gap: 2rem;
+      align-items: center;
     }
+    
     .nav-links a {
       color: rgba(255, 255, 255, 0.9);
       text-decoration: none;
       font-weight: 500;
+      transition: color 0.2s;
     }
-    .nav-links a:hover {
-      color: #fff;
-    }
-    .main-content {
-      padding: 2rem 0;
-    }
-    .page-header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .tabs {
-      display: flex;
-      border-bottom: 2px solid #eee;
-      margin-bottom: 2rem;
-    }
-    .tab {
-      padding: 1rem 2rem;
-      cursor: pointer;
-      border: none;
-      background: none;
-      font-weight: 500;
-      color: #6b7280;
-      border-bottom: 3px solid transparent;
-    }
-    .tab.active {
-      color: #1e40af;
-      border-bottom-color: #1e40af;
-      background: #f9fafb;
-    }
-    .tab-content {
-      display: none;
-      padding: 2rem;
-      background: #fff;
-      border-radius: 0 0 0.5rem 0.5rem;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    .document-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-    .document-card {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 0.75rem;
-      padding: 1.5rem;
-    }
-    .document-title {
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-    .document-description {
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-      color: #6b7280;
-    }
-    .btn-secondary {
-      background: #f3f4f6;
-      color: #1e40af;
-      padding: 0.5rem 1rem;
-      border: 1px solid #1e40af;
+    
+    .nav-links a:hover { color: white; }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
       border-radius: 0.5rem;
       text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      display: inline-block;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .btn-primary:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .btn-secondary {
+      background: var(--bg-light);
+      color: var(--primary);
+      padding: 0.5rem 1.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--primary);
+      transition: all 0.2s;
       cursor: pointer;
     }
-    .btn-secondary:hover {
-      background: #1e40af;
-      color: #fff;
+    
+    .btn-secondary:hover { background: var(--primary); color: white; }
+    
+    .main-content { padding: 2rem 0; min-height: calc(100vh - 200px); }
+    
+    .page-header { text-align: center; margin-bottom: 3rem; }
+    .page-header h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+    .page-header p { color: var(--text-secondary); font-size: 1.1rem; }
+    
+    .tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 2rem; }
+    .tab { padding: 1rem 2rem; cursor: pointer; background: none; font-weight: 500; color: var(--text-secondary); border-bottom: 3px solid transparent; }
+    .tab.active { color: var(--primary); border-bottom-color: var(--primary); background: var(--bg-light); }
+    
+    .tab-content { display: none; padding: 2rem; background: var(--bg-white); border-radius: 0 0 0.5rem 0.5rem; }
+    .tab-content.active { display: block; }
+    
+    .document-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+    .document-card { background: var(--bg-light); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.5rem; }
+    .document-title { font-weight: 600; margin-bottom: 0.5rem; }
+    .document-description { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; }
+    .document-actions { display: flex; gap: 0.5rem; }
+    
+    #credits-banner {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 0.75rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    #credits-banner span { font-weight: 600; }
+    #credits-count { font-size: 1.5rem; font-weight: 700; margin-left: 0.5rem; }
+    
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .tabs { flex-wrap: wrap; }
+      .tab { flex: 1; min-width: 120px; }
+      .document-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
   <header>
     <div class="container">
       <nav>
@@ -124,13 +155,12 @@
           <a href="../product.html">Product</a>
           <a href="response-center.html">Response Center</a>
           <a href="settings.html">Settings</a>
-          <a href="login.html" onclick="logout()">Logout</a>
+          <a href="#" onclick="logout()">Logout</a>
         </div>
       </nav>
     </div>
   </header>
 
-  <!-- Main -->
   <main class="main-content">
     <div class="container">
       <div class="page-header">
@@ -138,103 +168,104 @@
         <p>AI-powered tools to strengthen your claim and generate professional responses</p>
       </div>
 
-      <!-- Tabs -->
       <div class="tabs">
         <button class="tab active" onclick="switchTab('my-documents')">My Documents</button>
         <button class="tab" onclick="switchTab('estimate-tools')">Estimate Tools</button>
         <button class="tab" onclick="switchTab('settings')">Settings</button>
       </div>
 
-      <!-- My Documents -->
       <div id="my-documents" class="tab-content active">
         <h2>Document Library</h2>
-        <p style="color:#6b7280; margin-bottom:1rem;">Download professional claim documents and templates.</p>
-        <div id="documents-loading" class="loading">Loading documents...</div>
-        <div id="documents-error" style="display:none; color:red;">Error loading documents</div>
+
+        <!-- Credits Banner -->
+        <div id="credits-banner">
+          <span>AI Responses Available:</span>
+          <span id="credits-count">Loading...</span>
+        </div>
+
         <div id="documents-container" style="display:none;"></div>
       </div>
     </div>
   </main>
 
-  <!-- Scripts -->
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+  <script>
+    let userCredits = 0;
 
-    const supabase = createClient(
-      "SUPABASE_URL",       // replace with your Supabase project URL
-      "SUPABASE_ANON_KEY"   // replace with your anon key
-    );
-
-    let currentUserEmail = null;
-
-    async function initUser() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        alert("You must log in first.");
-        window.location.href = "login.html";
-        return;
-      }
-      currentUserEmail = user.email;
-      console.log("Logged in as:", currentUserEmail);
-    }
-
-    async function logout() {
-      await supabase.auth.signOut();
-      window.location.href = "login.html";
-    }
-    window.logout = logout;
-
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(tabName).classList.add('active');
       event.target.classList.add('active');
     }
 
-    async function downloadDocument(fileName) {
-      if (!currentUserEmail) {
-        alert("No user logged in.");
-        return;
-      }
-      try {
-        const res = await fetch("/.netlify/functions/generate-signed-url", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName, userEmail: currentUserEmail })
-        });
-        if (res.status === 200) {
-          const { url } = await res.json();
-          window.location.href = url;
-        } else {
-          const msg = await res.text();
-          alert(msg);
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Error downloading file.");
+    function logout() {
+      if (confirm("Are you sure you want to logout?")) {
+        localStorage.removeItem('userEmail');
+        window.location.href = '../index.html';
       }
     }
 
-    async function loadDocuments() {
-      const loading = document.getElementById('documents-loading');
-      const error = document.getElementById('documents-error');
-      const container = document.getElementById('documents-container');
-
-      loading.style.display = 'block';
-      error.style.display = 'none';
-      container.style.display = 'none';
-
+    async function loadEntitlement() {
       try {
-        const response = await fetch('../assets/data/documents.json');
-        if (!response.ok) throw new Error('Failed to fetch documents');
-        const documents = await response.json();
-        renderDocuments(documents);
-        loading.style.display = 'none';
-        container.style.display = 'block';
+        const response = await fetch('/.netlify/functions/verify-entitlement', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: localStorage.getItem('userEmail') })
+        });
+        const data = await response.json();
+        if (data.success) {
+          userCredits = data.credits_remaining || 0;
+          document.getElementById('credits-count').textContent = userCredits;
+        } else {
+          userCredits = 0;
+          document.getElementById('credits-count').textContent = '0';
+        }
       } catch (err) {
         console.error(err);
-        loading.style.display = 'none';
-        error.style.display = 'block';
+        userCredits = 0;
+        document.getElementById('credits-count').textContent = '0';
+      }
+    }
+
+    async function decrementCredit() {
+      try {
+        const response = await fetch('/.netlify/functions/decrement-credit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: localStorage.getItem('userEmail') })
+        });
+        const data = await response.json();
+        if (data.success) {
+          userCredits = data.credits_remaining;
+          document.getElementById('credits-count').textContent = userCredits;
+        }
+      } catch (err) {
+        console.error('Failed to decrement credit:', err);
+      }
+    }
+
+    async function downloadDocument(filePath) {
+      if (userCredits <= 0) {
+        alert('You have no credits left. Please purchase a top-up.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/.netlify/functions/generate-signed-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fileName: filePath, email: localStorage.getItem('userEmail') })
+        });
+        const data = await response.json();
+        if (data.url) {
+          window.location.href = data.url;
+          await decrementCredit(); // reduce credits after successful download
+        } else {
+          alert('Download failed. Please try again.');
+        }
+      } catch (err) {
+        console.error('Download error:', err);
+        alert('Error downloading file.');
       }
     }
 
@@ -247,18 +278,30 @@
             <div class="document-title">${doc.label}</div>
             <div class="document-description">${doc.description}</div>
             <div class="document-actions">
-              <button onclick="downloadDocument('${doc.templatePath}')" class="btn-secondary">Download Template</button>
-              ${doc.samplePath ? `<button onclick="downloadDocument('${doc.samplePath}')" class="btn-secondary">Download Sample</button>` : ''}
+              <button class="btn-secondary" onclick="downloadDocument('${doc.templatePath}')">Download Template</button>
+              ${doc.samplePath ? `<button class="btn-secondary" onclick="downloadDocument('${doc.samplePath}')">Download Sample</button>` : ''}
             </div>
           </div>`;
       });
       html += '</div>';
       container.innerHTML = html;
+      container.style.display = 'block';
     }
 
-    document.addEventListener("DOMContentLoaded", async () => {
-      await initUser();
-      await loadDocuments();
+    async function loadDocuments() {
+      try {
+        const response = await fetch('../assets/data/documents.json');
+        if (!response.ok) throw new Error('Failed to fetch documents');
+        const documents = await response.json();
+        renderDocuments(documents);
+      } catch (err) {
+        console.error('Error loading documents:', err);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadEntitlement();
+      loadDocuments();
     });
   </script>
 </body>
