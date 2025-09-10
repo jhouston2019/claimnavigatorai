@@ -6,7 +6,7 @@
   <title>Response Center - ClaimNavigatorAI</title>
   <meta name="description" content="AI-powered claim response center with document library, AI response generation, and estimate tools.">
   <style>
-    /* Keep your CSS from before (unchanged) */
+    /* Keep all your CSS as-is (unchanged) */
   </style>
 </head>
 <body>
@@ -55,9 +55,10 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
+    // Init Supabase client
     const supabase = createClient(
-      "SUPABASE_URL",
-      "SUPABASE_ANON_KEY"
+      "SUPABASE_URL",        // replace with your Supabase project URL
+      "SUPABASE_ANON_KEY"    // replace with your Supabase anon key
     );
 
     let currentUserEmail = null;
@@ -66,12 +67,19 @@
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         currentUserEmail = user.email;
+        console.log("Logged in as:", currentUserEmail);
       } else {
         alert("You must log in first.");
       }
     }
 
+    // Secure download
     async function downloadDocument(fileName) {
+      if (!currentUserEmail) {
+        alert("No user logged in.");
+        return;
+      }
+
       try {
         const res = await fetch("/.netlify/functions/generate-signed-url", {
           method: "POST",
@@ -92,6 +100,7 @@
       }
     }
 
+    // Load documents
     async function loadDocuments() {
       const loading = document.getElementById('documents-loading');
       const error = document.getElementById('documents-error');
@@ -117,6 +126,7 @@
       }
     }
 
+    // Render documents with download buttons
     function renderDocuments(documents) {
       const container = document.getElementById('documents-container');
       let html = '<div class="document-grid">';
