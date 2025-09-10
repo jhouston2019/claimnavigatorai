@@ -374,7 +374,7 @@
       }
     }
 
-    // Render documents in a single grid (no categories)
+    // Render documents with secure download buttons
     function renderDocuments(documents) {
       const container = document.getElementById('documents-container');
       let html = '<div class="document-grid">';
@@ -385,8 +385,8 @@
             <div class="document-title">${doc.label}</div>
             <div class="document-description">${doc.description}</div>
             <div class="document-actions">
-              <a href="${doc.templatePath}" class="btn-secondary" download>Download Template</a>
-              ${doc.samplePath ? `<a href="${doc.samplePath}" class="btn-secondary" download>Download Sample</a>` : ''}
+              <button class="btn-secondary" onclick="downloadDocument('${doc.templatePath}', currentUserEmail)">Download Template</button>
+              ${doc.samplePath ? `<button class="btn-secondary" onclick="downloadDocument('${doc.samplePath}', currentUserEmail)">Download Sample</button>` : ''}
             </div>
           </div>
         `;
@@ -396,8 +396,31 @@
       container.innerHTML = html;
     }
 
-    document.addEventListener('DOMContentLoaded', loadDocuments);
-  </script>
+    // Dummy email for now - replace later with logged-in user's email
+    const currentUserEmail = "test@example.com";
+
+    // Call Netlify function for secure download
+    async function downloadDocument(fileName, userEmail) {
+      try {
+        const res = await fetch("/.netlify/functions/generate-signed-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileName, userEmail })
+        });
+
+        if (res.status === 200) {
+          const { url } = await res.json();
+          window.location.href = url;
+        } else if (res.status === 403) {
+          alert("Access denied. Please purchase first.");
+        } else {
+          alert("Error downloading file. Please try again.");
+        }
+      } catch (err) {
+        console.error("Download error:", err);
+        alert("Error downloading file. Please try again.");
+      }
+    }
 
     document.addEventListener('DOMContentLoaded', loadDocuments);
   </script>
