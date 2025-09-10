@@ -70,7 +70,7 @@
         <button class="btn-primary" onclick="exportDoc('docx')">Export DOCX</button>
         <button class="btn-primary" onclick="exportDoc('pdf')">Export PDF</button>
         <button class="btn-primary" onclick="saveDraft()">Save to My Documents</button>
-        <select id="language-select" onchange="setLanguage()" style="padding:0.5rem; border-radius:0.5rem;">
+        <select id="language-select" style="padding:0.5rem; border-radius:0.5rem;">
           <option value="en">English</option>
           <option value="es">Español</option>
         </select>
@@ -91,23 +91,8 @@
     <!-- Claim Analysis Tools -->
     <div id="analysis-tools" class="tab-content">
       <h2>Claim Analysis Tools</h2>
-      <div class="tool-grid">
-        <!-- Existing 10 + 4 new -->
-        <div class="tool-card"><div class="tool-title">Reserve Inquiry Letter</div><div class="tool-desc">Request insurer reserve information.</div><button class="btn-primary" onclick="runTool('reserve-inquiry')">Generate</button><div id="reserve-inquiry-output" class="tool-output"></div><div id="reserve-inquiry-actions" class="action-buttons" style="display:none;"><button class="btn-primary" onclick="copyToolOutput('reserve-inquiry')">Copy</button><button class="btn-primary" onclick="downloadToolOutput('reserve-inquiry')">Download</button><button class="btn-primary" onclick="clearOutput('reserve-inquiry')">Clear</button></div></div>
-        <div class="tool-card"><div class="tool-title">Coverage Letter Analyzer</div><div class="tool-desc">Analyze insurer coverage letters.</div><button class="btn-primary" onclick="runTool('coverage-analyzer')">Generate</button><div id="coverage-analyzer-output" class="tool-output"></div><div id="coverage-analyzer-actions" class="action-buttons" style="display:none;"><button class="btn-primary" onclick="copyToolOutput('coverage-analyzer')">Copy</button><button class="btn-primary" onclick="downloadToolOutput('coverage-analyzer')">Download</button><button class="btn-primary" onclick="clearOutput('coverage-analyzer')">Clear</button></div></div>
-        <div class="tool-card"><div class="tool-title">Supplement Request Draft</div><div class="tool-desc">Request additional scope items.</div><button class="btn-primary" onclick="runTool('supplement-request')">Generate</button><div id="supplement-request-output" class="tool-output"></div><div id="supplement-request-actions" class="action-buttons" style="display:none;"><button class="btn-primary" onclick="copyToolOutput('supplement-request')">Copy</button><button class="btn-primary" onclick="downloadToolOutput('supplement-request')">Download</button><button class="btn-primary" onclick="clearOutput('supplement-request')">Clear</button></div></div>
-        <div class="tool-card"><div class="tool-title">Proof of Loss Checklist</div><div class="tool-desc">Checklist of Proof of Loss requirements.</div><button class="btn-primary" onclick="runTool('pol-checklist')">Generate</button><div id="pol-checklist-output" class="tool-output"></div><div id="pol-checklist-actions" class="action-buttons" style="display:none;"><button class="btn-primary" onclick="copyToolOutput('pol-checklist')">Copy</button><button class="btn-primary" onclick="downloadToolOutput('pol-checklist')">Download</button><button class="btn-primary" onclick="clearOutput('pol-checklist')">Clear</button></div></div>
-        <div class="tool-card"><div class="tool-title">Depreciation Release Request</div><div class="tool-desc">Request release of recoverable depreciation.</div><button class="btn-primary" onclick="runTool('depreciation-release')">Generate</button><div id="depreciation-release-output" class="tool-output"></div><div id="depreciation-release-actions" class="action-buttons" style="display:none;"><button class="btn-primary" onclick="copyToolOutput('depreciation-release')">Copy</button><button class="btn-primary" onclick="downloadToolOutput('depreciation-release')">Download</button><button class="btn-primary" onclick="clearOutput('depreciation-release')">Clear</button></div></div>
-        <div class="tool-card"><div class="tool-title">ALE Extension Letter</div><div class="tool-desc">Request ALE extension.</div><button class="btn-primary" onclick="runTool('ale-extension')">Generate</button><div id="ale-extension-output" class="tool-output"></div><div id="ale-extension-actions" class="action-buttons" style="display:none;"><button class="btn-primary" onclick="copyToolOutput('ale-extension')">Copy</button><button class="btn-primary" onclick="downloadToolOutput('ale-extension')">Download</button><button class="btn-primary" onclick="clearOutput('ale-extension')">Clear</button></div></div>
-        <div class="tool-card"><div class="tool-title">Settlement Analyzer</div><div class="tool-desc">Analyze insurer settlement offers.</div><button class="btn-primary" onclick="runTool('settlement-analyzer')">Generate</button><div id="settlement-analyzer-output" class="tool-output"></div><div id="settlement-analyzer-actions" class="action-buttons" style="display:none;"><button class="btn-primary" onclick="copyToolOutput('settlement-analyzer')">Copy</button><button class="btn-primary" onclick="downloadToolOutput('settlement-analyzer')">Download</button><button class="btn-primary" onclick="clearOutput('settlement-analyzer')">Clear</button></div></div>
-        <div class="tool-card"><div class="tool-title">Bad Faith Checker</div><div class="tool-desc">Check for bad faith indicators.</div><button class="btn-primary" onclick="runTool('badfaith-checker')">Generate</button><div id="badfaith-checker-output" class="tool-output"></div><div id="badfaith-checker-actions" class="action-buttons" style="display:none;"><button class="btn-primary" onclick="copyToolOutput('badfaith-checker')">Copy</button><button class="btn-primary" onclick="downloadToolOutput('badfaith-checker')">Download</button><button class="btn-primary" onclick="clearOutput('badfaith-checker')">Clear</button></div></div>
-        <div class="tool-card"><div class="tool-title">Escalation Drafts</div><div class="tool-desc">Generate escalation drafts.</div><button class="btn-primary" onclick="runTool('escalation-drafts')">Generate</button><div id="escalation-drafts-output" class="tool-output"></div><div id="escalation-drafts-actions" class="action-buttons" style="display:none;"><button class="btn-primary" onclick="copyToolOutput('escalation-drafts')">Copy</button><button class="btn-primary" onclick="downloadToolOutput('escalation-drafts')">Download</button><button class="btn-primary" onclick="clearOutput('escalation-drafts')">Clear</button></div></div>
-        <div class="tool-card"><div class="tool-title">Timeline Builder</div><div class="tool-desc">Build claim event timelines.</div><button class="btn-primary" onclick="runTool('timeline-builder')">Generate</button><div id="timeline-builder-output" class="tool-output"></div><div id="timeline-builder-actions" class="action-buttons" style="display:none;"><button class="btn-primary" onclick="copyToolOutput('timeline-builder')">Copy</button><button class="btn-primary" onclick="downloadToolOutput('timeline-builder')">Download</button><button class="btn-primary" onclick="clearOutput('timeline-builder')">Clear</button><button class="btn-primary" onclick="exportTimeline()">Export CSV</button></div></div>
-        <!-- New tools -->
-        <div class="tool-card"><div class="tool-title">Policy Language Analyzer</div><div class="tool-desc">Explain policy language and exclusions.</div><button class="btn-primary" onclick="runTool('policy-analyzer')">Generate</button><div id="policy-analyzer-output" class="tool-output"></div><div id="policy-analyzer-actions" class="action-buttons" style="display:none;"><button class="btn-primary" onclick="copyToolOutput('policy-analyzer')">Copy</button><button class="btn-primary" onclick="downloadToolOutput('policy-analyzer')">Download</button><button class="btn-primary" onclick="clearOutput('policy-analyzer')">Clear</button></div></div>
-        <div class="tool-card"><div class="tool-title">Demand Letter Generator</div><div class="tool-desc">Generate persuasive demand letters.</div><button class="btn-primary" onclick="runTool('demand-letter')">Generate</button><div id="demand-letter-output" class="tool-output"></div><div id="demand-letter-actions" class="action-buttons" style="display:none;"><button class="btn-primary" onclick="copyToolOutput('demand-letter')">Copy</button><button class="btn-primary" onclick="downloadToolOutput('demand-letter')">Download</button><button class="btn-primary" onclick="clearOutput('demand-letter')">Clear</button></div></div>
-        <div class="tool-card"><div class="tool-title">Attorney Prep Sheet</div><div class="tool-desc">Summarize claim for attorneys.</div><button class="btn-primary" onclick="runTool('attorney-prep')">Generate</button><div id="attorney-prep-output" class="tool-output"></div><div id="attorney-prep-actions" class="action-buttons" style="display:none;"><button class="btn-primary" onclick="copyToolOutput('attorney-prep')">Copy</button><button class="btn-primary" onclick="downloadToolOutput('attorney-prep')">Download</button><button class="btn-primary" onclick="clearOutput('attorney-prep')">Clear</button></div></div>
-        <div class="tool-card"><div class="tool-title">Bad Faith Complaint Letter</div><div class="tool-desc">Draft complaints to DOI.</div><button class="btn-primary" onclick="runTool('badfaith-complaint')">Generate</button><div id="badfaith-complaint-output" class="tool-output"></div><div id="badfaith-complaint-actions" class="action-buttons" style="display:none;"><button class="btn-primary" onclick="copyToolOutput('badfaith-complaint')">Copy</button><button class="btn-primary" onclick="downloadToolOutput('badfaith-complaint')">Download</button><button class="btn-primary" onclick="clearOutput('badfaith-complaint')">Clear</button></div></div>
+      <div class="tool-grid" id="tool-grid">
+        <!-- Tool cards injected by JS for maintainability -->
       </div>
     </div>
 
@@ -120,21 +105,86 @@
   </main>
 
   <script>
+    // --- Tab + Session Helpers ---
     function switchTab(tab){document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(tab).classList.add('active');event.target.classList.add('active');}
     function logout(){localStorage.removeItem('userEmail');window.location.href='../index.html';}
-    async function runTool(tool){const out=document.getElementById(`${tool}-output`);const actions=document.getElementById(`${tool}-actions`);out.style.display='block';out.innerHTML=`<div class="spinner"></div> Generating...`;actions.style.display='none';try{const res=await fetch('/.netlify/functions/generate-response',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:localStorage.getItem('userEmail'),mode:tool,inputText:`Run tool: ${tool}`})});const data=await res.json();if(res.ok&&data.draft){out.textContent=data.draft;actions.style.display='flex';document.getElementById('confidence-meter').innerText="Confidence: High";addToHistory(tool,data.draft);}else{out.textContent=data.error||"Failed.";}}catch(err){out.textContent="Error.";}}
+    function getLanguage(){return document.getElementById('language-select')?.value || 'en';}
+    function addToHistory(tool,text){const h=document.getElementById('session-history');const div=document.createElement('div');div.innerText=`${tool}: ${text.substring(0,100)}...`;h.prepend(div);if(h.childNodes.length>10)h.removeChild(h.lastChild);}
+
+    // --- AI Agent ---
+    async function generateResponse(){
+      const input=document.getElementById('input-text').value.trim();
+      if(!input)return alert("Please paste text first.");
+      const out=document.getElementById('ai-output');
+      out.style.display='block';out.innerHTML=`<div class="spinner"></div> Generating...`;
+      try{
+        const res=await fetch('/.netlify/functions/generate-response',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:localStorage.getItem('userEmail'),inputText:input,language:getLanguage()})});
+        const data=await res.json();
+        if(res.ok&&data.draft){out.textContent=data.draft;document.getElementById('confidence-meter').innerText="Confidence: High";addToHistory("ai-agent",data.draft);}else out.textContent=data.error||"Failed.";
+      }catch(e){console.error(e);out.textContent="Error generating.";}
+    }
+
+    // --- Claim Analysis Tools ---
+    const tools=[
+      {id:'reserve-inquiry',title:'Reserve Inquiry Letter',desc:'Request insurer reserve information.'},
+      {id:'coverage-analyzer',title:'Coverage Letter Analyzer',desc:'Analyze insurer coverage letters.'},
+      {id:'supplement-request',title:'Supplement Request Draft',desc:'Request additional scope items.'},
+      {id:'pol-checklist',title:'Proof of Loss Checklist',desc:'Checklist of Proof of Loss requirements.'},
+      {id:'depreciation-release',title:'Depreciation Release Request',desc:'Request release of recoverable depreciation.'},
+      {id:'ale-extension',title:'ALE Extension Letter',desc:'Request ALE extension.'},
+      {id:'settlement-analyzer',title:'Settlement Analyzer',desc:'Analyze settlement offers.'},
+      {id:'badfaith-checker',title:'Bad Faith Checker',desc:'Check for bad faith indicators.'},
+      {id:'escalation-drafts',title:'Escalation Drafts',desc:'Generate escalation drafts.'},
+      {id:'timeline-builder',title:'Timeline Builder',desc:'Build claim event timelines.'},
+      {id:'policy-analyzer',title:'Policy Language Analyzer',desc:'Explain policy language.'},
+      {id:'demand-letter',title:'Demand Letter Generator',desc:'Draft persuasive demand letters.'},
+      {id:'attorney-prep',title:'Attorney Prep Sheet',desc:'Summarize claim for attorneys.'},
+      {id:'badfaith-complaint',title:'Bad Faith Complaint Letter',desc:'Draft DOI complaints.'},
+    ];
+
+    function renderTools(){
+      const grid=document.getElementById('tool-grid');
+      grid.innerHTML="";
+      tools.forEach(t=>{
+        grid.innerHTML+=`
+          <div class="tool-card">
+            <div class="tool-title">${t.title}</div>
+            <div class="tool-desc">${t.desc}</div>
+            <button class="btn-primary" onclick="runTool('${t.id}')">Generate</button>
+            <div id="${t.id}-output" class="tool-output"></div>
+            <div id="${t.id}-actions" class="action-buttons" style="display:none;">
+              <button class="btn-primary" onclick="copyToolOutput('${t.id}')">Copy</button>
+              <button class="btn-primary" onclick="downloadToolOutput('${t.id}')">Download</button>
+              <button class="btn-primary" onclick="clearOutput('${t.id}')">Clear</button>
+              ${t.id==='timeline-builder'?'<button class="btn-primary" onclick="exportTimeline()">Export CSV</button>':""}
+            </div>
+          </div>`;
+      });
+    }
+
+    async function runTool(tool){
+      const out=document.getElementById(`${tool}-output`);
+      const actions=document.getElementById(`${tool}-actions`);
+      out.style.display='block';out.innerHTML=`<div class="spinner"></div> Generating...`;actions.style.display='none';
+      try{
+        const res=await fetch('/.netlify/functions/generate-response',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:localStorage.getItem('userEmail'),mode:tool,inputText:`Run tool: ${tool}`,language:getLanguage()})});
+        const data=await res.json();
+        if(res.ok&&data.draft){out.textContent=data.draft;actions.style.display='flex';addToHistory(tool,data.draft);}else out.textContent=data.error||"Failed.";
+      }catch(err){console.error(err);out.textContent="Error generating.";}
+    }
+
     function copyToolOutput(t){const text=document.getElementById(`${t}-output`).innerText;if(!text)return alert("No content.");navigator.clipboard.writeText(text).then(()=>alert("Copied!"));}
     function downloadToolOutput(t){const text=document.getElementById(`${t}-output`).innerText;if(!text)return;const blob=new Blob([text],{type:'text/plain'});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=`${t}-output.txt`;link.click();}
     function clearOutput(t){document.getElementById(`${t}-output`).textContent='';document.getElementById(`${t}-actions`).style.display='none';}
-    function exportDoc(type){alert("Export to "+type+" coming soon (backend hook).");}
-    function saveDraft(){alert("Draft saved to My Documents (backend hook).");}
-    function filterDocuments(){/* search filter logic */} 
-    function uploadDocument(){/* file upload classification logic */} 
-    function generateResponse(){/* AI response agent logic */} 
-    function downloadAllOutputs(){alert("ZIP export coming soon.");}
-    function exportTimeline(){alert("Timeline exported to CSV (backend hook).");}
-    function setLanguage(){alert("Language switched (backend hook).");}
-    function addToHistory(tool,text){const h=document.getElementById('session-history');const div=document.createElement('div');div.innerText=`${tool}: ${text.substring(0,100)}...`;h.prepend(div);if(h.childNodes.length>10)h.removeChild(h.lastChild);}
+    function exportDoc(type){fetch('/.netlify/functions/export-doc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:localStorage.getItem('userEmail'),type})}).then(res=>res.blob()).then(blob=>{const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=`response.${type}`;link.click();});}
+    function saveDraft(){const text=document.getElementById('ai-output').innerText;if(!text)return alert("No draft.");fetch('/.netlify/functions/save-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:localStorage.getItem('userEmail'),content:text})}).then(()=>alert("Draft saved."));}
+    function filterDocuments(){/* search Supabase */} 
+    function uploadDocument(){const file=document.getElementById('doc-upload').files[0];if(!file)return;const formData=new FormData();formData.append('file',file);formData.append('email',localStorage.getItem('userEmail'));fetch('/.netlify/functions/classify-upload',{method:'POST',body:formData}).then(()=>alert("Uploaded."));}
+    function downloadAllOutputs(){fetch('/.netlify/functions/download-all',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:localStorage.getItem('userEmail')})}).then(res=>res.blob()).then(blob=>{const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download="All-Outputs.zip";link.click();});}
+    function exportTimeline(){alert("Timeline export would return CSV/Excel (backend).");}
+
+    // Render on load
+    document.addEventListener('DOMContentLoaded',renderTools);
   </script>
 </body>
 </html>
