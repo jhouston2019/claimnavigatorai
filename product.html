@@ -75,9 +75,16 @@
           <li>✓ 30-day action plan and timeline</li>
           <li>✓ Bonus: Recommended tools guide with exclusive discounts</li>
         </ul>
-        <button onclick="startCheckout()" class="btn-primary checkout-btn" style="display: block; margin: 0 auto; max-width: 400px;">
-          Get My AI-Powered Claim Toolkit
+        <!-- Main Package -->
+        <button onclick="startCheckout('main')" class="btn-primary checkout-btn" style="display: block; margin: 0 auto; max-width: 400px;">
+          Get My AI-Powered Claim Toolkit – $499
         </button>
+
+        <!-- Top-Up -->
+        <button onclick="startCheckout('topup')" class="btn-secondary checkout-btn" style="display: block; margin: 1rem auto 0 auto; max-width: 400px;">
+          Buy Extra AI Response – $29
+        </button>
+
         <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary); font-size: 0.875rem;">
           Digital products are delivered immediately. All sales are final.
         </p>
@@ -109,15 +116,11 @@
       "SUPABASE_ANON_KEY"    // replace with your anon key
     );
 
-    async function startCheckout() {
-      const button = document.querySelector(".checkout-btn");
-      const originalText = button.textContent;
+    async function startCheckout(type) {
+      const buttons = document.querySelectorAll(".checkout-btn");
+      buttons.forEach(btn => { btn.disabled = true; btn.textContent = "Redirecting..."; });
 
       try {
-        // Disable button while loading
-        button.disabled = true;
-        button.textContent = "Redirecting to checkout...";
-
         // Get logged-in user
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
@@ -130,7 +133,7 @@
         const response = await fetch("/.netlify/functions/create-checkout-session", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userEmail: user.email })
+          body: JSON.stringify({ email: user.email, type })
         });
 
         const data = await response.json();
@@ -143,8 +146,7 @@
       } catch (err) {
         console.error("Checkout error:", err);
         alert("Checkout failed. Please try again.");
-        button.disabled = false;
-        button.textContent = originalText;
+        buttons.forEach(btn => { btn.disabled = false; btn.textContent = btn.dataset.originalText || "Buy Now"; });
       }
     }
 
