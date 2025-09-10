@@ -1,10 +1,6 @@
-const Stripe = require('stripe');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
 
-// Initialize Stripe with secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-// Initialize Supabase client
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -25,34 +21,54 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: `Webhook Error: ${err.message}` };
   }
 
-  // Handle checkout.session.completed
   if (stripeEvent.type === 'checkout.session.completed') {
     const session = stripeEvent.data.object;
 
-    // Stripe sends the email in session.customer_details
     const email = session.customer_details?.email;
+    const creditsPurchased = 20; // default package size
+    const product = 'AI Claim Toolkit';
+    const amount = session.amount_total / 100; // Stripe uses cents
+    const currency = session.currency.toUpperCase();
 
-    if (!email) {
-      console.error('No email found in checkout session');
-      return { statusCode: 400, body: 'Missing email' };
+    if (email) {
+      try {
+        // 1. Insert into orders table
+        const { error: orderError } = await supabase
+          .from('orders')
+          .insert([
+            {
+              email,
+              session_id: session.id,
+              product,
+              amount,
+              currency,
+              credits_added: creditsPurchased
+            }
+          ]);
+
+        if (orderError) {
+          console.error('Supabase insert order error:', orderError);
+        }
+
+        // 2. Update entitlements table
+        const { data, error } = await supabase
+          .from('entitlements')
+          .upsert(
+            { email, credits: creditsPurchased },
+            { onConflict: 'email' }
+          )
+          .select();
+
+        if (error) {
+          console.error('Supabase entitlement error:', error);
+        } else {
+          console.log('Entitlement updated:', data);
+        }
+      } catch (err) {
+        console.error('Error handling checkout.session.completed:', err);
+      }
     }
-
-    // Add 20 credits (or whatever you want per purchase)
-    const { data, error } = await supabase
-      .from('entitlements')
-      .upsert(
-        { email, credits: 20 },
-        { onConflict: 'email', ignoreDuplicates: false }
-      )
-      .select();
-
-    if (error) {
-      console.error('Error updating entitlements:', error);
-      return { statusCode: 500, body: 'Database update failed' };
-    }
-
-    console.log('Entitlements updated:', data);
   }
 
-  return { statusCode: 200, body: 'Success' };
+  return { statusCode: 200, body: 'Webhook processed' };
 };
