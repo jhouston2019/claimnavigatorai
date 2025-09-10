@@ -1,7 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
-const { v4: uuidv4 } = require('uuid');
 
-// Initialize Supabase client
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -9,63 +7,52 @@ const supabase = createClient(
 
 exports.handler = async (event) => {
   try {
-    const { fileName, userEmail } = JSON.parse(event.body);
-
-    if (!fileName || !userEmail) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Missing fileName or userEmail' }),
-      };
+    if (event.httpMethod !== 'POST') {
+      return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
     }
 
-    // 1. Check entitlements
+    const { fileName, email } = JSON.parse(event.body);
+
+    if (!fileName || !email) {
+      return { statusCode: 400, body: JSON.stringify({ error: 'Missing fileName or email' }) };
+    }
+
+    // 1. Verify entitlement credits > 0
     const { data: entitlement, error: entitlementError } = await supabase
       .from('entitlements')
       .select('credits')
-      .eq('email', userEmail)
+      .eq('email', email)
       .single();
 
-    if (entitlementError) {
-      console.error('Entitlement check error:', entitlementError);
-      return { statusCode: 500, body: JSON.stringify({ error: 'DB error' }) };
+    if (entitlementError || !entitlement) {
+      console.error('Entitlement lookup failed:', entitlementError);
+      return { statusCode: 403, body: JSON.stringify({ error: 'Access denied. Please purchase first.' }) };
     }
 
-    if (!entitlement || entitlement.credits <= 0) {
-      return {
-        statusCode: 403,
-        body: JSON.stringify({ error: 'Access denied. Please purchase credits first.' }),
-      };
+    if (entitlement.credits <= 0) {
+      return { statusCode: 403, body: JSON.stringify({ error: 'No credits remaining' }) };
     }
 
-    // 2. Decrement credits
-    const { error: updateError } = await supabase
-      .from('entitlements')
-      .update({ credits: entitlement.credits - 1 })
-      .eq('email', userEmail);
+    // 2. Generate signed URL (15 min expiry)
+    const { data: signedUrl, error: urlError } = await supabase.storage
+      .from('documents')  // <-- your Supabase bucket name
+      .createSignedUrl(fileName, 900);
 
-    if (updateError) {
-      console.error('Failed to decrement credits:', updateError);
-      return { statusCode: 500, body: JSON.stringify({ error: 'Failed to update credits' }) };
-    }
-
-    // 3. Generate signed URL (valid for 1 hour)
-    const { data: signedUrlData, error: signedUrlError } = await supabase
-      .storage
-      .from('documents')
-      .createSignedUrl(fileName, 60 * 60);
-
-    if (signedUrlError) {
-      console.error('Signed URL error:', signedUrlError);
-      return { statusCode: 500, body: JSON.stringify({ error: 'Signed URL generation failed' }) };
+    if (urlError || !signedUrl) {
+      console.error('Signed URL error:', urlError);
+      return { statusCode: 500, body: JSON.stringify({ error: 'Failed to generate download link' }) };
     }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ url: signedUrlData.signedUrl }),
+      body: JSON.stringify({ success: true, url: signedUrl.signedUrl })
     };
 
   } catch (err) {
-    console.error('Unhandled error in generate-signed-url:', err);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Server error' }) };
+    console.error('generate-signed-url error:', err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Internal server error' })
+    };
   }
 };
