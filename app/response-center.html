@@ -232,61 +232,121 @@
       font-size: 0.875rem;
     }
     
-    /* Loading States */
-    .loading {
-      display: none;
-      text-align: center;
-      padding: 2rem;
-      color: var(--text-secondary);
-    }
-    
-    .loading.active {
-      display: block;
-    }
-    
-    .spinner {
-      border: 3px solid var(--border);
-      border-top: 3px solid var(--primary);
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
     /* Responsive */
     @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .tabs { flex-wrap: wrap; }
-      .tab { flex: 1; min-width: 120px; }
-      .document-grid { grid-template-columns: 1fr; gap: 1rem; }
-      .document-card { padding: 1rem; }
-      .document-actions { flex-direction: column; gap: 0.75rem; }
-      .document-actions .btn-secondary { flex: none; text-align: center; }
+      .nav-links {
+        display: none;
+      }
+      
+      .tabs {
+        flex-wrap: wrap;
+      }
+      
+      .tab {
+        flex: 1;
+        min-width: 120px;
+      }
+      
+      .document-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .document-card {
+        padding: 1rem;
+      }
+      
+      .document-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      
+      .document-actions .btn-secondary {
+        flex: none;
+        text-align: center;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- (Body stays the same as your version above) -->
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">ClaimNavigatorAI</div>
+        <div class="nav-links">
+          <a href="../index.html">Home</a>
+          <a href="../product.html">Product</a>
+          <a href="response-center.html">Response Center</a>
+          <a href="settings.html">Settings</a>
+          <a href="#" onclick="logout()">Logout</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="page-header">
+        <h1>Response Center</h1>
+        <p>AI-powered tools to strengthen your claim and generate professional responses</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('new-response')">New Response</button>
+        <button class="tab" onclick="switchTab('my-documents')">My Documents</button>
+        <button class="tab" onclick="switchTab('estimate-tools')">Estimate Tools</button>
+        <button class="tab" onclick="switchTab('settings')">Settings</button>
+      </div>
+
+      <!-- My Documents Tab -->
+      <div id="my-documents" class="tab-content active">
+        <h2>Document Library</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Download professional claim documents and templates.</p>
+        
+        <!-- Loading State -->
+        <div id="documents-loading" class="loading">
+          <div class="spinner"></div>
+          <p>Loading documents...</p>
+        </div>
+        
+        <!-- Error State -->
+        <div id="documents-error" style="display: none; text-align: center; padding: 2rem; color: var(--text-secondary);">
+          <p>Unable to load documents at this time. Please try again later.</p>
+          <button class="btn-primary" onclick="loadDocuments()" style="margin-top: 1rem;">Retry</button>
+        </div>
+        
+        <!-- Documents Container -->
+        <div id="documents-container" style="display: none;">
+          <!-- Documents will be dynamically loaded here -->
+        </div>
+      </div>
+    </div>
+  </main>
 
   <script>
     // Tab switching
     function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
       document.getElementById(tabName).classList.add('active');
       event.target.classList.add('active');
     }
 
-    // (AI Response, ROM, Reserve form logic unchanged)
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        window.location.href = '../index.html';
+      }
+    }
 
-    // Load documents dynamically (no categories)
+    // Load documents dynamically
     async function loadDocuments() {
       const loading = document.getElementById('documents-loading');
       const error = document.getElementById('documents-error');
@@ -298,7 +358,9 @@
 
       try {
         const response = await fetch('../assets/data/documents.json');
-        if (!response.ok) throw new Error('Failed to fetch documents');
+        if (!response.ok) {
+          throw new Error('Failed to fetch documents');
+        }
 
         const documents = await response.json();
         renderDocuments(documents);
@@ -312,11 +374,11 @@
       }
     }
 
-    // Render documents in one grid
+    // Render documents in a single grid (no categories)
     function renderDocuments(documents) {
       const container = document.getElementById('documents-container');
-
       let html = '<div class="document-grid">';
+
       Object.values(documents).forEach(doc => {
         html += `
           <div class="document-card">
@@ -329,10 +391,13 @@
           </div>
         `;
       });
-      html += '</div>';
 
+      html += '</div>';
       container.innerHTML = html;
     }
+
+    document.addEventListener('DOMContentLoaded', loadDocuments);
+  </script>
 
     document.addEventListener('DOMContentLoaded', loadDocuments);
   </script>
