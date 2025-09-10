@@ -7,45 +7,33 @@ const supabase = createClient(
 
 exports.handler = async (event) => {
   try {
-    if (event.httpMethod !== 'POST') {
-      return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
-    }
-
     const { fileName, email } = JSON.parse(event.body);
 
-    if (!fileName || !email) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Missing fileName or email' }) };
+    if (!fileName) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Missing fileName' })
+      };
     }
 
-    // 1. Verify entitlement credits > 0
-    const { data: entitlement, error: entitlementError } = await supabase
-      .from('entitlements')
-      .select('credits')
-      .eq('email', email)
-      .single();
+    console.log(`Generating signed URL for file: ${fileName}, user: ${email}`);
 
-    if (entitlementError || !entitlement) {
-      console.error('Entitlement lookup failed:', entitlementError);
-      return { statusCode: 403, body: JSON.stringify({ error: 'Access denied. Please purchase first.' }) };
-    }
+    // Generate a signed URL for the requested document
+    const { data, error } = await supabase.storage
+      .from('claimnavigatorai-docs')
+      .createSignedUrl(fileName, 240); // 240 seconds expiry
 
-    if (entitlement.credits <= 0) {
-      return { statusCode: 403, body: JSON.stringify({ error: 'No credits remaining' }) };
-    }
-
-    // 2. Generate signed URL (15 min expiry)
-    const { data: signedUrl, error: urlError } = await supabase.storage
-      .from('claimnavigatorai-docs')  // <-- your Supabase bucket name
-      .createSignedUrl(fileName, 900);
-
-    if (urlError || !signedUrl) {
-      console.error('Signed URL error:', urlError);
-      return { statusCode: 500, body: JSON.stringify({ error: 'Failed to generate download link' }) };
+    if (error) {
+      console.error('Supabase signed URL error:', error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Failed to generate signed URL' })
+      };
     }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true, url: signedUrl.signedUrl })
+      body: JSON.stringify({ url: data.signedUrl })
     };
 
   } catch (err) {
