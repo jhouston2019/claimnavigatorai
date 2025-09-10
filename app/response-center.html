@@ -4,40 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Response Center - ClaimNavigatorAI</title>
-  <meta name="description" content="AI-powered claim response center with document library, AI response generation, and estimate tools.">
+  <meta name="description" content="AI-powered claim response center with document library, AI response generation, and claim analysis tools.">
 
   <style>
     /* keep all your existing CSS */
-    .response-input { width: 100%; min-height: 120px; padding: 1rem; border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 1rem; font-size: 1rem; }
-    .file-upload { margin: 1rem 0; }
-    .btn-primary { background: var(--primary); color: #fff; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 1rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; }
-    .btn-primary:disabled { background: var(--text-secondary); cursor: not-allowed; }
-    .action-buttons { margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; }
-
-    /* Spinner */
-    .spinner {
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #1e40af;
-      border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* Comparison Grid */
-    .comparison-container { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
-    .comparison-box { border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; background: var(--bg-light); min-height: 300px; overflow-y: auto; white-space: pre-wrap; }
-    .comparison-header { font-weight: 600; margin-bottom: 0.5rem; }
-    @media (max-width: 768px) { .comparison-container { grid-template-columns: 1fr; } }
-
-    /* Analysis Summary */
-    .summary-container { margin-top: 2rem; padding: 1rem; border: 1px solid var(--border); border-radius: 0.5rem; background: #fefce8; }
-    .summary-header { font-weight: 600; margin-bottom: 0.5rem; }
-    .summary-text { white-space: pre-wrap; }
+    .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+    .tool-card { border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.5rem; background: var(--bg-light); box-shadow: var(--shadow-sm); }
+    .tool-title { font-weight: 600; margin-bottom: 0.5rem; }
+    .tool-desc { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem; }
+    .tool-output { white-space: pre-wrap; margin-top: 1rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; background: #fff; display:none; }
   </style>
 </head>
 <body>
@@ -69,68 +44,116 @@
       <div class="tabs">
         <button class="tab active" onclick="switchTab('ai-agent')">AI Response & Analysis Agent</button>
         <button class="tab" onclick="switchTab('my-documents')">My Documents</button>
-        <button class="tab" onclick="switchTab('estimate-tools')">Estimate Tools</button>
+        <button class="tab" onclick="switchTab('analysis-tools')">Claim Analysis Tools</button>
         <button class="tab" onclick="switchTab('settings')">Settings</button>
       </div>
 
       <!-- AI Response & Analysis Agent -->
       <div id="ai-agent" class="tab-content active">
-        <h2>AI Response & Analysis Agent</h2>
-        <p>Paste or upload your insurer correspondence below to generate a professional AI-powered reply, compare side-by-side, and receive a plain-English analysis.</p>
+        <!-- keep all your existing AI Agent content here -->
+      </div>
 
-        <textarea id="input-text" class="response-input" placeholder="Paste your denial letter, insurer email, or claim text here..."></textarea>
+      <!-- My Documents -->
+      <div id="my-documents" class="tab-content">
+        <!-- keep your document library here -->
+      </div>
 
-        <div class="file-upload">
-          <label for="file-input">Or upload a document (PDF, DOCX, TXT):</label>
-          <input type="file" id="file-input" accept=".pdf,.docx,.txt" />
-        </div>
-
-        <button id="generate-btn" class="btn-primary">Generate AI Response</button>
-
-        <!-- Comparison view -->
-        <div id="comparison-container" class="comparison-container" style="display:none;">
-          <div>
-            <div class="comparison-header">📄 Insurer Letter</div>
-            <div id="original-text" class="comparison-box"></div>
+      <!-- Claim Analysis Tools -->
+      <div id="analysis-tools" class="tab-content">
+        <h2>Claim Analysis Tools</h2>
+        <p>Use these AI-powered tools to analyze insurer communications, reserves, settlement positions, and more.</p>
+        
+        <div class="tool-grid">
+          <!-- Tool 1 -->
+          <div class="tool-card">
+            <div class="tool-title">Reserve Inquiry Letter</div>
+            <div class="tool-desc">Generate a professional request for insurer reserve information.</div>
+            <button class="btn-primary" onclick="runTool('reserve-inquiry')">Generate</button>
+            <div id="reserve-inquiry-output" class="tool-output"></div>
           </div>
-          <div>
-            <div class="comparison-header">
-              🤖 AI Draft Response 
-              <span id="view-mode-label">(Redline View)</span>
-            </div>
-            <div id="ai-output" class="comparison-box"></div>
-            <div class="action-buttons">
-              <button class="btn-primary" onclick="toggleView()">Toggle View</button>
-              <button class="btn-primary" onclick="copyResponse()">Copy</button>
-              <button class="btn-primary" onclick="downloadResponse()">Download</button>
-            </div>
-          </div>
-        </div>
 
-        <!-- Analysis summary -->
-        <div id="summary-container" class="summary-container" style="display:none;">
-          <div class="summary-header">📊 Analysis Summary</div>
-          <div id="summary-text" class="summary-text">Generating summary...</div>
-          <div class="action-buttons" style="margin-top:1rem;">
-            <button class="btn-primary" onclick="copySummary()">Copy Summary</button>
-            <button class="btn-primary" onclick="downloadSummary()">Download Summary</button>
+          <!-- Tool 2 -->
+          <div class="tool-card">
+            <div class="tool-title">Coverage Letter Analyzer</div>
+            <div class="tool-desc">Paste an insurer coverage letter and receive a plain-English analysis with rebuttal points.</div>
+            <button class="btn-primary" onclick="runTool('coverage-analyzer')">Generate</button>
+            <div id="coverage-analyzer-output" class="tool-output"></div>
+          </div>
+
+          <!-- Tool 3 -->
+          <div class="tool-card">
+            <div class="tool-title">Supplement Request Draft</div>
+            <div class="tool-desc">Generate a draft letter requesting additional scope items without dollar values.</div>
+            <button class="btn-primary" onclick="runTool('supplement-request')">Generate</button>
+            <div id="supplement-request-output" class="tool-output"></div>
+          </div>
+
+          <!-- Tool 4 -->
+          <div class="tool-card">
+            <div class="tool-title">Proof of Loss Checklist</div>
+            <div class="tool-desc">Get a checklist of required elements for a valid Proof of Loss.</div>
+            <button class="btn-primary" onclick="runTool('pol-checklist')">Generate</button>
+            <div id="pol-checklist-output" class="tool-output"></div>
+          </div>
+
+          <!-- Tool 5 -->
+          <div class="tool-card">
+            <div class="tool-title">Depreciation Release Request</div>
+            <div class="tool-desc">Draft a request to release recoverable depreciation once repairs are complete.</div>
+            <button class="btn-primary" onclick="runTool('depreciation-release')">Generate</button>
+            <div id="depreciation-release-output" class="tool-output"></div>
+          </div>
+
+          <!-- Tool 6 -->
+          <div class="tool-card">
+            <div class="tool-title">ALE Extension Letter</div>
+            <div class="tool-desc">Request an extension for Additional Living Expenses or temporary housing.</div>
+            <button class="btn-primary" onclick="runTool('ale-extension')">Generate</button>
+            <div id="ale-extension-output" class="tool-output"></div>
+          </div>
+
+          <!-- Tool 7 -->
+          <div class="tool-card">
+            <div class="tool-title">Settlement Position Analyzer</div>
+            <div class="tool-desc">Paste an insurer settlement offer and receive a plain-English analysis.</div>
+            <button class="btn-primary" onclick="runTool('settlement-analyzer')">Generate</button>
+            <div id="settlement-analyzer-output" class="tool-output"></div>
+          </div>
+
+          <!-- Tool 8 -->
+          <div class="tool-card">
+            <div class="tool-title">Bad Faith Red Flag Checker</div>
+            <div class="tool-desc">Enter insurer actions/timeline to check for possible bad faith indicators.</div>
+            <button class="btn-primary" onclick="runTool('badfaith-checker')">Generate</button>
+            <div id="badfaith-checker-output" class="tool-output"></div>
+          </div>
+
+          <!-- Tool 9 -->
+          <div class="tool-card">
+            <div class="tool-title">Escalation Drafts</div>
+            <div class="tool-desc">Generate draft complaints or escalation letters to supervisors, DOI, or mediation.</div>
+            <button class="btn-primary" onclick="runTool('escalation-drafts')">Generate</button>
+            <div id="escalation-drafts-output" class="tool-output"></div>
+          </div>
+
+          <!-- Tool 10 -->
+          <div class="tool-card">
+            <div class="tool-title">Claim Timeline Builder</div>
+            <div class="tool-desc">Input claim events and generate a structured timeline to highlight delays and gaps.</div>
+            <button class="btn-primary" onclick="runTool('timeline-builder')">Generate</button>
+            <div id="timeline-builder-output" class="tool-output"></div>
           </div>
         </div>
+      </div>
+
+      <!-- Settings -->
+      <div id="settings" class="tab-content">
+        <!-- keep your settings section -->
       </div>
     </div>
   </main>
 
-  <!-- External libs -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff-match-patch/1.0.5/diff_match_patch.js"></script>
-
   <script>
-    let userCredits = 0;
-    let cleanDraft = ""; 
-    let redlineDraft = "";
-    let showingRedline = true;
-
     function switchTab(tabName) {
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -139,138 +162,14 @@
     }
 
     function logout() {
-      if (confirm("Are you sure you want to logout?")) {
-        localStorage.removeItem('userEmail');
-        window.location.href = '../index.html';
-      }
+      localStorage.removeItem('userEmail');
+      window.location.href = '../index.html';
     }
 
-    async function loadEntitlement() {
-      try {
-        const response = await fetch('/.netlify/functions/verify-entitlement', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: localStorage.getItem('userEmail') })
-        });
-        const data = await response.json();
-        if (response.ok && data.credits !== undefined) {
-          userCredits = data.credits;
-          document.getElementById('credits-count').textContent = userCredits;
-        } else {
-          document.getElementById('credits-count').textContent = '0';
-        }
-      } catch (err) {
-        console.error('Entitlement fetch error:', err);
-        document.getElementById('credits-count').textContent = '0';
-      }
-    }
-
-    // File parsing
-    async function handleFileUpload(file) {
-      if (!file) return "";
-      if (file.type === "text/plain") return await file.text();
-      if (file.type === "application/pdf") {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        let text = "";
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const content = await page.getTextContent();
-          text += content.items.map(item => item.str).join(" ") + "\n";
-        }
-        return text.trim();
-      }
-      if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-        const arrayBuffer = await file.arrayBuffer();
-        const result = await window.mammoth.extractRawText({ arrayBuffer });
-        return result.value.trim();
-      }
-      alert("Unsupported file type. Please upload PDF, DOCX, or TXT.");
-      return "";
-    }
-
-    // Highlight differences
-    function highlightDifferences(original, aiDraft) {
-      const dmp = new diff_match_patch();
-      const diffs = dmp.diff_main(original, aiDraft);
-      dmp.diff_cleanupSemantic(diffs);
-      return diffs.map(([op, text]) => {
-        if (op === 1) return `<ins>${text}</ins>`; 
-        if (op === -1) return `<del>${text}</del>`;
-        return text;
-      }).join('');
-    }
-
-    async function generateResponse() {
-      const btn = document.getElementById('generate-btn');
-      const inputTextArea = document.getElementById('input-text');
-      const fileInput = document.getElementById('file-input');
-
-      let inputText = inputTextArea.value.trim();
-      if (!inputText && fileInput.files.length > 0) {
-        inputText = await handleFileUpload(fileInput.files[0]);
-        inputTextArea.value = inputText;
-      }
-
-      if (!inputText) {
-        alert("Please paste text or upload a document first.");
-        return;
-      }
-      if (userCredits <= 0) {
-        alert("You have no credits left. Please purchase a top-up.");
-        return;
-      }
-
-      btn.disabled = true;
-      btn.innerHTML = `<div class="spinner"></div> Generating...`;
-
-      try {
-        const res = await fetch('/.netlify/functions/generate-response', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: localStorage.getItem('userEmail'), inputText })
-        });
-        const data = await res.json();
-
-        if (res.ok && data.draft) {
-          cleanDraft = data.draft;
-          redlineDraft = highlightDifferences(inputText, data.draft);
-
-          document.getElementById('original-text').textContent = inputText;
-          document.getElementById('ai-output').innerHTML = redlineDraft;
-          document.getElementById('view-mode-label').textContent = "(Redline View)";
-          showingRedline = true;
-
-          document.getElementById('comparison-container').style.display = 'grid';
-          userCredits = data.credits_remaining;
-          document.getElementById('credits-count').textContent = userCredits;
-
-          // Generate plain-English summary
-          generateSummary(inputText, data.draft);
-        } else {
-          alert(data.error || "Failed to generate response.");
-        }
-      } catch (err) {
-        console.error("AI Response error:", err);
-        alert("Error generating response.");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Generate AI Response";
-      }
-    }
-
-    async function generateSummary(original, draft) {
-      const summaryBox = document.getElementById('summary-container');
-      const summaryText = document.getElementById('summary-text');
-      summaryBox.style.display = 'block';
-
-      // Show spinner + message
-      summaryText.innerHTML = `
-        <div style="display:flex;align-items:center;gap:0.5rem;">
-          <div class="spinner"></div>
-          <span>Analyzing differences...</span>
-        </div>
-      `;
+    async function runTool(tool) {
+      const outputBox = document.getElementById(`${tool}-output`);
+      outputBox.style.display = 'block';
+      outputBox.innerHTML = `<div class="spinner"></div> Generating...`;
 
       try {
         const res = await fetch('/.netlify/functions/generate-response', {
@@ -278,84 +177,22 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             email: localStorage.getItem('userEmail'),
-            mode: 'summary',  // ✅ ensures no credits are decremented
-            inputText: `Insurer Letter:\n${original}\n\nAI Draft Response:\n${draft}\n\nPlease summarize the key differences, strengths, and changes in plain English for the policyholder.`
+            mode: tool, // backend interprets mode type
+            inputText: `Please generate output for tool: ${tool}`
           })
         });
         const data = await res.json();
 
         if (res.ok && data.draft) {
-          summaryText.textContent = data.draft;
+          outputBox.textContent = data.draft;
         } else {
-          summaryText.textContent = data.error || "Failed to generate analysis.";
+          outputBox.textContent = data.error || "Failed to generate output.";
         }
       } catch (err) {
-        console.error("Summary error:", err);
-        summaryText.textContent = "Error generating analysis.";
+        console.error(err);
+        outputBox.textContent = "Error generating output.";
       }
     }
-
-    function toggleView() {
-      if (showingRedline) {
-        document.getElementById('ai-output').textContent = cleanDraft;
-        document.getElementById('view-mode-label').textContent = "(Clean View)";
-      } else {
-        document.getElementById('ai-output').innerHTML = redlineDraft;
-        document.getElementById('view-mode-label').textContent = "(Redline View)";
-      }
-      showingRedline = !showingRedline;
-    }
-
-    function copyResponse() {
-      const text = showingRedline 
-        ? document.getElementById('ai-output').innerText 
-        : cleanDraft;
-      navigator.clipboard.writeText(text);
-      alert("Copied to clipboard!");
-    }
-
-    function downloadResponse() {
-      const text = showingRedline 
-        ? document.getElementById('ai-output').innerText 
-        : cleanDraft;
-      const blob = new Blob([text], { type: 'text/plain' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'AI-Response.txt';
-      link.click();
-    }
-
-    function copySummary() {
-      const summary = document.getElementById('summary-text').innerText.trim();
-      if (!summary) {
-        alert("No summary available to copy.");
-        return;
-      }
-      navigator.clipboard.writeText(summary)
-        .then(() => alert("Summary copied to clipboard!"))
-        .catch(err => {
-          console.error("Copy failed:", err);
-          alert("Failed to copy summary.");
-        });
-    }
-
-    function downloadSummary() {
-      const summary = document.getElementById('summary-text').innerText.trim();
-      if (!summary) {
-        alert("No summary available to download.");
-        return;
-      }
-      const blob = new Blob([summary], { type: 'text/plain' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'Analysis-Summary.txt';
-      link.click();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      loadEntitlement();
-      document.getElementById('generate-btn').addEventListener('click', generateResponse);
-    });
   </script>
 </body>
 </html>
