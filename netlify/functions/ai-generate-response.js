@@ -12,7 +12,7 @@ const openai = new OpenAI({
 
 exports.handler = async (event) => {
   try {
-    const { email, inputText, mode } = JSON.parse(event.body);
+    const { email, inputText, mode, language = "en" } = JSON.parse(event.body);
 
     if (!email || !inputText) {
       return {
@@ -42,7 +42,7 @@ exports.handler = async (event) => {
       };
     }
 
-    // 2. Choose prompt based on mode
+    // 2. Choose system + user prompt
     let systemPrompt = "You are a professional insurance claims expert. Write polished, persuasive, and policyholder-focused responses.";
     let userPrompt = inputText;
 
@@ -54,10 +54,10 @@ exports.handler = async (event) => {
         userPrompt = `Analyze the following insurer coverage letter. Provide a plain-English explanation of coverage decisions, exclusions, and policyholder rebuttal points.\n\nLetter:\n${inputText}`;
         break;
       case 'supplement-request':
-        userPrompt = `Draft a Supplement Request Letter asking for additional scope items to be included without dollar amounts.\n\nDetails:\n${inputText}`;
+        userPrompt = `Draft a Supplement Request Letter asking for additional scope items without dollar amounts.\n\nDetails:\n${inputText}`;
         break;
       case 'pol-checklist':
-        userPrompt = `Generate a Proof of Loss Checklist with all required elements based on the following claim context.\n\nContext:\n${inputText}`;
+        userPrompt = `Generate a Proof of Loss Checklist with all required elements based on:\n${inputText}`;
         break;
       case 'depreciation-release':
         userPrompt = `Draft a Recoverable Depreciation Release Letter requesting withheld funds be released after repairs.\n\nClaim Info:\n${inputText}`;
@@ -90,12 +90,16 @@ exports.handler = async (event) => {
         userPrompt = `Draft a Department of Insurance (DOI) Complaint Letter for suspected bad faith insurer conduct.\n\nContext:\n${inputText}`;
         break;
       default:
-        // Default: AI Response Agent
         userPrompt = inputText;
         break;
     }
 
-    // 3. Generate AI response
+    // 3. Apply language override
+    if (language === "es") {
+      userPrompt += "\n\n⚠️ Respond entirely in Spanish with a clear, professional tone.";
+    }
+
+    // 4. Generate AI response
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
@@ -107,7 +111,7 @@ exports.handler = async (event) => {
 
     const aiResponse = completion.choices[0].message.content.trim();
 
-    // 4. Decrement credits
+    // 5. Decrement credits
     const { data: updated, error: updateError } = await supabase
       .from('entitlements')
       .update({ credits: entitlement.credits - 1 })
@@ -119,7 +123,22 @@ exports.handler = async (event) => {
       console.error('Failed to decrement credits:', updateError);
     }
 
-    // 5. Return AI draft
+    // 6. Log credit usage
+    const { error: logError } = await supabase
+      .from('credit_logs')
+      .insert([{
+        email,
+        mode: mode || "ai-agent",
+        language,
+        tokens_used: completion.usage?.total_tokens || null,
+        created_at: new Date().toISOString()
+      }]);
+
+    if (logError) {
+      console.error("Failed to log credit usage:", logError);
+    }
+
+    // 7. Return response
     return {
       statusCode: 200,
       body: JSON.stringify({
