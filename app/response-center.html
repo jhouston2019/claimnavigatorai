@@ -96,95 +96,251 @@
       </div>
     </div>
 
-    <!-- Settings -->
-    <div id="settings" class="tab-content">
-      <h2>Account Settings</h2>
-      <div id="credit-log"></div>
-      <button class="btn-secondary" onclick="downloadAllOutputs()">Download All Outputs (ZIP)</button>
-    </div>
+  <!-- Settings -->
+<div id="settings" class="tab-content">
+  <h2>Account Settings</h2>
+
+  <h3>Credit Usage Log</h3>
+  <table id="credit-log-table" border="1" cellspacing="0" cellpadding="6" style="width:100%; margin-bottom:1rem; border-collapse:collapse; font-size:0.9rem;">
+    <thead style="background:#f3f4f6;">
+      <tr>
+        <th>Date</th>
+        <th>Tool</th>
+        <th>Language</th>
+        <th>Tokens Used</th>
+      </tr>
+    </thead>
+    <tbody id="credit-log-body">
+      <tr><td colspan="4">Loading...</td></tr>
+    </tbody>
+  </table>
+
+  <button class="btn-secondary" onclick="downloadAllOutputs()">Download All Outputs (ZIP)</button>
+</div>
   </main>
 
-  <script>
-    // --- Tab + Session Helpers ---
-    function switchTab(tab){document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(tab).classList.add('active');event.target.classList.add('active');}
-    function logout(){localStorage.removeItem('userEmail');window.location.href='../index.html';}
-    function getLanguage(){return document.getElementById('language-select')?.value || 'en';}
-    function addToHistory(tool,text){const h=document.getElementById('session-history');const div=document.createElement('div');div.innerText=`${tool}: ${text.substring(0,100)}...`;h.prepend(div);if(h.childNodes.length>10)h.removeChild(h.lastChild);}
+ <script>
+// --- Tab + Session Helpers ---
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  event.target.classList.add('active');
+}
 
-    // --- AI Agent ---
-    async function generateResponse(){
-      const input=document.getElementById('input-text').value.trim();
-      if(!input)return alert("Please paste text first.");
-      const out=document.getElementById('ai-output');
-      out.style.display='block';out.innerHTML=`<div class="spinner"></div> Generating...`;
-      try{
-        const res=await fetch('/.netlify/functions/generate-response',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:localStorage.getItem('userEmail'),inputText:input,language:getLanguage()})});
-        const data=await res.json();
-        if(res.ok&&data.draft){out.textContent=data.draft;document.getElementById('confidence-meter').innerText="Confidence: High";addToHistory("ai-agent",data.draft);}else out.textContent=data.error||"Failed.";
-      }catch(e){console.error(e);out.textContent="Error generating.";}
+function logout() {
+  localStorage.removeItem('userEmail');
+  window.location.href = '../index.html';
+}
+
+function getLanguage() {
+  return document.getElementById('language-select')?.value || 'en';
+}
+
+function addToHistory(tool, text) {
+  const h = document.getElementById('session-history');
+  const div = document.createElement('div');
+  div.textContent = `[${tool}] ${text.substring(0, 100)}...`;
+  h.appendChild(div);
+}
+
+// --- AI Agent ---
+async function generateResponse() {
+  const input = document.getElementById('input-text').value.trim();
+  if (!input) return alert("Please paste text first.");
+  const out = document.getElementById('ai-output');
+  out.style.display = 'block';
+  out.innerHTML = `<div class="spinner"></div> Generating...`;
+
+  try {
+    const res = await fetch('/.netlify/functions/generate-response', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: localStorage.getItem('userEmail'),
+        inputText: input,
+        language: getLanguage()
+      })
+    });
+    const data = await res.json();
+    if (res.ok && data.draft) {
+      out.textContent = data.draft;
+      document.getElementById('confidence-meter').innerText = "Confidence: High";
+      addToHistory("ai-agent", data.draft);
+    } else out.textContent = data.error || "Failed.";
+  } catch (e) {
+    console.error(e);
+    out.textContent = "Error generating.";
+  }
+}
+
+// --- Claim Analysis Tools ---
+async function runTool(tool) {
+  const out = document.getElementById(`${tool}-output`);
+  const actions = document.getElementById(`${tool}-actions`);
+  out.style.display = 'block';
+  out.innerHTML = `<div class="spinner"></div> Generating...`;
+  actions.style.display = 'none';
+
+  try {
+    const res = await fetch('/.netlify/functions/generate-response', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: localStorage.getItem('userEmail'),
+        mode: tool,
+        language: getLanguage(),
+        inputText: `Please generate output for tool: ${tool}`
+      })
+    });
+    const data = await res.json();
+
+    if (res.ok && data.draft) {
+      out.textContent = data.draft;
+      actions.style.display = 'flex';
+      addToHistory(tool, data.draft);
+    } else {
+      out.textContent = data.error || "Failed to generate output.";
     }
+  } catch (err) {
+    console.error(err);
+    out.textContent = "Error generating output.";
+  }
+}
 
-    // --- Claim Analysis Tools ---
-    const tools=[
-      {id:'reserve-inquiry',title:'Reserve Inquiry Letter',desc:'Request insurer reserve information.'},
-      {id:'coverage-analyzer',title:'Coverage Letter Analyzer',desc:'Analyze insurer coverage letters.'},
-      {id:'supplement-request',title:'Supplement Request Draft',desc:'Request additional scope items.'},
-      {id:'pol-checklist',title:'Proof of Loss Checklist',desc:'Checklist of Proof of Loss requirements.'},
-      {id:'depreciation-release',title:'Depreciation Release Request',desc:'Request release of recoverable depreciation.'},
-      {id:'ale-extension',title:'ALE Extension Letter',desc:'Request ALE extension.'},
-      {id:'settlement-analyzer',title:'Settlement Analyzer',desc:'Analyze settlement offers.'},
-      {id:'badfaith-checker',title:'Bad Faith Checker',desc:'Check for bad faith indicators.'},
-      {id:'escalation-drafts',title:'Escalation Drafts',desc:'Generate escalation drafts.'},
-      {id:'timeline-builder',title:'Timeline Builder',desc:'Build claim event timelines.'},
-      {id:'policy-analyzer',title:'Policy Language Analyzer',desc:'Explain policy language.'},
-      {id:'demand-letter',title:'Demand Letter Generator',desc:'Draft persuasive demand letters.'},
-      {id:'attorney-prep',title:'Attorney Prep Sheet',desc:'Summarize claim for attorneys.'},
-      {id:'badfaith-complaint',title:'Bad Faith Complaint Letter',desc:'Draft DOI complaints.'},
-    ];
+function copyToolOutput(tool) {
+  const text = document.getElementById(`${tool}-output`).innerText.trim();
+  if (!text) return alert("No content to copy.");
+  navigator.clipboard.writeText(text)
+    .then(() => alert("Copied to clipboard!"))
+    .catch(err => {
+      console.error("Copy failed:", err);
+      alert("Failed to copy.");
+    });
+}
 
-    function renderTools(){
-      const grid=document.getElementById('tool-grid');
-      grid.innerHTML="";
-      tools.forEach(t=>{
-        grid.innerHTML+=`
-          <div class="tool-card">
-            <div class="tool-title">${t.title}</div>
-            <div class="tool-desc">${t.desc}</div>
-            <button class="btn-primary" onclick="runTool('${t.id}')">Generate</button>
-            <div id="${t.id}-output" class="tool-output"></div>
-            <div id="${t.id}-actions" class="action-buttons" style="display:none;">
-              <button class="btn-primary" onclick="copyToolOutput('${t.id}')">Copy</button>
-              <button class="btn-primary" onclick="downloadToolOutput('${t.id}')">Download</button>
-              <button class="btn-primary" onclick="clearOutput('${t.id}')">Clear</button>
-              ${t.id==='timeline-builder'?'<button class="btn-primary" onclick="exportTimeline()">Export CSV</button>':""}
-            </div>
-          </div>`;
+function downloadToolOutput(tool) {
+  const text = document.getElementById(`${tool}-output`).innerText.trim();
+  if (!text) return alert("No content to download.");
+  const blob = new Blob([text], { type: 'text/plain' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `${tool}-output.txt`;
+  link.click();
+}
+
+function clearOutput(tool) {
+  document.getElementById(`${tool}-output`).textContent = '';
+  document.getElementById(`${tool}-actions`).style.display = 'none';
+}
+
+function exportDoc(type) {
+  fetch('/.netlify/functions/export-doc', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: localStorage.getItem('userEmail'),
+      type,
+      content: document.getElementById('ai-output').innerText
+    })
+  })
+  .then(res => res.blob())
+  .then(blob => {
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `AI-Response.${type}`;
+    link.click();
+  })
+  .catch(err => console.error("Export failed:", err));
+}
+
+function saveDraft() {
+  const text = document.getElementById('ai-output').innerText;
+  if (!text) return alert("No draft.");
+  fetch('/.netlify/functions/save-draft', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: localStorage.getItem('userEmail'), content: text })
+  })
+  .then(() => alert("Draft saved."))
+  .catch(err => console.error("Save failed:", err));
+}
+
+function filterDocuments() {
+  /* search in Supabase later */
+}
+
+function uploadDocument() {
+  const file = document.getElementById('doc-upload').files[0];
+  if (!file) return;
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("email", localStorage.getItem('userEmail'));
+  fetch('/.netlify/functions/classify-upload', { method: 'POST', body: formData })
+    .then(res => res.json())
+    .then(() => alert("Document uploaded & classified"))
+    .catch(err => console.error("Upload failed:", err));
+}
+
+function downloadAllOutputs() {
+  fetch('/.netlify/functions/download-all', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: localStorage.getItem('userEmail') })
+  })
+  .then(res => res.blob())
+  .then(blob => {
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'All-Outputs.zip';
+    link.click();
+  })
+  .catch(err => console.error("Download all failed:", err));
+}
+
+function exportTimeline() {
+  alert("Timeline export would return CSV/Excel (backend).");
+}
+
+// --- NEW: Load Credit Log ---
+async function loadCreditLog() {
+  try {
+    const res = await fetch('/.netlify/functions/get-credit-log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: localStorage.getItem('userEmail') })
+    });
+
+    const data = await res.json();
+    const tbody = document.getElementById('credit-log-body');
+    tbody.innerHTML = "";
+
+    if (res.ok && data.success && data.logs.length > 0) {
+      data.logs.forEach(log => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${new Date(log.created_at).toLocaleString()}</td>
+          <td>${log.mode}</td>
+          <td>${log.language}</td>
+          <td>${log.tokens_used ?? "-"}</td>
+        `;
+        tbody.appendChild(row);
       });
+    } else {
+      tbody.innerHTML = `<tr><td colspan="4">No logs found.</td></tr>`;
     }
+  } catch (err) {
+    console.error("Error loading credit log:", err);
+    document.getElementById('credit-log-body').innerHTML =
+      `<tr><td colspan="4">Error loading log.</td></tr>`;
+  }
+}
 
-    async function runTool(tool){
-      const out=document.getElementById(`${tool}-output`);
-      const actions=document.getElementById(`${tool}-actions`);
-      out.style.display='block';out.innerHTML=`<div class="spinner"></div> Generating...`;actions.style.display='none';
-      try{
-        const res=await fetch('/.netlify/functions/generate-response',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:localStorage.getItem('userEmail'),mode:tool,inputText:`Run tool: ${tool}`,language:getLanguage()})});
-        const data=await res.json();
-        if(res.ok&&data.draft){out.textContent=data.draft;actions.style.display='flex';addToHistory(tool,data.draft);}else out.textContent=data.error||"Failed.";
-      }catch(err){console.error(err);out.textContent="Error generating.";}
-    }
-
-    function copyToolOutput(t){const text=document.getElementById(`${t}-output`).innerText;if(!text)return alert("No content.");navigator.clipboard.writeText(text).then(()=>alert("Copied!"));}
-    function downloadToolOutput(t){const text=document.getElementById(`${t}-output`).innerText;if(!text)return;const blob=new Blob([text],{type:'text/plain'});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=`${t}-output.txt`;link.click();}
-    function clearOutput(t){document.getElementById(`${t}-output`).textContent='';document.getElementById(`${t}-actions`).style.display='none';}
-    function exportDoc(type){fetch('/.netlify/functions/export-doc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:localStorage.getItem('userEmail'),type})}).then(res=>res.blob()).then(blob=>{const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=`response.${type}`;link.click();});}
-    function saveDraft(){const text=document.getElementById('ai-output').innerText;if(!text)return alert("No draft.");fetch('/.netlify/functions/save-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:localStorage.getItem('userEmail'),content:text})}).then(()=>alert("Draft saved."));}
-    function filterDocuments(){/* search Supabase */} 
-    function uploadDocument(){const file=document.getElementById('doc-upload').files[0];if(!file)return;const formData=new FormData();formData.append('file',file);formData.append('email',localStorage.getItem('userEmail'));fetch('/.netlify/functions/classify-upload',{method:'POST',body:formData}).then(()=>alert("Uploaded."));}
-    function downloadAllOutputs(){fetch('/.netlify/functions/download-all',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:localStorage.getItem('userEmail')})}).then(res=>res.blob()).then(blob=>{const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download="All-Outputs.zip";link.click();});}
-    function exportTimeline(){alert("Timeline export would return CSV/Excel (backend).");}
-
-    // Render on load
-    document.addEventListener('DOMContentLoaded',renderTools);
-  </script>
+// Render on load
+document.addEventListener('DOMContentLoaded', () => {
+  renderTools();
+  loadCreditLog();
+});
+</script>
 </body>
 </html>
