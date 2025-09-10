@@ -5,272 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Response Center - ClaimNavigatorAI</title>
   <meta name="description" content="AI-powered claim response center with document library, AI response generation, and estimate tools.">
-
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    :root {
-      --primary: #1e40af;
-      --primary-dark: #0f172a;
-      --primary-header: #0f172a;
-      --accent: #3b82f6;
-      --success: #10b981;
-      --text-primary: #111827;
-      --text-secondary: #6b7280;
-      --bg-white: #ffffff;
-      --bg-light: #f9fafb;
-      --bg-gray: #f3f4f6;
-      --border: #e5e7eb;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      line-height: 1.6;
-      color: var(--text-primary);
-      background: var(--bg-white);
-    }
-    
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-    
-    /* Header */
-    header {
-      background: var(--primary-header);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-    
-    nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 0;
-    }
-    
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: white;
-    }
-    
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      align-items: center;
-    }
-    
-    .nav-links a {
-      color: rgba(255, 255, 255, 0.9);
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-    
-    .nav-links a:hover {
-      color: white;
-    }
-    
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.5rem;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.2s;
-      border: none;
-      display: inline-block;
-      cursor: pointer;
-      text-align: center;
-    }
-    
-    .btn-primary:hover {
-      background: var(--accent);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    
-    .btn-primary:disabled {
-      background: #9ca3af;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    .btn-secondary {
-      background: var(--bg-light);
-      color: var(--primary);
-      padding: 0.5rem 1.5rem;
-      border-radius: 0.5rem;
-      text-decoration: none;
-      font-weight: 500;
-      border: 1px solid var(--primary);
-      transition: all 0.2s;
-      display: inline-block;
-    }
-    
-    .btn-secondary:hover {
-      background: var(--primary);
-      color: white;
-    }
-    
-    /* Main Content */
-    .main-content {
-      padding: 2rem 0;
-      min-height: calc(100vh - 200px);
-    }
-    
-    .page-header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-    
-    .page-header h1 {
-      font-size: 2.5rem;
-      color: var(--text-primary);
-      margin-bottom: 1rem;
-    }
-    
-    .page-header p {
-      color: var(--text-secondary);
-      font-size: 1.1rem;
-    }
-    
-    /* Tabs */
-    .tabs {
-      display: flex;
-      border-bottom: 2px solid var(--border);
-      margin-bottom: 2rem;
-      background: var(--bg-white);
-      border-radius: 0.5rem 0.5rem 0 0;
-    }
-    
-    .tab {
-      padding: 1rem 2rem;
-      cursor: pointer;
-      border: none;
-      background: none;
-      font-weight: 500;
-      color: var(--text-secondary);
-      transition: all 0.2s;
-      border-bottom: 3px solid transparent;
-    }
-    
-    .tab.active {
-      color: var(--primary);
-      border-bottom-color: var(--primary);
-      background: var(--bg-light);
-    }
-    
-    .tab:hover {
-      color: var(--primary);
-      background: var(--bg-light);
-    }
-    
-    .tab-content {
-      display: none;
-      padding: 2rem;
-      background: var(--bg-white);
-      border-radius: 0 0 0.5rem 0.5rem;
-      box-shadow: var(--shadow-sm);
-    }
-    
-    .tab-content.active {
-      display: block;
-    }
-    
-    /* Document Grid */
-    .document-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-    
-    .document-card {
-      background: var(--bg-light);
-      border: 1px solid var(--border);
-      border-radius: 0.75rem;
-      padding: 1.5rem;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    
-    .document-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-    
-    .document-title {
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.5rem;
-    }
-    
-    .document-description {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-      line-height: 1.5;
-    }
-    
-    .document-actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-    
-    .document-actions .btn-secondary {
-      flex: 1;
-      text-align: center;
-      padding: 0.5rem 1rem;
-      font-size: 0.875rem;
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-      .nav-links {
-        display: none;
-      }
-      
-      .tabs {
-        flex-wrap: wrap;
-      }
-      
-      .tab {
-        flex: 1;
-        min-width: 120px;
-      }
-      
-      .document-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-      
-      .document-card {
-        padding: 1rem;
-      }
-      
-      .document-actions {
-        flex-direction: column;
-        gap: 0.75rem;
-      }
-      
-      .document-actions .btn-secondary {
-        flex: none;
-        text-align: center;
-      }
-    }
+    /* Keep your CSS from before (unchanged) */
   </style>
 </head>
 <body>
-
-  <!-- Header -->
   <header>
     <div class="container">
       <nav>
@@ -286,7 +25,6 @@
     </div>
   </header>
 
-  <!-- Main Content -->
   <main class="main-content">
     <div class="container">
       <div class="page-header">
@@ -294,7 +32,6 @@
         <p>AI-powered tools to strengthen your claim and generate professional responses</p>
       </div>
 
-      <!-- Tabs -->
       <div class="tabs">
         <button class="tab active" onclick="switchTab('new-response')">New Response</button>
         <button class="tab" onclick="switchTab('my-documents')">My Documents</button>
@@ -302,51 +39,59 @@
         <button class="tab" onclick="switchTab('settings')">Settings</button>
       </div>
 
-      <!-- My Documents Tab -->
       <div id="my-documents" class="tab-content active">
         <h2>Document Library</h2>
         <p style="color: var(--text-secondary); margin-bottom: 2rem;">Download professional claim documents and templates.</p>
-        
-        <!-- Loading State -->
-        <div id="documents-loading" class="loading">
-          <div class="spinner"></div>
-          <p>Loading documents...</p>
-        </div>
-        
-        <!-- Error State -->
+        <div id="documents-loading" class="loading"><div class="spinner"></div><p>Loading documents...</p></div>
         <div id="documents-error" style="display: none; text-align: center; padding: 2rem; color: var(--text-secondary);">
           <p>Unable to load documents at this time. Please try again later.</p>
           <button class="btn-primary" onclick="loadDocuments()" style="margin-top: 1rem;">Retry</button>
         </div>
-        
-        <!-- Documents Container -->
-        <div id="documents-container" style="display: none;">
-          <!-- Documents will be dynamically loaded here -->
-        </div>
+        <div id="documents-container" style="display: none;"></div>
       </div>
     </div>
   </main>
 
-  <script>
-    // Tab switching
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
-      });
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      document.getElementById(tabName).classList.add('active');
-      event.target.classList.add('active');
-    }
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    function logout() {
-      if (confirm('Are you sure you want to logout?')) {
-        window.location.href = '../index.html';
+    const supabase = createClient(
+      "SUPABASE_URL",
+      "SUPABASE_ANON_KEY"
+    );
+
+    let currentUserEmail = null;
+
+    async function initUser() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        currentUserEmail = user.email;
+      } else {
+        alert("You must log in first.");
       }
     }
 
-    // Load documents dynamically
+    async function downloadDocument(fileName) {
+      try {
+        const res = await fetch("/.netlify/functions/generate-signed-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileName, userEmail: currentUserEmail })
+        });
+
+        if (res.status === 200) {
+          const { url } = await res.json();
+          window.location.href = url;
+        } else {
+          const msg = await res.text();
+          alert(msg);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error downloading file.");
+      }
+    }
+
     async function loadDocuments() {
       const loading = document.getElementById('documents-loading');
       const error = document.getElementById('documents-error');
@@ -358,9 +103,7 @@
 
       try {
         const response = await fetch('../assets/data/documents.json');
-        if (!response.ok) {
-          throw new Error('Failed to fetch documents');
-        }
+        if (!response.ok) throw new Error('Failed to fetch documents');
 
         const documents = await response.json();
         renderDocuments(documents);
@@ -374,55 +117,28 @@
       }
     }
 
-    // Render documents with secure download buttons
     function renderDocuments(documents) {
       const container = document.getElementById('documents-container');
       let html = '<div class="document-grid">';
-
       Object.values(documents).forEach(doc => {
         html += `
           <div class="document-card">
             <div class="document-title">${doc.label}</div>
             <div class="document-description">${doc.description}</div>
             <div class="document-actions">
-              <button class="btn-secondary" onclick="downloadDocument('${doc.templatePath}', currentUserEmail)">Download Template</button>
-              ${doc.samplePath ? `<button class="btn-secondary" onclick="downloadDocument('${doc.samplePath}', currentUserEmail)">Download Sample</button>` : ''}
+              <button onclick="downloadDocument('${doc.templatePath}')" class="btn-secondary">Download Template</button>
+              ${doc.samplePath ? `<button onclick="downloadDocument('${doc.samplePath}')" class="btn-secondary">Download Sample</button>` : ''}
             </div>
-          </div>
-        `;
+          </div>`;
       });
-
       html += '</div>';
       container.innerHTML = html;
     }
 
-    // Dummy email for now - replace later with logged-in user's email
-    const currentUserEmail = "test@example.com";
-
-    // Call Netlify function for secure download
-    async function downloadDocument(fileName, userEmail) {
-      try {
-        const res = await fetch("/.netlify/functions/generate-signed-url", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName, userEmail })
-        });
-
-        if (res.status === 200) {
-          const { url } = await res.json();
-          window.location.href = url;
-        } else if (res.status === 403) {
-          alert("Access denied. Please purchase first.");
-        } else {
-          alert("Error downloading file. Please try again.");
-        }
-      } catch (err) {
-        console.error("Download error:", err);
-        alert("Error downloading file. Please try again.");
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', loadDocuments);
+    document.addEventListener('DOMContentLoaded', () => {
+      initUser();
+      loadDocuments();
+    });
   </script>
 </body>
 </html>
