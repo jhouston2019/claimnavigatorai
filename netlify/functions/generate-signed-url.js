@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
+const Stripe = require('stripe');
 
 exports.handler = async (event, context) => {
   // Only allow POST requests
@@ -62,17 +63,57 @@ exports.handler = async (event, context) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // For now, skip Stripe check and set entitled = true
-    const entitled = true;
+    // Initialize Stripe
+    const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-    if (!entitled) {
+    // Check Stripe entitlement
+    try {
+      // Look up customer by email
+      const customers = await stripe.customers.list({
+        email: userEmail,
+        limit: 1
+      });
+
+      if (customers.data.length === 0) {
+        return {
+          statusCode: 403,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          },
+          body: JSON.stringify({ error: 'Access denied. No Stripe customer found.' })
+        };
+      }
+
+      const customer = customers.data[0];
+
+      // Check for active subscriptions
+      const subscriptions = await stripe.subscriptions.list({
+        customer: customer.id,
+        status: 'active',
+        limit: 1
+      });
+
+      if (subscriptions.data.length === 0) {
+        return {
+          statusCode: 403,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          },
+          body: JSON.stringify({ error: 'Access denied. No active subscription.' })
+        };
+      }
+
+    } catch (stripeError) {
+      console.error('Stripe entitlement check error:', stripeError);
       return {
-        statusCode: 403,
+        statusCode: 500,
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*'
         },
-        body: JSON.stringify({ error: 'Access denied' })
+        body: JSON.stringify({ error: 'Internal server error' })
       };
     }
 
