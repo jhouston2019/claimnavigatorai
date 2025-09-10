@@ -12,36 +12,32 @@ exports.handler = async (event) => {
     if (!email) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: 'Missing email' })
+        body: JSON.stringify({ error: "Missing email" }),
       };
     }
 
     const { data: entitlement, error } = await supabase
-      .from('entitlements')
-      .select('credits')
-      .eq('email', email)
+      .from("entitlements")
+      .select("credits")
+      .eq("email", email)
       .single();
 
     if (error || !entitlement) {
       return {
         statusCode: 403,
-        body: JSON.stringify({ error: 'No entitlement found' })
+        body: JSON.stringify({ error: "No entitlement found for this user" }),
       };
     }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        success: true,
-        credits: entitlement.credits
-      })
+      body: JSON.stringify({ credits: entitlement.credits }),
     };
-
   } catch (err) {
-    console.error('verify-entitlement error:', err);
+    console.error("verify-entitlement error:", err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error' })
+      body: JSON.stringify({ error: "Internal server error" }),
     };
   }
 };
