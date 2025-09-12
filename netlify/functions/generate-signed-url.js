@@ -1,4 +1,4 @@
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require("@supabase/supabase-js");
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -9,38 +9,36 @@ exports.handler = async (event) => {
   try {
     const { fileName, email } = JSON.parse(event.body);
 
-    if (!fileName) {
+    // entitlement check (optional, depending on your verify-entitlement logic)
+    const { data: entitlement, error: entitlementError } = await supabase
+      .from("entitlements")
+      .select("credits")
+      .eq("email", email)
+      .single();
+
+    if (entitlementError || !entitlement || entitlement.credits <= 0) {
       return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Missing fileName' })
+        statusCode: 403,
+        body: JSON.stringify({ error: "No valid entitlement" })
       };
     }
 
-    console.log(`Generating signed URL for file: ${fileName}, user: ${email}`);
-
-    // Generate a signed URL for the requested document
+    // generate signed URL
     const { data, error } = await supabase.storage
-      .from('claimnavigatorai-docs')
-      .createSignedUrl(fileName, 240); // 240 seconds expiry
+      .from("claimnavigatorai-docs")
+      .createSignedUrl(fileName, 300); // 5 minutes
 
-    if (error) {
-      console.error('Supabase signed URL error:', error);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'Failed to generate signed URL' })
-      };
-    }
+    if (error) throw error;
 
     return {
       statusCode: 200,
       body: JSON.stringify({ url: data.signedUrl })
     };
-
   } catch (err) {
-    console.error('generate-signed-url error:', err);
+    console.error("Signed URL error:", err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error' })
+      body: JSON.stringify({ error: "Server error" })
     };
   }
 };
