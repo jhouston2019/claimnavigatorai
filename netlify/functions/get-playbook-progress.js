@@ -4,17 +4,12 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SER
 exports.handler = async (event) => {
   try {
     const { email } = JSON.parse(event.body);
+    if (!email) return { statusCode: 400, body: JSON.stringify({ error: "Missing email" }) };
 
-    if (!email) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Missing email" }) };
-    }
-
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("playbook_progress")
-      .select("phase, tasks")
+      .select("phase,tasks")
       .eq("email", email);
-
-    if (error) throw error;
 
     return { statusCode: 200, body: JSON.stringify({ success: true, progress: data }) };
   } catch (err) {
