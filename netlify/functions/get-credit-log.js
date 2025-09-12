@@ -6,18 +6,15 @@ exports.handler = async (event) => {
     const { email } = JSON.parse(event.body);
     if (!email) return { statusCode: 400, body: JSON.stringify({ error: "Missing email" }) };
 
-    const { data, error } = await supabase
-      .from('credit_logs')
-      .select('*')
-      .eq('email', email)
-      .order('created_at', { ascending: false })
-      .limit(20);
-
-    if (error) throw error;
+    const { data } = await supabase
+      .from("credit_logs")
+      .select("*")
+      .eq("email", email)
+      .order("created_at", { ascending: false });
 
     return { statusCode: 200, body: JSON.stringify({ success: true, logs: data }) };
   } catch (err) {
     console.error("get-credit-log error:", err);
-    return { statusCode: 500, body: JSON.stringify({ error: "Internal server error" }) };
+    return { statusCode: 500, body: JSON.stringify({ error: "Server error" }) };
   }
 };
