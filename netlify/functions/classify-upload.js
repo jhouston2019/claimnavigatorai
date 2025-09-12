@@ -1,12 +1,10 @@
-const multiparty = require("multiparty");
 const { createClient } = require('@supabase/supabase-js');
+const multiparty = require("multiparty");
+const fs = require("fs");
+
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
 exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method not allowed" };
-  }
-
   try {
     const form = new multiparty.Form();
     const data = await new Promise((resolve, reject) => {
@@ -17,20 +15,26 @@ exports.handler = async (event) => {
     });
 
     const email = data.fields.email[0];
-    if (!email) return { statusCode: 400, body: JSON.stringify({ error: "Missing email" }) };
+    const file = data.files.file[0];
 
-    // For MVP, just save filename as placeholder
-    const fileName = data.files.file[0].originalFilename;
-
-    const { error } = await supabase
-      .from('documents')
-      .insert([{ email, content: `Uploaded document: ${fileName}`, created_at: new Date().toISOString() }]);
+    const { data: upload, error } = await supabase.storage
+      .from("documents")
+      .upload(`${email}/${file.originalFilename}`, fs.createReadStream(file.path), {
+        contentType: file.headers["content-type"]
+      });
 
     if (error) throw error;
 
-    return { statusCode: 200, body: JSON.stringify({ success: true, message: "File classified & saved." }) };
+    await supabase.from("documents").insert({
+      email,
+      file_name: file.originalFilename,
+      path: upload.path,
+      category: "uploaded"
+    });
+
+    return { statusCode: 200, body: JSON.stringify({ success: true }) };
   } catch (err) {
     console.error("classify-upload error:", err);
-    return { statusCode: 500, body: JSON.stringify({ error: "Internal server error" }) };
+    return { statusCode: 500, body: JSON.stringify({ error: "Server error" }) };
   }
 };
