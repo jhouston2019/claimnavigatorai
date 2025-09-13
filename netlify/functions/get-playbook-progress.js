@@ -7,10 +7,6 @@ const supabase = createClient(
 
 exports.handler = async (event) => {
   try {
-    if (event.httpMethod !== "POST") {
-      return { statusCode: 405, body: "Method Not Allowed" };
-    }
-
     const { email } = JSON.parse(event.body);
 
     if (!email) {
@@ -18,18 +14,18 @@ exports.handler = async (event) => {
     }
 
     const { data, error } = await supabase
-      .from("playbook_progress")
-      .select("phase, tasks")
-      .eq("email", email);
+      .from('playbook_progress')
+      .select('phase, tasks')
+      .eq('email', email);
 
     if (error) throw error;
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true, progress: data }),
+      body: JSON.stringify({ success: true, progress: data })
     };
   } catch (err) {
-    console.error("Get playbook error:", err);
-    return { statusCode: 500, body: JSON.stringify({ error: "Failed to fetch progress" }) };
+    console.error("Get playbook progress error:", err.message);
+    return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
 };
