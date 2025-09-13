@@ -1,5 +1,11 @@
 const Stripe = require("stripe");
+const { createClient } = require("@supabase/supabase-js");
+
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -10,17 +16,18 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { userEmail } = JSON.parse(event.body);
+    // Expecting { userEmail, affiliateID }
+    const { userEmail, affiliateID } = JSON.parse(event.body);
 
     if (!userEmail) {
       return { statusCode: 400, body: "Missing user email" };
     }
 
-    // Stripe Checkout Session
+    // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
-      customer_email: userEmail, // ties checkout to logged-in email
+      customer_email: userEmail,
       line_items: [
         {
           price_data: {
@@ -35,7 +42,26 @@ exports.handler = async (event) => {
       ],
       success_url: `${process.env.URL}/app/receipt.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.URL}/product.html?canceled=true`,
+      metadata: {
+        affiliateID: affiliateID || null,
+        product: "ClaimNavigatorAI – 20 Document Credits",
+      },
     });
+
+    // Log transaction in Supabase (affiliate commission pending)
+    const { error } = await supabase.from("transactions").insert([
+      {
+        user_email: userEmail,
+        product: "ClaimNavigatorAI – 20 Document Credits",
+        amount: 499, // in dollars (not cents)
+        affiliateid: affiliateID || null,
+        payout_status: "pending",
+      },
+    ]);
+
+    if (error) {
+      console.error("Supabase transaction log error:", error);
+    }
 
     return {
       statusCode: 200,
