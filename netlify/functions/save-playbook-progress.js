@@ -7,29 +7,29 @@ const supabase = createClient(
 
 exports.handler = async (event) => {
   try {
-    if (event.httpMethod !== "POST") {
-      return { statusCode: 405, body: "Method Not Allowed" };
-    }
-
     const { email, phase, tasks } = JSON.parse(event.body);
 
     if (!email || !phase || !tasks) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Missing fields" }) };
+      return { statusCode: 400, body: JSON.stringify({ error: "Missing email, phase, or tasks" }) };
     }
 
-    // Upsert (insert or update if exists)
-    const { error } = await supabase
-      .from("playbook_progress")
+    // Upsert playbook progress (insert if not exists, update if exists)
+    const { data, error } = await supabase
+      .from('playbook_progress')
       .upsert(
-        { email, phase, tasks, updated_at: new Date() },
-        { onConflict: ["email", "phase"] }
-      );
+        { email, phase, tasks },
+        { onConflict: ['email','phase'] }
+      )
+      .select();
 
     if (error) throw error;
 
-    return { statusCode: 200, body: JSON.stringify({ success: true }) };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ success: true, data })
+    };
   } catch (err) {
-    console.error("Save playbook error:", err);
-    return { statusCode: 500, body: JSON.stringify({ error: "Failed to save progress" }) };
+    console.error("Save playbook progress error:", err.message);
+    return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
 };
