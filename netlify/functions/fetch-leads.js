@@ -11,23 +11,21 @@ exports.handler = async (event) => {
 
     // Verify partner
     const { data: partner, error: partnerError } = await supabase
-      .from('partners')
-      .select('*')
-      .eq('email', partnerEmail)
+      .from("partners")
+      .select("*")
+      .eq("email", partnerEmail)
       .single();
 
     if (partnerError || !partner) {
-      return { statusCode: 403, body: JSON.stringify({ error: 'Unauthorized partner' }) };
+      return { statusCode: 403, body: JSON.stringify({ error: "Unauthorized partner" }) };
     }
 
-    // Build query
-    let query = supabase.from('leads').select('*').eq('status', 'new');
+    let query = supabase.from("leads").select("*").eq("status", "new");
 
-    if (filters?.claim_type) query = query.eq('claim_type', filters.claim_type);
-    if (filters?.location) query = query.eq('location', filters.location);
+    if (filters?.claim_type) query = query.eq("claim_type", filters.claim_type);
+    if (filters?.location) query = query.eq("location", filters.location);
 
     const { data: leads, error } = await query;
-
     if (error) throw error;
 
     return { statusCode: 200, body: JSON.stringify({ leads }) };
