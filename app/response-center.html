@@ -457,13 +457,16 @@
   // --- My Documents ---
   const lang = localStorage.getItem("lang") || "en";
    
-  async function loadDocuments() {
-    try {
-      const res = await fetch('/.netlify/functions/get-documents', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: localStorage.getItem('userEmail') })
-      });
+ async function loadDocuments() {
+  try {
+    const res = await fetch(`/assets/docs/${lang}/documents.json`);
+    const docs = await res.json();
+
+    renderDocuments(docs); // whatever you use to render them
+  } catch (err) {
+    console.error("Failed to load documents:", err);
+  }
+}
       const data = await res.json();
       const container = document.getElementById('documents-container');
       container.innerHTML = "";
