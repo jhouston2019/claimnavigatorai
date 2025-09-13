@@ -103,10 +103,169 @@
       <div class="tool-grid" id="tool-grid"></div>
     </div>
 
-    <!-- Claim Playbook -->
-    <div id="claim-playbook" class="tab-content">
-      <h2>Claim Playbook</h2>
-      <p>Step-by-step roadmap for managing your insurance claim. Expand each phase for checklists, decision points, and the right documents.</p>
+  <!-- Claim Playbook -->
+<div id="claim-playbook" class="tab-content">
+  <h2>Claim Playbook</h2>
+  <p>Step-by-step roadmap for managing your insurance claim. Expand each phase for checklists, decision points, and the right documents.</p>
+
+  <div class="accordion">
+    <!-- Phase 1 -->
+    <div class="accordion-item">
+      <button class="accordion-header">Phase 1 – Immediate Response (0–24 Hours)</button>
+      <div class="accordion-body" id="phase-1">
+        <ul>
+          <li><input type="checkbox" data-phase="phase-1" data-task-index="0" onchange="handleTaskChange(this)"> Ensure safety: evacuate if needed, check for injuries.</li>
+          <li><input type="checkbox" data-phase="phase-1" data-task-index="1" onchange="handleTaskChange(this)"> Call 911 for fire, flood, or medical emergencies.</li>
+          <li><input type="checkbox" data-phase="phase-1" data-task-index="2" onchange="handleTaskChange(this)"> Shut off utilities (gas, electric, water).</li>
+          <li><input type="checkbox" data-phase="phase-1" data-task-index="3" onchange="handleTaskChange(this)"> Document damage before moving anything.</li>
+          <li><input type="checkbox" data-phase="phase-1" data-task-index="4" onchange="handleTaskChange(this)"> Secure property: board up, tarp, lock doors.</li>
+        </ul>
+        <div class="action-buttons">
+          <button class="btn-primary" onclick="downloadDocument('core/fnol-form.docx')">Download DOCX</button>
+          <button class="btn-secondary" onclick="downloadDocument('core/fnol-form.pdf')">Download PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="accordion-item">
+      <button class="accordion-header">Phase 2 – Documentation (Day 1–7)</button>
+      <div class="accordion-body" id="phase-2">
+        <ul>
+          <li><input type="checkbox" data-phase="phase-2" data-task-index="0" onchange="handleTaskChange(this)"> Take comprehensive photos & video walkthrough.</li>
+          <li><input type="checkbox" data-phase="phase-2" data-task-index="1" onchange="handleTaskChange(this)"> Create written damage inventory (room by room).</li>
+          <li><input type="checkbox" data-phase="phase-2" data-task-index="2" onchange="handleTaskChange(this)"> Save receipts for emergency expenses.</li>
+          <li><input type="checkbox" data-phase="phase-2" data-task-index="3" onchange="handleTaskChange(this)"> Upload evidence into “My Documents.”</li>
+        </ul>
+        <div class="action-buttons">
+          <button class="btn-primary" onclick="downloadDocument('core/proof-of-loss.docx')">Download DOCX</button>
+          <button class="btn-secondary" onclick="downloadDocument('core/proof-of-loss.pdf')">Download PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="accordion-item">
+      <button class="accordion-header">Phase 3 – Policy & Coverage Review</button>
+      <div class="accordion-body" id="phase-3">
+        <ul>
+          <li><input type="checkbox" data-phase="phase-3" data-task-index="0" onchange="handleTaskChange(this)"> Review Declarations page (limits, deductibles, endorsements).</li>
+          <li><input type="checkbox" data-phase="phase-3" data-task-index="1" onchange="handleTaskChange(this)"> Identify exclusions insurer may cite.</li>
+          <li><input type="checkbox" data-phase="phase-3" data-task-index="2" onchange="handleTaskChange(this)"> Calendar critical deadlines (Proof of Loss, Appraisal, Suit Limitations).</li>
+        </ul>
+        <div class="action-buttons">
+          <button class="btn-secondary" onclick="downloadDocument('policy/coverage-checklist.pdf')">Download Checklist</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="accordion-item">
+      <button class="accordion-header">Phase 4 – Adjuster Interaction</button>
+      <div class="accordion-body" id="phase-4">
+        <ul>
+          <li><input type="checkbox" data-phase="phase-4" data-task-index="0" onchange="handleTaskChange(this)"> Walk adjuster through ALL damage (don’t let them skip).</li>
+          <li><input type="checkbox" data-phase="phase-4" data-task-index="1" onchange="handleTaskChange(this)"> Request copy of their estimate in writing.</li>
+          <li><input type="checkbox" data-phase="phase-4" data-task-index="2" onchange="handleTaskChange(this)"> Record all communications with adjuster.</li>
+          <li><input type="checkbox" data-phase="phase-4" data-task-index="3" onchange="handleTaskChange(this)"> Store all correspondence in Claim Navigator.</li>
+        </ul>
+        <div class="action-buttons">
+          <button class="btn-secondary" onclick="downloadDocument('adjuster/meeting-checklist.pdf')">Download Checklist</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 5 -->
+    <div class="accordion-item">
+      <button class="accordion-header">Phase 5 – Estimates & Reserves</button>
+      <div class="accordion-body" id="phase-5">
+        <ul>
+          <li><input type="checkbox" data-phase="phase-5" data-task-index="0" onchange="handleTaskChange(this)"> Compare insurer estimate vs contractor/public adjuster estimate.</li>
+          <li><input type="checkbox" data-phase="phase-5" data-task-index="1" onchange="handleTaskChange(this)"> If underpaid → send Supplement Request Letter.</li>
+          <li><input type="checkbox" data-phase="phase-5" data-task-index="2" onchange="handleTaskChange(this)"> Ask insurer: “What reserve has been set on my claim?”</li>
+        </ul>
+        <div class="action-buttons">
+          <button class="btn-primary" onclick="downloadDocument('correspondence/supplement-request.docx')">Download DOCX</button>
+          <button class="btn-secondary" onclick="downloadDocument('correspondence/supplement-request.pdf')">Download PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 6 -->
+    <div class="accordion-item">
+      <button class="accordion-header">Phase 6 – Negotiation & Escalation</button>
+      <div class="accordion-body" id="phase-6">
+        <ul>
+          <li><input type="checkbox" data-phase="phase-6" data-task-index="0" onchange="handleTaskChange(this)"> If denied → send Denial Response Letter.</li>
+          <li><input type="checkbox" data-phase="phase-6" data-task-index="1" onchange="handleTaskChange(this)"> Escalation Path: Supplement → Appraisal → DOI Complaint → Intent to Litigate → Attorney.</li>
+        </ul>
+        <div class="action-buttons">
+          <button class="btn-primary" onclick="downloadDocument('correspondence/denial-response.docx')">Denial DOCX</button>
+          <button class="btn-secondary" onclick="downloadDocument('correspondence/denial-response.pdf')">Denial PDF</button>
+          <button class="btn-primary" onclick="downloadDocument('escalation/doi-complaint.docx')">DOI DOCX</button>
+          <button class="btn-secondary" onclick="downloadDocument('escalation/doi-complaint.pdf')">DOI PDF</button>
+          <button class="btn-primary" onclick="downloadDocument('escalation/intent-to-litigate.docx')">Intent DOCX</button>
+          <button class="btn-secondary" onclick="downloadDocument('escalation/intent-to-litigate.pdf')">Intent PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 7 -->
+    <div class="accordion-item">
+      <button class="accordion-header">Phase 7 – Settlement & Payment</button>
+      <div class="accordion-body" id="phase-7">
+        <ul>
+          <li><input type="checkbox" data-phase="phase-7" data-task-index="0" onchange="handleTaskChange(this)"> Review insurer’s settlement offer line by line.</li>
+          <li><input type="checkbox" data-phase="phase-7" data-task-index="1" onchange="handleTaskChange(this)"> Don’t sign release until all supplements are resolved.</li>
+          <li><input type="checkbox" data-phase="phase-7" data-task-index="2" onchange="handleTaskChange(this)"> Request advance payment if needed.</li>
+          <li><input type="checkbox" data-phase="phase-7" data-task-index="3" onchange="handleTaskChange(this)"> Request depreciation release.</li>
+          <li><input type="checkbox" data-phase="phase-7" data-task-index="4" onchange="handleTaskChange(this)"> Handle mortgage endorsements properly.</li>
+        </ul>
+        <div class="action-buttons">
+          <button class="btn-primary" onclick="downloadDocument('financial/advance-payment.docx')">Advance DOCX</button>
+          <button class="btn-secondary" onclick="downloadDocument('financial/advance-payment.pdf')">Advance PDF</button>
+          <button class="btn-primary" onclick="downloadDocument('financial/depreciation-release.docx')">Depreciation DOCX</button>
+          <button class="btn-secondary" onclick="downloadDocument('financial/depreciation-release.pdf')">Depreciation PDF</button>
+          <button class="btn-primary" onclick="downloadDocument('financial/check-endorsement.docx')">Endorsement DOCX</button>
+          <button class="btn-secondary" onclick="downloadDocument('financial/check-endorsement.pdf')">Endorsement PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 8 -->
+    <div class="accordion-item">
+      <button class="accordion-header">Phase 8 – Additional Living Expenses (ALE)</button>
+      <div class="accordion-body" id="phase-8">
+        <ul>
+          <li><input type="checkbox" data-phase="phase-8" data-task-index="0" onchange="handleTaskChange(this)"> Track receipts for hotel, meals, mileage, utilities.</li>
+          <li><input type="checkbox" data-phase="phase-8" data-task-index="1" onchange="handleTaskChange(this)"> Submit interim reimbursement requests.</li>
+          <li><input type="checkbox" data-phase="phase-8" data-task-index="2" onchange="handleTaskChange(this)"> Submit final ALE summary.</li>
+          <li><input type="checkbox" data-phase="phase-8" data-task-index="3" onchange="handleTaskChange(this)"> Request housing extension if needed.</li>
+        </ul>
+        <div class="action-buttons">
+          <button class="btn-primary" onclick="downloadDocument('housing/ale-interim-request.docx')">Interim DOCX</button>
+          <button class="btn-secondary" onclick="downloadDocument('housing/ale-interim-request.pdf')">Interim PDF</button>
+          <button class="btn-primary" onclick="downloadDocument('housing/ale-final-summary.docx')">Final DOCX</button>
+          <button class="btn-secondary" onclick="downloadDocument('housing/ale-final-summary.pdf')">Final PDF</button>
+          <button class="btn-primary" onclick="downloadDocument('housing/housing-extension.docx')">Extension DOCX</button>
+          <button class="btn-secondary" onclick="downloadDocument('housing/housing-extension.pdf')">Extension PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 9 -->
+    <div class="accordion-item">
+      <button class="accordion-header">Phase 9 – Closeout</button>
+      <div class="accordion-body" id="phase-9">
+        <ul>
+          <li><input type="checkbox" data-phase="phase-9" data-task-index="0" onchange="handleTaskChange(this)"> Confirm all payments received, depreciation released.</li>
+          <li><input type="checkbox" data-phase="phase-9" data-task-index="1" onchange="handleTaskChange(this)"> Ensure mortgage cleared.</li>
+          <li><input type="checkbox" data-phase="phase-9" data-task-index="2" onchange="handleTaskChange(this)"> Archive entire claim file for tax/loan/legal purposes.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
 
       <!-- Progress Tracker -->
       <div id="playbook-progress" style="margin:1rem 0; padding:1rem; background:#f3f4f6; border:1px solid var(--border); border-radius:0.5rem;">
@@ -117,11 +276,6 @@
         <div style="width:100%; height:10px; background:#e5e7eb; border-radius:5px; overflow:hidden;">
           <div id="progress-bar" style="height:10px; width:0%; background:var(--primary); transition:width 0.3s ease;"></div>
         </div>
-      </div>
-
-      <div class="accordion">
-        <!-- Phase 1–9 accordions with checkboxes (same as you pasted) -->
-        <!-- [Keeping as is for brevity in this block — full Phases 1-9 remain intact with checkboxes + documents] -->
       </div>
 
       <!-- Premium Resource -->
@@ -434,6 +588,29 @@
         });
       });
     });
+    async function downloadDocument(filePath) {
+  try {
+    const response = await fetch('/.netlify/functions/generate-signed-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fileName: filePath,
+        email: localStorage.getItem('userEmail')
+      })
+    });
+
+    const data = await response.json();
+    if (response.ok && data.url) {
+      window.location.href = data.url;
+    } else {
+      alert(data.error || "Download failed. Please try again.");
+    }
+  } catch (err) {
+    console.error("Download error:", err);
+    alert("Error downloading file.");
+  }
+}
+
   </script>
 </body>
 </html>
