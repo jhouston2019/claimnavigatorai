@@ -7,29 +7,29 @@ const supabase = createClient(
 
 exports.handler = async (event) => {
   try {
-    const { affiliateID, email } = JSON.parse(event.body);
+    const { affiliateID, email, product, amount } = JSON.parse(event.body);
 
     if (!affiliateID || !email) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: 'Missing affiliateID or email' })
+        body: JSON.stringify({ error: "Missing affiliateID or email" }),
       };
     }
 
-    const { error } = await supabase
-      .from('transactions')
-      .insert([{ user_email: email, affiliateid: affiliateID }]);
+    // Save transaction
+    const { error } = await supabase.from("transactions").insert([
+      {
+        user_email: email,
+        product,
+        amount,
+        affiliateid: affiliateID,
+      },
+    ]);
 
     if (error) throw error;
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ success: true })
-    };
+    return { statusCode: 200, body: JSON.stringify({ success: true }) };
   } catch (err) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: err.message })
-    };
+    return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
 };
