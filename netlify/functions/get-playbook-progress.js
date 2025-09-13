@@ -11,25 +11,25 @@ exports.handler = async (event) => {
       return { statusCode: 405, body: "Method Not Allowed" };
     }
 
-    const { email, phase, tasks } = JSON.parse(event.body);
+    const { email } = JSON.parse(event.body);
 
-    if (!email || !phase || !tasks) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Missing fields" }) };
+    if (!email) {
+      return { statusCode: 400, body: JSON.stringify({ error: "Missing email" }) };
     }
 
-    // Upsert (insert or update if exists)
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("playbook_progress")
-      .upsert(
-        { email, phase, tasks, updated_at: new Date() },
-        { onConflict: ["email", "phase"] }
-      );
+      .select("phase, tasks")
+      .eq("email", email);
 
     if (error) throw error;
 
-    return { statusCode: 200, body: JSON.stringify({ success: true }) };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ success: true, progress: data }),
+    };
   } catch (err) {
-    console.error("Save playbook error:", err);
-    return { statusCode: 500, body: JSON.stringify({ error: "Failed to save progress" }) };
+    console.error("Get playbook error:", err);
+    return { statusCode: 500, body: JSON.stringify({ error: "Failed to fetch progress" }) };
   }
 };
