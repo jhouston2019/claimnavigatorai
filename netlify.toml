@@ -1,11 +1,13 @@
 [build]
   publish = "."
 
-[functions]
-  directory = "netlify/functions"
-
 [build.environment]
   NODE_VERSION = "18"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  external_node_modules = ["pdfkit", "docx", "pdf-parse", "tesseract.js"]
 
 [[redirects]]
   from = "/api/*"
@@ -41,8 +43,3 @@
   to = "https://claimnavigatorai.netlify.app/:splat"
   status = 301
   force = true
-
-# Function settings
-[functions]
-  node_bundler = "esbuild"
-  external_node_modules = ["pdfkit", "docx", "pdf-parse", "tesseract.js"]
