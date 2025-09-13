@@ -7,31 +7,26 @@ const supabase = createClient(
 
 exports.handler = async (event) => {
   try {
-    if (event.httpMethod !== "POST") {
-      return { statusCode: 405, body: "Method Not Allowed" };
-    }
-
     const { email } = JSON.parse(event.body);
 
     if (!email) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Missing email" }) };
+      return { statusCode: 400, body: JSON.stringify({ success: false, error: 'Missing email' }) };
     }
 
-    // Get metadata from documents table
     const { data, error } = await supabase
-      .from("documents")
-      .select("id, file_name, category, created_at")
-      .eq("email", email)
-      .order("created_at", { ascending: false });
+      .from('documents')
+      .select('id, name, category, file_path, created_at')
+      .eq('email', email)
+      .order('created_at', { ascending: false });
 
     if (error) throw error;
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true, docs: data }),
+      body: JSON.stringify({ success: true, documents: data })
     };
   } catch (err) {
-    console.error("Get documents error:", err);
-    return { statusCode: 500, body: JSON.stringify({ error: "Failed to fetch documents" }) };
+    console.error("get-documents error:", err);
+    return { statusCode: 500, body: JSON.stringify({ success: false, error: err.message }) };
   }
 };
