@@ -7,25 +7,34 @@ const supabase = createClient(
 
 exports.handler = async (event) => {
   try {
-    if (event.httpMethod !== "POST") {
-      return { statusCode: 405, body: "Method Not Allowed" };
+    const { id, fileName, email } = JSON.parse(event.body);
+
+    if (!id || !fileName || !email) {
+      return { statusCode: 400, body: JSON.stringify({ success: false, error: 'Missing fields' }) };
     }
 
-    const { id, fileName } = JSON.parse(event.body);
+    // 1. Delete from Supabase storage
+    const { error: storageError } = await supabase.storage
+      .from('claim-docs')
+      .remove([fileName]);
 
-    if (!id || !fileName) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Missing required fields" }) };
-    }
+    if (storageError) throw storageError;
 
-    // Delete from DB
-    await supabase.from("documents").delete().eq("id", id);
+    // 2. Delete from Supabase table
+    const { error: dbError } = await supabase
+      .from('documents')
+      .delete()
+      .eq('id', id)
+      .eq('email', email);
 
-    // Delete from storage
-    await supabase.storage.from("claimnavigatorai-docs").remove([fileName]);
+    if (dbError) throw dbError;
 
-    return { statusCode: 200, body: JSON.stringify({ success: true }) };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ success: true })
+    };
   } catch (err) {
-    console.error("Delete document error:", err);
-    return { statusCode: 500, body: JSON.stringify({ error: "Failed to delete document" }) };
+    console.error("delete-document error:", err);
+    return { statusCode: 500, body: JSON.stringify({ success: false, error: err.message }) };
   }
 };
