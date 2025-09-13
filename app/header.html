@@ -1,0 +1,26 @@
+<header class="flex justify-between items-center p-4 bg-gray-900 text-white">
+  <h1 class="text-xl font-bold">Navigator Suite</h1>
+  <nav class="flex gap-2">
+    <button onclick="switchLang('en')" id="btn-en" class="px-2 py-1 rounded">EN</button>
+    <button onclick="switchLang('es')" id="btn-es" class="px-2 py-1 rounded">ES</button>
+    <button onclick="switchLang('fr')" id="btn-fr" class="px-2 py-1 rounded">FR</button>
+    <button onclick="switchLang('de')" id="btn-de" class="px-2 py-1 rounded">DE</button>
+    <button onclick="switchLang('pt')" id="btn-pt" class="px-2 py-1 rounded">PT</button>
+    <button onclick="switchLang('zh')" id="btn-zh" class="px-2 py-1 rounded">中文</button>
+    <button onclick="switchLang('hi')" id="btn-hi" class="px-2 py-1 rounded">हिंदी</button>
+  </nav>
+</header>
+
+<script>
+  function switchLang(lang) {
+    localStorage.setItem("lang", lang);
+    location.reload(); // reload page so document loader picks correct JSON
+  }
+
+  // highlight current lang
+  const currentLang = localStorage.getItem("lang") || "en";
+  document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById(`btn-${currentLang}`);
+    if (btn) btn.classList.add("bg-blue-600");
+  });
+</script>
