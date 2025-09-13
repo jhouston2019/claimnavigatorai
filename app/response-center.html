@@ -307,365 +307,362 @@
     </div>
   </main>
 
-  <script>
-    // --- Tabs ---
-    function switchTab(tab) {
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById(tab).classList.add('active');
-      event.target.classList.add('active');
-    }
+ <script>
+  // --- Tabs ---
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    event.target.classList.add('active');
+  }
 
-    function logout() {
-      localStorage.removeItem('userEmail');
-      window.location.href = '../index.html';
-    }
+  function logout() {
+    localStorage.removeItem('userEmail');
+    window.location.href = '../index.html';
+  }
 
-    function getLanguage() {
-      return document.getElementById('language-select')?.value || 'en';
-    }
+  function getLanguage() {
+    return document.getElementById('language-select')?.value || 'en';
+  }
 
-    function addToHistory(tool, text) {
-      const h = document.getElementById('session-history');
-      const div = document.createElement('div');
-      div.textContent = `[${tool}] ${text.substring(0, 100)}...`;
-      h.appendChild(div);
-    }
+  function addToHistory(tool, text) {
+    const h = document.getElementById('session-history');
+    const div = document.createElement('div');
+    div.textContent = `[${tool}] ${text.substring(0, 100)}...`;
+    h.appendChild(div);
+  }
 
-    // --- AI Agent ---
-    async function generateResponse() {
-      const input = document.getElementById('input-text').value.trim();
-      if (!input) return alert("Please paste text first.");
-      const out = document.getElementById('ai-output');
-      out.style.display = 'block';
-      out.innerHTML = `<div class="spinner"></div> Generating...`;
+  // --- AI Agent ---
+  async function generateResponse() {
+    const input = document.getElementById('input-text').value.trim();
+    if (!input) return alert("Please paste text first.");
+    const out = document.getElementById('ai-output');
+    out.style.display = 'block';
+    out.innerHTML = `<div class="spinner"></div> Generating...`;
 
-      try {
-        const res = await fetch('/.netlify/functions/generate-response', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: localStorage.getItem('userEmail'),
-            inputText: input,
-            language: getLanguage()
-          })
-        });
-        const data = await res.json();
-        if (res.ok && data.draft) {
-          out.textContent = data.draft;
-          document.getElementById('confidence-meter').innerText = "Confidence: High";
-          addToHistory("ai-agent", data.draft);
-        } else out.textContent = data.error || "Failed.";
-      } catch (e) {
-        console.error(e);
-        out.textContent = "Error generating.";
-      }
-    }
-
-    // --- Claim Analysis Tools ---
-    async function runTool(tool) {
-      const out = document.getElementById(`${tool}-output`);
-      const actions = document.getElementById(`${tool}-actions`);
-      out.style.display = 'block';
-      out.innerHTML = `<div class="spinner"></div> Generating...`;
-      actions.style.display = 'none';
-
-      try {
-        const res = await fetch('/.netlify/functions/generate-response', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: localStorage.getItem('userEmail'),
-            mode: tool,
-            language: getLanguage(),
-            inputText: `Please generate output for tool: ${tool}`
-          })
-        });
-        const data = await res.json();
-
-        if (res.ok && data.draft) {
-          out.textContent = data.draft;
-          actions.style.display = 'flex';
-          addToHistory(tool, data.draft);
-        } else {
-          out.textContent = data.error || "Failed to generate output.";
-        }
-      } catch (err) {
-        console.error(err);
-        out.textContent = "Error generating output.";
-      }
-    }
-
-    function copyToolOutput(tool) {
-      const text = document.getElementById(`${tool}-output`).innerText.trim();
-      if (!text) return alert("No content to copy.");
-      navigator.clipboard.writeText(text)
-        .then(() => alert("Copied to clipboard!"))
-        .catch(err => {
-          console.error("Copy failed:", err);
-          alert("Failed to copy.");
-        });
-    }
-
-    function downloadToolOutput(tool) {
-      const text = document.getElementById(`${tool}-output`).innerText.trim();
-      if (!text) return alert("No content to download.");
-      const blob = new Blob([text], { type: 'text/plain' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `${tool}-output.txt`;
-      link.click();
-    }
-
-    function clearOutput(tool) {
-      document.getElementById(`${tool}-output`).textContent = '';
-      document.getElementById(`${tool}-actions`).style.display = 'none';
-    }
-
-    function exportDoc(type) {
-      fetch('/.netlify/functions/export-doc', {
+    try {
+      const res = await fetch('/.netlify/functions/generate-response', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: localStorage.getItem('userEmail'),
-          type,
-          content: document.getElementById('ai-output').innerText
+          inputText: input,
+          language: getLanguage()
         })
-      })
-      .then(res => res.blob())
-      .then(blob => {
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `AI-Response.${type}`;
-        link.click();
-      })
-      .catch(err => console.error("Export failed:", err));
+      });
+      const data = await res.json();
+      if (res.ok && data.draft) {
+        out.textContent = data.draft;
+        document.getElementById('confidence-meter').innerText = "Confidence: High";
+        addToHistory("ai-agent", data.draft);
+      } else out.textContent = data.error || "Failed.";
+    } catch (e) {
+      console.error(e);
+      out.textContent = "Error generating.";
     }
+  }
 
-    function saveDraft() {
-      const text = document.getElementById('ai-output').innerText;
-      if (!text) return alert("No draft.");
-      fetch('/.netlify/functions/save-draft', {
+  // --- Claim Analysis Tools ---
+  async function runTool(tool) {
+    const out = document.getElementById(`${tool}-output`);
+    const actions = document.getElementById(`${tool}-actions`);
+    out.style.display = 'block';
+    out.innerHTML = `<div class="spinner"></div> Generating...`;
+    actions.style.display = 'none';
+
+    try {
+      const res = await fetch('/.netlify/functions/generate-response', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: localStorage.getItem('userEmail'), content: text })
-      })
-      .then(() => alert("Draft saved."))
-      .catch(err => console.error("Save failed:", err));
-    }async function loadDocuments() {
-  try {
-    const res = await fetch('/.netlify/functions/get-documents', {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: localStorage.getItem("userEmail") })
-    });
-
-    const data = await res.json();
-    const container = document.getElementById("documents-container");
-    container.innerHTML = "";
-
-    if (res.ok && data.success && data.docs.length > 0) {
-      data.docs.forEach(doc => {
-        const card = document.createElement("div");
-        card.className = "tool-card";
-        card.innerHTML = `
-          <div class="tool-title">${doc.file_name}</div>
-          <div class="tool-desc">Category: ${doc.category || "Uncategorized"}</div>
-          <div class="tool-desc">Uploaded: ${new Date(doc.created_at).toLocaleString()}</div>
-          <div class="action-buttons">
-            <button class="btn-primary" onclick="downloadDocument('${doc.file_name}')">Download</button>
-            <button class="btn-secondary" onclick="deleteDocument('${doc.id}', '${doc.file_name}')">Delete</button>
-          </div>
-        `;
-        container.appendChild(card);
+        body: JSON.stringify({
+          email: localStorage.getItem('userEmail'),
+          mode: tool,
+          language: getLanguage(),
+          inputText: `Please generate output for tool: ${tool}`
+        })
       });
-    } else {
-      container.innerHTML = "<p>No documents found.</p>";
+      const data = await res.json();
+
+      if (res.ok && data.draft) {
+        out.textContent = data.draft;
+        actions.style.display = 'flex';
+        addToHistory(tool, data.draft);
+      } else {
+        out.textContent = data.error || "Failed to generate output.";
+      }
+    } catch (err) {
+      console.error(err);
+      out.textContent = "Error generating output.";
     }
-  } catch (err) {
-    console.error("Load documents error:", err);
-    document.getElementById("documents-container").innerHTML = "<p>Error loading documents.</p>";
   }
-}
 
-async function deleteDocument(id, fileName) {
-  if (!confirm("Delete this document?")) return;
-
-  try {
-    const res = await fetch('/.netlify/functions/delete-document', {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, fileName })
-    });
-    const data = await res.json();
-    if (res.ok && data.success) {
-      alert("Deleted.");
-      loadDocuments();
-    } else {
-      alert(data.error || "Delete failed.");
-    }
-  } catch (err) {
-    console.error("Delete error:", err);
-    alert("Error deleting document.");
+  function copyToolOutput(tool) {
+    const text = document.getElementById(`${tool}-output`).innerText.trim();
+    if (!text) return alert("No content to copy.");
+    navigator.clipboard.writeText(text)
+      .then(() => alert("Copied to clipboard!"))
+      .catch(err => {
+        console.error("Copy failed:", err);
+        alert("Failed to copy.");
+      });
   }
-}
 
+  function downloadToolOutput(tool) {
+    const text = document.getElementById(`${tool}-output`).innerText.trim();
+    if (!text) return alert("No content to download.");
+    const blob = new Blob([text], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${tool}-output.txt`;
+    link.click();
+  }
 
-    function uploadDocument() {
-      const file = document.getElementById('doc-upload').files[0];
-      if (!file) return;
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("email", localStorage.getItem('userEmail'));
-      fetch('/.netlify/functions/classify-upload', { method: 'POST', body: formData })
-        .then(res => res.json())
-        .then(() => alert("Document uploaded & classified"))
-        .catch(err => console.error("Upload failed:", err));
-    }
+  function clearOutput(tool) {
+    document.getElementById(`${tool}-output`).textContent = '';
+    document.getElementById(`${tool}-actions`).style.display = 'none';
+  }
 
-    function downloadAllOutputs() {
-      fetch('/.netlify/functions/download-all', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: localStorage.getItem('userEmail') })
-      })
-      .then(res => res.blob())
-      .then(blob => {
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'All-Outputs.zip';
-        link.click();
-      })
-      .catch(err => console.error("Download all failed:", err));
-    }
-
-    async function loadCreditLog() {
-      try {
-        const res = await fetch('/.netlify/functions/get-credit-log', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: localStorage.getItem('userEmail') })
-        });
-        const data = await res.json();
-        const tbody = document.getElementById('credit-log-body');
-        tbody.innerHTML = "";
-        if (res.ok && data.success && data.logs.length > 0) {
-          data.logs.forEach(log => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-              <td>${new Date(log.created_at).toLocaleString()}</td>
-              <td>${log.mode}</td>
-              <td>${log.language}</td>
-              <td>${log.tokens_used ?? "-"}</td>
-            `;
-            tbody.appendChild(row);
-          });
-        } else {
-          tbody.innerHTML = `<tr><td colspan="4">No logs found.</td></tr>`;
-        }
-      } catch (err) {
-        console.error("Error loading credit log:", err);
-        document.getElementById('credit-log-body').innerHTML =
-          `<tr><td colspan="4">Error loading log.</td></tr>`;
-      }
-    }
-
-    // --- Playbook Progress ---
-    async function savePlaybookProgress(phase, tasks) {
-      try {
-        await fetch("/.netlify/functions/save-playbook-progress", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: localStorage.getItem("userEmail"),
-            phase,
-            tasks
-          })
-        });
-      } catch (err) {
-        console.error("Failed to save playbook progress:", err);
-      }
-    }
-
-    async function loadPlaybookProgress() {
-      try {
-        const res = await fetch("/.netlify/functions/get-playbook-progress", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: localStorage.getItem("userEmail") })
-        });
-
-        const data = await res.json();
-        if (res.ok && data.success) {
-          data.progress.forEach(({ phase, tasks }) => {
-            Object.entries(tasks).forEach(([i, checked]) => {
-              const checkbox = document.querySelector(`#${phase} input[data-task-index="${i}"]`);
-              if (checkbox) checkbox.checked = checked;
-            });
-          });
-        }
-        updateProgressTracker();
-      } catch (err) {
-        console.error("Failed to load playbook progress:", err);
-      }
-    }
-
-    function handleTaskChange(checkbox) {
-      const phase = checkbox.dataset.phase;
-      const allTasks = {};
-      document.querySelectorAll(`#${phase} input[type="checkbox"]`).forEach(cb => {
-        allTasks[cb.dataset.taskIndex] = cb.checked;
-      });
-      savePlaybookProgress(phase, allTasks);
-      updateProgressTracker();
-    }
-
-    function updateProgressTracker() {
-      const checkboxes = document.querySelectorAll('#claim-playbook input[type="checkbox"]');
-      const total = checkboxes.length;
-      let completed = 0;
-      checkboxes.forEach(cb => { if (cb.checked) completed++; });
-      const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-      document.getElementById('progress-label').textContent = `Progress: ${percent}%`;
-      document.getElementById('progress-count').textContent = `${completed} / ${total} tasks`;
-      document.getElementById('progress-bar').style.width = `${percent}%`;
-    }
-
-    // --- Accordion ---
-    document.addEventListener('DOMContentLoaded', () => {
-      loadPlaybookProgress();
-      loadCreditLog();
-      document.querySelectorAll('.accordion-header').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const item = btn.parentElement;
-          item.classList.toggle('active');
-        });
-      });
-    });
-    async function downloadDocument(filePath) {
-  try {
-    const response = await fetch('/.netlify/functions/generate-signed-url', {
+  function exportDoc(type) {
+    fetch('/.netlify/functions/export-doc', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        fileName: filePath,
-        email: localStorage.getItem('userEmail')
+        email: localStorage.getItem('userEmail'),
+        type,
+        content: document.getElementById('ai-output').innerText
       })
-    });
-
-    const data = await response.json();
-    if (response.ok && data.url) {
-      window.location.href = data.url;
-    } else {
-      alert(data.error || "Download failed. Please try again.");
-    }
-  } catch (err) {
-    console.error("Download error:", err);
-    alert("Error downloading file.");
+    })
+    .then(res => res.blob())
+    .then(blob => {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `AI-Response.${type}`;
+      link.click();
+    })
+    .catch(err => console.error("Export failed:", err));
   }
-}
 
-  </script>
+  function saveDraft() {
+    const text = document.getElementById('ai-output').innerText;
+    if (!text) return alert("No draft.");
+    fetch('/.netlify/functions/save-draft', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: localStorage.getItem('userEmail'), content: text })
+    })
+    .then(() => alert("Draft saved."))
+    .catch(err => console.error("Save failed:", err));
+  }
+
+  // --- My Documents ---
+  async function loadDocuments() {
+    try {
+      const res = await fetch('/.netlify/functions/get-documents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: localStorage.getItem('userEmail') })
+      });
+      const data = await res.json();
+      const container = document.getElementById('documents-container');
+      container.innerHTML = "";
+
+      if (res.ok && data.success && data.documents.length > 0) {
+        data.documents.forEach((doc, i) => {
+          const card = document.createElement("div");
+          card.className = "tool-card";
+          card.innerHTML = `
+            <div class="tool-title">${doc.name}</div>
+            <div class="tool-desc">${doc.category || "Uncategorized"}</div>
+            <div class="action-buttons">
+              <button class="btn-primary" onclick="downloadDocument('${doc.file_path}')">Download</button>
+              <button class="btn-secondary" onclick="deleteDocument('${doc.id}','${doc.file_path}')">Delete</button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      } else {
+        container.innerHTML = `<p>No documents found.</p>`;
+      }
+    } catch (err) {
+      console.error("Error loading documents:", err);
+    }
+  }
+
+  async function deleteDocument(id, fileName) {
+    if (!confirm("Delete this document?")) return;
+    try {
+      await fetch('/.netlify/functions/delete-document', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, fileName, email: localStorage.getItem('userEmail') })
+      });
+      loadDocuments();
+    } catch (err) {
+      console.error("Delete failed:", err);
+    }
+  }
+
+  function uploadDocument() {
+    const file = document.getElementById('doc-upload').files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("email", localStorage.getItem('userEmail'));
+    fetch('/.netlify/functions/classify-upload', { method: 'POST', body: formData })
+      .then(res => res.json())
+      .then(() => {
+        alert("Document uploaded & classified");
+        loadDocuments();
+      })
+      .catch(err => console.error("Upload failed:", err));
+  }
+
+  async function downloadDocument(filePath) {
+    try {
+      const response = await fetch('/.netlify/functions/generate-signed-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileName: filePath,
+          email: localStorage.getItem('userEmail')
+        })
+      });
+
+      const data = await response.json();
+      if (response.ok && data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.error || "Download failed. Please try again.");
+      }
+    } catch (err) {
+      console.error("Download error:", err);
+      alert("Error downloading file.");
+    }
+  }
+
+  function downloadAllOutputs() {
+    fetch('/.netlify/functions/download-all', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: localStorage.getItem('userEmail') })
+    })
+    .then(res => res.blob())
+    .then(blob => {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'All-Outputs.zip';
+      link.click();
+    })
+    .catch(err => console.error("Download all failed:", err));
+  }
+
+  // --- Credit Log ---
+  async function loadCreditLog() {
+    try {
+      const res = await fetch('/.netlify/functions/get-credit-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: localStorage.getItem('userEmail') })
+      });
+      const data = await res.json();
+      const tbody = document.getElementById('credit-log-body');
+      tbody.innerHTML = "";
+      if (res.ok && data.success && data.logs.length > 0) {
+        data.logs.forEach(log => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${new Date(log.created_at).toLocaleString()}</td>
+            <td>${log.mode}</td>
+            <td>${log.language}</td>
+            <td>${log.tokens_used ?? "-"}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      } else {
+        tbody.innerHTML = `<tr><td colspan="4">No logs found.</td></tr>`;
+      }
+    } catch (err) {
+      console.error("Error loading credit log:", err);
+      document.getElementById('credit-log-body').innerHTML =
+        `<tr><td colspan="4">Error loading log.</td></tr>`;
+    }
+  }
+
+  // --- Playbook Progress ---
+  async function savePlaybookProgress(phase, tasks) {
+    try {
+      await fetch("/.netlify/functions/save-playbook-progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: localStorage.getItem("userEmail"),
+          phase,
+          tasks
+        })
+      });
+    } catch (err) {
+      console.error("Failed to save playbook progress:", err);
+    }
+  }
+
+  async function loadPlaybookProgress() {
+    try {
+      const res = await fetch("/.netlify/functions/get-playbook-progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: localStorage.getItem("userEmail") })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        data.progress.forEach(({ phase, tasks }) => {
+          Object.entries(tasks).forEach(([i, checked]) => {
+            const checkbox = document.querySelector(`#${phase} input[data-task-index="${i}"]`);
+            if (checkbox) checkbox.checked = checked;
+          });
+        });
+      }
+      updateProgressTracker();
+    } catch (err) {
+      console.error("Failed to load playbook progress:", err);
+    }
+  }
+
+  function handleTaskChange(checkbox) {
+    const phase = checkbox.dataset.phase;
+    const allTasks = {};
+    document.querySelectorAll(`#${phase} input[type="checkbox"]`).forEach(cb => {
+      allTasks[cb.dataset.taskIndex] = cb.checked;
+    });
+    savePlaybookProgress(phase, allTasks);
+    updateProgressTracker();
+  }
+
+  function updateProgressTracker() {
+    const checkboxes = document.querySelectorAll('#claim-playbook input[type="checkbox"]');
+    const total = checkboxes.length;
+    let completed = 0;
+    checkboxes.forEach(cb => { if (cb.checked) completed++; });
+    const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+    document.getElementById('progress-label').textContent = `Progress: ${percent}%`;
+    document.getElementById('progress-count').textContent = `${completed} / ${total} tasks`;
+    document.getElementById('progress-bar').style.width = `${percent}%`;
+  }
+
+  // --- Accordion + Init ---
+  document.addEventListener('DOMContentLoaded', () => {
+    loadPlaybookProgress();
+    loadCreditLog();
+    loadDocuments();
+    document.querySelectorAll('.accordion-header').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.parentElement;
+        item.classList.toggle('active');
+      });
+    });
+  });
+</script>
+
 </body>
 </html>
