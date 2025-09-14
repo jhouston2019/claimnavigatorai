@@ -473,6 +473,27 @@
 
   const lang = localStorage.getItem("lang") || "en";
 
+  // Generate a signed URL from Netlify function
+  async function getSignedUrl(filePath) {
+    const res = await fetch('/.netlify/functions/get-doc', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filePath })
+    });
+
+    const data = await res.json();
+    return data.url;
+  }
+
+  async function openDocument(filePath) {
+    const url = await getSignedUrl(filePath);
+    if (url) {
+      window.open(url, "_blank");
+    } else {
+      alert("Failed to load document");
+    }
+  }
+
   async function loadDocuments() {
     try {
       const res = await fetch(`/docs/${localStorage.getItem("lang") || "en"}/documents.json`);
@@ -489,8 +510,8 @@
           <div class="tool-title">${doc.label}</div>
           <div class="tool-desc">${doc.description || "Insurance Document"}</div>
           <div class="action-buttons">
-            <a class="btn-primary" href="${doc.templatePath}" target="_blank">Template</a>
-            <a class="btn-secondary" href="${doc.samplePath}" target="_blank">Sample</a>
+            <button class="btn-primary" onclick="openDocument('${doc.templatePath}')">Template</button>
+            <button class="btn-secondary" onclick="openDocument('${doc.samplePath}')">Sample</button>
           </div>
         `;
         container.appendChild(card);
@@ -515,7 +536,6 @@
   // Run on page load
   document.addEventListener("DOMContentLoaded", loadDocuments);
 </script>
-
 
   async function deleteDocument(id, fileName) {
     if (!confirm("Delete this document?")) return;
