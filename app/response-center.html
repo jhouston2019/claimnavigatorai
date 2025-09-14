@@ -454,44 +454,68 @@
     .catch(err => console.error("Save failed:", err));
   }
 
-  // --- My Documents ---
-  const lang = localStorage.getItem("lang") || "en";
-   
- async function loadDocuments() {
-  try {
-    const res = await fetch(`/assets/docs/${lang}/documents.json`);
-    const docs = await res.json();
+<!-- My Documents Section -->
+<section id="my-documents">
+  <h2>My Documents</h2>
 
-    renderDocuments(docs); // whatever you use to render them
-  } catch (err) {
-    console.error("Failed to load documents:", err);
-  }
-}
-      const data = await res.json();
-      const container = document.getElementById('documents-container');
+  <!-- Language Toggle -->
+  <div class="lang-toggle" style="margin-bottom:1rem;">
+    <button onclick="setLang('en')" class="btn-primary">English</button>
+    <button onclick="setLang('es')" class="btn-secondary">Español</button>
+  </div>
+
+  <!-- Container where documents render -->
+  <div id="documents-container"></div>
+</section>
+
+<script>
+  // --- My Documents ---
+
+  const lang = localStorage.getItem("lang") || "en";
+
+  async function loadDocuments() {
+    try {
+      const res = await fetch(`/docs/${localStorage.getItem("lang") || "en"}/documents.json`);
+      if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
+
+      const docs = await res.json();
+      const container = document.getElementById("documents-container");
       container.innerHTML = "";
 
-      if (res.ok && data.success && data.documents.length > 0) {
-        data.documents.forEach((doc, i) => {
-          const card = document.createElement("div");
-          card.className = "tool-card";
-          card.innerHTML = `
-            <div class="tool-title">${doc.name}</div>
-            <div class="tool-desc">${doc.category || "Uncategorized"}</div>
-            <div class="action-buttons">
-              <button class="btn-primary" onclick="downloadDocument('${doc.file_path}')">Download</button>
-              <button class="btn-secondary" onclick="deleteDocument('${doc.id}','${doc.file_path}')">Delete</button>
-            </div>
-          `;
-          container.appendChild(card);
-        });
-      } else {
+      Object.values(docs).forEach(doc => {
+        const card = document.createElement("div");
+        card.className = "tool-card";
+        card.innerHTML = `
+          <div class="tool-title">${doc.label}</div>
+          <div class="tool-desc">${doc.description || "Insurance Document"}</div>
+          <div class="action-buttons">
+            <a class="btn-primary" href="${doc.templatePath}" target="_blank">Template</a>
+            <a class="btn-secondary" href="${doc.samplePath}" target="_blank">Sample</a>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      if (Object.keys(docs).length === 0) {
         container.innerHTML = `<p>No documents found.</p>`;
       }
     } catch (err) {
       console.error("Error loading documents:", err);
+      document.getElementById("documents-container").innerHTML =
+        `<p style="color:red;">Failed to load documents.</p>`;
     }
   }
+
+  // Change language and reload docs
+  function setLang(newLang) {
+    localStorage.setItem("lang", newLang);
+    loadDocuments();
+  }
+
+  // Run on page load
+  document.addEventListener("DOMContentLoaded", loadDocuments);
+</script>
+
 
   async function deleteDocument(id, fileName) {
     if (!confirm("Delete this document?")) return;
