@@ -483,6 +483,33 @@
         `<tr><td colspan="4">Error loading log.</td></tr>`;
     }
   }
+// --- Download All Outputs ---
+async function downloadAllOutputs() {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Not logged in");
+
+    const res = await fetch('/.netlify/functions/download-all', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: user.email })
+    });
+
+  if (!res.ok) {
+  const errMsg = await res.text();
+  throw new Error(errMsg || "Download failed");
+}
+
+    const blob = await res.blob();
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'outputs.zip';
+    link.click();
+  } catch (err) {
+    console.error("Download failed:", err);
+    alert("Error downloading outputs.");
+  }
+}
 
   // --- Auth Guard + Init ---
   document.addEventListener('DOMContentLoaded', async () => {
