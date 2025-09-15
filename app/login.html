@@ -87,38 +87,38 @@
   </div>
 
   <script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-  const supabase = createClient(
-    "SUPABASE_URL",         // replace with your Supabase project URL
-    "SUPABASE_ANON_KEY"     // replace with your anon key
-  );
+    // Initialize Supabase client
+    const supabase = createClient(
+      "https://bnxvfxtpsxgfpltflyrr.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
+    );
 
-  const form = document.getElementById('login-form');
+    // Handle login form submit
+    const form = document.getElementById('login-form');
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
-      alert("Login failed: " + error.message);
-    } else {
-      // ✅ Save email for future function calls
-      if (data.user && data.user.email) {
-        localStorage.setItem("userEmail", data.user.email);
+      if (error) {
+        alert("Login failed: " + error.message);
+      } else {
+        if (data.user && data.user.email) {
+          localStorage.setItem("userEmail", data.user.email);
+        }
+        // optional: remove alert for smoother UX
+        alert("Login successful!");
+        window.location.href = "response-center.html"; // redirect after login
       }
-
-      alert("Login successful!");
-      window.location.href = "response-center.html"; // redirect after login
-    }
-  });
-</script>
+    });
+  </script>
 </body>
 </html>
 
-</body>
-</html>
+
