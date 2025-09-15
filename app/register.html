@@ -87,30 +87,39 @@
   </div>
 
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    const supabase = createClient(
-      "SUPABASE_URL",         // replace with your Supabase project URL
-      "SUPABASE_ANON_KEY"     // replace with your anon key
-    );
+  const supabase = createClient(
+    "SUPABASE_URL",         // replace with your Supabase project URL
+    "SUPABASE_ANON_KEY"     // replace with your anon key
+  );
 
-    const form = document.getElementById('register-form');
+  const form = document.getElementById('register-form');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
-      const { data, error } = await supabase.auth.signUp({ email, password });
-
-      if (error) {
-        alert("Registration failed: " + error.message);
-      } else {
-        alert("Registration successful! Please login.");
-        window.location.href = "login.html"; // redirect after signup
-      }
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password
     });
-  </script>
+
+    if (error) {
+      alert("Registration failed: " + error.message);
+    } else {
+      // ✅ Save email to localStorage for all future calls
+      if (data.user && data.user.email) {
+        localStorage.setItem("userEmail", data.user.email);
+      }
+
+      alert("Registration successful! Please verify your email if required.");
+      window.location.href = "response-center.html"; // redirect after signup
+    }
+  });
+</script>
+
 </body>
 </html>
