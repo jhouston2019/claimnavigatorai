@@ -61,32 +61,39 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    // Initialize Supabase client
+    // ✅ Initialize Supabase
     const supabase = createClient(
       "https://bnxvfxtpsxgfpltflyrr.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
     );
 
     async function loadUser() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error } = await supabase.auth.getUser();
+
+      if (error) {
+        console.error("Auth error:", error.message);
+        alert("Session expired. Please log in again.");
+        window.location.href = "login.html";
+        return;
+      }
 
       if (!user) {
-        alert("You must log in first.");
         window.location.href = "login.html";
         return;
       }
 
       document.getElementById("user-email").innerText = user.email;
 
-      // Fetch entitlements from Supabase
-      const { data, error } = await supabase
+      // ⚠️ Temporary: direct call to Supabase table
+      // TODO: replace with a Netlify function that checks JWT
+      const { data, error: creditsError } = await supabase
         .from("entitlements")
         .select("credits")
         .eq("email", user.email)
         .single();
 
-      if (error || !data) {
-        console.error("Error fetching credits:", error);
+      if (creditsError || !data) {
+        console.error("Credits fetch error:", creditsError?.message);
         document.getElementById("user-credits").innerText = "0";
       } else {
         document.getElementById("user-credits").innerText = data.credits;
@@ -99,7 +106,6 @@
     }
 
     document.getElementById("logout-btn").addEventListener("click", logout);
-
     document.addEventListener("DOMContentLoaded", loadUser);
   </script>
 </body>
