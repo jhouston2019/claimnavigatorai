@@ -61,9 +61,10 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
+    // Initialize Supabase client
     const supabase = createClient(
-      "SUPABASE_URL",       // replace with your Supabase project URL
-      "SUPABASE_ANON_KEY"   // replace with your anon key
+      "https://bnxvfxtpsxgfpltflyrr.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
     );
 
     async function loadUser() {
@@ -85,6 +86,7 @@
         .single();
 
       if (error || !data) {
+        console.error("Error fetching credits:", error);
         document.getElementById("user-credits").innerText = "0";
       } else {
         document.getElementById("user-credits").innerText = data.credits;
@@ -93,7 +95,6 @@
 
     async function logout() {
       await supabase.auth.signOut();
-      alert("Logged out successfully.");
       window.location.href = "login.html";
     }
 
