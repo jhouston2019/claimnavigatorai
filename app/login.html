@@ -89,13 +89,12 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    // Initialize Supabase client
+    // ✅ Initialize Supabase client
     const supabase = createClient(
       "https://bnxvfxtpsxgfpltflyrr.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
     );
 
-    // Handle login form submit
     const form = document.getElementById('login-form');
 
     form.addEventListener('submit', async (e) => {
@@ -108,17 +107,20 @@
 
       if (error) {
         alert("Login failed: " + error.message);
-      } else {
-        if (data.user && data.user.email) {
-          localStorage.setItem("userEmail", data.user.email);
-        }
-        // optional: remove alert for smoother UX
-        alert("Login successful!");
-        window.location.href = "response-center.html"; // redirect after login
+        return;
       }
+
+      // ✅ Store session automatically (supabase-js does this by default)
+      const { user, session } = data;
+      if (user) {
+        console.log("Logged in user:", user.email);
+        // Optional: test JWT
+        console.log("Access token:", session?.access_token);
+      }
+
+      // Redirect to response center
+      window.location.href = "response-center.html";
     });
   </script>
 </body>
 </html>
-
-
