@@ -6,15 +6,15 @@ const supabase = createClient(
 
 exports.handler = async (event) => {
   try {
-    const { fileName, email } = JSON.parse(event.body);
+    const { filePath, email } = JSON.parse(event.body);
 
-    if (!fileName || !email) {
+    if (!filePath || !email) {
       return { statusCode: 400, body: JSON.stringify({ error: "Missing fileName or email." }) };
     }
 
     const { data, error } = await supabase.storage
       .from('documents')
-      .createSignedUrl(fileName, 60 * 10); // valid 10 min
+      .createSignedUrl(filePath, 60 * 10); // valid 10 min
 
     if (error) throw error;
 
