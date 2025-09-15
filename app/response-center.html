@@ -249,214 +249,222 @@
     </div>
   </main>
 
-  <script>
-    // --- Tabs ---
-    function switchTab(event, tab) {
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById(tab).classList.add('active');
-      event.target.classList.add('active');
-    }
+ <script>
+  // --- Tabs ---
+  function switchTab(event, tab) {
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    event.target.classList.add('active');
+  }
 
-    function logout() {
-      localStorage.removeItem('userEmail');
-      window.location.href = '../index.html';
-    }
+  function logout() {
+    localStorage.removeItem('userEmail');
+    window.location.href = '../index.html';
+  }
 
-    function getLanguage() {
-      return document.getElementById('language-select')?.value || 'en';
-    }
+  function getLanguage() {
+    return document.getElementById('language-select')?.value || 'en';
+  }
 
-    function addToHistory(tool, text) {
-      const h = document.getElementById('session-history');
-      const div = document.createElement('div');
-      div.textContent = `[${tool}] ${text.substring(0, 100)}...`;
-      h.appendChild(div);
-    }
+  function addToHistory(tool, text) {
+    const h = document.getElementById('session-history');
+    const div = document.createElement('div');
+    div.textContent = `[${tool}] ${text.substring(0, 100)}...`;
+    h.appendChild(div);
+  }
 
-    // --- AI Agent ---
-    async function generateResponse() {
-      const input = document.getElementById('input-text').value.trim();
-      if (!input) return alert("Please paste text first.");
-      const out = document.getElementById('ai-output');
-      out.style.display = 'block';
-      out.innerHTML = `<div class="spinner"></div> Generating...`;
+  // --- AI Agent ---
+  async function generateResponse() {
+    const input = document.getElementById('input-text').value.trim();
+    if (!input) return alert("Please paste text first.");
+    const out = document.getElementById('ai-output');
+    out.style.display = 'block';
+    out.innerHTML = `<div class="spinner"></div> Generating...`;
 
-      try {
-        const res = await fetch('/.netlify/functions/generate-response', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: localStorage.getItem('userEmail'),
-            inputText: input,
-            language: getLanguage()
-          })
-        });
-        const data = await res.json();
-        if (res.ok && data.draft) {
-          out.textContent = data.draft;
-          document.getElementById('confidence-meter').innerText = "Confidence: High";
-          addToHistory("ai-agent", data.draft);
-        } else out.textContent = data.error || "Failed.";
-      } catch (e) {
-        console.error(e);
-        out.textContent = "Error generating.";
-      }
-    }
-
-    function saveDraft() {
-      const text = document.getElementById('ai-output').innerText;
-      if (!text) return alert("No draft.");
-      fetch('/.netlify/functions/save-draft', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: localStorage.getItem('userEmail'), content: text })
-      })
-      .then(() => alert("Draft saved."))
-      .catch(err => console.error("Save failed:", err));
-    }
-
-    function exportDoc(type) {
-      fetch('/.netlify/functions/export-doc', {
+    try {
+      const res = await fetch('/.netlify/functions/generate-response', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: localStorage.getItem('userEmail'),
-          type,
-          content: document.getElementById('ai-output').innerText
+          inputText: input,
+          language: getLanguage()
         })
-      })
-      .then(res => res.blob())
-      .then(blob => {
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `AI-Response.${type}`;
-        link.click();
-      })
-      .catch(err => console.error("Export failed:", err));
+      });
+      const data = await res.json();
+      if (res.ok && data.draft) {
+        out.textContent = data.draft;
+        document.getElementById('confidence-meter').innerText = "Confidence: High";
+        addToHistory("ai-agent", data.draft);
+      } else out.textContent = data.error || "Failed.";
+    } catch (e) {
+      console.error(e);
+      out.textContent = "Error generating.";
     }
-
-    // --- My Documents ---
-    async function loadDocuments() {
-      try {
-        const res = await fetch('/.netlify/functions/list-documents', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: localStorage.getItem('userEmail'), lang: localStorage.getItem('lang') || 'en' })
-        });
-        const docs = await res.json();
-        const container = document.getElementById("documents-container");
-        container.innerHTML = "";
-
-        if (res.ok && Array.isArray(docs) && docs.length > 0) {
-          docs.forEach(doc => {
-            const card = document.createElement("div");
-            card.className = "tool-card";
-            card.innerHTML = `
-              <div class="tool-title">${doc.label}</div>
-              <div class="tool-desc">${doc.description || "Insurance Document"}</div>
-              <div class="action-buttons">
-                <button class="btn-primary" onclick="openDocument('${doc.templatePath}')">Template</button>
-                <button class="btn-secondary" onclick="openDocument('${doc.samplePath}')">Sample</button>
-              </div>
-            `;
-            container.appendChild(card);
-          });
-        } else {
-          container.innerHTML = `<p>No documents found.</p>`;
-        }
-      } catch (err) {
-        console.error("Error loading documents:", err);
-        document.getElementById("documents-container").innerHTML =
-          `<p style="color:red;">Failed to load documents.</p>`;
-      }
-    }
-
-    async function openDocument(filePath) {
-  try {
-    const res = await fetch('/.netlify/functions/generate-signed-url', {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        fileName: filePath, 
-        email: localStorage.getItem('userEmail') 
-      })
-    });
-    const data = await res.json();
-    if (res.ok && data.url) {
-      window.open(data.url, "_blank");
-    } else {
-      alert("Failed to load document");
-    }
-  } catch (err) {
-    console.error("Signed URL error:", err);
-    alert("Error opening document");
   }
-}
 
-    function uploadDocument() {
-      const file = document.getElementById('doc-upload').files[0];
-      if (!file) return;
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("email", localStorage.getItem('userEmail'));
-      fetch('/.netlify/functions/classify-upload', { method: 'POST', body: formData })
-        .then(res => res.json())
-        .then(() => {
-          alert("Document uploaded & classified");
-          loadDocuments();
-        })
-        .catch(err => console.error("Upload failed:", err));
-    }
+  function saveDraft() {
+    const text = document.getElementById('ai-output').innerText;
+    if (!text) return alert("No draft.");
+    fetch('/.netlify/functions/save-draft', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: localStorage.getItem('userEmail'), content: text })
+    })
+    .then(() => alert("Draft saved."))
+    .catch(err => console.error("Save failed:", err));
+  }
 
-    function setLang(newLang) {
-      localStorage.setItem("lang", newLang);
-      loadDocuments();
-    }
+  function exportDoc(type) {
+    fetch('/.netlify/functions/export-doc', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: localStorage.getItem('userEmail'),
+        type,
+        content: document.getElementById('ai-output').innerText
+      })
+    })
+    .then(res => res.blob())
+    .then(blob => {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `AI-Response.${type}`;
+      link.click();
+    })
+    .catch(err => console.error("Export failed:", err));
+  }
 
-    // --- Credit Log ---
-    async function loadCreditLog() {
-      try {
-        const res = await fetch('/.netlify/functions/get-credit-log', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: localStorage.getItem('userEmail') })
+  // --- My Documents ---
+  async function loadDocuments() {
+    try {
+      const res = await fetch('/.netlify/functions/list-documents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: localStorage.getItem('userEmail'), lang: localStorage.getItem('lang') || 'en' })
+      });
+      const docs = await res.json();
+      const container = document.getElementById("documents-container");
+      container.innerHTML = "";
+
+      if (res.ok && Array.isArray(docs) && docs.length > 0) {
+        docs.forEach(doc => {
+          const card = document.createElement("div");
+          card.className = "tool-card";
+          card.innerHTML = `
+            <div class="tool-title">${doc.label}</div>
+            <div class="tool-desc">${doc.description || "Insurance Document"}</div>
+            <div class="action-buttons">
+              <button class="btn-primary" onclick="openDocument('${doc.templatePath}')">Template</button>
+              <button class="btn-secondary" onclick="openDocument('${doc.samplePath}')">Sample</button>
+            </div>
+          `;
+          container.appendChild(card);
         });
-        const data = await res.json();
-        const tbody = document.getElementById('credit-log-body');
-        tbody.innerHTML = "";
-        if (res.ok && data.success && data.logs.length > 0) {
-          data.logs.forEach(log => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-              <td>${new Date(log.created_at).toLocaleString()}</td>
-              <td>${log.mode}</td>
-              <td>${log.language}</td>
-              <td>${log.tokens_used ?? "-"}</td>
-            `;
-            tbody.appendChild(row);
-          });
-        } else {
-          tbody.innerHTML = `<tr><td colspan="4">No logs found.</td></tr>`;
-        }
-      } catch (err) {
-        console.error("Error loading credit log:", err);
-        document.getElementById('credit-log-body').innerHTML =
-          `<tr><td colspan="4">Error loading log.</td></tr>`;
+      } else {
+        container.innerHTML = `<p>No documents found.</p>`;
       }
+    } catch (err) {
+      console.error("Error loading documents:", err);
+      document.getElementById("documents-container").innerHTML =
+        `<p style="color:red;">Failed to load documents.</p>`;
+    }
+  }
+
+  async function openDocument(filePath) {
+    try {
+      const res = await fetch('/.netlify/functions/generate-signed-url', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          fileName: filePath, 
+          email: localStorage.getItem('userEmail') 
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        window.open(data.url, "_blank");
+      } else {
+        alert("Failed to load document");
+      }
+    } catch (err) {
+      console.error("Signed URL error:", err);
+      alert("Error opening document");
+    }
+  }
+
+  function uploadDocument() {
+    const file = document.getElementById('doc-upload').files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("email", localStorage.getItem('userEmail'));
+    fetch('/.netlify/functions/classify-upload', { method: 'POST', body: formData })
+      .then(res => res.json())
+      .then(() => {
+        alert("Document uploaded & classified");
+        loadDocuments();
+      })
+      .catch(err => console.error("Upload failed:", err));
+  }
+
+  function setLang(newLang) {
+    localStorage.setItem("lang", newLang);
+    loadDocuments();
+  }
+
+  // --- Credit Log ---
+  async function loadCreditLog() {
+    try {
+      const res = await fetch('/.netlify/functions/get-credit-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: localStorage.getItem('userEmail') })
+      });
+      const data = await res.json();
+      const tbody = document.getElementById('credit-log-body');
+      tbody.innerHTML = "";
+      if (res.ok && data.success && data.logs.length > 0) {
+        data.logs.forEach(log => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${new Date(log.created_at).toLocaleString()}</td>
+            <td>${log.mode}</td>
+            <td>${log.language}</td>
+            <td>${log.tokens_used ?? "-"}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      } else {
+        tbody.innerHTML = `<tr><td colspan="4">No logs found.</td></tr>`;
+      }
+    } catch (err) {
+      console.error("Error loading credit log:", err);
+      document.getElementById('credit-log-body').innerHTML =
+        `<tr><td colspan="4">Error loading log.</td></tr>`;
+    }
+  }
+
+  // --- Auth Guard + Init ---
+  document.addEventListener('DOMContentLoaded', () => {
+    const userEmail = localStorage.getItem('userEmail');
+    if (!userEmail) {
+      alert("You must log in first.");
+      window.location.href = "login.html";
+      return;
     }
 
-    // --- Init ---
-    document.addEventListener('DOMContentLoaded', () => {
-      loadDocuments();
-      loadCreditLog();
-      document.querySelectorAll('.accordion-header').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const item = btn.parentElement;
-          item.classList.toggle('active');
-        });
+    // If logged in, run init
+    loadDocuments();
+    loadCreditLog();
+    document.querySelectorAll('.accordion-header').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.parentElement;
+        item.classList.toggle('active');
       });
     });
-  </script>
+  });
+</script>
 </body>
 </html>
