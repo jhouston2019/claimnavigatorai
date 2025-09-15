@@ -104,20 +104,18 @@
 
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-      if (error) {
-        alert("Login failed: " + error.message);
-      } else {
-        // ✅ Save email for all future function calls
-        if (data.user && data.user.email) {
-          localStorage.setItem("userEmail", data.user.email);
-        }
+     if (error) {
+  alert("Login failed: " + error.message);
+} else {
+  // ✅ Save email for all future function calls
+  if (data.user && data.user.email) {
+    localStorage.setItem("userEmail", data.user.email);
+  }
 
-   alert("Login successful!");
-localStorage.setItem("userEmail", email);   
-window.location.href = "response-center.html";
+  alert("Login successful!");
+  window.location.href = "response-center.html";
+}
 
-      }
-    });
   </script>
 </body>
 </html>
