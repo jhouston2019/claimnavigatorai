@@ -268,7 +268,6 @@
 
   async function logout() {
     await supabase.auth.signOut();
-    localStorage.removeItem('userEmail'); // legacy cleanup
     window.location.href = "login.html";
   }
 
@@ -283,6 +282,13 @@
     h.appendChild(div);
   }
 
+  // Helper: get auth header
+  async function getAuthHeader() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error("Not logged in");
+    return { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' };
+  }
+
   // --- AI Agent ---
   async function generateResponse() {
     const input = document.getElementById('input-text').value.trim();
@@ -292,17 +298,11 @@
     out.innerHTML = `<div class="spinner"></div> Generating...`;
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not logged in");
-
+      const headers = await getAuthHeader();
       const res = await fetch('/.netlify/functions/generate-response', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: user.email,
-          inputText: input,
-          language: getLanguage()
-        })
+        headers,
+        body: JSON.stringify({ inputText: input, language: getLanguage() })
       });
       const data = await res.json();
       if (res.ok && data.draft) {
@@ -322,13 +322,11 @@
     const text = document.getElementById('ai-output').innerText;
     if (!text) return alert("No draft.");
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not logged in");
-
+      const headers = await getAuthHeader();
       await fetch('/.netlify/functions/save-draft', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email, content: text })
+        headers,
+        body: JSON.stringify({ content: text })
       });
       alert("Draft saved.");
     } catch (err) {
@@ -338,14 +336,11 @@
 
   async function exportDoc(type) {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not logged in");
-
+      const headers = await getAuthHeader();
       const res = await fetch('/.netlify/functions/export-doc', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
-          email: user.email,
           type,
           content: document.getElementById('ai-output').innerText
         })
@@ -363,13 +358,11 @@
   // --- My Documents ---
   async function loadDocuments() {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not logged in");
-
+      const headers = await getAuthHeader();
       const res = await fetch('/.netlify/functions/list-documents', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email, lang: localStorage.getItem('lang') || 'en' })
+        headers,
+        body: JSON.stringify({ lang: localStorage.getItem('lang') || 'en' })
       });
       const docs = await res.json();
       const container = document.getElementById("documents-container");
@@ -401,16 +394,11 @@
 
   async function openDocument(filePath) {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not logged in");
-
+      const headers = await getAuthHeader();
       const res = await fetch('/.netlify/functions/generate-signed-url', {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          fileName: filePath, 
-          email: user.email
-        })
+        headers,
+        body: JSON.stringify({ fileName: filePath })
       });
       const data = await res.json();
       if (res.ok && data.url) {
@@ -428,14 +416,17 @@
     const file = document.getElementById('doc-upload').files[0];
     if (!file) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not logged in");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not logged in");
 
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("email", user.email);
 
-      await fetch('/.netlify/functions/classify-upload', { method: 'POST', body: formData });
+      await fetch('/.netlify/functions/classify-upload', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: formData
+      });
       alert("Document uploaded & classified");
       loadDocuments();
     } catch (err) {
@@ -451,13 +442,11 @@
   // --- Credit Log ---
   async function loadCreditLog() {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not logged in");
-
+      const headers = await getAuthHeader();
       const res = await fetch('/.netlify/functions/get-credit-log', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email })
+        headers,
+        body: JSON.stringify({})
       });
       const data = await res.json();
       const tbody = document.getElementById('credit-log-body');
@@ -483,33 +472,32 @@
         `<tr><td colspan="4">Error loading log.</td></tr>`;
     }
   }
-// --- Download All Outputs ---
-async function downloadAllOutputs() {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not logged in");
 
-    const res = await fetch('/.netlify/functions/download-all', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: user.email })
-    });
+  // --- Download All Outputs ---
+  async function downloadAllOutputs() {
+    try {
+      const headers = await getAuthHeader();
+      const res = await fetch('/.netlify/functions/download-all', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({})
+      });
 
-  if (!res.ok) {
-  const errMsg = await res.text();
-  throw new Error(errMsg || "Download failed");
-}
+      if (!res.ok) {
+        const errMsg = await res.text();
+        throw new Error(errMsg || "Download failed");
+      }
 
-    const blob = await res.blob();
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'outputs.zip';
-    link.click();
-  } catch (err) {
-    console.error("Download failed:", err);
-    alert("Error downloading outputs.");
+      const blob = await res.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'outputs.zip';
+      link.click();
+    } catch (err) {
+      console.error("Download failed:", err);
+      alert("Error downloading outputs.");
+    }
   }
-}
 
   // --- Auth Guard + Init ---
   document.addEventListener('DOMContentLoaded', async () => {
@@ -520,7 +508,6 @@ async function downloadAllOutputs() {
       return;
     }
 
-    // If logged in, run init
     loadDocuments();
     loadCreditLog();
     document.querySelectorAll('.accordion-header').forEach(btn => {
