@@ -89,13 +89,12 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    // Initialize Supabase client
+    // ✅ Initialize Supabase client
     const supabase = createClient(
       "https://bnxvfxtpsxgfpltflyrr.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
     );
 
-    // Handle register form submit
     const form = document.getElementById('register-form');
 
     form.addEventListener('submit', async (e) => {
@@ -108,13 +107,16 @@
 
       if (error) {
         alert("Registration failed: " + error.message);
-      } else {
-        if (data.user && data.user.email) {
-          localStorage.setItem("userEmail", data.user.email);
-        }
-        alert("Registration successful! Please verify your email if required.");
-        window.location.href = "response-center.html"; // redirect after signup
+        return;
       }
+
+      const { user } = data;
+      if (user) {
+        console.log("Registered user:", user.email);
+      }
+
+      alert("Registration successful! Please check your email for a verification link.");
+      window.location.href = "response-center.html";
     });
   </script>
 </body>
