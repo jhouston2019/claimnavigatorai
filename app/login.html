@@ -87,35 +87,38 @@
   </div>
 
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    const supabase = createClient(
-      "SUPABASE_URL",         // replace with your Supabase project URL
-      "SUPABASE_ANON_KEY"     // replace with your anon key
-    );
+  const supabase = createClient(
+    "SUPABASE_URL",         // replace with your Supabase project URL
+    "SUPABASE_ANON_KEY"     // replace with your anon key
+  );
 
-    const form = document.getElementById('login-form');
+  const form = document.getElementById('login-form');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-     if (error) {
-  alert("Login failed: " + error.message);
-} else {
-  // ✅ Save email for all future function calls
-  if (data.user && data.user.email) {
-    localStorage.setItem("userEmail", data.user.email);
-  }
+    if (error) {
+      alert("Login failed: " + error.message);
+    } else {
+      // ✅ Save email for future function calls
+      if (data.user && data.user.email) {
+        localStorage.setItem("userEmail", data.user.email);
+      }
 
-  alert("Login successful!");
-  window.location.href = "response-center.html";
-}
+      alert("Login successful!");
+      window.location.href = "response-center.html"; // redirect after login
+    }
+  });
+</script>
+</body>
+</html>
 
-  </script>
 </body>
 </html>
