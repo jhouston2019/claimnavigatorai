@@ -113,8 +113,119 @@
     <div id="claim-playbook" class="tab-content">
       <h2>Claim Playbook</h2>
       <p>Step-by-step roadmap for managing your insurance claim. Expand each phase for checklists, decision points, and the right documents.</p>
-      <!-- Accordion content remains unchanged (phases 1–9) -->
-      <!-- [KEEP YOUR FULL PHASE CONTENT HERE – unchanged for brevity in this snippet] -->
+
+      <div class="accordion">
+
+        <div class="accordion-item">
+          <button class="accordion-header">Phase 1: Initial Notice of Loss</button>
+          <div class="accordion-body">
+            <ul>
+              <li>Notify insurer immediately after the loss</li>
+              <li>Submit initial claim form</li>
+              <li>Document date/time of event and initial damages</li>
+              <li>Upload proof of loss (photos, receipts)</li>
+              <li>Track claim number & adjuster contact</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-header">Phase 2: Documentation & Evidence</button>
+          <div class="accordion-body">
+            <ul>
+              <li>Collect receipts, invoices, estimates</li>
+              <li>Upload contractor reports</li>
+              <li>Maintain expense log for ALE (Additional Living Expenses)</li>
+              <li>Cross-reference with policy limits</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-header">Phase 3: Adjuster Inspection</button>
+          <div class="accordion-body">
+            <ul>
+              <li>Schedule inspection with insurer’s adjuster</li>
+              <li>Prepare property for walkthrough</li>
+              <li>Provide all requested documentation</li>
+              <li>Request a copy of the adjuster’s report</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-header">Phase 4: Estimate Review</button>
+          <div class="accordion-body">
+            <ul>
+              <li>Review insurer’s estimate line-by-line</li>
+              <li>Compare with contractor estimates</li>
+              <li>Highlight discrepancies for negotiation</li>
+              <li>Prepare supplemental documentation</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-header">Phase 5: Negotiation</button>
+          <div class="accordion-body">
+            <ul>
+              <li>Communicate discrepancies to adjuster</li>
+              <li>Submit revised estimates</li>
+              <li>Keep written record of all communications</li>
+              <li>Escalate if adjuster refuses fair settlement</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-header">Phase 6: Supplemental Claims</button>
+          <div class="accordion-body">
+            <ul>
+              <li>File additional claims for missed damages</li>
+              <li>Submit contractor invoices for hidden damages</li>
+              <li>Document ongoing ALE expenses</li>
+              <li>Track all supplemental claim approvals</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-header">Phase 7: Escalation</button>
+          <div class="accordion-body">
+            <ul>
+              <li>Send formal demand letter</li>
+              <li>Request supervisor review</li>
+              <li>Engage public adjuster or legal counsel</li>
+              <li>Prepare for appraisal or mediation</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-header">Phase 8: Appraisal / Mediation</button>
+          <div class="accordion-body">
+            <ul>
+              <li>Initiate appraisal clause if available</li>
+              <li>Hire independent appraiser</li>
+              <li>Engage mediation/arbitration if required</li>
+              <li>Maintain documentation trail for litigation</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-header">Phase 9: Final Settlement & Payment</button>
+          <div class="accordion-body">
+            <ul>
+              <li>Review final settlement offer</li>
+              <li>Ensure payment matches settlement</li>
+              <li>Confirm ALE reimbursement</li>
+              <li>Close out claim and archive documents</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
     </div>
 
     <!-- Settings -->
@@ -172,7 +283,7 @@
       out.innerHTML = `<div class="spinner"></div> Generating...`;
 
       try {
-        const res = await fetch('/.netlify/functions/generate-response', {
+        const res = await fetch('/.netlify/functions/ai-generate-response', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -228,7 +339,7 @@
     // --- My Documents ---
     async function loadDocuments() {
       try {
-        const res = await fetch('/.netlify/functions/list-documents', {
+        const res = await fetch('/.netlify/functions/get-documents', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: localStorage.getItem('userEmail'), lang: localStorage.getItem('lang') || 'en' })
@@ -263,7 +374,7 @@
 
     async function openDocument(filePath) {
       try {
-        const res = await fetch('/.netlify/functions/getSignedUrl', {
+        const res = await fetch('/.netlify/functions/generate-signed-url', {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ filePath })
