@@ -12,24 +12,39 @@ const openai = new OpenAI({
 
 exports.handler = async (event) => {
   try {
-    const { email, inputText, language } = JSON.parse(event.body);
-
-    if (!email || !inputText) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Missing email or inputText" }) };
+    // 1. Extract and verify JWT token
+    const token = event.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return { statusCode: 401, body: JSON.stringify({ error: "Missing auth token." }) };
     }
 
-    // Check entitlement
-    const { data: entitlement } = await supabase
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !user) {
+      return { statusCode: 401, body: JSON.stringify({ error: "Invalid or expired session." }) };
+    }
+
+    const { inputText, language } = JSON.parse(event.body);
+
+    if (!inputText) {
+      return { statusCode: 400, body: JSON.stringify({ error: "Missing inputText" }) };
+    }
+
+    // 2. Check entitlement for this verified user
+    const { data: entitlement, error: entitlementError } = await supabase
       .from('entitlements')
       .select('credits')
-      .eq('email', email)
+      .eq('email', user.email)
       .single();
 
-    if (!entitlement || entitlement.credits <= 0) {
+    if (entitlementError || !entitlement) {
+      return { statusCode: 403, body: JSON.stringify({ error: "Entitlements not found." }) };
+    }
+
+    if (entitlement.credits <= 0) {
       return { statusCode: 403, body: JSON.stringify({ error: "No credits left." }) };
     }
 
-    // Generate AI draft
+    // 3. Generate AI draft
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
@@ -40,11 +55,11 @@ exports.handler = async (event) => {
 
     const draft = completion.choices[0].message.content;
 
-    // Deduct 1 credit
+    // 4. Deduct 1 credit
     await supabase
       .from('entitlements')
       .update({ credits: entitlement.credits - 1 })
-      .eq('email', email);
+      .eq('email', user.email);
 
     return {
       statusCode: 200,
