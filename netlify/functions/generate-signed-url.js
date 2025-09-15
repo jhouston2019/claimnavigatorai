@@ -1,4 +1,6 @@
 const { supabase, getUserFromAuth } = require("./utils/auth");
+const fs = require('fs');
+const path = require('path');
 
 exports.handler = async (event) => {
   try {
@@ -9,13 +11,22 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ error: "Missing fileName" }) };
     }
 
-    const { data, error } = await supabase.storage
-      .from("documents")
-      .createSignedUrl(fileName, 600); // 10 min
+    // Check if file exists locally
+    const filePath = path.join(__dirname, `../../assets/docs/${fileName}`);
+    
+    if (!fs.existsSync(filePath)) {
+      return { 
+        statusCode: 404, 
+        body: JSON.stringify({ error: "Document not found" }) 
+      };
+    }
 
-    if (error) throw error;
+    // For local files, return a direct download URL
+    // In production, you might want to serve this through a secure endpoint
+    const baseUrl = process.env.URL || 'https://claimnavigatorai.netlify.app';
+    const downloadUrl = `${baseUrl}/assets/docs/${fileName}`;
 
-    return { statusCode: 200, body: JSON.stringify({ url: data.signedUrl }) };
+    return { statusCode: 200, body: JSON.stringify({ url: downloadUrl }) };
   } catch (err) {
     console.error("Signed URL Error:", err);
     return { statusCode: 500, body: JSON.stringify({ error: "Failed to generate signed URL." }) };

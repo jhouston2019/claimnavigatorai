@@ -1,22 +1,30 @@
 const { supabase, getUserFromAuth } = require("./utils/auth");
+const fs = require('fs');
+const path = require('path');
 
 exports.handler = async (event) => {
   try {
     const user = await getUserFromAuth(event);
     const { lang = "en" } = JSON.parse(event.body || "{}");
 
-    const { data, error } = await supabase
-      .storage
-      .from("documents")
-      .list(`${lang}/`, { limit: 100 });
+    // Load documents from local JSON file
+    const documentsPath = path.join(__dirname, `../../assets/docs/${lang}/documents.json`);
+    
+    if (!fs.existsSync(documentsPath)) {
+      return { 
+        statusCode: 404, 
+        body: JSON.stringify({ error: `Documents for language ${lang} not found` }) 
+      };
+    }
 
-    if (error) throw error;
-
-    const docs = data.map(file => ({
-      label: file.name.replace(/\.[^/.]+$/, ""),
-      description: "Insurance Document",
-      templatePath: `${lang}/${file.name}`,
-      samplePath: `${lang}/${file.name}`
+    const documentsData = JSON.parse(fs.readFileSync(documentsPath, 'utf8'));
+    
+    // Convert to array format expected by frontend
+    const docs = Object.values(documentsData).map(doc => ({
+      label: doc.label,
+      description: doc.description || "Insurance Document",
+      templatePath: doc.templatePath,
+      samplePath: doc.samplePath
     }));
 
     return { statusCode: 200, body: JSON.stringify(docs) };

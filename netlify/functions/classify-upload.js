@@ -1,5 +1,4 @@
 const { createClient } = require("@supabase/supabase-js");
-const Busboy = require("busboy");
 const { supabase, getUserFromAuth } = require("./utils/auth");
 
 exports.handler = async (event) => {
@@ -9,31 +8,20 @@ exports.handler = async (event) => {
       return { statusCode: 405, body: "Method Not Allowed" };
     }
 
-    const busboy = Busboy({ headers: event.headers });
-    let uploadPromise;
+    // Simple file upload handling without busboy
+    const { file, filename } = JSON.parse(event.body);
+    
+    if (!file || !filename) {
+      return { statusCode: 400, body: JSON.stringify({ error: "Missing file or filename" }) };
+    }
 
-    busboy.on("file", (fieldname, file, filename) => {
-      const filePath = `${user.email}/${filename}`;
-      uploadPromise = supabase.storage
-        .from("claimnavigatorai-docs")
-        .upload(filePath, file, { upsert: true })
-        .then(async ({ error }) => {
-          if (error) throw error;
-          await supabase.from("documents").insert({
-            email: user.email,
-            file_name: filename,
-            category: "uploaded"
-          });
-        });
+    // Store file metadata in database
+    await supabase.from("documents").insert({
+      email: user.email,
+      file_name: filename,
+      category: "uploaded",
+      content: file // Store base64 content
     });
-
-    await new Promise((resolve, reject) => {
-      busboy.on("finish", resolve);
-      busboy.on("error", reject);
-      busboy.end(Buffer.from(event.body, "base64"));
-    });
-
-    if (uploadPromise) await uploadPromise;
 
     return { statusCode: 200, body: JSON.stringify({ success: true }) };
   } catch (err) {
