@@ -11,6 +11,7 @@ exports.handler = async (event) => {
   const sig = event.headers["stripe-signature"];
 
   try {
+    // Verify webhook signature
     const stripeEvent = stripe.webhooks.constructEvent(
       event.body,
       sig,
@@ -23,29 +24,54 @@ exports.handler = async (event) => {
       const userEmail = session.customer_email;
       const affiliateID = session.metadata?.affiliateID || null;
       const product = session.metadata?.product || "Unknown Product";
-      const amount = session.amount_total / 100; // convert cents to dollars
+      const amount = (session.amount_total || 0) / 100; // convert cents to dollars
 
-      // Update entitlements (grant credits)
-      await supabase.from("entitlements").upsert(
-        { email: userEmail, credits: 20 },
-        { onConflict: "email" }
-      );
+      console.log(`✅ Payment received: ${userEmail}, Product: ${product}, Amount: $${amount}`);
 
-      // Update transaction to mark paid
-      const { error } = await supabase
+      // 1. Increment entitlements (grant credits)
+      const { data: entitlement, error: entError } = await supabase
+        .from("entitlements")
+        .select("credits")
+        .eq("email", userEmail)
+        .single();
+
+      if (entError && entError.code !== "PGRST116") {
+        // Not just "row not found"
+        console.error("Entitlement fetch error:", entError);
+      }
+
+      const newCredits = (entitlement?.credits || 0) + 20;
+
+      const { error: upsertError } = await supabase
+        .from("entitlements")
+        .upsert(
+          { email: userEmail, credits: newCredits },
+          { onConflict: "email" }
+        );
+
+      if (upsertError) {
+        console.error("Entitlement update error:", upsertError);
+      } else {
+        console.log(`🎉 Updated credits for ${userEmail}: ${newCredits}`);
+      }
+
+      // 2. Update transactions table
+      const { error: txnError } = await supabase
         .from("transactions")
         .update({ payout_status: "pending" })
         .eq("user_email", userEmail)
         .eq("product", product);
 
-      if (error) console.error("Transaction update error:", error);
+      if (txnError) console.error("Transaction update error:", txnError);
 
-      // If partner subscription, update status
-      if (product.includes("Subscription")) {
-        await supabase
+      // 3. If subscription, update partners table
+      if (product.toLowerCase().includes("subscription")) {
+        const { error: partnerError } = await supabase
           .from("partners")
           .update({ subscription_status: "active" })
           .eq("email", userEmail);
+
+        if (partnerError) console.error("Partner update error:", partnerError);
       }
     }
 
