@@ -11,16 +11,22 @@ exports.handler = async (event) => {
       return { statusCode: 405, body: "Method Not Allowed" };
     }
 
-    const { email } = JSON.parse(event.body);
-
-    if (!email) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Missing email" }) };
+    // 1. Verify JWT
+    const token = event.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return { statusCode: 401, body: JSON.stringify({ error: "Missing auth token" }) };
     }
 
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !user) {
+      return { statusCode: 401, body: JSON.stringify({ error: "Invalid or expired session" }) };
+    }
+
+    // 2. Fetch logs for authenticated user
     const { data, error } = await supabase
       .from("credit_logs")
       .select("created_at, mode, language, tokens_used")
-      .eq("email", email)
+      .eq("email", user.email)
       .order("created_at", { ascending: false })
       .limit(50);
 
