@@ -9,7 +9,7 @@ exports.handler = async (event) => {
   try {
     const { lang = "en" } = JSON.parse(event.body || "{}");
 
-    // Point this to your Supabase storage bucket name
+    // List all files in that language folder
     const { data, error } = await supabase
       .storage
       .from('documents')
@@ -17,9 +17,21 @@ exports.handler = async (event) => {
 
     if (error) throw error;
 
+    // Convert Supabase file entries into usable frontend objects
+    const docs = data.map(file => {
+      const filePath = `${lang}/${file.name}`;
+
+      return {
+        label: file.name.replace(/\.[^/.]+$/, ""), // filename w/out extension
+        description: "Insurance Document",
+        templatePath: filePath,
+        samplePath: filePath
+      };
+    });
+
     return {
       statusCode: 200,
-      body: JSON.stringify(data),
+      body: JSON.stringify(docs),
     };
   } catch (err) {
     console.error(err);
