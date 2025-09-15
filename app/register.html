@@ -87,39 +87,35 @@
   </div>
 
   <script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-  const supabase = createClient(
-    "SUPABASE_URL",         // replace with your Supabase project URL
-    "SUPABASE_ANON_KEY"     // replace with your anon key
-  );
+    // Initialize Supabase client
+    const supabase = createClient(
+      "https://bnxvfxtpsxgfpltflyrr.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
+    );
 
-  const form = document.getElementById('register-form');
+    // Handle register form submit
+    const form = document.getElementById('register-form');
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password
-    });
+      const { data, error } = await supabase.auth.signUp({ email, password });
 
-    if (error) {
-      alert("Registration failed: " + error.message);
-    } else {
-      // ✅ Save email to localStorage for all future calls
-      if (data.user && data.user.email) {
-        localStorage.setItem("userEmail", data.user.email);
+      if (error) {
+        alert("Registration failed: " + error.message);
+      } else {
+        if (data.user && data.user.email) {
+          localStorage.setItem("userEmail", data.user.email);
+        }
+        alert("Registration successful! Please verify your email if required.");
+        window.location.href = "response-center.html"; // redirect after signup
       }
-
-      alert("Registration successful! Please verify your email if required.");
-      window.location.href = "response-center.html"; // redirect after signup
-    }
-  });
-</script>
-
+    });
+  </script>
 </body>
 </html>
