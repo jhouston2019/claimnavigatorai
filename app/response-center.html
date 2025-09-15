@@ -283,7 +283,7 @@
       out.innerHTML = `<div class="spinner"></div> Generating...`;
 
       try {
-        const res = await fetch('/.netlify/functions/ai-generate-response', {
+        const res = await fetch('/.netlify/functions/generate-response', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -339,7 +339,7 @@
     // --- My Documents ---
     async function loadDocuments() {
       try {
-        const res = await fetch('/.netlify/functions/get-documents', {
+        const res = await fetch('/.netlify/functions/list-documents', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: localStorage.getItem('userEmail'), lang: localStorage.getItem('lang') || 'en' })
