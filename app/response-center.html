@@ -373,23 +373,26 @@
     }
 
     async function openDocument(filePath) {
-      try {
-        const res = await fetch('/.netlify/functions/generate-signed-url', {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ filePath })
-        });
-        const data = await res.json();
-        if (res.ok && data.url) {
-          window.open(data.url, "_blank");
-        } else {
-          alert("Failed to load document");
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Error opening document");
-      }
+  try {
+    const res = await fetch('/.netlify/functions/generate-signed-url', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        fileName: filePath, 
+        email: localStorage.getItem('userEmail') 
+      })
+    });
+    const data = await res.json();
+    if (res.ok && data.url) {
+      window.open(data.url, "_blank");
+    } else {
+      alert("Failed to load document");
     }
+  } catch (err) {
+    console.error("Signed URL error:", err);
+    alert("Error opening document");
+  }
+}
 
     function uploadDocument() {
       const file = document.getElementById('doc-upload').files[0];
