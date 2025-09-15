@@ -249,7 +249,15 @@
     </div>
   </main>
 
- <script>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+  // Initialize Supabase client
+  const supabase = createClient(
+    "https://bnxvfxtpsxgfpltflyrr.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
+  );
+
   // --- Tabs ---
   function switchTab(event, tab) {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -258,9 +266,10 @@
     event.target.classList.add('active');
   }
 
-  function logout() {
-    localStorage.removeItem('userEmail');
-    window.location.href = '../index.html';
+  async function logout() {
+    await supabase.auth.signOut();
+    localStorage.removeItem('userEmail'); // legacy cleanup
+    window.location.href = "login.html";
   }
 
   function getLanguage() {
@@ -283,11 +292,14 @@
     out.innerHTML = `<div class="spinner"></div> Generating...`;
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not logged in");
+
       const res = await fetch('/.netlify/functions/generate-response', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: localStorage.getItem('userEmail'),
+          email: user.email,
           inputText: input,
           language: getLanguage()
         })
@@ -297,52 +309,67 @@
         out.textContent = data.draft;
         document.getElementById('confidence-meter').innerText = "Confidence: High";
         addToHistory("ai-agent", data.draft);
-      } else out.textContent = data.error || "Failed.";
+      } else {
+        out.textContent = data.error || "Failed.";
+      }
     } catch (e) {
       console.error(e);
       out.textContent = "Error generating.";
     }
   }
 
-  function saveDraft() {
+  async function saveDraft() {
     const text = document.getElementById('ai-output').innerText;
     if (!text) return alert("No draft.");
-    fetch('/.netlify/functions/save-draft', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: localStorage.getItem('userEmail'), content: text })
-    })
-    .then(() => alert("Draft saved."))
-    .catch(err => console.error("Save failed:", err));
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not logged in");
+
+      await fetch('/.netlify/functions/save-draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email, content: text })
+      });
+      alert("Draft saved.");
+    } catch (err) {
+      console.error("Save failed:", err);
+    }
   }
 
-  function exportDoc(type) {
-    fetch('/.netlify/functions/export-doc', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: localStorage.getItem('userEmail'),
-        type,
-        content: document.getElementById('ai-output').innerText
-      })
-    })
-    .then(res => res.blob())
-    .then(blob => {
+  async function exportDoc(type) {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not logged in");
+
+      const res = await fetch('/.netlify/functions/export-doc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: user.email,
+          type,
+          content: document.getElementById('ai-output').innerText
+        })
+      });
+      const blob = await res.blob();
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
       link.download = `AI-Response.${type}`;
       link.click();
-    })
-    .catch(err => console.error("Export failed:", err));
+    } catch (err) {
+      console.error("Export failed:", err);
+    }
   }
 
   // --- My Documents ---
   async function loadDocuments() {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not logged in");
+
       const res = await fetch('/.netlify/functions/list-documents', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: localStorage.getItem('userEmail'), lang: localStorage.getItem('lang') || 'en' })
+        body: JSON.stringify({ email: user.email, lang: localStorage.getItem('lang') || 'en' })
       });
       const docs = await res.json();
       const container = document.getElementById("documents-container");
@@ -374,12 +401,15 @@
 
   async function openDocument(filePath) {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not logged in");
+
       const res = await fetch('/.netlify/functions/generate-signed-url', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           fileName: filePath, 
-          email: localStorage.getItem('userEmail') 
+          email: user.email
         })
       });
       const data = await res.json();
@@ -394,19 +424,23 @@
     }
   }
 
-  function uploadDocument() {
+  async function uploadDocument() {
     const file = document.getElementById('doc-upload').files[0];
     if (!file) return;
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("email", localStorage.getItem('userEmail'));
-    fetch('/.netlify/functions/classify-upload', { method: 'POST', body: formData })
-      .then(res => res.json())
-      .then(() => {
-        alert("Document uploaded & classified");
-        loadDocuments();
-      })
-      .catch(err => console.error("Upload failed:", err));
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not logged in");
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("email", user.email);
+
+      await fetch('/.netlify/functions/classify-upload', { method: 'POST', body: formData });
+      alert("Document uploaded & classified");
+      loadDocuments();
+    } catch (err) {
+      console.error("Upload failed:", err);
+    }
   }
 
   function setLang(newLang) {
@@ -417,14 +451,18 @@
   // --- Credit Log ---
   async function loadCreditLog() {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not logged in");
+
       const res = await fetch('/.netlify/functions/get-credit-log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: localStorage.getItem('userEmail') })
+        body: JSON.stringify({ email: user.email })
       });
       const data = await res.json();
       const tbody = document.getElementById('credit-log-body');
       tbody.innerHTML = "";
+
       if (res.ok && data.success && data.logs.length > 0) {
         data.logs.forEach(log => {
           const row = document.createElement("tr");
@@ -447,9 +485,9 @@
   }
 
   // --- Auth Guard + Init ---
-  document.addEventListener('DOMContentLoaded', () => {
-    const userEmail = localStorage.getItem('userEmail');
-    if (!userEmail) {
+  document.addEventListener('DOMContentLoaded', async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
       alert("You must log in first.");
       window.location.href = "login.html";
       return;
@@ -460,8 +498,7 @@
     loadCreditLog();
     document.querySelectorAll('.accordion-header').forEach(btn => {
       btn.addEventListener('click', () => {
-        const item = btn.parentElement;
-        item.classList.toggle('active');
+        btn.parentElement.classList.toggle('active');
       });
     });
   });
