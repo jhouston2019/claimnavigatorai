@@ -42,6 +42,14 @@
     .accordion-item.active .accordion-body { display:block; }
     .accordion-body ul { list-style:none; padding:0; }
     .accordion-body li { margin-bottom:0.5rem; }
+
+    /* Affiliate Tools Styles */
+    .affiliate-disclosure { background:var(--bg-light); padding:1rem; border-radius:0.5rem; border-left:4px solid var(--primary); margin:2rem 0; font-size:0.875rem; color:var(--text-secondary); }
+    .resource-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1rem; margin-top:1rem; }
+    .resource-card { background:var(--bg-light); padding:1rem; border:1px solid var(--border); border-radius:0.5rem; }
+    .resource-badge { background:var(--primary); color:#fff; padding:0.25rem 0.5rem; border-radius:0.25rem; font-size:0.75rem; font-weight:bold; text-transform:uppercase; }
+    .resource-card h4 { color:#000; margin:0.5rem 0; font-size:1.1rem; }
+    .resource-card p { color:var(--text-secondary); font-size:0.9rem; margin-bottom:1rem; }
   </style>
 </head>
 <body>
@@ -68,6 +76,7 @@
       <button class="tab" onclick="switchTab(event,'my-documents')">My Documents</button>
       <button class="tab" onclick="switchTab(event,'analysis-tools')">Claim Analysis Tools</button>
       <button class="tab" onclick="switchTab(event,'claim-playbook')">Claim Playbook</button>
+      <button class="tab" onclick="switchTab(event,'recommended-tools')">Recommended Tools</button>
       <button class="tab" onclick="switchTab(event,'settings')">Settings</button>
     </div>
 
@@ -94,8 +103,8 @@
     <div id="my-documents" class="tab-content">
       <h2>My Documents</h2>
       <div class="lang-toggle" style="margin-bottom:1rem;">
-        <button onclick="setLang('en')" class="btn-primary">English</button>
-        <button onclick="setLang('es')" class="btn-secondary">Español</button>
+        <button id="lang-en" onclick="setLang('en')" class="btn-primary">English</button>
+        <button id="lang-es" onclick="setLang('es')" class="btn-secondary">Español</button>
       </div>
       <input type="text" id="doc-search" placeholder="Search documents..."
         oninput="filterDocuments()" style="width:100%; margin-bottom:1rem; padding:0.5rem;">
@@ -106,7 +115,81 @@
     <!-- Claim Analysis Tools -->
     <div id="analysis-tools" class="tab-content">
       <h2>Claim Analysis Tools</h2>
-      <div class="tool-grid" id="tool-grid"></div>
+      <p>Professional tools to analyze your claim, review coverage, and assess damages</p>
+      
+      <div class="tool-grid" id="tool-grid">
+        <!-- Policy Review Tool -->
+        <div class="tool-card">
+          <div class="tool-title">Policy Review & Coverage Analysis</div>
+          <div class="tool-desc">Upload your policy documents for AI-powered coverage analysis and gap identification</div>
+          <textarea id="policy-input" placeholder="Paste your policy information here or upload documents..." style="width: 100%; min-height: 80px; margin: 0.5rem 0; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"></textarea>
+          <div class="action-buttons">
+            <button class="btn-primary" onclick="analyzePolicy()">Analyze Policy</button>
+            <button class="btn-secondary" onclick="downloadPolicyChecklist()">Download Checklist</button>
+          </div>
+          <div id="policy-analysis-output" class="tool-output"></div>
+        </div>
+
+        <!-- Damage Assessment Tool -->
+        <div class="tool-card">
+          <div class="tool-title">Damage Assessment Calculator</div>
+          <div class="tool-desc">Calculate and document property damage with line-item estimates and depreciation analysis</div>
+          <textarea id="damage-input" placeholder="Describe the damage, paste estimates, or upload photos..." style="width: 100%; min-height: 80px; margin: 0.5rem 0; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"></textarea>
+          <div class="action-buttons">
+            <button class="btn-primary" onclick="assessDamage()">Start Assessment</button>
+            <button class="btn-secondary" onclick="downloadDamageForm()">Download Form</button>
+          </div>
+          <div id="damage-assessment-output" class="tool-output"></div>
+        </div>
+
+        <!-- Estimate Review Tool -->
+        <div class="tool-card">
+          <div class="tool-title">Estimate Review & Comparison</div>
+          <div class="tool-desc">Compare contractor estimates with insurer estimates and identify discrepancies</div>
+          <textarea id="estimate-input" placeholder="Paste contractor and insurer estimates for comparison..." style="width: 100%; min-height: 80px; margin: 0.5rem 0; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"></textarea>
+          <div class="action-buttons">
+            <button class="btn-primary" onclick="reviewEstimate()">Review Estimate</button>
+            <button class="btn-secondary" onclick="downloadComparison()">Download Comparison</button>
+          </div>
+          <div id="estimate-review-output" class="tool-output"></div>
+        </div>
+
+        <!-- Business Interruption Tool -->
+        <div class="tool-card">
+          <div class="tool-title">Business Interruption Calculator</div>
+          <div class="tool-desc">Calculate business interruption losses including lost revenue and extra expenses</div>
+          <textarea id="bi-input" placeholder="Provide business financial information, revenue data, and expenses..." style="width: 100%; min-height: 80px; margin: 0.5rem 0; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"></textarea>
+          <div class="action-buttons">
+            <button class="btn-primary" onclick="calculateBI()">Calculate BI Loss</button>
+            <button class="btn-secondary" onclick="downloadBICalc()">Download Calculator</button>
+          </div>
+          <div id="bi-calculator-output" class="tool-output"></div>
+        </div>
+
+        <!-- Expert Opinion Tool -->
+        <div class="tool-card">
+          <div class="tool-title">Expert Opinion Request Generator</div>
+          <div class="tool-desc">Generate professional requests for expert opinions on damage assessment or policy interpretation</div>
+          <textarea id="expert-input" placeholder="Describe the claim situation and type of expert opinion needed..." style="width: 100%; min-height: 80px; margin: 0.5rem 0; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"></textarea>
+          <div class="action-buttons">
+            <button class="btn-primary" onclick="requestExpertOpinion()">Generate Request</button>
+            <button class="btn-secondary" onclick="downloadExpertForm()">Download Form</button>
+          </div>
+          <div id="expert-opinion-output" class="tool-output"></div>
+        </div>
+
+        <!-- Settlement Analysis Tool -->
+        <div class="tool-card">
+          <div class="tool-title">Settlement Analysis & Negotiation</div>
+          <div class="tool-desc">Analyze settlement offers and generate negotiation strategies with supporting documentation</div>
+          <textarea id="settlement-input" placeholder="Paste settlement offer details and your claim information..." style="width: 100%; min-height: 80px; margin: 0.5rem 0; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"></textarea>
+          <div class="action-buttons">
+            <button class="btn-primary" onclick="analyzeSettlement()">Analyze Settlement</button>
+            <button class="btn-secondary" onclick="downloadNegotiation()">Download Strategy</button>
+          </div>
+          <div id="settlement-analysis-output" class="tool-output"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Claim Playbook -->
@@ -228,6 +311,16 @@
       </div>
     </div>
 
+    <!-- Recommended Tools -->
+    <div id="recommended-tools" class="tab-content">
+      <h2>Recommended Tools & Resources</h2>
+      <p>Essential tools to complement your AI claim toolkit and strengthen your documentation</p>
+      
+      <div id="affiliate-tools-container">
+        <!-- Affiliate tools will be dynamically rendered here -->
+      </div>
+    </div>
+
     <!-- Settings -->
     <div id="settings" class="tab-content">
       <h2>Account Settings</h2>
@@ -249,14 +342,28 @@
     </div>
   </main>
 
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-  // Initialize Supabase client
-  const supabase = createClient(
-    "https://bnxvfxtpsxgfpltflyrr.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
-  );
+<script>
+  // Simplified version without ES6 modules for better compatibility
+  let supabase = null;
+  
+  // Initialize Supabase client - using environment variables
+  try {
+    // Load Supabase dynamically
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/main/index.js';
+    script.onload = function() {
+      if (window.supabase) {
+        supabase = window.supabase.createClient(
+          window.SUPABASE_URL || "https://bnxvfxtpsxgfpltflyrr.supabase.co",
+          window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
+        );
+        console.log('Supabase initialized successfully');
+      }
+    };
+    document.head.appendChild(script);
+  } catch (error) {
+    console.log('Supabase initialization failed, using development mode:', error);
+  }
 
   // --- Tabs ---
   function switchTab(event, tab) {
@@ -267,7 +374,16 @@
   }
 
   async function logout() {
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (isDevelopment) {
+      alert("Development Mode: Would log out\n\nIn production, this would clear the session and redirect to login.");
+      return;
+    }
+    
+    if (supabase) {
     await supabase.auth.signOut();
+    }
     window.location.href = "login.html";
   }
 
@@ -284,6 +400,17 @@
 
   // Helper: get auth header
   async function getAuthHeader() {
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (isDevelopment) {
+      // Development mode - return mock headers
+      return { 'Content-Type': 'application/json' };
+    }
+    
+    if (!supabase) {
+      throw new Error("Supabase not initialized");
+    }
+    
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error("Not logged in");
     return { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' };
@@ -298,6 +425,35 @@
     out.innerHTML = `<div class="spinner"></div> Generating...`;
 
     try {
+      // Development mode - use mock response
+      const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      
+      if (isDevelopment) {
+        // Mock response for development
+        setTimeout(() => {
+          const mockResponse = `Thank you for your correspondence regarding claim #${Math.floor(Math.random() * 10000)}.
+
+Based on the information provided, I would like to address the following points:
+
+1. **Policy Coverage Review**: Please provide additional documentation to support the claim as outlined in your policy terms.
+
+2. **Damage Assessment**: We request a detailed assessment from a qualified contractor to evaluate the extent of damages.
+
+3. **Timeline**: Please submit all required documentation within 30 days to avoid any delays in processing.
+
+This is a mock AI-generated response for development testing. In production, this would be generated by OpenAI's GPT-4 model.
+
+Best regards,
+Policyholder Response Team`;
+
+          out.textContent = mockResponse;
+          document.getElementById('confidence-meter').innerText = "Confidence: High (Development Mode)";
+          addToHistory("ai-agent", mockResponse);
+        }, 2000);
+        return;
+      }
+
+      // Production mode - use real API
       const headers = await getAuthHeader();
       const res = await fetch('/.netlify/functions/generate-response', {
         method: 'POST',
@@ -314,7 +470,7 @@
       }
     } catch (e) {
       console.error(e);
-      out.textContent = "Error generating.";
+      out.textContent = "Error generating response. Please check your connection and try again.";
     }
   }
 
@@ -357,6 +513,54 @@
 
   // --- My Documents ---
   async function loadDocuments() {
+    const container = document.getElementById("documents-container");
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const currentLang = localStorage.getItem('lang') || 'en';
+
+    if (isDevelopment) {
+      // Load real documents from JSON files
+      try {
+        const docsUrl = currentLang === 'es' ? '/assets/docs/es/documents.json' : '/assets/data/documents.json';
+        const response = await fetch(docsUrl);
+        const docsData = await response.json();
+        
+        // Convert object to array and sort by label
+        const docsArray = Object.values(docsData).sort((a, b) => a.label.localeCompare(b.label));
+        
+        container.innerHTML = "";
+        
+        if (docsArray.length === 0) {
+          container.innerHTML = `<p>No documents found for ${currentLang === 'es' ? 'Spanish' : 'English'}.</p>`;
+          return;
+        }
+        
+        docsArray.forEach(doc => {
+          const card = document.createElement("div");
+          card.className = "tool-card";
+          card.innerHTML = `
+            <div class="tool-title">${doc.label}</div>
+            <div class="tool-desc">${doc.description || 'Insurance claim document'}</div>
+            <div class="action-buttons">
+              <button class="btn-primary" onclick="openDocument('${doc.templatePath}')">Template</button>
+              <button class="btn-secondary" onclick="openDocument('${doc.samplePath}')">Sample</button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+        
+        // Show document count
+        const countDiv = document.createElement("div");
+        countDiv.style.cssText = "margin-top: 1rem; padding: 0.5rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; color: #0369a1;";
+        countDiv.innerHTML = `<strong>📄 ${docsArray.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'}</strong>`;
+        container.appendChild(countDiv);
+        
+      } catch (error) {
+        console.error('Error loading documents:', error);
+        container.innerHTML = `<p style="color: red;">Error loading documents: ${error.message}</p>`;
+      }
+      return;
+    }
+
     try {
       const headers = await getAuthHeader();
       const res = await fetch('/.netlify/functions/list-documents', {
@@ -365,8 +569,6 @@
         body: JSON.stringify({ lang: localStorage.getItem('lang') || 'en' })
       });
       const docs = await res.json();
-      const container = document.getElementById("documents-container");
-      container.innerHTML = "";
 
       if (res.ok && Array.isArray(docs) && docs.length > 0) {
         docs.forEach(doc => {
@@ -387,12 +589,19 @@
       }
     } catch (err) {
       console.error("Error loading documents:", err);
-      document.getElementById("documents-container").innerHTML =
-        `<p style="color:red;">Failed to load documents.</p>`;
+      container.innerHTML = `<p style="color:red;">Failed to load documents.</p>`;
     }
   }
 
   async function openDocument(filePath) {
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (isDevelopment) {
+      // Mock document opening for development
+      alert(`Development Mode: Would open document "${filePath}"\n\nIn production, this would generate a signed URL and open the document.`);
+      return;
+    }
+
     try {
       const headers = await getAuthHeader();
       const res = await fetch('/.netlify/functions/generate-signed-url', {
@@ -415,7 +624,19 @@
   async function uploadDocument() {
     const file = document.getElementById('doc-upload').files[0];
     if (!file) return;
+    
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (isDevelopment) {
+      alert(`Development Mode: Would upload file "${file.name}"\n\nIn production, this would upload and classify the document.`);
+      return;
+    }
+    
     try {
+      if (!supabase) {
+        throw new Error("Supabase not initialized");
+      }
+      
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not logged in");
 
@@ -431,11 +652,27 @@
       loadDocuments();
     } catch (err) {
       console.error("Upload failed:", err);
+      alert("Upload failed: " + err.message);
     }
   }
 
   function setLang(newLang) {
     localStorage.setItem("lang", newLang);
+    
+    // Update button styling
+    const enBtn = document.getElementById('lang-en');
+    const esBtn = document.getElementById('lang-es');
+    
+    if (enBtn && esBtn) {
+      if (newLang === 'en') {
+        enBtn.className = 'btn-primary';
+        esBtn.className = 'btn-secondary';
+      } else {
+        enBtn.className = 'btn-secondary';
+        esBtn.className = 'btn-primary';
+      }
+    }
+    
     loadDocuments();
   }
 
@@ -457,6 +694,46 @@
 
   // --- Credit Log ---
   async function loadCreditLog() {
+    const tbody = document.getElementById('credit-log-body');
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (isDevelopment) {
+      // Mock credit log for development
+      const mockLogs = [
+        {
+          created_at: new Date().toISOString(),
+          mode: "ai-response",
+          language: "en",
+          tokens_used: 150
+        },
+        {
+          created_at: new Date(Date.now() - 86400000).toISOString(),
+          mode: "ai-response",
+          language: "es",
+          tokens_used: 200
+        },
+        {
+          created_at: new Date(Date.now() - 172800000).toISOString(),
+          mode: "document-generation",
+          language: "en",
+          tokens_used: 75
+        }
+      ];
+
+      tbody.innerHTML = "";
+      mockLogs.forEach(log => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${new Date(log.created_at).toLocaleString()}</td>
+          <td>${log.mode}</td>
+          <td>${log.language}</td>
+          <td>${log.tokens_used}</td>
+        `;
+        tbody.appendChild(row);
+      });
+      return;
+    }
+
     try {
       const headers = await getAuthHeader();
       const res = await fetch('/.netlify/functions/get-credit-log', {
@@ -465,8 +742,6 @@
         body: JSON.stringify({})
       });
       const data = await res.json();
-      const tbody = document.getElementById('credit-log-body');
-      tbody.innerHTML = "";
 
       if (res.ok && data.success && data.logs.length > 0) {
         data.logs.forEach(log => {
@@ -484,8 +759,7 @@
       }
     } catch (err) {
       console.error("Error loading credit log:", err);
-      document.getElementById('credit-log-body').innerHTML =
-        `<tr><td colspan="4">Error loading log.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4">Error loading log.</td></tr>`;
     }
   }
 
@@ -515,23 +789,456 @@
     }
   }
 
+  // --- Claim Analysis Tools ---
+  async function analyzePolicy() {
+    const output = document.getElementById('policy-analysis-output');
+    output.style.display = 'block';
+    output.innerHTML = '<div class="spinner"></div> Analyzing policy with AI...';
+
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (isDevelopment) {
+      // Development mode - show mock data but also demonstrate real functionality
+      setTimeout(() => {
+        const analysis = `Policy Coverage Analysis Results:
+
+✓ Coverage Type: Property Insurance
+✓ Policy Limits: $500,000 dwelling, $100,000 contents
+✓ Deductible: $2,500
+✓ Coverage Gaps Identified:
+  - Additional Living Expenses (ALE) coverage may be insufficient
+  - Code upgrade coverage not clearly defined
+  - Mold coverage limitations present
+
+Recommendations:
+1. Review ALE coverage limits for extended displacement
+2. Clarify code upgrade coverage with adjuster
+3. Document all mold-related damages immediately
+4. Consider hiring public adjuster for complex claim
+
+This is a mock analysis for development testing. In production, this would use AI to analyze your actual policy documents.`;
+        output.textContent = analysis;
+      }, 2000);
+    } else {
+      // Production mode - use real AI analysis
+      try {
+        const headers = await getAuthHeader();
+        
+        // Get policy data from user input or uploaded documents
+        const policyData = document.getElementById('policy-input')?.value || 
+          "Please upload your policy documents or paste policy information for AI analysis.";
+        
+        const response = await fetch('/.netlify/functions/analyze-claim', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            analysisType: 'policy_review',
+            inputData: policyData
+          })
+        });
+
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+          output.textContent = result.analysis;
+        } else {
+          output.textContent = `Error: ${result.error || 'Analysis failed'}`;
+        }
+      } catch (error) {
+        console.error('Policy analysis error:', error);
+        output.textContent = 'Error: Failed to analyze policy. Please try again.';
+      }
+    }
+  }
+
+  async function assessDamage() {
+    const output = document.getElementById('damage-assessment-output');
+    output.style.display = 'block';
+    output.innerHTML = '<div class="spinner"></div> Calculating damage assessment with AI...';
+
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (isDevelopment) {
+      setTimeout(() => {
+        const assessment = `Damage Assessment Summary:
+
+Property Damage Breakdown:
+- Roof Damage: $15,000 (replacement required)
+- Interior Water Damage: $8,500 (drywall, flooring)
+- HVAC System: $3,200 (water damage)
+- Personal Property: $12,000 (furniture, electronics)
+
+Total Estimated Damage: $38,700
+Less Depreciation (10%): $3,870
+Net Claim Value: $34,830
+
+Documentation Required:
+✓ Photos of all damaged areas
+✓ Contractor estimates (minimum 2)
+✓ Proof of ownership for personal property
+✓ Receipts for emergency repairs
+
+This is a mock assessment for development testing. In production, this would use AI to analyze your damage photos and estimates.`;
+        output.textContent = assessment;
+      }, 2000);
+    } else {
+      try {
+        const headers = await getAuthHeader();
+        
+        const damageData = document.getElementById('damage-input')?.value || 
+          "Please provide damage information, photos, or estimates for AI analysis.";
+        
+        const response = await fetch('/.netlify/functions/analyze-claim', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            analysisType: 'damage_assessment',
+            inputData: damageData
+          })
+        });
+
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+          output.textContent = result.analysis;
+        } else {
+          output.textContent = `Error: ${result.error || 'Assessment failed'}`;
+        }
+      } catch (error) {
+        console.error('Damage assessment error:', error);
+        output.textContent = 'Error: Failed to assess damage. Please try again.';
+      }
+    }
+  }
+
+  async function reviewEstimate() {
+    const output = document.getElementById('estimate-review-output');
+    output.style.display = 'block';
+    output.innerHTML = '<div class="spinner"></div> Reviewing estimates with AI...';
+
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (isDevelopment) {
+      setTimeout(() => {
+        const review = `Estimate Comparison Analysis:
+
+Contractor Estimate: $38,700
+Insurer Estimate: $28,500
+Discrepancy: $10,200 (26% difference)
+
+Key Discrepancies Identified:
+1. Roof Replacement: Contractor $15,000 vs Insurer $12,000
+   - Missing: Underlayment, flashing, permits
+2. Interior Repairs: Contractor $8,500 vs Insurer $6,200
+   - Missing: Paint, trim, baseboards
+3. HVAC: Contractor $3,200 vs Insurer $2,100
+   - Missing: Ductwork cleaning, filter replacement
+
+Recommended Actions:
+1. Request detailed line-item breakdown from insurer
+2. Submit contractor estimates with supporting documentation
+3. Schedule re-inspection with both parties present
+4. Consider independent appraisal if dispute continues
+
+This is a mock review for development testing. In production, this would use AI to compare your actual estimates.`;
+        output.textContent = review;
+      }, 2000);
+    } else {
+      try {
+        const headers = await getAuthHeader();
+        
+        const estimateData = document.getElementById('estimate-input')?.value || 
+          "Please provide contractor and insurer estimates for AI comparison.";
+        
+        const response = await fetch('/.netlify/functions/analyze-claim', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            analysisType: 'estimate_review',
+            inputData: estimateData
+          })
+        });
+
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+          output.textContent = result.analysis;
+        } else {
+          output.textContent = `Error: ${result.error || 'Estimate review failed'}`;
+        }
+      } catch (error) {
+        console.error('Estimate review error:', error);
+        output.textContent = 'Error: Failed to review estimates. Please try again.';
+      }
+    }
+  }
+
+  async function calculateBI() {
+    const output = document.getElementById('bi-calculator-output');
+    output.style.display = 'block';
+    output.innerHTML = '<div class="spinner"></div> Calculating business interruption with AI...';
+
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (isDevelopment) {
+      setTimeout(() => {
+        const biCalc = `Business Interruption Loss Calculation:
+
+Lost Revenue Analysis:
+- Pre-loss monthly revenue: $25,000
+- Projected downtime: 3 months
+- Total lost revenue: $75,000
+
+Extra Expenses:
+- Temporary location rent: $3,000/month × 3 = $9,000
+- Equipment rental: $1,500/month × 3 = $4,500
+- Additional utilities: $500/month × 3 = $1,500
+- Marketing to retain customers: $2,000
+
+Total Extra Expenses: $17,000
+
+Total BI Claim: $92,000
+
+Documentation Required:
+✓ Profit & Loss statements (12 months prior)
+✓ Tax returns (2 years)
+✓ Bank statements
+✓ Customer contracts
+✓ Vendor invoices
+
+This is a mock calculation for development testing. In production, this would use AI to analyze your business financials.`;
+        output.textContent = biCalc;
+      }, 2000);
+    } else {
+      try {
+        const headers = await getAuthHeader();
+        
+        const biData = document.getElementById('bi-input')?.value || 
+          "Please provide business financial information for BI calculation.";
+        
+        const response = await fetch('/.netlify/functions/analyze-claim', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            analysisType: 'business_interruption',
+            inputData: biData
+          })
+        });
+
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+          output.textContent = result.analysis;
+        } else {
+          output.textContent = `Error: ${result.error || 'BI calculation failed'}`;
+        }
+      } catch (error) {
+        console.error('BI calculation error:', error);
+        output.textContent = 'Error: Failed to calculate BI losses. Please try again.';
+      }
+    }
+  }
+
+  async function requestExpertOpinion() {
+    const output = document.getElementById('expert-opinion-output');
+    output.style.display = 'block';
+    output.innerHTML = '<div class="spinner"></div> Generating expert opinion request with AI...';
+
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (isDevelopment) {
+      setTimeout(() => {
+        const expertRequest = `Expert Opinion Request Letter:
+
+[Date]
+
+[Expert Name]
+[Expert Company]
+[Address]
+
+Re: Property Damage Assessment - Claim #[CLAIM_NUMBER]
+
+Dear [Expert Name],
+
+We are requesting your professional opinion regarding property damage sustained at [Property Address] on [Date of Loss].
+
+Scope of Work Requested:
+1. Structural damage assessment
+2. Cause and origin analysis
+3. Repair methodology and cost estimation
+4. Timeline for completion
+5. Code compliance requirements
+
+Documents Provided:
+- Insurance adjuster's estimate
+- Contractor estimates
+- Photographic documentation
+- Engineering reports (if available)
+
+Please provide your written opinion within 14 days of inspection.
+
+Sincerely,
+[Your Name]
+
+This is a mock request for development testing. In production, this would use AI to generate customized expert opinion requests.`;
+        output.textContent = expertRequest;
+      }, 2000);
+    } else {
+      try {
+        const headers = await getAuthHeader();
+        
+        const expertData = document.getElementById('expert-input')?.value || 
+          "Please provide claim details for expert opinion request generation.";
+        
+        const response = await fetch('/.netlify/functions/analyze-claim', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            analysisType: 'expert_opinion',
+            inputData: expertData
+          })
+        });
+
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+          output.textContent = result.analysis;
+        } else {
+          output.textContent = `Error: ${result.error || 'Expert opinion generation failed'}`;
+        }
+      } catch (error) {
+        console.error('Expert opinion error:', error);
+        output.textContent = 'Error: Failed to generate expert opinion request. Please try again.';
+      }
+    }
+  }
+
+  async function analyzeSettlement() {
+    const output = document.getElementById('settlement-analysis-output');
+    output.style.display = 'block';
+    output.innerHTML = '<div class="spinner"></div> Analyzing settlement offer with AI...';
+
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (isDevelopment) {
+      setTimeout(() => {
+        const settlementAnalysis = `Settlement Analysis & Negotiation Strategy:
+
+Current Settlement Offer: $28,500
+Your Claim Value: $38,700
+Shortfall: $10,200 (26% underpayment)
+
+Negotiation Strategy:
+1. Document all discrepancies with supporting evidence
+2. Request detailed explanation for each line item reduction
+3. Submit independent contractor estimates
+4. Highlight code upgrade requirements
+5. Emphasize policy language supporting full replacement cost
+
+Key Arguments:
+- Policy provides replacement cost coverage
+- Contractor estimates are from licensed professionals
+- Code upgrades are required by local ordinances
+- Depreciation should not apply to structural elements
+
+Next Steps:
+1. Send formal demand letter within 30 days
+2. Request appraisal if negotiations fail
+3. Consider public adjuster if claim exceeds $50,000
+4. Document all communications
+
+This is a mock analysis for development testing. In production, this would use AI to analyze your actual settlement offer.`;
+        output.textContent = settlementAnalysis;
+      }, 2000);
+    } else {
+      try {
+        const headers = await getAuthHeader();
+        
+        const settlementData = document.getElementById('settlement-input')?.value || 
+          "Please provide settlement offer details for AI analysis.";
+        
+        const response = await fetch('/.netlify/functions/analyze-claim', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            analysisType: 'settlement_analysis',
+            inputData: settlementData
+          })
+        });
+
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+          output.textContent = result.analysis;
+        } else {
+          output.textContent = `Error: ${result.error || 'Settlement analysis failed'}`;
+        }
+      } catch (error) {
+        console.error('Settlement analysis error:', error);
+        output.textContent = 'Error: Failed to analyze settlement. Please try again.';
+      }
+    }
+  }
+
+  // Download functions for analysis tools
+  function downloadPolicyChecklist() {
+    alert("Development Mode: Would download Policy Review Checklist\n\nIn production, this would generate and download a comprehensive policy review checklist.");
+  }
+
+  function downloadDamageForm() {
+    alert("Development Mode: Would download Damage Assessment Form\n\nIn production, this would generate and download a detailed damage assessment form.");
+  }
+
+  function downloadComparison() {
+    alert("Development Mode: Would download Estimate Comparison Report\n\nIn production, this would generate and download a detailed comparison report.");
+  }
+
+  function downloadBICalc() {
+    alert("Development Mode: Would download Business Interruption Calculator\n\nIn production, this would generate and download a BI calculation worksheet.");
+  }
+
+  function downloadExpertForm() {
+    alert("Development Mode: Would download Expert Opinion Request Form\n\nIn production, this would generate and download a professional expert opinion request form.");
+  }
+
+  function downloadNegotiation() {
+    alert("Development Mode: Would download Negotiation Strategy Document\n\nIn production, this would generate and download a comprehensive negotiation strategy document.");
+  }
+
   // --- Auth Guard + Init ---
   document.addEventListener('DOMContentLoaded', async () => {
+    // Development mode bypass - remove in production
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (!isDevelopment) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       alert("You must log in first.");
       window.location.href = "login.html";
       return;
+      }
+    } else {
+      console.log("Development mode: Authentication bypassed");
     }
 
-    loadDocuments();
-    loadCreditLog();
+    // Initialize accordion functionality
     document.querySelectorAll('.accordion-header').forEach(btn => {
       btn.addEventListener('click', () => {
         btn.parentElement.classList.toggle('active');
       });
     });
+
+    // Load initial data
+    try {
+      await loadDocuments();
+      await loadCreditLog();
+    } catch (error) {
+      console.log("Some functions may not be available in development mode:", error);
+    }
   });
 </script>
+
+<!-- Affiliate Tools Script -->
+<script src="../assets/js/affiliate-tools.js"></script>
 </body>
 </html>
