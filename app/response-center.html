@@ -665,6 +665,11 @@
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.getElementById(tab).classList.add('active');
     event.target.classList.add('active');
+    
+    // Load documents when My Documents tab is clicked
+    if (tab === 'my-documents') {
+      loadDocuments();
+    }
   }
 
   async function logout() {
