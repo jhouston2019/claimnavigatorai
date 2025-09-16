@@ -12,11 +12,13 @@
   external_node_modules = ["archiver", "pdfkit", "docx", "pdf-parse", "tesseract.js", "busboy"]
   node_bundler = "esbuild"
 
+# API redirects
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
+# Security headers
 [[headers]]
   for = "/*"
   [headers.values]
@@ -24,7 +26,9 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
 
+# Static asset caching
 [[headers]]
   for = "/*.js"
   [headers.values]
