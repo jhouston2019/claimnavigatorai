@@ -1,3 +1,7 @@
+console.log("DEBUG OPENAI KEY:", process.env.OPENAI_API_KEY ? "Loaded" : "MISSING");
+console.log("DEBUG SUPABASE URL:", process.env.SUPABASE_URL);
+console.log("DEBUG SUPABASE ANON KEY:", process.env.SUPABASE_ANON_KEY ? "Loaded" : "MISSING");
+
 const OpenAI = require("openai");
 const { supabase, getUserFromAuth } = require("./utils/auth");
 
@@ -5,11 +9,16 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 exports.handler = async (event) => {
   try {
-    const user = await getUserFromAuth(event);
+    // ✅ DEV OVERRIDE: hardcode user email while testing
+    const user = { email: "test@example.com" };
+
     const { inputText, language } = JSON.parse(event.body);
 
     if (!inputText) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Missing inputText" }) };
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Missing inputText" })
+      };
     }
 
     // Check credits
@@ -49,8 +58,15 @@ exports.handler = async (event) => {
     });
 
     return { statusCode: 200, body: JSON.stringify({ draft }) };
-  } catch (err) {
-    console.error("AI Response Error:", err);
-    return { statusCode: 500, body: JSON.stringify({ error: "Failed to generate response." }) };
-  }
+} catch (err) {
+  console.error("AI Response Error:", err);
+  return {
+    statusCode: 500,
+    body: JSON.stringify({
+      error: err.message || "Failed to generate response.",
+      stack: err.stack
+    })
+  };
+}
 };
+
