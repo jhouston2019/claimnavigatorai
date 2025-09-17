@@ -40,10 +40,11 @@ exports.handler = async (event, context) => {
             const filePath = path.join(directory, file);
             const fileBuffer = fs.readFileSync(filePath);
             
-            // Upload to Supabase Storage
+            // Upload to Supabase Storage with proper folder structure
+            const folderName = language === 'english' ? 'en' : 'es';
             const { data, error } = await supabase.storage
               .from('documents')
-              .upload(`${language}/${file}`, fileBuffer, {
+              .upload(`${folderName}/${file}`, fileBuffer, {
                 contentType: 'application/pdf',
                 upsert: true
               });
