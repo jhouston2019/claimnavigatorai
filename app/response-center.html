@@ -1225,126 +1225,34 @@ Policyholder Response Team`;
   // --- My Documents ---
   async function loadDocuments() {
     const container = document.getElementById("documents-container");
-    // Force development mode to fix the Supabase error
-    const isDevelopment = false; // Force production mode for live site
     const currentLang = localStorage.getItem('lang') || 'en';
     
     console.log('loadDocuments called - hostname:', window.location.hostname);
     console.log('loadDocuments called - protocol:', window.location.protocol);
-    console.log('loadDocuments called - isDevelopment:', isDevelopment);
     console.log('loadDocuments called - full URL:', window.location.href);
 
-    if (isDevelopment) {
-      // In development mode, load from local JSON files
-      // Note: Local files have limited documents (62 English, 65 Spanish)
-        // All 122 English and 125 Spanish documents are available in production via Supabase
-      try {
-        console.log('Development mode: Loading documents from local JSON files...');
-        console.log('About to fetch documents from:', currentLang === 'es' ? '../assets/docs/es/documents.json' : '../assets/data/documents.json');
-        const docsUrl = currentLang === 'es' ? '../assets/docs/es/documents.json' : '../assets/data/documents.json';
-        console.log('Loading documents from:', docsUrl);
-        const response = await fetch(docsUrl);
-        
-        console.log('Response status:', response.status);
-        console.log('Response ok:', response.ok);
-        console.log('Response headers:', response.headers);
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('Error response:', errorText);
-          throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-        }
-        
-        const responseText = await response.text();
-        console.log('Response text (first 200 chars):', responseText.substring(0, 200));
-        
-        let docsData;
-        try {
-          docsData = JSON.parse(responseText);
-        } catch (parseError) {
-          console.error('JSON parse error:', parseError);
-          console.error('Response text:', responseText);
-          throw new Error(`JSON parse error: ${parseError.message}`);
-        }
-        console.log('Documents loaded from local file:', docsData);
-        
-        // Convert object to array and sort by label
-        const docsArray = Object.values(docsData).sort((a, b) => a.label.localeCompare(b.label));
-        
-        container.innerHTML = "";
-        
-        if (docsArray.length === 0) {
-          container.innerHTML = `<p>No documents found for ${currentLang === 'es' ? 'Spanish' : 'English'}.</p>`;
-          return;
-        }
-        
-        docsArray.forEach(doc => {
-          const card = document.createElement("div");
-          card.className = "tool-card";
-          card.innerHTML = `
-            <div class="tool-title">${doc.label}</div>
-            <div class="tool-desc">${doc.description || 'Insurance claim document'}</div>
-            <div class="action-buttons">
-              <button class="btn-primary" onclick="openDocument('${doc.templatePath}')">Template</button>
-              <button class="btn-secondary" onclick="openDocument('${doc.samplePath}')">Sample</button>
-            </div>
-          `;
-          container.appendChild(card);
-        });
-        
-        // Show document count with note about production
-        const countDiv = document.createElement("div");
-        countDiv.style.cssText = "margin-top: 1rem; padding: 0.5rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; color: #0369a1;";
-        countDiv.innerHTML = `
-            <strong>📄 ${docsArray.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'} (development mode)</strong><br>
-            <small style="color: #64748b;">Note: All 122 English and 125 Spanish documents are available in production via Supabase</small>
-        `;
-        container.appendChild(countDiv);
-        
-      } catch (error) {
-        console.error('Error loading documents:', error);
-        container.innerHTML = `
-          <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
-            <h4 style="color: #dc2626; margin: 0 0 0.5rem 0;">⚠️ Error Loading Documents</h4>
-            <p style="color: #7f1d1d; margin: 0 0 0.5rem 0;">${error.message}</p>
-            <p style="color: #7f1d1d; margin: 0; font-size: 0.9rem;">Please check the browser console for more details.</p>
-          </div>
-        `;
-      }
-      return;
-    }
-
-    // Production mode - load from Supabase
-    // Show loading state
+    // Show loading spinner
     container.innerHTML = '<div style="text-align: center; padding: 2rem;"><div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div><p style="margin-top: 1rem;">Loading documents...</p></div>';
-    
-    // Add CSS for loading spinner
-    if (!document.getElementById('loading-spinner-style')) {
-      const style = document.createElement('style');
-      style.id = 'loading-spinner-style';
-      style.textContent = '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }';
-      document.head.appendChild(style);
-    }
 
     try {
-      const headers = await getAuthHeader();
-      const res = await fetch('/.netlify/functions/list-documents', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ lang: currentLang })
-      });
+      // Load documents directly from GitHub JSON
+      console.log('Loading documents from GitHub JSON...');
+      const response = await fetch('/assets/data/github-documents.json');
       
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      const docs = await res.json();
-      console.log(`Loaded ${docs.length} documents for language: ${currentLang}`);
+      const allDocs = await response.json();
+      console.log(`Loaded ${allDocs.length} total documents from GitHub JSON`);
+      
+      // Filter by language
+      const docs = allDocs.filter(doc => doc.language === currentLang);
+      console.log(`Filtered to ${docs.length} documents for language: ${currentLang}`);
 
       container.innerHTML = "";
 
-      if (Array.isArray(docs) && docs.length > 0) {
-        // Sort documents by label
+      if (docs.length > 0) {
         const sortedDocs = docs.sort((a, b) => a.label.localeCompare(b.label));
         
         sortedDocs.forEach(doc => {
@@ -1352,21 +1260,22 @@ Policyholder Response Team`;
           card.className = "tool-card";
           card.innerHTML = `
             <div class="tool-title">${doc.label}</div>
-            <div class="tool-desc">${doc.description || "Insurance claim document"}</div>
+            <div class="tool-desc">${doc.description || 'Insurance claim document'}</div>
             <div class="action-buttons">
-              <button class="btn-primary" onclick="openDocument('${doc.templatePath}')">Template</button>
-              <button class="btn-secondary" onclick="openDocument('${doc.samplePath}')">Sample</button>
+              <button class="btn-primary" onclick="openDocument('${doc.template_path}')">Template</button>
+              ${doc.sample_path ? `<button class="btn-secondary" onclick="openDocument('${doc.sample_path}')">Sample</button>` : ''}
             </div>
           `;
           container.appendChild(card);
         });
         
-        // Show document count
         const countDiv = document.createElement("div");
         countDiv.style.cssText = "margin-top: 1rem; padding: 0.5rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; color: #0369a1;";
-        countDiv.innerHTML = `<strong>📄 ${docs.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'}</strong>`;
+        countDiv.innerHTML = `
+          <strong>📄 ${docs.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'}</strong><br>
+          <small style="color: #64748b;">Loaded from GitHub CDN</small>
+        `;
         container.appendChild(countDiv);
-        
       } else {
         container.innerHTML = `
           <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
@@ -1378,80 +1287,20 @@ Policyholder Response Team`;
     } catch (err) {
       console.error("Error loading documents:", err);
       
-      // Check if it's a development environment issue
-      const isDevelopment = false; // Force production mode for live site
-      
-      if (isDevelopment && (err.message.includes('Failed to fetch') || err.message.includes('net::ERR_CONNECTION_REFUSED'))) {
-        container.innerHTML = `
-          <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
-            <h4 style="color: #92400e; margin: 0 0 0.5rem 0;">🔧 Development Mode</h4>
-            <p style="color: #92400e; margin: 0 0 0.5rem 0;">Netlify functions are not available in development mode.</p>
-            <p style="color: #92400e; margin: 0; font-size: 0.9rem;">Documents will be available when deployed to production.</p>
-          </div>
-          <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
-            <h4 style="color: #0369a1; margin: 0 0 0.5rem 0;">📄 Documents Available in Production</h4>
-            <p style="color: #0369a1; margin: 0;">The system has 122 English documents and 122 Spanish documents stored in Supabase.</p>
-          </div>
-        `;
-      } else {
-        container.innerHTML = `
-          <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
-            <h4 style="color: #dc2626; margin: 0 0 0.5rem 0;">⚠️ Error Loading Documents</h4>
-            <p style="color: #7f1d1d; margin: 0 0 0.5rem 0;">${err.message}</p>
-            <p style="color: #7f1d1d; margin: 0; font-size: 0.9rem;">Please check your connection and try again.</p>
-          </div>
-          <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
-            <h4 style="color: #0369a1; margin: 0 0 0.5rem 0;">📄 Documents Available</h4>
-            <p style="color: #0369a1; margin: 0;">The system has 122 English documents and 122 Spanish documents stored in Supabase.</p>
-          </div>
-        `;
-      }
-      
-      // Try direct Supabase API as fallback
-      try {
-        console.log('Trying direct Supabase API as fallback...');
-        const docs = await directSupabaseCall(`documents?language=eq.${currentLang}&select=*`);
-        console.log(`Loaded ${docs.length} documents directly from Supabase for language: ${currentLang}`);
-        
-        if (Array.isArray(docs) && docs.length > 0) {
-          // Sort documents by label
-          const sortedDocs = docs.sort((a, b) => a.label.localeCompare(b.label));
-          
-          sortedDocs.forEach(doc => {
-            const card = document.createElement("div");
-            card.className = "tool-card";
-            card.innerHTML = `
-              <div class="tool-title">${doc.label}</div>
-              <div class="tool-desc">${doc.description || 'Insurance claim document'}</div>
-              <div class="action-buttons">
-                <button class="btn-primary" onclick="openDocument('${doc.template_path}')">Template</button>
-                ${doc.sample_path ? `<button class="btn-secondary" onclick="openDocument('${doc.sample_path}')">Sample</button>` : ''}
-              </div>
-            `;
-            container.appendChild(card);
-          });
-          
-          // Show document count
-          const countDiv = document.createElement("div");
-          countDiv.style.cssText = "margin-top: 1rem; padding: 0.5rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; color: #0369a1;";
-          countDiv.innerHTML = `
-            <strong>📄 ${docs.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'} (direct API)</strong><br>
-            <small style="color: #64748b;">Loaded directly from Supabase database</small>
-          `;
-          container.appendChild(countDiv);
-        } else {
-          container.innerHTML = `
-            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
-              <h4 style="color: #dc2626; margin: 0 0 0.5rem 0;">📄 No Documents Found</h4>
-              <p style="color: #7f1d1d; margin: 0;">No documents found in Supabase database for ${currentLang === 'es' ? 'Spanish' : 'English'} language.</p>
-            </div>
-          `;
-        }
-      } catch (directApiError) {
-        console.error('Direct Supabase API also failed:', directApiError);
-        // Keep the original error message
-      }
+      container.innerHTML = `
+        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+          <h4 style="color: #dc2626; margin: 0 0 0.5rem 0;">⚠️ Error Loading Documents</h4>
+          <p style="color: #7f1d1d; margin: 0 0 0.5rem 0;">${err.message}</p>
+          <p style="color: #7f1d1d; margin: 0;">Please check your connection and try again.</p>
+        </div>
+        <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+          <h4 style="color: #0369a1; margin: 0 0 0.5rem 0;">📄 Documents Available</h4>
+          <p style="color: #0369a1; margin: 0;">The system has 124 English documents and 127 Spanish documents stored in GitHub.</p>
+        </div>
+      `;
     }
+  }
+
   }
 
   async function openDocument(filePath) {
