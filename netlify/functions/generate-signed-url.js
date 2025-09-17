@@ -11,6 +11,12 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ error: "Missing fileName" }) };
     }
 
+    // Check if fileName is already a GitHub URL
+    if (fileName.startsWith('https://raw.githubusercontent.com/')) {
+      console.log(`Direct GitHub URL provided: ${fileName}`);
+      return { statusCode: 200, body: JSON.stringify({ url: fileName }) };
+    }
+
     // First try to generate signed URL from Supabase storage
     try {
       console.log(`Generating signed URL from Supabase for: ${fileName}`);
@@ -45,25 +51,24 @@ exports.handler = async (event) => {
         return { statusCode: 200, body: JSON.stringify({ url: data.signedUrl }) };
       }
     } catch (supabaseError) {
-      console.log('Supabase storage failed, falling back to local files:', supabaseError.message);
+      console.log('Supabase storage failed, falling back to GitHub:', supabaseError.message);
     }
 
-    // Fallback to local files if Supabase fails
-    const filePath = path.join(__dirname, `../../assets/docs/${fileName}`);
+    // Fallback to GitHub URLs if Supabase fails
+    const githubBaseUrl = 'https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs';
+    let githubUrl;
     
-    if (!fs.existsSync(filePath)) {
-      return { 
-        statusCode: 404, 
-        body: JSON.stringify({ error: "Document not found" }) 
-      };
+    if (fileName.startsWith('en/')) {
+      githubUrl = `${githubBaseUrl}/en/${encodeURIComponent(fileName.replace('en/', ''))}`;
+    } else if (fileName.startsWith('es/')) {
+      githubUrl = `${githubBaseUrl}/es/${encodeURIComponent(fileName.replace('es/', ''))}`;
+    } else {
+      // Try to determine language from file name or default to English
+      githubUrl = `${githubBaseUrl}/en/${encodeURIComponent(fileName)}`;
     }
 
-    // For local files, return a direct download URL
-    const baseUrl = process.env.URL || 'https://claimnavigatorai.netlify.app';
-    const downloadUrl = `${baseUrl}/assets/docs/${fileName}`;
-
-    console.log(`Generated local URL for: ${fileName}`);
-    return { statusCode: 200, body: JSON.stringify({ url: downloadUrl }) };
+    console.log(`Generated GitHub URL for: ${fileName} -> ${githubUrl}`);
+    return { statusCode: 200, body: JSON.stringify({ url: githubUrl }) };
   } catch (err) {
     console.error("Signed URL Error:", err);
     return { statusCode: 500, body: JSON.stringify({ error: "Failed to generate signed URL." }) };
