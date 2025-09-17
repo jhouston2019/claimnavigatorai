@@ -11,7 +11,29 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ error: "Missing fileName" }) };
     }
 
-    // Check if file exists locally
+    // First try to generate signed URL from Supabase storage
+    try {
+      console.log(`Generating signed URL from Supabase for: ${fileName}`);
+      
+      const { data, error } = await supabase
+        .storage
+        .from('claimnavigatorai-docs')
+        .createSignedUrl(fileName, 60 * 5); // URL expires in 5 minutes
+
+      if (error) {
+        console.error('Supabase storage error:', error);
+        throw error;
+      }
+
+      if (data && data.signedUrl) {
+        console.log(`Generated signed URL from Supabase for: ${fileName}`);
+        return { statusCode: 200, body: JSON.stringify({ url: data.signedUrl }) };
+      }
+    } catch (supabaseError) {
+      console.log('Supabase storage failed, falling back to local files:', supabaseError.message);
+    }
+
+    // Fallback to local files if Supabase fails
     const filePath = path.join(__dirname, `../../assets/docs/${fileName}`);
     
     if (!fs.existsSync(filePath)) {
@@ -22,10 +44,10 @@ exports.handler = async (event) => {
     }
 
     // For local files, return a direct download URL
-    // In production, you might want to serve this through a secure endpoint
     const baseUrl = process.env.URL || 'https://claimnavigatorai.netlify.app';
     const downloadUrl = `${baseUrl}/assets/docs/${fileName}`;
 
+    console.log(`Generated local URL for: ${fileName}`);
     return { statusCode: 200, body: JSON.stringify({ url: downloadUrl }) };
   } catch (err) {
     console.error("Signed URL Error:", err);
