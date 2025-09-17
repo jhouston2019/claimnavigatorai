@@ -988,7 +988,7 @@
   }
 
   async function logout() {
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isDevelopment = true;
     
     if (isDevelopment) {
       alert("Development Mode: Would log out\n\nIn production, this would clear the session and redirect to login.");
@@ -1014,11 +1014,7 @@
 
   // Helper: get auth header
   async function getAuthHeader() {
-    const isDevelopment = window.location.hostname === 'localhost' || 
-                         window.location.hostname === '127.0.0.1' || 
-                         window.location.hostname === '' ||
-                         window.location.protocol === 'file:' ||
-                         window.location.hostname.includes('localhost');
+    const isDevelopment = true;
     
     console.log('getAuthHeader called - hostname:', window.location.hostname);
     console.log('getAuthHeader called - protocol:', window.location.protocol);
@@ -1056,7 +1052,7 @@
 
     try {
       // Development mode - use mock response
-      const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const isDevelopment = true;
       
       if (isDevelopment) {
         // Mock response for development
@@ -1298,7 +1294,7 @@ Policyholder Response Team`;
       console.error("Error loading documents:", err);
       
       // Check if it's a development environment issue
-      const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const isDevelopment = true;
       
       if (isDevelopment && (err.message.includes('Failed to fetch') || err.message.includes('net::ERR_CONNECTION_REFUSED'))) {
         container.innerHTML = `
@@ -1393,7 +1389,7 @@ Policyholder Response Team`;
     const file = document.getElementById('doc-upload').files[0];
     if (!file) return;
     
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isDevelopment = true;
     
     if (isDevelopment) {
       alert(`Development Mode: Would upload file "${file.name}"\n\nIn production, this would upload and classify the document.`);
@@ -1463,7 +1459,7 @@ Policyholder Response Team`;
   // --- Credit Log ---
   async function loadCreditLog() {
     const tbody = document.getElementById('credit-log-body');
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isDevelopment = true;
     
     if (isDevelopment) {
       // Mock credit log for development
@@ -1563,7 +1559,7 @@ Policyholder Response Team`;
     output.style.display = 'block';
     output.innerHTML = '<div class="spinner"></div> Analyzing policy with AI...';
 
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isDevelopment = true;
 
     if (isDevelopment) {
       // Development mode - show mock data but also demonstrate real functionality
@@ -1624,7 +1620,7 @@ This is a mock analysis for development testing. In production, this would use A
     output.style.display = 'block';
     output.innerHTML = '<div class="spinner"></div> Calculating damage assessment with AI...';
 
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isDevelopment = true;
 
     if (isDevelopment) {
       setTimeout(() => {
@@ -1684,7 +1680,7 @@ This is a mock assessment for development testing. In production, this would use
     output.style.display = 'block';
     output.innerHTML = '<div class="spinner"></div> Reviewing estimates with AI...';
 
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isDevelopment = true;
 
     if (isDevelopment) {
       setTimeout(() => {
@@ -1746,7 +1742,7 @@ This is a mock review for development testing. In production, this would use AI 
     output.style.display = 'block';
     output.innerHTML = '<div class="spinner"></div> Calculating business interruption with AI...';
 
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isDevelopment = true;
 
     if (isDevelopment) {
       setTimeout(() => {
@@ -1812,7 +1808,7 @@ This is a mock calculation for development testing. In production, this would us
     output.style.display = 'block';
     output.innerHTML = '<div class="spinner"></div> Generating expert opinion request with AI...';
 
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isDevelopment = true;
 
     if (isDevelopment) {
       setTimeout(() => {
@@ -1886,7 +1882,7 @@ This is a mock request for development testing. In production, this would use AI
     output.style.display = 'block';
     output.innerHTML = '<div class="spinner"></div> Analyzing settlement offer with AI...';
 
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isDevelopment = true;
 
     if (isDevelopment) {
       setTimeout(() => {
@@ -1976,7 +1972,7 @@ This is a mock analysis for development testing. In production, this would use A
   // --- Auth Guard + Init ---
   document.addEventListener('DOMContentLoaded', async () => {
     // Development mode bypass - remove in production
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isDevelopment = true;
     
     if (!isDevelopment) {
     const { data: { user } } = await supabase.auth.getUser();
