@@ -1,8 +1,8 @@
 const { createClient } = require('@supabase/supabase-js');
 
 exports.handler = async (event, context) => {
-  // Only allow this function to run in development or with admin access
-  if (event.httpMethod !== 'POST') {
+  // Allow both GET and POST methods
+  if (event.httpMethod !== 'POST' && event.httpMethod !== 'GET') {
     return {
       statusCode: 405,
       headers: {
