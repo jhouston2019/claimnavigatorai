@@ -1139,8 +1139,53 @@ Policyholder Response Team`;
     const currentLang = localStorage.getItem('lang') || 'en';
 
     if (isDevelopment) {
-      // Load real documents from JSON files in development mode
+      // In development mode, try to load from Supabase first, then fallback to local files
       try {
+        console.log('Development mode: Attempting to load documents from Supabase...');
+        
+        // Try to load from Supabase via Netlify function
+        const headers = await getAuthHeader();
+        const res = await fetch('/.netlify/functions/list-documents', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ lang: currentLang })
+        });
+        
+        if (res.ok) {
+          const docs = await res.json();
+          console.log(`Loaded ${docs.length} documents from Supabase for language: ${currentLang}`);
+          
+          container.innerHTML = "";
+          
+          if (Array.isArray(docs) && docs.length > 0) {
+            // Sort documents by label
+            const sortedDocs = docs.sort((a, b) => a.label.localeCompare(b.label));
+            
+            sortedDocs.forEach(doc => {
+              const card = document.createElement("div");
+              card.className = "tool-card";
+              card.innerHTML = `
+                <div class="tool-title">${doc.label}</div>
+                <div class="tool-desc">${doc.description || "Insurance claim document"}</div>
+                <div class="action-buttons">
+                  <button class="btn-primary" onclick="openDocument('${doc.templatePath}')">Template</button>
+                  <button class="btn-secondary" onclick="openDocument('${doc.samplePath}')">Sample</button>
+                </div>
+              `;
+              container.appendChild(card);
+            });
+            
+            // Show document count
+            const countDiv = document.createElement("div");
+            countDiv.style.cssText = "margin-top: 1rem; padding: 0.5rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; color: #0369a1;";
+            countDiv.innerHTML = `<strong>📄 ${docs.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'} (from Supabase)</strong>`;
+            container.appendChild(countDiv);
+            return;
+          }
+        }
+        
+        // Fallback to local JSON files if Supabase fails
+        console.log('Supabase failed, falling back to local JSON files...');
         const docsUrl = currentLang === 'es' ? './assets/docs/es/documents.json' : './assets/data/documents.json';
         console.log('Loading documents from:', docsUrl);
         const response = await fetch(docsUrl);
@@ -1150,7 +1195,7 @@ Policyholder Response Team`;
         }
         
         const docsData = await response.json();
-        console.log('Documents loaded:', docsData);
+        console.log('Documents loaded from local file:', docsData);
         
         // Convert object to array and sort by label
         const docsArray = Object.values(docsData).sort((a, b) => a.label.localeCompare(b.label));
@@ -1179,7 +1224,7 @@ Policyholder Response Team`;
         // Show document count
         const countDiv = document.createElement("div");
         countDiv.style.cssText = "margin-top: 1rem; padding: 0.5rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; color: #0369a1;";
-        countDiv.innerHTML = `<strong>📄 ${docsArray.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'}</strong>`;
+        countDiv.innerHTML = `<strong>📄 ${docsArray.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'} (from local files)</strong>`;
         container.appendChild(countDiv);
         
       } catch (error) {
@@ -1192,7 +1237,7 @@ Policyholder Response Team`;
           </div>
           <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
             <h4 style="color: #0369a1; margin: 0 0 0.5rem 0;">📄 Documents Available</h4>
-            <p style="color: #0369a1; margin: 0;">The system has 50+ insurance claim documents available. The documents are stored in the assets/data/documents.json file.</p>
+            <p style="color: #0369a1; margin: 0;">The system has 122 English documents and 122 Spanish documents stored in Supabase.</p>
           </div>
         `;
       }
