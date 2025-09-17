@@ -15,10 +15,25 @@ exports.handler = async (event) => {
     try {
       console.log(`Generating signed URL from Supabase for: ${fileName}`);
       
+      // Handle both old folder structure and new flat structure
+      let storagePath = fileName;
+      if (fileName.includes('/')) {
+        // Old structure: en/filename.pdf or es/filename.pdf
+        storagePath = fileName;
+      } else {
+        // New flat structure: en_filename.pdf or es_filename.pdf
+        // Convert from template_path format to storage format
+        if (fileName.startsWith('en/')) {
+          storagePath = fileName.replace('en/', 'en_');
+        } else if (fileName.startsWith('es/')) {
+          storagePath = fileName.replace('es/', 'es_');
+        }
+      }
+      
       const { data, error } = await supabase
         .storage
         .from('claimnavigatorai-docs')
-        .createSignedUrl(fileName, 60 * 5); // URL expires in 5 minutes
+        .createSignedUrl(storagePath, 60 * 5); // URL expires in 5 minutes
 
       if (error) {
         console.error('Supabase storage error:', error);
@@ -26,7 +41,7 @@ exports.handler = async (event) => {
       }
 
       if (data && data.signedUrl) {
-        console.log(`Generated signed URL from Supabase for: ${fileName}`);
+        console.log(`Generated signed URL from Supabase for: ${storagePath}`);
         return { statusCode: 200, body: JSON.stringify({ url: data.signedUrl }) };
       }
     } catch (supabaseError) {
