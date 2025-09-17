@@ -47,3 +47,28 @@ create policy "Users can update their own claims" on claims
 -- Policy to allow users to delete their own claims
 create policy "Users can delete their own claims" on claims
   for delete using (auth.uid() = user_id);
+
+-- Documents table for storing document metadata
+create table documents (
+  id uuid default uuid_generate_v4() primary key,
+  slug text unique not null,
+  label text not null,
+  description text,
+  language text not null check (language in ('en', 'es')),
+  template_path text not null,
+  sample_path text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+-- Create indexes for documents
+create index idx_documents_language on documents(language);
+create index idx_documents_slug on documents(slug);
+create index idx_documents_label on documents(label);
+
+-- Enable RLS for documents (public read access)
+alter table documents enable row level security;
+
+-- Policy to allow anyone to read documents (public access)
+create policy "Anyone can view documents" on documents
+  for select using (true);
