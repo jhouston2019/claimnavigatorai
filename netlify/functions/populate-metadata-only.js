@@ -29,7 +29,7 @@ exports.handler = async (event, context) => {
 
     // First, check what files are already in storage
     const { data: storageFiles, error: storageError } = await supabase.storage
-      .from('documents')
+      .from('claimnavigatorai-docs')
       .list('', { limit: 1000 });
 
     if (storageError) {

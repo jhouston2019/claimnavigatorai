@@ -17,7 +17,7 @@ exports.handler = async (event) => {
       
       const { data, error } = await supabase
         .storage
-        .from('documents')
+        .from('claimnavigatorai-docs')
         .createSignedUrl(fileName, 60 * 5); // URL expires in 5 minutes
 
       if (error) {
