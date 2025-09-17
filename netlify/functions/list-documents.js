@@ -52,7 +52,26 @@ exports.handler = async (event) => {
       console.log('Supabase failed, falling back to local JSON files:', supabaseError.message);
     }
 
-    // Fallback to local JSON files if Supabase fails
+    // Fallback to GitHub documents JSON if Supabase fails
+    const githubDocumentsPath = path.join(__dirname, `../../assets/data/github-documents.json`);
+    
+    if (fs.existsSync(githubDocumentsPath)) {
+      const githubDocumentsData = JSON.parse(fs.readFileSync(githubDocumentsPath, 'utf8'));
+      const filteredDocs = githubDocumentsData.filter(doc => doc.language === lang);
+      
+      // Convert to array format expected by frontend
+      const docs = filteredDocs.map(doc => ({
+        label: doc.label,
+        description: doc.description || "Insurance Document",
+        templatePath: doc.template_path,
+        samplePath: doc.sample_path
+      }));
+
+      console.log(`Loaded ${docs.length} documents from GitHub JSON for language: ${lang}`);
+      return { statusCode: 200, body: JSON.stringify(docs) };
+    }
+
+    // Final fallback to local JSON files
     const documentsPath = path.join(__dirname, `../../assets/docs/${lang}/documents.json`);
     
     if (!fs.existsSync(documentsPath)) {
