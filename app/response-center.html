@@ -1156,54 +1156,11 @@ Policyholder Response Team`;
     console.log('loadDocuments called - isDevelopment:', isDevelopment);
 
     if (isDevelopment) {
-      // In development mode, try to load from Netlify function first (all 122 documents), then fallback to local files
+      // In development mode, load from local JSON files
+      // Note: Local files have limited documents (62 English, 65 Spanish)
+      // All 122 documents are available in production via Supabase
       try {
-        console.log('Development mode: Attempting to load all 122 documents from Netlify function...');
-        
-        // Try to load from Netlify function (which can access Supabase)
-        const res = await fetch('/.netlify/functions/list-documents', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ lang: currentLang })
-        });
-        
-        console.log('Netlify function response status:', res.status);
-        
-        if (res.ok) {
-          const docs = await res.json();
-          console.log(`Loaded ${docs.length} documents from Netlify function for language: ${currentLang}`);
-          
-          container.innerHTML = "";
-          
-          if (Array.isArray(docs) && docs.length > 0) {
-            // Sort documents by label
-            const sortedDocs = docs.sort((a, b) => a.label.localeCompare(b.label));
-            
-            sortedDocs.forEach(doc => {
-              const card = document.createElement("div");
-              card.className = "tool-card";
-              card.innerHTML = `
-                <div class="tool-title">${doc.label}</div>
-                <div class="tool-desc">${doc.description || "Insurance claim document"}</div>
-                <div class="action-buttons">
-                  <button class="btn-primary" onclick="openDocument('${doc.templatePath}')">Template</button>
-                  <button class="btn-secondary" onclick="openDocument('${doc.samplePath}')">Sample</button>
-                </div>
-              `;
-              container.appendChild(card);
-            });
-            
-            // Show document count
-            const countDiv = document.createElement("div");
-            countDiv.style.cssText = "margin-top: 1rem; padding: 0.5rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; color: #0369a1;";
-            countDiv.innerHTML = `<strong>📄 ${docs.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'} (from Supabase via Netlify)</strong>`;
-            container.appendChild(countDiv);
-            return;
-          }
-        }
-        
-        // Fallback to local JSON files if Netlify function fails
-        console.log('Netlify function failed, falling back to local JSON files...');
+        console.log('Development mode: Loading documents from local JSON files...');
         const docsUrl = currentLang === 'es' ? './assets/docs/es/documents.json' : './assets/data/documents.json';
         console.log('Loading documents from:', docsUrl);
         const response = await fetch(docsUrl);
@@ -1239,10 +1196,13 @@ Policyholder Response Team`;
           container.appendChild(card);
         });
         
-        // Show document count
+        // Show document count with note about production
         const countDiv = document.createElement("div");
         countDiv.style.cssText = "margin-top: 1rem; padding: 0.5rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; color: #0369a1;";
-        countDiv.innerHTML = `<strong>📄 ${docsArray.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'} (from local files - Supabase unavailable)</strong>`;
+        countDiv.innerHTML = `
+          <strong>📄 ${docsArray.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'} (development mode)</strong><br>
+          <small style="color: #64748b;">Note: All 122 documents are available in production via Supabase</small>
+        `;
         container.appendChild(countDiv);
         
       } catch (error) {
