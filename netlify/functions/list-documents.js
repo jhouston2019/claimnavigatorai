@@ -4,7 +4,16 @@ const path = require('path');
 
 exports.handler = async (event) => {
   try {
-    const user = await getUserFromAuth(event);
+    // In development mode, skip authentication
+    const isDevelopment = process.env.NODE_ENV === 'development' || 
+                         process.env.CONTEXT === 'dev' ||
+                         !event.headers.authorization;
+    
+    let user = null;
+    if (!isDevelopment) {
+      user = await getUserFromAuth(event);
+    }
+    
     const { lang = "en" } = JSON.parse(event.body || "{}");
 
     // First try to load from Supabase (all 122 documents)
