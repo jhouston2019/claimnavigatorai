@@ -10,6 +10,7 @@ exports.handler = async (event) => {
     // First try to load from Supabase (all 122 documents)
     try {
       console.log(`Loading documents from Supabase for language: ${lang}`);
+      console.log('Supabase client available:', !!supabase);
       
       // Query documents from Supabase
       const { data: docs, error } = await supabase
@@ -17,6 +18,8 @@ exports.handler = async (event) => {
         .select('*')
         .eq('language', lang)
         .order('label');
+        
+      console.log('Supabase query result:', { docs: docs?.length, error: error?.message });
 
       if (error) {
         console.error('Supabase error:', error);

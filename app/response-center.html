@@ -1148,11 +1148,15 @@ Policyholder Response Team`;
         // Try to load from Supabase via Netlify function
         const headers = await getAuthHeader();
         console.log('Auth headers:', headers);
+        console.log('Requesting documents for language:', currentLang);
         const res = await fetch('/.netlify/functions/list-documents', {
           method: 'POST',
           headers,
           body: JSON.stringify({ lang: currentLang })
         });
+        
+        console.log('Response status:', res.status);
+        console.log('Response ok:', res.ok);
         
         if (res.ok) {
           const docs = await res.json();
