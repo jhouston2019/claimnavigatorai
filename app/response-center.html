@@ -1135,8 +1135,71 @@ Policyholder Response Team`;
   // --- My Documents ---
   async function loadDocuments() {
     const container = document.getElementById("documents-container");
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const currentLang = localStorage.getItem('lang') || 'en';
-    
+
+    if (isDevelopment) {
+      // Load real documents from JSON files in development mode
+      try {
+        const docsUrl = currentLang === 'es' ? './assets/docs/es/documents.json' : './assets/data/documents.json';
+        console.log('Loading documents from:', docsUrl);
+        const response = await fetch(docsUrl);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const docsData = await response.json();
+        console.log('Documents loaded:', docsData);
+        
+        // Convert object to array and sort by label
+        const docsArray = Object.values(docsData).sort((a, b) => a.label.localeCompare(b.label));
+        
+        container.innerHTML = "";
+        
+        if (docsArray.length === 0) {
+          container.innerHTML = `<p>No documents found for ${currentLang === 'es' ? 'Spanish' : 'English'}.</p>`;
+          return;
+        }
+        
+        docsArray.forEach(doc => {
+          const card = document.createElement("div");
+          card.className = "tool-card";
+          card.innerHTML = `
+            <div class="tool-title">${doc.label}</div>
+            <div class="tool-desc">${doc.description || 'Insurance claim document'}</div>
+            <div class="action-buttons">
+              <button class="btn-primary" onclick="openDocument('${doc.templatePath}')">Template</button>
+              <button class="btn-secondary" onclick="openDocument('${doc.samplePath}')">Sample</button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+        
+        // Show document count
+        const countDiv = document.createElement("div");
+        countDiv.style.cssText = "margin-top: 1rem; padding: 0.5rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; color: #0369a1;";
+        countDiv.innerHTML = `<strong>📄 ${docsArray.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'}</strong>`;
+        container.appendChild(countDiv);
+        
+      } catch (error) {
+        console.error('Error loading documents:', error);
+        container.innerHTML = `
+          <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+            <h4 style="color: #dc2626; margin: 0 0 0.5rem 0;">⚠️ Error Loading Documents</h4>
+            <p style="color: #7f1d1d; margin: 0 0 0.5rem 0;">${error.message}</p>
+            <p style="color: #7f1d1d; margin: 0; font-size: 0.9rem;">Please check the browser console for more details.</p>
+          </div>
+          <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+            <h4 style="color: #0369a1; margin: 0 0 0.5rem 0;">📄 Documents Available</h4>
+            <p style="color: #0369a1; margin: 0;">The system has 50+ insurance claim documents available. The documents are stored in the assets/data/documents.json file.</p>
+          </div>
+        `;
+      }
+      return;
+    }
+
+    // Production mode - load from Supabase
     // Show loading state
     container.innerHTML = '<div style="text-align: center; padding: 2rem;"><div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div><p style="margin-top: 1rem;">Loading documents...</p></div>';
     
@@ -1232,7 +1295,15 @@ Policyholder Response Team`;
   }
 
   async function openDocument(filePath) {
-    // Show loading state
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (isDevelopment) {
+      // Mock document opening for development
+      alert(`Development Mode: Would open document "${filePath}"\n\nIn production, this would generate a signed URL and open the document.`);
+      return;
+    }
+
+    // Production mode - show loading state
     const loadingDiv = document.createElement('div');
     loadingDiv.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 9999;';
     loadingDiv.innerHTML = '<div style="background: white; padding: 2rem; border-radius: 8px; text-align: center;"><div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div><p style="margin-top: 1rem;">Opening document...</p></div>';
