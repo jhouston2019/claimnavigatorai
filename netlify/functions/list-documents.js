@@ -53,22 +53,26 @@ exports.handler = async (event) => {
     }
 
     // Fallback to GitHub documents JSON if Supabase fails
-    const githubDocumentsPath = path.join(__dirname, `../../assets/data/github-documents.json`);
-    
-    if (fs.existsSync(githubDocumentsPath)) {
-      const githubDocumentsData = JSON.parse(fs.readFileSync(githubDocumentsPath, 'utf8'));
-      const filteredDocs = githubDocumentsData.filter(doc => doc.language === lang);
-      
-      // Convert to array format expected by frontend
-      const docs = filteredDocs.map(doc => ({
-        label: doc.label,
-        description: doc.description || "Insurance Document",
-        templatePath: doc.template_path,
-        samplePath: doc.sample_path
-      }));
+    try {
+      console.log('Fetching GitHub documents JSON from web...');
+      const response = await fetch('https://claimnavigatorai.netlify.app/assets/data/github-documents.json');
+      if (response.ok) {
+        const githubDocumentsData = await response.json();
+        const filteredDocs = githubDocumentsData.filter(doc => doc.language === lang);
+        
+        // Convert to array format expected by frontend
+        const docs = filteredDocs.map(doc => ({
+          label: doc.label,
+          description: doc.description || "Insurance Document",
+          templatePath: doc.template_path,
+          samplePath: doc.sample_path
+        }));
 
-      console.log(`Loaded ${docs.length} documents from GitHub JSON for language: ${lang}`);
-      return { statusCode: 200, body: JSON.stringify(docs) };
+        console.log(`Loaded ${docs.length} documents from GitHub JSON for language: ${lang}`);
+        return { statusCode: 200, body: JSON.stringify(docs) };
+      }
+    } catch (fetchError) {
+      console.log('Failed to fetch GitHub documents JSON:', fetchError.message);
     }
 
     // Final fallback to local JSON files
