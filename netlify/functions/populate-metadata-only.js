@@ -27,12 +27,16 @@ exports.handler = async (event, context) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // First, check what files are already in storage
-    const { data: storageFiles, error: storageError } = await supabase.storage
+    // First, check what files are already in storage - look in both en/ and es/ folders
+    const { data: enFiles, error: enError } = await supabase.storage
       .from('claimnavigatorai-docs')
-      .list('', { limit: 1000 });
+      .list('en', { limit: 1000 });
+    
+    const { data: esFiles, error: esError } = await supabase.storage
+      .from('claimnavigatorai-docs')
+      .list('es', { limit: 1000 });
 
-    if (storageError) {
+    if (enError || esError) {
       return {
         statusCode: 500,
         headers: {
@@ -41,10 +45,16 @@ exports.handler = async (event, context) => {
         },
         body: JSON.stringify({ 
           error: 'Failed to list storage files',
-          details: storageError.message
+          details: { enError: enError?.message, esError: esError?.message }
         })
       };
     }
+
+    // Combine files from both folders
+    const storageFiles = [
+      ...(enFiles || []).map(file => ({ ...file, name: `en/${file.name}` })),
+      ...(esFiles || []).map(file => ({ ...file, name: `es/${file.name}` }))
+    ];
 
     // Clear existing documents table
     const { error: deleteError } = await supabase
