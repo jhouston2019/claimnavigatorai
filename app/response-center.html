@@ -1076,8 +1076,20 @@ Policyholder Response Team`;
 
             console.log('Mock response generated:', mockResponse);
             out.textContent = mockResponse;
-            document.getElementById('confidence-meter').innerText = "Confidence: High (Development Mode)";
-            addToHistory("ai-agent", mockResponse);
+            
+            // Safely update confidence meter
+            const confidenceMeter = document.getElementById('confidence-meter');
+            if (confidenceMeter) {
+              confidenceMeter.innerText = "Confidence: High (Development Mode)";
+            }
+            
+            // Safely add to history
+            try {
+              addToHistory("ai-agent", mockResponse);
+            } catch (historyError) {
+              console.log('History function not available:', historyError);
+            }
+            
             console.log('Mock response displayed successfully');
           } catch (error) {
             console.error('Error in mock response generation:', error);
