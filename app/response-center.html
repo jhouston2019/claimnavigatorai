@@ -1142,9 +1142,12 @@ Policyholder Response Team`;
       // In development mode, try to load from Supabase first, then fallback to local files
       try {
         console.log('Development mode: Attempting to load documents from Supabase...');
+        console.log('Current hostname:', window.location.hostname);
+        console.log('Is development:', isDevelopment);
         
         // Try to load from Supabase via Netlify function
         const headers = await getAuthHeader();
+        console.log('Auth headers:', headers);
         const res = await fetch('/.netlify/functions/list-documents', {
           method: 'POST',
           headers,
@@ -1229,6 +1232,51 @@ Policyholder Response Team`;
         
       } catch (error) {
         console.error('Error loading documents:', error);
+        console.error('Error details:', {
+          message: error.message,
+          stack: error.stack,
+          hostname: window.location.hostname,
+          isDevelopment: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        });
+        
+        // If it's a Supabase initialization error in development, try local files directly
+        if (error.message.includes('Supabase not initialized') && isDevelopment) {
+          console.log('Supabase error in development, trying local files directly...');
+          try {
+            const docsUrl = currentLang === 'es' ? './assets/docs/es/documents.json' : './assets/data/documents.json';
+            console.log('Loading documents from:', docsUrl);
+            const response = await fetch(docsUrl);
+            
+            if (response.ok) {
+              const docsData = await response.json();
+              const docsArray = Object.values(docsData).sort((a, b) => a.label.localeCompare(b.label));
+              
+              container.innerHTML = "";
+              docsArray.forEach(doc => {
+                const card = document.createElement("div");
+                card.className = "tool-card";
+                card.innerHTML = `
+                  <div class="tool-title">${doc.label}</div>
+                  <div class="tool-desc">${doc.description || 'Insurance claim document'}</div>
+                  <div class="action-buttons">
+                    <button class="btn-primary" onclick="openDocument('${doc.templatePath}')">Template</button>
+                    <button class="btn-secondary" onclick="openDocument('${doc.samplePath}')">Sample</button>
+                  </div>
+                `;
+                container.appendChild(card);
+              });
+              
+              const countDiv = document.createElement("div");
+              countDiv.style.cssText = "margin-top: 1rem; padding: 0.5rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; color: #0369a1;";
+              countDiv.innerHTML = `<strong>📄 ${docsArray.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'} (from local files - Supabase unavailable)</strong>`;
+              container.appendChild(countDiv);
+              return;
+            }
+          } catch (localError) {
+            console.error('Local file loading also failed:', localError);
+          }
+        }
+        
         container.innerHTML = `
           <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
             <h4 style="color: #dc2626; margin: 0 0 0.5rem 0;">⚠️ Error Loading Documents</h4>
