@@ -919,22 +919,28 @@
   let supabase = null;
   
   // Initialize Supabase client - using environment variables
-  try {
-    // Load Supabase dynamically
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/main/index.js';
-    script.onload = function() {
-      if (window.supabase) {
-        supabase = window.supabase.createClient(
-          window.SUPABASE_URL || "https://bnxvfxtpsxgfpltflyrr.supabase.co",
-          window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
-        );
-        console.log('Supabase initialized successfully');
-      }
-    };
-    document.head.appendChild(script);
-  } catch (error) {
-    console.log('Supabase initialization failed, using development mode:', error);
+  const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  
+  if (!isDevelopment) {
+    try {
+      // Load Supabase dynamically for production
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/main/index.js';
+      script.onload = function() {
+        if (window.supabase) {
+          supabase = window.supabase.createClient(
+            window.SUPABASE_URL || "https://bnxvfxtpsxgfpltflyrr.supabase.co",
+            window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
+          );
+          console.log('Supabase initialized successfully');
+        }
+      };
+      document.head.appendChild(script);
+    } catch (error) {
+      console.log('Supabase initialization failed:', error);
+    }
+  } else {
+    console.log('Development mode: Supabase initialization skipped');
   }
 
   // --- Tabs ---
@@ -1012,16 +1018,23 @@
     
     if (isDevelopment) {
       // Development mode - return mock headers
+      console.log('Development mode: Using mock auth headers');
       return { 'Content-Type': 'application/json' };
     }
     
+    // Production mode - check Supabase
     if (!supabase) {
-      throw new Error("Supabase not initialized");
+      throw new Error("Supabase not initialized. Please refresh the page and try again.");
     }
     
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw new Error("Not logged in");
-    return { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' };
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not logged in. Please log in and try again.");
+      return { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' };
+    } catch (error) {
+      console.error('Auth error:', error);
+      throw new Error(`Authentication failed: ${error.message}`);
+    }
   }
 
   // --- AI Agent ---
@@ -1186,17 +1199,35 @@ Policyholder Response Team`;
       }
     } catch (err) {
       console.error("Error loading documents:", err);
-      container.innerHTML = `
-        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
-          <h4 style="color: #dc2626; margin: 0 0 0.5rem 0;">⚠️ Error Loading Documents</h4>
-          <p style="color: #7f1d1d; margin: 0 0 0.5rem 0;">${err.message}</p>
-          <p style="color: #7f1d1d; margin: 0; font-size: 0.9rem;">Please check your connection and try again.</p>
-        </div>
-        <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
-          <h4 style="color: #0369a1; margin: 0 0 0.5rem 0;">📄 Documents Available</h4>
-          <p style="color: #0369a1; margin: 0;">The system has 122 English documents and 122 Spanish documents stored in Supabase.</p>
-        </div>
-      `;
+      
+      // Check if it's a development environment issue
+      const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      
+      if (isDevelopment && (err.message.includes('Failed to fetch') || err.message.includes('net::ERR_CONNECTION_REFUSED'))) {
+        container.innerHTML = `
+          <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+            <h4 style="color: #92400e; margin: 0 0 0.5rem 0;">🔧 Development Mode</h4>
+            <p style="color: #92400e; margin: 0 0 0.5rem 0;">Netlify functions are not available in development mode.</p>
+            <p style="color: #92400e; margin: 0; font-size: 0.9rem;">Documents will be available when deployed to production.</p>
+          </div>
+          <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+            <h4 style="color: #0369a1; margin: 0 0 0.5rem 0;">📄 Documents Available in Production</h4>
+            <p style="color: #0369a1; margin: 0;">The system has 122 English documents and 122 Spanish documents stored in Supabase.</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+            <h4 style="color: #dc2626; margin: 0 0 0.5rem 0;">⚠️ Error Loading Documents</h4>
+            <p style="color: #7f1d1d; margin: 0 0 0.5rem 0;">${err.message}</p>
+            <p style="color: #7f1d1d; margin: 0; font-size: 0.9rem;">Please check your connection and try again.</p>
+          </div>
+          <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+            <h4 style="color: #0369a1; margin: 0 0 0.5rem 0;">📄 Documents Available</h4>
+            <p style="color: #0369a1; margin: 0;">The system has 122 English documents and 122 Spanish documents stored in Supabase.</p>
+          </div>
+        `;
+      }
     }
   }
 
