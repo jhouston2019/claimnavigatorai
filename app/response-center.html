@@ -1156,67 +1156,9 @@ Policyholder Response Team`;
     console.log('loadDocuments called - isDevelopment:', isDevelopment);
 
     if (isDevelopment) {
-      // In development mode, try to load from Supabase first, then fallback to local files
+      // In development mode, load directly from local JSON files (the way it worked before)
       try {
-        console.log('Development mode: Attempting to load documents from Supabase...');
-        console.log('Current hostname:', window.location.hostname);
-        console.log('Is development:', isDevelopment);
-        
-        // Try to load from Supabase via Netlify function
-        let headers;
-        try {
-          headers = await getAuthHeader();
-          console.log('Auth headers:', headers);
-        } catch (authError) {
-          console.error('getAuthHeader failed:', authError);
-          throw authError;
-        }
-        
-        console.log('Requesting documents for language:', currentLang);
-        const res = await fetch('/.netlify/functions/list-documents', {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({ lang: currentLang })
-        });
-        
-        console.log('Response status:', res.status);
-        console.log('Response ok:', res.ok);
-        
-        if (res.ok) {
-          const docs = await res.json();
-          console.log(`Loaded ${docs.length} documents from Supabase for language: ${currentLang}`);
-          
-          container.innerHTML = "";
-          
-          if (Array.isArray(docs) && docs.length > 0) {
-            // Sort documents by label
-            const sortedDocs = docs.sort((a, b) => a.label.localeCompare(b.label));
-            
-            sortedDocs.forEach(doc => {
-              const card = document.createElement("div");
-              card.className = "tool-card";
-              card.innerHTML = `
-                <div class="tool-title">${doc.label}</div>
-                <div class="tool-desc">${doc.description || "Insurance claim document"}</div>
-                <div class="action-buttons">
-                  <button class="btn-primary" onclick="openDocument('${doc.templatePath}')">Template</button>
-                  <button class="btn-secondary" onclick="openDocument('${doc.samplePath}')">Sample</button>
-                </div>
-              `;
-              container.appendChild(card);
-            });
-            
-            // Show document count
-            const countDiv = document.createElement("div");
-            countDiv.style.cssText = "margin-top: 1rem; padding: 0.5rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; color: #0369a1;";
-            countDiv.innerHTML = `<strong>📄 ${docs.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'} (from Supabase)</strong>`;
-            container.appendChild(countDiv);
-            return;
-          }
-        }
-        
-        // Fallback to local JSON files if Supabase fails
-        console.log('Supabase failed, falling back to local JSON files...');
+        console.log('Development mode: Loading documents from local JSON files...');
         const docsUrl = currentLang === 'es' ? './assets/docs/es/documents.json' : './assets/data/documents.json';
         console.log('Loading documents from:', docsUrl);
         const response = await fetch(docsUrl);
@@ -1255,65 +1197,16 @@ Policyholder Response Team`;
         // Show document count
         const countDiv = document.createElement("div");
         countDiv.style.cssText = "margin-top: 1rem; padding: 0.5rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; color: #0369a1;";
-        countDiv.innerHTML = `<strong>📄 ${docsArray.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'} (from local files)</strong>`;
+        countDiv.innerHTML = `<strong>📄 ${docsArray.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'} (development mode)</strong>`;
         container.appendChild(countDiv);
         
       } catch (error) {
         console.error('Error loading documents:', error);
-        console.error('Error details:', {
-          message: error.message,
-          stack: error.stack,
-          hostname: window.location.hostname,
-          isDevelopment: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        });
-        
-        // If it's a Supabase initialization error in development, try local files directly
-        if (error.message.includes('Supabase not initialized') && isDevelopment) {
-          console.log('Supabase error in development, trying local files directly...');
-          try {
-            const docsUrl = currentLang === 'es' ? './assets/docs/es/documents.json' : './assets/data/documents.json';
-            console.log('Loading documents from:', docsUrl);
-            const response = await fetch(docsUrl);
-            
-            if (response.ok) {
-              const docsData = await response.json();
-              const docsArray = Object.values(docsData).sort((a, b) => a.label.localeCompare(b.label));
-              
-              container.innerHTML = "";
-              docsArray.forEach(doc => {
-                const card = document.createElement("div");
-                card.className = "tool-card";
-                card.innerHTML = `
-                  <div class="tool-title">${doc.label}</div>
-                  <div class="tool-desc">${doc.description || 'Insurance claim document'}</div>
-                  <div class="action-buttons">
-                    <button class="btn-primary" onclick="openDocument('${doc.templatePath}')">Template</button>
-                    <button class="btn-secondary" onclick="openDocument('${doc.samplePath}')">Sample</button>
-                  </div>
-                `;
-                container.appendChild(card);
-              });
-              
-              const countDiv = document.createElement("div");
-              countDiv.style.cssText = "margin-top: 1rem; padding: 0.5rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; color: #0369a1;";
-              countDiv.innerHTML = `<strong>📄 ${docsArray.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'} (from local files - Supabase unavailable)</strong>`;
-              container.appendChild(countDiv);
-              return;
-            }
-          } catch (localError) {
-            console.error('Local file loading also failed:', localError);
-          }
-        }
-        
         container.innerHTML = `
           <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
             <h4 style="color: #dc2626; margin: 0 0 0.5rem 0;">⚠️ Error Loading Documents</h4>
             <p style="color: #7f1d1d; margin: 0 0 0.5rem 0;">${error.message}</p>
             <p style="color: #7f1d1d; margin: 0; font-size: 0.9rem;">Please check the browser console for more details.</p>
-          </div>
-          <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
-            <h4 style="color: #0369a1; margin: 0 0 0.5rem 0;">📄 Documents Available</h4>
-            <p style="color: #0369a1; margin: 0;">The system has 122 English documents and 122 Spanish documents stored in Supabase.</p>
           </div>
         `;
       }
