@@ -3,3 +3,47 @@ create table entitlements (
   email text unique not null,
   credits integer not null default 0
 );
+
+-- Claims table for storing user claims
+create table claims (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid not null,
+  date_of_loss date not null,
+  type_of_loss text not null,
+  loss_location jsonb not null,
+  insured_name text not null,
+  policy_number text,
+  insurer text,
+  status text default 'new' check (status in ('new', 'pending', 'settled', 'disputed', 'litigation')),
+  property_type text check (property_type in ('residential', 'commercial', 'industrial')),
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+-- Add foreign key constraint (assuming users table exists in Supabase Auth)
+-- alter table claims add constraint fk_claims_user_id foreign key (user_id) references auth.users(id) on delete cascade;
+
+-- Create indexes for better performance
+create index idx_claims_user_id on claims(user_id);
+create index idx_claims_status on claims(status);
+create index idx_claims_type_of_loss on claims(type_of_loss);
+create index idx_claims_created_at on claims(created_at);
+
+-- Add RLS (Row Level Security) policies
+alter table claims enable row level security;
+
+-- Policy to allow users to see only their own claims
+create policy "Users can view their own claims" on claims
+  for select using (auth.uid() = user_id);
+
+-- Policy to allow users to insert their own claims
+create policy "Users can insert their own claims" on claims
+  for insert with check (auth.uid() = user_id);
+
+-- Policy to allow users to update their own claims
+create policy "Users can update their own claims" on claims
+  for update using (auth.uid() = user_id);
+
+-- Policy to allow users to delete their own claims
+create policy "Users can delete their own claims" on claims
+  for delete using (auth.uid() = user_id);
