@@ -1016,6 +1016,10 @@
   async function getAuthHeader() {
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     
+    console.log('getAuthHeader called - hostname:', window.location.hostname);
+    console.log('getAuthHeader called - isDevelopment:', isDevelopment);
+    console.log('getAuthHeader called - supabase available:', !!supabase);
+    
     if (isDevelopment) {
       // Development mode - return mock headers
       console.log('Development mode: Using mock auth headers');
@@ -1146,8 +1150,15 @@ Policyholder Response Team`;
         console.log('Is development:', isDevelopment);
         
         // Try to load from Supabase via Netlify function
-        const headers = await getAuthHeader();
-        console.log('Auth headers:', headers);
+        let headers;
+        try {
+          headers = await getAuthHeader();
+          console.log('Auth headers:', headers);
+        } catch (authError) {
+          console.error('getAuthHeader failed:', authError);
+          throw authError;
+        }
+        
         console.log('Requesting documents for language:', currentLang);
         const res = await fetch('/.netlify/functions/list-documents', {
           method: 'POST',
