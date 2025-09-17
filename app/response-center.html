@@ -1333,8 +1333,25 @@ Policyholder Response Team`;
     const isDevelopment = true;
     
     if (isDevelopment) {
-      // Mock document opening for development
-      alert(`Development Mode: Would open document "${filePath}"\n\nIn production, this would generate a signed URL and open the document.`);
+      // In development mode, try to open the document directly
+      try {
+        // Try to open the document from the Document Library folders
+        const documentUrl = `../Document Library - Final English/${filePath}`;
+        console.log('Attempting to open document:', documentUrl);
+        
+        // Try to open the document in a new tab
+        const newWindow = window.open(documentUrl, '_blank');
+        
+        if (!newWindow) {
+          // If popup was blocked, show alert with instructions
+          alert(`Development Mode: Document "${filePath}"\n\nTo view this document:\n1. Allow popups for this site\n2. Or manually navigate to: Document Library - Final English/${filePath}\n\nIn production, this would generate a signed URL and open automatically.`);
+        } else {
+          console.log('Document opened successfully in new tab');
+        }
+      } catch (error) {
+        console.error('Error opening document:', error);
+        alert(`Development Mode: Could not open document "${filePath}"\n\nError: ${error.message}\n\nIn production, this would generate a signed URL and open the document.`);
+      }
       return;
     }
 
