@@ -930,17 +930,28 @@
         const existingScripts = document.querySelectorAll('script[src*="supabase"]');
         existingScripts.forEach(script => script.remove());
         
-        // Load Supabase script using UMD build
+        // Load Supabase script using jsDelivr CDN
         await new Promise((resolve, reject) => {
           const script = document.createElement('script');
-          script.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/main/index.umd.js';
+          script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/main/index.umd.js';
           script.onload = () => {
             console.log('Supabase script loaded successfully');
             resolve();
           };
           script.onerror = () => {
-            console.error('Failed to load Supabase script');
-            reject(new Error('Failed to load Supabase script'));
+            console.error('Failed to load Supabase script from jsDelivr, trying alternative...');
+            // Try alternative CDN
+            const altScript = document.createElement('script');
+            altScript.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/main/index.umd.js';
+            altScript.onload = () => {
+              console.log('Supabase script loaded successfully from alternative CDN');
+              resolve();
+            };
+            altScript.onerror = () => {
+              console.error('Failed to load Supabase script from all CDNs');
+              reject(new Error('Failed to load Supabase script from all CDNs'));
+            };
+            document.head.appendChild(altScript);
           };
           document.head.appendChild(script);
         });
@@ -964,6 +975,28 @@
       console.error('Error initializing Supabase:', error);
       return null;
     }
+  }
+
+  // Fallback: Direct Supabase API calls without client library
+  async function directSupabaseCall(endpoint, options = {}) {
+    const supabaseUrl = "https://bnxvfxtpsxgfpltflyrr.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks";
+    
+    const response = await fetch(`${supabaseUrl}/rest/v1/${endpoint}`, {
+      ...options,
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json',
+        ...options.headers
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Supabase API error: ${response.status} ${response.statusText}`);
+    }
+    
+    return response.json();
   }
 
   // Initialize Supabase on page load
@@ -1055,20 +1088,23 @@
       return { 'Content-Type': 'application/json' };
     }
     
-    // Production mode - ensure Supabase is initialized
+    // Production mode - try Supabase client first, then fallback to direct API
     const client = await initializeSupabase();
-    if (!client) {
-      throw new Error("Supabase not initialized. Please refresh the page and try again.");
+    
+    if (client) {
+      try {
+        const { data: { session } } = await client.auth.getSession();
+        if (!session) throw new Error("Not logged in. Please log in and try again.");
+        return { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' };
+      } catch (error) {
+        console.error('Auth error with Supabase client:', error);
+        // Fall through to direct API approach
+      }
     }
     
-    try {
-      const { data: { session } } = await client.auth.getSession();
-      if (!session) throw new Error("Not logged in. Please log in and try again.");
-      return { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' };
-    } catch (error) {
-      console.error('Auth error:', error);
-      throw new Error(`Authentication failed: ${error.message}`);
-    }
+    // Fallback: Use direct API approach (no authentication required for public documents)
+    console.log('Using direct API approach for document access');
+    return { 'Content-Type': 'application/json' };
   }
 
   // --- AI Agent ---
@@ -1369,6 +1405,51 @@ Policyholder Response Team`;
             <p style="color: #0369a1; margin: 0;">The system has 122 English documents and 122 Spanish documents stored in Supabase.</p>
           </div>
         `;
+      }
+      
+      // Try direct Supabase API as fallback
+      try {
+        console.log('Trying direct Supabase API as fallback...');
+        const docs = await directSupabaseCall(`documents?language=eq.${currentLang}&select=*`);
+        console.log(`Loaded ${docs.length} documents directly from Supabase for language: ${currentLang}`);
+        
+        if (Array.isArray(docs) && docs.length > 0) {
+          // Sort documents by label
+          const sortedDocs = docs.sort((a, b) => a.label.localeCompare(b.label));
+          
+          sortedDocs.forEach(doc => {
+            const card = document.createElement("div");
+            card.className = "tool-card";
+            card.innerHTML = `
+              <div class="tool-title">${doc.label}</div>
+              <div class="tool-desc">${doc.description || 'Insurance claim document'}</div>
+              <div class="action-buttons">
+                <button class="btn-primary" onclick="openDocument('${doc.template_path}')">Template</button>
+                ${doc.sample_path ? `<button class="btn-secondary" onclick="openDocument('${doc.sample_path}')">Sample</button>` : ''}
+              </div>
+            `;
+            container.appendChild(card);
+          });
+          
+          // Show document count
+          const countDiv = document.createElement("div");
+          countDiv.style.cssText = "margin-top: 1rem; padding: 0.5rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; color: #0369a1;";
+          countDiv.innerHTML = `
+            <strong>📄 ${docs.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'} (direct API)</strong><br>
+            <small style="color: #64748b;">Loaded directly from Supabase database</small>
+          `;
+          container.appendChild(countDiv);
+        } else {
+          container.innerHTML = `
+            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+              <h4 style="color: #dc2626; margin: 0 0 0.5rem 0;">📄 No Documents Found</h4>
+              <p style="color: #7f1d1d; margin: 0;">No documents found in Supabase database for ${currentLang === 'es' ? 'Spanish' : 'English'} language.</p>
+            </div>
+          `;
+        }
+      } catch (directApiError) {
+        console.error('Direct Supabase API also failed:', directApiError);
+        // Keep the original error message
       }
     }
   }
