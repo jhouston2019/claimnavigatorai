@@ -2,7 +2,7 @@
 // This file provides shared authentication functionality across the app
 
 let supabase = null;
-const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const isDevelopment = false; // Force production mode for live site
 
 // Initialize Supabase client
 async function initializeSupabase() {
@@ -22,8 +22,8 @@ async function initializeSupabase() {
     }
 
     supabase = window.supabase.createClient(
-      'https://your-project.supabase.co', // Replace with your actual Supabase URL
-      'your-anon-key' // Replace with your actual Supabase anon key
+      'https://bnxvfxtpsxgfpltflyrr.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks'
     );
 
     return supabase;
