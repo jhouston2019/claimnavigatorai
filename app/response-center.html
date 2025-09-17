@@ -1055,9 +1055,11 @@
       const isDevelopment = true;
       
       if (isDevelopment) {
+        console.log('Development mode: Generating mock AI response...');
         // Mock response for development
         setTimeout(() => {
-          const mockResponse = `Thank you for your correspondence regarding claim #${Math.floor(Math.random() * 10000)}.
+          try {
+            const mockResponse = `Thank you for your correspondence regarding claim #${Math.floor(Math.random() * 10000)}.
 
 Based on the information provided, I would like to address the following points:
 
@@ -1072,9 +1074,15 @@ This is a mock AI-generated response for development testing. In production, thi
 Best regards,
 Policyholder Response Team`;
 
-          out.textContent = mockResponse;
-          document.getElementById('confidence-meter').innerText = "Confidence: High (Development Mode)";
-          addToHistory("ai-agent", mockResponse);
+            console.log('Mock response generated:', mockResponse);
+            out.textContent = mockResponse;
+            document.getElementById('confidence-meter').innerText = "Confidence: High (Development Mode)";
+            addToHistory("ai-agent", mockResponse);
+            console.log('Mock response displayed successfully');
+          } catch (error) {
+            console.error('Error in mock response generation:', error);
+            out.textContent = "Error in development mode: " + error.message;
+          }
         }, 2000);
         return;
       }
