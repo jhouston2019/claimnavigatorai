@@ -34,11 +34,11 @@ exports.handler = async (event, context) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Load English documents
-    const englishDocsPath = path.join(__dirname, '../assets/data/documents.json');
+    const englishDocsPath = path.join(__dirname, '../../assets/data/documents.json');
     const englishDocs = JSON.parse(fs.readFileSync(englishDocsPath, 'utf8'));
 
     // Load Spanish documents
-    const spanishDocsPath = path.join(__dirname, '../assets/docs/es/documents.json');
+    const spanishDocsPath = path.join(__dirname, '../../assets/docs/es/documents.json');
     const spanishDocs = JSON.parse(fs.readFileSync(spanishDocsPath, 'utf8'));
 
     console.log(`Found ${Object.keys(englishDocs).length} English documents`);
