@@ -55,7 +55,7 @@ exports.handler = async (event, context) => {
             name: 'ClaimNavigatorAI Toolkit',
             description: 'AI-powered claim documentation package (20 AI responses included). Digital product - delivered immediately upon payment.',
           },
-          unit_amount: 49900, // $499.00 in cents
+          unit_amount: 99700, // $997.00 in cents
         },
         quantity: 1,
       }],

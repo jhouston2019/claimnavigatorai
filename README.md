@@ -211,7 +211,7 @@ Check Netlify function logs in the dashboard for production debugging.
 
 ## 💰 Pricing
 
-- **Base Toolkit:** $499 (includes 20 AI responses)
+- **Base Toolkit:** $997 (includes 20 AI responses)
 - **Additional Responses:** $29 each
 - **Features:** AI-powered claim letters, document generation, PDF export
 

@@ -106,7 +106,7 @@ exports.handler = async (event) => {
               name: "ClaimNavigatorAI – 20 Document Credits",
               description: "AI-powered claim documentation toolkit with 20 AI responses included"
             },
-            unit_amount: 49900, // $499.00 in cents
+            unit_amount: 99700, // $997.00 in cents
           },
           quantity: 1,
         },
@@ -155,7 +155,7 @@ exports.handler = async (event) => {
       {
         user_email: userEmail,
         product: "ClaimNavigatorAI – 20 Document Credits",
-        amount: 499, // in dollars (not cents)
+        amount: 997, // in dollars (not cents)
         affiliateid: affiliateID || null,
         payout_status: "pending",
         stripe_session_id: session.id,
