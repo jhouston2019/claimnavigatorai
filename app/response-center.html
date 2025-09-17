@@ -924,34 +924,52 @@
     }
 
     try {
-      // Load Supabase dynamically for production
+      // Check if Supabase is already loaded
       if (!window.supabase) {
+        // Remove any existing Supabase scripts to avoid conflicts
+        const existingScripts = document.querySelectorAll('script[src*="supabase"]');
+        existingScripts.forEach(script => script.remove());
+        
+        // Load Supabase script using UMD build
         await new Promise((resolve, reject) => {
           const script = document.createElement('script');
-          script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/main/index.js';
-          script.onload = () => resolve();
-          script.onerror = () => reject(new Error('Failed to load Supabase script'));
+          script.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/main/index.umd.js';
+          script.onload = () => {
+            console.log('Supabase script loaded successfully');
+            resolve();
+          };
+          script.onerror = () => {
+            console.error('Failed to load Supabase script');
+            reject(new Error('Failed to load Supabase script'));
+          };
           document.head.appendChild(script);
         });
       }
 
-      if (window.supabase) {
+      // Wait a bit for the script to fully initialize
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      if (window.supabase && window.supabase.createClient) {
         supabase = window.supabase.createClient(
           "https://bnxvfxtpsxgfpltflyrr.supabase.co",
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
         );
         console.log('Supabase client initialized successfully');
         return supabase;
+      } else {
+        console.error('Supabase not available after script load');
+        return null;
       }
     } catch (error) {
       console.error('Error initializing Supabase:', error);
+      return null;
     }
-    
-    return null;
   }
 
   // Initialize Supabase on page load
-  initializeSupabase();
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeSupabase();
+  });
 
   // --- Tabs ---
   function switchTab(event, tab) {
