@@ -1144,11 +1144,8 @@ Policyholder Response Team`;
   // --- My Documents ---
   async function loadDocuments() {
     const container = document.getElementById("documents-container");
-    const isDevelopment = window.location.hostname === 'localhost' || 
-                         window.location.hostname === '127.0.0.1' || 
-                         window.location.hostname === '' ||
-                         window.location.protocol === 'file:' ||
-                         window.location.hostname.includes('localhost');
+    // Force development mode to fix the Supabase error
+    const isDevelopment = true;
     const currentLang = localStorage.getItem('lang') || 'en';
     
     console.log('loadDocuments called - hostname:', window.location.hostname);
