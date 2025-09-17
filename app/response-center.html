@@ -1164,11 +1164,27 @@ Policyholder Response Team`;
         console.log('Loading documents from:', docsUrl);
         const response = await fetch(docsUrl);
         
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        console.log('Response headers:', response.headers);
+        
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
         }
         
-        const docsData = await response.json();
+        const responseText = await response.text();
+        console.log('Response text (first 200 chars):', responseText.substring(0, 200));
+        
+        let docsData;
+        try {
+          docsData = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error('JSON parse error:', parseError);
+          console.error('Response text:', responseText);
+          throw new Error(`JSON parse error: ${parseError.message}`);
+        }
         console.log('Documents loaded from local file:', docsData);
         
         // Convert object to array and sort by label
