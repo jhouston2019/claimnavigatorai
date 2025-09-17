@@ -1154,6 +1154,7 @@ Policyholder Response Team`;
     console.log('loadDocuments called - hostname:', window.location.hostname);
     console.log('loadDocuments called - protocol:', window.location.protocol);
     console.log('loadDocuments called - isDevelopment:', isDevelopment);
+    console.log('loadDocuments called - full URL:', window.location.href);
 
     if (isDevelopment) {
       // In development mode, load from local JSON files
@@ -1161,6 +1162,7 @@ Policyholder Response Team`;
       // All 122 documents are available in production via Supabase
       try {
         console.log('Development mode: Loading documents from local JSON files...');
+        console.log('About to fetch documents from:', currentLang === 'es' ? './assets/docs/es/documents.json' : './assets/data/documents.json');
         const docsUrl = currentLang === 'es' ? './assets/docs/es/documents.json' : './assets/data/documents.json';
         console.log('Loading documents from:', docsUrl);
         const response = await fetch(docsUrl);
