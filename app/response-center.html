@@ -910,29 +910,48 @@
   let supabase = null;
   
   // Initialize Supabase client - using environment variables
-  const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const isDevelopment = false; // Force production mode for live site
   
-  if (!isDevelopment) {
+  // Initialize Supabase asynchronously
+  async function initializeSupabase() {
+    if (isDevelopment) {
+      console.log('Development mode: Supabase not initialized');
+      return null;
+    }
+
+    if (supabase) {
+      return supabase;
+    }
+
     try {
       // Load Supabase dynamically for production
-      const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/main/index.js';
-      script.onload = function() {
-        if (window.supabase) {
-          supabase = window.supabase.createClient(
-            window.SUPABASE_URL || "https://bnxvfxtpsxgfpltflyrr.supabase.co",
-            window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
-          );
-          console.log('Supabase initialized successfully');
-        }
-      };
-      document.head.appendChild(script);
+      if (!window.supabase) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/main/index.js';
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error('Failed to load Supabase script'));
+          document.head.appendChild(script);
+        });
+      }
+
+      if (window.supabase) {
+        supabase = window.supabase.createClient(
+          "https://bnxvfxtpsxgfpltflyrr.supabase.co",
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
+        );
+        console.log('Supabase client initialized successfully');
+        return supabase;
+      }
     } catch (error) {
-      console.log('Supabase initialization failed:', error);
+      console.error('Error initializing Supabase:', error);
     }
-  } else {
-    console.log('Development mode: Supabase initialization skipped');
+    
+    return null;
   }
+
+  // Initialize Supabase on page load
+  initializeSupabase();
 
   // --- Tabs ---
   function switchTab(event, tab) {
@@ -1018,13 +1037,14 @@
       return { 'Content-Type': 'application/json' };
     }
     
-    // Production mode - check Supabase
-    if (!supabase) {
+    // Production mode - ensure Supabase is initialized
+    const client = await initializeSupabase();
+    if (!client) {
       throw new Error("Supabase not initialized. Please refresh the page and try again.");
     }
     
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await client.auth.getSession();
       if (!session) throw new Error("Not logged in. Please log in and try again.");
       return { Authorization: `Bearer ${session.access_token}`, 'Content-Type': 'application/json' };
     } catch (error) {
