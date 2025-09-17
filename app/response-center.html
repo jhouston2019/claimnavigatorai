@@ -726,7 +726,7 @@
           <div style="background: var(--primary); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; display: inline-block; margin-bottom: 1rem;">DOCUMENTATION</div>
           <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Adobe Scan</h4>
           <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">Scan receipts and paperwork instantly with your phone.</p>
-          <a href="https://www.amazon.com/dp/B00X4WHP5E?tag=ash202500-20" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="text-decoration: none;">Learn More →</a>
+          <a href="https://www.amazon.com/dp/B00X4WHP5E?tag=ash202500-20" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="text-decoration: none;" onclick="trackAffiliateClick('Adobe Scan', 'Amazon')">Learn More →</a>
         </div>
 
         <!-- Storage Tools -->
@@ -948,6 +948,37 @@
     if (tab === 'my-documents') {
       loadDocuments();
     }
+  }
+
+  // --- Affiliate Tracking ---
+  function trackAffiliateClick(product, platform) {
+    // Track affiliate link clicks for analytics
+    const clickData = {
+      product: product,
+      platform: platform,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      referrer: document.referrer
+    };
+    
+    // Send to your analytics (you can use Google Analytics, Mixpanel, etc.)
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'affiliate_click', {
+        'product_name': product,
+        'platform': platform,
+        'event_category': 'affiliate'
+      });
+    }
+    
+    // Log to console for debugging
+    console.log('Affiliate click tracked:', clickData);
+    
+    // Optional: Send to your own tracking endpoint
+    // fetch('/.netlify/functions/track-affiliate', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(clickData)
+    // }).catch(err => console.log('Tracking error:', err));
   }
 
   async function logout() {
