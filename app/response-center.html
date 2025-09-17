@@ -1014,9 +1014,14 @@
 
   // Helper: get auth header
   async function getAuthHeader() {
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isDevelopment = window.location.hostname === 'localhost' || 
+                         window.location.hostname === '127.0.0.1' || 
+                         window.location.hostname === '' ||
+                         window.location.protocol === 'file:' ||
+                         window.location.hostname.includes('localhost');
     
     console.log('getAuthHeader called - hostname:', window.location.hostname);
+    console.log('getAuthHeader called - protocol:', window.location.protocol);
     console.log('getAuthHeader called - isDevelopment:', isDevelopment);
     console.log('getAuthHeader called - supabase available:', !!supabase);
     
@@ -1139,8 +1144,16 @@ Policyholder Response Team`;
   // --- My Documents ---
   async function loadDocuments() {
     const container = document.getElementById("documents-container");
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isDevelopment = window.location.hostname === 'localhost' || 
+                         window.location.hostname === '127.0.0.1' || 
+                         window.location.hostname === '' ||
+                         window.location.protocol === 'file:' ||
+                         window.location.hostname.includes('localhost');
     const currentLang = localStorage.getItem('lang') || 'en';
+    
+    console.log('loadDocuments called - hostname:', window.location.hostname);
+    console.log('loadDocuments called - protocol:', window.location.protocol);
+    console.log('loadDocuments called - isDevelopment:', isDevelopment);
 
     if (isDevelopment) {
       // In development mode, try to load from Supabase first, then fallback to local files
