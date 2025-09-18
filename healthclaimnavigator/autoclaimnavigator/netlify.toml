@@ -1,0 +1,56 @@
+[build]
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "18"
+  # Supabase environment variables - replace with your actual values
+  SUPABASE_URL = "https://your-project-id.supabase.co"
+  SUPABASE_ANON_KEY = "your-anon-key-here"
+  SUPABASE_SERVICE_ROLE_KEY = "your-service-role-key-here"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[functions."functions-heavy/*"]
+  external_node_modules = ["archiver", "pdfkit", "docx", "pdf-parse", "tesseract.js", "busboy"]
+  node_bundler = "esbuild"
+
+# API redirects
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+# Static asset caching
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Redirect www to non-www
+[[redirects]]
+  from = "https://www.claimnavigatorai.netlify.app/*"
+  to = "https://claimnavigatorai.netlify.app/:splat"
+  status = 301
+  force = true
