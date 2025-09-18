@@ -1263,6 +1263,11 @@ Policyholder Response Team`;
           const templatePath = doc.template_path.replace('https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs/', '');
           const samplePath = doc.sample_path ? doc.sample_path.replace('https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs/', '') : null;
           
+          console.log('Original template path:', doc.template_path);
+          console.log('Converted template path:', templatePath);
+          console.log('Original sample path:', doc.sample_path);
+          console.log('Converted sample path:', samplePath);
+          
           card.innerHTML = `
             <div class="tool-title">${doc.label}</div>
             <div class="tool-desc">${doc.description || 'Insurance claim document'}</div>
@@ -1308,6 +1313,8 @@ Policyholder Response Team`;
 
   async function openDocument(filePath) {
     console.log('Opening protected document:', filePath);
+    console.log('File path type:', typeof filePath);
+    console.log('File path starts with http:', filePath.startsWith('http'));
     
     // Check if it's already a full URL
     if (filePath.startsWith('http')) {
