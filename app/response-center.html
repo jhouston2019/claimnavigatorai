@@ -1342,7 +1342,8 @@ Policyholder Response Team`;
 
     try {
       // Use the test function to see if basic document serving works
-      const res = await fetch(`/.netlify/functions/test-document-simple?documentPath=${encodeURIComponent(filePath)}`, {
+      console.log('Calling test-document-simple function with path:', filePath);
+      const res = await fetch(`/.netlify/functions/test-document-simple?documentPath=${encodeURIComponent(filePath)}&v=${Date.now()}`, {
         method: "GET"
       });
       
