@@ -1341,11 +1341,9 @@ Policyholder Response Team`;
     document.body.appendChild(loadingDiv);
 
     try {
-      // Use the new protected document serving endpoint
-      const headers = await getAuthHeader();
-      const res = await fetch(`/.netlify/functions/serve-protected-document?documentPath=${encodeURIComponent(filePath)}`, {
-        method: "GET",
-        headers
+      // Use the simple protected document serving endpoint
+      const res = await fetch(`/.netlify/functions/simple-document-protection?documentPath=${encodeURIComponent(filePath)}`, {
+        method: "GET"
       });
       
       if (res.ok) {
