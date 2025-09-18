@@ -1102,8 +1102,19 @@
       }
     }
     
-    // Fallback: Use direct API approach (no authentication required for public documents)
-    console.log('Using direct API approach for document access');
+    // Fallback: Try to get token from localStorage or sessionStorage
+    console.log('Supabase client failed, trying localStorage token');
+    const token = localStorage.getItem('supabase.auth.token') || 
+                  sessionStorage.getItem('supabase.auth.token') ||
+                  localStorage.getItem('sb-access-token');
+    
+    if (token) {
+      console.log('Found token in storage, using for authentication');
+      return { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+    }
+    
+    // Last resort: no authentication
+    console.log('No authentication available, proceeding without auth');
     return { 'Content-Type': 'application/json' };
   }
 

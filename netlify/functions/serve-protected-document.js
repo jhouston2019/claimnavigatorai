@@ -20,10 +20,41 @@ exports.handler = async (event) => {
       user = await getUserFromAuth(event);
     } catch (authError) {
       console.error("Authentication error:", authError.message);
-      return {
-        statusCode: 401,
-        body: JSON.stringify({ error: "Authentication required" })
-      };
+      
+      // Try alternative authentication methods
+      const authHeader = event.headers.authorization || event.headers.Authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7);
+        console.log("Found Bearer token, attempting direct authentication");
+        
+        // Try to validate the token directly
+        try {
+          const { createClient } = require('@supabase/supabase-js');
+          const supabase = createClient(
+            process.env.SUPABASE_URL,
+            process.env.SUPABASE_ANON_KEY
+          );
+          
+          const { data: { user: tokenUser }, error } = await supabase.auth.getUser(token);
+          if (error || !tokenUser) {
+            throw new Error("Invalid token");
+          }
+          
+          user = tokenUser;
+          console.log("Direct token authentication successful");
+        } catch (tokenError) {
+          console.error("Token authentication failed:", tokenError.message);
+          return {
+            statusCode: 401,
+            body: JSON.stringify({ error: "Authentication required" })
+          };
+        }
+      } else {
+        return {
+          statusCode: 401,
+          body: JSON.stringify({ error: "Authentication required" })
+        };
+      }
     }
 
     // Get document path from query parameters
