@@ -328,11 +328,14 @@
       document.getElementById("product-name").textContent = session.product;
       document.getElementById("amount-paid").textContent = `$${session.amount_total}`;
 
-      // Fetch credits from Supabase
+      // Fetch credits from Supabase with proper authentication
       const creditRes = await fetch("/.netlify/functions/verify-entitlement", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: user.email }),
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+        },
+        body: JSON.stringify({ email: user.email })
       });
 
       const creditData = await creditRes.json();

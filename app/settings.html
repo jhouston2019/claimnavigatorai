@@ -84,19 +84,28 @@
 
       document.getElementById("user-email").innerText = user.email;
 
-      // ⚠️ Temporary: direct call to Supabase table
-      // TODO: replace with a Netlify function that checks JWT
-      const { data, error: creditsError } = await supabase
-        .from("entitlements")
-        .select("credits")
-        .eq("email", user.email)
-        .single();
+      // Use Netlify function to get credits with proper authentication
+      try {
+        const response = await fetch("/.netlify/functions/verify-entitlement", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+          },
+          body: JSON.stringify({ email: user.email })
+        });
 
-      if (creditsError || !data) {
-        console.error("Credits fetch error:", creditsError?.message);
-        document.getElementById("user-credits").innerText = "0";
-      } else {
-        document.getElementById("user-credits").innerText = data.credits;
+        const data = await response.json();
+
+        if (response.ok && data.credits !== undefined) {
+          document.getElementById("user-credits").innerText = data.credits;
+        } else {
+          console.error("Credits fetch error:", data.error);
+          document.getElementById("user-credits").innerText = "0";
+        }
+      } catch (err) {
+        console.error("Error fetching credits:", err);
+        document.getElementById("user-credits").innerText = "Error";
       }
     }
 

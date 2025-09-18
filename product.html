@@ -111,42 +111,58 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
+    // Initialize Supabase with actual credentials
     const supabase = createClient(
-      "SUPABASE_URL",        // replace with your Supabase project URL
-      "SUPABASE_ANON_KEY"    // replace with your anon key
+      "https://bnxvfxtpsxgfpltflyrr.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
     );
 
     async function startCheckout(type) {
       const buttons = document.querySelectorAll(".checkout-btn");
-      buttons.forEach(btn => { btn.disabled = true; btn.textContent = "Redirecting..."; });
+      buttons.forEach(btn => { 
+        btn.disabled = true; 
+        btn.textContent = "Redirecting to checkout..."; 
+      });
 
       try {
         // Get logged-in user
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          alert("Please log in first.");
+          alert("Please log in first to purchase credits.");
           window.location.href = "/app/login.html";
           return;
         }
 
-        // Call Netlify function
+        console.log(`Starting checkout for user: ${user.email}`);
+
+        // Call Netlify function with proper authentication
         const response = await fetch("/.netlify/functions/create-checkout-session", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: user.email, type })
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+          },
+          body: JSON.stringify({ 
+            email: user.email, 
+            type: type || "claim_toolkit"
+          })
         });
 
         const data = await response.json();
 
         if (data.url) {
+          console.log("Redirecting to Stripe checkout:", data.url);
           window.location.href = data.url;
         } else {
           throw new Error(data.error || "Checkout failed");
         }
       } catch (err) {
         console.error("Checkout error:", err);
-        alert("Checkout failed. Please try again.");
-        buttons.forEach(btn => { btn.disabled = false; btn.textContent = btn.dataset.originalText || "Buy Now"; });
+        alert(`Checkout failed: ${err.message}. Please try again.`);
+        buttons.forEach(btn => { 
+          btn.disabled = false; 
+          btn.textContent = btn.dataset.originalText || "Buy Now - $997"; 
+        });
       }
     }
 
