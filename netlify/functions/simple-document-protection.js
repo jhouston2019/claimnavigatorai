@@ -14,26 +14,46 @@ exports.handler = async (event) => {
       };
     }
 
-    // Construct the GitHub URL for the document
-    const githubUrl = `https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs/${documentPath}`;
-    console.log('Fetching from GitHub:', githubUrl);
+    // Try to fetch from the local Netlify site first
+    const localUrl = `https://claimnavigatorai.netlify.app/docs/${documentPath}`;
+    console.log('Fetching from local Netlify site:', localUrl);
     
-    // Fetch the document from GitHub
-    const response = await fetch(githubUrl);
-    if (!response.ok) {
-      console.error('GitHub fetch failed:', response.status, response.statusText);
-      return {
-        statusCode: 404,
-        body: JSON.stringify({ 
-          error: "Document not found",
-          githubUrl: githubUrl,
-          status: response.status
-        })
-      };
-    }
+    let originalPdfBuffer;
+    let response;
+    
+    try {
+      response = await fetch(localUrl);
+      if (response.ok) {
+        originalPdfBuffer = Buffer.from(await response.arrayBuffer());
+        console.log('Fetched PDF from local site, size:', originalPdfBuffer.length);
+      } else {
+        throw new Error(`Local fetch failed: ${response.status}`);
+      }
+    } catch (localError) {
+      console.log('Local fetch failed, trying GitHub:', localError.message);
+      
+      // Fallback to GitHub
+      const githubUrl = `https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs/${documentPath}`;
+      console.log('Fetching from GitHub:', githubUrl);
+      
+      response = await fetch(githubUrl);
+      if (!response.ok) {
+        console.error('Both local and GitHub fetch failed');
+        return {
+          statusCode: 404,
+          body: JSON.stringify({ 
+            error: "Document not found",
+            localUrl: localUrl,
+            githubUrl: githubUrl,
+            localError: localError.message,
+            githubStatus: response.status
+          })
+        };
+      }
 
-    const originalPdfBuffer = Buffer.from(await response.arrayBuffer());
-    console.log('Fetched PDF, size:', originalPdfBuffer.length);
+      originalPdfBuffer = Buffer.from(await response.arrayBuffer());
+      console.log('Fetched PDF from GitHub, size:', originalPdfBuffer.length);
+    }
 
     // Load the original PDF and add watermark
     const originalPdf = await PDFDocument.load(originalPdfBuffer);
