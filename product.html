@@ -76,12 +76,12 @@
           <li>✓ Bonus: Recommended tools guide with exclusive discounts</li>
         </ul>
         <!-- Main Package -->
-        <button onclick="startCheckout('main')" class="btn-primary checkout-btn" style="display: block; margin: 0 auto; max-width: 400px;">
+        <button onclick="startCheckout('main')" class="btn-primary checkout-btn" style="display: block; margin: 0 auto; max-width: 400px;" data-original-text="Get My AI-Powered Claim Toolkit – $997">
           Get My AI-Powered Claim Toolkit – $997
         </button>
 
         <!-- Top-Up -->
-        <button onclick="startCheckout('topup')" class="btn-secondary checkout-btn" style="display: block; margin: 1rem auto 0 auto; max-width: 400px;">
+        <button onclick="startCheckout('topup')" class="btn-secondary checkout-btn" style="display: block; margin: 1rem auto 0 auto; max-width: 400px;" data-original-text="Buy Extra AI Response – $29">
           Buy Extra AI Response – $29
         </button>
 
@@ -116,6 +116,41 @@
       "https://bnxvfxtpsxgfpltflyrr.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
     );
+
+    // Check authentication status on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          console.log('User is authenticated:', user.email);
+          // User is logged in, enable checkout buttons
+          document.querySelectorAll('.checkout-btn').forEach(btn => {
+            btn.disabled = false;
+            btn.textContent = btn.dataset.originalText || 'Get My AI-Powered Claim Toolkit';
+          });
+        } else {
+          console.log('User is not authenticated');
+          // User is not logged in, show login prompt
+          document.querySelectorAll('.checkout-btn').forEach(btn => {
+            btn.disabled = false;
+            btn.textContent = 'Login Required - Click to Login';
+            btn.onclick = () => {
+              window.location.href = '/app/login.html';
+            };
+          });
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        // On error, assume not logged in
+        document.querySelectorAll('.checkout-btn').forEach(btn => {
+          btn.disabled = false;
+          btn.textContent = 'Login Required - Click to Login';
+          btn.onclick = () => {
+            window.location.href = '/app/login.html';
+          };
+        });
+      }
+    });
 
     async function startCheckout(type) {
       const buttons = document.querySelectorAll(".checkout-btn");
