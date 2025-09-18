@@ -1,5 +1,5 @@
 const { getBlob } = require("@netlify/blobs");
-const PDFDocument = require("pdfkit");
+const { generateSecurePDF } = require('./utils/pdf-security');
 const { Document, Packer, Paragraph, TextRun } = require("docx");
 
 exports.handler = async (event, context) => {
@@ -26,40 +26,9 @@ exports.handler = async (event, context) => {
     let fileExtension;
 
     if (format.toLowerCase() === 'pdf') {
-      // Generate PDF using PDFKit
-      const doc = new PDFDocument({
-        size: 'A4',
-        margins: {
-          top: 50,
-          bottom: 50,
-          left: 50,
-          right: 50
-        }
-      });
-
-      const chunks = [];
-      doc.on('data', chunk => chunks.push(chunk));
-      
-      // Add title
-      doc.fontSize(18)
-         .font('Helvetica-Bold')
-         .text('Claim Response Document', { align: 'center' })
-         .moveDown(0.5);
-      
-      // Add timestamp
-      doc.fontSize(10)
-         .font('Helvetica')
-         .text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'right' })
-         .moveDown(1);
-      
-      // Add content
-      doc.fontSize(12)
-         .font('Helvetica')
-         .text(content, { align: 'justify' });
-
-      doc.end();
-      
-      fileBuffer = Buffer.concat(chunks);
+      // Generate secure PDF with password protection and watermarking
+      const userEmail = context.clientContext.user.email;
+      fileBuffer = await generateSecurePDF(content, userEmail, 'Claim Response Document');
       contentType = 'application/pdf';
       fileExtension = 'pdf';
     } else if (format.toLowerCase() === 'docx') {
