@@ -76,7 +76,7 @@ exports.handler = async (event) => {
         x: width / 2 - 150, // Center horizontally (approximate)
         y: 30, // Bottom margin
         size: 8,
-        color: { r: 0.7, g: 0.7, b: 0.7 }, // Light gray
+        color: { r: 0.5, g: 0.5, b: 0.5 }, // Light gray (0-1 range)
         opacity: 0.6
       });
     }
