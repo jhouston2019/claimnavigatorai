@@ -108,18 +108,85 @@
   </footer>
 
   <!-- Scripts -->
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+  <script>
+    // Use the same Supabase initialization pattern as response center
+    let supabase = null;
+    
+    // Initialize Supabase asynchronously (same as response center)
+    async function initializeSupabase() {
+      if (supabase) {
+        return supabase;
+      }
 
-    // Initialize Supabase with actual credentials
-    const supabase = createClient(
-      "https://bnxvfxtpsxgfpltflyrr.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
-    );
+      try {
+        // Check if Supabase is already loaded
+        if (!window.supabase) {
+          // Load Supabase script using jsDelivr CDN
+          await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/main/index.umd.js';
+            script.onload = () => {
+              console.log('Supabase script loaded successfully');
+              resolve();
+            };
+            script.onerror = () => {
+              console.error('Failed to load Supabase script from jsDelivr, trying alternative...');
+              // Try alternative CDN
+              const altScript = document.createElement('script');
+              altScript.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/main/index.umd.js';
+              altScript.onload = () => {
+                console.log('Supabase script loaded successfully from alternative CDN');
+                resolve();
+              };
+              altScript.onerror = () => {
+                console.error('Failed to load Supabase script from all CDNs');
+                reject(new Error('Failed to load Supabase script from all CDNs'));
+              };
+              document.head.appendChild(altScript);
+            };
+            document.head.appendChild(script);
+          });
+        }
+
+        // Wait a bit for the script to fully initialize
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        if (window.supabase && window.supabase.createClient) {
+          supabase = window.supabase.createClient(
+            "https://bnxvfxtpsxgfpltflyrr.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
+          );
+          console.log('Supabase client initialized successfully');
+          return supabase;
+        } else {
+          console.error('Supabase not available after script load');
+          return null;
+        }
+      } catch (error) {
+        console.error('Error initializing Supabase:', error);
+        return null;
+      }
+    }
 
     // Check authentication status on page load
     document.addEventListener('DOMContentLoaded', async () => {
       try {
+        // Initialize Supabase first
+        await initializeSupabase();
+        
+        if (!supabase) {
+          console.error('Failed to initialize Supabase');
+          // Show login required buttons
+          document.querySelectorAll('.checkout-btn').forEach(btn => {
+            btn.disabled = false;
+            btn.textContent = 'Login Required - Click to Login';
+            btn.onclick = () => {
+              window.location.href = '/app/login.html';
+            };
+          });
+          return;
+        }
+
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           console.log('User is authenticated:', user.email);
@@ -160,6 +227,18 @@
       });
 
       try {
+        // Ensure Supabase is initialized
+        await initializeSupabase();
+        
+        if (!supabase) {
+          alert("Authentication service unavailable. Please try again.");
+          buttons.forEach(btn => { 
+            btn.disabled = false; 
+            btn.textContent = btn.dataset.originalText || "Get My AI-Powered Claim Toolkit"; 
+          });
+          return;
+        }
+
         // Get logged-in user
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
