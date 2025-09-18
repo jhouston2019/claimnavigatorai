@@ -1302,39 +1302,23 @@ Policyholder Response Team`;
   }
 
   async function openDocument(filePath) {
-    // Force development mode to match loadDocuments function
-    const isDevelopment = false; // Force production mode for live site
+    console.log('Opening document:', filePath);
     
-    if (isDevelopment) {
-      // In development mode, try to open the document directly
-      try {
-        // Try to open the document from the Document Library folders
-        const documentUrl = `../Document Library - Final English/${filePath}`;
-        console.log('Attempting to open document:', documentUrl);
-        
-        // Try to open the document in a new tab
-        const newWindow = window.open(documentUrl, '_blank');
-        
-        if (!newWindow) {
-          // If popup was blocked, show alert with instructions
-          alert(`Development Mode: Document "${filePath}"\n\nTo view this document:\n1. Allow popups for this site\n2. Or manually navigate to: Document Library - Final English/${filePath}\n\nIn production, this would generate a signed URL and open automatically.`);
-        } else {
-          console.log('Document opened successfully in new tab');
-        }
-      } catch (error) {
-        console.error('Error opening document:', error);
-        alert(`Development Mode: Could not open document "${filePath}"\n\nError: ${error.message}\n\nIn production, this would generate a signed URL and open the document.`);
-      }
+    // Check if it's already a GitHub URL
+    if (filePath.startsWith('https://raw.githubusercontent.com/')) {
+      console.log('Direct GitHub URL provided, opening directly');
+      window.open(filePath, '_blank');
       return;
     }
-
-    // Production mode - show loading state
+    
+    // Show loading state
     const loadingDiv = document.createElement('div');
     loadingDiv.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 9999;';
     loadingDiv.innerHTML = '<div style="background: white; padding: 2rem; border-radius: 8px; text-align: center;"><div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div><p style="margin-top: 1rem;">Opening document...</p></div>';
     document.body.appendChild(loadingDiv);
 
     try {
+      // Try to get signed URL from Netlify function first
       const headers = await getAuthHeader();
       const res = await fetch('/.netlify/functions/generate-signed-url', {
         method: "POST",
@@ -1342,23 +1326,40 @@ Policyholder Response Team`;
         body: JSON.stringify({ fileName: filePath })
       });
       
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.url) {
+          window.open(data.url, "_blank");
+          return;
+        }
       }
       
-      const data = await res.json();
+      // Fallback: construct GitHub URL directly
+      console.log('Netlify function failed, using GitHub fallback');
+      const githubBaseUrl = 'https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs';
+      let githubUrl;
       
-      if (data.url) {
-        window.open(data.url, "_blank");
+      if (filePath.startsWith('en/')) {
+        githubUrl = `${githubBaseUrl}/en/${encodeURIComponent(filePath.replace('en/', ''))}`;
+      } else if (filePath.startsWith('es/')) {
+        githubUrl = `${githubBaseUrl}/es/${encodeURIComponent(filePath.replace('es/', ''))}`;
       } else {
-        throw new Error(data.error || "No URL returned");
+        // Try to determine language from file name or default to English
+        githubUrl = `${githubBaseUrl}/en/${encodeURIComponent(filePath)}`;
       }
+      
+      console.log('Opening GitHub URL:', githubUrl);
+      window.open(githubUrl, '_blank');
+      
     } catch (err) {
       console.error("Error opening document:", err);
       alert(`Failed to open document: ${err.message}\n\nDocument: ${filePath}`);
     } finally {
       // Remove loading overlay
-      document.body.removeChild(loadingDiv);
+      const loadingDiv = document.querySelector('div[style*="position: fixed"]');
+      if (loadingDiv) {
+        loadingDiv.remove();
+      }
     }
   }
 
