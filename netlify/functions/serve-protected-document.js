@@ -55,6 +55,10 @@ exports.handler = async (event) => {
     // Get document path from query parameters
     const { documentPath } = event.queryStringParameters || {};
     
+    console.log('Full event object:', JSON.stringify(event, null, 2));
+    console.log('Query string parameters:', event.queryStringParameters);
+    console.log('Document path received:', documentPath);
+    
     if (!documentPath) {
       return {
         statusCode: 400,
