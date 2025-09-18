@@ -109,62 +109,45 @@
 
   <!-- Scripts -->
   <script>
-    // Use the same Supabase initialization pattern as response center
+    // Use ES6 modules for reliable Supabase loading (same as response center)
     let supabase = null;
     
-    // Initialize Supabase asynchronously (same as response center)
+    // Initialize Supabase using ES6 modules (more reliable than dynamic script loading)
     async function initializeSupabase() {
       if (supabase) {
         return supabase;
       }
 
       try {
-        // Check if Supabase is already loaded
-        if (!window.supabase) {
-          // Load Supabase script using jsDelivr CDN
-          await new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/main/index.umd.js';
-            script.onload = () => {
-              console.log('Supabase script loaded successfully');
-              resolve();
-            };
-            script.onerror = () => {
-              console.error('Failed to load Supabase script from jsDelivr, trying alternative...');
-              // Try alternative CDN
-              const altScript = document.createElement('script');
-              altScript.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/main/index.umd.js';
-              altScript.onload = () => {
-                console.log('Supabase script loaded successfully from alternative CDN');
-                resolve();
-              };
-              altScript.onerror = () => {
-                console.error('Failed to load Supabase script from all CDNs');
-                reject(new Error('Failed to load Supabase script from all CDNs'));
-              };
-              document.head.appendChild(altScript);
-            };
-            document.head.appendChild(script);
-          });
-        }
-
-        // Wait a bit for the script to fully initialize
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        if (window.supabase && window.supabase.createClient) {
-          supabase = window.supabase.createClient(
+        // Use dynamic import for ES6 modules (more reliable than script tags)
+        const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+        
+        supabase = createClient(
+          "https://bnxvfxtpsxgfpltflyrr.supabase.co",
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
+        );
+        
+        console.log('Supabase client initialized successfully with ES6 modules');
+        return supabase;
+      } catch (error) {
+        console.error('Error initializing Supabase with ES6 modules:', error);
+        
+        // Fallback: Try alternative CDN
+        try {
+          console.log('Trying alternative CDN...');
+          const { createClient } = await import('https://unpkg.com/@supabase/supabase-js@2/+esm');
+          
+          supabase = createClient(
             "https://bnxvfxtpsxgfpltflyrr.supabase.co",
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
           );
-          console.log('Supabase client initialized successfully');
+          
+          console.log('Supabase client initialized successfully with alternative CDN');
           return supabase;
-        } else {
-          console.error('Supabase not available after script load');
+        } catch (fallbackError) {
+          console.error('Error with alternative CDN:', fallbackError);
           return null;
         }
-      } catch (error) {
-        console.error('Error initializing Supabase:', error);
-        return null;
       }
     }
 
