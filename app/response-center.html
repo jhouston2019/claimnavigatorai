@@ -1258,12 +1258,17 @@ Policyholder Response Team`;
         sortedDocs.forEach(doc => {
           const card = document.createElement("div");
           card.className = "tool-card";
+          
+          // Convert GitHub URLs to local paths for serving
+          const templatePath = doc.template_path.replace('https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs/', '');
+          const samplePath = doc.sample_path ? doc.sample_path.replace('https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs/', '') : null;
+          
           card.innerHTML = `
             <div class="tool-title">${doc.label}</div>
             <div class="tool-desc">${doc.description || 'Insurance claim document'}</div>
             <div class="action-buttons">
-              <button class="btn-primary" onclick="openDocument('${doc.template_path}')">Template</button>
-              ${doc.sample_path ? `<button class="btn-secondary" onclick="openDocument('${doc.sample_path}')">Sample</button>` : ''}
+              <button class="btn-primary" onclick="openDocument('${templatePath}')">Template</button>
+              ${samplePath ? `<button class="btn-secondary" onclick="openDocument('${samplePath}')">Sample</button>` : ''}
             </div>
           `;
           container.appendChild(card);
@@ -1273,7 +1278,7 @@ Policyholder Response Team`;
         countDiv.style.cssText = "margin-top: 1rem; padding: 0.5rem; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; color: #0369a1;";
         countDiv.innerHTML = `
           <strong>📄 ${docs.length} documents available in ${currentLang === 'es' ? 'Spanish' : 'English'}</strong><br>
-          <small style="color: #64748b;">Loaded from GitHub CDN</small>
+          <small style="color: #64748b;">Served from local storage</small>
         `;
         container.appendChild(countDiv);
       } else {
@@ -1304,9 +1309,9 @@ Policyholder Response Team`;
   async function openDocument(filePath) {
     console.log('Opening document:', filePath);
     
-    // Check if it's already a GitHub URL
-    if (filePath.startsWith('https://raw.githubusercontent.com/')) {
-      console.log('Direct GitHub URL provided, opening directly');
+    // Check if it's already a full URL
+    if (filePath.startsWith('http')) {
+      console.log('Full URL provided, opening directly');
       window.open(filePath, '_blank');
       return;
     }
@@ -1334,22 +1339,11 @@ Policyholder Response Team`;
         }
       }
       
-      // Fallback: construct GitHub URL directly
-      console.log('Netlify function failed, using GitHub fallback');
-      const githubBaseUrl = 'https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs';
-      let githubUrl;
-      
-      if (filePath.startsWith('en/')) {
-        githubUrl = `${githubBaseUrl}/en/${encodeURIComponent(filePath.replace('en/', ''))}`;
-      } else if (filePath.startsWith('es/')) {
-        githubUrl = `${githubBaseUrl}/es/${encodeURIComponent(filePath.replace('es/', ''))}`;
-      } else {
-        // Try to determine language from file name or default to English
-        githubUrl = `${githubBaseUrl}/en/${encodeURIComponent(filePath)}`;
-      }
-      
-      console.log('Opening GitHub URL:', githubUrl);
-      window.open(githubUrl, '_blank');
+      // Fallback: serve from local Netlify site
+      console.log('Netlify function failed, using local file serving');
+      const localUrl = `/docs/${filePath}`;
+      console.log('Opening local URL:', localUrl);
+      window.open(localUrl, '_blank');
       
     } catch (err) {
       console.error("Error opening document:", err);
