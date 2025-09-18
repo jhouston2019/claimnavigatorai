@@ -1957,13 +1957,13 @@ Policyholder Response Team`;
     // Show loading state
     const loadingDiv = document.createElement('div');
     loadingDiv.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 9999;';
-      loadingDiv.innerHTML = '<div style="background: white; padding: 2rem; border-radius: 8px; text-align: center;"><div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div><p style="margin-top: 1rem;">Applying watermark and password protection...</p></div>';
+      loadingDiv.innerHTML = '<div style="background: white; padding: 2rem; border-radius: 8px; text-align: center;"><div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div><p style="margin-top: 1rem;">Loading document...</p></div>';
     document.body.appendChild(loadingDiv);
 
     try {
-      // Use the protected document function with watermarking
-      console.log('Calling serve-protected-document-final function with path:', filePath);
-      const res = await fetch(`/.netlify/functions/serve-protected-document-final?documentPath=${encodeURIComponent(filePath)}&v=${Date.now()}`, {
+      // Use the simple protected document function (watermarking disabled due to pdf-lib issues)
+      console.log('Calling serve-protected-document-simple function with path:', filePath);
+      const res = await fetch(`/.netlify/functions/serve-protected-document-simple?documentPath=${encodeURIComponent(filePath)}&v=${Date.now()}`, {
         method: "GET"
       });
       
@@ -1975,21 +1975,21 @@ Policyholder Response Team`;
         // Open the protected document
         window.open(url, '_blank');
         
-        // Show success message about protection
+        // Show success message
         const successDiv = document.createElement('div');
         successDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 1rem; border-radius: 8px; z-index: 10000; max-width: 300px;';
         successDiv.innerHTML = `
-          <div style="font-weight: bold; margin-bottom: 0.5rem;">✅ Document Protected</div>
-          <div style="font-size: 0.9rem;">Your document has been watermarked and password protected. Use your email as the password to open.</div>
+          <div style="font-weight: bold; margin-bottom: 0.5rem;">✅ Document Loaded</div>
+          <div style="font-size: 0.9rem;">Your document has been loaded successfully.</div>
         `;
         document.body.appendChild(successDiv);
         
-        // Remove success message after 5 seconds
+        // Remove success message after 3 seconds
         setTimeout(() => {
           if (successDiv.parentNode) {
             successDiv.parentNode.removeChild(successDiv);
           }
-        }, 5000);
+        }, 3000);
         
         // Clean up the URL after a delay
         setTimeout(() => URL.revokeObjectURL(url), 10000);
