@@ -35,13 +35,47 @@
     .spinner { border:3px solid #f3f3f3; border-top:3px solid var(--primary); border-radius:50%; width:18px; height:18px; animation:spin 1s linear infinite; display:inline-block; }
     @keyframes spin { 0% { transform:rotate(0deg);} 100%{ transform:rotate(360deg);} }
 
-    /* Accordion for Claim Playbook */
-    .accordion .accordion-item { border:1px solid var(--border); border-radius:0.5rem; margin-bottom:1rem; overflow:hidden; }
-    .accordion-header { width:100%; text-align:left; background:var(--bg-light); padding:0.75rem; border:none; font-weight:bold; cursor:pointer; }
-    .accordion-body { display:none; padding:1rem; background:#fff; border-top:1px solid var(--border); }
-    .accordion-item.active .accordion-body { display:block; }
-    .accordion-body ul { list-style:none; padding:0; }
-    .accordion-body li { margin-bottom:0.5rem; }
+    /* Enhanced Claim Playbook Styles */
+    .playbook-container { max-width: 1200px; margin: 0 auto; }
+    .playbook-phase { background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .playbook-phase-header { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem; }
+    .playbook-phase-number { background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
+    .playbook-phase-title { font-size: 1.3rem; font-weight: 600; flex: 1; }
+    .playbook-phase-toggle { font-size: 1.5rem; transition: transform 0.3s; }
+    .playbook-phase.active .playbook-phase-toggle { transform: rotate(180deg); }
+    .playbook-phase-body { display: none; padding: 2rem; background: #fafbfc; }
+    .playbook-phase.active .playbook-phase-body { display: block; }
+    
+    .playbook-overview { background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 5px solid var(--primary); }
+    .playbook-overview h3 { color: var(--primary); margin: 0 0 1rem 0; font-size: 1.4rem; }
+    .playbook-overview p { margin: 0; color: #374151; line-height: 1.6; }
+    
+    .step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+    .step-card { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; position: relative; }
+    .step-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--primary); border-radius: 8px 8px 0 0; }
+    .step-number { background: var(--primary); color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; margin-bottom: 1rem; }
+    .step-title { font-weight: 600; color: var(--primary); margin-bottom: 0.5rem; font-size: 1.1rem; }
+    .step-description { color: #6b7280; font-size: 0.95rem; line-height: 1.5; margin-bottom: 1rem; }
+    .step-actions { background: #f8fafc; padding: 1rem; border-radius: 6px; border-left: 3px solid var(--accent); }
+    .step-actions h4 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 0.95rem; }
+    .step-actions ul { margin: 0; padding-left: 1.2rem; }
+    .step-actions li { margin-bottom: 0.3rem; color: #374151; font-size: 0.9rem; }
+    
+    .timeline-indicator { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0; padding: 0.75rem; background: #f0f9ff; border-radius: 8px; border: 1px solid #bae6fd; }
+    .timeline-dot { width: 12px; height: 12px; background: var(--primary); border-radius: 50%; }
+    .timeline-text { color: var(--primary); font-weight: 500; font-size: 0.9rem; }
+    
+    .document-links { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+    .document-link { background: var(--accent); color: white; padding: 0.4rem 0.8rem; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: background 0.2s; }
+    .document-link:hover { background: var(--primary); }
+    
+    .warning-box { background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+    .warning-box h4 { color: #92400e; margin: 0 0 0.5rem 0; font-size: 1rem; }
+    .warning-box p { color: #92400e; margin: 0; font-size: 0.9rem; }
+    
+    .success-box { background: #d1fae5; border: 1px solid #10b981; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+    .success-box h4 { color: #065f46; margin: 0 0 0.5rem 0; font-size: 1rem; }
+    .success-box p { color: #065f46; margin: 0; font-size: 0.9rem; }
 
     /* Affiliate Tools Styles */
     .affiliate-disclosure { background:var(--bg-light); padding:1rem; border-radius:0.5rem; border-left:4px solid var(--primary); margin:2rem 0; font-size:0.875rem; color:var(--text-secondary); }
@@ -231,117 +265,676 @@
 
     <!-- Claim Playbook -->
     <div id="claim-playbook" class="tab-content">
-      <h2>Claim Playbook</h2>
-      <p>Step-by-step roadmap for managing your insurance claim. Expand each phase for checklists, decision points, and the right documents.</p>
+      <h2>📋 Complete Claim Navigation Playbook</h2>
+      
+      <div class="playbook-overview">
+        <h3>🎯 Your Step-by-Step Claim Success Roadmap</h3>
+        <p>This comprehensive playbook guides you through every phase of your insurance claim with detailed steps, timelines, and actionable checklists. Each phase includes specific documents, tools, and strategies to maximize your settlement and avoid common pitfalls.</p>
+      </div>
 
-      <div class="accordion">
+      <div class="playbook-container">
 
-        <div class="accordion-item">
-          <button class="accordion-header">Phase 1: Initial Notice of Loss</button>
-          <div class="accordion-body">
-            <ul>
-              <li>Notify insurer immediately after the loss</li>
-              <li>Submit initial claim form</li>
-              <li>Document date/time of event and initial damages</li>
-              <li>Upload proof of loss (photos, receipts)</li>
-              <li>Track claim number & adjuster contact</li>
-            </ul>
+        <!-- Phase 1: Immediate Response -->
+        <div class="playbook-phase active">
+          <div class="playbook-phase-header" onclick="togglePlaybookPhase(this)">
+            <div class="playbook-phase-number">1</div>
+            <div class="playbook-phase-title">🚨 Immediate Response & Safety</div>
+            <div class="playbook-phase-toggle">▼</div>
+          </div>
+          <div class="playbook-phase-body">
+            <div class="timeline-indicator">
+              <div class="timeline-dot"></div>
+              <div class="timeline-text">Timeline: First 24-48 hours after loss</div>
+            </div>
+            
+            <div class="step-grid">
+              <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-title">Ensure Safety First</div>
+                <div class="step-description">Protect yourself and others from immediate danger</div>
+                <div class="step-actions">
+                  <h4>Critical Actions:</h4>
+                  <ul>
+                    <li>Evacuate if structural damage or gas leaks</li>
+                    <li>Call 911 for emergencies</li>
+                    <li>Turn off utilities if safe to do so</li>
+                    <li>Do not re-enter damaged areas until cleared</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-title">Secure the Property</div>
+                <div class="step-description">Prevent further damage and protect your belongings</div>
+                <div class="step-actions">
+                  <h4>Immediate Steps:</h4>
+                  <ul>
+                    <li>Board up broken windows and doors</li>
+                    <li>Cover roof damage with tarps</li>
+                    <li>Move undamaged items to safe location</li>
+                    <li>Document all protective measures taken</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-title">Notify Your Insurance Company</div>
+                <div class="step-description">Start the claims process immediately</div>
+                <div class="step-actions">
+                  <h4>Contact Information:</h4>
+                  <ul>
+                    <li>Call your insurance company's 24/7 hotline</li>
+                    <li>Provide policy number and basic loss details</li>
+                    <li>Get your claim number and adjuster contact</li>
+                    <li>Ask about immediate assistance programs</li>
+                  </ul>
+                </div>
+                <div class="document-links">
+                  <a href="#" class="document-link" onclick="openDocument('en/initial-loss-notification-sample.pdf')">Initial Loss Notice</a>
+                  <a href="#" class="document-link" onclick="openDocument('en/emergency-contact-log-sample.pdf')">Contact Log</a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="warning-box">
+              <h4>⚠️ Critical Warning</h4>
+              <p>Do not begin permanent repairs until your adjuster has inspected the damage. Temporary protective measures are acceptable and often required by your policy.</p>
+            </div>
           </div>
         </div>
 
-        <div class="accordion-item">
-          <button class="accordion-header">Phase 2: Documentation & Evidence</button>
-          <div class="accordion-body">
-            <ul>
-              <li>Collect receipts, invoices, estimates</li>
-              <li>Upload contractor reports</li>
-              <li>Maintain expense log for ALE (Additional Living Expenses)</li>
-              <li>Cross-reference with policy limits</li>
-            </ul>
+        <!-- Phase 2: Documentation & Evidence -->
+        <div class="playbook-phase">
+          <div class="playbook-phase-header" onclick="togglePlaybookPhase(this)">
+            <div class="playbook-phase-number">2</div>
+            <div class="playbook-phase-title">📸 Comprehensive Documentation</div>
+            <div class="playbook-phase-toggle">▼</div>
+          </div>
+          <div class="playbook-phase-body">
+            <div class="timeline-indicator">
+              <div class="timeline-dot"></div>
+              <div class="timeline-text">Timeline: First 7 days after loss</div>
+            </div>
+            
+            <div class="step-grid">
+              <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-title">Photograph Everything</div>
+                <div class="step-description">Create comprehensive visual evidence of all damage</div>
+                <div class="step-actions">
+                  <h4>Photo Documentation:</h4>
+                  <ul>
+                    <li>Take wide shots showing overall damage</li>
+                    <li>Capture close-ups of specific damage</li>
+                    <li>Include date/time stamps on photos</li>
+                    <li>Document both damaged and undamaged areas</li>
+                    <li>Take photos from multiple angles</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-title">Create Detailed Inventory</div>
+                <div class="step-description">Document all damaged and destroyed items</div>
+                <div class="step-actions">
+                  <h4>Inventory Process:</h4>
+                  <ul>
+                    <li>List every damaged item with descriptions</li>
+                    <li>Include purchase dates and original costs</li>
+                    <li>Note brand names, model numbers, serial numbers</li>
+                    <li>Estimate current replacement costs</li>
+                    <li>Gather receipts and proof of purchase</li>
+                  </ul>
+                </div>
+                <div class="document-links">
+                  <a href="#" class="document-link" onclick="openDocument('en/personal-property-inventory-sample.pdf')">Property Inventory</a>
+                  <a href="#" class="document-link" onclick="openDocument('en/damage-assessment-form-sample.pdf')">Damage Assessment</a>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-title">Gather Supporting Documents</div>
+                <div class="step-description">Collect all relevant paperwork and records</div>
+                <div class="step-actions">
+                  <h4>Essential Documents:</h4>
+                  <ul>
+                    <li>Insurance policy and declarations page</li>
+                    <li>Police reports (if applicable)</li>
+                    <li>Fire department reports</li>
+                    <li>Weather service reports</li>
+                    <li>Contractor estimates and invoices</li>
+                    <li>Receipts for emergency repairs</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div class="success-box">
+              <h4>✅ Pro Tip</h4>
+              <p>Use your smartphone's voice memo feature to record detailed descriptions while walking through the damage. This creates an audio inventory that complements your photos.</p>
+            </div>
           </div>
         </div>
 
-        <div class="accordion-item">
-          <button class="accordion-header">Phase 3: Adjuster Inspection</button>
-          <div class="accordion-body">
-            <ul>
-              <li>Schedule inspection with insurer’s adjuster</li>
-              <li>Prepare property for walkthrough</li>
-              <li>Provide all requested documentation</li>
-              <li>Request a copy of the adjuster’s report</li>
-            </ul>
+        <!-- Phase 3: Adjuster Meeting -->
+        <div class="playbook-phase">
+          <div class="playbook-phase-header" onclick="togglePlaybookPhase(this)">
+            <div class="playbook-phase-number">3</div>
+            <div class="playbook-phase-title">🤝 Adjuster Inspection & Meeting</div>
+            <div class="playbook-phase-toggle">▼</div>
+          </div>
+          <div class="playbook-phase-body">
+            <div class="timeline-indicator">
+              <div class="timeline-dot"></div>
+              <div class="timeline-text">Timeline: 3-14 days after loss notification</div>
+            </div>
+            
+            <div class="step-grid">
+              <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-title">Prepare for the Inspection</div>
+                <div class="step-description">Get ready for the adjuster's visit</div>
+                <div class="step-actions">
+                  <h4>Pre-Inspection Checklist:</h4>
+                  <ul>
+                    <li>Schedule inspection at your convenience</li>
+                    <li>Prepare all documentation in organized folders</li>
+                    <li>Have contractor estimates ready</li>
+                    <li>Ensure all damaged areas are accessible</li>
+                    <li>Prepare a list of questions for the adjuster</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-title">During the Inspection</div>
+                <div class="step-description">Make the most of the adjuster's visit</div>
+                <div class="step-actions">
+                  <h4>Inspection Best Practices:</h4>
+                  <ul>
+                    <li>Accompany the adjuster throughout the inspection</li>
+                    <li>Point out all damage, even minor issues</li>
+                    <li>Take notes on what the adjuster says</li>
+                    <li>Ask about coverage for specific items</li>
+                    <li>Request a copy of the adjuster's report</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-title">Post-Inspection Follow-up</div>
+                <div class="step-description">Ensure nothing is missed after the inspection</div>
+                <div class="step-actions">
+                  <h4>Follow-up Actions:</h4>
+                  <ul>
+                    <li>Send thank you email to adjuster</li>
+                    <li>Request written confirmation of inspection</li>
+                    <li>Ask for timeline on estimate delivery</li>
+                    <li>Document any additional damage discovered</li>
+                    <li>Keep detailed records of all communications</li>
+                  </ul>
+                </div>
+                <div class="document-links">
+                  <a href="#" class="document-link" onclick="openDocument('en/adjuster-meeting-checklist-sample.pdf')">Meeting Checklist</a>
+                  <a href="#" class="document-link" onclick="openDocument('en/inspection-follow-up-letter-sample.pdf')">Follow-up Letter</a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="warning-box">
+              <h4>⚠️ Important Reminder</h4>
+              <p>You have the right to hire your own independent adjuster or contractor to provide a second opinion. Don't rely solely on the insurance company's assessment.</p>
+            </div>
           </div>
         </div>
 
-        <div class="accordion-item">
-          <button class="accordion-header">Phase 4: Estimate Review</button>
-          <div class="accordion-body">
-            <ul>
-              <li>Review insurer’s estimate line-by-line</li>
-              <li>Compare with contractor estimates</li>
-              <li>Highlight discrepancies for negotiation</li>
-              <li>Prepare supplemental documentation</li>
-            </ul>
+        <!-- Phase 4: Estimate Analysis -->
+        <div class="playbook-phase">
+          <div class="playbook-phase-header" onclick="togglePlaybookPhase(this)">
+            <div class="playbook-phase-number">4</div>
+            <div class="playbook-phase-title">🔍 Estimate Review & Analysis</div>
+            <div class="playbook-phase-toggle">▼</div>
+          </div>
+          <div class="playbook-phase-body">
+            <div class="timeline-indicator">
+              <div class="timeline-dot"></div>
+              <div class="timeline-text">Timeline: 7-21 days after inspection</div>
+            </div>
+            
+            <div class="step-grid">
+              <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-title">Obtain Multiple Estimates</div>
+                <div class="step-description">Get independent contractor estimates for comparison</div>
+                <div class="step-actions">
+                  <h4>Estimate Collection:</h4>
+                  <ul>
+                    <li>Get at least 3 detailed contractor estimates</li>
+                    <li>Ensure estimates include all damaged areas</li>
+                    <li>Request line-item breakdowns</li>
+                    <li>Verify contractor licensing and insurance</li>
+                    <li>Ask about warranty and timeline</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-title">Compare Estimates Line-by-Line</div>
+                <div class="step-description">Analyze differences between insurance and contractor estimates</div>
+                <div class="step-actions">
+                  <h4>Analysis Process:</h4>
+                  <ul>
+                    <li>Compare labor rates and material costs</li>
+                    <li>Check for missing items or scope</li>
+                    <li>Verify code compliance requirements</li>
+                    <li>Look for hidden or additional damage</li>
+                    <li>Document all discrepancies found</li>
+                  </ul>
+                </div>
+                <div class="document-links">
+                  <a href="#" class="document-link" onclick="openDocument('en/estimate-comparison-worksheet-sample.pdf')">Comparison Worksheet</a>
+                  <a href="#" class="document-link" onclick="openDocument('en/estimate-discrepancy-letter-sample.pdf')">Discrepancy Letter</a>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-title">Identify Coverage Issues</div>
+                <div class="step-description">Review policy coverage and identify potential disputes</div>
+                <div class="step-actions">
+                  <h4>Coverage Review:</h4>
+                  <ul>
+                    <li>Review policy limits and deductibles</li>
+                    <li>Check for coverage exclusions</li>
+                    <li>Verify replacement cost vs. actual cash value</li>
+                    <li>Understand depreciation calculations</li>
+                    <li>Identify potential coverage disputes</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div class="success-box">
+              <h4>✅ Pro Tip</h4>
+              <p>Use our AI-powered estimate comparison tool to automatically identify discrepancies between estimates and generate professional dispute letters.</p>
+            </div>
           </div>
         </div>
 
-        <div class="accordion-item">
-          <button class="accordion-header">Phase 5: Negotiation</button>
-          <div class="accordion-body">
-            <ul>
-              <li>Communicate discrepancies to adjuster</li>
-              <li>Submit revised estimates</li>
-              <li>Keep written record of all communications</li>
-              <li>Escalate if adjuster refuses fair settlement</li>
-            </ul>
+        <!-- Phase 5: Negotiation -->
+        <div class="playbook-phase">
+          <div class="playbook-phase-header" onclick="togglePlaybookPhase(this)">
+            <div class="playbook-phase-number">5</div>
+            <div class="playbook-phase-title">💬 Professional Negotiation</div>
+            <div class="playbook-phase-toggle">▼</div>
+          </div>
+          <div class="playbook-phase-body">
+            <div class="timeline-indicator">
+              <div class="timeline-dot"></div>
+              <div class="timeline-text">Timeline: Ongoing after estimate review</div>
+            </div>
+            
+            <div class="step-grid">
+              <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-title">Prepare Negotiation Strategy</div>
+                <div class="step-description">Develop a professional approach to settlement discussions</div>
+                <div class="step-actions">
+                  <h4>Strategy Development:</h4>
+                  <ul>
+                    <li>Document all discrepancies with evidence</li>
+                    <li>Prepare professional dispute letters</li>
+                    <li>Gather supporting documentation</li>
+                    <li>Set realistic settlement goals</li>
+                    <li>Plan your negotiation timeline</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-title">Submit Formal Disputes</div>
+                <div class="step-description">Present your case professionally and thoroughly</div>
+                <div class="step-actions">
+                  <h4>Dispute Process:</h4>
+                  <ul>
+                    <li>Send written disputes for all discrepancies</li>
+                    <li>Include supporting documentation</li>
+                    <li>Request written responses to disputes</li>
+                    <li>Maintain professional tone in all communications</li>
+                    <li>Keep detailed records of all correspondence</li>
+                  </ul>
+                </div>
+                <div class="document-links">
+                  <a href="#" class="document-link" onclick="openDocument('en/formal-dispute-letter-sample.pdf')">Dispute Letter</a>
+                  <a href="#" class="document-link" onclick="openDocument('en/negotiation-timeline-sample.pdf')">Negotiation Timeline</a>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-title">Follow Up Systematically</div>
+                <div class="step-description">Maintain momentum and pressure for fair settlement</div>
+                <div class="step-actions">
+                  <h4>Follow-up Strategy:</h4>
+                  <ul>
+                    <li>Set follow-up deadlines for responses</li>
+                    <li>Escalate to supervisors when needed</li>
+                    <li>Document all delays and unresponsiveness</li>
+                    <li>Consider alternative dispute resolution</li>
+                    <li>Prepare for formal escalation if necessary</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div class="warning-box">
+              <h4>⚠️ Negotiation Warning</h4>
+              <p>Never accept the first offer without thorough analysis. Insurance companies often start with low offers expecting negotiation. Be persistent but professional.</p>
+            </div>
           </div>
         </div>
 
-        <div class="accordion-item">
-          <button class="accordion-header">Phase 6: Supplemental Claims</button>
-          <div class="accordion-body">
-            <ul>
-              <li>File additional claims for missed damages</li>
-              <li>Submit contractor invoices for hidden damages</li>
-              <li>Document ongoing ALE expenses</li>
-              <li>Track all supplemental claim approvals</li>
-            </ul>
+        <!-- Phase 6: Supplemental Claims -->
+        <div class="playbook-phase">
+          <div class="playbook-phase-header" onclick="togglePlaybookPhase(this)">
+            <div class="playbook-phase-number">6</div>
+            <div class="playbook-phase-title">📋 Supplemental Claims & Additional Damages</div>
+            <div class="playbook-phase-toggle">▼</div>
+          </div>
+          <div class="playbook-phase-body">
+            <div class="timeline-indicator">
+              <div class="timeline-dot"></div>
+              <div class="timeline-text">Timeline: Ongoing throughout claim process</div>
+            </div>
+            
+            <div class="step-grid">
+              <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-title">Identify Additional Damage</div>
+                <div class="step-description">Look for hidden or newly discovered damage</div>
+                <div class="step-actions">
+                  <h4>Damage Discovery:</h4>
+                  <ul>
+                    <li>Conduct thorough re-inspection</li>
+                    <li>Look for water damage, mold, structural issues</li>
+                    <li>Check for damage behind walls or under floors</li>
+                    <li>Document any damage that worsens over time</li>
+                    <li>Get professional assessments for hidden damage</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-title">Document Additional Living Expenses</div>
+                <div class="step-description">Track all costs related to displacement</div>
+                <div class="step-actions">
+                  <h4>ALE Documentation:</h4>
+                  <ul>
+                    <li>Keep receipts for temporary housing</li>
+                    <li>Document increased food costs</li>
+                    <li>Track transportation expenses</li>
+                    <li>Record storage and moving costs</li>
+                    <li>Calculate pet boarding and care costs</li>
+                  </ul>
+                </div>
+                <div class="document-links">
+                  <a href="#" class="document-link" onclick="openDocument('en/additional-living-expenses-ale-reimbursement-request-sample.pdf')">ALE Request</a>
+                  <a href="#" class="document-link" onclick="openDocument('en/supplemental-claim-form-sample.pdf')">Supplemental Claim</a>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-title">Submit Supplemental Claims</div>
+                <div class="step-description">Formally request additional coverage for new damage</div>
+                <div class="step-actions">
+                  <h4>Submission Process:</h4>
+                  <ul>
+                    <li>Prepare detailed supplemental claim forms</li>
+                    <li>Include all supporting documentation</li>
+                    <li>Provide contractor estimates for new damage</li>
+                    <li>Request prompt review and response</li>
+                    <li>Follow up on submission status</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div class="success-box">
+              <h4>✅ Pro Tip</h4>
+              <p>Many policyholders miss significant additional damage because they don't know what to look for. Consider hiring a public adjuster or independent contractor for a thorough assessment.</p>
+            </div>
           </div>
         </div>
 
-        <div class="accordion-item">
-          <button class="accordion-header">Phase 7: Escalation</button>
-          <div class="accordion-body">
-            <ul>
-              <li>Send formal demand letter</li>
-              <li>Request supervisor review</li>
-              <li>Engage public adjuster or legal counsel</li>
-              <li>Prepare for appraisal or mediation</li>
-            </ul>
+        <!-- Phase 7: Escalation -->
+        <div class="playbook-phase">
+          <div class="playbook-phase-header" onclick="togglePlaybookPhase(this)">
+            <div class="playbook-phase-number">7</div>
+            <div class="playbook-phase-title">⚖️ Formal Escalation & Dispute Resolution</div>
+            <div class="playbook-phase-toggle">▼</div>
+          </div>
+          <div class="playbook-phase-body">
+            <div class="timeline-indicator">
+              <div class="timeline-dot"></div>
+              <div class="timeline-text">Timeline: When negotiations stall or fail</div>
+            </div>
+            
+            <div class="step-grid">
+              <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-title">Formal Demand Letter</div>
+                <div class="step-description">Send a professional demand for fair settlement</div>
+                <div class="step-actions">
+                  <h4>Demand Letter Elements:</h4>
+                  <ul>
+                    <li>Clearly state your position and demands</li>
+                    <li>Include all supporting evidence</li>
+                    <li>Set reasonable deadline for response</li>
+                    <li>Threaten further action if needed</li>
+                    <li>Send via certified mail with return receipt</li>
+                  </ul>
+                </div>
+                <div class="document-links">
+                  <a href="#" class="document-link" onclick="openDocument('en/formal-demand-letter-sample.pdf')">Demand Letter</a>
+                  <a href="#" class="document-link" onclick="openDocument('en/insurance-commissioner-complaint-sample.pdf')">Commissioner Complaint</a>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-title">File Insurance Commissioner Complaint</div>
+                <div class="step-description">Escalate to state insurance regulator</div>
+                <div class="step-actions">
+                  <h4>Regulatory Process:</h4>
+                  <ul>
+                    <li>Research your state's insurance department</li>
+                    <li>File formal complaint with supporting documents</li>
+                    <li>Request investigation of unfair practices</li>
+                    <li>Cooperate with regulatory investigation</li>
+                    <li>Use regulatory findings in negotiations</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-title">Consider Professional Help</div>
+                <div class="step-description">Engage experts when needed</div>
+                <div class="step-actions">
+                  <h4>Professional Options:</h4>
+                  <ul>
+                    <li>Hire a public adjuster for complex claims</li>
+                    <li>Consult with insurance attorneys</li>
+                    <li>Engage independent appraisers</li>
+                    <li>Consider mediation services</li>
+                    <li>Evaluate litigation as last resort</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div class="warning-box">
+              <h4>⚠️ Escalation Warning</h4>
+              <p>Escalation should be used strategically. Document all attempts at resolution before escalating, as this strengthens your position in any formal proceedings.</p>
+            </div>
           </div>
         </div>
 
-        <div class="accordion-item">
-          <button class="accordion-header">Phase 8: Appraisal / Mediation</button>
-          <div class="accordion-body">
-            <ul>
-              <li>Initiate appraisal clause if available</li>
-              <li>Hire independent appraiser</li>
-              <li>Engage mediation/arbitration if required</li>
-              <li>Maintain documentation trail for litigation</li>
-            </ul>
+        <!-- Phase 8: Appraisal & Mediation -->
+        <div class="playbook-phase">
+          <div class="playbook-phase-header" onclick="togglePlaybookPhase(this)">
+            <div class="playbook-phase-number">8</div>
+            <div class="playbook-phase-title">🏛️ Appraisal & Alternative Dispute Resolution</div>
+            <div class="playbook-phase-toggle">▼</div>
+          </div>
+          <div class="playbook-phase-body">
+            <div class="timeline-indicator">
+              <div class="timeline-dot"></div>
+              <div class="timeline-text">Timeline: When formal escalation is needed</div>
+            </div>
+            
+            <div class="step-grid">
+              <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-title">Invoke Appraisal Clause</div>
+                <div class="step-description">Use policy's appraisal process for value disputes</div>
+                <div class="step-actions">
+                  <h4>Appraisal Process:</h4>
+                  <ul>
+                    <li>Review your policy's appraisal clause</li>
+                    <li>Formally invoke appraisal in writing</li>
+                    <li>Select qualified independent appraiser</li>
+                    <li>Prepare comprehensive documentation</li>
+                    <li>Participate fully in appraisal process</li>
+                  </ul>
+                </div>
+                <div class="document-links">
+                  <a href="#" class="document-link" onclick="openDocument('en/appraisal-demand-letter-sample.pdf')">Appraisal Demand</a>
+                  <a href="#" class="document-link" onclick="openDocument('en/appraisal-process-guide-sample.pdf')">Process Guide</a>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-title">Mediation Process</div>
+                <div class="step-description">Engage neutral mediator for settlement</div>
+                <div class="step-actions">
+                  <h4>Mediation Steps:</h4>
+                  <ul>
+                    <li>Agree on qualified mediator</li>
+                    <li>Prepare comprehensive settlement package</li>
+                    <li>Present your case professionally</li>
+                    <li>Be prepared to compromise reasonably</li>
+                    <li>Document all agreements reached</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-title">Prepare for Litigation</div>
+                <div class="step-description">Get ready for court if other methods fail</div>
+                <div class="step-actions">
+                  <h4>Litigation Preparation:</h4>
+                  <ul>
+                    <li>Consult with experienced insurance attorneys</li>
+                    <li>Preserve all evidence and documentation</li>
+                    <li>Understand statute of limitations</li>
+                    <li>Calculate potential damages and costs</li>
+                    <li>Consider settlement vs. litigation costs</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div class="success-box">
+              <h4>✅ Pro Tip</h4>
+              <p>Appraisal is often faster and less expensive than litigation. Most policies require both parties to accept the umpire's decision, making it binding.</p>
+            </div>
           </div>
         </div>
 
-        <div class="accordion-item">
-          <button class="accordion-header">Phase 9: Final Settlement & Payment</button>
-          <div class="accordion-body">
-            <ul>
-              <li>Review final settlement offer</li>
-              <li>Ensure payment matches settlement</li>
-              <li>Confirm ALE reimbursement</li>
-              <li>Close out claim and archive documents</li>
-            </ul>
+        <!-- Phase 9: Settlement & Closure -->
+        <div class="playbook-phase">
+          <div class="playbook-phase-header" onclick="togglePlaybookPhase(this)">
+            <div class="playbook-phase-number">9</div>
+            <div class="playbook-phase-title">✅ Final Settlement & Claim Closure</div>
+            <div class="playbook-phase-toggle">▼</div>
+          </div>
+          <div class="playbook-phase-body">
+            <div class="timeline-indicator">
+              <div class="timeline-dot"></div>
+              <div class="timeline-text">Timeline: Final phase of claim process</div>
+            </div>
+            
+            <div class="step-grid">
+              <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-title">Review Final Settlement</div>
+                <div class="step-description">Carefully analyze the final settlement offer</div>
+                <div class="step-actions">
+                  <h4>Settlement Review:</h4>
+                  <ul>
+                    <li>Compare settlement to your documentation</li>
+                    <li>Verify all covered damages are included</li>
+                    <li>Check calculations and deductions</li>
+                    <li>Ensure ALE and additional expenses covered</li>
+                    <li>Review any release or waiver language</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-title">Payment Processing</div>
+                <div class="step-description">Ensure proper payment and documentation</div>
+                <div class="step-actions">
+                  <h4>Payment Steps:</h4>
+                  <ul>
+                    <li>Confirm payment method and timeline</li>
+                    <li>Verify payment amounts match settlement</li>
+                    <li>Track payment processing and delivery</li>
+                    <li>Document all payments received</li>
+                    <li>Address any payment discrepancies immediately</li>
+                  </ul>
+                </div>
+                <div class="document-links">
+                  <a href="#" class="document-link" onclick="openDocument('en/settlement-review-checklist-sample.pdf')">Settlement Review</a>
+                  <a href="#" class="document-link" onclick="openDocument('en/claim-closure-letter-sample.pdf')">Closure Letter</a>
+                </div>
+              </div>
+              
+              <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-title">Archive & Learn</div>
+                <div class="step-description">Properly close out and learn from the experience</div>
+                <div class="step-actions">
+                  <h4>Closure Process:</h4>
+                  <ul>
+                    <li>Archive all claim documents securely</li>
+                    <li>Update your insurance coverage if needed</li>
+                    <li>Review lessons learned from the process</li>
+                    <li>Share feedback with insurance company</li>
+                    <li>Consider preventive measures for future</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <div class="success-box">
+              <h4>🎉 Congratulations!</h4>
+              <p>You've successfully navigated the complex insurance claim process. Your persistence and attention to detail have paid off. Consider this experience valuable knowledge for any future claims.</p>
+            </div>
           </div>
         </div>
 
@@ -1028,6 +1621,19 @@
     // Load documents when My Documents tab is clicked
     if (tab === 'my-documents') {
       loadDocuments();
+    }
+  }
+
+  function togglePlaybookPhase(header) {
+    const phase = header.parentElement;
+    const isActive = phase.classList.contains('active');
+    
+    // Close all phases
+    document.querySelectorAll('.playbook-phase').forEach(p => p.classList.remove('active'));
+    
+    // Open clicked phase if it wasn't already active
+    if (!isActive) {
+      phase.classList.add('active');
     }
   }
 
