@@ -1,37 +1,28 @@
-const { generateSecurePDF } = require('./utils/pdf-security');
-const { getUserFromAuth } = require('./utils/auth');
-const fs = require('fs');
-const path = require('path');
+const { PDFDocument } = require('pdf-lib');
+const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
-  try {
-    // Validate HTTP method
-    if (event.httpMethod !== 'GET') {
-      return {
-        statusCode: 405,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'Method not allowed' })
-      };
-    }
+  if (event.httpMethod !== 'GET') {
+    return {
+      statusCode: 405,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Method not allowed' })
+    };
+  }
 
-    // For now, use a simple user identifier approach
-    // We'll get the user email from the request or use a default
-    let userEmail = 'user@claimnavigatorai.com'; // Default fallback
+  try {
+    // Get user email from JWT token or use default
+    let userEmail = 'user@claimnavigatorai.com';
     
-    // Try to get user info from various sources
     const authHeader = event.headers.authorization || event.headers.Authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7);
-      console.log("Found Bearer token, attempting to extract user info");
-      
       try {
-        // Try to decode the JWT token to get user info (simple base64 decode)
         const parts = token.split('.');
         if (parts.length === 3) {
           const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
           if (payload && payload.email) {
             userEmail = payload.email;
-            console.log("Extracted user email from token:", userEmail);
           }
         }
       } catch (jwtError) {
@@ -39,25 +30,10 @@ exports.handler = async (event) => {
       }
     }
     
-    // Try to get user from getUserFromAuth as fallback
-    try {
-      const user = await getUserFromAuth(event);
-      if (user && user.email) {
-        userEmail = user.email;
-        console.log("Got user email from getUserFromAuth:", userEmail);
-      }
-    } catch (authError) {
-      console.log("getUserFromAuth failed, using extracted/default email:", userEmail);
-    }
-    
     console.log("Using user email for document protection:", userEmail);
 
     // Get document path from query parameters
     const { documentPath } = event.queryStringParameters || {};
-    
-    console.log('Full event object:', JSON.stringify(event, null, 2));
-    console.log('Query string parameters:', event.queryStringParameters);
-    console.log('Document path received:', documentPath);
     
     if (!documentPath) {
       return {
@@ -68,44 +44,34 @@ exports.handler = async (event) => {
 
     console.log(`Serving protected document for user: ${userEmail}, path: ${documentPath}`);
 
-    // Construct the GitHub URL for the document
-    const githubUrl = `https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs/${documentPath}`;
-    console.log(`Fetching document from GitHub: ${githubUrl}`);
+    // Try to fetch from the local Netlify site first
+    const decodedPath = decodeURIComponent(documentPath);
+    const localUrl = `https://claimnavigatorai.netlify.app/docs/${decodedPath}`;
+    console.log('Fetching from:', localUrl);
     
-    // Fetch the document from GitHub
-    let originalPdfBuffer;
-    try {
-      const response = await fetch(githubUrl);
-      if (!response.ok) {
-        throw new Error(`GitHub fetch failed: ${response.status} ${response.statusText}`);
-      }
-      originalPdfBuffer = Buffer.from(await response.arrayBuffer());
-      console.log(`Successfully fetched document from GitHub, size: ${originalPdfBuffer.length} bytes`);
-    } catch (fetchError) {
-      console.error(`Error fetching document from GitHub:`, fetchError.message);
+    const response = await fetch(localUrl);
+    if (!response.ok) {
+      console.error('Fetch failed:', response.status, response.statusText);
       return {
         statusCode: 404,
         body: JSON.stringify({ 
           error: "Document not found",
-          githubUrl: githubUrl,
-          fetchError: fetchError.message
+          url: localUrl,
+          status: response.status
         })
       };
     }
-    
-    // Load the original PDF and add security
-    const { PDFDocument } = require('pdf-lib');
-    const originalPdf = await PDFDocument.load(originalPdfBuffer);
-    const protectedPdf = await PDFDocument.create();
-    
-    // Copy all pages from original to new document
-    const pages = await protectedPdf.copyPages(originalPdf, originalPdf.getPageIndices());
-    pages.forEach(page => protectedPdf.addPage(page));
+
+    const originalPdfBuffer = Buffer.from(await response.arrayBuffer());
+    console.log('Original PDF fetched, size:', originalPdfBuffer.length);
+
+    // Apply watermarking using pdf-lib
+    const pdfDoc = await PDFDocument.load(originalPdfBuffer);
+    const pages = pdfDoc.getPages();
     
     // Add watermark to each page
-    const allPages = protectedPdf.getPages();
-    for (let i = 0; i < allPages.length; i++) {
-      const page = allPages[i];
+    for (let i = 0; i < pages.length; i++) {
+      const page = pages[i];
       const { width, height } = page.getSize();
       
       // Add watermark at the bottom center of each page
@@ -118,37 +84,25 @@ exports.handler = async (event) => {
       });
     }
     
-    // Set document metadata
-    protectedPdf.setTitle(`ClaimNavigatorAI Template - ${path.basename(documentPath, '.pdf')}`);
-    protectedPdf.setAuthor('ClaimNavigatorAI');
-    protectedPdf.setSubject('Insurance Claim Template');
-    protectedPdf.setKeywords(['claim', 'insurance', 'template', 'document']);
-    protectedPdf.setProducer('ClaimNavigatorAI');
-    protectedPdf.setCreator('ClaimNavigatorAI');
+    const watermarkedPdfBytes = await pdfDoc.save();
+    const watermarkedBuffer = Buffer.from(watermarkedPdfBytes);
     
-    // Save the protected PDF
-    const finalPdfBytes = await protectedPdf.save();
-    const finalPdfBuffer = Buffer.from(finalPdfBytes);
-
-    console.log(`Protected document generated successfully. Size: ${finalPdfBuffer.length} bytes`);
+    console.log(`PDF watermarked for user: ${userEmail}, new size: ${watermarkedBuffer.length}`);
 
     return {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="protected-${path.basename(documentPath)}"`,
-        'Content-Length': finalPdfBuffer.length,
+        'Content-Disposition': `attachment; filename="protected-${decodedPath.split('/').pop()}"`,
+        'Content-Length': watermarkedBuffer.length,
         'Cache-Control': 'no-cache'
       },
-      body: finalPdfBuffer.toString('base64'),
+      body: watermarkedBuffer.toString('base64'),
       isBase64Encoded: true
     };
 
   } catch (err) {
-    console.error("Error serving protected document:", {
-      message: err.message,
-      stack: err.stack
-    });
+    console.error("Error serving protected document:", err);
     
     return {
       statusCode: 500,
