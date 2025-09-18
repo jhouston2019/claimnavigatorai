@@ -906,6 +906,7 @@
   </main>
 
 <script>
+  // Version: 2025-01-18-v2 - Force browser reload
   // Simplified version without ES6 modules for better compatibility
   let supabase = null;
   
@@ -1343,6 +1344,7 @@ Policyholder Response Team`;
     try {
       // Use the simple protected document function
       console.log('Calling serve-protected-document-simple function with path:', filePath);
+      console.log('Function URL:', `/.netlify/functions/serve-protected-document-simple?documentPath=${encodeURIComponent(filePath)}&v=${Date.now()}`);
       const res = await fetch(`/.netlify/functions/serve-protected-document-simple?documentPath=${encodeURIComponent(filePath)}&v=${Date.now()}`, {
         method: "GET"
       });
