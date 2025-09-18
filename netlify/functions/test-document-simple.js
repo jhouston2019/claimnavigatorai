@@ -5,7 +5,8 @@ exports.handler = async (event) => {
     // Get document path from query parameters
     const { documentPath } = event.queryStringParameters || {};
     
-    console.log('Document path:', documentPath);
+    console.log('Raw document path:', documentPath);
+    console.log('Decoded document path:', decodeURIComponent(documentPath));
     
     if (!documentPath) {
       return {
@@ -15,18 +16,25 @@ exports.handler = async (event) => {
     }
 
     // Try to fetch from the local Netlify site
-    const localUrl = `https://claimnavigatorai.netlify.app/docs/${documentPath}`;
+    const decodedPath = decodeURIComponent(documentPath);
+    const localUrl = `https://claimnavigatorai.netlify.app/docs/${decodedPath}`;
     console.log('Fetching from:', localUrl);
     
     const response = await fetch(localUrl);
+    console.log('Response status:', response.status);
+    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+    
     if (!response.ok) {
       console.error('Fetch failed:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('Error response body:', errorText);
       return {
         statusCode: 404,
         body: JSON.stringify({ 
           error: "Document not found",
           url: localUrl,
-          status: response.status
+          status: response.status,
+          details: errorText
         })
       };
     }
