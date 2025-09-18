@@ -64,20 +64,30 @@ exports.handler = async (event) => {
 
     console.log(`Serving protected document for user: ${userEmail}, path: ${documentPath}`);
 
-    // Construct the full path to the document
-    const fullPath = path.join(process.cwd(), 'docs', documentPath);
+    // Construct the GitHub URL for the document
+    const githubUrl = `https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs/${documentPath}`;
+    console.log(`Fetching document from GitHub: ${githubUrl}`);
     
-    // Check if file exists
-    if (!fs.existsSync(fullPath)) {
-      console.error(`Document not found: ${fullPath}`);
+    // Fetch the document from GitHub
+    let originalPdfBuffer;
+    try {
+      const response = await fetch(githubUrl);
+      if (!response.ok) {
+        throw new Error(`GitHub fetch failed: ${response.status} ${response.statusText}`);
+      }
+      originalPdfBuffer = Buffer.from(await response.arrayBuffer());
+      console.log(`Successfully fetched document from GitHub, size: ${originalPdfBuffer.length} bytes`);
+    } catch (fetchError) {
+      console.error(`Error fetching document from GitHub:`, fetchError.message);
       return {
         statusCode: 404,
-        body: JSON.stringify({ error: "Document not found" })
+        body: JSON.stringify({ 
+          error: "Document not found",
+          githubUrl: githubUrl,
+          fetchError: fetchError.message
+        })
       };
     }
-
-    // Read the original PDF
-    const originalPdfBuffer = fs.readFileSync(fullPath);
     
     // Load the original PDF and add security
     const { PDFDocument } = require('pdf-lib');
