@@ -1961,44 +1961,29 @@ Policyholder Response Team`;
     document.body.appendChild(loadingDiv);
 
     try {
-      // Use the simple protected document function (watermarking disabled due to pdf-lib issues)
-      console.log('Calling serve-protected-document-simple function with path:', filePath);
-      const res = await fetch(`/.netlify/functions/serve-protected-document-simple?documentPath=${encodeURIComponent(filePath)}&v=${Date.now()}`, {
-        method: "GET"
-      });
+      // Direct GitHub access - most efficient approach
+      console.log('Opening document directly from GitHub:', filePath);
+      const githubUrl = `https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs/${filePath}`;
+      window.open(githubUrl, '_blank');
       
-      if (res.ok) {
-        // Create a blob from the response
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        
-        // Open the protected document
-        window.open(url, '_blank');
-        
-        // Show success message
-        const successDiv = document.createElement('div');
-        successDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 1rem; border-radius: 8px; z-index: 10000; max-width: 300px;';
-        successDiv.innerHTML = `
-          <div style="font-weight: bold; margin-bottom: 0.5rem;">✅ Document Loaded</div>
-          <div style="font-size: 0.9rem;">Your document has been loaded successfully.</div>
-        `;
-        document.body.appendChild(successDiv);
-        
-        // Remove success message after 3 seconds
-        setTimeout(() => {
-          if (successDiv.parentNode) {
-            successDiv.parentNode.removeChild(successDiv);
-          }
-        }, 3000);
-        
-        // Clean up the URL after a delay
-        setTimeout(() => URL.revokeObjectURL(url), 10000);
-        
-        console.log('Protected document opened successfully');
-        return;
-      } else {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
+      // Show success message
+      const successDiv = document.createElement('div');
+      successDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 1rem; border-radius: 8px; z-index: 10000; max-width: 300px;';
+      successDiv.innerHTML = `
+        <div style="font-weight: bold; margin-bottom: 0.5rem;">✅ Document Opened</div>
+        <div style="font-size: 0.9rem;">Document opened in new tab.</div>
+      `;
+      document.body.appendChild(successDiv);
+      
+      // Remove success message after 3 seconds
+      setTimeout(() => {
+        if (successDiv.parentNode) {
+          successDiv.parentNode.removeChild(successDiv);
+        }
+      }, 3000);
+      
+      console.log('Document opened successfully');
+      return;
       
     } catch (err) {
       console.error("Error opening protected document:", err);
