@@ -56,14 +56,22 @@ exports.handler = async (event) => {
     }
 
     // Load the original PDF and add watermark
+    console.log('Loading PDF with pdf-lib...');
     const originalPdf = await PDFDocument.load(originalPdfBuffer);
+    console.log('PDF loaded successfully, pages:', originalPdf.getPageCount());
+    
     const protectedPdf = await PDFDocument.create();
+    console.log('Created new PDF document');
     
     // Copy all pages from original to new document
+    console.log('Copying pages...');
     const pages = await protectedPdf.copyPages(originalPdf, originalPdf.getPageIndices());
+    console.log('Pages copied, adding to new document...');
     pages.forEach(page => protectedPdf.addPage(page));
+    console.log('Pages added to new document');
     
     // Add watermark to each page
+    console.log('Adding watermarks...');
     const allPages = protectedPdf.getPages();
     for (let i = 0; i < allPages.length; i++) {
       const page = allPages[i];
@@ -78,18 +86,23 @@ exports.handler = async (event) => {
         opacity: 0.6
       });
     }
+    console.log('Watermarks added to all pages');
     
     // Set document metadata
+    console.log('Setting document metadata...');
     protectedPdf.setTitle('ClaimNavigatorAI Protected Document');
     protectedPdf.setAuthor('ClaimNavigatorAI');
     protectedPdf.setSubject('Insurance Claim Document');
     protectedPdf.setKeywords(['claim', 'insurance', 'protected']);
     protectedPdf.setProducer('ClaimNavigatorAI');
     protectedPdf.setCreator('ClaimNavigatorAI');
+    console.log('Metadata set');
     
     // Save the protected PDF
+    console.log('Saving protected PDF...');
     const finalPdfBytes = await protectedPdf.save();
     const finalPdfBuffer = Buffer.from(finalPdfBytes);
+    console.log('Protected PDF saved, final size:', finalPdfBuffer.length);
 
     console.log('Protected PDF generated, size:', finalPdfBuffer.length);
 
@@ -107,13 +120,18 @@ exports.handler = async (event) => {
 
   } catch (err) {
     console.error("Error in simple document protection:", err);
+    console.error("Error stack:", err.stack);
+    console.error("Error name:", err.name);
+    console.error("Error message:", err.message);
     
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         error: err.message || "Failed to protect document",
-        stack: err.stack
+        errorName: err.name,
+        stack: err.stack,
+        documentPath: documentPath
       })
     };
   }
