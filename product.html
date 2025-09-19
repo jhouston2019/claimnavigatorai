@@ -438,9 +438,37 @@
           Buy Extra AI Response – $29
         </button>
 
+        <!-- Appeal Builder -->
+        <button onclick="startCheckout('appeal')" class="btn-appeal checkout-btn" style="display: block; margin: 1rem auto 0 auto; max-width: 400px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none;" data-original-text="Purchase Appeal Builder – $249">
+          Purchase Appeal Builder – $249
+        </button>
+
         <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary); font-size: 0.875rem;">
           Digital products are delivered immediately. All sales are final.
         </p>
+      </div>
+
+      <!-- Appeal Builder Section -->
+      <div class="pricing-card appeal-builder-card" style="margin-top: 3rem; border: 2px solid #f59e0b; background: linear-gradient(135deg, #fef3c7, #fde68a);">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;">
+          <span style="font-size: 1.5rem;">⚖️</span>
+          <h3 style="color: #92400e; margin: 0;">Appeal Builder - Premium Access</h3>
+        </div>
+        <div class="price-amount" style="color: #92400e;">$249</div>
+        <p class="price-description" style="color: #92400e;">
+          Generate complete, customized appeal letters + evidence package<br>
+          <strong>Per appeal - one-time purchase</strong>
+        </p>
+        <ul class="price-features" style="color: #92400e;">
+          <li>✓ AI-powered appeal letter generation</li>
+          <li>✓ Multi-language support (English, Spanish, French, Portuguese)</li>
+          <li>✓ Multiple appeal types (Internal, External, Arbitration, Litigation)</li>
+          <li>✓ Professional tone customization</li>
+          <li>✓ Evidence package with supporting documents</li>
+          <li>✓ Appeal tracking dashboard</li>
+          <li>✓ Professional partner referrals</li>
+          <li>✓ PDF and DOCX document generation</li>
+        </ul>
       </div>
     </div>
   </section>
@@ -585,15 +613,21 @@
 
         console.log(`Starting checkout for user: ${user.email}`);
 
+        // Determine which function to call based on type
+        let endpoint = "/.netlify/functions/create-checkout-session";
+        if (type === 'appeal') {
+          endpoint = "/.netlify/functions/create-appeal-checkout";
+        }
+
         // Call Netlify function with proper authentication
-        const response = await fetch("/.netlify/functions/create-checkout-session", {
+        const response = await fetch(endpoint, {
           method: "POST",
           headers: { 
             "Content-Type": "application/json",
             "Authorization": `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
           },
           body: JSON.stringify({ 
-            email: user.email, 
+            userEmail: user.email, 
             type: type || "claim_toolkit"
           })
         });
