@@ -40,19 +40,57 @@ exports.handler = async (event) => {
         console.error("Entitlement fetch error:", entError);
       }
 
-      const newCredits = (entitlement?.credits || 0) + 20;
+      // Handle different product types
+      if (product.includes("Appeal Builder")) {
+        // Handle appeal purchase
+        const { data: currentEntitlement } = await supabase
+          .from("entitlements")
+          .select("appeals")
+          .eq("email", userEmail)
+          .single();
 
-      const { error: upsertError } = await supabase
-        .from("entitlements")
-        .upsert(
-          { email: userEmail, credits: newCredits },
-          { onConflict: "email" }
-        );
+        const currentAppeals = currentEntitlement?.appeals || [];
+        const newAppeal = {
+          appeal_id: `appeal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          status: "active",
+          purchased_at: new Date().toISOString(),
+          used: false
+        };
 
-      if (upsertError) {
-        console.error("Entitlement update error:", upsertError);
+        const updatedAppeals = [...currentAppeals, newAppeal];
+
+        const { error: appealError } = await supabase
+          .from("entitlements")
+          .upsert(
+            { 
+              email: userEmail, 
+              appeals: updatedAppeals,
+              credits: entitlement?.credits || 0
+            },
+            { onConflict: "email" }
+          );
+
+        if (appealError) {
+          console.error("Appeal entitlement update error:", appealError);
+        } else {
+          console.log(`🎉 Added appeal for ${userEmail}: ${newAppeal.appeal_id}`);
+        }
       } else {
-        console.log(`🎉 Updated credits for ${userEmail}: ${newCredits}`);
+        // Handle regular credit purchase
+        const newCredits = (entitlement?.credits || 0) + 20;
+
+        const { error: upsertError } = await supabase
+          .from("entitlements")
+          .upsert(
+            { email: userEmail, credits: newCredits },
+            { onConflict: "email" }
+          );
+
+        if (upsertError) {
+          console.error("Entitlement update error:", upsertError);
+        } else {
+          console.log(`🎉 Updated credits for ${userEmail}: ${newCredits}`);
+        }
       }
 
       // 2. Update transactions table
