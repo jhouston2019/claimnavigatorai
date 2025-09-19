@@ -31,17 +31,35 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // Get file from Netlify Blobs
-    const store = getStore("documents");
-    const fileBuffer = await store.get(filename);
+    // Get file from docs directory (GitHub repository)
+    const fs = require('fs');
+    const path = require('path');
     
-    if (!fileBuffer) {
+    // Determine language and file path
+    const isEnglish = filename.includes('/en/') || filename.startsWith('en/');
+    const isSpanish = filename.includes('/es/') || filename.startsWith('es/');
+    
+    let filePath;
+    if (isEnglish) {
+      filePath = path.join(process.cwd(), 'docs', 'en', filename.replace(/^en\//, ''));
+    } else if (isSpanish) {
+      filePath = path.join(process.cwd(), 'docs', 'es', filename.replace(/^es\//, ''));
+    } else {
+      // Default to English if no language specified
+      filePath = path.join(process.cwd(), 'docs', 'en', filename);
+    }
+    
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
       return {
         statusCode: 404,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ error: 'File not found' })
       };
     }
+    
+    // Read file
+    const fileBuffer = fs.readFileSync(filePath);
 
     // Determine content type based on file extension
     const isPDF = filename.toLowerCase().endsWith('.pdf');
