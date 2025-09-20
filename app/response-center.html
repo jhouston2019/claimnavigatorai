@@ -2841,7 +2841,11 @@ Policyholder Response Team`;
     try {
       // Use the working simple Netlify function
       console.log('Calling serve-protected-document-simple function with path:', filePath);
-      const res = await fetch(`/.netlify/functions/serve-protected-document-simple?documentPath=${encodeURIComponent(filePath)}&v=${Date.now()}`, {
+      // Get current user ID for claimant protection
+      const currentUser = await supabase.auth.getUser();
+      const userId = currentUser.data.user?.id;
+      
+      const res = await fetch(`/.netlify/functions/serve-protected-document-simple?documentPath=${encodeURIComponent(filePath)}&user_id=${userId || ''}&v=${Date.now()}`, {
         method: "GET"
       });
       
