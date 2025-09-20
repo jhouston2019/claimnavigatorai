@@ -136,9 +136,6 @@ exports.handler = async (event, context) => {
       consent_collection: {
         terms_of_service: {
           required: true
-        },
-        promotions: {
-          required: false
         }
       },
       // Custom text for legal clarity

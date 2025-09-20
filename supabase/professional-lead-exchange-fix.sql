@@ -1,5 +1,5 @@
--- Professional Lead Exchange Schema
--- This schema supports the professional-only dashboard for lead exchange
+-- Professional Lead Exchange Schema Fix
+-- This adds the necessary columns to existing tables
 
 -- Add lead exchange columns to existing leads table
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS lead_status TEXT DEFAULT 'new' CHECK (lead_status IN ('new', 'claimed', 'expired'));
@@ -274,3 +274,4 @@ CREATE TRIGGER new_lead_notification
     AFTER INSERT ON leads
     FOR EACH ROW
     EXECUTE FUNCTION notify_professionals_new_lead();
+

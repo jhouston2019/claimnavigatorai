@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professional Dashboard - ClaimNavigatorAI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #1e40af;
+      --primary-dark: #0f172a;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --bg-white: #ffffff;
+      --bg-light: #f9fafb;
+      --bg-gray: #f3f4f6;
+      --border: #e5e7eb;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-light);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header */
+    header {
+      background: var(--primary-header);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+      margin-right: 2rem;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: white;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      display: inline-block;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .btn-primary:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .btn-secondary {
+      background: var(--bg-white);
+      color: var(--primary);
+      padding: 0.5rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 500;
+      border: 1px solid var(--primary);
+      transition: all 0.2s;
+      display: inline-block;
+    }
+    
+    .btn-secondary:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-success {
+      background: var(--success);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-success:hover {
+      background: #059669;
+    }
+    
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+    
+    /* Main Content */
+    .main-content {
+      padding: 2rem 0;
+    }
+    
+    .dashboard-header {
+      background: var(--bg-white);
+      padding: 2rem;
+      border-radius: 0.75rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+    }
+    
+    .dashboard-header h1 {
+      color: var(--primary-dark);
+      margin-bottom: 0.5rem;
+    }
+    
+    .dashboard-header p {
+      color: var(--text-secondary);
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: var(--bg-white);
+      border-radius: 0.75rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    
+    .tab {
+      flex: 1;
+      padding: 1rem 2rem;
+      background: var(--bg-white);
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .tab.active {
+      background: var(--bg-light);
+      border-bottom-color: var(--primary);
+      color: var(--primary);
+    }
+    
+    .tab:hover {
+      background: var(--bg-light);
+    }
+    
+    /* Tab Content */
+    .tab-content {
+      display: none;
+      background: var(--bg-white);
+      border-radius: 0.75rem;
+      box-shadow: var(--shadow-sm);
+      padding: 2rem;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-white);
+    }
+    
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    th {
+      background: var(--bg-light);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    tr:hover {
+      background: var(--bg-light);
+    }
+    
+    /* Status badges */
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .status-new {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    .status-claimed {
+      background: #dcfce7;
+      color: #166534;
+    }
+    
+    .status-expired {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    /* Account section */
+    .account-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: var(--bg-light);
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+    
+    /* Credit packs */
+    .credit-packs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .credit-pack {
+      background: var(--bg-light);
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      border: 2px solid var(--border);
+      text-align: center;
+      transition: all 0.2s;
+    }
+    
+    .credit-pack:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    
+    .credit-pack h3 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .credit-pack .price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .credit-pack .leads {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+    
+    /* Loading states */
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+    }
+    
+    .spinner {
+      border: 3px solid var(--border);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Error states */
+    .error {
+      background: #fef2f2;
+      color: #dc2626;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid #fecaca;
+      margin: 1rem 0;
+    }
+    
+    /* Success states */
+    .success {
+      background: #f0fdf4;
+      color: #166534;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid #bbf7d0;
+      margin: 1rem 0;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .tabs {
+        flex-direction: column;
+      }
+      
+      .tab {
+        border-bottom: 1px solid var(--border);
+        border-right: none;
+      }
+      
+      .tab.active {
+        border-bottom-color: var(--border);
+        border-left: 3px solid var(--primary);
+      }
+      
+      .account-stats {
+        grid-template-columns: 1fr;
+      }
+      
+      .credit-packs {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">ClaimNavigatorAI</div>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="#" onclick="logout()">Logout</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Dashboard Header -->
+      <div class="dashboard-header">
+        <h1>Professional Dashboard</h1>
+        <p>Access leads, manage your account, and grow your business</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('lead-feed')">Lead Feed</button>
+        <button class="tab" onclick="switchTab('my-leads')">My Leads</button>
+        <button class="tab" onclick="switchTab('account')">Account & Credits</button>
+      </div>
+
+      <!-- Lead Feed Tab -->
+      <div id="lead-feed" class="tab-content active">
+        <h2>Available Leads</h2>
+        <p>Browse and purchase new claim leads in your area</p>
+        
+        <div id="lead-feed-loading" class="loading">
+          <div class="spinner"></div>
+          Loading available leads...
+        </div>
+        
+        <div id="lead-feed-error" class="error" style="display: none;"></div>
+        
+        <div class="table-container">
+          <table id="leads-table" style="display: none;">
+            <thead>
+              <tr>
+                <th>Type of Loss</th>
+                <th>Date of Loss</th>
+                <th>Insurer</th>
+                <th>Property Type</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Price</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="leads-tbody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- My Leads Tab -->
+      <div id="my-leads" class="tab-content">
+        <h2>My Purchased Leads</h2>
+        <p>View and manage leads you've purchased</p>
+        
+        <div id="my-leads-loading" class="loading">
+          <div class="spinner"></div>
+          Loading your leads...
+        </div>
+        
+        <div id="my-leads-error" class="error" style="display: none;"></div>
+        
+        <div class="table-container">
+          <table id="my-leads-table" style="display: none;">
+            <thead>
+              <tr>
+                <th>Insured Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Type of Loss</th>
+                <th>Date of Loss</th>
+                <th>Insurer</th>
+                <th>Property Type</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Purchased</th>
+              </tr>
+            </thead>
+            <tbody id="my-leads-tbody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Account Tab -->
+      <div id="account" class="tab-content">
+        <h2>Account & Credits</h2>
+        <p>Manage your credits and account settings</p>
+        
+        <div id="account-loading" class="loading">
+          <div class="spinner"></div>
+          Loading account information...
+        </div>
+        
+        <div id="account-error" class="error" style="display: none;"></div>
+        
+        <div id="account-content" style="display: none;">
+          <!-- Account Stats -->
+          <div class="account-stats">
+            <div class="stat-card">
+              <div class="stat-value" id="credits-balance">0</div>
+              <div class="stat-label">Available Credits</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="leads-purchased">0</div>
+              <div class="stat-label">Leads Purchased</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="total-spent">$0</div>
+              <div class="stat-label">Total Spent</div>
+            </div>
+          </div>
+
+          <!-- Credit Packs -->
+          <h3>Buy Credits</h3>
+          <p>Purchase credit packs to buy leads without individual payments</p>
+          
+          <div class="credit-packs">
+            <div class="credit-pack">
+              <h3>Starter Pack</h3>
+              <div class="price">$500</div>
+              <div class="leads">2 leads</div>
+              <button class="btn-primary" onclick="buyCredits(500, 2)">Buy Now</button>
+            </div>
+            <div class="credit-pack">
+              <h3>Professional Pack</h3>
+              <div class="price">$1,000</div>
+              <div class="leads">5 leads</div>
+              <button class="btn-primary" onclick="buyCredits(1000, 5)">Buy Now</button>
+            </div>
+            <div class="credit-pack">
+              <h3>Business Pack</h3>
+              <div class="price">$2,000</div>
+              <div class="leads">10 leads</div>
+              <button class="btn-primary" onclick="buyCredits(2000, 10)">Buy Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    // Initialize Supabase client
+    const supabase = createClient(
+      "https://bnxvfxtpsxgfpltflyrr.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
+    );
+
+    let currentUser = null;
+    let currentProfessional = null;
+
+    // Check authentication and role on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+      await checkAuth();
+      if (currentUser && currentProfessional) {
+        // Check for success parameters in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+        const purchase = urlParams.get('purchase');
+        const credits = urlParams.get('credits');
+        
+        if (sessionId && (purchase === 'success' || credits === 'success')) {
+          // Show success message
+          alert('Payment successful! Your account has been updated.');
+          // Clean up URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        
+        loadLeadFeed();
+        loadMyLeads();
+        loadAccountInfo();
+      }
+    });
+
+    async function checkAuth() {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      
+      if (error || !user) {
+        window.location.href = '/app/login.html';
+        return;
+      }
+
+      currentUser = user;
+
+      // Check if user is a professional
+      const { data: professional, error: profError } = await supabase
+        .from('professionals')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (profError || !professional) {
+        // User is not a professional, redirect to registration
+        window.location.href = 'register-professional.html';
+        return;
+      }
+
+      currentProfessional = professional;
+    }
+
+    function switchTab(tabName) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      // Remove active class from all tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show selected tab content
+      document.getElementById(tabName).classList.add('active');
+      
+      // Add active class to clicked tab
+      event.target.classList.add('active');
+    }
+
+    async function loadLeadFeed() {
+      const loadingEl = document.getElementById('lead-feed-loading');
+      const errorEl = document.getElementById('lead-feed-error');
+      const tableEl = document.getElementById('leads-table');
+      const tbodyEl = document.getElementById('leads-tbody');
+
+      try {
+        loadingEl.style.display = 'block';
+        errorEl.style.display = 'none';
+        tableEl.style.display = 'none';
+
+        const { data: leads, error } = await supabase
+          .from('professional_leads_anonymized')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        loadingEl.style.display = 'none';
+
+        if (leads.length === 0) {
+          tbodyEl.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-secondary);">No leads available at the moment</td></tr>';
+        } else {
+          tbodyEl.innerHTML = leads.map(lead => `
+            <tr>
+              <td>${lead.type_of_loss}</td>
+              <td>${new Date(lead.date_of_loss).toLocaleDateString()}</td>
+              <td>${lead.insurer}</td>
+              <td>${lead.property_type}</td>
+              <td>${lead.location_display}</td>
+              <td><span class="status-badge status-${lead.status}">${lead.status}</span></td>
+              <td>$${lead.price}</td>
+              <td>
+                <button class="btn-success" onclick="purchaseLead('${lead.id}')" 
+                        ${currentProfessional.credits < lead.price ? 'disabled' : ''}>
+                  ${currentProfessional.credits >= lead.price ? 'Buy Lead' : 'Insufficient Credits'}
+                </button>
+              </td>
+            </tr>
+          `).join('');
+        }
+
+        tableEl.style.display = 'table';
+      } catch (error) {
+        console.error('Error loading leads:', error);
+        loadingEl.style.display = 'none';
+        errorEl.textContent = 'Failed to load leads. Please try again.';
+        errorEl.style.display = 'block';
+      }
+    }
+
+    async function loadMyLeads() {
+      const loadingEl = document.getElementById('my-leads-loading');
+      const errorEl = document.getElementById('my-leads-error');
+      const tableEl = document.getElementById('my-leads-table');
+      const tbodyEl = document.getElementById('my-leads-tbody');
+
+      try {
+        loadingEl.style.display = 'block';
+        errorEl.style.display = 'none';
+        tableEl.style.display = 'none';
+
+        const { data: leads, error } = await supabase
+          .from('professional_claimed_leads')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        loadingEl.style.display = 'none';
+
+        if (leads.length === 0) {
+          tbodyEl.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 2rem; color: var(--text-secondary);">You haven\'t purchased any leads yet</td></tr>';
+        } else {
+          tbodyEl.innerHTML = leads.map(lead => `
+            <tr>
+              <td>${lead.insured_name}</td>
+              <td><a href="tel:${lead.phone}">${lead.phone}</a></td>
+              <td><a href="mailto:${lead.email}">${lead.email}</a></td>
+              <td>${lead.type_of_loss}</td>
+              <td>${new Date(lead.date_of_loss).toLocaleDateString()}</td>
+              <td>${lead.insurer}</td>
+              <td>${lead.property_type}</td>
+              <td>${lead.loss_location}</td>
+              <td><span class="status-badge status-${lead.status}">${lead.status}</span></td>
+              <td>${new Date(lead.updated_at).toLocaleDateString()}</td>
+            </tr>
+          `).join('');
+        }
+
+        tableEl.style.display = 'table';
+      } catch (error) {
+        console.error('Error loading my leads:', error);
+        loadingEl.style.display = 'none';
+        errorEl.textContent = 'Failed to load your leads. Please try again.';
+        errorEl.style.display = 'block';
+      }
+    }
+
+    async function loadAccountInfo() {
+      const loadingEl = document.getElementById('account-loading');
+      const errorEl = document.getElementById('account-error');
+      const contentEl = document.getElementById('account-content');
+
+      try {
+        loadingEl.style.display = 'block';
+        errorEl.style.display = 'none';
+        contentEl.style.display = 'none';
+
+        // Get professional info
+        const { data: professional, error: profError } = await supabase
+          .from('professionals')
+          .select('*')
+          .eq('id', currentUser.id)
+          .single();
+
+        if (profError) throw profError;
+
+        // Get leads count
+        const { data: leads, error: leadsError } = await supabase
+          .from('professional_claimed_leads')
+          .select('price')
+          .eq('claimed_by', currentUser.id);
+
+        if (leadsError) throw leadsError;
+
+        const totalSpent = leads.reduce((sum, lead) => sum + lead.price, 0);
+
+        // Update UI
+        document.getElementById('credits-balance').textContent = professional.credits;
+        document.getElementById('leads-purchased').textContent = leads.length;
+        document.getElementById('total-spent').textContent = `$${totalSpent.toFixed(2)}`;
+
+        loadingEl.style.display = 'none';
+        contentEl.style.display = 'block';
+      } catch (error) {
+        console.error('Error loading account info:', error);
+        loadingEl.style.display = 'none';
+        errorEl.textContent = 'Failed to load account information. Please try again.';
+        errorEl.style.display = 'block';
+      }
+    }
+
+    async function purchaseLead(leadId) {
+      if (!confirm('Are you sure you want to purchase this lead for $249?')) {
+        return;
+      }
+
+      try {
+        // Create Stripe checkout session for lead purchase
+        const response = await fetch('/.netlify/functions/create-lead-checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+          },
+          body: JSON.stringify({
+            lead_id: leadId,
+            professional_id: currentUser.id
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          throw new Error(data.error || 'Failed to create checkout session');
+        }
+      } catch (error) {
+        console.error('Error purchasing lead:', error);
+        alert('Failed to start checkout: ' + error.message);
+      }
+    }
+
+    async function buyCredits(amount, leads) {
+      if (!confirm(`Are you sure you want to buy ${leads} leads worth $${amount} in credits?`)) {
+        return;
+      }
+
+      try {
+        // Create Stripe checkout session for credits
+        const response = await fetch('/.netlify/functions/create-credits-checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+          },
+          body: JSON.stringify({
+            amount: amount,
+            credits: amount, // 1 credit = $1
+            professional_id: currentUser.id
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          throw new Error(data.error || 'Failed to create checkout session');
+        }
+      } catch (error) {
+        console.error('Error buying credits:', error);
+        alert('Failed to start checkout: ' + error.message);
+      }
+    }
+
+    async function logout() {
+      await supabase.auth.signOut();
+      window.location.href = '/';
+    }
+
+    // Make functions globally available
+    window.switchTab = switchTab;
+    window.purchaseLead = purchaseLead;
+    window.buyCredits = buyCredits;
+    window.logout = logout;
+  </script>
+</body>
+</html>

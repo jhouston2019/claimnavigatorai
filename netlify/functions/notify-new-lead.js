@@ -83,24 +83,17 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Send email notifications
-    const results = await Promise.allSettled(
-      professionals.map(professional => sendLeadNotification(lead, professional, state))
-    );
-
-    const successful = results.filter(r => r.status === 'fulfilled').length;
-    const failed = results.filter(r => r.status === 'rejected').length;
-
-    console.log(`Lead notifications sent: ${successful} successful, ${failed} failed`);
+    // Log the new lead (notifications will be sent via daily digest)
+    console.log(`New lead created: ${lead.id} in ${state} - will be included in daily digest`);
 
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({ 
-        message: 'Lead notifications sent',
+        message: 'Lead logged for daily digest',
         state: state,
-        professionals_notified: successful,
-        failed_notifications: failed
+        professionals_count: professionals.length,
+        note: 'Notifications will be sent via daily digest'
       })
     };
 

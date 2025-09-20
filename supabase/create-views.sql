@@ -43,3 +43,4 @@ WHERE le.lead_status = 'claimed';
 -- Grant permissions to authenticated users
 GRANT SELECT ON professional_leads_anonymized TO authenticated;
 GRANT SELECT ON professional_claimed_leads TO authenticated;
+

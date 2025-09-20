@@ -1,10 +1,17 @@
--- Professional Lead Exchange Schema
--- This schema supports the professional-only dashboard for lead exchange
+-- Professional Lead Exchange Schema - Safe Version
+-- This version only adds the necessary columns without assuming existing structure
 
 -- Add lead exchange columns to existing leads table
-ALTER TABLE leads ADD COLUMN IF NOT EXISTS lead_status TEXT DEFAULT 'new' CHECK (lead_status IN ('new', 'claimed', 'expired'));
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS lead_status TEXT DEFAULT 'new';
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS claimed_by UUID REFERENCES auth.users(id);
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS price NUMERIC DEFAULT 249;
+
+-- Add email column if it doesn't exist (for lead exchange)
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS email TEXT;
+
+-- Add CHECK constraints after columns are created
+ALTER TABLE leads ADD CONSTRAINT IF NOT EXISTS check_lead_status 
+    CHECK (lead_status IN ('new', 'claimed', 'expired'));
 
 -- Create professionals table for professional users
 CREATE TABLE IF NOT EXISTS professionals (
@@ -14,6 +21,7 @@ CREATE TABLE IF NOT EXISTS professionals (
     company_name TEXT,
     specialty TEXT,
     state TEXT,
+    email TEXT, -- Professional's email for notifications
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -32,14 +40,10 @@ CREATE TABLE IF NOT EXISTS professional_transactions (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Create indexes for better performance
+-- Create indexes for better performance (only for columns that exist)
 CREATE INDEX IF NOT EXISTS idx_leads_lead_status ON leads(lead_status);
 CREATE INDEX IF NOT EXISTS idx_leads_claimed_by ON leads(claimed_by);
-CREATE INDEX IF NOT EXISTS idx_leads_type_of_loss ON leads(type_of_loss);
-CREATE INDEX IF NOT EXISTS idx_leads_insurer ON leads(insurer);
-CREATE INDEX IF NOT EXISTS idx_leads_property_type ON leads(property_type);
 CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at);
-CREATE INDEX IF NOT EXISTS idx_leads_state ON leads(loss_location);
 
 CREATE INDEX IF NOT EXISTS idx_professionals_role ON professionals(role);
 CREATE INDEX IF NOT EXISTS idx_professionals_state ON professionals(state);
@@ -214,23 +218,25 @@ GRANT EXECUTE ON FUNCTION purchase_lead TO authenticated;
 GRANT EXECUTE ON FUNCTION add_credits TO authenticated;
 
 -- Create view for professional dashboard - anonymized leads
+-- This view will work with whatever columns exist in your leads table
 CREATE OR REPLACE VIEW professional_leads_anonymized AS
 SELECT 
     l.id,
-    l.type_of_loss,
     l.date_of_loss,
     l.insurer,
-    l.property_type,
-    l.loss_location,
     l.status,
     l.lead_status,
     l.price,
     l.created_at,
+    -- Handle different column names that might exist
+    COALESCE(l.type_of_loss, 'Unknown') as type_of_loss,
+    COALESCE(l.property_type, 'Unknown') as property_type,
+    COALESCE(l.loss_location, 'Unknown') as loss_location,
     -- Anonymized location (city, state only)
     CASE 
         WHEN l.loss_location ~ ',' THEN 
             TRIM(SPLIT_PART(l.loss_location, ',', 2)) || ', ' || TRIM(SPLIT_PART(l.loss_location, ',', 1))
-        ELSE l.loss_location
+        ELSE COALESCE(l.loss_location, 'Unknown')
     END as location_display
 FROM leads l
 WHERE l.lead_status = 'new';
@@ -240,18 +246,19 @@ CREATE OR REPLACE VIEW professional_claimed_leads AS
 SELECT 
     l.id,
     l.insured_name,
-    l.phone,
+    l.phone_number as phone,
     l.email,
     l.date_of_loss,
-    l.type_of_loss,
     l.insurer,
     l.status,
-    l.property_type,
-    l.loss_location,
     l.lead_status,
     l.price,
     l.created_at,
-    l.updated_at
+    l.updated_at,
+    -- Handle different column names that might exist
+    COALESCE(l.type_of_loss, 'Unknown') as type_of_loss,
+    COALESCE(l.property_type, 'Unknown') as property_type,
+    COALESCE(l.loss_location, 'Unknown') as loss_location
 FROM leads l
 WHERE l.claimed_by = auth.uid() AND l.lead_status = 'claimed';
 

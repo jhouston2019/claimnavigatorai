@@ -1,10 +1,17 @@
--- Professional Lead Exchange Schema
--- This schema supports the professional-only dashboard for lead exchange
+-- Professional Lead Exchange Schema Fix V2
+-- This works with your existing leads table structure
+
+-- First, let's check what columns exist in your leads table
+-- Based on your existing schema, it looks like you have:
+-- id, user_id, date_of_loss, type_of_loss, loss_location, insured_name, phone_number, policy_number, insurer, status, property_type, created_at, updated_at
 
 -- Add lead exchange columns to existing leads table
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS lead_status TEXT DEFAULT 'new' CHECK (lead_status IN ('new', 'claimed', 'expired'));
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS claimed_by UUID REFERENCES auth.users(id);
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS price NUMERIC DEFAULT 249;
+
+-- Add email column if it doesn't exist (for lead exchange)
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS email TEXT;
 
 -- Create professionals table for professional users
 CREATE TABLE IF NOT EXISTS professionals (
@@ -14,6 +21,7 @@ CREATE TABLE IF NOT EXISTS professionals (
     company_name TEXT,
     specialty TEXT,
     state TEXT,
+    email TEXT, -- Professional's email for notifications
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -39,7 +47,6 @@ CREATE INDEX IF NOT EXISTS idx_leads_type_of_loss ON leads(type_of_loss);
 CREATE INDEX IF NOT EXISTS idx_leads_insurer ON leads(insurer);
 CREATE INDEX IF NOT EXISTS idx_leads_property_type ON leads(property_type);
 CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at);
-CREATE INDEX IF NOT EXISTS idx_leads_state ON leads(loss_location);
 
 CREATE INDEX IF NOT EXISTS idx_professionals_role ON professionals(role);
 CREATE INDEX IF NOT EXISTS idx_professionals_state ON professionals(state);
@@ -214,6 +221,7 @@ GRANT EXECUTE ON FUNCTION purchase_lead TO authenticated;
 GRANT EXECUTE ON FUNCTION add_credits TO authenticated;
 
 -- Create view for professional dashboard - anonymized leads
+-- This works with your existing leads table structure
 CREATE OR REPLACE VIEW professional_leads_anonymized AS
 SELECT 
     l.id,
@@ -240,7 +248,7 @@ CREATE OR REPLACE VIEW professional_claimed_leads AS
 SELECT 
     l.id,
     l.insured_name,
-    l.phone,
+    l.phone_number as phone,
     l.email,
     l.date_of_loss,
     l.type_of_loss,
@@ -274,3 +282,4 @@ CREATE TRIGGER new_lead_notification
     AFTER INSERT ON leads
     FOR EACH ROW
     EXECUTE FUNCTION notify_professionals_new_lead();
+

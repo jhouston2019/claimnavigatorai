@@ -121,3 +121,4 @@ SELECT
     (SELECT COUNT(*) FROM storage.buckets WHERE id = 'appeal-documents') as storage_bucket_exists,
     (SELECT COUNT(*) FROM pg_policies WHERE tablename = 'objects' AND policyname LIKE '%appeal%') as rls_policies_count;
 
+
