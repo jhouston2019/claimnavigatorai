@@ -1,12 +1,13 @@
 const { createClient } = require('@supabase/supabase-js');
 const { addClaimantProtection, generateDocumentId, logDocumentAccess } = require('./utils/pdf-protection');
+const { requireClaimAccess, logClaimAccess } = require('./utils/claim-access-control');
 
 exports.handler = async (event) => {
   try {
     console.log('Enhanced protected document function called');
     
-    // Get document path and user ID from query parameters
-    const { documentPath, user_id } = event.queryStringParameters || {};
+    // Get document path and claim ID from query parameters
+    const { documentPath, claim_id } = event.queryStringParameters || {};
     
     if (!documentPath) {
       return {
@@ -15,10 +16,23 @@ exports.handler = async (event) => {
       };
     }
 
-    // Get user email from JWT token or use default
+    if (!claim_id) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Claim ID is required" })
+      };
+    }
+
+    // Validate claim access
+    const accessResult = await requireClaimAccess(event, claim_id);
+    if (accessResult.statusCode) {
+      return accessResult; // Return error response
+    }
+
+    const { userId, claim, claimantInfo } = accessResult;
+
+    // Get user email from JWT token
     let userEmail = 'user@claimnavigatorai.com';
-    let userId = user_id;
-    
     const authHeader = event.headers.authorization || event.headers.Authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7);
@@ -29,16 +43,13 @@ exports.handler = async (event) => {
           if (payload && payload.email) {
             userEmail = payload.email;
           }
-          if (payload && payload.sub) {
-            userId = payload.sub;
-          }
         }
       } catch (jwtError) {
-        console.log("Could not decode JWT, using default values");
+        console.log("Could not decode JWT, using default email");
       }
     }
     
-    console.log("Serving document for user:", userEmail, "ID:", userId);
+    console.log("Serving document for user:", userEmail, "ID:", userId, "Claim:", claim_id);
 
     // Fetch the protected document directly
     const decodedPath = decodeURIComponent(documentPath);
@@ -62,61 +73,35 @@ exports.handler = async (event) => {
     const pdfBuffer = Buffer.from(await response.arrayBuffer());
     console.log('PDF fetched successfully, size:', pdfBuffer.length);
 
-    // If we have a user ID, try to get claimant information and add protection
+    // Add claimant protection using the validated claim information
     let finalPdfBuffer = pdfBuffer;
     let documentId = null;
     
-    if (userId) {
-      try {
-        // Initialize Supabase client
-        const supabase = createClient(
-          process.env.SUPABASE_URL,
-          process.env.SUPABASE_ANON_KEY
-        );
-
-        // Get user's claim information
-        const { data: claimData, error: claimError } = await supabase
-          .from('claims')
-          .select('*')
-          .eq('user_id', userId)
-          .single();
-
-        if (claimData && !claimError) {
-          console.log('Found claim data for user:', userId);
-          
-          // Prepare claimant information
-          const claimantInfo = {
-            user_id: userId,
-            insured_name: claimData.insured_name,
-            policy_number: claimData.policy_number,
-            insurer: claimData.insurer,
-            date_of_loss: claimData.date_of_loss,
-            loss_location: claimData.loss_location,
-            property_type: claimData.property_type,
-            status: claimData.status
-          };
-
-          // Add claimant protection to the already-protected PDF
-          const { protectedPdf, documentId: docId } = await addClaimantProtection(pdfBuffer, claimantInfo);
-          finalPdfBuffer = protectedPdf;
-          documentId = docId;
-          
-          // Log document access
-          await logDocumentAccess(docId, claimantInfo, 'download');
-          
-          console.log('Added claimant protection to document, ID:', docId);
-        } else {
-          console.log('No claim data found for user:', userId, claimError?.message);
-          // Generate a basic document ID even without claim data
-          documentId = generateDocumentId(userId, 'unknown', Date.now());
+    try {
+      // Add claimant protection to the already-protected PDF
+      const { protectedPdf, documentId: docId } = await addClaimantProtection(pdfBuffer, claimantInfo);
+      finalPdfBuffer = protectedPdf;
+      documentId = docId;
+      
+      // Log claim access
+      await logClaimAccess(
+        userId, 
+        claim_id, 
+        decodedPath, 
+        'downloaded', 
+        'template',
+        {
+          document_path: decodedPath,
+          file_size: finalPdfBuffer.length,
+          user_email: userEmail
         }
-      } catch (protectionError) {
-        console.error('Error adding claimant protection:', protectionError);
-        // Continue with original PDF if protection fails
-        documentId = generateDocumentId(userId || 'anonymous', 'unknown', Date.now());
-      }
-    } else {
-      console.log('No user ID provided, serving original protected document');
+      );
+      
+      console.log('Added claimant protection to document, ID:', docId);
+    } catch (protectionError) {
+      console.error('Error adding claimant protection:', protectionError);
+      // Continue with original PDF if protection fails
+      documentId = generateDocumentId(userId, claimantInfo.policy_number, Date.now());
     }
 
     // Log the document access for tracking
@@ -130,7 +115,8 @@ exports.handler = async (event) => {
       'X-User-Email': userEmail,
       'X-Document-Path': decodedPath,
       'X-Access-Time': new Date().toISOString(),
-      'X-Protection-Applied': 'password-watermark-claimant-protection'
+      'X-Protection-Applied': 'password-watermark-claimant-protection',
+      'X-Claim-ID': claim_id
     };
 
     // Add document ID to headers if available

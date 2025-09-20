@@ -2841,12 +2841,24 @@ Policyholder Response Team`;
     try {
       // Use the working simple Netlify function
       console.log('Calling serve-protected-document-simple function with path:', filePath);
-      // Get current user ID for claimant protection
+      // Get current user and claim ID for access control
       const currentUser = await supabase.auth.getUser();
       const userId = currentUser.data.user?.id;
       
-      const res = await fetch(`/.netlify/functions/serve-protected-document-simple?documentPath=${encodeURIComponent(filePath)}&user_id=${userId || ''}&v=${Date.now()}`, {
-        method: "GET"
+      // Get claim ID from URL parameters or localStorage
+      const urlParams = new URLSearchParams(window.location.search);
+      const claimId = urlParams.get('claim_id') || localStorage.getItem('current_claim_id');
+      
+      if (!claimId) {
+        alert('Claim ID is required to access documents. Please select a claim first.');
+        return;
+      }
+      
+      const res = await fetch(`/.netlify/functions/serve-protected-document-simple?documentPath=${encodeURIComponent(filePath)}&claim_id=${claimId}&v=${Date.now()}`, {
+        method: "GET",
+        headers: {
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+        }
       });
       
       if (res.ok) {
