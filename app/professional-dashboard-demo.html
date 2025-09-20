@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professional Dashboard Demo - ClaimNavigatorAI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #1e40af;
+      --primary-dark: #0f172a;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --bg-white: #ffffff;
+      --bg-light: #f9fafb;
+      --bg-gray: #f3f4f6;
+      --border: #e5e7eb;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-light);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header */
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 1rem 0;
+      box-shadow: var(--shadow-md);
+    }
+    
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: white;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      display: inline-block;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .btn-primary:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    /* Main Content */
+    .main-content {
+      padding: 2rem 0;
+    }
+    
+    .dashboard-header {
+      background: var(--bg-white);
+      padding: 2rem;
+      border-radius: 0.75rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+    }
+    
+    .dashboard-header h1 {
+      color: var(--primary-dark);
+      margin-bottom: 0.5rem;
+    }
+    
+    .dashboard-header p {
+      color: var(--text-secondary);
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: var(--bg-white);
+      border-radius: 0.75rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    
+    .tab {
+      flex: 1;
+      padding: 1rem 2rem;
+      background: var(--bg-white);
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .tab.active {
+      background: var(--bg-light);
+      border-bottom-color: var(--primary);
+      color: var(--primary);
+    }
+    
+    .tab:hover {
+      background: var(--bg-light);
+    }
+    
+    /* Tab Content */
+    .tab-content {
+      display: none;
+      background: var(--bg-white);
+      border-radius: 0.75rem;
+      box-shadow: var(--shadow-sm);
+      padding: 2rem;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Demo Content */
+    .demo-notice {
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    
+    .demo-notice h3 {
+      color: #92400e;
+      margin-bottom: 0.5rem;
+    }
+    
+    .demo-notice p {
+      color: #92400e;
+      margin: 0;
+    }
+    
+    .demo-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: var(--bg-light);
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+    
+    .demo-leads {
+      background: var(--bg-light);
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      margin: 1rem 0;
+    }
+    
+    .lead-item {
+      background: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--primary);
+    }
+    
+    .lead-item h4 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .lead-item p {
+      color: var(--text-secondary);
+      margin: 0.25rem 0;
+    }
+    
+    .btn-success {
+      background: var(--success);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-success:hover {
+      background: #059669;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .tabs {
+        flex-direction: column;
+      }
+      
+      .tab {
+        border-bottom: 1px solid var(--border);
+        border-right: none;
+      }
+      
+      .tab.active {
+        border-bottom-color: var(--border);
+        border-left: 3px solid var(--primary);
+      }
+      
+      .demo-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">ClaimNavigatorAI</div>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/app/register-professional.html">Register</a>
+          <a href="/app/login.html">Login</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <!-- Demo Notice -->
+      <div class="demo-notice">
+        <h3>🎯 Professional Dashboard Demo</h3>
+        <p>This is a demonstration of the professional dashboard. Register as a professional to access the full functionality.</p>
+      </div>
+
+      <!-- Dashboard Header -->
+      <div class="dashboard-header">
+        <h1>Professional Dashboard</h1>
+        <p>Access leads, manage your account, and grow your business</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('lead-feed')">Lead Feed</button>
+        <button class="tab" onclick="switchTab('my-leads')">My Leads</button>
+        <button class="tab" onclick="switchTab('account')">Account & Credits</button>
+      </div>
+
+      <!-- Lead Feed Tab -->
+      <div id="lead-feed" class="tab-content active">
+        <h2>Available Leads</h2>
+        <p>Browse and purchase new claim leads in your area</p>
+
+        <div class="demo-leads">
+          <h3>Sample Leads (Demo Data)</h3>
+          
+          <div class="lead-item">
+            <h4>Water Damage Claim</h4>
+            <p><strong>Property Type:</strong> Residential</p>
+            <p><strong>Insurer:</strong> State Farm</p>
+            <p><strong>Date of Loss:</strong> 2024-01-15</p>
+            <p><strong>Location:</strong> Miami, FL</p>
+            <p><strong>Status:</strong> New</p>
+            <p><strong>Price:</strong> $249</p>
+            <button class="btn-success" onclick="alert('Demo: Lead purchase would require professional registration')">Buy Lead</button>
+          </div>
+
+          <div class="lead-item">
+            <h4>Hurricane Damage Claim</h4>
+            <p><strong>Property Type:</strong> Commercial</p>
+            <p><strong>Insurer:</strong> Allstate</p>
+            <p><strong>Date of Loss:</strong> 2024-01-10</p>
+            <p><strong>Location:</strong> Tampa, FL</p>
+            <p><strong>Status:</strong> New</p>
+            <p><strong>Price:</strong> $249</p>
+            <button class="btn-success" onclick="alert('Demo: Lead purchase would require professional registration')">Buy Lead</button>
+          </div>
+
+          <div class="lead-item">
+            <h4>Fire Damage Claim</h4>
+            <p><strong>Property Type:</strong> Residential</p>
+            <p><strong>Insurer:</strong> Progressive</p>
+            <p><strong>Date of Loss:</strong> 2024-01-08</p>
+            <p><strong>Location:</strong> Orlando, FL</p>
+            <p><strong>Status:</strong> New</p>
+            <p><strong>Price:</strong> $249</p>
+            <button class="btn-success" onclick="alert('Demo: Lead purchase would require professional registration')">Buy Lead</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Leads Tab -->
+      <div id="my-leads" class="tab-content">
+        <h2>My Purchased Leads</h2>
+        <p>View and manage leads you've purchased</p>
+
+        <div class="demo-leads">
+          <p><em>No leads purchased yet. Register as a professional to start purchasing leads.</em></p>
+        </div>
+      </div>
+
+      <!-- Account Tab -->
+      <div id="account" class="tab-content">
+        <h2>Account & Credits</h2>
+        <p>Manage your credits and account settings</p>
+
+        <div class="demo-stats">
+          <div class="stat-card">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Available Credits</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Leads Purchased</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">$0</div>
+            <div class="stat-label">Total Spent</div>
+          </div>
+        </div>
+
+        <div class="demo-leads">
+          <h3>Credit Packs</h3>
+          <p>Purchase credit packs to buy leads without individual payments</p>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
+            <div style="background: white; padding: 1.5rem; border-radius: 0.5rem; text-align: center; border: 2px solid var(--border);">
+              <h4>Starter Pack</h4>
+              <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin: 0.5rem 0;">$500</div>
+              <div style="color: var(--text-secondary); margin-bottom: 1rem;">2 leads</div>
+              <button class="btn-primary" onclick="alert('Demo: Credit purchase would require professional registration')">Buy Now</button>
+            </div>
+            
+            <div style="background: white; padding: 1.5rem; border-radius: 0.5rem; text-align: center; border: 2px solid var(--border);">
+              <h4>Professional Pack</h4>
+              <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin: 0.5rem 0;">$1,000</div>
+              <div style="color: var(--text-secondary); margin-bottom: 1rem;">5 leads</div>
+              <button class="btn-primary" onclick="alert('Demo: Credit purchase would require professional registration')">Buy Now</button>
+            </div>
+            
+            <div style="background: white; padding: 1.5rem; border-radius: 0.5rem; text-align: center; border: 2px solid var(--border);">
+              <h4>Business Pack</h4>
+              <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin: 0.5rem 0;">$2,000</div>
+              <div style="color: var(--text-secondary); margin-bottom: 1rem;">10 leads</div>
+              <button class="btn-primary" onclick="alert('Demo: Credit purchase would require professional registration')">Buy Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function switchTab(tabName) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+
+      // Remove active class from all tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      // Show selected tab content
+      document.getElementById(tabName).classList.add('active');
+
+      // Add active class to clicked tab
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>

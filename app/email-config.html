@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Configuration - ClaimNavigatorAI</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: #f9fafb;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #1e40af;
+      margin-bottom: 1rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #374151;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+    }
+    .btn {
+      background: #1e40af;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn:hover {
+      background: #1d4ed8;
+    }
+    .info-box {
+      background: #f0f9ff;
+      border: 1px solid #0ea5e9;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📧 Email Configuration</h1>
+    
+    <div class="info-box">
+      <h3>Current Email Settings</h3>
+      <p><strong>Email Provider:</strong> SendGrid</p>
+      <p><strong>SMTP Host:</strong> smtp.sendgrid.net</p>
+      <p><strong>Port:</strong> 587</p>
+      <p><strong>Authentication:</strong> API Key</p>
+    </div>
+
+    <form id="email-config-form">
+      <div class="form-group">
+        <label for="sendgrid-api-key">SendGrid API Key</label>
+        <input type="password" id="sendgrid-api-key" placeholder="Enter your SendGrid API key">
+        <small>Get your API key from <a href="https://app.sendgrid.com/settings/api_keys" target="_blank">SendGrid Dashboard</a></small>
+      </div>
+
+      <div class="form-group">
+        <label for="from-email">From Email Address</label>
+        <input type="email" id="from-email" placeholder="noreply@claimnavigatorai.com">
+        <small>This email must be verified in SendGrid</small>
+      </div>
+
+      <div class="form-group">
+        <label for="admin-email">Admin Email (for notifications)</label>
+        <input type="email" id="admin-email" placeholder="admin@claimnavigatorai.com">
+        <small>Email address to receive system notifications</small>
+      </div>
+
+      <button type="submit" class="btn">Save Email Configuration</button>
+    </form>
+
+    <div class="info-box">
+      <h3>📋 Setup Instructions</h3>
+      <ol>
+        <li>Create a SendGrid account at <a href="https://sendgrid.com" target="_blank">sendgrid.com</a></li>
+        <li>Generate an API key in your SendGrid dashboard</li>
+        <li>Verify your sender email address in SendGrid</li>
+        <li>Enter the API key and email addresses above</li>
+        <li>Test the configuration</li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('email-config-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = {
+        sendgrid_api_key: document.getElementById('sendgrid-api-key').value,
+        from_email: document.getElementById('from-email').value,
+        admin_email: document.getElementById('admin-email').value
+      };
+
+      try {
+        const response = await fetch('/.netlify/functions/configure-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+        
+        if (response.ok) {
+          alert('Email configuration saved successfully!');
+        } else {
+          alert('Error: ' + result.error);
+        }
+      } catch (error) {
+        alert('Error saving configuration: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -132,12 +132,7 @@ exports.handler = async (event, context) => {
           optional: false // REQUIRED field
         }
       ],
-      // Consent collection for legal compliance
-      consent_collection: {
-        terms_of_service: {
-          required: true
-        }
-      },
+      // Legal compliance handled through custom text
       // Custom text for legal clarity
       custom_text: {
         submit: {
