@@ -1,10 +1,13 @@
 const { createClient } = require('@supabase/supabase-js');
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
+
+// Set SendGrid API key
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 exports.handler = async (event, context) => {
   // Only allow POST

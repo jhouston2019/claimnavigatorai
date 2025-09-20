@@ -1,10 +1,13 @@
 const { createClient } = require('@supabase/supabase-js');
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
+
+// Set SendGrid API key
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 exports.handler = async (event, context) => {
   // Only allow POST (for manual triggers) or scheduled events
@@ -159,17 +162,6 @@ async function sendDailyDigest(professional, leadsByState) {
       return;
     }
 
-    // Create email transporter
-    const transporter = nodemailer.createTransporter({
-      host: 'smtp.sendgrid.net',
-      port: 587,
-      secure: false,
-      auth: {
-        user: 'apikey',
-        pass: process.env.SENDGRID_API_KEY
-      }
-    });
-
     const emailSubject = `Daily Lead Digest - ${stateLeads.length} New Leads in ${professional.state}`;
     const emailBody = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -216,14 +208,14 @@ async function sendDailyDigest(professional, leadsByState) {
       </div>
     `;
 
-    const mailOptions = {
-      from: process.env.FROM_EMAIL || 'noreply@claimnavigatorai.netlify.app',
+    const msg = {
       to: professional.email || 'professional@example.com',
+      from: 'claimnavigatorai@gmail.com', // ✅ locked verified sender
       subject: emailSubject,
       html: emailBody
     };
 
-    await transporter.sendMail(mailOptions);
+    await sgMail.send(msg);
     console.log(`Daily digest sent to ${professional.email}`);
 
   } catch (error) {

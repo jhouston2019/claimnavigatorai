@@ -1,4 +1,7 @@
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
+
+// Set SendGrid API key
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 exports.handler = async (event, context) => {
   // Only allow POST requests
@@ -105,23 +108,12 @@ exports.handler = async (event, context) => {
 };
 
 async function sendEmailNotification({ user_name, user_email, subject, message, messageId }) {
-  // Email configuration
-  const transporter = nodemailer.createTransporter({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: process.env.SMTP_PORT || 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
-    }
-  });
-
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@claimnavigatorai.com';
   const siteUrl = process.env.SITE_URL || 'https://claimnavigatorai.netlify.app';
 
-  const mailOptions = {
-    from: `"ClaimNavigatorAI Support" <${process.env.SMTP_USER}>`,
+  const msg = {
     to: adminEmail,
+    from: 'claimnavigatorai@gmail.com', // ✅ locked verified sender
     subject: `New Support Message: ${subject}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -164,6 +156,6 @@ Visit: ${siteUrl}/solution-center.html
     `
   };
 
-  await transporter.sendMail(mailOptions);
+  await sgMail.send(msg);
   console.log('Email notification sent successfully');
 }

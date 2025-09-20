@@ -27,7 +27,7 @@ exports.handler = async (event, context) => {
       
       const msg = {
         to,
-        from: process.env.FROM_EMAIL || 'noreply@claimnavigatorai.com',
+        from: 'claimnavigatorai@gmail.com', // ✅ locked verified sender
         subject,
         text: text || stripHtml(html),
         html,
