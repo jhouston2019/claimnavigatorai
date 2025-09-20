@@ -12,10 +12,11 @@ create table claims (
   type_of_loss text not null,
   loss_location jsonb not null,
   insured_name text not null,
-  policy_number text,
-  insurer text,
-  status text default 'new' check (status in ('new', 'pending', 'settled', 'disputed', 'litigation')),
-  property_type text check (property_type in ('residential', 'commercial', 'industrial')),
+  phone_number text not null,
+  policy_number text not null,
+  insurer text not null,
+  status text not null check (status in ('new', 'pending', 'settled', 'disputed', 'litigation')),
+  property_type text not null check (property_type in ('residential', 'commercial', 'industrial')),
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );

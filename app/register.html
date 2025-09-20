@@ -250,21 +250,25 @@
         <label for="insured_name">Insured Name <span class="required">*</span></label>
         <input type="text" id="insured_name" placeholder="John Doe" required>
 
+        <label for="phone_number">Phone Number <span class="required">*</span></label>
+        <input type="tel" id="phone_number" placeholder="(555) 123-4567" required>
+
         <div class="form-row">
           <div>
-            <label for="policy_number">Policy Number</label>
-            <input type="text" id="policy_number" placeholder="POL123456">
+            <label for="policy_number">Policy Number <span class="required">*</span></label>
+            <input type="text" id="policy_number" placeholder="POL123456" required>
           </div>
           <div>
-            <label for="insurer">Insurance Company</label>
-            <input type="text" id="insurer" placeholder="State Farm">
+            <label for="insurer">Insurance Company <span class="required">*</span></label>
+            <input type="text" id="insurer" placeholder="State Farm" required>
           </div>
         </div>
 
         <div class="form-row">
           <div>
-            <label for="status">Status</label>
-            <select id="status">
+            <label for="status">Status <span class="required">*</span></label>
+            <select id="status" required>
+              <option value="">Select status</option>
               <option value="new">New</option>
               <option value="pending">Pending</option>
               <option value="settled">Settled</option>
@@ -273,8 +277,8 @@
             </select>
           </div>
           <div>
-            <label for="property_type">Property Type</label>
-            <select id="property_type">
+            <label for="property_type">Property Type <span class="required">*</span></label>
+            <select id="property_type" required>
               <option value="">Select property type</option>
               <option value="residential">Residential</option>
               <option value="commercial">Commercial</option>
@@ -397,17 +401,20 @@
             zip: document.getElementById('zip').value
           },
           insured_name: document.getElementById('insured_name').value,
-          policy_number: document.getElementById('policy_number').value || null,
-          insurer: document.getElementById('insurer').value || null,
+          phone_number: document.getElementById('phone_number').value,
+          policy_number: document.getElementById('policy_number').value,
+          insurer: document.getElementById('insurer').value,
           status: document.getElementById('status').value,
-          property_type: document.getElementById('property_type').value || null
+          property_type: document.getElementById('property_type').value
         };
 
         // Validate claim data
         if (!claimData.date_of_loss || !claimData.type_of_loss || 
             !claimData.loss_location.address || !claimData.loss_location.city || 
             !claimData.loss_location.state || !claimData.loss_location.zip || 
-            !claimData.insured_name) {
+            !claimData.insured_name || !claimData.phone_number ||
+            !claimData.policy_number || !claimData.insurer ||
+            !claimData.status || !claimData.property_type) {
           showError('Please fill in all required claim fields.');
           registerBtn.disabled = false;
           registerBtn.textContent = 'Create Account & Claim';
