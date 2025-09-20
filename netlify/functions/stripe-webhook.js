@@ -62,11 +62,18 @@ async function handleCheckoutSessionCompleted(session) {
   console.log('Processing checkout.session.completed for session:', session.id);
   
   try {
-    // Extract claim data from session metadata
+    // Extract data from session metadata
     const metadata = session.metadata;
     
+    // Handle appeal purchases
+    if (metadata && metadata.product_type === 'appeal') {
+      await handleAppealPurchase(session);
+      return;
+    }
+    
+    // Handle claim license purchases
     if (!metadata || metadata.product_type !== 'claim_license') {
-      console.log('Not a claim license checkout, skipping');
+      console.log('Not a claim license or appeal checkout, skipping');
       return;
     }
 
@@ -245,5 +252,100 @@ async function handlePaymentIntentFailed(paymentIntent) {
 
   } catch (error) {
     console.error('Error handling payment intent failed:', error);
+  }
+}
+
+async function handleAppealPurchase(session) {
+  console.log('Processing appeal purchase for session:', session.id);
+  
+  try {
+    const userEmail = session.customer_email;
+    if (!userEmail) {
+      throw new Error('No user email found in session');
+    }
+
+    console.log('Processing appeal purchase for user:', userEmail);
+
+    // Generate unique appeal ID
+    const appealId = `appeal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Create new appeal object
+    const newAppeal = {
+      appeal_id: appealId,
+      status: 'active',
+      used: false,
+      purchased_at: new Date().toISOString(),
+      stripe_session_id: session.id,
+      amount_paid: session.amount_total / 100
+    };
+
+    // Get or create user entitlements record
+    const { data: existingEntitlement, error: fetchError } = await supabase
+      .from('entitlements')
+      .select('appeals')
+      .eq('email', userEmail)
+      .single();
+
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      throw new Error(`Error fetching user entitlements: ${fetchError.message}`);
+    }
+
+    // Initialize appeals array if it doesn't exist
+    const currentAppeals = existingEntitlement?.appeals || [];
+    const updatedAppeals = [...currentAppeals, newAppeal];
+
+    // Upsert the entitlements record
+    const { error: upsertError } = await supabase
+      .from('entitlements')
+      .upsert({
+        email: userEmail,
+        appeals: updatedAppeals,
+        updated_at: new Date().toISOString()
+      });
+
+    if (upsertError) {
+      throw new Error(`Error updating user appeals: ${upsertError.message}`);
+    }
+
+    // Log the transaction
+    const { error: logError } = await supabase
+      .from('transactions')
+      .insert([{
+        user_email: userEmail,
+        product: 'Appeal Builder - Premium Access',
+        amount: session.amount_total / 100,
+        affiliateid: null,
+        payout_status: 'completed',
+        stripe_session_id: session.id,
+        created_at: new Date().toISOString()
+      }]);
+
+    if (logError) {
+      console.error('Error logging appeal transaction:', logError);
+      // Don't fail the webhook for logging errors
+    }
+
+    console.log(`Appeal purchase completed successfully for user: ${userEmail}, appeal ID: ${appealId}`);
+
+  } catch (error) {
+    console.error('Error handling appeal purchase:', error);
+    
+    // Log the error for debugging
+    try {
+      await supabase
+        .from('webhook_errors')
+        .insert([{
+          event_type: 'checkout.session.completed',
+          session_id: session.id,
+          error_message: error.message,
+          error_stack: error.stack,
+          metadata: session.metadata,
+          created_at: new Date().toISOString()
+        }]);
+    } catch (logError) {
+      console.error('Error logging webhook error:', logError);
+    }
+    
+    throw error; // Re-throw to mark webhook as failed
   }
 }
