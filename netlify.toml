@@ -12,6 +12,11 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+# Scheduled functions for daily lead digest
+[[functions.scheduled]]
+  function = "scheduled-daily-digest"
+  schedule = "0 7 * * *"  # Daily at 7 AM EST
+
 [functions."functions-heavy/*"]
   external_node_modules = ["archiver", "pdfkit", "docx", "pdf-parse", "tesseract.js", "busboy"]
   node_bundler = "esbuild"

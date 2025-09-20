@@ -70,30 +70,35 @@ async function handleCheckoutSessionCompleted(session) {
 }
 
 async function processLeadPurchase(session, metadata) {
-  const { lead_id, professional_id } = metadata;
+  const { lead_exchange_id, professional_id } = metadata;
   
   try {
-    // Use the purchase_lead function to handle the transaction
-    const { data, error } = await supabase.rpc('purchase_lead', {
-      p_lead_id: lead_id,
-      p_professional_id: professional_id
-    });
+    // Update the lead_exchange table to mark as claimed
+    const { data, error } = await supabase
+      .from('lead_exchange')
+      .update({
+        lead_status: 'claimed',
+        claimed_by: professional_id
+      })
+      .eq('id', lead_exchange_id)
+      .select()
+      .single();
 
     if (error) {
-      console.error('Error processing lead purchase:', error);
+      console.error('Error updating lead exchange:', error);
       throw error;
     }
 
-    console.log(`Lead ${lead_id} successfully purchased by professional ${professional_id}`);
+    console.log(`Lead exchange ${lead_exchange_id} successfully purchased by professional ${professional_id}`);
     
     // Log the transaction
     await supabase
       .from('professional_transactions')
       .insert([{
         professional_id: professional_id,
-        lead_id: lead_id,
+        lead_id: data.original_lead_id,
         type: 'lead_purchase',
-        amount: 249,
+        amount: data.price,
         stripe_session_id: session.id,
         status: 'completed'
       }]);

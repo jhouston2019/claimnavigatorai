@@ -54,7 +54,7 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Insert the lead
+    // Insert the lead into the original leads table
     const { data: lead, error: insertError } = await supabase
       .from('leads')
       .insert([{
@@ -66,9 +66,7 @@ exports.handler = async (event, context) => {
         insurer,
         status,
         property_type,
-        loss_location,
-        lead_status: 'new',
-        price: 249
+        loss_location
       }])
       .select()
       .single();
@@ -79,6 +77,27 @@ exports.handler = async (event, context) => {
         statusCode: 500,
         headers,
         body: JSON.stringify({ error: 'Failed to create lead' })
+      };
+    }
+
+    // Create entry in lead_exchange table
+    const { data: leadExchange, error: exchangeError } = await supabase
+      .from('lead_exchange')
+      .insert([{
+        original_lead_id: lead.id,
+        lead_status: 'new',
+        price: 249,
+        email: lead.email
+      }])
+      .select()
+      .single();
+
+    if (exchangeError) {
+      console.error('Error creating lead exchange entry:', exchangeError);
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ error: 'Failed to create lead exchange entry' })
       };
     }
 
