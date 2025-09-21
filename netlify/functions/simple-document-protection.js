@@ -15,7 +15,7 @@ exports.handler = async (event) => {
     }
 
     // Try to fetch from the local Netlify site first
-    const localUrl = `https://claimnavigatorai.netlify.app/docs/${documentPath}`;
+    const localUrl = `https://claimnavigatorai.com/docs/${documentPath}`;
     console.log('Fetching from local Netlify site:', localUrl);
     
     let originalPdfBuffer;

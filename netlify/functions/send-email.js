@@ -131,7 +131,7 @@ function getPurchaseConfirmationEmail(customerEmail, sessionId, amount) {
       <h3>Get Started Now:</h3>
       <p>Access your AI Response Center to start generating professional responses to insurer correspondence:</p>
       
-      <a href="https://claimnavigatorai.netlify.app/success.html?session_id=${sessionId}" class="button">
+      <a href="https://claimnavigatorai.com/success.html?session_id=${sessionId}" class="button">
         Access Your Account
       </a>
       

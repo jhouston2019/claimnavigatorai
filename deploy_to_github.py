@@ -62,7 +62,7 @@ def create_github_deployment_instructions():
 ## The Challenge
 The documents are stored in the GitHub repository at:
 - https://github.com/jhouston2019/claimnavigatorai
-- They are served from: https://claimnavigatorai.netlify.app/docs/
+- They are served from: https://claimnavigatorai.com/docs/
 
 ## Deployment Strategy
 
@@ -103,7 +103,7 @@ docs/
 
 ## Verification
 After deployment, verify that:
-1. Documents are accessible at https://claimnavigatorai.netlify.app/docs/
+1. Documents are accessible at https://claimnavigatorai.com/docs/
 2. Documents require password to open
 3. Watermark appears at bottom of each page
 4. Printing and copying are disabled

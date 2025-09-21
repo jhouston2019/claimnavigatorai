@@ -189,7 +189,7 @@ async function sendDailyDigest(professional, leadsByState) {
         <p>These leads are available for purchase on the ClaimNavigatorAI Professional Dashboard.</p>
         
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${process.env.URL || 'https://claimnavigatorai.netlify.app'}/app/professional-dashboard.html" 
+          <a href="${process.env.URL || 'https://claimnavigatorai.com'}/app/professional-dashboard.html" 
              style="background: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
             View Lead Dashboard
           </a>
@@ -203,7 +203,7 @@ async function sendDailyDigest(professional, leadsByState) {
         
         <p style="color: #6b7280; font-size: 12px;">
           ClaimNavigatorAI Professional Lead Exchange<br>
-          <a href="${process.env.URL || 'https://claimnavigatorai.netlify.app'}">claimnavigatorai.netlify.app</a>
+          <a href="${process.env.URL || 'https://claimnavigatorai.com'}">claimnavigatorai.netlify.app</a>
         </p>
       </div>
     `;

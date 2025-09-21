@@ -38,7 +38,7 @@ SMTP_PORT=587
 SMTP_USER=your_email@gmail.com
 SMTP_PASS=your_app_password
 ADMIN_EMAIL=admin@claimnavigatorai.com
-SITE_URL=https://claimnavigatorai.netlify.app
+SITE_URL=https://claimnavigatorai.com
 ```
 
 #### Gmail Setup (if using Gmail):

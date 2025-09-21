@@ -7,7 +7,7 @@ exports.handler = async (event, context) => {
     // Try to fetch GitHub documents JSON
     try {
       console.log('Fetching GitHub documents JSON...');
-      const response = await fetch('https://claimnavigatorai.netlify.app/assets/data/github-documents.json');
+      const response = await fetch('https://claimnavigatorai.com/assets/data/github-documents.json');
       console.log('Response status:', response.status);
       
       if (response.ok) {

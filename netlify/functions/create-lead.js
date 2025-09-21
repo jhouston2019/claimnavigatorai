@@ -105,7 +105,7 @@ exports.handler = async (event, context) => {
 
     // Trigger notification to professionals (async, don't wait for response)
     try {
-      const notificationResponse = await fetch(`${process.env.URL || 'https://claimnavigatorai.netlify.app'}/.netlify/functions/notify-new-lead`, {
+      const notificationResponse = await fetch(`${process.env.URL || 'https://claimnavigatorai.com'}/.netlify/functions/notify-new-lead`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

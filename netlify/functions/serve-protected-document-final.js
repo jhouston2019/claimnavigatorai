@@ -37,7 +37,7 @@ exports.handler = async (event) => {
 
     // Fetch the original document
     const decodedPath = decodeURIComponent(documentPath);
-    const localUrl = `https://claimnavigatorai.netlify.app/docs/${decodedPath}`;
+    const localUrl = `https://claimnavigatorai.com/docs/${decodedPath}`;
     console.log('Fetching from:', localUrl);
     
     const response = await fetch(localUrl);

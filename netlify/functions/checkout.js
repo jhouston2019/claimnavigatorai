@@ -43,7 +43,7 @@ exports.handler = async (event, context) => {
     }
 
     // Determine the site URL dynamically
-    const siteUrl = process.env.URL || 'https://claimnavigatorai.netlify.app';
+    const siteUrl = process.env.URL || 'https://claimnavigatorai.com';
     
     // Create Stripe checkout session with legal protections
     const session = await stripe.checkout.sessions.create({
@@ -139,7 +139,7 @@ exports.handler = async (event, context) => {
           message: 'By completing this purchase, you agree to our Terms of Service and acknowledge that this is a non-refundable digital product.'
         },
         terms_of_service_acceptance: {
-          message: 'I agree to the [Terms of Service](https://claimnavigatorai.netlify.app/terms.html), [Privacy Policy](https://claimnavigatorai.netlify.app/privacy.html), and [Legal Disclaimer](https://claimnavigatorai.netlify.app/disclaimer.html)'
+          message: 'I agree to the [Terms of Service](https://claimnavigatorai.com/terms.html), [Privacy Policy](https://claimnavigatorai.com/privacy.html), and [Legal Disclaimer](https://claimnavigatorai.com/disclaimer.html)'
         }
       },
       // Automatic tax collection (if configured in Stripe)

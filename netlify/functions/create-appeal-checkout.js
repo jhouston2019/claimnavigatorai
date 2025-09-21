@@ -82,7 +82,7 @@ exports.handler = async (event) => {
     console.log(`Creating appeal checkout session for user: ${userEmail}`);
 
     // Determine site URL
-    const siteUrl = process.env.URL || 'https://claimnavigatorai.netlify.app';
+    const siteUrl = process.env.URL || 'https://claimnavigatorai.com';
 
     // Create Stripe Checkout Session for appeal
     const session = await stripe.checkout.sessions.create({

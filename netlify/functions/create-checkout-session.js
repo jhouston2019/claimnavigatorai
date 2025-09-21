@@ -91,7 +91,7 @@ exports.handler = async (event) => {
     console.log(`Creating checkout session for user: ${userEmail}${affiliateID ? ` (affiliate: ${affiliateID})` : ''}`);
 
     // Determine site URL
-    const siteUrl = process.env.URL || 'https://claimnavigatorai.netlify.app';
+    const siteUrl = process.env.URL || 'https://claimnavigatorai.com';
 
     // Create Stripe Checkout Session with enhanced security
     const session = await stripe.checkout.sessions.create({

@@ -40,7 +40,7 @@ After adding the environment variables, trigger a new deployment:
 ## Step 6: Test the Function
 Once deployed, test the populate function:
 ```powershell
-Invoke-RestMethod -Uri "https://claimnavigatorai.netlify.app/.netlify/functions/populate-documents-bilingual" -Method POST -ContentType "application/json" -Body "{}"
+Invoke-RestMethod -Uri "https://claimnavigatorai.com/.netlify/functions/populate-documents-bilingual" -Method POST -ContentType "application/json" -Body "{}"
 ```
 
 ## Security Note
