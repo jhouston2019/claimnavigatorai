@@ -1,4 +1,10 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const Sentry = require('@sentry/node');
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0,
+});
 
 exports.handler = async (event, context) => {
   // Only allow POST
@@ -191,6 +197,7 @@ exports.handler = async (event, context) => {
 
   } catch (error) {
     console.error('Stripe error:', error);
+    Sentry.captureException(error);
     
     // Handle specific Stripe errors
     let errorMessage = 'Failed to create checkout session';

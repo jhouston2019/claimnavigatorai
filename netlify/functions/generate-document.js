@@ -1,5 +1,11 @@
 const { generateSecurePDF } = require('./utils/pdf-security');
 const { supabase, getUserFromAuth } = require("./utils/auth");
+const Sentry = require('@sentry/node');
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0,
+});
 
 exports.handler = async (event) => {
   const startTime = Date.now();
@@ -105,6 +111,8 @@ exports.handler = async (event) => {
       stack: err.stack,
       processingTime: `${processingTime}ms`
     });
+    
+    Sentry.captureException(err);
     
     return {
       statusCode: 500,

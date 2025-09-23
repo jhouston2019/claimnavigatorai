@@ -1,4 +1,10 @@
 const { createClient } = require('@supabase/supabase-js');
+const Sentry = require('@sentry/node');
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0,
+});
 
 exports.handler = async (event, context) => {
   // Handle CORS
@@ -150,6 +156,7 @@ exports.handler = async (event, context) => {
 
   } catch (error) {
     console.error('Unexpected error:', error);
+    Sentry.captureException(error);
     return {
       statusCode: 500,
       headers: {

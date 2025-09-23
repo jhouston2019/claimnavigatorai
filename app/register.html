@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Register - ClaimNavigatorAI</title>
+  
+  <!-- Sentry Loader Script -->
+  <script
+    src="https://js.sentry-cdn.com/0c1da5bb8247f021348e7b67a0a6b96.min.js"
+    crossorigin="anonymous"
+  ></script>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -301,6 +307,18 @@
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    // Initialize Sentry
+    Sentry.init({
+      dsn: "{{ SENTRY_DSN }}", // Netlify will inject this env var, or replace with full DSN for testing
+      integrations: [new Sentry.BrowserTracing()],
+      tracesSampleRate: 1.0,             // capture 100% of traces
+      replaysSessionSampleRate: 0.1,     // capture 10% of normal sessions
+      replaysOnErrorSampleRate: 1.0,     // capture 100% of sessions with errors
+    });
+
+    // Test error (uncomment to verify)
+    // myUndefinedFunction();
 
     // ✅ Initialize Supabase client
     const supabase = createClient(
