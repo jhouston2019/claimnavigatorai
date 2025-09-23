@@ -8,20 +8,20 @@
   <meta name="keywords" content="insurance claim AI, claim navigator, health claim AI, fire claim AI, hurricane claim AI, auto claim AI, denied claim help, AI claim management">
   <meta name="author" content="ClaimNavigatorAI">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://claimnavigatorai.com">
+  <link rel="canonical" href="{{ SITE_URL }}">
   
   <!-- Open Graph Meta Tags -->
   <meta property="og:title" content="Claim Navigator AI | AI-Powered Insurance Claim Management System">
   <meta property="og:description" content="Win your insurance claim with AI. Claim Navigator AI creates documents, analyzes denials, and empowers policyholders and professionals.">
-  <meta property="og:url" content="https://claimnavigatorai.com">
+  <meta property="og:url" content="{{ SITE_URL }}">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="https://claimnavigatorai.com/og-image.jpg">
+  <meta property="og:image" content="{{ SITE_URL }}/og-image.jpg">
   
   <!-- Twitter Card Meta Tags -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Claim Navigator AI | AI-Powered Insurance Claim Management System">
   <meta name="twitter:description" content="AI-powered claim management tools for policyholders and professionals. Fight denials and manage claims faster.">
-  <meta name="twitter:image" content="https://claimnavigatorai.com/og-image.jpg">
+  <meta name="twitter:image" content="{{ SITE_URL }}/og-image.jpg">
   
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -40,6 +40,15 @@
   <link rel="preload" href="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm" as="script">
   <link rel="preload" href="/assets/css/main.css" as="style">
   
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ GA4_ID }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ GA4_ID }}');
+  </script>
+  
   <!-- Sentry Loader Script -->
   <script
     src="https://js.sentry-cdn.com/0c1da5bb8247f021348e7b67a0a6b96.min.js"
@@ -53,12 +62,12 @@
     "@type": "Service",
     "name": "ClaimNavigatorAI",
     "description": "AI-powered claim navigation tool and document solution providing professional templates, AI-generated responses, and comprehensive claim navigation for property and business interruption insurance claims.",
-    "url": "https://claimnavigatorai.com/",
+    "url": "{{ SITE_URL }}/",
     "serviceType": "AI-Powered Claim Navigation Tool and Document Solution",
     "provider": {
       "@type": "Organization",
       "name": "ClaimNavigatorAI",
-      "url": "https://claimnavigatorai.com/"
+      "url": "{{ SITE_URL }}/"
     },
     "areaServed": "United States",
     "hasOfferCatalog": {
@@ -86,9 +95,9 @@
   {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "url": "https://claimnavigatorai.com",
+    "url": "{{ SITE_URL }}",
     "name": "Claim Navigator AI",
-    "logo": "https://claimnavigatorai.com/logo.png",
+    "logo": "{{ SITE_URL }}/logo.png",
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "customer support",
@@ -102,11 +111,11 @@
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "url": "https://claimnavigatorai.com",
+    "url": "{{ SITE_URL }}",
     "name": "Claim Navigator AI",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://claimnavigatorai.com/?s={search_term_string}",
+      "target": "{{ SITE_URL }}/?s={search_term_string}",
       "query-input": "required name=search_term_string"
     }
   }
@@ -1788,6 +1797,10 @@
   </script>
 
   <!-- Affiliate Tools Script -->
+  <script>
+    // Inject affiliate ID from environment variable
+    window.AFFILIATE_ID = "{{ AFFILIATE_ID }}";
+  </script>
   <script src="assets/js/affiliate-tools.js"></script>
 
 </body>

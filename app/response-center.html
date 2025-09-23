@@ -2500,8 +2500,8 @@
       const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
       
       supabase = createClient(
-        "https://bnxvfxtpsxgfpltflyrr.supabase.co",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
+        "{{ SUPABASE_URL }}",
+        "{{ SUPABASE_ANON_KEY }}"
       );
       
       console.log('Supabase client initialized successfully with ES6 modules');
@@ -2515,8 +2515,8 @@
         const { createClient } = await import('https://unpkg.com/@supabase/supabase-js@2/+esm');
         
         supabase = createClient(
-          "https://bnxvfxtpsxgfpltflyrr.supabase.co",
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks"
+          "{{ SUPABASE_URL }}",
+          "{{ SUPABASE_ANON_KEY }}"
         );
         
         console.log('Supabase client initialized successfully with alternative CDN');
@@ -2530,8 +2530,8 @@
 
   // Fallback: Direct Supabase API calls without client library
   async function directSupabaseCall(endpoint, options = {}) {
-    const supabaseUrl = "https://bnxvfxtpsxgfpltflyrr.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks";
+    const supabaseUrl = "{{ SUPABASE_URL }}";
+    const supabaseKey = "{{ SUPABASE_ANON_KEY }}";
     
     const response = await fetch(`${supabaseUrl}/rest/v1/${endpoint}`, {
       ...options,

@@ -31,7 +31,7 @@ exports.handler = async (event, context) => {
         subject,
         text: text || stripHtml(html),
         html,
-        replyTo: process.env.SUPPORT_EMAIL || 'support@claimnavigatorai.com'
+        replyTo: process.env.SUPPORT_EMAIL || process.env.EMAIL_REPLY_TO || 'support@claimnavigatorai.com'
       };
       
       await sgMail.send(msg);
@@ -131,7 +131,7 @@ function getPurchaseConfirmationEmail(customerEmail, sessionId, amount) {
       <h3>Get Started Now:</h3>
       <p>Access your AI Response Center to start generating professional responses to insurer correspondence:</p>
       
-      <a href="https://claimnavigatorai.com/success.html?session_id=${sessionId}" class="button">
+      <a href="${process.env.SITE_URL || process.env.URL || 'https://claimnavigatorai.com'}/success.html?session_id=${sessionId}" class="button">
         Access Your Account
       </a>
       
@@ -146,7 +146,7 @@ function getPurchaseConfirmationEmail(customerEmail, sessionId, amount) {
       <p><strong>Order ID:</strong> ${sessionId}</p>
       
       <h3>Need Help?</h3>
-      <p>If you have any questions, please contact us at support@claimnavigatorai.com</p>
+      <p>If you have any questions, please contact us at ${process.env.SUPPORT_EMAIL || process.env.EMAIL_REPLY_TO || 'support@claimnavigatorai.com'}</p>
     </div>
     <div class="footer">
       <p>ClaimNavigatorAI - AI-Powered Claim Documentation Tools</p>

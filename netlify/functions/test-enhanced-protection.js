@@ -41,7 +41,7 @@ exports.handler = async (event, context) => {
 
     // Test document path (use a default if not provided)
     const testDocumentPath = document_path || 'en/Proof of Loss - Property.pdf';
-    const localUrl = `https://claimnavigatorai.com/docs/${testDocumentPath}`;
+    const localUrl = `${process.env.SITE_URL || process.env.URL || 'https://claimnavigatorai.com'}/docs/${testDocumentPath}`;
     
     console.log('Testing with document:', localUrl);
     

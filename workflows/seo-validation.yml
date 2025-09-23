@@ -1,0 +1,46 @@
+name: SEO & Schema Validation
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Install validators
+      run: |
+        npm install -g htmlhint ajv-cli xmllint
+
+    - name: Validate HTML files
+      run: |
+        npx htmlhint "**/*.html" || true
+
+    - name: Validate sitemap.xml
+      run: |
+        xmllint --noout sitemap.xml
+
+    - name: Validate robots.txt exists
+      run: |
+        if [ ! -f robots.txt ]; then
+          echo "❌ robots.txt missing!"
+          exit 1
+        fi
+
+    - name: Validate JSON-LD schema
+      run: |
+        for file in $(find . -name "*.html"); do
+          echo "Checking $file"
+          cat $file | grep -o '<script type="application/ld+json">.*</script>' | sed 's/<script type="application\/ld+json">//' | sed 's/<\/script>//' | ajv validate -s '{}' -d - || true
+        done

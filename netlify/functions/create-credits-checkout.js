@@ -51,7 +51,7 @@ exports.handler = async (event, context) => {
     }
 
     // Determine the site URL dynamically
-    const siteUrl = process.env.URL || 'https://claimnavigatorai.com';
+    const siteUrl = process.env.SITE_URL || process.env.URL || 'https://claimnavigatorai.com';
     
     // Create Stripe checkout session for credits purchase
     const session = await stripe.checkout.sessions.create({

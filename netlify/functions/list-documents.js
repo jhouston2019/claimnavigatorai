@@ -55,7 +55,7 @@ exports.handler = async (event) => {
     // Fallback to GitHub documents JSON if Supabase fails
     try {
       console.log('Fetching GitHub documents JSON from web...');
-      const response = await fetch('https://claimnavigatorai.com/assets/data/github-documents.json');
+      const response = await fetch(`${process.env.SITE_URL || process.env.URL || 'https://claimnavigatorai.com'}/assets/data/github-documents.json`);
       if (response.ok) {
         const githubDocumentsData = await response.json();
         const filteredDocs = githubDocumentsData.filter(doc => doc.language === lang);

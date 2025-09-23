@@ -1,10 +1,13 @@
 // Affiliate Tools Data and Rendering Functions
+// Get affiliate ID from environment variable or use default
+const AFFILIATE_ID = window.AFFILIATE_ID || 'ash202500-20';
+
 const affiliates = [
   {
     category: "Documentation",
     title: "Adobe Scan",
     description: "Scan receipts and paperwork instantly with your phone.",
-    link: "https://www.amazon.com/dp/B00X4WHP5E?tag=ash202500-20"
+    link: `https://www.amazon.com/dp/B00X4WHP5E?tag=${AFFILIATE_ID}`
   },
   {
     category: "Storage",
@@ -40,7 +43,7 @@ const affiliates = [
     category: "3D Imaging",
     title: "Matterport Pro2 3D Camera",
     description: "Capture immersive 3D scans of property damage.",
-    link: "https://www.amazon.com/dp/B072PC3K1W?tag=ash202500-20"
+    link: `https://www.amazon.com/dp/B072PC3K1W?tag=${AFFILIATE_ID}`
   },
   {
     category: "Contractors",
@@ -58,13 +61,13 @@ const affiliates = [
     category: "Photography",
     title: "Photo Evidence Kit",
     description: "Tools for moisture testing, measurement, and damage documentation.",
-    link: "https://www.amazon.com/dp/B09B1DHP5F?tag=ash202500-20"
+    link: `https://www.amazon.com/dp/B09B1DHP5F?tag=${AFFILIATE_ID}`
   },
   {
     category: "Security",
     title: "Ring Security Camera",
     description: "Document property condition with continuous video evidence.",
-    link: "https://www.amazon.com/dp/B08F6GPQQ7?tag=ash202500-20"
+    link: `https://www.amazon.com/dp/B08F6GPQQ7?tag=${AFFILIATE_ID}`
   },
   {
     category: "Tools & Equipment",

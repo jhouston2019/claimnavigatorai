@@ -109,7 +109,7 @@ exports.handler = async (event, context) => {
 
 async function sendEmailNotification({ user_name, user_email, subject, message, messageId }) {
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@claimnavigatorai.com';
-  const siteUrl = process.env.SITE_URL || 'https://claimnavigatorai.com';
+  const siteUrl = process.env.SITE_URL || process.env.URL || 'https://claimnavigatorai.com';
 
   const msg = {
     to: adminEmail,

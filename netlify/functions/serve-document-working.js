@@ -35,7 +35,7 @@ exports.handler = async (event) => {
 
     // Fetch the document directly
     const decodedPath = decodeURIComponent(documentPath);
-    const localUrl = `https://claimnavigatorai.com/docs/${decodedPath}`;
+    const localUrl = `${process.env.SITE_URL || process.env.URL || 'https://claimnavigatorai.com'}/docs/${decodedPath}`;
     console.log('Fetching from:', localUrl);
     
     const response = await fetch(localUrl);

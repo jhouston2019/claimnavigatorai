@@ -22,8 +22,8 @@ async function initializeSupabase() {
     }
 
     supabase = window.supabase.createClient(
-      'https://bnxvfxtpsxgfpltflyrr.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHZmeHRwc3hnZnBsdGZseXJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzMjUyMDUsImV4cCI6MjA3MTkwMTIwNX0.6oW8eiy5Q6ruYLfitxYkUp5MmjmdycvVod--5hiFOks'
+      '{{ SUPABASE_URL }}',
+      '{{ SUPABASE_ANON_KEY }}'
     );
 
     return supabase;
