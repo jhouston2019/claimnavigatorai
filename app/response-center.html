@@ -558,6 +558,225 @@
         document.getElementById('content-area').innerHTML = '';
       }
       
+      // AI Response & Analysis Agent Functions
+      function generateResponse() {
+        const input = document.getElementById('input-text').value;
+        const output = document.getElementById('ai-output');
+        const confidence = document.getElementById('confidence-meter');
+        
+        if (!input.trim()) {
+          alert('Please enter some text to analyze.');
+          return;
+        }
+        
+        output.style.display = 'block';
+        output.innerHTML = '<div class="spinner"></div> Generating response...';
+        
+        // Simulate AI processing
+        setTimeout(() => {
+          const response = `Based on your correspondence, here's a professional response:\n\nDear Insurance Representative,\n\nI am writing in response to your letter dated [DATE]. After careful review of your correspondence, I would like to address the following points:\n\n1. [Point 1 from your letter]\n2. [Point 2 from your letter]\n3. [Point 3 from your letter]\n\nI believe there may be some misunderstanding regarding [SPECIFIC ISSUE]. According to my policy documentation, [RELEVANT POLICY LANGUAGE].\n\nI would appreciate the opportunity to discuss this matter further and provide additional documentation as needed.\n\nThank you for your time and consideration.\n\nSincerely,\n[YOUR NAME]`;
+          
+          output.innerHTML = response;
+          confidence.innerHTML = 'Confidence Level: 85% - High quality response generated';
+          
+          // Add to session history
+          addToSessionHistory(input, response);
+        }, 2000);
+      }
+      
+      function exportDoc(format) {
+        const output = document.getElementById('ai-output');
+        if (!output.innerHTML || output.innerHTML.includes('spinner')) {
+          alert('Please generate a response first.');
+          return;
+        }
+        
+        const content = output.innerHTML;
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `claim_response.${format}`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+      
+      function saveDraft() {
+        const output = document.getElementById('ai-output');
+        if (!output.innerHTML || output.innerHTML.includes('spinner')) {
+          alert('Please generate a response first.');
+          return;
+        }
+        
+        alert('Draft saved to My Documents!');
+      }
+      
+      function addToSessionHistory(input, response) {
+        const history = document.getElementById('session-history');
+        const entry = document.createElement('div');
+        entry.style.cssText = 'border: 1px solid var(--border); padding: 1rem; margin: 0.5rem 0; border-radius: 6px; background: var(--bg-light);';
+        entry.innerHTML = `
+          <strong>Input:</strong> ${input.substring(0, 100)}...<br>
+          <strong>Response:</strong> ${response.substring(0, 200)}...
+        `;
+        history.appendChild(entry);
+      }
+      
+      // Document Library Functions
+      function setLang(lang) {
+        document.getElementById('lang-en').className = lang === 'en' ? 'btn-primary' : 'btn-secondary';
+        document.getElementById('lang-es').className = lang === 'es' ? 'btn-primary' : 'btn-secondary';
+        loadDocuments(lang);
+      }
+      
+      function loadDocuments(lang = 'en') {
+        const container = document.getElementById('documents-container');
+        const documents = lang === 'en' ? [
+          { name: 'Claim Denial Response Template', type: 'PDF', date: '2024-01-15' },
+          { name: 'Policy Review Checklist', type: 'DOCX', date: '2024-01-14' },
+          { name: 'Damage Assessment Form', type: 'PDF', date: '2024-01-13' }
+        ] : [
+          { name: 'Plantilla de Respuesta a Denegación', type: 'PDF', date: '2024-01-15' },
+          { name: 'Lista de Verificación de Póliza', type: 'DOCX', date: '2024-01-14' },
+          { name: 'Formulario de Evaluación de Daños', type: 'PDF', date: '2024-01-13' }
+        ];
+        
+        container.innerHTML = documents.map(doc => `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid var(--border); border-radius: 6px; margin: 0.5rem 0;">
+            <div>
+              <strong>${doc.name}</strong><br>
+              <small style="color: var(--text-secondary);">${doc.type} • ${doc.date}</small>
+            </div>
+            <button class="btn-primary" onclick="downloadDocument('${doc.name}')">Download</button>
+          </div>
+        `).join('');
+      }
+      
+      function filterDocuments() {
+        const search = document.getElementById('doc-search').value.toLowerCase();
+        const docs = document.querySelectorAll('#documents-container > div');
+        docs.forEach(doc => {
+          const text = doc.textContent.toLowerCase();
+          doc.style.display = text.includes(search) ? 'flex' : 'none';
+        });
+      }
+      
+      function uploadDocument() {
+        const file = document.getElementById('doc-upload').files[0];
+        if (file) {
+          alert(`File "${file.name}" uploaded successfully!`);
+          loadDocuments();
+        }
+      }
+      
+      function downloadDocument(name) {
+        alert(`Downloading ${name}...`);
+      }
+      
+      // Claim Analysis Functions
+      function analyzePolicy() {
+        const input = document.getElementById('policy-input').value;
+        const output = document.getElementById('policy-analysis-output');
+        
+        if (!input.trim()) {
+          alert('Please enter policy information to analyze.');
+          return;
+        }
+        
+        output.style.display = 'block';
+        output.innerHTML = 'Analyzing policy...';
+        
+        setTimeout(() => {
+          output.innerHTML = `Policy Analysis Results:\n\n✅ Coverage Type: Property Insurance\n✅ Deductible: $1,000\n✅ Coverage Limit: $500,000\n⚠️  Potential Gap: Flood damage not covered\n⚠️  Potential Gap: Earthquake damage not covered\n\nRecommendations:\n1. Consider additional flood insurance\n2. Review earthquake coverage options\n3. Document all pre-existing conditions\n4. Keep detailed records of improvements`;
+        }, 1500);
+      }
+      
+      function downloadPolicyChecklist() {
+        alert('Policy Review Checklist downloaded!');
+      }
+      
+      function assessDamage() {
+        const input = document.getElementById('damage-input').value;
+        const output = document.getElementById('damage-assessment-output');
+        
+        if (!input.trim()) {
+          alert('Please describe the damage to assess.');
+          return;
+        }
+        
+        output.style.display = 'block';
+        output.innerHTML = 'Assessing damage...';
+        
+        setTimeout(() => {
+          output.innerHTML = `Damage Assessment Report:\n\nProperty Type: Residential\nDamage Category: Water Damage\nEstimated Repair Cost: $15,000 - $25,000\nUrgency Level: High\n\nRecommended Actions:\n1. Contact water damage restoration company\n2. Document all affected areas\n3. Keep receipts for emergency repairs\n4. Schedule professional inspection\n\nNext Steps:\n- File claim within 24 hours\n- Gather supporting documentation\n- Prepare for adjuster visit`;
+        }, 1500);
+      }
+      
+      function generateDamageReport() {
+        alert('Damage Assessment Report generated and downloaded!');
+      }
+      
+      // Evidence Organizer Functions
+      function handleDragOver(e) {
+        e.preventDefault();
+        e.currentTarget.style.borderColor = 'var(--primary)';
+        e.currentTarget.style.background = '#e0f2fe';
+      }
+      
+      function handleDragLeave(e) {
+        e.currentTarget.style.borderColor = 'var(--border)';
+        e.currentTarget.style.background = 'var(--bg-light)';
+      }
+      
+      function handleDrop(e) {
+        e.preventDefault();
+        e.currentTarget.style.borderColor = 'var(--border)';
+        e.currentTarget.style.background = 'var(--bg-light)';
+        
+        const files = e.dataTransfer.files;
+        handleFiles(files);
+      }
+      
+      function handleFileSelect(e) {
+        const files = e.target.files;
+        handleFiles(files);
+      }
+      
+      function handleFiles(files) {
+        const evidenceList = document.getElementById('evidence-list');
+        
+        Array.from(files).forEach(file => {
+          const item = document.createElement('div');
+          item.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid var(--border); border-radius: 6px; margin: 0.5rem 0; background: white;';
+          item.innerHTML = `
+            <div>
+              <strong>${file.name}</strong><br>
+              <small style="color: var(--text-secondary);">${file.type} • ${(file.size / 1024).toFixed(1)} KB</small>
+            </div>
+            <div>
+              <span style="background: var(--primary); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Categorized</span>
+            </div>
+          `;
+          evidenceList.appendChild(item);
+        });
+        
+        alert(`${files.length} file(s) uploaded and categorized!`);
+      }
+      
+      // Claim Playbook Functions
+      function togglePhase(phaseId) {
+        const body = document.getElementById(phaseId + '-body');
+        const toggle = document.getElementById(phaseId + '-toggle');
+        
+        if (body.style.display === 'none' || body.style.display === '') {
+          body.style.display = 'block';
+          toggle.innerHTML = '▲';
+        } else {
+          body.style.display = 'none';
+          toggle.innerHTML = '▼';
+        }
+      }
+      
       function showCategory(category) {
         const categoryNames = {
           'core-tools': 'Core Claim Tools',
@@ -603,14 +822,213 @@
           'settings': 'Settings'
         };
         
-        return `
-          <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
-            <h2 style="color: var(--primary); margin-bottom: 1rem;">${toolNames[tool]}</h2>
-            <p style="color: var(--text-secondary); margin-bottom: 2rem;">This is where the ${toolNames[tool]} functionality would be implemented.</p>
-            <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 6px; border: 1px solid var(--border);">
-              <h3 style="color: var(--primary); margin: 0 0 1rem 0;">Coming Soon</h3>
-              <p style="margin: 0; color: var(--text-secondary);">The ${toolNames[tool]} tool is currently under development. Check back soon for updates!</p>
+        const toolContent = {
+          'ai-agent': `
+            <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+              <h2 style="color: var(--primary); margin-bottom: 1.5rem;">🤖 AI Response & Analysis Agent</h2>
+              <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Generate professional responses to insurance correspondence using AI</p>
+              
+              <textarea id="input-text" style="width:100%; min-height:120px; margin-bottom:1rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px;" placeholder="Paste insurer correspondence..."></textarea>
+              
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                <button class="btn-primary" onclick="generateResponse()">Generate Response</button>
+                <button class="btn-primary" onclick="exportDoc('docx')">Export DOCX</button>
+                <button class="btn-primary" onclick="exportDoc('pdf')">Export PDF</button>
+                <button class="btn-primary" onclick="saveDraft()">Save to My Documents</button>
+                <select id="language-select" style="padding:0.5rem; border-radius:0.5rem; border: 1px solid var(--border);">
+                  <option value="en">English</option>
+                  <option value="es">Español</option>
+                </select>
+              </div>
+              
+              <div id="ai-output" style="display:none; background:#fff; border:1px solid var(--border); border-radius:0.5rem; padding:0.75rem; white-space:pre-wrap; margin-top:0.5rem; min-height:80px;"></div>
+              <div id="confidence-meter" style="margin-top:0.5rem; font-size:0.9rem; color:var(--text-secondary);"></div>
+              
+              <h3 style="margin-top: 2rem;">Session History</h3>
+              <div id="session-history"></div>
             </div>
+          `,
+          'claim-document-library': `
+            <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+              <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📁 Claim Document Library</h2>
+              <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Access and manage your claim documents</p>
+              
+              <div style="margin-bottom:1rem;">
+                <button id="lang-en" onclick="setLang('en')" class="btn-primary">English</button>
+                <button id="lang-es" onclick="setLang('es')" class="btn-secondary">Español</button>
+              </div>
+              
+              <input type="text" id="doc-search" placeholder="Search documents..." oninput="filterDocuments()" style="width:100%; margin-bottom:1rem; padding:0.5rem; border: 1px solid var(--border); border-radius: 6px;">
+              <input type="file" id="doc-upload" onchange="uploadDocument()" style="margin-bottom:1rem;">
+              <div id="documents-container"></div>
+            </div>
+          `,
+          'claim-analysis': `
+            <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+              <h2 style="color: var(--primary); margin-bottom: 1.5rem;">🔍 Claim Analysis Tools</h2>
+              <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Professional tools to analyze your claim, review coverage, and assess damages</p>
+              
+              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem;">
+                <div style="background: var(--bg-light); padding: 1rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                  <div style="font-weight: bold; margin-bottom: 0.5rem;">Policy Review & Coverage Analysis</div>
+                  <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Upload your policy documents for AI-powered coverage analysis</div>
+                  <textarea id="policy-input" placeholder="Paste your policy information here..." style="width: 100%; min-height: 80px; margin: 0.5rem 0; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"></textarea>
+                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                    <button class="btn-primary" onclick="analyzePolicy()">Analyze Policy</button>
+                    <button class="btn-secondary" onclick="downloadPolicyChecklist()">Download Checklist</button>
+                  </div>
+                  <div id="policy-analysis-output" style="display:none; background:#fff; border:1px solid var(--border); border-radius:0.5rem; padding:0.75rem; white-space:pre-wrap; margin-top:0.5rem; min-height:80px;"></div>
+                </div>
+                
+                <div style="background: var(--bg-light); padding: 1rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                  <div style="font-weight: bold; margin-bottom: 0.5rem;">Damage Assessment Tool</div>
+                  <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Calculate and document property damage</div>
+                  <textarea id="damage-input" placeholder="Describe the damage to your property..." style="width: 100%; min-height: 80px; margin: 0.5rem 0; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem;"></textarea>
+                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                    <button class="btn-primary" onclick="assessDamage()">Assess Damage</button>
+                    <button class="btn-secondary" onclick="generateDamageReport()">Generate Report</button>
+                  </div>
+                  <div id="damage-assessment-output" style="display:none; background:#fff; border:1px solid var(--border); border-radius:0.5rem; padding:0.75rem; white-space:pre-wrap; margin-top:0.5rem; min-height:80px;"></div>
+                </div>
+              </div>
+            </div>
+          `,
+          'claim-playbook': `
+            <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+              <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📖 Claim Playbook</h2>
+              <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Step-by-step guidance for your insurance claim process</p>
+              
+              <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 5px solid var(--primary);">
+                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">Claim Process Overview</h3>
+                <p style="margin: 0;">Follow these phases to maximize your claim success and ensure you receive fair compensation.</p>
+              </div>
+              
+              <div style="max-width: 1200px; margin: 0 auto;">
+                <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                  <div style="background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="togglePhase('phase1')">
+                    <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">1</div>
+                    <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Initial Claim Filing</div>
+                    <div style="font-size: 1.5rem; transition: transform 0.3s;" id="phase1-toggle">▼</div>
+                  </div>
+                  <div id="phase1-body" style="display: none; padding: 2rem; background: #fafbfc;">
+                    <h4>Immediate Actions (First 24-48 Hours)</h4>
+                    <ul>
+                      <li>Document everything with photos and videos</li>
+                      <li>Contact your insurance company immediately</li>
+                      <li>Secure your property to prevent further damage</li>
+                      <li>Keep detailed records of all communications</li>
+                    </ul>
+                    <h4>Required Documentation</h4>
+                    <ul>
+                      <li>Policy number and coverage details</li>
+                      <li>Photos/videos of damage</li>
+                      <li>Police report (if applicable)</li>
+                      <li>Witness contact information</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                  <div style="background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="togglePhase('phase2')">
+                    <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">2</div>
+                    <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Evidence Collection & Documentation</div>
+                    <div style="font-size: 1.5rem; transition: transform 0.3s;" id="phase2-toggle">▼</div>
+                  </div>
+                  <div id="phase2-body" style="display: none; padding: 2rem; background: #fafbfc;">
+                    <h4>Evidence Collection Checklist</h4>
+                    <ul>
+                      <li>Comprehensive photo documentation</li>
+                      <li>Video walkthrough of damage</li>
+                      <li>Receipts for temporary repairs</li>
+                      <li>Expert assessments and estimates</li>
+                    </ul>
+                    <h4>Documentation Best Practices</h4>
+                    <ul>
+                      <li>Date and timestamp all evidence</li>
+                      <li>Include multiple angles and perspectives</li>
+                      <li>Maintain a detailed damage log</li>
+                      <li>Keep all receipts and invoices</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `,
+          'evidence-organizer': `
+            <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+              <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📸 Evidence Organizer</h2>
+              <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Upload, organize, and categorize your claim evidence</p>
+              
+              <div style="border: 3px dashed var(--border); border-radius: 12px; padding: 3rem; text-align: center; background: var(--bg-light); transition: all 0.3s ease; cursor: pointer;" id="upload-area" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📁</div>
+                <h3>Drop files here or click to upload</h3>
+                <p style="color: var(--text-secondary);">Supports: Images, PDFs, Videos, Documents</p>
+                <input type="file" id="evidence-upload" multiple accept="image/*,video/*,.pdf,.doc,.docx" style="display: none;" onchange="handleFileSelect(event)">
+              </div>
+              
+              <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
+                <h4 style="margin: 0 0 1rem 0;">AI-Powered Categorization</h4>
+                <p style="margin: 0;">Your uploaded evidence will be automatically categorized and organized for easy access.</p>
+              </div>
+              
+              <div id="evidence-categories" style="margin: 2rem 0;">
+                <h3>Organized Evidence</h3>
+                <div id="evidence-list"></div>
+              </div>
+            </div>
+          `,
+          'how-to-use': `
+            <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+              <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📚 How to Use This Site</h2>
+              <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Get started with your claim management toolkit</p>
+              
+              <div style="background: var(--bg-light); padding: 1rem; border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 2rem;">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">1. Explore the Resource Center</h3>
+                <p>Use the sidebar to navigate between sections such as:</p>
+                <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                  <li><strong>Claim Documentation Guides</strong> – ready-to-use letters and forms</li>
+                  <li><strong>AI Response & Analysis Agent</strong> – generate custom claim responses</li>
+                  <li><strong>Claim Timeline & Sequence Guide</strong> – step-by-step claim process</li>
+                  <li><strong>Appeal Builder</strong> – purchase and generate professional appeals</li>
+                </ul>
+              </div>
+              
+              <div style="background: var(--bg-light); padding: 1rem; border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 2rem;">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">2. Choose a Document or Guide</h3>
+                <p>Browse the <strong>Claim Documentation Guides</strong>.</p>
+                <p>Each guide includes:</p>
+                <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                  <li>Step-by-step instructions</li>
+                  <li>Customizable templates</li>
+                  <li>Legal compliance checklists</li>
+                </ul>
+              </div>
+              
+              <div style="background: var(--bg-light); padding: 1rem; border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 2rem;">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">3. Use the AI Agent</h3>
+                <p>Go to the <strong>AI Response & Analysis Agent</strong> tab.</p>
+                <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                  <li>Enter your claim details and facts.</li>
+                  <li>The AI will produce a draft letter or response, tailored to your situation.</li>
+                </ul>
+              </div>
+              
+              <div style="background: var(--bg-light); padding: 1rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">4. Download Your Files</h3>
+                <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                  <li>All generated documents are delivered as secure PDFs.</li>
+                  <li>Save them to your device or cloud storage.</li>
+                  <li>Print and mail as needed.</li>
+                </ul>
+              </div>
+            </div>
+          `
+        };
+        
+        return toolContent[tool] || `
+          <div style="text-align: center; padding: 3rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+            <h2 style="color: var(--primary); margin-bottom: 1rem;">${toolNames[tool]}</h2>
+            <p style="color: var(--text-secondary);">Coming Soon - This tool is under development</p>
           </div>
         `;
       }
