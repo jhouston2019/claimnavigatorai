@@ -225,25 +225,20 @@ class ResponseCenter {
   }
 
   renderMainSectionContent(section) {
-    // This would integrate with existing section components
-    // For now, we'll create a placeholder that can be replaced
-    this.contentArea.innerHTML = `
-      <div class="section-content">
-        <div class="section-header">
-          <h2 class="section-title">${section.title}</h2>
-          <p class="section-description">Loading ${section.title.toLowerCase()} content...</p>
-        </div>
-        <div class="section-body">
-          <div class="loading-placeholder">
-            <div class="loading-spinner"></div>
-            <p>Content will be loaded here</p>
-          </div>
-        </div>
-      </div>
-    `;
+    console.log('📄 Rendering main section content for:', section.title);
     
-    // In a real implementation, this would load the actual section component
-    this.loadSectionComponent(section.component);
+    // Load the actual Response Center content
+    if (!this.responseContent) {
+      this.responseContent = new ResponseCenterContent(this.contentArea, {
+        onContentChange: (tabId) => {
+          console.log('🔄 Content changed to:', tabId);
+        }
+      });
+    } else {
+      // Re-render the content
+      this.responseContent.container = this.contentArea;
+      this.responseContent.createContent();
+    }
   }
 
   renderSubsectionContent(section, subsection) {
