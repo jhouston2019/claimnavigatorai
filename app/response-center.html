@@ -749,15 +749,39 @@
   </div>
 
   <!-- Load Component Scripts -->
-  <script src="../../components/ResponseCenter/SidebarNav.js"></script>
-  <script src="../../components/ResponseCenter/DashboardLanding.js"></script>
-  <script src="../../components/ResponseCenter/ResponseCenter.js"></script>
+  <script src="../components/ResponseCenter/SidebarNav.js"></script>
+  <script src="../components/ResponseCenter/DashboardLanding.js"></script>
+  <script src="../components/ResponseCenter/ResponseCenter.js"></script>
 
   <!-- Initialize Response Center -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      console.log('🚀 DOM Content Loaded - Initializing Response Center');
+      
+      // Check if components are loaded
+      if (typeof SidebarNav === 'undefined') {
+        console.error('❌ SidebarNav component not loaded');
+        return;
+      }
+      if (typeof DashboardLanding === 'undefined') {
+        console.error('❌ DashboardLanding component not loaded');
+        return;
+      }
+      if (typeof ResponseCenter === 'undefined') {
+        console.error('❌ ResponseCenter component not loaded');
+        return;
+      }
+      
+      console.log('✅ All components loaded successfully');
+      
       // Initialize the hybrid Response Center
       const container = document.getElementById('response-center-container');
+      if (!container) {
+        console.error('❌ Response center container not found');
+        return;
+      }
+      
+      console.log('✅ Container found, initializing ResponseCenter');
       const responseCenter = new ResponseCenter(container, {
         initialSection: 'dashboard',
         isMobile: window.innerWidth <= 768
