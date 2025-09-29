@@ -4338,6 +4338,293 @@ This is a mock analysis for development testing. In production, this would use A
            sessionStorage.getItem('supabase.auth.token');
   }
 
+  // Evidence Organizer JavaScript
+  let evidenceItems = [];
+
+  // Initialize Evidence Organizer
+  function initializeEvidenceOrganizer() {
+    setupFileUpload();
+    loadExistingEvidence();
+  }
+
+  // Setup file upload functionality
+  function setupFileUpload() {
+    const uploadArea = document.getElementById('upload-area');
+    const fileInput = document.getElementById('evidence-file-input');
+
+    // Drag and drop functionality
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const files = Array.from(e.dataTransfer.files);
+      handleFileUpload(files);
+    });
+
+    // Click to upload
+    uploadArea.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      handleFileUpload(files);
+    });
+  }
+
+  // Handle file upload
+  async function handleFileUpload(files) {
+    if (files.length === 0) return;
+
+    const token = getAuthToken();
+    if (!token) {
+      alert('Please log in to upload evidence files.');
+      return;
+    }
+
+    // Show loading state
+    const uploadArea = document.getElementById('upload-area');
+    const originalContent = uploadArea.innerHTML;
+    uploadArea.innerHTML = '<div class="spinner"></div><p>Uploading and analyzing files...</p>';
+
+    try {
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('files', file);
+      });
+
+      const response = await fetch('/.netlify/functions/categorizeEvidence', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.status}`);
+      }
+
+      const results = await response.json();
+      
+      // Show categorization results
+      showCategorizationResults(results);
+      
+      // Update evidence display
+      await loadExistingEvidence();
+      
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Failed to upload files. Please try again.');
+    } finally {
+      // Restore upload area
+      uploadArea.innerHTML = originalContent;
+    }
+  }
+
+  // Show AI categorization results
+  function showCategorizationResults(results) {
+    const panel = document.getElementById('ai-categorization-panel');
+    const resultsDiv = document.getElementById('categorization-results');
+    
+    resultsDiv.innerHTML = '';
+    
+    results.forEach(result => {
+      const resultDiv = document.createElement('div');
+      resultDiv.className = 'categorization-result';
+      resultDiv.innerHTML = `
+        <div class="result-filename">${result.filename}</div>
+        <div class="result-category">${result.category}</div>
+        <div class="result-summary">${result.ai_summary}</div>
+      `;
+      resultsDiv.appendChild(resultDiv);
+    });
+    
+    panel.style.display = 'block';
+    
+    // Hide panel after 5 seconds
+    setTimeout(() => {
+      panel.style.display = 'none';
+    }, 5000);
+  }
+
+  // Load existing evidence from database
+  async function loadExistingEvidence() {
+    const token = getAuthToken();
+    if (!token) return;
+
+    try {
+      const response = await fetch('/.netlify/functions/getEvidenceItems', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const evidence = await response.json();
+        evidenceItems = evidence;
+        displayEvidenceByCategory();
+      }
+    } catch (error) {
+      console.error('Error loading evidence:', error);
+    }
+  }
+
+  // Display evidence organized by category
+  function displayEvidenceByCategory() {
+    const categories = {
+      'Structure': 'structure-evidence',
+      'Contents': 'contents-evidence', 
+      'ALE': 'ale-evidence',
+      'Medical': 'medical-evidence'
+    };
+
+    Object.entries(categories).forEach(([category, containerId]) => {
+      const container = document.getElementById(containerId);
+      const categoryItems = evidenceItems.filter(item => item.category === category);
+      
+      if (categoryItems.length === 0) {
+        container.innerHTML = '<p class="no-evidence">No evidence uploaded yet</p>';
+      } else {
+        container.innerHTML = '';
+        categoryItems.forEach(item => {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'evidence-item';
+          itemDiv.innerHTML = `
+            <div class="evidence-info">
+              <div class="evidence-name">${item.filename || 'Unknown file'}</div>
+              <div class="evidence-summary">${item.ai_summary || 'No summary available'}</div>
+            </div>
+            <div class="evidence-actions">
+              <button onclick="downloadEvidence('${item.id}')">📥 Download</button>
+              <button class="delete-btn" onclick="deleteEvidence('${item.id}')">🗑️ Delete</button>
+            </div>
+          `;
+          container.appendChild(itemDiv);
+        });
+      }
+    });
+  }
+
+  // Download evidence file
+  async function downloadEvidence(itemId) {
+    const token = getAuthToken();
+    if (!token) return;
+
+    try {
+      const response = await fetch(`/.netlify/functions/downloadEvidence?itemId=${itemId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `evidence-${itemId}`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      } else {
+        alert('Failed to download file');
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Failed to download file');
+    }
+  }
+
+  // Delete evidence file
+  async function deleteEvidence(itemId) {
+    if (!confirm('Are you sure you want to delete this evidence file?')) return;
+
+    const token = getAuthToken();
+    if (!token) return;
+
+    try {
+      const response = await fetch('/.netlify/functions/deleteEvidence', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ itemId })
+      });
+
+      if (response.ok) {
+        await loadExistingEvidence();
+      } else {
+        alert('Failed to delete file');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('Failed to delete file');
+    }
+  }
+
+  // Generate evidence package
+  async function generateEvidencePackage() {
+    const token = getAuthToken();
+    if (!token) {
+      alert('Please log in to generate evidence package.');
+      return;
+    }
+
+    if (evidenceItems.length === 0) {
+      alert('No evidence files to package. Please upload some files first.');
+      return;
+    }
+
+    const button = document.getElementById('generate-evidence-package');
+    const status = document.getElementById('package-status');
+    
+    button.disabled = true;
+    button.innerHTML = '<div class="spinner"></div> Generating Package...';
+    status.style.display = 'block';
+    status.innerHTML = 'Compiling your evidence into a package...';
+
+    try {
+      const response = await fetch('/.netlify/functions/generateEvidencePackage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ evidenceItems })
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `evidence-package-${new Date().toISOString().split('T')[0]}.zip`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        status.innerHTML = '✅ Evidence package generated successfully!';
+      } else {
+        throw new Error('Package generation failed');
+      }
+    } catch (error) {
+      console.error('Package generation error:', error);
+      status.innerHTML = '❌ Failed to generate evidence package. Please try again.';
+    } finally {
+      button.disabled = false;
+      button.innerHTML = '📄 Generate Evidence Package';
+    }
+  }
+
   // Show upgrade modal
   function showUpgradeModal(limitCheck) {
     const t = maximizeClaimTranslations[maximizeClaimData.language];
@@ -4383,6 +4670,8 @@ This is a mock analysis for development testing. In production, this would use A
     originalSwitchTab(event, tabName);
     if (tabName === 'maximize-claim') {
       initializeMaximizeClaim();
+    } else if (tabName === 'evidence-organizer') {
+      initializeEvidenceOrganizer();
     }
   };
 </script>
