@@ -72,12 +72,15 @@ class DashboardLanding {
   }
 
   init() {
+    console.log('🏠 DashboardLanding init() called');
     this.createDashboard();
     this.bindEvents();
     this.injectStyles();
+    console.log('✅ DashboardLanding initialized');
   }
 
   createDashboard() {
+    console.log('🏗️ Creating dashboard HTML');
     this.container.innerHTML = `
       <div class="dashboard-landing">
         <div class="dashboard-header">

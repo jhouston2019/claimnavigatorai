@@ -106,8 +106,11 @@ class ResponseCenter {
   }
 
   initializeComponents() {
+    console.log('🔧 Initializing components');
+    
     // Initialize sidebar
     const sidebarContainer = this.container.querySelector('.response-center-sidebar');
+    console.log('📱 Sidebar container found:', !!sidebarContainer);
     this.sidebar = new SidebarNav(sidebarContainer, {
       onSectionChange: (section, subsection) => {
         this.loadSection(section, subsection);
@@ -117,6 +120,8 @@ class ResponseCenter {
 
     // Initialize content area
     this.contentArea = this.container.querySelector('.response-center-content');
+    console.log('📄 Content area found:', !!this.contentArea);
+    console.log('✅ Components initialized');
   }
 
   bindEvents() {
@@ -202,16 +207,21 @@ class ResponseCenter {
   }
 
   renderDashboard() {
+    console.log('🎯 Rendering Dashboard');
     if (!this.dashboard) {
+      console.log('📊 Creating new DashboardLanding component');
       this.dashboard = new DashboardLanding(this.contentArea, {
         onCardClick: (cardId) => {
           this.loadSection(cardId);
         }
       });
     } else {
+      console.log('🔄 Re-rendering existing dashboard');
+      // Re-render the dashboard
       this.dashboard.container = this.contentArea;
       this.dashboard.createDashboard();
     }
+    console.log('✅ Dashboard rendered');
   }
 
   renderMainSectionContent(section) {
