@@ -176,6 +176,7 @@
       cursor: pointer;
       transition: all 0.2s;
       font-size: 0.9rem;
+      font-weight: 600;
     }
     
     .tool-item:hover {
@@ -565,6 +566,12 @@
       }
       
       function showTool(tool) {
+        const toolContent = getToolContent(tool);
+        document.getElementById('content-area').innerHTML = toolContent;
+      }
+      
+      function getToolContent(tool) {
+        // This will be implemented with actual content
         const toolNames = {
           'advanced-tools': 'Advanced Tools',
           'ai-agent': 'AI Response & Analysis Agent',
@@ -587,7 +594,7 @@
           'settings': 'Settings'
         };
         
-        document.getElementById('content-area').innerHTML = `
+        return `
           <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
             <h2 style="color: var(--primary); margin-bottom: 1rem;">${toolNames[tool]}</h2>
             <p style="color: var(--text-secondary); margin-bottom: 2rem;">This is where the ${toolNames[tool]} functionality would be implemented.</p>
@@ -602,6 +609,43 @@
       // Show dashboard by default
       showDashboard();
     });
+    
+    // AI Response functions
+    function generateAIResponse() {
+      const input = document.getElementById('ai-input').value;
+      if (!input.trim()) {
+        alert('Please enter some text first.');
+        return;
+      }
+      
+      const output = document.getElementById('ai-output');
+      const content = document.getElementById('ai-response-content');
+      
+      content.innerHTML = `
+        <div style="background: #f0f9ff; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+          <strong>AI Generated Response:</strong><br>
+          Based on your input, here's a professional response to the insurance company...
+        </div>
+      `;
+      
+      output.style.display = 'block';
+    }
+
+    function downloadResponse() {
+      alert('Download functionality would be implemented here.');
+    }
+
+    function copyResponse() {
+      alert('Copy to clipboard functionality would be implemented here.');
+    }
+
+    function buyMoreCredits() {
+      alert('Credit purchase functionality would be implemented here.');
+    }
+
+    function searchDocuments() {
+      alert('Document search functionality would be implemented here.');
+    }
   </script>
 </body>
 </html>
