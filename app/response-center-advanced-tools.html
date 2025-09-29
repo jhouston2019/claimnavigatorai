@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Claim Tools - ClaimNavigatorAI</title>
+  <meta name="description" content="Advanced AI-powered claim analysis tools including policy analyzer, settlement comparison, negotiation scripts, and more.">
+  <style>
+    :root {
+      --primary: #1e40af;
+      --accent: #3b82f6;
+      --border: #e5e7eb;
+      --text-secondary: #6b7280;
+      --bg-light: #f9fafb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+    }
+    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#fff; }
+    header { background:#0f172a; padding:1rem; color:#fff; position:sticky; top:0; }
+    nav { display:flex; justify-content:space-between; align-items:center; }
+    .logo { margin-right: 2rem; }
+    .nav-links { display:flex; gap:1rem; }
+    .nav-links a { color:#fff; text-decoration:none; }
+    .main-content { padding:2rem; }
+    .tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:1.5rem; flex-wrap:wrap; }
+    .tab { padding:1rem; cursor:pointer; }
+    .tab.active { border-bottom:3px solid var(--primary); font-weight:bold; }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+    .btn-primary { background:var(--primary); color:#fff; border:none; border-radius:0.5rem; padding:0.5rem 1rem; cursor:pointer; text-decoration:none; display:inline-block; }
+    .btn-secondary { background:var(--accent); color:#fff; border:none; border-radius:0.5rem; padding:0.5rem 1rem; cursor:pointer; text-decoration:none; display:inline-block; }
+    .btn-success { background:var(--success); color:#fff; border:none; border-radius:0.5rem; padding:0.5rem 1rem; cursor:pointer; text-decoration:none; display:inline-block; }
+    .btn-warning { background:var(--warning); color:#fff; border:none; border-radius:0.5rem; padding:0.5rem 1rem; cursor:pointer; text-decoration:none; display:inline-block; }
+    .btn-danger { background:var(--error); color:#fff; border:none; border-radius:0.5rem; padding:0.5rem 1rem; cursor:pointer; text-decoration:none; display:inline-block; }
+    .tool-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(350px,1fr)); gap:1.5rem; }
+    .tool-card { background:var(--bg-light); padding:1.5rem; border:1px solid var(--border); border-radius:0.75rem; transition:all 0.3s ease; }
+    .tool-card:hover { box-shadow:0 4px 12px rgba(0,0,0,0.1); transform:translateY(-2px); }
+    .tool-card.expanded { background:#fff; border:2px solid var(--primary); }
+    .tool-title { font-weight:bold; font-size:1.1rem; margin-bottom:0.5rem; color:var(--primary); }
+    .tool-desc { font-size:0.9rem; color:var(--text-secondary); margin-bottom:1rem; }
+    .tool-icon { font-size:2rem; margin-bottom:0.5rem; }
+    .tool-output { display:none; background:#fff; border:1px solid var(--border); border-radius:0.5rem; padding:1rem; margin-top:1rem; }
+    .tool-output.active { display:block; }
+    .form-group { margin-bottom:1rem; }
+    .form-label { display:block; font-weight:bold; margin-bottom:0.5rem; }
+    .form-input, .form-select, .form-textarea { width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:0.25rem; }
+    .form-textarea { min-height:100px; resize:vertical; }
+    .file-upload { border:2px dashed var(--border); padding:1rem; text-align:center; border-radius:0.5rem; cursor:pointer; }
+    .file-upload:hover { border-color:var(--primary); background:var(--bg-light); }
+    .progress-bar { width:100%; height:8px; background:var(--border); border-radius:4px; overflow:hidden; margin:0.5rem 0; }
+    .progress-fill { height:100%; background:var(--primary); transition:width 0.3s ease; }
+    .chart-container { margin:1rem 0; padding:1rem; background:var(--bg-light); border-radius:0.5rem; }
+    .comparison-chart { display:flex; align-items:end; gap:1rem; height:200px; }
+    .chart-bar { background:var(--primary); color:#fff; padding:0.5rem; border-radius:0.25rem 0.25rem 0 0; display:flex; align-items:end; justify-content:center; min-height:20px; }
+    .chart-bar.insurer { background:var(--error); }
+    .chart-bar.contractor { background:var(--warning); }
+    .chart-bar.rom { background:var(--success); }
+    .language-toggle { position:absolute; top:1rem; right:1rem; }
+    .credits-display { display:flex; align-items:center; gap:0.5rem; }
+    .loading { display:none; text-align:center; padding:2rem; }
+    .loading.active { display:block; }
+    .spinner { border:3px solid var(--border); border-top:3px solid var(--primary); border-radius:50%; width:30px; height:30px; animation:spin 1s linear infinite; margin:0 auto 1rem; }
+    @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
+    .alert { padding:1rem; border-radius:0.5rem; margin:1rem 0; }
+    .alert-success { background:#d1fae5; color:#065f46; border:1px solid #a7f3d0; }
+    .alert-warning { background:#fef3c7; color:#92400e; border:1px solid #fde68a; }
+    .alert-error { background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; }
+    .download-btn { background:var(--success); color:#fff; border:none; border-radius:0.25rem; padding:0.5rem 1rem; cursor:pointer; text-decoration:none; display:inline-block; margin:0.25rem; }
+    .stage-tracker { margin:1rem 0; }
+    .stage-item { display:flex; align-items:center; padding:0.5rem; border:1px solid var(--border); border-radius:0.25rem; margin:0.25rem 0; }
+    .stage-item.completed { background:#d1fae5; border-color:var(--success); }
+    .stage-item.current { background:#dbeafe; border-color:var(--primary); }
+    .stage-checkbox { margin-right:0.5rem; }
+    .evidence-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin:1rem 0; }
+    .evidence-item { border:1px solid var(--border); border-radius:0.5rem; padding:1rem; text-align:center; }
+    .evidence-item img { max-width:100%; height:auto; border-radius:0.25rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo">ClaimNavigatorAI</div>
+      <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="../product.html">Product</a>
+        <a href="/solution-center.html">Get Help</a>
+        <a href="settings.html">Settings</a>
+        <div class="credits-display">
+          <span id="user-credits-display">Credits: Loading...</span>
+          <button class="btn-buy-credits" onclick="buyMoreCredits()">Buy More</button>
+        </div>
+        <a href="#" onclick="logout()">Logout</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <div class="language-toggle">
+      <button id="lang-toggle" onclick="toggleLanguage()">EN/ES</button>
+    </div>
+
+    <h1 id="page-title">Advanced Claim Tools</h1>
+    <p id="page-subtitle">Professional AI-powered tools to maximize your claim settlement</p>
+
+    <!-- Advanced Tools Grid -->
+    <div class="tool-grid" id="tools-grid">
+      <!-- Certified Policy Analyzer -->
+      <div class="tool-card" id="policy-analyzer-card">
+        <div class="tool-icon">📋</div>
+        <div class="tool-title" id="policy-analyzer-title">Certified Policy Analyzer</div>
+        <div class="tool-desc" id="policy-analyzer-desc">Upload your policy for AI analysis of coverage limits, exclusions, and deadlines</div>
+        <button class="btn-primary" onclick="toggleTool('policy-analyzer')" id="policy-analyzer-btn">Analyze Policy</button>
+        
+        <div class="tool-output" id="policy-analyzer-output">
+          <div class="form-group">
+            <label class="form-label" id="policy-upload-label">Upload Policy Document</label>
+            <div class="file-upload" onclick="document.getElementById('policy-file').click()">
+              <input type="file" id="policy-file" accept=".pdf,.docx" style="display:none" onchange="handlePolicyUpload()">
+              <div id="policy-upload-text">Click to upload PDF or DOCX</div>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="analyzePolicy()" id="analyze-policy-btn">Analyze Policy</button>
+          <div id="policy-analysis-result"></div>
+        </div>
+      </div>
+
+      <!-- State-Specific Rights & Deadlines -->
+      <div class="tool-card" id="state-rights-card">
+        <div class="tool-icon">⚖️</div>
+        <div class="tool-title" id="state-rights-title">State-Specific Rights & Deadlines</div>
+        <div class="tool-desc" id="state-rights-desc">Get state-specific timelines, unfair claims act highlights, and DOI complaint process</div>
+        <button class="btn-primary" onclick="toggleTool('state-rights')" id="state-rights-btn">Check Rights</button>
+        
+        <div class="tool-output" id="state-rights-output">
+          <div class="form-group">
+            <label class="form-label" id="state-select-label">Select State</label>
+            <select class="form-select" id="state-select">
+              <option value="">Choose your state...</option>
+              <option value="CA">California</option>
+              <option value="TX">Texas</option>
+              <option value="FL">Florida</option>
+              <option value="NY">New York</option>
+              <option value="IL">Illinois</option>
+              <option value="PA">Pennsylvania</option>
+              <option value="OH">Ohio</option>
+              <option value="GA">Georgia</option>
+              <option value="NC">North Carolina</option>
+              <option value="MI">Michigan</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" id="claim-type-label">Claim Type</label>
+            <select class="form-select" id="claim-type">
+              <option value="">Select claim type...</option>
+              <option value="property">Property Damage</option>
+              <option value="auto">Auto Insurance</option>
+              <option value="health">Health Insurance</option>
+              <option value="disability">Disability Insurance</option>
+            </select>
+          </div>
+          <button class="btn-primary" onclick="checkStateRights()" id="check-rights-btn">Check Rights & Deadlines</button>
+          <div id="state-rights-result"></div>
+        </div>
+      </div>
+
+      <!-- Claim Stage Tracker -->
+      <div class="tool-card" id="claim-tracker-card">
+        <div class="tool-icon">📊</div>
+        <div class="tool-title" id="claim-tracker-title">Claim Stage Tracker</div>
+        <div class="tool-desc" id="claim-tracker-desc">Track your claim progress with AI advice for each stage</div>
+        <button class="btn-primary" onclick="toggleTool('claim-tracker')" id="claim-tracker-btn">Track Progress</button>
+        
+        <div class="tool-output" id="claim-tracker-output">
+          <div class="stage-tracker">
+            <div class="stage-item" id="stage-filed">
+              <input type="checkbox" class="stage-checkbox" onchange="updateStage('filed')">
+              <span id="stage-filed-text">Claim Filed</span>
+            </div>
+            <div class="stage-item" id="stage-inspection">
+              <input type="checkbox" class="stage-checkbox" onchange="updateStage('inspection')">
+              <span id="stage-inspection-text">Inspection Scheduled</span>
+            </div>
+            <div class="stage-item" id="stage-offer">
+              <input type="checkbox" class="stage-checkbox" onchange="updateStage('offer')">
+              <span id="stage-offer-text">Offer Made</span>
+            </div>
+            <div class="stage-item" id="stage-appeal">
+              <input type="checkbox" class="stage-checkbox" onchange="updateStage('appeal')">
+              <span id="stage-appeal-text">Appeal Filed</span>
+            </div>
+            <div class="stage-item" id="stage-settlement">
+              <input type="checkbox" class="stage-checkbox" onchange="updateStage('settlement')">
+              <span id="stage-settlement-text">Settlement Pending</span>
+            </div>
+          </div>
+          <div id="stage-advice"></div>
+        </div>
+      </div>
+
+      <!-- Evidence Organizer -->
+      <div class="tool-card" id="evidence-organizer-card">
+        <div class="tool-icon">📁</div>
+        <div class="tool-title" id="evidence-organizer-title">Evidence Organizer</div>
+        <div class="tool-desc" id="evidence-organizer-desc">Upload and organize evidence with AI categorization</div>
+        <button class="btn-primary" onclick="toggleTool('evidence-organizer')" id="evidence-organizer-btn">Organize Evidence</button>
+        
+        <div class="tool-output" id="evidence-organizer-output">
+          <div class="form-group">
+            <label class="form-label" id="evidence-upload-label">Upload Evidence Files</label>
+            <div class="file-upload" onclick="document.getElementById('evidence-files').click()">
+              <input type="file" id="evidence-files" multiple accept=".pdf,.jpg,.jpeg,.png,.docx" style="display:none" onchange="handleEvidenceUpload()">
+              <div id="evidence-upload-text">Click to upload multiple files</div>
+            </div>
+          </div>
+          <div class="evidence-grid" id="evidence-grid"></div>
+          <button class="btn-primary" onclick="organizeEvidence()" id="organize-evidence-btn">Organize Evidence</button>
+          <div id="evidence-result"></div>
+        </div>
+      </div>
+
+      <!-- Settlement Comparison Tool -->
+      <div class="tool-card" id="settlement-comparison-card">
+        <div class="tool-icon">💰</div>
+        <div class="tool-title" id="settlement-comparison-title">Settlement Comparison Tool</div>
+        <div class="tool-desc" id="settlement-comparison-desc">Compare insurer offers with market estimates</div>
+        <button class="btn-primary" onclick="toggleTool('settlement-comparison')" id="settlement-comparison-btn">Compare Settlement</button>
+        
+        <div class="tool-output" id="settlement-comparison-output">
+          <div class="form-group">
+            <label class="form-label" id="insurer-offer-label">Insurer Offer Amount</label>
+            <input type="number" class="form-input" id="insurer-offer" placeholder="Enter offer amount">
+          </div>
+          <div class="form-group">
+            <label class="form-label" id="contractor-estimate-label">Contractor Estimate</label>
+            <input type="number" class="form-input" id="contractor-estimate" placeholder="Enter contractor estimate">
+          </div>
+          <div class="form-group">
+            <label class="form-label" id="rom-estimate-label">ROM Estimate (Optional)</label>
+            <input type="number" class="form-input" id="rom-estimate" placeholder="Enter ROM estimate">
+          </div>
+          <button class="btn-primary" onclick="compareSettlement()" id="compare-settlement-btn">Compare Settlement</button>
+          <div id="settlement-comparison-result"></div>
+        </div>
+      </div>
+
+      <!-- Negotiation Scripts & Communication Helper -->
+      <div class="tool-card" id="negotiation-scripts-card">
+        <div class="tool-icon">💬</div>
+        <div class="tool-title" id="negotiation-scripts-title">Negotiation Scripts & Communication Helper</div>
+        <div class="tool-desc" id="negotiation-scripts-desc">Generate professional scripts for calls and emails</div>
+        <button class="btn-primary" onclick="toggleTool('negotiation-scripts')" id="negotiation-scripts-btn">Generate Scripts</button>
+        
+        <div class="tool-output" id="negotiation-scripts-output">
+          <div class="form-group">
+            <label class="form-label" id="scenario-type-label">Scenario Type</label>
+            <select class="form-select" id="scenario-type">
+              <option value="">Select scenario...</option>
+              <option value="follow-up">Follow-up Call</option>
+              <option value="lowball-counter">Lowball Counter</option>
+              <option value="denial-challenge">Denial Challenge</option>
+              <option value="delay-reminder">Delay Reminder</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" id="negotiation-context-label">Context/Details</label>
+            <textarea class="form-textarea" id="negotiation-context" placeholder="Provide context about your situation..."></textarea>
+          </div>
+          <button class="btn-primary" onclick="generateNegotiationScript()" id="generate-script-btn">Generate Script</button>
+          <div id="negotiation-script-result"></div>
+        </div>
+      </div>
+
+      <!-- Litigation & Escalation Notices -->
+      <div class="tool-card" id="escalation-notices-card">
+        <div class="tool-icon">⚖️</div>
+        <div class="tool-title" id="escalation-notices-title">Litigation & Escalation Notices</div>
+        <div class="tool-desc" id="escalation-notices-desc">Generate formal notice letters for escalation</div>
+        <button class="btn-primary" onclick="toggleTool('escalation-notices')" id="escalation-notices-btn">Generate Notice</button>
+        
+        <div class="tool-output" id="escalation-notices-output">
+          <div class="form-group">
+            <label class="form-label" id="escalation-type-label">Escalation Type</label>
+            <select class="form-select" id="escalation-type">
+              <option value="">Select escalation type...</option>
+              <option value="appraisal-demand">Appraisal Demand</option>
+              <option value="doi-complaint">DOI Complaint</option>
+              <option value="bad-faith-notice">Bad Faith Notice</option>
+              <option value="litigation-notice">Litigation Notice</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" id="escalation-details-label">Case Details</label>
+            <textarea class="form-textarea" id="escalation-details" placeholder="Describe your case details..."></textarea>
+          </div>
+          <button class="btn-primary" onclick="generateEscalationNotice()" id="generate-notice-btn">Generate Notice</button>
+          <div id="escalation-notice-result"></div>
+        </div>
+      </div>
+
+      <!-- Financial Impact Calculator -->
+      <div class="tool-card" id="financial-calculator-card">
+        <div class="tool-icon">🧮</div>
+        <div class="tool-title" id="financial-calculator-title">Financial Impact Calculator</div>
+        <div class="tool-desc" id="financial-calculator-desc">Calculate projected payouts with/without professional help</div>
+        <button class="btn-primary" onclick="toggleTool('financial-calculator')" id="financial-calculator-btn">Calculate Impact</button>
+        
+        <div class="tool-output" id="financial-calculator-output">
+          <div class="form-group">
+            <label class="form-label" id="claim-value-label">Claim Value Estimate</label>
+            <input type="number" class="form-input" id="claim-value" placeholder="Enter estimated claim value">
+          </div>
+          <div class="form-group">
+            <label class="form-label" id="professional-fee-label">Professional Fee %</label>
+            <input type="number" class="form-input" id="professional-fee" placeholder="Enter fee percentage" value="10">
+          </div>
+          <div class="form-group">
+            <label class="form-label" id="out-of-pocket-label">Out-of-Pocket Expenses</label>
+            <input type="number" class="form-input" id="out-of-pocket" placeholder="Enter out-of-pocket expenses">
+          </div>
+          <button class="btn-primary" onclick="calculateFinancialImpact()" id="calculate-impact-btn">Calculate Impact</button>
+          <div id="financial-impact-result"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <div id="loading-text">Processing...</div>
+    </div>
+  </main>
+
+  <script>
+    // Global variables
+    let currentLanguage = 'en';
+    let translations = {};
+    let userCredits = 0;
+    let currentTool = null;
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      loadTranslations();
+      loadUserCredits();
+      initializeTools();
+    });
+
+    // Load translations
+    async function loadTranslations() {
+      try {
+        const response = await fetch(`../locales/${currentLanguage}.json`);
+        translations = await response.json();
+        updateUI();
+      } catch (error) {
+        console.error('Error loading translations:', error);
+      }
+    }
+
+    // Toggle language
+    function toggleLanguage() {
+      currentLanguage = currentLanguage === 'en' ? 'es' : 'en';
+      loadTranslations();
+    }
+
+    // Update UI with translations
+    function updateUI() {
+      if (!translations.advancedTools) return;
+      
+      const t = translations.advancedTools;
+      document.getElementById('page-title').textContent = t.title;
+      document.getElementById('page-subtitle').textContent = t.subtitle;
+      
+      // Update tool cards
+      updateToolCard('policy-analyzer', t.policyAnalyzer);
+      updateToolCard('state-rights', t.stateRights);
+      updateToolCard('claim-tracker', t.claimTracker);
+      updateToolCard('evidence-organizer', t.evidenceOrganizer);
+      updateToolCard('settlement-comparison', t.settlementComparison);
+      updateToolCard('negotiation-scripts', t.negotiationScripts);
+      updateToolCard('escalation-notices', t.escalationNotices);
+      updateToolCard('financial-calculator', t.financialCalculator);
+    }
+
+    // Update individual tool card
+    function updateToolCard(toolId, toolData) {
+      document.getElementById(`${toolId}-title`).textContent = toolData.title;
+      document.getElementById(`${toolId}-desc`).textContent = toolData.description;
+      document.getElementById(`${toolId}-btn`).textContent = toolData.buttonText;
+    }
+
+    // Load user credits
+    async function loadUserCredits() {
+      try {
+        const response = await fetch('/.netlify/functions/get-user-credits');
+        const data = await response.json();
+        userCredits = data.credits || 0;
+        document.getElementById('user-credits-display').textContent = `Credits: ${userCredits}`;
+      } catch (error) {
+        console.error('Error loading credits:', error);
+      }
+    }
+
+    // Initialize tools
+    function initializeTools() {
+      // Add event listeners and initialize tool states
+      console.log('Advanced Tools initialized');
+    }
+
+    // Toggle tool expansion
+    function toggleTool(toolId) {
+      const card = document.getElementById(`${toolId}-card`);
+      const output = document.getElementById(`${toolId}-output`);
+      
+      if (currentTool === toolId) {
+        // Collapse current tool
+        card.classList.remove('expanded');
+        output.classList.remove('active');
+        currentTool = null;
+      } else {
+        // Collapse previous tool if any
+        if (currentTool) {
+          const prevCard = document.getElementById(`${currentTool}-card`);
+          const prevOutput = document.getElementById(`${currentTool}-output`);
+          prevCard.classList.remove('expanded');
+          prevOutput.classList.remove('active');
+        }
+        
+        // Expand new tool
+        card.classList.add('expanded');
+        output.classList.add('active');
+        currentTool = toolId;
+      }
+    }
+
+    // Policy Analyzer Functions
+    function handlePolicyUpload() {
+      const file = document.getElementById('policy-file').files[0];
+      if (file) {
+        document.getElementById('policy-upload-text').textContent = `Selected: ${file.name}`;
+      }
+    }
+
+    async function analyzePolicy() {
+      const file = document.getElementById('policy-file').files[0];
+      if (!file) {
+        alert('Please select a policy file first');
+        return;
+      }
+
+      showLoading('Analyzing policy...');
+      
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await fetch('/.netlify/functions/policyAnalyzer', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        hideLoading();
+        
+        if (result.success) {
+          document.getElementById('policy-analysis-result').innerHTML = result.html;
+        } else {
+          showError('Error analyzing policy: ' + result.error);
+        }
+      } catch (error) {
+        hideLoading();
+        showError('Error analyzing policy: ' + error.message);
+      }
+    }
+
+    // State Rights Functions
+    async function checkStateRights() {
+      const state = document.getElementById('state-select').value;
+      const claimType = document.getElementById('claim-type').value;
+      
+      if (!state || !claimType) {
+        alert('Please select both state and claim type');
+        return;
+      }
+
+      showLoading('Checking state rights...');
+      
+      try {
+        const response = await fetch('/.netlify/functions/stateRights', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ state, claimType })
+        });
+        
+        const result = await response.json();
+        hideLoading();
+        
+        if (result.success) {
+          document.getElementById('state-rights-result').innerHTML = result.html;
+        } else {
+          showError('Error checking state rights: ' + result.error);
+        }
+      } catch (error) {
+        hideLoading();
+        showError('Error checking state rights: ' + error.message);
+      }
+    }
+
+    // Claim Tracker Functions
+    function updateStage(stage) {
+      const stageElement = document.getElementById(`stage-${stage}`);
+      const checkbox = stageElement.querySelector('.stage-checkbox');
+      
+      if (checkbox.checked) {
+        stageElement.classList.add('completed');
+        stageElement.classList.remove('current');
+      } else {
+        stageElement.classList.remove('completed');
+        stageElement.classList.add('current');
+      }
+      
+      // Generate AI advice for current stage
+      generateStageAdvice(stage);
+    }
+
+    async function generateStageAdvice(stage) {
+      try {
+        const response = await fetch('/.netlify/functions/generateStageAdvice', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stage })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          document.getElementById('stage-advice').innerHTML = result.advice;
+        }
+      } catch (error) {
+        console.error('Error generating stage advice:', error);
+      }
+    }
+
+    // Evidence Organizer Functions
+    function handleEvidenceUpload() {
+      const files = document.getElementById('evidence-files').files;
+      const grid = document.getElementById('evidence-grid');
+      grid.innerHTML = '';
+      
+      Array.from(files).forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'evidence-item';
+        item.innerHTML = `
+          <div>${file.name}</div>
+          <div>${(file.size / 1024).toFixed(1)} KB</div>
+        `;
+        grid.appendChild(item);
+      });
+    }
+
+    async function organizeEvidence() {
+      const files = document.getElementById('evidence-files').files;
+      if (files.length === 0) {
+        alert('Please select evidence files first');
+        return;
+      }
+
+      showLoading('Organizing evidence...');
+      
+      try {
+        const formData = new FormData();
+        Array.from(files).forEach(file => {
+          formData.append('files', file);
+        });
+        
+        const response = await fetch('/.netlify/functions/evidenceOrganizer', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        hideLoading();
+        
+        if (result.success) {
+          document.getElementById('evidence-result').innerHTML = result.html;
+        } else {
+          showError('Error organizing evidence: ' + result.error);
+        }
+      } catch (error) {
+        hideLoading();
+        showError('Error organizing evidence: ' + error.message);
+      }
+    }
+
+    // Settlement Comparison Functions
+    async function compareSettlement() {
+      const insurerOffer = parseFloat(document.getElementById('insurer-offer').value);
+      const contractorEstimate = parseFloat(document.getElementById('contractor-estimate').value);
+      const romEstimate = parseFloat(document.getElementById('rom-estimate').value);
+      
+      if (!insurerOffer || !contractorEstimate) {
+        alert('Please enter both insurer offer and contractor estimate');
+        return;
+      }
+
+      showLoading('Comparing settlement...');
+      
+      try {
+        const response = await fetch('/.netlify/functions/settlementCompare', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            insurerOffer, 
+            contractorEstimate, 
+            romEstimate: romEstimate || null 
+          })
+        });
+        
+        const result = await response.json();
+        hideLoading();
+        
+        if (result.success) {
+          document.getElementById('settlement-comparison-result').innerHTML = result.html;
+        } else {
+          showError('Error comparing settlement: ' + result.error);
+        }
+      } catch (error) {
+        hideLoading();
+        showError('Error comparing settlement: ' + error.message);
+      }
+    }
+
+    // Negotiation Scripts Functions
+    async function generateNegotiationScript() {
+      const scenarioType = document.getElementById('scenario-type').value;
+      const context = document.getElementById('negotiation-context').value;
+      
+      if (!scenarioType) {
+        alert('Please select a scenario type');
+        return;
+      }
+
+      showLoading('Generating negotiation script...');
+      
+      try {
+        const response = await fetch('/.netlify/functions/generateNegotiation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ scenarioType, context })
+        });
+        
+        const result = await response.json();
+        hideLoading();
+        
+        if (result.success) {
+          document.getElementById('negotiation-script-result').innerHTML = result.html;
+        } else {
+          showError('Error generating script: ' + result.error);
+        }
+      } catch (error) {
+        hideLoading();
+        showError('Error generating script: ' + error.message);
+      }
+    }
+
+    // Escalation Notices Functions
+    async function generateEscalationNotice() {
+      const escalationType = document.getElementById('escalation-type').value;
+      const details = document.getElementById('escalation-details').value;
+      
+      if (!escalationType) {
+        alert('Please select an escalation type');
+        return;
+      }
+
+      showLoading('Generating escalation notice...');
+      
+      try {
+        const response = await fetch('/.netlify/functions/generateEscalation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ escalationType, details })
+        });
+        
+        const result = await response.json();
+        hideLoading();
+        
+        if (result.success) {
+          document.getElementById('escalation-notice-result').innerHTML = result.html;
+        } else {
+          showError('Error generating notice: ' + result.error);
+        }
+      } catch (error) {
+        hideLoading();
+        showError('Error generating notice: ' + error.message);
+      }
+    }
+
+    // Financial Calculator Functions
+    async function calculateFinancialImpact() {
+      const claimValue = parseFloat(document.getElementById('claim-value').value);
+      const professionalFee = parseFloat(document.getElementById('professional-fee').value);
+      const outOfPocket = parseFloat(document.getElementById('out-of-pocket').value) || 0;
+      
+      if (!claimValue) {
+        alert('Please enter claim value estimate');
+        return;
+      }
+
+      showLoading('Calculating financial impact...');
+      
+      try {
+        const response = await fetch('/.netlify/functions/financialImpact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            claimValue, 
+            professionalFee: professionalFee || 10, 
+            outOfPocket 
+          })
+        });
+        
+        const result = await response.json();
+        hideLoading();
+        
+        if (result.success) {
+          document.getElementById('financial-impact-result').innerHTML = result.html;
+        } else {
+          showError('Error calculating impact: ' + result.error);
+        }
+      } catch (error) {
+        hideLoading();
+        showError('Error calculating impact: ' + error.message);
+      }
+    }
+
+    // Utility Functions
+    function showLoading(text = 'Processing...') {
+      document.getElementById('loading-text').textContent = text;
+      document.getElementById('loading').classList.add('active');
+    }
+
+    function hideLoading() {
+      document.getElementById('loading').classList.remove('active');
+    }
+
+    function showError(message) {
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'alert alert-error';
+      errorDiv.textContent = message;
+      document.querySelector('.main-content').appendChild(errorDiv);
+      setTimeout(() => errorDiv.remove(), 5000);
+    }
+
+    function showSuccess(message) {
+      const successDiv = document.createElement('div');
+      successDiv.className = 'alert alert-success';
+      successDiv.textContent = message;
+      document.querySelector('.main-content').appendChild(successDiv);
+      setTimeout(() => successDiv.remove(), 5000);
+    }
+
+    // Buy more credits
+    function buyMoreCredits() {
+      window.location.href = '/app/settings.html';
+    }
+
+    // Logout
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        window.location.href = '/app/login.html';
+      }
+    }
+  </script>
+</body>
+</html>
