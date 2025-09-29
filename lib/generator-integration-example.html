@@ -1,0 +1,80 @@
+<!-- Example integration snippet for document-generator.html -->
+<!-- Add this script tag to the document-generator.html file -->
+
+<script type="module">
+  // Import the enhanced generator functions
+  import { handleGenerateAndSaveEnhanced, handleFormSubmitEnhanced } from './lib/generator-integration-simple.js';
+
+  // Override the existing handleFormSubmit method in the DocumentGenerator class
+  // Add this to the DocumentGenerator class in document-generator.html
+  
+  // Replace the existing handleFormSubmit method with this enhanced version:
+  async handleFormSubmit(data) {
+    try {
+      this.showLoading(true);
+      this.hideResultPanel();
+      
+      // Use the new enhanced handler that automatically saves to Supabase
+      await handleGenerateAndSaveEnhanced({
+        docType: this.currentDocType,
+        lang: this.currentLocale,
+        inputJson: data
+      });
+
+      // Show success message and redirect to documents page
+      alert('Document generated and saved! Check your Documents page.');
+      window.location.href = '/my-documents.html';
+      
+    } catch (error) {
+      console.error('Document generation error:', error);
+      
+      // Check if it's a limit error
+      if (error.message?.includes('limit') || error.message?.includes('quota')) {
+        this.showUpgradeRequired({ limit: 2 });
+      } else {
+        this.showError(error.message || 'An unexpected error occurred. Please try again.');
+      }
+    } finally {
+      this.showLoading(false);
+    }
+  }
+</script>
+
+<!-- Alternative: Simple script inclusion (no modules) -->
+<script src="./lib/generator-integration-simple.js"></script>
+<script>
+  // Override the existing handleFormSubmit method
+  // Find the DocumentGenerator class and replace its handleFormSubmit method
+  
+  // Example of how to modify the existing code:
+  // In document-generator.html, find the handleFormSubmit method and replace it with:
+  
+  async handleFormSubmit(data) {
+    try {
+      this.showLoading(true);
+      this.hideResultPanel();
+      
+      // Use the new enhanced handler
+      await window.handleGenerateAndSaveEnhanced({
+        docType: this.currentDocType,
+        lang: this.currentLocale,
+        inputJson: data
+      });
+
+      // Show success message and redirect
+      alert('Document generated and saved! Check your Documents page.');
+      window.location.href = '/my-documents.html';
+      
+    } catch (error) {
+      console.error('Document generation error:', error);
+      
+      if (error.message?.includes('limit') || error.message?.includes('quota')) {
+        this.showUpgradeRequired({ limit: 2 });
+      } else {
+        this.showError(error.message || 'An unexpected error occurred. Please try again.');
+      }
+    } finally {
+      this.showLoading(false);
+    }
+  }
+</script>
