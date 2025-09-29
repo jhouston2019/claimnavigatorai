@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Calculator Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .test-input { margin: 10px 0; }
+        .test-input label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .test-input input { width: 200px; padding: 5px; margin-right: 10px; }
+        .test-button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+        .test-button:hover { background: #0056b3; }
+        .test-result { margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 4px; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Financial Calculator Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Financial Calculator Function</h2>
+        <p>This test will verify the financial calculator Netlify function works correctly.</p>
+        
+        <div class="test-input">
+            <label for="claimValue">Estimated Claim Value ($):</label>
+            <input type="number" id="claimValue" value="100000" />
+        </div>
+        
+        <div class="test-input">
+            <label for="insurerOffer">Insurer Offer ($):</label>
+            <input type="number" id="insurerOffer" value="60000" />
+        </div>
+        
+        <div class="test-input">
+            <label for="publicAdjusterFee">Public Adjuster Fee (%):</label>
+            <input type="number" id="publicAdjusterFee" value="10" />
+        </div>
+        
+        <div class="test-input">
+            <label for="attorneyFee">Attorney Fee (%):</label>
+            <input type="number" id="attorneyFee" value="33" />
+        </div>
+        
+        <div class="test-input">
+            <label for="outOfPocket">Out-of-Pocket Expenses ($):</label>
+            <input type="number" id="outOfPocket" value="5000" />
+        </div>
+        
+        <button class="test-button" onclick="testFinancialCalculator()">Test Calculator</button>
+        
+        <div id="testResult" class="test-result" style="display: none;">
+            <h3>Test Results:</h3>
+            <div id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        async function testFinancialCalculator() {
+            const resultDiv = document.getElementById('testResult');
+            const contentDiv = document.getElementById('resultContent');
+            
+            resultDiv.style.display = 'block';
+            contentDiv.innerHTML = '<div class="loading">Testing...</div>';
+            
+            try {
+                const testData = {
+                    estimatedClaimValue: parseFloat(document.getElementById('claimValue').value),
+                    insurerOffer: parseFloat(document.getElementById('insurerOffer').value),
+                    publicAdjusterFee: parseFloat(document.getElementById('publicAdjusterFee').value),
+                    attorneyFee: parseFloat(document.getElementById('attorneyFee').value),
+                    outOfPocketExpenses: parseFloat(document.getElementById('outOfPocket').value)
+                };
+                
+                console.log('Testing with data:', testData);
+                
+                const response = await fetch('/.netlify/functions/financialCalculator', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    contentDiv.innerHTML = `
+                        <div class="success">✅ Test Passed!</div>
+                        <h4>Calculations:</h4>
+                        <ul>
+                            <li><strong>DIY Net Recovery:</strong> $${result.calculations.diy.netRecovery.toLocaleString()}</li>
+                            <li><strong>Public Adjuster Net Recovery:</strong> $${result.calculations.withPublicAdjuster.netRecovery.toLocaleString()}</li>
+                            <li><strong>Attorney Net Recovery:</strong> $${result.calculations.withAttorney.netRecovery.toLocaleString()}</li>
+                        </ul>
+                        <h4>Recommendation:</h4>
+                        <p>${result.calculations.recommendation}</p>
+                        <h4>Processing Time:</h4>
+                        <p>${result.processingTimeMs}ms</p>
+                    `;
+                } else {
+                    contentDiv.innerHTML = `
+                        <div class="error">❌ Test Failed</div>
+                        <p><strong>Error:</strong> ${result.error}</p>
+                        <p><strong>Status:</strong> ${response.status}</p>
+                    `;
+                }
+                
+            } catch (error) {
+                contentDiv.innerHTML = `
+                    <div class="error">❌ Test Failed</div>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

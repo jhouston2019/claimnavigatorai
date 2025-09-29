@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Negotiation Scripts & Escalation Readiness - ClaimNavigatorAI</title>
+  <meta name="description" content="AI-powered negotiation scripts and escalation notices for insurance claims. Generate professional phone scripts, email drafts, and formal escalation letters.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/index.js"></script>
+  <style>
+    :root {
+      --primary: #1e40af;
+      --accent: #3b82f6;
+      --border: #e5e7eb;
+      --text-secondary: #6b7280;
+      --bg-light: #f9fafb;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    }
+    
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .preview-panel {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      min-height: 400px;
+    }
+    
+    .form-section {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e5e7eb;
+    }
+    
+    .tab-button {
+      transition: all 0.3s ease;
+    }
+    
+    .tab-button.active {
+      background: linear-gradient(135deg, #1e40af, #3b82f6);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+    }
+    
+    .loading-spinner {
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .result-content {
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+    
+    .download-btn {
+      transition: all 0.3s ease;
+    }
+    
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <header class="gradient-bg text-white py-6">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <h1 class="text-2xl font-bold">Negotiation Scripts & Escalation Readiness</h1>
+          <span class="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-semibold">Premium</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <button onclick="window.location.href='/app/response-center.html'" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-all">
+            ← Back to Response Center
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container mx-auto px-4 py-8" x-data="negotiationTools()">
+    <!-- Tab Navigation -->
+    <div class="flex space-x-2 mb-8">
+      <button 
+        @click="activeTab = 'scripts'" 
+        :class="activeTab === 'scripts' ? 'tab-button active' : 'tab-button'"
+        class="px-6 py-3 rounded-lg font-semibold bg-white border border-gray-300 hover:bg-gray-50"
+      >
+        📞 Negotiation Scripts
+      </button>
+      <button 
+        @click="activeTab = 'escalation'" 
+        :class="activeTab === 'escalation' ? 'tab-button active' : 'tab-button'"
+        class="px-6 py-3 rounded-lg font-semibold bg-white border border-gray-300 hover:bg-gray-50"
+      >
+        ⚖️ Escalation Notices
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Left Panel: Forms -->
+      <div class="space-y-6">
+        <!-- Negotiation Scripts Form -->
+        <div x-show="activeTab === 'scripts'" class="form-section p-6">
+          <h2 class="text-xl font-bold text-gray-800 mb-4">Generate Negotiation Script</h2>
+          <form @submit.prevent="generateNegotiationScript()">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Scenario Type</label>
+                <select x-model="negotiationForm.scenario" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <option value="">Select a scenario...</option>
+                  <option value="delay-followup">Delay Follow-up</option>
+                  <option value="lowball-counter">Lowball Counter</option>
+                  <option value="denial-challenge">Denial Challenge</option>
+                  <option value="payment-demand">Payment Demand</option>
+                </select>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Claim Details</label>
+                <textarea 
+                  x-model="negotiationForm.details" 
+                  placeholder="Describe your claim situation, current status, and specific issues..."
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent h-32"
+                ></textarea>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Language</label>
+                <select x-model="negotiationForm.language" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <option value="en">English</option>
+                  <option value="es">Español</option>
+                </select>
+              </div>
+              
+              <button 
+                type="submit" 
+                :disabled="isGenerating || !negotiationForm.scenario"
+                class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-all"
+              >
+                <span x-show="!isGenerating">Generate Script</span>
+                <span x-show="isGenerating" class="flex items-center justify-center">
+                  <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Generating...
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Escalation Notices Form -->
+        <div x-show="activeTab === 'escalation'" class="form-section p-6">
+          <h2 class="text-xl font-bold text-gray-800 mb-4">Generate Escalation Notice</h2>
+          <form @submit.prevent="generateEscalationNotice()">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Escalation Type</label>
+                <select x-model="escalationForm.type" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <option value="">Select escalation type...</option>
+                  <option value="appraisal-demand">Appraisal Demand</option>
+                  <option value="doi-complaint">DOI Complaint</option>
+                  <option value="bad-faith-notice">Bad Faith Notice</option>
+                </select>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Claim Information</label>
+                <textarea 
+                  x-model="escalationForm.claimInfo" 
+                  placeholder="Provide claim details, timeline, and specific issues that warrant escalation..."
+                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent h-32"
+                ></textarea>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Language</label>
+                <select x-model="escalationForm.language" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <option value="en">English</option>
+                  <option value="es">Español</option>
+                </select>
+              </div>
+              
+              <button 
+                type="submit" 
+                :disabled="isGenerating || !escalationForm.type"
+                class="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-all"
+              >
+                <span x-show="!isGenerating">Generate Escalation Notice</span>
+                <span x-show="isGenerating" class="flex items-center justify-center">
+                  <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Generating...
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Panel: Preview -->
+      <div class="preview-panel p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-800">AI Generated Content</h3>
+          <div x-show="currentResult" class="flex space-x-2">
+            <button 
+              @click="downloadAsPDF()" 
+              class="download-btn bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+            >
+              📄 PDF
+            </button>
+            <button 
+              @click="downloadAsDOCX()" 
+              class="download-btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+            >
+              📝 DOCX
+            </button>
+          </div>
+        </div>
+        
+        <div x-show="!currentResult" class="text-center text-gray-500 py-12">
+          <div class="text-6xl mb-4">🤖</div>
+          <p class="text-lg">Select a scenario and generate content to see results here</p>
+        </div>
+        
+        <div x-show="currentResult" class="result-content bg-white p-4 rounded-lg border border-gray-200 max-h-96 overflow-y-auto">
+          <div x-html="currentResult"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function negotiationTools() {
+      return {
+        activeTab: 'scripts',
+        isGenerating: false,
+        currentResult: '',
+        
+        // Negotiation form data
+        negotiationForm: {
+          scenario: '',
+          details: '',
+          language: 'en'
+        },
+        
+        // Escalation form data
+        escalationForm: {
+          type: '',
+          claimInfo: '',
+          language: 'en'
+        },
+        
+        async generateNegotiationScript() {
+          if (!this.negotiationForm.scenario) return;
+          
+          this.isGenerating = true;
+          this.currentResult = '';
+          
+          try {
+            const response = await fetch('/netlify/functions/generateNegotiation', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                scenario: this.negotiationForm.scenario,
+                details: this.negotiationForm.details,
+                language: this.negotiationForm.language
+              })
+            });
+            
+            if (!response.ok) {
+              throw new Error('Failed to generate script');
+            }
+            
+            const data = await response.json();
+            this.currentResult = this.formatNegotiationResult(data);
+            
+            // Save to Supabase
+            await this.saveToSupabase('negotiation', data);
+            
+          } catch (error) {
+            console.error('Error generating negotiation script:', error);
+            this.currentResult = `
+              <div class="text-red-600">
+                <h4 class="font-semibold mb-2">Error generating script</h4>
+                <p>Please try again. If the problem persists, contact support.</p>
+              </div>
+            `;
+          } finally {
+            this.isGenerating = false;
+          }
+        },
+        
+        async generateEscalationNotice() {
+          if (!this.escalationForm.type) return;
+          
+          this.isGenerating = true;
+          this.currentResult = '';
+          
+          try {
+            const response = await fetch('/netlify/functions/generateEscalation', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                type: this.escalationForm.type,
+                claimInfo: this.escalationForm.claimInfo,
+                language: this.escalationForm.language
+              })
+            });
+            
+            if (!response.ok) {
+              throw new Error('Failed to generate escalation notice');
+            }
+            
+            const data = await response.json();
+            this.currentResult = this.formatEscalationResult(data);
+            
+            // Save to Supabase
+            await this.saveToSupabase('escalation', data);
+            
+          } catch (error) {
+            console.error('Error generating escalation notice:', error);
+            this.currentResult = `
+              <div class="text-red-600">
+                <h4 class="font-semibold mb-2">Error generating escalation notice</h4>
+                <p>Please try again. If the problem persists, contact support.</p>
+              </div>
+            `;
+          } finally {
+            this.isGenerating = false;
+          }
+        },
+        
+        formatNegotiationResult(data) {
+          return `
+            <div class="space-y-4">
+              <div class="border-l-4 border-blue-500 pl-4">
+                <h4 class="font-semibold text-blue-700">📞 Phone Script</h4>
+                <div class="mt-2 text-gray-700">${data.phoneScript || 'Script not generated'}</div>
+              </div>
+              
+              <div class="border-l-4 border-green-500 pl-4">
+                <h4 class="font-semibold text-green-700">📧 Email Draft</h4>
+                <div class="mt-2 text-gray-700">${data.emailDraft || 'Email not generated'}</div>
+              </div>
+              
+              <div class="bg-yellow-50 p-3 rounded-lg">
+                <h4 class="font-semibold text-yellow-800">💡 Key Points</h4>
+                <div class="mt-2 text-yellow-700">${data.keyPoints || 'No key points provided'}</div>
+              </div>
+            </div>
+          `;
+        },
+        
+        formatEscalationResult(data) {
+          return `
+            <div class="space-y-4">
+              <div class="border-l-4 border-red-500 pl-4">
+                <h4 class="font-semibold text-red-700">⚖️ Formal Letter</h4>
+                <div class="mt-2 text-gray-700">${data.formalLetter || 'Letter not generated'}</div>
+              </div>
+              
+              <div class="bg-red-50 p-3 rounded-lg">
+                <h4 class="font-semibold text-red-800">⚠️ Legal Considerations</h4>
+                <div class="mt-2 text-red-700">${data.legalConsiderations || 'No legal considerations provided'}</div>
+              </div>
+              
+              <div class="bg-blue-50 p-3 rounded-lg">
+                <h4 class="font-semibold text-blue-800">📋 Next Steps</h4>
+                <div class="mt-2 text-blue-700">${data.nextSteps || 'No next steps provided'}</div>
+              </div>
+            </div>
+          `;
+        },
+        
+        async saveToSupabase(type, data) {
+          try {
+            const response = await fetch('/netlify/functions/save-escalation', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                type: type,
+                data: data,
+                timestamp: new Date().toISOString()
+              })
+            });
+            
+            if (!response.ok) {
+              console.warn('Failed to save to Supabase:', await response.text());
+            }
+          } catch (error) {
+            console.warn('Error saving to Supabase:', error);
+          }
+        },
+        
+        async downloadAsPDF() {
+          if (!this.currentResult) return;
+          
+          try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(16);
+            doc.text('Negotiation Script & Escalation Notice', 20, 20);
+            
+            // Add content
+            doc.setFontSize(12);
+            const content = this.currentResult.replace(/<[^>]*>/g, ''); // Strip HTML
+            const lines = doc.splitTextToSize(content, 170);
+            doc.text(lines, 20, 40);
+            
+            // Save
+            doc.save('negotiation-script.pdf');
+          } catch (error) {
+            console.error('Error generating PDF:', error);
+            alert('Error generating PDF. Please try again.');
+          }
+        },
+        
+        async downloadAsDOCX() {
+          if (!this.currentResult) return;
+          
+          try {
+            const { Document, Packer, Paragraph, TextRun } = window.docx;
+            
+            const doc = new Document({
+              sections: [{
+                properties: {},
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({
+                        text: "Negotiation Script & Escalation Notice",
+                        bold: true,
+                        size: 32
+                      })
+                    ]
+                  }),
+                  new Paragraph({
+                    children: [
+                      new TextRun({
+                        text: this.currentResult.replace(/<[^>]*>/g, ''), // Strip HTML
+                        size: 24
+                      })
+                    ]
+                  })
+                ]
+              }]
+            });
+            
+            const blob = await Packer.toBlob(doc);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'negotiation-script.docx';
+            a.click();
+            URL.revokeObjectURL(url);
+          } catch (error) {
+            console.error('Error generating DOCX:', error);
+            alert('Error generating DOCX. Please try again.');
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>
