@@ -48,6 +48,109 @@
     .playbook-phase.active .playbook-phase-body { display: block; }
     
     .playbook-overview { background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 5px solid var(--primary); }
+
+    /* Evidence Organizer Styles */
+    .evidence-upload-zone { margin: 2rem 0; }
+    .upload-area { 
+      border: 3px dashed var(--border); 
+      border-radius: 12px; 
+      padding: 3rem; 
+      text-align: center; 
+      background: var(--bg-light);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .upload-area:hover { 
+      border-color: var(--primary); 
+      background: #f0f9ff; 
+    }
+    .upload-area.dragover { 
+      border-color: var(--primary); 
+      background: #e0f2fe; 
+      transform: scale(1.02);
+    }
+    .upload-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .ai-categorization-panel { 
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe); 
+      border: 1px solid var(--border); 
+      border-radius: 12px; 
+      padding: 1.5rem; 
+      margin: 2rem 0; 
+    }
+    .evidence-categories { margin: 2rem 0; }
+    .evidence-category { 
+      background: #fff; 
+      border: 1px solid var(--border); 
+      border-radius: 8px; 
+      margin-bottom: 1.5rem; 
+      overflow: hidden; 
+    }
+    .evidence-category h4 { 
+      background: var(--bg-light); 
+      padding: 1rem; 
+      margin: 0; 
+      border-bottom: 1px solid var(--border); 
+    }
+    .evidence-list { padding: 1rem; }
+    .evidence-item { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      padding: 0.75rem; 
+      border: 1px solid var(--border); 
+      border-radius: 6px; 
+      margin-bottom: 0.5rem; 
+      background: #fff; 
+    }
+    .evidence-item:last-child { margin-bottom: 0; }
+    .evidence-info { flex: 1; }
+    .evidence-name { font-weight: 600; margin-bottom: 0.25rem; }
+    .evidence-summary { font-size: 0.9rem; color: var(--text-secondary); }
+    .evidence-actions { display: flex; gap: 0.5rem; }
+    .evidence-actions button { 
+      padding: 0.25rem 0.5rem; 
+      border: 1px solid var(--border); 
+      border-radius: 4px; 
+      background: #fff; 
+      cursor: pointer; 
+      font-size: 0.8rem; 
+    }
+    .evidence-actions button:hover { background: var(--bg-light); }
+    .evidence-actions .delete-btn { color: #dc2626; border-color: #dc2626; }
+    .evidence-actions .delete-btn:hover { background: #fef2f2; }
+    .no-evidence { 
+      color: var(--text-secondary); 
+      font-style: italic; 
+      text-align: center; 
+      padding: 2rem; 
+    }
+    .evidence-package-section { 
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe); 
+      border: 1px solid var(--border); 
+      border-radius: 12px; 
+      padding: 2rem; 
+      margin: 2rem 0; 
+      text-align: center; 
+    }
+    .categorization-result { 
+      background: #fff; 
+      border: 1px solid var(--border); 
+      border-radius: 6px; 
+      padding: 1rem; 
+      margin-bottom: 0.5rem; 
+    }
+    .categorization-result:last-child { margin-bottom: 0; }
+    .result-filename { font-weight: 600; margin-bottom: 0.5rem; }
+    .result-category { 
+      display: inline-block; 
+      background: var(--primary); 
+      color: white; 
+      padding: 0.25rem 0.5rem; 
+      border-radius: 4px; 
+      font-size: 0.8rem; 
+      margin-bottom: 0.5rem; 
+    }
+    .result-summary { font-size: 0.9rem; color: var(--text-secondary); }
     .playbook-overview h3 { color: var(--primary); margin: 0 0 1rem 0; font-size: 1.4rem; }
     .playbook-overview p { margin: 0; color: #374151; line-height: 1.6; }
     
@@ -683,6 +786,8 @@
       <button class="tab" onclick="switchTab(event,'claim-documentation-guides')">📝 Claim Documentation Guides</button>
       <button class="tab" onclick="switchTab(event,'recommended-resources')">🔗 Recommended Resources</button>
       <button class="tab" onclick="switchTab(event,'appeal-builder')">⚖️ Appeal Builder</button>
+      <button class="tab" onclick="switchTab(event,'evidence-organizer')">📸 Evidence Organizer</button>
+      <button class="tab" onclick="window.location.href='/app/state-rights.html'">🏛️ State-Specific Rights & Deadlines</button>
       <button class="tab" onclick="switchTab(event,'settings')">⚙️ Settings</button>
     </div>
 
@@ -4281,6 +4386,76 @@ This is a mock analysis for development testing. In production, this would use A
     }
   };
 </script>
+
+<!-- Evidence Organizer Tab Content -->
+<div id="evidence-organizer" class="tab-content">
+  <h2>📸 Evidence Organizer</h2>
+  <p>Upload and organize your claim evidence with AI-powered categorization.</p>
+  
+  <!-- Upload Zone -->
+  <div class="evidence-upload-zone" id="evidence-upload-zone">
+    <div class="upload-area" id="upload-area">
+      <div class="upload-icon">📁</div>
+      <h3>Drop files here or click to upload</h3>
+      <p>Supports photos, receipts, PDFs, and documents</p>
+      <input type="file" id="evidence-file-input" multiple accept="image/*,.pdf,.doc,.docx" style="display: none;">
+      <button class="btn-primary" onclick="document.getElementById('evidence-file-input').click()">Choose Files</button>
+    </div>
+  </div>
+
+  <!-- AI Categorization Panel -->
+  <div class="ai-categorization-panel" id="ai-categorization-panel" style="display: none;">
+    <h3>🤖 AI Categorization Results</h3>
+    <div class="categorization-results" id="categorization-results"></div>
+  </div>
+
+  <!-- Categorized Evidence Display -->
+  <div class="evidence-categories">
+    <h3>📋 Organized Evidence</h3>
+    
+    <!-- Structure Category -->
+    <div class="evidence-category">
+      <h4>🏗️ Structure Damage</h4>
+      <div class="evidence-list" id="structure-evidence">
+        <p class="no-evidence">No structure evidence uploaded yet</p>
+      </div>
+    </div>
+
+    <!-- Contents Category -->
+    <div class="evidence-category">
+      <h4>📦 Contents/Personal Property</h4>
+      <div class="evidence-list" id="contents-evidence">
+        <p class="no-evidence">No contents evidence uploaded yet</p>
+      </div>
+    </div>
+
+    <!-- ALE Category -->
+    <div class="evidence-category">
+      <h4>🏠 Additional Living Expenses (ALE)</h4>
+      <div class="evidence-list" id="ale-evidence">
+        <p class="no-evidence">No ALE evidence uploaded yet</p>
+      </div>
+    </div>
+
+    <!-- Medical Category -->
+    <div class="evidence-category">
+      <h4>🏥 Medical/Injury</h4>
+      <div class="evidence-list" id="medical-evidence">
+        <p class="no-evidence">No medical evidence uploaded yet</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Generate Evidence Package -->
+  <div class="evidence-package-section">
+    <h3>📦 Evidence Package</h3>
+    <p>Compile all your evidence into a single organized package</p>
+    <button class="btn-primary" id="generate-evidence-package" onclick="generateEvidencePackage()">
+      📄 Generate Evidence Package
+    </button>
+    <div id="package-status" style="display: none;"></div>
+  </div>
+</div>
 
 <script src="/app/AppealBuilder.js"></script>
 </body>

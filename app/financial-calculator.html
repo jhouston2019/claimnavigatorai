@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Financial Impact Calculator - ClaimNavigatorAI</title>
+  <meta name="description" content="Calculate the financial impact of hiring professional help for your insurance claim. Compare DIY vs Public Adjuster vs Attorney scenarios.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .gradient-bg {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    }
+    .card-shadow {
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    .input-focus:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .chart-container {
+      position: relative;
+      height: 400px;
+      margin: 2rem 0;
+    }
+    .scenario-card {
+      transition: all 0.3s ease;
+    }
+    .scenario-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    .best-option {
+      border: 2px solid #10b981;
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    }
+    .loading-spinner {
+      border: 3px solid #f3f4f6;
+      border-top: 3px solid #3b82f6;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="gradient-bg text-white py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <div class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+            <span class="text-xl font-bold">💰</span>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold">Financial Impact Calculator</h1>
+            <p class="text-blue-100">Compare DIY vs Professional Help</p>
+          </div>
+        </div>
+        <a href="/response-center.html" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all">
+          ← Back to Response Center
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Input Form -->
+      <div class="bg-white rounded-xl card-shadow p-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Calculate Your Financial Impact</h2>
+        
+        <form id="financialCalculatorForm" class="space-y-6">
+          <!-- Estimated Claim Value -->
+          <div>
+            <label for="estimatedClaimValue" class="block text-sm font-medium text-gray-700 mb-2">
+              Estimated Claim Value ($)
+            </label>
+            <input 
+              type="number" 
+              id="estimatedClaimValue" 
+              name="estimatedClaimValue"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus"
+              placeholder="Enter your estimated claim value"
+              required
+            >
+          </div>
+
+          <!-- Insurer Offer -->
+          <div>
+            <label for="insurerOffer" class="block text-sm font-medium text-gray-700 mb-2">
+              Insurer Offer ($)
+            </label>
+            <input 
+              type="number" 
+              id="insurerOffer" 
+              name="insurerOffer"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus"
+              placeholder="Enter the insurer's offer amount"
+              required
+            >
+          </div>
+
+          <!-- Public Adjuster Fee -->
+          <div>
+            <label for="publicAdjusterFee" class="block text-sm font-medium text-gray-700 mb-2">
+              Public Adjuster Fee (%)
+            </label>
+            <input 
+              type="number" 
+              id="publicAdjusterFee" 
+              name="publicAdjusterFee"
+              value="10"
+              min="0"
+              max="50"
+              step="0.1"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus"
+            >
+            <p class="text-sm text-gray-500 mt-1">Typical range: 5-15%</p>
+          </div>
+
+          <!-- Attorney Fee -->
+          <div>
+            <label for="attorneyFee" class="block text-sm font-medium text-gray-700 mb-2">
+              Attorney Fee (%)
+            </label>
+            <input 
+              type="number" 
+              id="attorneyFee" 
+              name="attorneyFee"
+              value="33"
+              min="0"
+              max="50"
+              step="0.1"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus"
+            >
+            <p class="text-sm text-gray-500 mt-1">Typical range: 25-40%</p>
+          </div>
+
+          <!-- Out-of-Pocket Expenses -->
+          <div>
+            <label for="outOfPocketExpenses" class="block text-sm font-medium text-gray-700 mb-2">
+              Out-of-Pocket Expenses ($)
+            </label>
+            <input 
+              type="number" 
+              id="outOfPocketExpenses" 
+              name="outOfPocketExpenses"
+              value="0"
+              min="0"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus"
+              placeholder="Enter any out-of-pocket expenses"
+            >
+          </div>
+
+          <!-- Calculate Button -->
+          <button 
+            type="submit" 
+            id="calculateBtn"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+          >
+            <span id="calculateText">Calculate Financial Impact</span>
+            <div id="loadingSpinner" class="loading-spinner ml-3 hidden"></div>
+          </button>
+        </form>
+
+        <!-- Disclaimer -->
+        <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p class="text-sm text-yellow-800">
+            <strong>Disclaimer:</strong> This calculator provides AI-estimated projections based on industry averages. 
+            Results may vary based on your specific situation. Consult with professionals for personalized advice.
+          </p>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div class="bg-white rounded-xl card-shadow p-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Financial Impact Analysis</h2>
+        
+        <!-- Results will be populated here -->
+        <div id="resultsContainer" class="hidden">
+          <!-- Chart -->
+          <div class="chart-container">
+            <canvas id="comparisonChart"></canvas>
+          </div>
+
+          <!-- Scenario Comparison -->
+          <div id="scenarioComparison" class="space-y-4 mb-6">
+            <!-- Scenarios will be populated here -->
+          </div>
+
+          <!-- AI Analysis -->
+          <div id="aiAnalysis" class="bg-gray-50 rounded-lg p-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">🤖 AI Analysis & Recommendation</h3>
+            <div id="aiContent" class="text-gray-700"></div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap gap-3 mt-6">
+            <button 
+              id="downloadBtn" 
+              class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              📄 Download Analysis
+            </button>
+            <button 
+              id="saveBtn" 
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              💾 Save to Documents
+            </button>
+            <button 
+              id="shareBtn" 
+              class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              🔗 Share Results
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="text-center py-12">
+          <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl">📊</span>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Ready to Calculate</h3>
+          <p class="text-gray-500">Fill out the form and click "Calculate Financial Impact" to see your analysis.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let comparisonChart = null;
+    let currentResults = null;
+
+    // Form submission handler
+    document.getElementById('financialCalculatorForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(e.target);
+      const data = {
+        estimatedClaimValue: parseFloat(formData.get('estimatedClaimValue')),
+        insurerOffer: parseFloat(formData.get('insurerOffer')),
+        publicAdjusterFee: parseFloat(formData.get('publicAdjusterFee')),
+        attorneyFee: parseFloat(formData.get('attorneyFee')),
+        outOfPocketExpenses: parseFloat(formData.get('outOfPocketExpenses')) || 0
+      };
+
+      await calculateFinancialImpact(data);
+    });
+
+    async function calculateFinancialImpact(data) {
+      const calculateBtn = document.getElementById('calculateBtn');
+      const calculateText = document.getElementById('calculateText');
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      const resultsContainer = document.getElementById('resultsContainer');
+      const emptyState = document.getElementById('emptyState');
+
+      // Show loading state
+      calculateBtn.disabled = true;
+      calculateText.textContent = 'Calculating...';
+      loadingSpinner.classList.remove('hidden');
+
+      try {
+        const response = await fetch('/.netlify/functions/financialCalculator', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Calculation failed');
+        }
+
+        // Store results
+        currentResults = result;
+
+        // Hide empty state and show results
+        emptyState.classList.add('hidden');
+        resultsContainer.classList.remove('hidden');
+
+        // Update UI with results
+        updateResultsDisplay(result);
+        createComparisonChart(result.calculations);
+
+      } catch (error) {
+        console.error('Calculation error:', error);
+        alert('Error calculating financial impact: ' + error.message);
+      } finally {
+        // Reset button state
+        calculateBtn.disabled = false;
+        calculateText.textContent = 'Calculate Financial Impact';
+        loadingSpinner.classList.add('hidden');
+      }
+    }
+
+    function updateResultsDisplay(result) {
+      const { calculations, aiAnalysis } = result;
+      
+      // Update scenario comparison
+      const scenarioComparison = document.getElementById('scenarioComparison');
+      scenarioComparison.innerHTML = '';
+
+      const scenarios = [
+        {
+          name: 'DIY',
+          data: calculations.diy,
+          color: 'bg-gray-100',
+          borderColor: 'border-gray-300'
+        },
+        {
+          name: 'Public Adjuster',
+          data: calculations.withPublicAdjuster,
+          color: 'bg-blue-100',
+          borderColor: 'border-blue-300'
+        },
+        {
+          name: 'Attorney',
+          data: calculations.withAttorney,
+          color: 'bg-purple-100',
+          borderColor: 'border-purple-300'
+        }
+      ];
+
+      // Find the best option
+      const bestOption = scenarios.reduce((best, current) => 
+        current.data.netRecovery > best.data.netRecovery ? current : best
+      );
+
+      scenarios.forEach(scenario => {
+        const isBest = scenario === bestOption;
+        const cardClass = isBest ? 'scenario-card best-option' : 'scenario-card bg-white border border-gray-200 rounded-lg p-4';
+        
+        const scenarioCard = document.createElement('div');
+        scenarioCard.className = cardClass;
+        scenarioCard.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="text-lg font-semibold text-gray-900">${scenario.name}</h4>
+            ${isBest ? '<span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">Best Option</span>' : ''}
+          </div>
+          <p class="text-gray-600 text-sm mb-3">${scenario.data.description}</p>
+          <div class="text-2xl font-bold text-gray-900">
+            $${scenario.data.netRecovery.toLocaleString()}
+          </div>
+          <div class="text-sm text-gray-500">Net Recovery</div>
+          ${scenario.data.feeAmount ? `
+            <div class="mt-2 text-sm text-gray-600">
+              Fee: $${scenario.data.feeAmount.toLocaleString()}
+              ${scenario.data.projectedIncrease ? ` | Projected Increase: $${scenario.data.projectedIncrease.toLocaleString()}` : ''}
+            </div>
+          ` : ''}
+        `;
+        scenarioComparison.appendChild(scenarioCard);
+      });
+
+      // Update AI analysis
+      document.getElementById('aiContent').innerHTML = aiAnalysis.replace(/\n/g, '<br>');
+    }
+
+    function createComparisonChart(calculations) {
+      const ctx = document.getElementById('comparisonChart').getContext('2d');
+      
+      // Destroy existing chart if it exists
+      if (comparisonChart) {
+        comparisonChart.destroy();
+      }
+
+      const scenarios = [
+        { name: 'DIY', value: calculations.diy.netRecovery, color: '#6b7280' },
+        { name: 'Public Adjuster', value: calculations.withPublicAdjuster.netRecovery, color: '#3b82f6' },
+        { name: 'Attorney', value: calculations.withAttorney.netRecovery, color: '#8b5cf6' }
+      ];
+
+      comparisonChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: scenarios.map(s => s.name),
+          datasets: [{
+            label: 'Net Recovery ($)',
+            data: scenarios.map(s => s.value),
+            backgroundColor: scenarios.map(s => s.color),
+            borderColor: scenarios.map(s => s.color),
+            borderWidth: 2,
+            borderRadius: 8,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Financial Impact Comparison',
+              font: {
+                size: 16,
+                weight: 'bold'
+              }
+            },
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return '$' + value.toLocaleString();
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Action button handlers
+    document.getElementById('downloadBtn')?.addEventListener('click', () => {
+      if (currentResults) {
+        downloadAnalysis();
+      }
+    });
+
+    document.getElementById('saveBtn')?.addEventListener('click', () => {
+      if (currentResults) {
+        saveToDocuments();
+      }
+    });
+
+    document.getElementById('shareBtn')?.addEventListener('click', () => {
+      if (currentResults) {
+        shareResults();
+      }
+    });
+
+    function downloadAnalysis() {
+      if (!currentResults) return;
+      
+      const content = generateAnalysisReport(currentResults);
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `financial-analysis-${new Date().toISOString().split('T')[0]}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function saveToDocuments() {
+      // Implementation for saving to documents
+      alert('Save to Documents feature will be implemented');
+    }
+
+    function shareResults() {
+      if (!currentResults) return;
+      
+      const shareText = `Check out my insurance claim financial analysis: ${window.location.href}`;
+      if (navigator.share) {
+        navigator.share({
+          title: 'Financial Impact Analysis',
+          text: shareText,
+          url: window.location.href
+        });
+      } else {
+        navigator.clipboard.writeText(shareText);
+        alert('Results link copied to clipboard!');
+      }
+    }
+
+    function generateAnalysisReport(result) {
+      const { calculations, aiAnalysis } = result;
+      
+      return `
+FINANCIAL IMPACT ANALYSIS REPORT
+Generated: ${new Date().toLocaleString()}
+
+SCENARIO COMPARISON:
+==================
+
+DIY (Accept Insurer Offer):
+- Net Recovery: $${calculations.diy.netRecovery.toLocaleString()}
+- Description: ${calculations.diy.description}
+
+Public Adjuster:
+- Net Recovery: $${calculations.withPublicAdjuster.netRecovery.toLocaleString()}
+- Description: ${calculations.withPublicAdjuster.description}
+- Fee Amount: $${calculations.withPublicAdjuster.feeAmount.toLocaleString()}
+- Projected Increase: $${calculations.withPublicAdjuster.projectedIncrease.toLocaleString()}
+
+Attorney:
+- Net Recovery: $${calculations.withAttorney.netRecovery.toLocaleString()}
+- Description: ${calculations.withAttorney.description}
+- Fee Amount: $${calculations.withAttorney.feeAmount.toLocaleString()}
+- Projected Increase: $${calculations.withAttorney.projectedIncrease.toLocaleString()}
+
+RECOMMENDATION:
+===============
+${calculations.recommendation}
+
+AI ANALYSIS:
+============
+${aiAnalysis}
+
+DISCLAIMER:
+===========
+This analysis is AI-estimated and for informational purposes only. 
+Results may vary based on your specific situation. 
+Consult with professionals for personalized advice.
+      `;
+    }
+  </script>
+</body>
+</html>
