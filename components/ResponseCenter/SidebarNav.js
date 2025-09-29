@@ -13,7 +13,7 @@ class SidebarNav {
       ...options
     };
     
-    this.sections = [
+    this.categories = [
       {
         id: 'dashboard',
         title: 'Dashboard',
@@ -21,51 +21,59 @@ class SidebarNav {
         description: 'Overview and quick access to all tools'
       },
       {
-        id: 'document-library',
-        title: 'Document Library',
-        icon: '📄',
-        description: 'Templates, samples, and policy requests',
-        subsections: [
-          { id: 'templates', title: 'Templates', icon: '📝' },
-          { id: 'samples', title: 'Samples', icon: '📋' },
-          { id: 'policy-requests', title: 'Certified Policy Requests', icon: '📜' }
+        id: 'core-tools',
+        title: 'Core Claim Tools',
+        icon: '🟢',
+        description: 'Essential tools for claim management',
+        color: '#10b981',
+        tools: [
+          { id: 'advanced-tools', title: 'Advanced Tools', icon: '⚡' },
+          { id: 'ai-agent', title: 'AI Response & Analysis Agent', icon: '🤖' },
+          { id: 'claim-analysis', title: 'Claim Analysis Tools', icon: '🔍' },
+          { id: 'document-generator', title: 'Document Generator', icon: '📄' },
+          { id: 'evidence-organizer', title: 'Evidence Organizer', icon: '📸' },
+          { id: 'claim-document-library', title: 'Claim Document Library', icon: '📁' },
+          { id: 'claim-documentation-guides', title: 'Claim Documentation Guides', icon: '📝' }
         ]
       },
       {
-        id: 'situational-advisory',
-        title: 'Situational Advisory',
-        icon: '🎯',
-        description: 'AI-powered guidance for your specific situation'
+        id: 'strategy-guidance',
+        title: 'Strategy & Guidance',
+        icon: '🟠',
+        description: 'Strategic guidance and tactics',
+        color: '#f59e0b',
+        tools: [
+          { id: 'claim-playbook', title: 'Claim Playbook', icon: '📖' },
+          { id: 'claim-timeline', title: 'Claim Timeline & Sequence Guide', icon: '⏰' },
+          { id: 'situational-advisory', title: 'Situational Advisory', icon: '💡' },
+          { id: 'insurance-tactics', title: 'Insurance Company Tactics', icon: '🎯' },
+          { id: 'maximize-claim', title: 'Maximize Your Claim', icon: '📈' },
+          { id: 'negotiation-scripts', title: 'Negotiation Scripts & Escalation', icon: '💬' }
+        ]
       },
       {
-        id: 'insurance-tactics',
-        title: 'Insurance Company Tactics',
-        icon: '⚔️',
-        description: 'Common tactics and how to counter them'
+        id: 'appeals-legal',
+        title: 'Appeals & Legal Rights',
+        icon: '🔵',
+        description: 'Legal appeals and rights information',
+        color: '#3b82f6',
+        tools: [
+          { id: 'appeal-builder', title: 'Appeal Builder', icon: '⚖️' },
+          { id: 'state-rights', title: 'State-Specific Rights & Deadlines', icon: '🏛️' }
+        ]
       },
       {
-        id: 'claim-timeline',
-        title: 'Claim Timeline & Sequence Guide',
-        icon: '⏰',
-        description: 'Step-by-step claim management roadmap'
-      },
-      {
-        id: 'maximize-claim',
-        title: 'How to Maximize Your Claim',
-        icon: '💰',
-        description: 'Strategies to maximize your settlement'
-      },
-      {
-        id: 'how-to-use',
-        title: 'How to Use This Site',
-        icon: '❓',
-        description: 'Tutorials and help documentation'
-      },
-      {
-        id: 'solution-center',
-        title: 'Solution Center',
-        icon: '💬',
-        description: 'Messaging and communication hub'
+        id: 'resources-support',
+        title: 'Resources & Support',
+        icon: '🟣',
+        description: 'Help, resources, and settings',
+        color: '#8b5cf6',
+        tools: [
+          { id: 'how-to-use', title: 'How to Use This Site', icon: '📚' },
+          { id: 'recommended-resources', title: 'Recommended Resources', icon: '🔗' },
+          { id: 'my-claims', title: 'My Claims', icon: '📋' },
+          { id: 'settings', title: 'Settings', icon: '⚙️' }
+        ]
       }
     ];
     
@@ -92,7 +100,7 @@ class SidebarNav {
         </div>
         
         <nav class="sidebar-menu" role="navigation" aria-label="Main navigation">
-          ${this.sections.map(section => this.createSectionHTML(section)).join('')}
+          ${this.categories.map(category => this.createCategoryHTML(category)).join('')}
         </nav>
         
         <div class="sidebar-footer">
@@ -110,34 +118,34 @@ class SidebarNav {
     this.injectStyles();
   }
 
-  createSectionHTML(section) {
-    const hasSubsections = section.subsections && section.subsections.length > 0;
-    const isActive = this.activeSection === section.id;
-    const isExpanded = isActive && hasSubsections;
+  createCategoryHTML(category) {
+    const hasTools = category.tools && category.tools.length > 0;
+    const isActive = this.activeSection === category.id;
+    const isExpanded = isActive && hasTools;
     
     return `
       <div class="sidebar-section ${isActive ? 'active' : ''}">
         <button 
-          class="section-button ${hasSubsections ? 'has-subsections' : ''}" 
-          data-section="${section.id}"
+          class="section-button ${hasTools ? 'has-subsections' : ''}" 
+          data-section="${category.id}"
           aria-expanded="${isExpanded}"
-          aria-controls="subsection-${section.id}"
+          aria-controls="subsection-${category.id}"
         >
-          <span class="section-icon">${section.icon}</span>
-          <span class="section-title">${section.title}</span>
-          ${hasSubsections ? '<span class="section-arrow">▶</span>' : ''}
+          <span class="section-icon" style="color: ${category.color || 'var(--primary)'}">${category.icon}</span>
+          <span class="section-title">${category.title}</span>
+          ${hasTools ? '<span class="section-arrow">▶</span>' : ''}
         </button>
         
-        ${hasSubsections ? `
-          <div class="subsection-list ${isExpanded ? 'expanded' : ''}" id="subsection-${section.id}">
-            ${section.subsections.map(subsection => `
+        ${hasTools ? `
+          <div class="subsection-list ${isExpanded ? 'expanded' : ''}" id="subsection-${category.id}">
+            ${category.tools.map(tool => `
               <button 
                 class="subsection-button" 
-                data-section="${section.id}"
-                data-subsection="${subsection.id}"
+                data-section="${category.id}"
+                data-subsection="${tool.id}"
               >
-                <span class="subsection-icon">${subsection.icon}</span>
-                <span class="subsection-title">${subsection.title}</span>
+                <span class="subsection-icon">${tool.icon}</span>
+                <span class="subsection-title">${tool.title}</span>
               </button>
             `).join('')}
           </div>

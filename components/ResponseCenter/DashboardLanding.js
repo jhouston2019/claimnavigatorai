@@ -11,60 +11,42 @@ class DashboardLanding {
       ...options
     };
     
-    this.cards = [
+    this.categories = [
       {
-        id: 'document-library',
-        title: 'Document Library',
-        icon: '📄',
-        description: 'Access templates and samples instantly',
-        color: 'blue',
-        stats: '50+ Templates',
-        action: 'Browse Library'
+        id: 'core-tools',
+        title: 'Core Claim Tools',
+        icon: '🟢',
+        description: 'Essential tools for claim management',
+        color: '#10b981',
+        stats: '7 Tools',
+        action: 'Explore Tools'
       },
       {
-        id: 'situational-advisory',
-        title: 'Situational Advisory',
-        icon: '🎯',
-        description: 'AI-powered guidance for your specific situation',
-        color: 'green',
-        stats: 'AI-Powered',
-        action: 'Get Guidance'
+        id: 'strategy-guidance',
+        title: 'Strategy & Guidance',
+        icon: '🟠',
+        description: 'Strategic guidance and tactics',
+        color: '#f59e0b',
+        stats: '6 Strategies',
+        action: 'View Strategies'
       },
       {
-        id: 'insurance-tactics',
-        title: 'Insurance Company Tactics',
-        icon: '⚔️',
-        description: 'Common tactics and how to counter them',
-        color: 'red',
-        stats: '25+ Tactics',
-        action: 'Learn More'
+        id: 'appeals-legal',
+        title: 'Appeals & Legal Rights',
+        icon: '🔵',
+        description: 'Legal appeals and rights information',
+        color: '#3b82f6',
+        stats: '2 Legal Tools',
+        action: 'Legal Help'
       },
       {
-        id: 'claim-timeline',
-        title: 'Claim Timeline & Sequence Guide',
-        icon: '⏰',
-        description: 'Step-by-step claim management roadmap',
-        color: 'purple',
-        stats: '9 Phases',
-        action: 'View Timeline'
-      },
-      {
-        id: 'maximize-claim',
-        title: 'How to Maximize Your Claim',
-        icon: '💰',
-        description: 'Strategies to maximize your settlement',
-        color: 'yellow',
-        stats: 'Proven Methods',
-        action: 'Maximize Now'
-      },
-      {
-        id: 'solution-center',
-        title: 'Solution Center',
-        icon: '💬',
-        description: 'Messaging and communication hub',
-        color: 'indigo',
-        stats: '24/7 Support',
-        action: 'Open Center'
+        id: 'resources-support',
+        title: 'Resources & Support',
+        icon: '🟣',
+        description: 'Help, resources, and settings',
+        color: '#8b5cf6',
+        stats: '4 Resources',
+        action: 'Get Support'
       }
     ];
     
@@ -113,7 +95,7 @@ class DashboardLanding {
         </div>
         
         <div class="dashboard-cards">
-          ${this.cards.map(card => this.createCardHTML(card)).join('')}
+          ${this.categories.map(category => this.createCategoryCardHTML(category)).join('')}
         </div>
         
         <div class="dashboard-footer">
@@ -139,22 +121,22 @@ class DashboardLanding {
     `;
   }
 
-  createCardHTML(card) {
+  createCategoryCardHTML(category) {
     return `
-      <div class="dashboard-card ${card.color}" data-card="${card.id}">
+      <div class="dashboard-card" data-card="${category.id}" style="border-left: 4px solid ${category.color}">
         <div class="card-header">
-          <div class="card-icon">${card.icon}</div>
-          <div class="card-stats">${card.stats}</div>
+          <div class="card-icon" style="color: ${category.color}">${category.icon}</div>
+          <div class="card-stats" style="background: ${category.color}20; color: ${category.color}">${category.stats}</div>
         </div>
         
         <div class="card-content">
-          <h3 class="card-title">${card.title}</h3>
-          <p class="card-description">${card.description}</p>
+          <h3 class="card-title">${category.title}</h3>
+          <p class="card-description">${category.description}</p>
         </div>
         
         <div class="card-footer">
-          <button class="card-action" data-card="${card.id}">
-            ${card.action}
+          <button class="card-action" data-card="${category.id}" style="background: ${category.color}">
+            ${category.action}
             <span class="action-arrow">→</span>
           </button>
         </div>
@@ -365,30 +347,6 @@ class DashboardLanding {
           background: var(--primary);
           transform: scaleX(0);
           transition: transform 0.3s ease;
-        }
-
-        .dashboard-card.blue::before {
-          background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-        }
-
-        .dashboard-card.green::before {
-          background: linear-gradient(135deg, #10b981, #059669);
-        }
-
-        .dashboard-card.red::before {
-          background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-
-        .dashboard-card.purple::before {
-          background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-        }
-
-        .dashboard-card.yellow::before {
-          background: linear-gradient(135deg, #f59e0b, #d97706);
-        }
-
-        .dashboard-card.indigo::before {
-          background: linear-gradient(135deg, #6366f1, #4f46e5);
         }
 
         .dashboard-card:hover {

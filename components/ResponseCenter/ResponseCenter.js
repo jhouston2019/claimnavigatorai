@@ -18,43 +18,57 @@ class ResponseCenter {
     this.dashboard = null;
     this.contentArea = null;
     
-    this.sections = {
-      'dashboard': {
-        title: 'Dashboard',
-        component: 'DashboardLanding'
+    this.categories = {
+      'core-tools': {
+        id: 'core-tools',
+        title: 'Core Claim Tools',
+        icon: '🟢',
+        color: '#10b981',
+        tools: [
+          { id: 'advanced-tools', title: 'Advanced Tools', icon: '⚡', description: 'Advanced analysis and processing tools' },
+          { id: 'ai-agent', title: 'AI Response & Analysis Agent', icon: '🤖', description: 'AI-powered claim analysis and responses' },
+          { id: 'claim-analysis', title: 'Claim Analysis Tools', icon: '🔍', description: 'Comprehensive claim analysis and evaluation' },
+          { id: 'document-generator', title: 'Document Generator', icon: '📄', description: 'Generate professional claim documents' },
+          { id: 'evidence-organizer', title: 'Evidence Organizer', icon: '📸', description: 'Organize and manage claim evidence' },
+          { id: 'claim-document-library', title: 'Claim Document Library', icon: '📁', description: 'Access to comprehensive document library' },
+          { id: 'claim-documentation-guides', title: 'Claim Documentation Guides', icon: '📝', description: 'Step-by-step documentation guides' }
+        ]
       },
-      'document-library': {
-        title: 'Document Library',
-        component: 'DocumentLibrary',
-        subsections: {
-          'templates': { title: 'Templates', component: 'DocumentTemplates' },
-          'samples': { title: 'Samples', component: 'DocumentSamples' },
-          'policy-requests': { title: 'Policy Requests', component: 'PolicyRequests' }
-        }
+      'strategy-guidance': {
+        id: 'strategy-guidance',
+        title: 'Strategy & Guidance',
+        icon: '🟠',
+        color: '#f59e0b',
+        tools: [
+          { id: 'claim-playbook', title: 'Claim Playbook', icon: '📖', description: 'Strategic playbook for claim success' },
+          { id: 'claim-timeline', title: 'Claim Timeline & Sequence Guide', icon: '⏰', description: 'Timeline and sequence guidance' },
+          { id: 'situational-advisory', title: 'Situational Advisory', icon: '💡', description: 'Situational advice and recommendations' },
+          { id: 'insurance-tactics', title: 'Insurance Company Tactics', icon: '🎯', description: 'Understanding insurance company strategies' },
+          { id: 'maximize-claim', title: 'Maximize Your Claim', icon: '📈', description: 'Strategies to maximize claim value' },
+          { id: 'negotiation-scripts', title: 'Negotiation Scripts & Escalation', icon: '💬', description: 'Negotiation tools and escalation procedures' }
+        ]
       },
-      'situational-advisory': {
-        title: 'Situational Advisory',
-        component: 'SituationalAdvisory'
+      'appeals-legal': {
+        id: 'appeals-legal',
+        title: 'Appeals & Legal Rights',
+        icon: '🔵',
+        color: '#3b82f6',
+        tools: [
+          { id: 'appeal-builder', title: 'Appeal Builder', icon: '⚖️', description: 'Build and manage claim appeals' },
+          { id: 'state-rights', title: 'State-Specific Rights & Deadlines', icon: '🏛️', description: 'State-specific legal rights and deadlines' }
+        ]
       },
-      'insurance-tactics': {
-        title: 'Insurance Company Tactics',
-        component: 'InsuranceTactics'
-      },
-      'claim-timeline': {
-        title: 'Claim Timeline & Sequence Guide',
-        component: 'ClaimTimeline'
-      },
-      'maximize-claim': {
-        title: 'How to Maximize Your Claim',
-        component: 'MaximizeClaim'
-      },
-      'how-to-use': {
-        title: 'How to Use This Site',
-        component: 'HowToUse'
-      },
-      'solution-center': {
-        title: 'Solution Center',
-        component: 'SolutionCenter'
+      'resources-support': {
+        id: 'resources-support',
+        title: 'Resources & Support',
+        icon: '🟣',
+        color: '#8b5cf6',
+        tools: [
+          { id: 'how-to-use', title: 'How to Use This Site', icon: '📚', description: 'Guide to using the Response Center' },
+          { id: 'recommended-resources', title: 'Recommended Resources', icon: '🔗', description: 'Curated resources and links' },
+          { id: 'my-claims', title: 'My Claims', icon: '📋', description: 'Personal claims tracking and management' },
+          { id: 'settings', title: 'Settings', icon: '⚙️', description: 'Application settings and preferences' }
+        ]
       }
     };
     
@@ -160,9 +174,19 @@ class ResponseCenter {
     // Update page title
     const pageTitle = this.container.querySelector('.page-title');
     if (pageTitle) {
-      const section = this.sections[sectionId];
-      if (section) {
-        pageTitle.textContent = section.title;
+      if (sectionId === 'dashboard') {
+        pageTitle.textContent = 'Response Center Dashboard';
+      } else if (this.categories[sectionId]) {
+        pageTitle.textContent = this.categories[sectionId].title;
+      } else {
+        // Find the tool in categories
+        for (const category of Object.values(this.categories)) {
+          const tool = category.tools.find(t => t.id === sectionId);
+          if (tool) {
+            pageTitle.textContent = tool.title;
+            break;
+          }
+        }
       }
     }
 
@@ -181,29 +205,26 @@ class ResponseCenter {
   }
 
   renderSectionContent(sectionId, subsectionId = null) {
-    const section = this.sections[sectionId];
-    if (!section) {
-      this.renderError('Section not found');
-      return;
-    }
-
     // Handle dashboard specially
     if (sectionId === 'dashboard') {
       this.renderDashboard();
       return;
     }
 
-    // Handle subsections
-    if (subsectionId && section.subsections) {
-      const subsection = section.subsections[subsectionId];
-      if (subsection) {
-        this.renderSubsectionContent(section, subsection);
-        return;
-      }
+    // Handle category views
+    if (this.categories[sectionId]) {
+      this.renderCategoryView(this.categories[sectionId]);
+      return;
     }
 
-    // Render main section content
-    this.renderMainSectionContent(section);
+    // Handle individual tool views
+    const tool = this.findToolById(sectionId);
+    if (tool) {
+      this.renderToolView(tool);
+      return;
+    }
+
+    this.renderError('Section not found');
   }
 
   renderDashboard() {
@@ -224,10 +245,54 @@ class ResponseCenter {
     console.log('✅ Dashboard rendered');
   }
 
-  renderMainSectionContent(section) {
-    console.log('📄 Rendering main section content for:', section.title);
+  findToolById(toolId) {
+    for (const category of Object.values(this.categories)) {
+      const tool = category.tools.find(t => t.id === toolId);
+      if (tool) {
+        return { ...tool, category: category.id };
+      }
+    }
+    return null;
+  }
+
+  renderCategoryView(category) {
+    console.log('📁 Rendering category view:', category.title);
     
-    // Load the actual Response Center content
+    this.contentArea.innerHTML = `
+      <div class="category-view">
+        <div class="category-header">
+          <div class="category-icon" style="color: ${category.color}">${category.icon}</div>
+          <div class="category-info">
+            <h2 class="category-title">${category.title}</h2>
+            <p class="category-description">Select a tool from the ${category.title.toLowerCase()} category</p>
+          </div>
+        </div>
+        <div class="tools-grid">
+          ${category.tools.map(tool => `
+            <div class="tool-card" data-tool-id="${tool.id}">
+              <div class="tool-icon">${tool.icon}</div>
+              <h3 class="tool-title">${tool.title}</h3>
+              <p class="tool-description">${tool.description}</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    // Bind tool card clicks
+    this.contentArea.addEventListener('click', (e) => {
+      const toolCard = e.target.closest('.tool-card');
+      if (toolCard) {
+        const toolId = toolCard.dataset.toolId;
+        this.loadSection(toolId);
+      }
+    });
+  }
+
+  renderToolView(tool) {
+    console.log('🔧 Rendering tool view:', tool.title);
+    
+    // Load the actual Response Center content for the specific tool
     if (!this.responseContent) {
       this.responseContent = new ResponseCenterContent(this.contentArea, {
         onContentChange: (tabId) => {
@@ -235,9 +300,13 @@ class ResponseCenter {
         }
       });
     } else {
-      // Re-render the content
+      // Re-render the content and switch to the specific tool
       this.responseContent.container = this.contentArea;
       this.responseContent.createContent();
+      // Switch to the specific tool tab
+      if (this.responseContent.switchTab) {
+        this.responseContent.switchTab(null, tool.id);
+      }
     }
   }
 
@@ -536,6 +605,87 @@ class ResponseCenter {
           padding: 2rem;
           border: 1px solid var(--border);
           min-height: 400px;
+        }
+
+        /* Category and Tool Views */
+        .category-view {
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        .category-header {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin-bottom: 2rem;
+          padding: 1.5rem;
+          background: white;
+          border-radius: 12px;
+          border: 1px solid var(--border);
+        }
+
+        .category-icon {
+          font-size: 3rem;
+          line-height: 1;
+        }
+
+        .category-info {
+          flex: 1;
+        }
+
+        .category-title {
+          font-size: 2rem;
+          font-weight: 700;
+          color: var(--primary);
+          margin: 0 0 0.5rem 0;
+        }
+
+        .category-description {
+          color: var(--text-secondary);
+          margin: 0;
+          font-size: 1.1rem;
+        }
+
+        .tools-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 1.5rem;
+          margin-top: 1rem;
+        }
+
+        .tool-card {
+          background: white;
+          border: 2px solid var(--border);
+          border-radius: 12px;
+          padding: 1.5rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          text-align: center;
+        }
+
+        .tool-card:hover {
+          border-color: var(--primary);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .tool-icon {
+          font-size: 2.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .tool-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: var(--primary);
+          margin: 0 0 0.5rem 0;
+        }
+
+        .tool-description {
+          color: var(--text-secondary);
+          margin: 0;
+          font-size: 0.9rem;
+          line-height: 1.4;
         }
 
         .loading-placeholder {
