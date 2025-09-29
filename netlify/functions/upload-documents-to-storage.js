@@ -97,7 +97,7 @@ exports.handler = async (event, context) => {
         },
         nextSteps: [
           '1. Run populate-documents function to add metadata',
-          '2. Test document access in Response Center'
+          '2. Test document access in Claim Resource & AI Response Center'
         ]
       })
     };

@@ -1,5 +1,5 @@
 /**
- * Response Center Component
+ * Claim Resource & AI Response Center Component
  * Main component with hybrid navigation system
  */
 

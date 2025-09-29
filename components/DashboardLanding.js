@@ -27,7 +27,7 @@ class DashboardLanding {
     const header = document.createElement('div');
     header.className = 'dashboard-header';
     header.innerHTML = `
-      <h1 class="dashboard-title">Response Center</h1>
+      <h1 class="dashboard-title">Claim Resource & AI Response Center</h1>
       <p class="dashboard-subtitle">Your comprehensive claim management hub</p>
     `;
     

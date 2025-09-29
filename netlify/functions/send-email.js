@@ -129,7 +129,7 @@ function getPurchaseConfirmationEmail(customerEmail, sessionId, amount) {
       </ul>
       
       <h3>Get Started Now:</h3>
-      <p>Access your AI Response Center to start generating professional responses to insurer correspondence:</p>
+      <p>Access your Claim Resource & AI Response Center to start generating professional responses to insurer correspondence:</p>
       
       <a href="${process.env.SITE_URL || process.env.URL || 'https://claimnavigatorai.com'}/success.html?session_id=${sessionId}" class="button">
         Access Your Account

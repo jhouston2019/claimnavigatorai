@@ -625,7 +625,7 @@ class AppealBuilder {
         
         <div class="result-actions">
           <button onclick="location.reload()" class="btn-primary">Create Another Appeal</button>
-          <a href="/app/response-center.html" class="btn-secondary">Back to Response Center</a>
+          <a href="/app/response-center.html" class="btn-secondary">Back to Claim Resource & AI Response Center</a>
         </div>
       </div>
     `;

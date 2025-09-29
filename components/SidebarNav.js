@@ -38,7 +38,7 @@ class SidebarNav {
         <span class="hamburger"></span>
         <span class="hamburger"></span>
       </button>
-      <span class="sidebar-title">Response Center</span>
+      <span class="sidebar-title">Claim Resource & AI Response Center</span>
     `;
     
     // Navigation content

@@ -136,9 +136,9 @@ exports.handler = async (event, context) => {
         nextSteps: documentCount === 0 ? [
           '1. Upload PDF files to Supabase Storage documents bucket',
           '2. Run populate-documents function to add metadata',
-          '3. Test document access in Response Center'
+          '3. Test document access in Claim Resource & AI Response Center'
         ] : [
-          '1. Test document access in Response Center',
+          '1. Test document access in Claim Resource & AI Response Center',
           '2. Verify all documents are accessible'
         ]
       })
