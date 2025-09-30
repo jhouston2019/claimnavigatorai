@@ -146,6 +146,23 @@ async function handleCheckoutSessionCompleted(session) {
 
     console.log('Claim created successfully:', claim.id);
 
+    // Initialize timeline for the new claim
+    try {
+      const { error: timelineError } = await supabase.rpc('initialize_claim_timeline', {
+        claim_uuid: claim.id
+      });
+      
+      if (timelineError) {
+        console.error('Error initializing timeline:', timelineError);
+        // Don't fail the webhook for timeline initialization errors
+      } else {
+        console.log('Timeline initialized for claim:', claim.id);
+      }
+    } catch (timelineError) {
+      console.error('Error calling timeline initialization function:', timelineError);
+      // Don't fail the webhook for timeline initialization errors
+    }
+
     // Log the successful claim creation
     const { error: logError } = await supabase
       .from('claim_access_logs')

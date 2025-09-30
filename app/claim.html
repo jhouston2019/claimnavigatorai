@@ -408,6 +408,14 @@
             { text: 'Analyze Claim', action: 'analyze' },
             { text: 'View Report', action: 'report' }
           ]
+        },
+        {
+          title: 'Timeline & Sequence',
+          description: '12-month roadmap with phases, milestones, and deadlines',
+          actions: [
+            { text: 'View Timeline', action: 'timeline' },
+            { text: 'Checklist Mode', action: 'checklist' }
+          ]
         }
       ];
 
@@ -493,6 +501,12 @@
           break;
         case 'report':
           window.location.href = `/app/response-center.html?claim_id=${claimId}&tab=report`;
+          break;
+        case 'timeline':
+          window.location.href = `/app/timeline.html?id=${claimId}`;
+          break;
+        case 'checklist':
+          window.location.href = `/app/timeline.html?id=${claimId}&view=checklist`;
           break;
       }
     }
