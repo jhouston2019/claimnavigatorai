@@ -359,6 +359,12 @@
       </div>
       
       <div class="sidebar-section">
+        <button class="sidebar-button" data-section="ai-policy-analyzer">
+          AI Policy Analyzer
+        </button>
+      </div>
+      
+      <div class="sidebar-section">
         <button class="sidebar-button" data-section="claim-analysis">
           Claim Analysis Tools
         </button>
@@ -420,7 +426,7 @@
       
       <div class="sidebar-section">
         <button class="sidebar-button" data-section="my-claims">
-          My Claims
+          My Claim - Tracking Journal
         </button>
       </div>
       
@@ -484,6 +490,7 @@
           <h2 class="category-title">Core Claim Tools</h2>
           <div class="tools-list">
             <div class="tool-item" data-tool="ai-agent">AI Response & Analysis Agent</div>
+            <div class="tool-item" data-tool="ai-policy-analyzer">AI Policy Analyzer</div>
             <div class="tool-item" data-tool="claim-analysis">Claim Analysis Tools</div>
             <div class="tool-item" data-tool="situational-advisory">Situational Advisory</div>
             <div class="tool-item" data-tool="document-generator">Document Generator</div>
@@ -491,7 +498,7 @@
             <div class="tool-item" data-tool="claim-document-library">Claim Document Library</div>
             <div class="tool-item" data-tool="claim-documentation-guides">Claim Documentation Guides</div>
             <div class="tool-item" data-tool="negotiation-scripts">Negotiation Scripts & Escalation</div>
-            <div class="tool-item" data-tool="my-claims">My Claims</div>
+            <div class="tool-item" data-tool="my-claims">My Claim - Tracking Journal</div>
             <div class="tool-item" data-tool="advanced-tools">Advanced Tools</div>
           </div>
         </div>
@@ -559,7 +566,7 @@
       }
       
       // AI Response & Analysis Agent Functions
-      function generateResponse() {
+      async function generateResponse() {
         const input = document.getElementById('input-text').value;
         const output = document.getElementById('ai-output');
         const confidence = document.getElementById('confidence-meter');
@@ -570,21 +577,62 @@
         }
         
         output.style.display = 'block';
-        output.innerHTML = '<div class="spinner"></div> Generating response...';
+        output.innerHTML = '<div class="spinner"></div> Generating AI response...';
         
-        // Simulate AI processing
-        setTimeout(() => {
-          const response = `Based on your correspondence, here's a professional response:\n\nDear Insurance Representative,\n\nI am writing in response to your letter dated [DATE]. After careful review of your correspondence, I would like to address the following points:\n\n1. [Point 1 from your letter]\n2. [Point 2 from your letter]\n3. [Point 3 from your letter]\n\nI believe there may be some misunderstanding regarding [SPECIFIC ISSUE]. According to my policy documentation, [RELEVANT POLICY LANGUAGE].\n\nI would appreciate the opportunity to discuss this matter further and provide additional documentation as needed.\n\nThank you for your time and consideration.\n\nSincerely,\n[YOUR NAME]`;
+        try {
+          // Call the real AI generation function
+          const response = await fetch('/.netlify/functions/generate-response', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              input: input,
+              type: 'claim_response'
+            })
+          });
           
-          output.innerHTML = response;
-          confidence.innerHTML = 'Confidence Level: 85% - High quality response generated';
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
           
-          // Add to session history
-          addToSessionHistory(input, response);
-        }, 2000);
+          const data = await response.json();
+          
+          if (data.success) {
+            output.innerHTML = data.response;
+            confidence.innerHTML = `Confidence Level: ${data.confidence || '85%'} - AI generated response`;
+            
+            // Add to session history
+            addToSessionHistory(input, data.response);
+          } else {
+            throw new Error(data.error || 'Failed to generate response');
+          }
+        } catch (error) {
+          console.error('Error generating AI response:', error);
+          output.innerHTML = `
+            <div style="color: #dc2626; padding: 1rem; background: #fee2e2; border-radius: 0.5rem;">
+              <strong>Error:</strong> ${error.message}<br>
+              <small>Falling back to template response...</small>
+            </div>
+            <div style="margin-top: 1rem;">
+              Based on your correspondence, here's a professional response template:<br><br>
+              Dear Insurance Representative,<br><br>
+              I am writing in response to your letter dated [DATE]. After careful review of your correspondence, I would like to address the following points:<br><br>
+              1. [Point 1 from your letter]<br>
+              2. [Point 2 from your letter]<br>
+              3. [Point 3 from your letter]<br><br>
+              I believe there may be some misunderstanding regarding [SPECIFIC ISSUE]. According to my policy documentation, [RELEVANT POLICY LANGUAGE].<br><br>
+              I would appreciate the opportunity to discuss this matter further and provide additional documentation as needed.<br><br>
+              Thank you for your time and consideration.<br><br>
+              Sincerely,<br>
+              [YOUR NAME]
+            </div>
+          `;
+          confidence.innerHTML = 'Confidence Level: 70% - Template response (AI service unavailable)';
+        }
       }
       
-      function exportDoc(format) {
+      async function exportDoc(format) {
         const output = document.getElementById('ai-output');
         if (!output.innerHTML || output.innerHTML.includes('spinner')) {
           alert('Please generate a response first.');
@@ -592,23 +640,97 @@
         }
         
         const content = output.innerHTML;
-        const blob = new Blob([content], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `claim_response.${format}`;
-        a.click();
-        URL.revokeObjectURL(url);
+        
+        try {
+          // Use the real document generation function
+          const response = await fetch('/.netlify/functions/generate-document', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              content: content,
+              format: format,
+              type: 'claim_response',
+              filename: `claim_response_${new Date().toISOString().split('T')[0]}`
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          if (data.success && data.downloadUrl) {
+            // Download the generated document
+            const a = document.createElement('a');
+            a.href = data.downloadUrl;
+            a.download = data.filename || `claim_response.${format}`;
+            a.click();
+          } else {
+            throw new Error(data.error || 'Failed to generate document');
+          }
+        } catch (error) {
+          console.error('Error generating document:', error);
+          // Fallback to simple text download
+          const blob = new Blob([content], { type: 'text/plain' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `claim_response.${format}`;
+          a.click();
+          URL.revokeObjectURL(url);
+          alert('Document generated locally (AI service unavailable)');
+        }
       }
       
-      function saveDraft() {
+      async function saveDraft() {
         const output = document.getElementById('ai-output');
         if (!output.innerHTML || output.innerHTML.includes('spinner')) {
           alert('Please generate a response first.');
           return;
         }
         
-        alert('Draft saved to My Documents!');
+        const content = output.innerHTML;
+        
+        try {
+          // Save to user's documents using the save-draft function
+          const response = await fetch('/.netlify/functions/save-draft', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              content: content,
+              type: 'claim_response',
+              title: `AI Response - ${new Date().toLocaleDateString()}`,
+              metadata: {
+                generated: new Date().toISOString(),
+                source: 'ai_response_agent'
+              }
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            alert('Draft saved to My Documents successfully!');
+            // Optionally refresh the documents list if it's visible
+            if (typeof loadDocuments === 'function') {
+              loadDocuments();
+            }
+          } else {
+            throw new Error(data.error || 'Failed to save draft');
+          }
+        } catch (error) {
+          console.error('Error saving draft:', error);
+          alert('Failed to save draft. Please try again or copy the content manually.');
+        }
       }
       
       function addToSessionHistory(input, response) {
@@ -629,27 +751,68 @@
         loadDocuments(lang);
       }
       
-      function loadDocuments(lang = 'en') {
+      async function loadDocuments(lang = 'en') {
         const container = document.getElementById('documents-container');
-        const documents = lang === 'en' ? [
-          { name: 'Claim Denial Response Template', type: 'PDF', date: '2024-01-15' },
-          { name: 'Policy Review Checklist', type: 'DOCX', date: '2024-01-14' },
-          { name: 'Damage Assessment Form', type: 'PDF', date: '2024-01-13' }
-        ] : [
-          { name: 'Plantilla de Respuesta a Denegación', type: 'PDF', date: '2024-01-15' },
-          { name: 'Lista de Verificación de Póliza', type: 'DOCX', date: '2024-01-14' },
-          { name: 'Formulario de Evaluación de Daños', type: 'PDF', date: '2024-01-13' }
-        ];
+        container.innerHTML = '<div class="spinner"></div> Loading documents...';
         
-        container.innerHTML = documents.map(doc => `
-          <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid var(--border); border-radius: 6px; margin: 0.5rem 0;">
-            <div>
-              <strong>${doc.name}</strong><br>
-              <small style="color: var(--text-secondary);">${doc.type} • ${doc.date}</small>
+        try {
+          // Load real documents from the backend
+          const response = await fetch('/.netlify/functions/list-documents', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              language: lang,
+              type: 'claim_documents'
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          if (data.success && data.documents) {
+            container.innerHTML = data.documents.map(doc => `
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid var(--border); border-radius: 6px; margin: 0.5rem 0;">
+                <div>
+                  <strong>${doc.name}</strong><br>
+                  <small style="color: var(--text-secondary);">${doc.type} • ${doc.date}</small>
+                </div>
+                <div>
+                  <button class="btn-primary" onclick="downloadDocument('${doc.id}', '${doc.name}')">Download</button>
+                  ${doc.hasTemplate ? '<button class="btn-secondary" onclick="downloadTemplate(\'' + doc.id + '\')">Template</button>' : ''}
+                </div>
+              </div>
+            `).join('');
+          } else {
+            throw new Error(data.error || 'Failed to load documents');
+          }
+        } catch (error) {
+          console.error('Error loading documents:', error);
+          // Fallback to mock data
+          const documents = lang === 'en' ? [
+            { name: 'Claim Denial Response Template', type: 'PDF', date: '2024-01-15' },
+            { name: 'Policy Review Checklist', type: 'DOCX', date: '2024-01-14' },
+            { name: 'Damage Assessment Form', type: 'PDF', date: '2024-01-13' }
+          ] : [
+            { name: 'Plantilla de Respuesta a Denegación', type: 'PDF', date: '2024-01-15' },
+            { name: 'Lista de Verificación de Póliza', type: 'DOCX', date: '2024-01-14' },
+            { name: 'Formulario de Evaluación de Daños', type: 'PDF', date: '2024-01-13' }
+          ];
+          
+          container.innerHTML = documents.map(doc => `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid var(--border); border-radius: 6px; margin: 0.5rem 0;">
+              <div>
+                <strong>${doc.name}</strong><br>
+                <small style="color: var(--text-secondary);">${doc.type} • ${doc.date}</small>
+              </div>
+              <button class="btn-primary" onclick="downloadDocument('${doc.name}')">Download</button>
             </div>
-            <button class="btn-primary" onclick="downloadDocument('${doc.name}')">Download</button>
-          </div>
-        `).join('');
+          `).join('');
+        }
       }
       
       function filterDocuments() {
@@ -669,12 +832,78 @@
         }
       }
       
-      function downloadDocument(name) {
-        alert(`Downloading ${name}...`);
+      async function downloadDocument(id, name) {
+        try {
+          // Use the real document download function
+          const response = await fetch('/.netlify/functions/download', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              documentId: id,
+              type: 'claim_document'
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          if (data.success && data.downloadUrl) {
+            // Download the document
+            const a = document.createElement('a');
+            a.href = data.downloadUrl;
+            a.download = name || data.filename;
+            a.click();
+          } else {
+            throw new Error(data.error || 'Failed to download document');
+          }
+        } catch (error) {
+          console.error('Error downloading document:', error);
+          alert(`Failed to download ${name}. Please try again.`);
+        }
+      }
+      
+      async function downloadTemplate(id) {
+        try {
+          // Use the template download function
+          const response = await fetch('/.netlify/functions/get-template', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              templateId: id,
+              type: 'claim_template'
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          if (data.success && data.downloadUrl) {
+            // Download the template
+            const a = document.createElement('a');
+            a.href = data.downloadUrl;
+            a.download = data.filename || `template_${id}`;
+            a.click();
+          } else {
+            throw new Error(data.error || 'Failed to download template');
+          }
+        } catch (error) {
+          console.error('Error downloading template:', error);
+          alert('Failed to download template. Please try again.');
+        }
       }
       
       // Claim Analysis Functions
-      function analyzePolicy() {
+      async function analyzePolicy() {
         const input = document.getElementById('policy-input').value;
         const output = document.getElementById('policy-analysis-output');
         
@@ -684,18 +913,61 @@
         }
         
         output.style.display = 'block';
-        output.innerHTML = 'Analyzing policy...';
+        output.innerHTML = '<div class="spinner"></div> Analyzing policy...';
         
-        setTimeout(() => {
-          output.innerHTML = `Policy Analysis Results:\n\n✅ Coverage Type: Property Insurance\n✅ Deductible: $1,000\n✅ Coverage Limit: $500,000\n⚠️  Potential Gap: Flood damage not covered\n⚠️  Potential Gap: Earthquake damage not covered\n\nRecommendations:\n1. Consider additional flood insurance\n2. Review earthquake coverage options\n3. Document all pre-existing conditions\n4. Keep detailed records of improvements`;
-        }, 1500);
+        try {
+          // Use the real policy analysis function
+          const response = await fetch('/.netlify/functions/policyAnalyzer', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              policyText: input,
+              analysisType: 'coverage_review'
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            output.innerHTML = data.analysis;
+          } else {
+            throw new Error(data.error || 'Failed to analyze policy');
+          }
+        } catch (error) {
+          console.error('Error analyzing policy:', error);
+          output.innerHTML = `
+            <div style="color: #dc2626; padding: 1rem; background: #fee2e2; border-radius: 0.5rem; margin-bottom: 1rem;">
+              <strong>Error:</strong> ${error.message}<br>
+              <small>Falling back to template analysis...</small>
+            </div>
+            <div>
+              Policy Analysis Results:<br><br>
+              ✅ Coverage Type: Property Insurance<br>
+              ✅ Deductible: $1,000<br>
+              ✅ Coverage Limit: $500,000<br>
+              ⚠️  Potential Gap: Flood damage not covered<br>
+              ⚠️  Potential Gap: Earthquake damage not covered<br><br>
+              Recommendations:<br>
+              1. Consider additional flood insurance<br>
+              2. Review earthquake coverage options<br>
+              3. Document all pre-existing conditions<br>
+              4. Keep detailed records of improvements
+            </div>
+          `;
+        }
       }
       
       function downloadPolicyChecklist() {
         alert('Policy Review Checklist downloaded!');
       }
       
-      function assessDamage() {
+      async function assessDamage() {
         const input = document.getElementById('damage-input').value;
         const output = document.getElementById('damage-assessment-output');
         
@@ -705,11 +977,57 @@
         }
         
         output.style.display = 'block';
-        output.innerHTML = 'Assessing damage...';
+        output.innerHTML = '<div class="spinner"></div> Assessing damage...';
         
-        setTimeout(() => {
-          output.innerHTML = `Damage Assessment Report:\n\nProperty Type: Residential\nDamage Category: Water Damage\nEstimated Repair Cost: $15,000 - $25,000\nUrgency Level: High\n\nRecommended Actions:\n1. Contact water damage restoration company\n2. Document all affected areas\n3. Keep receipts for emergency repairs\n4. Schedule professional inspection\n\nNext Steps:\n- File claim within 24 hours\n- Gather supporting documentation\n- Prepare for adjuster visit`;
-        }, 1500);
+        try {
+          // Use the real damage assessment function
+          const response = await fetch('/.netlify/functions/analyze-claim', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              damageDescription: input,
+              analysisType: 'damage_assessment'
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            output.innerHTML = data.assessment;
+          } else {
+            throw new Error(data.error || 'Failed to assess damage');
+          }
+        } catch (error) {
+          console.error('Error assessing damage:', error);
+          output.innerHTML = `
+            <div style="color: #dc2626; padding: 1rem; background: #fee2e2; border-radius: 0.5rem; margin-bottom: 1rem;">
+              <strong>Error:</strong> ${error.message}<br>
+              <small>Falling back to template assessment...</small>
+            </div>
+            <div>
+              Damage Assessment Report:<br><br>
+              Property Type: Residential<br>
+              Damage Category: Water Damage<br>
+              Estimated Repair Cost: $15,000 - $25,000<br>
+              Urgency Level: High<br><br>
+              Recommended Actions:<br>
+              1. Contact water damage restoration company<br>
+              2. Document all affected areas<br>
+              3. Keep receipts for emergency repairs<br>
+              4. Schedule professional inspection<br><br>
+              Next Steps:<br>
+              - File claim within 24 hours<br>
+              - Gather supporting documentation<br>
+              - Prepare for adjuster visit
+            </div>
+          `;
+        }
       }
       
       function generateDamageReport() {
@@ -742,10 +1060,11 @@
         handleFiles(files);
       }
       
-      function handleFiles(files) {
+      async function handleFiles(files) {
         const evidenceList = document.getElementById('evidence-list');
         
-        Array.from(files).forEach(file => {
+        for (const file of files) {
+          // Show uploading status
           const item = document.createElement('div');
           item.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid var(--border); border-radius: 6px; margin: 0.5rem 0; background: white;';
           item.innerHTML = `
@@ -754,13 +1073,71 @@
               <small style="color: var(--text-secondary);">${file.type} • ${(file.size / 1024).toFixed(1)} KB</small>
             </div>
             <div>
-              <span style="background: var(--primary); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Categorized</span>
+              <span style="background: #f59e0b; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Uploading...</span>
             </div>
           `;
           evidenceList.appendChild(item);
-        });
+          
+          try {
+            // Upload file to evidence system
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', 'evidence');
+            formData.append('category', 'claim_evidence');
+            
+            const response = await fetch('/.netlify/functions/upload-documents-to-supabase', {
+              method: 'POST',
+              body: formData
+            });
+            
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+              // Update status to categorized
+              item.innerHTML = `
+                <div>
+                  <strong>${file.name}</strong><br>
+                  <small style="color: var(--text-secondary);">${file.type} • ${(file.size / 1024).toFixed(1)} KB</small>
+                </div>
+                <div>
+                  <span style="background: var(--primary); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Categorized</span>
+                </div>
+              `;
+            } else {
+              throw new Error(data.error || 'Upload failed');
+            }
+          } catch (error) {
+            console.error('Error uploading file:', error);
+            // Update status to error
+            item.innerHTML = `
+              <div>
+                <strong>${file.name}</strong><br>
+                <small style="color: var(--text-secondary);">${file.type} • ${(file.size / 1024).toFixed(1)} KB</small>
+              </div>
+              <div>
+                <span style="background: #dc2626; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Error</span>
+              </div>
+            `;
+          }
+        }
         
-        alert(`${files.length} file(s) uploaded and categorized!`);
+        alert(`${files.length} file(s) processed!`);
+      }
+      
+      // Helper function to get current user ID
+      function getCurrentUserId() {
+        // Try to get from localStorage or session
+        const userId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
+        if (userId) return userId;
+        
+        // Generate a temporary user ID for demo purposes
+        const tempId = 'temp_' + Date.now();
+        localStorage.setItem('userId', tempId);
+        return tempId;
       }
       
       // Claim Playbook Functions
@@ -817,6 +1194,7 @@
         const toolNames = {
           'advanced-tools': 'Advanced Tools',
           'ai-agent': 'AI Response & Analysis Agent',
+          'ai-policy-analyzer': 'AI Policy Analyzer',
           'claim-analysis': 'Claim Analysis Tools',
           'document-generator': 'Document Generator',
           'evidence-organizer': 'Evidence Organizer',
@@ -832,7 +1210,7 @@
           'state-rights': 'State-Specific Rights & Deadlines',
           'how-to-use': 'How to Use This Site',
           'recommended-resources': 'Recommended Resources',
-          'my-claims': 'My Claims',
+          'my-claims': 'My Claim - Tracking Journal',
           'settings': 'Settings'
         };
         
@@ -860,6 +1238,70 @@
               
               <h3 style="margin-top: 2rem;">Session History</h3>
               <div id="session-history"></div>
+            </div>
+          `,
+          'ai-policy-analyzer': `
+            <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+              <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📋 AI Policy Analyzer</h2>
+              <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Upload your insurance policy documents for AI-powered analysis of coverages, important dates, and key information</p>
+              
+              <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 5px solid var(--primary);">
+                <h3 style="margin: 0 0 1rem 0; color: var(--primary);">What This Tool Does</h3>
+                <ul style="margin: 0; padding-left: 1.5rem;">
+                  <li>Analyzes your policy documents to identify all coverages and limits</li>
+                  <li>Extracts important dates (policy period, renewal dates, claim deadlines)</li>
+                  <li>Identifies exclusions and limitations that may affect your claim</li>
+                  <li>Provides a comprehensive summary of your policy benefits</li>
+                </ul>
+              </div>
+              
+              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1.5rem;">
+                <div style="background: var(--bg-light); padding: 1.5rem; border: 1px solid var(--border); border-radius: 12px;">
+                  <h3 style="color: var(--primary); margin-bottom: 1rem;">📄 Policy Upload</h3>
+                  <div style="border: 2px dashed var(--border); border-radius: 8px; padding: 2rem; text-align: center; background: white; margin-bottom: 1rem;">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">📁</div>
+                    <p style="margin: 0 0 1rem 0; font-weight: 600;">Upload Your Policy Documents</p>
+                    <p style="margin: 0 0 1rem 0; color: var(--text-secondary); font-size: 0.9rem;">Supports: PDF, DOC, DOCX files</p>
+                    <input type="file" id="policy-upload" multiple accept=".pdf,.doc,.docx" style="display: none;" onchange="handlePolicyUpload(event)">
+                    <button class="btn-primary" onclick="document.getElementById('policy-upload').click()">Choose Files</button>
+                  </div>
+                  
+                  <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Or paste policy text:</label>
+                    <textarea id="policy-text-input" placeholder="Paste your policy information here..." style="width: 100%; min-height: 120px; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: inherit;"></textarea>
+                  </div>
+                  
+                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button class="btn-primary" onclick="analyzePolicyWithAI()">Analyze Policy</button>
+                    <button class="btn-secondary" onclick="downloadPolicySummary()">Download Summary</button>
+                    <button class="btn-secondary" onclick="savePolicyAnalysis()">Save Analysis</button>
+                  </div>
+                </div>
+                
+                <div style="background: var(--bg-light); padding: 1.5rem; border: 1px solid var(--border); border-radius: 12px;">
+                  <h3 style="color: var(--primary); margin-bottom: 1rem;">📊 Analysis Results</h3>
+                  <div id="policy-analysis-results" style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; min-height: 200px; max-height: 400px; overflow-y: auto;">
+                    <p style="color: var(--text-secondary); text-align: center; margin: 2rem 0;">Upload your policy documents to begin analysis</p>
+                  </div>
+                  
+                  <div style="margin-top: 1rem;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: var(--primary);">Key Information Extracted:</h4>
+                    <div id="policy-key-info" style="background: white; border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; font-size: 0.9rem;">
+                      <p style="margin: 0; color: var(--text-secondary);">Analysis results will appear here</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 1.5rem; border-radius: 12px; margin-top: 2rem; border-left: 5px solid #f59e0b;">
+                <h3 style="margin: 0 0 1rem 0; color: #92400e;">💡 Pro Tips</h3>
+                <ul style="margin: 0; padding-left: 1.5rem;">
+                  <li><strong>Upload Complete Documents:</strong> Include all policy pages, endorsements, and amendments</li>
+                  <li><strong>Check for Updates:</strong> Ensure you have the most recent policy version</li>
+                  <li><strong>Review Exclusions:</strong> Pay special attention to what's NOT covered</li>
+                  <li><strong>Save Your Analysis:</strong> Keep a copy of the analysis for your records</li>
+                </ul>
+              </div>
             </div>
           `,
           'claim-document-library': `
@@ -1286,41 +1728,342 @@
     });
     
     // AI Response functions
-    function generateAIResponse() {
+    async function generateAIResponse() {
       const input = document.getElementById('ai-input').value;
       if (!input.trim()) {
         alert('Please enter some text first.');
         return;
       }
-      
+
       const output = document.getElementById('ai-output');
       const content = document.getElementById('ai-response-content');
-      
-      content.innerHTML = `
-        <div style="background: #f0f9ff; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
-          <strong>AI Generated Response:</strong><br>
-          Based on your input, here's a professional response to the insurance company...
-        </div>
-      `;
-      
+
+      content.innerHTML = '<div class="spinner"></div> Generating AI response...';
+
+      try {
+        // Use the real AI generation function
+        const response = await fetch('/.netlify/functions/generate-response', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            input: input,
+            type: 'claim_response'
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          content.innerHTML = `
+            <div style="background: #f0f9ff; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">                                                           
+              <strong>AI Generated Response:</strong><br>
+              ${data.response}
+            </div>
+          `;
+        } else {
+          throw new Error(data.error || 'Failed to generate response');
+        }
+      } catch (error) {
+        console.error('Error generating AI response:', error);
+        content.innerHTML = `
+          <div style="background: #fee2e2; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; color: #dc2626;">                                                           
+            <strong>Error:</strong> ${error.message}<br>
+            <small>Falling back to template response...</small>
+          </div>
+          <div style="background: #f0f9ff; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">                                                           
+            <strong>AI Generated Response:</strong><br>
+            Based on your input, here's a professional response to the insurance company...                                                                       
+          </div>
+        `;
+      }
+
       output.style.display = 'block';
     }
 
-    function downloadResponse() {
-      alert('Download functionality would be implemented here.');
+    async function downloadResponse() {
+      const content = document.getElementById('ai-response-content');
+      if (!content || !content.innerHTML.includes('AI Generated Response')) {
+        alert('Please generate a response first.');
+        return;
+      }
+      
+      try {
+        // Use the real document generation function
+        const response = await fetch('/.netlify/functions/generate-document', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: content.innerHTML,
+            format: 'pdf',
+            type: 'ai_response',
+            filename: `ai_response_${new Date().toISOString().split('T')[0]}`
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.downloadUrl) {
+          // Download the generated document
+          const a = document.createElement('a');
+          a.href = data.downloadUrl;
+          a.download = data.filename || 'ai_response.pdf';
+          a.click();
+        } else {
+          throw new Error(data.error || 'Failed to generate document');
+        }
+      } catch (error) {
+        console.error('Error downloading response:', error);
+        alert('Failed to download response. Please try again.');
+      }
     }
 
     function copyResponse() {
-      alert('Copy to clipboard functionality would be implemented here.');
+      const content = document.getElementById('ai-response-content');
+      if (!content || !content.innerHTML.includes('AI Generated Response')) {
+        alert('Please generate a response first.');
+        return;
+      }
+      
+      // Copy to clipboard
+      navigator.clipboard.writeText(content.innerText).then(() => {
+        alert('Response copied to clipboard!');
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+        alert('Failed to copy to clipboard. Please select and copy manually.');
+      });
     }
 
     function buyMoreCredits() {
-      alert('Credit purchase functionality would be implemented here.');
+      // Redirect to credit purchase page
+      window.location.href = '/checkout?type=credits';
     }
 
-    function searchDocuments() {
-      alert('Document search functionality would be implemented here.');
-    }
+      function searchDocuments() {
+        const searchTerm = prompt('Enter search term:');
+        if (searchTerm) {
+          // Use the real document search function
+          fetch('/.netlify/functions/list-documents', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              search: searchTerm,
+              type: 'claim_documents'
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success && data.documents) {
+              alert(`Found ${data.documents.length} documents matching "${searchTerm}"`);
+              // You could display the results in a modal or update the document list
+            } else {
+              alert('No documents found matching your search.');
+            }
+          })
+          .catch(error => {
+            console.error('Error searching documents:', error);
+            alert('Search failed. Please try again.');
+          });
+        }
+      }
+      
+      // AI Policy Analyzer Functions
+      function handlePolicyUpload(event) {
+        const files = event.target.files;
+        if (files.length > 0) {
+          const fileNames = Array.from(files).map(f => f.name).join(', ');
+          alert(`Selected ${files.length} file(s): ${fileNames}`);
+          // In a real implementation, you would upload these files to the backend
+        }
+      }
+      
+      async function analyzePolicyWithAI() {
+        const textInput = document.getElementById('policy-text-input');
+        const resultsDiv = document.getElementById('policy-analysis-results');
+        const keyInfoDiv = document.getElementById('policy-key-info');
+        
+        if (!textInput || !textInput.value.trim()) {
+          alert('Please upload policy documents or paste policy text first.');
+          return;
+        }
+        
+        resultsDiv.innerHTML = '<div class="spinner"></div> Analyzing policy with AI...';
+        keyInfoDiv.innerHTML = '<p style="margin: 0; color: var(--text-secondary);">Analyzing...</p>';
+        
+        try {
+          // Use the real AI policy analysis function
+          const response = await fetch('/.netlify/functions/analyze-policy', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              policyText: textInput.value,
+              analysisType: 'comprehensive_policy_review'
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            resultsDiv.innerHTML = data.analysis;
+            keyInfoDiv.innerHTML = data.keyInfo || '<p style="margin: 0; color: var(--text-secondary);">Key information extracted</p>';
+          } else {
+            throw new Error(data.error || 'Failed to analyze policy');
+          }
+        } catch (error) {
+          console.error('Error analyzing policy:', error);
+          // Fallback to template analysis
+          resultsDiv.innerHTML = `
+            <div style="color: #dc2626; padding: 1rem; background: #fee2e2; border-radius: 0.5rem; margin-bottom: 1rem;">
+              <strong>Error:</strong> ${error.message}<br>
+              <small>Falling back to template analysis...</small>
+            </div>
+            <div style="background: #f0f9ff; padding: 1rem; border-radius: 0.5rem;">
+              <h4 style="margin: 0 0 1rem 0; color: var(--primary);">Policy Analysis Results</h4>
+              <div style="margin-bottom: 1rem;">
+                <strong>Coverage Summary:</strong><br>
+                • Property Coverage: $500,000 dwelling, $50,000 personal property<br>
+                • Liability Coverage: $300,000 per occurrence<br>
+                • Deductible: $1,000 per claim<br>
+                • Additional Living Expenses: Up to $100,000
+              </div>
+              <div style="margin-bottom: 1rem;">
+                <strong>Important Dates:</strong><br>
+                • Policy Period: January 1, 2024 - January 1, 2025<br>
+                • Renewal Date: January 1, 2025<br>
+                • Claim Filing Deadline: Within 1 year of loss<br>
+                • Proof of Loss Deadline: 60 days from request
+              </div>
+              <div style="margin-bottom: 1rem;">
+                <strong>Key Exclusions:</strong><br>
+                • Flood damage (requires separate policy)<br>
+                • Earthquake damage (requires separate policy)<br>
+                • Wear and tear, gradual deterioration<br>
+                • Intentional damage
+              </div>
+              <div>
+                <strong>Important Conditions:</strong><br>
+                • Must report claim within 24 hours<br>
+                • Must protect property from further damage<br>
+                • Must cooperate with investigation<br>
+                • Must provide proof of loss when requested
+              </div>
+            </div>
+          `;
+          
+          keyInfoDiv.innerHTML = `
+            <div style="background: #f0f9ff; padding: 0.75rem; border-radius: 6px; border-left: 3px solid var(--primary);">
+              <strong>Policy Number:</strong> [Extracted from document]<br>
+              <strong>Insured:</strong> [Policyholder name]<br>
+              <strong>Property Address:</strong> [Property location]<br>
+              <strong>Agent:</strong> [Insurance agent contact]<br>
+              <strong>Emergency Contact:</strong> [24/7 claims hotline]
+            </div>
+          `;
+        }
+      }
+      
+      function downloadPolicySummary() {
+        const resultsDiv = document.getElementById('policy-analysis-results');
+        if (!resultsDiv || resultsDiv.innerHTML.includes('Upload your policy')) {
+          alert('Please analyze a policy first.');
+          return;
+        }
+        
+        try {
+          // Use the real document generation function
+          fetch('/.netlify/functions/generate-document', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              content: resultsDiv.innerHTML,
+              format: 'pdf',
+              type: 'policy_analysis',
+              filename: `policy_analysis_${new Date().toISOString().split('T')[0]}`
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success && data.downloadUrl) {
+              const a = document.createElement('a');
+              a.href = data.downloadUrl;
+              a.download = data.filename || 'policy_analysis.pdf';
+              a.click();
+            } else {
+              throw new Error(data.error || 'Failed to generate document');
+            }
+          })
+          .catch(error => {
+            console.error('Error generating policy summary:', error);
+            alert('Failed to generate policy summary. Please try again.');
+          });
+        } catch (error) {
+          console.error('Error downloading policy summary:', error);
+          alert('Failed to download policy summary. Please try again.');
+        }
+      }
+      
+      function savePolicyAnalysis() {
+        const resultsDiv = document.getElementById('policy-analysis-results');
+        if (!resultsDiv || resultsDiv.innerHTML.includes('Upload your policy')) {
+          alert('Please analyze a policy first.');
+          return;
+        }
+        
+        try {
+          // Save to user's documents using the save-draft function
+          fetch('/.netlify/functions/save-draft', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              content: resultsDiv.innerHTML,
+              type: 'policy_analysis',
+              title: `Policy Analysis - ${new Date().toLocaleDateString()}`,
+              metadata: {
+                generated: new Date().toISOString(),
+                source: 'ai_policy_analyzer'
+              }
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert('Policy analysis saved to My Documents successfully!');
+            } else {
+              throw new Error(data.error || 'Failed to save analysis');
+            }
+          })
+          .catch(error => {
+            console.error('Error saving policy analysis:', error);
+            alert('Failed to save policy analysis. Please try again.');
+          });
+        } catch (error) {
+          console.error('Error saving policy analysis:', error);
+          alert('Failed to save policy analysis. Please try again.');
+        }
+      }
   </script>
 </body>
 </html>

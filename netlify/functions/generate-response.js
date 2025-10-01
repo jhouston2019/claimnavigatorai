@@ -45,12 +45,13 @@ exports.handler = async (event) => {
       };
     }
 
-    const { inputText, language } = requestData;
+    const { input, inputText, language, type } = requestData;
+    const inputTextToProcess = input || inputText;
 
-    if (!inputText || typeof inputText !== 'string' || inputText.trim().length === 0) {
+    if (!inputTextToProcess || typeof inputTextToProcess !== 'string' || inputTextToProcess.trim().length === 0) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: "inputText is required and must be a non-empty string" })
+        body: JSON.stringify({ error: "input is required and must be a non-empty string" })
       };
     }
 
@@ -134,7 +135,7 @@ QUALITY STANDARDS:
 - Comprehensive coverage of all relevant issues
 - Strategic positioning for maximum settlement potential` 
           },
-          { role: "user", content: inputText }
+          { role: "user", content: inputTextToProcess }
         ],
         max_tokens: 2000,
         temperature: 0.7
@@ -152,7 +153,7 @@ QUALITY STANDARDS:
               role: "system", 
               content: `You are an expert insurance claims professional generating polished, professional insurance response letters. Write in an authoritative tone with clear structure, specific policy references, and strong calls to action. Ensure every response is ready to send and maximizes settlement potential.` 
             },
-            { role: "user", content: inputText }
+            { role: "user", content: inputTextToProcess }
           ],
           max_tokens: 1500,
           temperature: 0.7
