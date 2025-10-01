@@ -986,6 +986,8 @@
             <div class="tool-item" data-tool="documentation-checklist">Documentation Checklist</div>
             <div class="tool-item" data-tool="deadline-tracker">Deadline Tracker</div>
             <div class="tool-item" data-tool="claim-stage-tracker">Claim Stage Tracker</div>
+            <div class="tool-item" data-tool="ai-advisory">AI Advisory System</div>
+            <div class="tool-item" data-tool="document-integration">Document Integration</div>
             <div class="tool-item" data-tool="evidence-organizer">Evidence Organizer</div>
             <div class="tool-item" data-tool="claim-document-library">Claim Document Library</div>
             <div class="tool-item" data-tool="claim-documentation-guides">Claim Documentation Guides</div>
@@ -1696,6 +1698,8 @@
           'documentation-checklist': 'Documentation Checklist',
           'deadline-tracker': 'Deadline Tracker',
           'claim-stage-tracker': 'Claim Stage Tracker',
+          'ai-advisory': 'AI Advisory System',
+          'document-integration': 'Document Integration',
           'evidence-organizer': 'Evidence Organizer',
           'claim-document-library': 'Claim Document Library',
           'claim-documentation-guides': 'Claim Documentation Guides',
@@ -2490,7 +2494,9 @@
           'claim-timeline-tracker': showClaimTimelineTracker(),
           'documentation-checklist': showDocumentationChecklist(),
           'deadline-tracker': showDeadlineTracker(),
-          'claim-stage-tracker': showClaimStageTracker()
+          'claim-stage-tracker': showClaimStageTracker(),
+          'ai-advisory': showAIAdvisory(),
+          'document-integration': showDocumentIntegration()
         };
         
         return toolContent[tool] || `
@@ -4207,6 +4213,547 @@
               <strong>Error:</strong> ${error.message}
             </div>
           `;
+        }
+      }
+
+      // AI Advisory System
+      function showAIAdvisory() {
+        return `
+          <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">🤖 AI Advisory System</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Get personalized guidance based on your specific claim situation</p>
+            
+            <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px; border: 1px solid #0ea5e9; margin-bottom: 2rem;">
+              <h3 style="color: #0369a1; margin: 0 0 1rem 0;">How It Works</h3>
+              <p style="margin: 0; color: #0369a1;">Answer a few questions about your claim situation, and our AI will provide personalized recommendations, suggested documents, and next steps.</p>
+            </div>
+            
+            <div id="advisory-container">
+              <div style="text-align: center; margin: 2rem 0;">
+                <button onclick="startAdvisoryProcess()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1.1rem; font-weight: 600; cursor: pointer;">
+                  Start AI Advisory Process
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Document Integration
+      function showDocumentIntegration() {
+        return `
+          <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">🔗 Document Integration</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Smart document suggestions and auto-population based on your situation</p>
+            
+            <div style="background: #f0fdf4; padding: 1.5rem; border-radius: 8px; border: 1px solid #22c55e; margin-bottom: 2rem;">
+              <h3 style="color: #15803d; margin: 0 0 1rem 0;">Smart Integration Features</h3>
+              <ul style="margin: 0; padding-left: 1.5rem; color: #15803d;">
+                <li>Auto-suggest documents based on your claim situation</li>
+                <li>Pre-populate templates with your information</li>
+                <li>Create document sequences and workflows</li>
+                <li>Link related documents and tools</li>
+              </ul>
+            </div>
+            
+            <div id="document-integration-container">
+              <div style="text-align: center; margin: 2rem 0;">
+                <button onclick="startDocumentIntegration()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1.1rem; font-weight: 600; cursor: pointer;">
+                  Start Document Integration
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // AI Advisory Functions
+      let currentAdvisoryStep = 1;
+      let advisoryResponses = {};
+      let advisorySituationType = null;
+
+      async function startAdvisoryProcess() {
+        const container = document.getElementById('advisory-container');
+        container.innerHTML = '<div class="spinner"></div> Loading advisory questions...';
+        
+        try {
+          const response = await fetch('/.netlify/functions/ai-advisory-system', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'get-questions',
+              currentStep: currentAdvisoryStep,
+              userResponses: advisoryResponses
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            displayAdvisoryQuestion(data.questions[0], data.currentStep, data.totalSteps, data.progress);
+          } else {
+            throw new Error(data.error || 'Failed to load questions');
+          }
+        } catch (error) {
+          console.error('Error starting advisory process:', error);
+          container.innerHTML = `
+            <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dc2626; color: #dc2626;">
+              <strong>Error:</strong> ${error.message}
+            </div>
+          `;
+        }
+      }
+
+      function displayAdvisoryQuestion(question, step, totalSteps, progress) {
+        const container = document.getElementById('advisory-container');
+        
+        let optionsHtml = '';
+        if (question.type === 'single-choice') {
+          question.options.forEach(option => {
+            optionsHtml += `
+              <label style="display: block; padding: 1rem; margin: 0.5rem 0; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+                <input type="radio" name="advisory-${question.id}" value="${option.value}" style="margin-right: 0.5rem;">
+                <span style="font-size: 1.2rem; margin-right: 0.5rem;">${option.icon}</span>
+                <strong>${option.label}</strong>
+              </label>
+            `;
+          });
+        } else if (question.type === 'multi-choice') {
+          question.options.forEach(option => {
+            optionsHtml += `
+              <label style="display: block; padding: 1rem; margin: 0.5rem 0; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
+                <input type="checkbox" name="advisory-${question.id}" value="${option.value}" style="margin-right: 0.5rem;">
+                <span style="font-size: 1.2rem; margin-right: 0.5rem;">${option.icon}</span>
+                <strong>${option.label}</strong>
+              </label>
+            `;
+          });
+        }
+        
+        container.innerHTML = `
+          <div style="background: white; padding: 2rem; border-radius: 8px; border: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+              <h3 style="color: var(--primary); margin: 0;">Question ${step} of ${totalSteps}</h3>
+              <div style="background: var(--bg-light); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600; color: var(--primary);">
+                ${progress}% Complete
+              </div>
+            </div>
+            
+            <div style="background: #f0f9ff; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+              <div style="width: 100%; background: #e0f2fe; border-radius: 4px; height: 8px;">
+                <div style="width: ${progress}%; background: var(--primary); height: 8px; border-radius: 4px; transition: width 0.3s;"></div>
+              </div>
+            </div>
+            
+            <h4 style="color: #1f2937; margin-bottom: 1rem; font-size: 1.2rem;">${question.question}</h4>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-style: italic;">${question.helpText}</p>
+            
+            <form id="advisory-question-form">
+              ${optionsHtml}
+              
+              <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                ${step > 1 ? '<button type="button" onclick="previousAdvisoryStep()" style="background: var(--text-secondary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; cursor: pointer;">Previous</button>' : ''}
+                <button type="button" onclick="nextAdvisoryStep()" style="background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; cursor: pointer;">
+                  ${step === totalSteps ? 'Get Recommendations' : 'Next'}
+                </button>
+              </div>
+            </form>
+          </div>
+        `;
+      }
+
+      function nextAdvisoryStep() {
+        // Collect current step responses
+        const form = document.getElementById('advisory-question-form');
+        const formData = new FormData(form);
+        
+        // Store responses
+        const currentQuestionId = Object.keys(advisoryResponses).length + 1;
+        const responses = [];
+        
+        for (let [name, value] of formData.entries()) {
+          responses.push(value);
+        }
+        
+        advisoryResponses[`question-${currentQuestionId}`] = responses;
+        
+        if (currentAdvisoryStep < 10) {
+          currentAdvisoryStep++;
+          startAdvisoryProcess();
+        } else {
+          analyzeAdvisoryResponses();
+        }
+      }
+
+      function previousAdvisoryStep() {
+        if (currentAdvisoryStep > 1) {
+          currentAdvisoryStep--;
+          startAdvisoryProcess();
+        }
+      }
+
+      async function analyzeAdvisoryResponses() {
+        const container = document.getElementById('advisory-container');
+        container.innerHTML = '<div class="spinner"></div> Analyzing your responses...';
+        
+        try {
+          const response = await fetch('/.netlify/functions/ai-advisory-system', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'analyze-responses',
+              userResponses: advisoryResponses
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            advisorySituationType = data.analysis.situationType;
+            displayAdvisoryResults(data.analysis, data.situationSummary, data.priorityActions);
+          } else {
+            throw new Error(data.error || 'Failed to analyze responses');
+          }
+        } catch (error) {
+          console.error('Error analyzing advisory responses:', error);
+          container.innerHTML = `
+            <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dc2626; color: #dc2626;">
+              <strong>Error:</strong> ${error.message}
+            </div>
+          `;
+        }
+      }
+
+      function displayAdvisoryResults(analysis, situationSummary, priorityActions) {
+        const container = document.getElementById('advisory-container');
+        
+        container.innerHTML = `
+          <div style="background: white; padding: 2rem; border-radius: 8px; border: 1px solid var(--border);">
+            <h3 style="color: var(--primary); margin-bottom: 1.5rem;">🎯 Your Personalized Recommendations</h3>
+            
+            <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px; border: 1px solid #0ea5e9; margin-bottom: 2rem;">
+              <h4 style="color: #0369a1; margin: 0 0 1rem 0;">Situation Summary</h4>
+              <p style="margin: 0; color: #0369a1;">${situationSummary}</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+              <div style="background: #fef3c7; padding: 1.5rem; border-radius: 8px; border: 1px solid #f59e0b;">
+                <h4 style="color: #92400e; margin: 0 0 1rem 0;">Priority Level</h4>
+                <p style="margin: 0; color: #92400e; font-weight: 600; text-transform: uppercase;">${analysis.urgencyLevel}</p>
+              </div>
+              
+              <div style="background: #f3e8ff; padding: 1.5rem; border-radius: 8px; border: 1px solid #a855f7;">
+                <h4 style="color: #7c3aed; margin: 0 0 1rem 0;">Complexity</h4>
+                <p style="margin: 0; color: #7c3aed; font-weight: 600; text-transform: uppercase;">${analysis.complexityLevel}</p>
+              </div>
+              
+              <div style="background: #ecfdf5; padding: 1.5rem; border-radius: 8px; border: 1px solid #22c55e;">
+                <h4 style="color: #15803d; margin: 0 0 1rem 0;">Recommended Approach</h4>
+                <p style="margin: 0; color: #15803d; font-weight: 600; text-transform: uppercase;">${analysis.recommendedApproach.replace(/-/g, ' ')}</p>
+              </div>
+            </div>
+            
+            <div style="background: #fef2f2; padding: 1.5rem; border-radius: 8px; border: 1px solid #dc2626; margin-bottom: 2rem;">
+              <h4 style="color: #dc2626; margin: 0 0 1rem 0;">Priority Actions</h4>
+              <ul style="margin: 0; padding-left: 1.5rem; color: #dc2626;">
+                ${priorityActions.map(action => `<li>${action}</li>`).join('')}
+              </ul>
+            </div>
+            
+            <div style="text-align: center; margin: 2rem 0;">
+              <button onclick="getAdvisoryRecommendations()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-right: 1rem;">
+                Get Detailed Recommendations
+              </button>
+              <button onclick="getDocumentSuggestions()" style="background: #22c55e; color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1.1rem; font-weight: 600; cursor: pointer;">
+                Get Document Suggestions
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      async function getAdvisoryRecommendations() {
+        const container = document.getElementById('advisory-container');
+        container.innerHTML = '<div class="spinner"></div> Getting detailed recommendations...';
+        
+        try {
+          const response = await fetch('/.netlify/functions/ai-advisory-system', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'get-advisory',
+              situationType: advisorySituationType,
+              userResponses: advisoryResponses
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            displayDetailedRecommendations(data.recommendation);
+          } else {
+            throw new Error(data.error || 'Failed to get recommendations');
+          }
+        } catch (error) {
+          console.error('Error getting advisory recommendations:', error);
+          container.innerHTML = `
+            <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dc2626; color: #dc2626;">
+              <strong>Error:</strong> ${error.message}
+            </div>
+          `;
+        }
+      }
+
+      function displayDetailedRecommendations(recommendation) {
+        const container = document.getElementById('advisory-container');
+        
+        container.innerHTML = `
+          <div style="background: white; padding: 2rem; border-radius: 8px; border: 1px solid var(--border);">
+            <h3 style="color: var(--primary); margin-bottom: 1.5rem;">📋 Detailed Recommendations</h3>
+            
+            <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px; border: 1px solid #0ea5e9; margin-bottom: 2rem;">
+              <h4 style="color: #0369a1; margin: 0 0 1rem 0;">${recommendation.title}</h4>
+              <p style="margin: 0; color: #0369a1;">${recommendation.summary}</p>
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+              <h4 style="color: #1f2937; margin-bottom: 1rem;">Recommended Actions</h4>
+              ${recommendation.actions.map((action, index) => `
+                <div style="background: ${action.priority === 'critical' ? '#fef2f2' : action.priority === 'high' ? '#fef3c7' : '#f0f9ff'}; padding: 1rem; border-radius: 8px; border: 1px solid ${action.priority === 'critical' ? '#dc2626' : action.priority === 'high' ? '#f59e0b' : '#0ea5e9'}; margin-bottom: 1rem;">
+                  <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                    <h5 style="color: ${action.priority === 'critical' ? '#dc2626' : action.priority === 'high' ? '#92400e' : '#0369a1'}; margin: 0;">${action.title}</h5>
+                    <span style="background: ${action.priority === 'critical' ? '#dc2626' : action.priority === 'high' ? '#f59e0b' : '#0ea5e9'}; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">${action.priority}</span>
+                  </div>
+                  <p style="margin: 0 0 0.5rem 0; color: #4b5563;">${action.description}</p>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: #6b7280; font-size: 0.9rem;">Timeline: ${action.timeline}</span>
+                    <div style="display: flex; gap: 0.5rem;">
+                      ${action.tools.map(tool => `<span style="background: #e5e7eb; color: #374151; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">${tool}</span>`).join('')}
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            
+            <div style="background: #f0fdf4; padding: 1.5rem; border-radius: 8px; border: 1px solid #22c55e; margin-bottom: 2rem;">
+              <h4 style="color: #15803d; margin: 0 0 1rem 0;">Next Steps</h4>
+              <ul style="margin: 0; padding-left: 1.5rem; color: #15803d;">
+                ${recommendation.nextSteps.map(step => `<li>${step}</li>`).join('')}
+              </ul>
+            </div>
+            
+            <div style="text-align: center; margin: 2rem 0;">
+              <button onclick="getDocumentSuggestions()" style="background: #22c55e; color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1.1rem; font-weight: 600; cursor: pointer;">
+                Get Document Suggestions
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      async function getDocumentSuggestions() {
+        const container = document.getElementById('advisory-container');
+        container.innerHTML = '<div class="spinner"></div> Getting document suggestions...';
+        
+        try {
+          const response = await fetch('/.netlify/functions/document-generator-integration', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'get-suggested-documents',
+              situationType: advisorySituationType,
+              userResponses: advisoryResponses
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            displayDocumentSuggestions(data.suggestions);
+          } else {
+            throw new Error(data.error || 'Failed to get document suggestions');
+          }
+        } catch (error) {
+          console.error('Error getting document suggestions:', error);
+          container.innerHTML = `
+            <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dc2626; color: #dc2626;">
+              <strong>Error:</strong> ${error.message}
+            </div>
+          `;
+        }
+      }
+
+      function displayDocumentSuggestions(suggestions) {
+        const container = document.getElementById('advisory-container');
+        
+        container.innerHTML = `
+          <div style="background: white; padding: 2rem; border-radius: 8px; border: 1px solid var(--border);">
+            <h3 style="color: var(--primary); margin-bottom: 1.5rem;">📄 Recommended Documents</h3>
+            
+            <div style="margin-bottom: 2rem;">
+              <h4 style="color: #1f2937; margin-bottom: 1rem;">Primary Documents (Critical)</h4>
+              ${suggestions.primary.map((doc, index) => `
+                <div style="background: ${doc.priority === 'critical' ? '#fef2f2' : '#f0f9ff'}; padding: 1rem; border-radius: 8px; border: 1px solid ${doc.priority === 'critical' ? '#dc2626' : '#0ea5e9'}; margin-bottom: 1rem;">
+                  <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                    <h5 style="color: ${doc.priority === 'critical' ? '#dc2626' : '#0369a1'}; margin: 0;">${doc.title}</h5>
+                    <span style="background: ${doc.priority === 'critical' ? '#dc2626' : '#0ea5e9'}; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">${doc.priority}</span>
+                  </div>
+                  <p style="margin: 0 0 0.5rem 0; color: #4b5563;">${doc.description}</p>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <span style="color: #6b7280; font-size: 0.9rem;">Timeline: ${doc.timeline}</span>
+                    <button onclick="generateDocument('${doc.type}')" style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.9rem; cursor: pointer;">
+                      Generate Document
+                    </button>
+                  </div>
+                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    ${doc.requiredFields.map(field => `<span style="background: #e5e7eb; color: #374151; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">${field}</span>`).join('')}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+              <h4 style="color: #1f2937; margin-bottom: 1rem;">Secondary Documents (Supporting)</h4>
+              ${suggestions.secondary.map((doc, index) => `
+                <div style="background: #f0f9ff; padding: 1rem; border-radius: 8px; border: 1px solid #0ea5e9; margin-bottom: 1rem;">
+                  <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                    <h5 style="color: #0369a1; margin: 0;">${doc.title}</h5>
+                    <span style="background: #0ea5e9; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">${doc.priority}</span>
+                  </div>
+                  <p style="margin: 0 0 0.5rem 0; color: #4b5563;">${doc.description}</p>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: #6b7280; font-size: 0.9rem;">Timeline: ${doc.timeline}</span>
+                    <button onclick="generateDocument('${doc.type}')" style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.9rem; cursor: pointer;">
+                      Generate Document
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            
+            <div style="text-align: center; margin: 2rem 0;">
+              <button onclick="startAdvisoryProcess()" style="background: var(--text-secondary); color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1.1rem; font-weight: 600; cursor: pointer;">
+                Start New Advisory Session
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      // Document Integration Functions
+      async function startDocumentIntegration() {
+        const container = document.getElementById('document-integration-container');
+        container.innerHTML = '<div class="spinner"></div> Loading document integration...';
+        
+        try {
+          const response = await fetch('/.netlify/functions/document-generator-integration', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'get-suggested-documents',
+              situationType: advisorySituationType || 'general-claim-guidance',
+              userResponses: advisoryResponses
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            displayDocumentIntegration(data.suggestions);
+          } else {
+            throw new Error(data.error || 'Failed to load document integration');
+          }
+        } catch (error) {
+          console.error('Error starting document integration:', error);
+          container.innerHTML = `
+            <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dc2626; color: #dc2626;">
+              <strong>Error:</strong> ${error.message}
+            </div>
+          `;
+        }
+      }
+
+      function displayDocumentIntegration(suggestions) {
+        const container = document.getElementById('document-integration-container');
+        
+        container.innerHTML = `
+          <div style="background: white; padding: 2rem; border-radius: 8px; border: 1px solid var(--border);">
+            <h3 style="color: var(--primary); margin-bottom: 1.5rem;">🔗 Smart Document Integration</h3>
+            
+            <div style="background: #f0fdf4; padding: 1.5rem; border-radius: 8px; border: 1px solid #22c55e; margin-bottom: 2rem;">
+              <h4 style="color: #15803d; margin: 0 0 1rem 0;">Integration Features</h4>
+              <ul style="margin: 0; padding-left: 1.5rem; color: #15803d;">
+                <li>Auto-suggest documents based on your situation</li>
+                <li>Pre-populate templates with your information</li>
+                <li>Create document sequences and workflows</li>
+                <li>Link related documents and tools</li>
+              </ul>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+              <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px; border: 1px solid #0ea5e9;">
+                <h4 style="color: #0369a1; margin: 0 0 1rem 0;">Primary Documents</h4>
+                <p style="margin: 0 0 1rem 0; color: #0369a1;">Critical documents for your situation</p>
+                <button onclick="showPrimaryDocuments()" style="background: #0ea5e9; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; cursor: pointer;">
+                  View Primary Documents
+                </button>
+              </div>
+              
+              <div style="background: #fef3c7; padding: 1.5rem; border-radius: 8px; border: 1px solid #f59e0b;">
+                <h4 style="color: #92400e; margin: 0 0 1rem 0;">Document Sequence</h4>
+                <p style="margin: 0 0 1rem 0; color: #92400e;">Recommended order for document creation</p>
+                <button onclick="showDocumentSequence()" style="background: #f59e0b; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; cursor: pointer;">
+                  View Sequence
+                </button>
+              </div>
+              
+              <div style="background: #f3e8ff; padding: 1.5rem; border-radius: 8px; border: 1px solid #a855f7;">
+                <h4 style="color: #7c3aed; margin: 0 0 1rem 0;">Auto-Population</h4>
+                <p style="margin: 0 0 1rem 0; color: #7c3aed;">Pre-fill templates with your data</p>
+                <button onclick="showAutoPopulation()" style="background: #a855f7; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; cursor: pointer;">
+                  Auto-Populate
+                </button>
+              </div>
+            </div>
+            
+            <div style="text-align: center; margin: 2rem 0;">
+              <button onclick="generateDocument('appeal-letter')" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-right: 1rem;">
+                Generate Appeal Letter
+              </button>
+              <button onclick="generateDocument('proof-of-loss')" style="background: #22c55e; color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1.1rem; font-weight: 600; cursor: pointer;">
+                Generate Proof of Loss
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      async function generateDocument(documentType) {
+        try {
+          const response = await fetch('/.netlify/functions/document-generator-integration', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'pre-populate-template',
+              documentType: documentType,
+              userResponses: advisoryResponses,
+              templateData: {}
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            // Open document generator with pre-populated data
+            showTool('document-generator');
+            // You could also pass the pre-populated data to the document generator
+            alert(`Document ${documentType} template pre-populated with your information!`);
+          } else {
+            throw new Error(data.error || 'Failed to pre-populate template');
+          }
+        } catch (error) {
+          console.error('Error generating document:', error);
+          alert(`Error: ${error.message}`);
         }
       }
   </script>
