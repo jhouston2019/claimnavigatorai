@@ -8,6 +8,9 @@
   
   <!-- Admin Authentication - DISABLED for public access -->
   <!-- <script src="../assets/js/admin-auth.js"></script> -->
+  <script src="assets/js/validation-utils.js"></script>
+  <script src="assets/js/error-handler.js"></script>
+  <script src="assets/js/api-client.js"></script>
   
   <style>
     :root {
@@ -4277,17 +4280,13 @@
         container.innerHTML = '<div class="spinner"></div> Loading advisory questions...';
         
         try {
-          const response = await fetch('/.netlify/functions/ai-advisory-system', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              action: 'get-questions',
-              currentStep: currentAdvisoryStep,
-              userResponses: advisoryResponses
-            })
-          });
-          
-          const data = await response.json();
+          // Validate current step
+          if (currentAdvisoryStep < 1 || currentAdvisoryStep > 10) {
+            throw new Error('Invalid step number');
+          }
+
+          // Use enhanced API client
+          const data = await window.apiClient.getAdvisoryQuestions(currentAdvisoryStep, advisoryResponses);
           
           if (data.success) {
             displayAdvisoryQuestion(data.questions[0], data.currentStep, data.totalSteps, data.progress);
@@ -4296,11 +4295,22 @@
           }
         } catch (error) {
           console.error('Error starting advisory process:', error);
+          
+          // Enhanced error handling
+          const errorInfo = window.errorHandler.handleApiError(error, { 
+            function: 'startAdvisoryProcess',
+            step: currentAdvisoryStep 
+          });
+          
           container.innerHTML = `
             <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dc2626; color: #dc2626;">
-              <strong>Error:</strong> ${error.message}
+              <strong>Error:</strong> ${errorInfo.userMessage}
+              ${errorInfo.shouldRetry ? '<br><button onclick="startAdvisoryProcess()" style="margin-top: 0.5rem; background: #dc2626; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer;">Retry</button>' : ''}
             </div>
           `;
+          
+          // Show error to user
+          window.errorHandler.showErrorToUser(errorInfo.userMessage, { retry: errorInfo.shouldRetry });
         }
       }
 
@@ -4367,15 +4377,27 @@
         const form = document.getElementById('advisory-question-form');
         const formData = new FormData(form);
         
-        // Store responses
-        const currentQuestionId = Object.keys(advisoryResponses).length + 1;
+        // Validate responses
         const responses = [];
-        
         for (let [name, value] of formData.entries()) {
-          responses.push(value);
+          // Sanitize input
+          const sanitizedValue = window.ValidationUtils.sanitizeInput(value);
+          responses.push(sanitizedValue);
         }
         
+        // Validate advisory response
+        const validation = window.ValidationUtils.validateAdvisoryResponse(currentAdvisoryStep, responses);
+        if (!validation.isValid) {
+          window.errorHandler.showErrorToUser(validation.error);
+          return;
+        }
+        
+        // Store responses
+        const currentQuestionId = Object.keys(advisoryResponses).length + 1;
         advisoryResponses[`question-${currentQuestionId}`] = responses;
+        
+        // Show success message
+        window.errorHandler.showSuccessMessage(`Step ${currentAdvisoryStep} completed successfully!`);
         
         if (currentAdvisoryStep < 10) {
           currentAdvisoryStep++;
