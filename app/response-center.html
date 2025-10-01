@@ -78,35 +78,183 @@
     
     .sidebar h3 {
       color: var(--primary);
-      margin-bottom: 1rem;
-      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      font-size: 1.2rem;
+      font-weight: 700;
     }
     
     .sidebar-section {
-      margin-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .sidebar-group-title {
+      color: var(--primary);
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .status-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .status-btn {
+      width: 100%;
+      background: white;
+      border: 2px solid var(--border);
+      padding: 0.75rem 1rem;
+      text-align: left;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    
+    .status-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    
+    .status-btn.active {
+      border-color: var(--primary);
+      border-width: 3px;
+      color: var(--primary);
     }
     
     .sidebar-button {
       width: 100%;
       background: none;
-      border: none;
+      border: 1px solid transparent;
       padding: 0.75rem 1rem;
       text-align: left;
       cursor: pointer;
-      border-radius: 0.5rem;
+      border-radius: 8px;
       transition: all 0.2s;
       color: var(--text-secondary);
       font-size: 0.9rem;
+      margin-bottom: 0.25rem;
     }
     
     .sidebar-button:hover {
-      background: var(--bg-light);
+      border: 1px solid var(--border);
       color: var(--primary);
     }
     
     .sidebar-button.active {
-      background: var(--primary);
-      color: white;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+    
+    .sidebar-toggle {
+      width: 100%;
+      background: white;
+      border: 2px solid var(--border);
+      padding: 0.75rem 1rem;
+      text-align: left;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+      color: var(--primary);
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .sidebar-toggle:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    
+    .collapsible-content {
+      margin-top: 0.5rem;
+      padding-left: 0.5rem;
+    }
+    
+    .tool-group {
+      margin-bottom: 1rem;
+    }
+    
+    .tool-group-title {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin: 0.75rem 0 0.5rem 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding-left: 0.5rem;
+    }
+    
+    .workflow-placeholder {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-style: italic;
+      margin: 0;
+      padding: 0.5rem;
+      background: var(--bg-light);
+      border-radius: 6px;
+    }
+    
+    .workflow-tool {
+      margin-bottom: 0.5rem;
+      background: white;
+      border: 2px solid var(--border);
+      color: var(--primary);
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .workflow-tool:hover {
+      border-color: var(--primary);
+      background: var(--bg-light);
+      transform: translateY(-1px);
+    }
+    
+    .workflow-tool:active {
+      border-color: var(--primary);
+      border-width: 3px;
+    }
+    
+    .how-to-use-content h5 {
+      color: var(--primary);
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin: 1rem 0 0.5rem 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding-left: 0.5rem;
+    }
+    
+    .how-to-use-content h5:first-child {
+      margin-top: 0;
+    }
+    
+    .help-button {
+      width: 100%;
+      background: white;
+      border: 2px solid #f59e0b;
+      padding: 0.75rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+      color: #f59e0b;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    
+    .help-button:hover {
+      border-color: #d97706;
+      color: #d97706;
+      transform: translateY(-1px);
     }
     
     .subsection-button {
@@ -140,56 +288,302 @@
       overflow-y: auto;
     }
     
-    /* Categories at top */
-    .categories-section {
-      margin-bottom: 2rem;
+    /* Smart Search */
+    .smart-search-section {
+      margin-bottom: 3rem;
+      text-align: center;
     }
     
-    .category-group {
-      margin-bottom: 2rem;
+    .search-container {
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    
+    .smart-search-input {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      font-size: 1.1rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
       background: white;
-      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+    
+    .smart-search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+    }
+    
+    .search-button {
+      position: absolute;
+      right: 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
       border-radius: 8px;
-      padding: 1.5rem;
+      padding: 0.5rem;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s;
     }
     
-    .category-title {
-      font-size: 5.5rem;
-      font-weight: 600;
-      color: black;
-      margin: 0 0 1rem 0;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid var(--border);
-    }
-    
-    .tools-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 0.75rem;
-    }
-    
-    .tool-item {
+    .search-button:hover {
       background: #1e3a8a;
-      border: 1px solid var(--border);
+      transform: scale(1.05);
+    }
+    
+    /* Status Entry Section */
+    .status-entry-section {
+      margin-bottom: 3rem;
+    }
+    
+    .section-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    
+    .situation-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .situation-card {
+      background: #f9fafb;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid;
+      position: relative;
+    }
+    
+    .situation-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      border-color: var(--primary);
+    }
+    
+    .denied-card {
+      border-left-color: #dc2626;
+    }
+    
+    .lowball-card {
+      border-left-color: #f59e0b;
+    }
+    
+    .first-time-card {
+      border-left-color: #3b82f6;
+    }
+    
+    .stuck-card {
+      border-left-color: #8b5cf6;
+    }
+    
+    .card-header {
+      margin-bottom: 1rem;
+    }
+    
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin: 0 0 0.5rem 0;
+      line-height: 1.3;
+    }
+    
+    .card-description {
+      font-size: 0.95rem;
+      color: #6b7280;
+      margin: 0;
+      line-height: 1.4;
+    }
+    
+    .card-tools {
+      margin-bottom: 1rem;
+    }
+    
+    .tool-link {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(0, 0, 0, 0.1);
       border-radius: 6px;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #374151;
+      margin: 0.25rem 0.25rem 0.25rem 0;
+      transition: all 0.2s ease;
+    }
+    
+    .tool-link:hover {
+      background: white;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    
+    .start-here-btn {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
       padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .start-here-btn:hover {
+      background: #1e3a8a;
+      transform: translateY(-1px);
+    }
+    
+    .denied-card .start-here-btn {
+      background: #dc2626;
+    }
+    
+    .denied-card .start-here-btn:hover {
+      background: #b91c1c;
+    }
+    
+    .lowball-card .start-here-btn {
+      background: #f59e0b;
+    }
+    
+    .lowball-card .start-here-btn:hover {
+      background: #d97706;
+    }
+    
+    .first-time-card .start-here-btn {
+      background: #3b82f6;
+    }
+    
+    .first-time-card .start-here-btn:hover {
+      background: #2563eb;
+    }
+    
+    .stuck-card .start-here-btn {
+      background: #8b5cf6;
+    }
+    
+    .stuck-card .start-here-btn:hover {
+      background: #7c3aed;
+    }
+    
+    /* Tool Item Styles */
+    .tool-item {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem 1rem;
       cursor: pointer;
       transition: all 0.2s;
       font-size: 1.2rem;
       font-weight: 700;
-      color: white;
-      text-align: center;
+      color: var(--primary);
+      text-align: left;
+      position: relative;
     }
     
     .tool-item:hover {
-      background: var(--primary);
-      color: white;
-      transform: translateY(-1px);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     
     .tool-item.active {
-      background: var(--primary);
-      color: white;
+      border-color: var(--primary);
+      border-width: 3px;
+    }
+    
+    /* Color coding for tool categories */
+    .tool-item[data-tool*="claim-playbook"],
+    .tool-item[data-tool*="claim-timeline"],
+    .tool-item[data-tool*="insurance-tactics"],
+    .tool-item[data-tool*="maximize-claim"],
+    .tool-item[data-tool*="state-rights"] {
+      border-left: 4px solid #3b82f6;
+    }
+    
+    .tool-item[data-tool*="ai-agent"],
+    .tool-item[data-tool*="ai-policy-analyzer"],
+    .tool-item[data-tool*="claim-analysis"],
+    .tool-item[data-tool*="situational-advisory"],
+    .tool-item[data-tool*="document-generator"],
+    .tool-item[data-tool*="evidence-organizer"],
+    .tool-item[data-tool*="claim-document-library"],
+    .tool-item[data-tool*="claim-documentation-guides"],
+    .tool-item[data-tool*="negotiation-scripts"],
+    .tool-item[data-tool*="my-claims"],
+    .tool-item[data-tool*="advanced-tools"] {
+      border-left: 4px solid #10b981;
+    }
+    
+    .tool-item[data-tool*="recommended-resources"],
+    .tool-item[data-tool*="settings"] {
+      border-left: 4px solid #8b5cf6;
+    }
+    
+    /* Button styles for consistency */
+    .btn-primary {
+      background: white;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary:hover {
+      border-color: #1e3a8a;
+      color: #1e3a8a;
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: var(--text-secondary);
+      border: 2px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    
+    /* Spinner for loading states */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
     
     .content-header {
@@ -233,11 +627,24 @@
       flex: 1;
     }
 
+    .category-group {
+      margin-bottom: 2rem;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
     .category-title {
-      font-size: 2rem;
-      font-weight: 700;
+      font-size: 2.5rem;
+      font-weight: 800;
       color: black;
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 1rem 0;
+      padding-bottom: 0.5rem;
+      border-bottom: 3px solid var(--primary);
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
     }
 
     .category-description {
@@ -299,25 +706,52 @@
         height: auto;
         border-right: none;
         border-bottom: 1px solid var(--border);
+        padding: 1rem;
       }
       
       .main-content {
         padding: 1rem;
       }
       
-      .tools-list {
+      .situation-cards-grid {
         grid-template-columns: 1fr;
-        gap: 0.5rem;
+        gap: 1.5rem;
       }
       
-      .tool-item {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.85rem;
+      .situation-card {
+        padding: 1.25rem;
       }
       
-      .category-group {
-        padding: 1rem;
-        margin-bottom: 1rem;
+      .card-title {
+        font-size: 1.25rem;
+      }
+      
+      .tool-link {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin: 0.25rem 0;
+      }
+      
+      .search-container {
+        max-width: 100%;
+      }
+      
+      .smart-search-input {
+        font-size: 1rem;
+        padding: 0.875rem 1.25rem;
+      }
+      
+      .status-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      
+      .status-btn {
+        flex: 1;
+        min-width: calc(50% - 0.25rem);
+        font-size: 0.8rem;
+        padding: 0.625rem 0.75rem;
       }
     }
   </style>
@@ -340,141 +774,189 @@
     <div class="sidebar">
       <h3>Response Center</h3>
       
+      <!-- How to Use Section (Moved to top) -->
       <div class="sidebar-section">
-        <button class="sidebar-button active" data-section="dashboard">
-          Dashboard
+        <button class="sidebar-toggle" onclick="toggleHowToUse()">
+          <span>How to Use</span>
+          <span id="how-to-use-toggle">▼</span>
         </button>
+        <div id="how-to-use-content" class="collapsible-content" style="display: none;">
+          <div class="how-to-use-content">
+            <h5>Getting Started</h5>
+            <button class="sidebar-button" data-section="how-to-use">Quick Start Guide</button>
+            <button class="sidebar-button" data-section="claim-playbook">Step-by-Step Process</button>
+            <button class="sidebar-button" data-section="claim-timeline">Timeline & Deadlines</button>
+            
+            <h5>Common Scenarios</h5>
+            <button class="sidebar-button" data-status="denied">My Claim Was Denied</button>
+            <button class="sidebar-button" data-status="lowball">I Got a Lowball Offer</button>
+            <button class="sidebar-button" data-status="first-time">First Time Filing</button>
+            <button class="sidebar-button" data-status="stuck">Stuck/No Response</button>
+            
+            <h5>Tool Categories</h5>
+            <button class="sidebar-button" data-section="ai-agent">AI-Powered Tools</button>
+            <button class="sidebar-button" data-section="claim-analysis">Analysis & Assessment</button>
+            <button class="sidebar-button" data-section="document-generator">Document Generation</button>
+            <button class="sidebar-button" data-section="negotiation-scripts">Negotiation & Escalation</button>
+            
+            <h5>Resources & Support</h5>
+            <button class="sidebar-button" data-section="recommended-resources">External Resources</button>
+            <button class="sidebar-button" data-section="state-rights">State-Specific Help</button>
+            <button class="sidebar-button" data-section="settings">Account Settings</button>
+          </div>
+        </div>
       </div>
       
+      <!-- Quick Start Section -->
       <div class="sidebar-section">
-        <button class="sidebar-button" data-section="advanced-tools">
-          Advanced Tools
+        <button class="sidebar-toggle" onclick="toggleQuickStart()">
+          <span>🎯 Quick Start</span>
+          <span id="quick-start-toggle">▼</span>
         </button>
+        <div id="quick-start-content" class="collapsible-content" style="display: none;">
+          <button class="sidebar-button" data-status="denied">🔴 Claim Denied</button>
+          <button class="sidebar-button" data-status="lowball">🟡 Lowball Offer</button>
+          <button class="sidebar-button" data-status="first-time">🔵 First Time Filing</button>
+          <button class="sidebar-button" data-status="stuck">🟣 Stuck/No Response</button>
+        </div>
       </div>
       
+      <!-- My Workflow Section (Dynamic) -->
       <div class="sidebar-section">
-        <button class="sidebar-button" data-section="ai-agent">
-          AI Response & Analysis Agent
-        </button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <h4 class="sidebar-group-title" style="margin: 0;">⚡ My Workflow</h4>
+          <button onclick="resetWorkflow()" style="background: none; border: 1px solid var(--border); color: var(--text-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--text-secondary)'">Reset</button>
+        </div>
+        <div id="my-workflow-content">
+          <p class="workflow-placeholder">Select a situation above to see your personalized workflow</p>
+        </div>
+        <!-- Test buttons (remove in production) -->
+        <div style="margin-top: 0.5rem; display: flex; gap: 0.25rem; flex-wrap: wrap;">
+          <button onclick="startWorkflow('denied')" style="background: #dc2626; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">Test Denied</button>
+          <button onclick="startWorkflow('lowball')" style="background: #f59e0b; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">Test Lowball</button>
+          <button onclick="startWorkflow('first-time')" style="background: #3b82f6; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">Test First</button>
+          <button onclick="startWorkflow('stuck')" style="background: #8b5cf6; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">Test Stuck</button>
+        </div>
       </div>
       
+      <!-- All Tools Section -->
       <div class="sidebar-section">
-        <button class="sidebar-button" data-section="ai-policy-analyzer">
-          AI Policy Analyzer
+        <button class="sidebar-toggle" onclick="toggleAllTools()">
+          <span>🛠️ All Tools</span>
+          <span id="all-tools-toggle">▼</span>
         </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="claim-analysis">
-          Claim Analysis Tools
-        </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="claim-document-library">
-          Claim Document Library
-        </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="claim-documentation-guides">
-          Claim Documentation Guides
-        </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="claim-playbook">
-          Claim Playbook
-        </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="claim-timeline">
-          Claim Timeline & Sequence Guide
-        </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="document-generator">
-          Document Generator
-        </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="evidence-organizer">
-          Evidence Organizer
-        </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="how-to-use">
-          How to Use this Site
-        </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="insurance-tactics">
-          Insurance Company Tactics
-        </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="maximize-claim">
-          Maximize Your Claim
-        </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="my-claims">
-          My Claim - Tracking Journal
-        </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="negotiation-scripts">
-          Negotiation Scripts & Escalation
-        </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="recommended-resources">
-          Recommended Resources
-        </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="settings">
-          Settings
-        </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="situational-advisory">
-          Situational Advisory
-        </button>
-      </div>
-      
-      <div class="sidebar-section">
-        <button class="sidebar-button" data-section="state-rights">
-          State-Specific Rights & Deadlines
-        </button>
+        <div id="all-tools-content" class="collapsible-content" style="display: none;">
+          
+          <!-- Strategy & Guidance Group -->
+          <div class="tool-group">
+            <h5 class="tool-group-title">Strategy & Guidance</h5>
+            <button class="sidebar-button" data-section="claim-playbook">Claim Playbook</button>
+            <button class="sidebar-button" data-section="claim-timeline">Claim Timeline & Sequence Guide</button>
+            <button class="sidebar-button" data-section="insurance-tactics">Insurance Company Tactics</button>
+            <button class="sidebar-button" data-section="maximize-claim">Maximize Your Claim</button>
+            <button class="sidebar-button" data-section="state-rights">State-Specific Rights & Deadlines</button>
+          </div>
+          
+          <!-- Core Claim Tools Group -->
+          <div class="tool-group">
+            <h5 class="tool-group-title">Core Claim Tools</h5>
+            <button class="sidebar-button" data-section="ai-agent">AI Response & Analysis Agent</button>
+            <button class="sidebar-button" data-section="ai-policy-analyzer">AI Policy Analyzer</button>
+            <button class="sidebar-button" data-section="claim-analysis">Claim Analysis Tools</button>
+            <button class="sidebar-button" data-section="situational-advisory">Situational Advisory</button>
+            <button class="sidebar-button" data-section="document-generator">Document Generator</button>
+            <button class="sidebar-button" data-section="evidence-organizer">Evidence Organizer</button>
+            <button class="sidebar-button" data-section="claim-document-library">Claim Document Library</button>
+            <button class="sidebar-button" data-section="claim-documentation-guides">Claim Documentation Guides</button>
+            <button class="sidebar-button" data-section="negotiation-scripts">Negotiation Scripts & Escalation</button>
+            <button class="sidebar-button" data-section="my-claims">My Claim - Tracking Journal</button>
+            <button class="sidebar-button" data-section="advanced-tools">Advanced Tools</button>
+          </div>
+          
+          <!-- Resources Group -->
+          <div class="tool-group">
+            <h5 class="tool-group-title">Resources</h5>
+            <button class="sidebar-button" data-section="recommended-resources">Recommended Resources</button>
+            <button class="sidebar-button" data-section="settings">Settings</button>
+          </div>
+        </div>
       </div>
     </div>
-    
+      
     <div class="main-content">
       <div class="content-header" style="text-align: center;">
         <h1>Your AI-Powered Claim Resource Center</h1>
         <p>Your comprehensive claim management toolkit</p>
       </div>
       
-      <div class="categories-section">
-        <div class="category-group">
-          <h2 class="category-title">How to Use this Site</h2>
-          <div class="tools-list">
-            <div class="tool-item" data-tool="how-to-use">How to Use this Site</div>
+      <!-- Smart Search -->
+      <div class="smart-search-section">
+        <div class="search-container">
+          <input type="text" id="smart-search" placeholder="Search tools or describe your situation..." class="smart-search-input">
+          <button class="search-button" onclick="performSmartSearch()">🔍</button>
+      </div>
+      </div>
+      
+      <!-- Status-Based Entry Layer -->
+      <div class="status-entry-section">
+        <h2 class="section-title">🎯 Quick Start - What's Your Situation?</h2>
+        <div class="situation-cards-grid">
+          <div class="situation-card denied-card" onclick="selectSituation('denied')">
+            <div class="card-header">
+              <h3 class="card-title">My claim was just denied</h3>
+              <p class="card-description">Don't panic. You have rights and options to appeal this decision.</p>
+      </div>
+            <div class="card-tools">
+              <span class="tool-link" data-tool="ai-agent">AI Response Agent</span>
+              <span class="tool-link" data-tool="negotiation-scripts">Negotiation Scripts</span>
+              <span class="tool-link" data-tool="state-rights">Appeal Builder</span>
+      </div>
+            <button class="start-here-btn" onclick="startWorkflow('denied')">Start Here →</button>
+      </div>
+      
+          <div class="situation-card lowball-card" onclick="selectSituation('lowball')">
+            <div class="card-header">
+              <h3 class="card-title">I got a lowball offer</h3>
+              <p class="card-description">Insurance companies often lowball initial offers. You have the right to negotiate.</p>
+      </div>
+            <div class="card-tools">
+              <span class="tool-link" data-tool="claim-analysis">Damage Assessment</span>
+              <span class="tool-link" data-tool="ai-policy-analyzer">Policy Analyzer</span>
+              <span class="tool-link" data-tool="negotiation-scripts">Counter-offer Tools</span>
+      </div>
+            <button class="start-here-btn" onclick="startWorkflow('lowball')">Start Here →</button>
+    </div>
+    
+          <div class="situation-card first-time-card" onclick="selectSituation('first-time')">
+            <div class="card-header">
+              <h3 class="card-title">Filing for the first time</h3>
+              <p class="card-description">Starting your first claim? We'll guide you through every step.</p>
+            </div>
+            <div class="card-tools">
+              <span class="tool-link" data-tool="claim-playbook">Claim Playbook</span>
+              <span class="tool-link" data-tool="claim-document-library">Document Library</span>
+              <span class="tool-link" data-tool="evidence-organizer">Evidence Organizer</span>
+            </div>
+            <button class="start-here-btn" onclick="startWorkflow('first-time')">Start Here →</button>
+      </div>
+      
+          <div class="situation-card stuck-card" onclick="selectSituation('stuck')">
+            <div class="card-header">
+              <h3 class="card-title">Stuck/No response</h3>
+              <p class="card-description">Insurance company not responding? Let's escalate this.</p>
+            </div>
+            <div class="card-tools">
+              <span class="tool-link" data-tool="negotiation-scripts">Escalation</span>
+              <span class="tool-link" data-tool="state-rights">State Rights</span>
+              <span class="tool-link" data-tool="claim-timeline">Timeline</span>
+            </div>
+            <button class="start-here-btn" onclick="startWorkflow('stuck')">Start Here →</button>
+          </div>
           </div>
         </div>
         
+      <!-- Original Category Groups (Preserved) -->
+      <div class="categories-section">
         <div class="category-group">
           <h2 class="category-title">Strategy & Guidance</h2>
           <div class="tools-list">
@@ -610,7 +1092,7 @@
         } catch (error) {
           console.error('Error generating AI response:', error);
           output.innerHTML = `
-            <div style="color: #dc2626; padding: 1rem; background: #fee2e2; border-radius: 0.5rem;">
+            <div style="color: #dc2626; padding: 1rem; background: white; border: 1px solid #dc2626; border-radius: 0.5rem;">
               <strong>Error:</strong> ${error.message}<br>
               <small>Falling back to template response...</small>
             </div>
@@ -942,7 +1424,7 @@
         } catch (error) {
           console.error('Error analyzing policy:', error);
           output.innerHTML = `
-            <div style="color: #dc2626; padding: 1rem; background: #fee2e2; border-radius: 0.5rem; margin-bottom: 1rem;">
+            <div style="color: #dc2626; padding: 1rem; background: white; border: 1px solid #dc2626; border-radius: 0.5rem; margin-bottom: 1rem;">
               <strong>Error:</strong> ${error.message}<br>
               <small>Falling back to template analysis...</small>
             </div>
@@ -1006,7 +1488,7 @@
         } catch (error) {
           console.error('Error assessing damage:', error);
           output.innerHTML = `
-            <div style="color: #dc2626; padding: 1rem; background: #fee2e2; border-radius: 0.5rem; margin-bottom: 1rem;">
+            <div style="color: #dc2626; padding: 1rem; background: white; border: 1px solid #dc2626; border-radius: 0.5rem; margin-bottom: 1rem;">
               <strong>Error:</strong> ${error.message}<br>
               <small>Falling back to template assessment...</small>
             </div>
@@ -1245,7 +1727,7 @@
               <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📋 AI Policy Analyzer</h2>
               <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Upload your insurance policy documents for AI-powered analysis of coverages, important dates, and key information</p>
               
-              <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 5px solid var(--primary);">
+              <div style="background: white; border: 2px solid var(--border); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 5px solid var(--primary);">
                 <h3 style="margin: 0 0 1rem 0; color: var(--primary);">What This Tool Does</h3>
                 <ul style="margin: 0; padding-left: 1.5rem;">
                   <li>Analyzes your policy documents to identify all coverages and limits</li>
@@ -1293,7 +1775,7 @@
                 </div>
               </div>
               
-              <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 1.5rem; border-radius: 12px; margin-top: 2rem; border-left: 5px solid #f59e0b;">
+              <div style="background: white; border: 2px solid var(--border); padding: 1.5rem; border-radius: 12px; margin-top: 2rem; border-left: 5px solid #f59e0b;">
                 <h3 style="margin: 0 0 1rem 0; color: #92400e;">💡 Pro Tips</h3>
                 <ul style="margin: 0; padding-left: 1.5rem;">
                   <li><strong>Upload Complete Documents:</strong> Include all policy pages, endorsements, and amendments</li>
@@ -1354,14 +1836,14 @@
               <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📖 Claim Playbook</h2>
               <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Step-by-step guidance for your insurance claim process</p>
               
-              <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 5px solid var(--primary);">
+              <div style="background: white; border: 2px solid var(--border); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 5px solid var(--primary);">
                 <h3 style="margin: 0 0 1rem 0; color: var(--primary);">Claim Process Overview</h3>
                 <p style="margin: 0;">Follow these phases to maximize your claim success and ensure you receive fair compensation.</p>
               </div>
               
               <div style="max-width: 1200px; margin: 0 auto;">
                 <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                  <div style="background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="togglePhase('phase1')">
+                  <div style="background: white; border: 2px solid var(--primary); color: var(--primary); padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="togglePhase('phase1')">
                     <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">1</div>
                     <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Initial Claim Filing</div>
                     <div style="font-size: 1.5rem; transition: transform 0.3s;" id="phase1-toggle">▼</div>
@@ -1385,7 +1867,7 @@
                 </div>
                 
                 <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                  <div style="background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="togglePhase('phase2')">
+                  <div style="background: white; border: 2px solid var(--primary); color: var(--primary); padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="togglePhase('phase2')">
                     <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">2</div>
                     <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Evidence Collection & Documentation</div>
                     <div style="font-size: 1.5rem; transition: transform 0.3s;" id="phase2-toggle">▼</div>
@@ -1422,7 +1904,7 @@
                 <input type="file" id="evidence-upload" multiple accept="image/*,video/*,.pdf,.doc,.docx" style="display: none;" onchange="handleFileSelect(event)">
               </div>
               
-              <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
+              <div style="background: white; border: 2px solid var(--border); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
                 <h4 style="margin: 0 0 1rem 0;">AI-Powered Categorization</h4>
                 <p style="margin: 0;">Your uploaded evidence will be automatically categorized and organized for easy access.</p>
               </div>
@@ -1438,7 +1920,7 @@
               <h2 style="color: var(--primary); margin-bottom: 1.5rem;">⏰ Claim Timeline & Sequence Guide</h2>
               <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Complete step-by-step timeline for your insurance claim process</p>
               
-              <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 5px solid var(--primary);">
+              <div style="background: white; border: 2px solid var(--border); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border-left: 5px solid var(--primary);">
                 <h3 style="margin: 0 0 1rem 0; color: var(--primary);">Claim Process Timeline</h3>
                 <p style="margin: 0;">Follow this comprehensive timeline to ensure you meet all deadlines and maximize your claim success.</p>
               </div>
@@ -1446,7 +1928,7 @@
               <div style="max-width: 1200px; margin: 0 auto;">
                 <!-- Phase 1: Immediate Response (0-48 hours) -->
                 <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                  <div style="background: linear-gradient(135deg, #dc2626, #ef4444); color: white; padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleTimelinePhase('timeline1')">
+                  <div style="background: white; border: 2px solid #dc2626; color: var(--primary); padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleTimelinePhase('timeline1')">
                     <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">1</div>
                     <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Immediate Response (0-48 Hours)</div>
                     <div style="font-size: 1.5rem; transition: transform 0.3s;" id="timeline1-toggle">▼</div>
@@ -1486,7 +1968,7 @@
                 
                 <!-- Phase 2: Documentation Phase (1-2 weeks) -->
                 <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                  <div style="background: linear-gradient(135deg, #ea580c, #f97316); color: white; padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleTimelinePhase('timeline2')">
+                  <div style="background: white; border: 2px solid #ea580c; color: var(--primary); padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleTimelinePhase('timeline2')">
                     <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">2</div>
                     <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Documentation Phase (1-2 Weeks)</div>
                     <div style="font-size: 1.5rem; transition: transform 0.3s;" id="timeline2-toggle">▼</div>
@@ -1526,7 +2008,7 @@
                 
                 <!-- Phase 3: Assessment Phase (2-4 weeks) -->
                 <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                  <div style="background: linear-gradient(135deg, #d97706, #f59e0b); color: white; padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleTimelinePhase('timeline3')">
+                  <div style="background: white; border: 2px solid #d97706; color: var(--primary); padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleTimelinePhase('timeline3')">
                     <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">3</div>
                     <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Assessment Phase (2-4 Weeks)</div>
                     <div style="font-size: 1.5rem; transition: transform 0.3s;" id="timeline3-toggle">▼</div>
@@ -1566,7 +2048,7 @@
                 
                 <!-- Phase 4: Negotiation Phase (1-3 months) -->
                 <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                  <div style="background: linear-gradient(135deg, #059669, #10b981); color: white; padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleTimelinePhase('timeline4')">
+                  <div style="background: white; border: 2px solid #059669; color: var(--primary); padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleTimelinePhase('timeline4')">
                     <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">4</div>
                     <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Negotiation Phase (1-3 Months)</div>
                     <div style="font-size: 1.5rem; transition: transform 0.3s;" id="timeline4-toggle">▼</div>
@@ -1606,7 +2088,7 @@
                 
                 <!-- Phase 5: Resolution Phase (3-6 months) -->
                 <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                  <div style="background: linear-gradient(135deg, #7c3aed, #8b5cf6); color: white; padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleTimelinePhase('timeline5')">
+                  <div style="background: white; border: 2px solid #7c3aed; color: var(--primary); padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleTimelinePhase('timeline5')">
                     <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">5</div>
                     <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Resolution Phase (3-6 Months)</div>
                     <div style="font-size: 1.5rem; transition: transform 0.3s;" id="timeline5-toggle">▼</div>
@@ -1645,7 +2127,7 @@
                 </div>
               </div>
               
-              <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 1.5rem; border-radius: 12px; margin-top: 2rem; border-left: 5px solid var(--primary);">
+              <div style="background: white; border: 2px solid var(--border); padding: 1.5rem; border-radius: 12px; margin-top: 2rem; border-left: 5px solid var(--primary);">
                 <h3 style="margin: 0 0 1rem 0; color: var(--primary);">💡 Pro Tips</h3>
                 <ul style="margin: 0; padding-left: 1.5rem;">
                   <li><strong>Stay Organized:</strong> Keep all documents in a dedicated folder</li>
@@ -1658,59 +2140,331 @@
             </div>
           `,
           'how-to-use': `
-            <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
-              <h1 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 2rem;">How to Use This Site (Fast Start)</h1>
-              <p style="margin-bottom: 1.5rem; color: var(--text-secondary); font-size: 1.1rem;"><strong>1) Create your case.</strong> Go to <strong>My Claims → New Claim</strong>, select your claim type, state, and insurer, then upload any policy docs, letters, photos, and receipts.<br/>
-              <strong>2) Pick your path.</strong> Choose the workflow that matches your situation: <strong>New Filing</strong>, <strong>Denied</strong>, <strong>Low Offer</strong>, or <strong>No Response</strong>.<br/>
-              <strong>3) Follow the steps.</strong> Each section below has a short checklist. Complete tasks in order—your <strong>Timeline</strong> and <strong>Deadlines</strong> will update automatically.<br/>
-              <strong>4) Generate documents.</strong> Use <strong>Document Generator</strong> to produce letters/forms, then send by the recommended channel (portal, email, certified mail).<br/>
-              <strong>5) Track &amp; escalate.</strong> Log insurer calls/emails under <strong>My Claims</strong>. If stalled or denied, use <strong>Negotiation Scripts &amp; Escalation</strong> and <strong>State-Specific Rights &amp; Deadlines</strong>.</p>
+            <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border); max-width: 1200px; margin: 0 auto;">
               
-              <hr style="border: none; border-top: 2px solid var(--border); margin: 2rem 0;"/>
+              <!-- Quick Navigation -->
+              <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 2px solid var(--border);">
+                <h2 style="color: var(--primary); margin: 0 0 1rem 0; font-size: 1.5rem;">📋 Quick Navigation</h2>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                  <a href="#strategy" style="background: white; border: 2px solid var(--primary); color: var(--primary); padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-weight: 600; transition: all 0.2s;">⚡ Strategy & Guidance</a>
+                  <a href="#core-tools" style="background: white; border: 2px solid var(--primary); color: var(--primary); padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-weight: 600; transition: all 0.2s;">🛠️ Core Claim Tools</a>
+                  <a href="#negotiation" style="background: white; border: 2px solid var(--primary); color: var(--primary); padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-weight: 600; transition: all 0.2s;">💬 Negotiation & Escalation</a>
+                  <a href="#support" style="background: white; border: 2px solid var(--primary); color: var(--primary); padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-weight: 600; transition: all 0.2s;">📚 Support & Resources</a>
+                </div>
+              </div>
 
-              <h2 style="color: var(--primary); margin: 2rem 0 1rem 0; font-size: 1.5rem;">🟠 Strategy &amp; Guidance</h2>
-              
-              <h3 style="color: #4b5563; margin: 1.5rem 0 0.75rem 0; font-size: 1.25rem;">Claim Playbook</h3>
-              <p style="margin-bottom: 1rem;"><strong>Goal:</strong> A clear, customized plan from today to payout.</p>
-              <ol style="margin: 1rem 0; padding-left: 2rem;">
-                <li>Open Claim Playbook → choose claim type + current status.</li>
-                <li>Link your <strong>My Claims</strong> case to auto-pull policy limits, dates, and uploads.</li>
-                <li>Complete <strong>Do This Now</strong> tasks.</li>
-                <li>Stage <strong>This Week/This Month</strong> steps (evidence, estimates, letters).</li>
-                <li><strong>Add to Timeline</strong> to create due dates + reminders.</li>
-                <li>Update as insurer responds.</li>
-              </ol>
-              <p style="color: #6b7280; font-style: italic; margin-bottom: 1rem;"><em>Output: Personalized checklist + timeline entries.</em></p>
-              
-              <h3 style="color: #4b5563; margin: 1.5rem 0 0.75rem 0; font-size: 1.25rem;">Claim Timeline &amp; Sequence Guide</h3>
-              <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Never miss a deadline; sequence actions correctly.</p>
-              <ol style="margin: 1rem 0; padding-left: 2rem;">
-                <li>Open Timeline → confirm state + loss date.</li>
-                <li>Import tasks from <strong>Playbook</strong> and <strong>Document Due Dates</strong>.</li>
-                <li>Log insurer events (RFIs, inspections, offers, denials).</li>
-                <li>Review computed deadlines (proof-of-loss, appeal windows, DOI timing).</li>
-                <li>Optional: Calendar sync.</li>
-                <li>Act on alerts (click red items to jump to the next action/letter).</li>
-              </ol>
-              <p style="color: #6b7280; font-style: italic; margin-bottom: 1rem;"><em>Output: Live calendar with legal/contractual deadlines.</em></p>
-              
-              <div style="background: var(--bg-light); padding: 1rem; border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 2rem;">
-                <h3 style="color: var(--primary); margin-bottom: 1rem;">3. Use the AI Agent</h3>
-                <p>Go to the <strong>AI Response & Analysis Agent</strong> tab.</p>
-                <ul style="margin: 1rem 0; padding-left: 1.5rem;">
-                  <li>Enter your claim details and facts.</li>
-                  <li>The AI will produce a draft letter or response, tailored to your situation.</li>
-                </ul>
+              <h1 style="color: var(--primary); margin-bottom: 1.5rem; font-size: 2.5rem; text-align: center;">Complete User Manual</h1>
+              <p style="margin-bottom: 2rem; color: var(--text-secondary); font-size: 1.2rem; text-align: center;">Your comprehensive guide to maximizing your insurance claim success</p>
+
+              <!-- Getting Started -->
+              <div style="background: white; border: 2px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
+                <h2 style="color: var(--primary); margin: 0 0 1.5rem 0; font-size: 1.8rem;">🚀 Getting Started</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h3 style="color: var(--primary); margin: 0 0 1rem 0;">Step 1: Create Your Case</h3>
+                    <p>Go to <strong>My Claims → New Claim</strong>, select your claim type, state, and insurer, then upload any policy docs, letters, photos, and receipts.</p>
+                  </div>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h3 style="color: var(--primary); margin: 0 0 1rem 0;">Step 2: Pick Your Path</h3>
+                    <p>Choose the workflow that matches your situation: <strong>New Filing</strong>, <strong>Denied</strong>, <strong>Low Offer</strong>, or <strong>No Response</strong>.</p>
+                  </div>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h3 style="color: var(--primary); margin: 0 0 1rem 0;">Step 3: Follow the Steps</h3>
+                    <p>Each section has a short checklist. Complete tasks in order—your <strong>Timeline</strong> and <strong>Deadlines</strong> will update automatically.</p>
+                  </div>
+                </div>
               </div>
-              
-              <div style="background: var(--bg-light); padding: 1rem; border: 1px solid var(--border); border-radius: 0.5rem;">
-                <h3 style="color: var(--primary); margin-bottom: 1rem;">4. Download Your Files</h3>
-                <ul style="margin: 1rem 0; padding-left: 1.5rem;">
-                  <li>All generated documents are delivered as secure PDFs.</li>
-                  <li>Save them to your device or cloud storage.</li>
-                  <li>Print and mail as needed.</li>
-                </ul>
+
+              <!-- Strategy & Guidance -->
+              <div id="strategy" style="background: white; border: 2px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
+                <h2 style="color: var(--primary); margin: 0 0 1.5rem 0; font-size: 1.8rem;">⚡ Strategy & Guidance</h2>
+                
+                <div style="margin-bottom: 2rem;">
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">📖 Claim Playbook</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> A clear, customized plan from today to payout.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">How to Use:</h4>
+                    <ol style="margin: 0; padding-left: 1.5rem;">
+                      <li>Open Claim Playbook → choose claim type + current status</li>
+                      <li>Link your <strong>My Claims</strong> case to auto-pull policy limits, dates, and uploads</li>
+                      <li>Complete <strong>Do This Now</strong> tasks</li>
+                      <li>Stage <strong>This Week/This Month</strong> steps (evidence, estimates, letters)</li>
+                      <li><strong>Add to Timeline</strong> to create due dates + reminders</li>
+                      <li>Update as insurer responds</li>
+                    </ol>
+                    <p style="color: #6b7280; font-style: italic; margin: 1rem 0 0 0;"><em>Output: Personalized checklist + timeline entries</em></p>
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">⏰ Claim Timeline & Sequence Guide</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Never miss a deadline; sequence actions correctly.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">How to Use:</h4>
+                    <ol style="margin: 0; padding-left: 1.5rem;">
+                      <li>Open Timeline → confirm state + loss date</li>
+                      <li>Import tasks from <strong>Playbook</strong> and <strong>Document Due Dates</strong></li>
+                      <li>Log insurer events (RFIs, inspections, offers, denials)</li>
+                      <li>Review computed deadlines (proof-of-loss, appeal windows, DOI timing)</li>
+                      <li>Optional: Calendar sync</li>
+                      <li>Act on alerts (click red items to jump to the next action/letter)</li>
+                    </ol>
+                    <p style="color: #6b7280; font-style: italic; margin: 1rem 0 0 0;"><em>Output: Live calendar with legal/contractual deadlines</em></p>
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">🎯 Insurance Company Tactics</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Understand and counter common insurance company tactics.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">What You'll Learn:</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                      <li>Common delay tactics and how to counter them</li>
+                      <li>Lowball offer strategies and negotiation techniques</li>
+                      <li>Documentation requirements and evidence standards</li>
+                      <li>When and how to escalate your claim</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">💰 Maximize Your Claim</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Ensure you receive the maximum compensation you're entitled to.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">Key Strategies:</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                      <li>Document everything thoroughly and immediately</li>
+                      <li>Get multiple independent estimates</li>
+                      <li>Understand your policy coverage limits</li>
+                      <li>Know your state's insurance laws and deadlines</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">⚖️ State-Specific Rights & Deadlines</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Understand your legal rights and critical deadlines in your state.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">What You'll Find:</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                      <li>State-specific claim filing deadlines</li>
+                      <li>Appeal rights and procedures</li>
+                      <li>Bad faith insurance laws</li>
+                      <li>Department of Insurance complaint processes</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
+
+              <!-- Core Claim Tools -->
+              <div id="core-tools" style="background: white; border: 2px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
+                <h2 style="color: var(--primary); margin: 0 0 1.5rem 0; font-size: 1.8rem;">🛠️ Core Claim Tools</h2>
+                
+                <div style="margin-bottom: 2rem;">
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">🤖 AI Response & Analysis Agent</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Generate professional responses to insurance correspondence using AI.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">How to Use:</h4>
+                    <ol style="margin: 0; padding-left: 1.5rem;">
+                      <li>Paste the insurance company's letter or correspondence</li>
+                      <li>Select your response type (appeal, counter-offer, request for information)</li>
+                      <li>Review the AI-generated response</li>
+                      <li>Edit and customize as needed</li>
+                      <li>Export as PDF or Word document</li>
+                    </ol>
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">📋 AI Policy Analyzer</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Analyze your insurance policy to understand coverage, exclusions, and key information.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">How to Use:</h4>
+                    <ol style="margin: 0; padding-left: 1.5rem;">
+                      <li>Upload your policy documents (PDF, DOC, DOCX)</li>
+                      <li>Or paste policy text directly</li>
+                      <li>Review the AI analysis of coverage and limits</li>
+                      <li>Download the policy summary for your records</li>
+                    </ol>
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">📊 Claim Analysis Tools</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Analyze your claim, review coverage, and assess damages professionally.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">Available Tools:</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                      <li><strong>Policy Review:</strong> Upload policy for coverage analysis</li>
+                      <li><strong>Damage Assessment:</strong> Calculate and document property damage</li>
+                      <li><strong>Coverage Analysis:</strong> Identify gaps and exclusions</li>
+                      <li><strong>Claim Valuation:</strong> Determine fair settlement amounts</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">📄 Document Generator</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Generate professional letters, forms, and documents for your claim.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">Available Documents:</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                      <li>Appeal letters and responses</li>
+                      <li>Proof of loss statements</li>
+                      <li>Demand letters for payment</li>
+                      <li>State insurance department complaints</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">📸 Evidence Organizer</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Upload, organize, and categorize your claim evidence.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">How to Use:</h4>
+                    <ol style="margin: 0; padding-left: 1.5rem;">
+                      <li>Drag and drop files or click to upload</li>
+                      <li>Files are automatically categorized by type</li>
+                      <li>Add descriptions and tags for easy searching</li>
+                      <li>Download organized evidence packages</li>
+                    </ol>
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">📁 Claim Document Library</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Access and manage your claim documents in one place.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">Features:</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                      <li>Upload and store all claim-related documents</li>
+                      <li>Search and filter by document type</li>
+                      <li>Download documents as needed</li>
+                      <li>Share documents with your attorney or public adjuster</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">📝 My Claim - Tracking Journal</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Track all communications and activities related to your claim.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">How to Use:</h4>
+                    <ol style="margin: 0; padding-left: 1.5rem;">
+                      <li>Log all phone calls with insurance company</li>
+                      <li>Record email communications</li>
+                      <li>Track document submissions</li>
+                      <li>Set reminders for follow-up actions</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Negotiation & Escalation -->
+              <div id="negotiation" style="background: white; border: 2px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
+                <h2 style="color: var(--primary); margin: 0 0 1.5rem 0; font-size: 1.8rem;">💬 Negotiation & Escalation</h2>
+                
+                <div style="margin-bottom: 2rem;">
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">💬 Negotiation Scripts & Escalation</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Professional scripts and strategies for negotiating with insurance companies.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">Available Scripts:</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                      <li>Initial claim follow-up calls</li>
+                      <li>Appeal denial conversations</li>
+                      <li>Counter-offer negotiations</li>
+                      <li>Escalation to supervisors</li>
+                      <li>Department of Insurance complaints</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">🎯 Situational Advisory</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Get specific advice based on your unique claim situation.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">How to Use:</h4>
+                    <ol style="margin: 0; padding-left: 1.5rem;">
+                      <li>Describe your specific claim situation</li>
+                      <li>Answer questions about your case</li>
+                      <li>Receive personalized recommendations</li>
+                      <li>Get next steps tailored to your situation</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Support & Resources -->
+              <div id="support" style="background: white; border: 2px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
+                <h2 style="color: var(--primary); margin: 0 0 1.5rem 0; font-size: 1.8rem;">📚 Support & Resources</h2>
+                
+                <div style="margin-bottom: 2rem;">
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">📚 Recommended Resources</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Access external resources and professional help when needed.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">Available Resources:</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                      <li>State insurance department contacts</li>
+                      <li>Public adjuster directories</li>
+                      <li>Insurance attorney referrals</li>
+                      <li>Consumer advocacy organizations</li>
+                      <li>Insurance industry publications</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                  <h3 style="color: #4b5563; margin: 1.5rem 0 1rem 0; font-size: 1.4rem;">⚙️ Settings</h3>
+                  <p style="margin-bottom: 1rem;"><strong>Goal:</strong> Customize your experience and manage your account.</p>
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">Available Settings:</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                      <li>Notification preferences</li>
+                      <li>Document storage settings</li>
+                      <li>Privacy and security options</li>
+                      <li>Account management</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tips & Best Practices -->
+              <div style="background: white; border: 2px solid var(--border); border-radius: 12px; padding: 2rem;">
+                <h2 style="color: var(--primary); margin: 0 0 1.5rem 0; font-size: 1.8rem;">💡 Tips & Best Practices</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">📝 Documentation</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                      <li>Take photos immediately after damage</li>
+                      <li>Keep detailed records of all communications</li>
+                      <li>Save receipts for temporary repairs</li>
+                      <li>Document everything in writing</li>
+                    </ul>
+                  </div>
+                  
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">⏰ Timing</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                      <li>File your claim as soon as possible</li>
+                      <li>Meet all deadlines religiously</li>
+                      <li>Follow up regularly but professionally</li>
+                      <li>Don't wait to escalate if needed</li>
+                    </ul>
+                  </div>
+                  
+                  <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="color: var(--primary); margin: 0 0 1rem 0;">🤝 Communication</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                      <li>Be professional and courteous</li>
+                      <li>Get everything in writing</li>
+                      <li>Don't accept the first offer</li>
+                      <li>Know when to get professional help</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
             </div>
           `
         };
@@ -1725,7 +2479,272 @@
       
       // Show dashboard by default
       showDashboard();
+      
+      // Handle card tool buttons
+      const cardToolBtns = document.querySelectorAll('.card-tool-btn');
+      cardToolBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const tool = this.dataset.tool;
+          showTool(tool);
+          
+          // Update sidebar active state
+          const sidebarButton = document.querySelector(`[data-section="${tool}"]`);
+          if (sidebarButton) {
+            sidebarButtons.forEach(btn => btn.classList.remove('active'));
+            sidebarButton.classList.add('active');
+          }
+        });
+      });
+      
+      // Handle status buttons
+      const statusBtns = document.querySelectorAll('.status-btn');
+      statusBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          statusBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          
+          const status = this.dataset.status;
+          highlightRelevantTools(status);
+        });
+      });
+      
+      // Handle smart search input
+      const smartSearchInput = document.getElementById('smart-search');
+      if (smartSearchInput) {
+        smartSearchInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            performSmartSearch();
+          }
+        });
+        
+        smartSearchInput.addEventListener('input', function() {
+          if (this.value.length > 2) {
+            performSmartSearch();
+          } else if (this.value.length === 0) {
+            // Reset all cards when search is cleared
+            document.querySelectorAll('.situation-card').forEach(card => {
+              card.style.opacity = '1';
+              card.style.transform = 'scale(1)';
+            });
+          }
+        });
+      }
     });
+    
+    // New functions for the redesigned interface
+    function selectSituation(situation) {
+      // Update status button
+      const statusBtn = document.querySelector(`[data-status="${situation}"]`);
+      if (statusBtn) {
+        document.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
+        statusBtn.classList.add('active');
+      }
+      
+      // Highlight relevant tools
+      highlightRelevantTools(situation);
+    }
+    
+    function highlightRelevantTools(situation) {
+      // Remove existing highlights
+      document.querySelectorAll('.situation-card').forEach(card => {
+        card.style.opacity = '0.6';
+        card.style.transform = 'scale(0.98)';
+      });
+      
+      // Highlight the relevant card
+      const relevantCard = document.querySelector(`.${situation}-card`);
+      if (relevantCard) {
+        relevantCard.style.opacity = '1';
+        relevantCard.style.transform = 'scale(1.02)';
+      }
+    }
+    
+    function performSmartSearch() {
+      const searchTerm = document.getElementById('smart-search').value.toLowerCase();
+      
+      // Search for situation keywords
+      if (searchTerm.includes('denied') || searchTerm.includes('denial') || searchTerm.includes('rejected')) {
+        selectSituation('denied');
+        startWorkflow('denied');
+      } else if (searchTerm.includes('lowball') || searchTerm.includes('low offer') || searchTerm.includes('offer') || searchTerm.includes('settlement')) {
+        selectSituation('lowball');
+        startWorkflow('lowball');
+      } else if (searchTerm.includes('first time') || searchTerm.includes('filing') || searchTerm.includes('new claim') || searchTerm.includes('beginning')) {
+        selectSituation('first-time');
+        startWorkflow('first-time');
+      } else if (searchTerm.includes('stuck') || searchTerm.includes('no response') || searchTerm.includes('waiting') || searchTerm.includes('delayed')) {
+        selectSituation('stuck');
+        startWorkflow('stuck');
+      } else {
+        // Search for tool names
+        const toolMatches = [];
+        const allTools = document.querySelectorAll('.tool-item, .sidebar-button');
+        
+        allTools.forEach(tool => {
+          const toolText = tool.textContent.toLowerCase();
+          if (toolText.includes(searchTerm)) {
+            toolMatches.push(tool);
+          }
+        });
+        
+        if (toolMatches.length > 0) {
+          // Highlight matching tools
+          allTools.forEach(tool => tool.style.opacity = '0.5');
+          toolMatches.forEach(tool => tool.style.opacity = '1');
+        } else {
+          // Show all cards and tools
+          document.querySelectorAll('.situation-card, .tool-item, .sidebar-button').forEach(item => {
+            item.style.opacity = '1';
+            item.style.transform = 'scale(1)';
+          });
+        }
+      }
+    }
+    
+    function toggleAllTools() {
+      const content = document.getElementById('all-tools-content');
+      const toggle = document.getElementById('all-tools-toggle');
+      
+      if (content.style.display === 'none') {
+        content.style.display = 'block';
+        toggle.innerHTML = '▲';
+      } else {
+        content.style.display = 'none';
+        toggle.innerHTML = '▼';
+      }
+    }
+    
+    function showHelpModal() {
+      // Show the help content in the main area
+      showTool('how-to-use');
+      
+      // Update sidebar active state
+      const sidebarButtons = document.querySelectorAll('.sidebar-button');
+      sidebarButtons.forEach(btn => btn.classList.remove('active'));
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function toggleHowToUse() {
+      const content = document.getElementById('how-to-use-content');
+      const toggle = document.getElementById('how-to-use-toggle');
+      
+      if (content.style.display === 'none') {
+        content.style.display = 'block';
+        toggle.innerHTML = '▲';
+      } else {
+        content.style.display = 'none';
+        toggle.innerHTML = '▼';
+      }
+    }
+    
+    function toggleQuickStart() {
+      const content = document.getElementById('quick-start-content');
+      const toggle = document.getElementById('quick-start-toggle');
+      
+      if (content.style.display === 'none') {
+        content.style.display = 'block';
+        toggle.innerHTML = '▲';
+      } else {
+        content.style.display = 'none';
+        toggle.innerHTML = '▼';
+      }
+    }
+    
+    function startWorkflow(situation) {
+      console.log('Starting workflow for:', situation); // Debug log
+      
+      // Update the My Workflow section with relevant tools
+      const workflowContent = document.getElementById('my-workflow-content');
+      
+      if (!workflowContent) {
+        console.error('My workflow content element not found');
+        return;
+      }
+      
+      const workflows = {
+        'denied': [
+          { tool: 'ai-agent', name: 'AI Response Agent', icon: '🤖' },
+          { tool: 'negotiation-scripts', name: 'Negotiation Scripts', icon: '💬' },
+          { tool: 'state-rights', name: 'State Rights & Appeals', icon: '⚖️' },
+          { tool: 'claim-timeline', name: 'Appeal Timeline', icon: '⏰' }
+        ],
+        'lowball': [
+          { tool: 'claim-analysis', name: 'Damage Assessment', icon: '📊' },
+          { tool: 'ai-policy-analyzer', name: 'Policy Analyzer', icon: '📋' },
+          { tool: 'negotiation-scripts', name: 'Counter-offer Tools', icon: '💬' },
+          { tool: 'maximize-claim', name: 'Maximize Claim', icon: '💰' }
+        ],
+        'first-time': [
+          { tool: 'claim-playbook', name: 'Claim Playbook', icon: '📖' },
+          { tool: 'claim-document-library', name: 'Document Library', icon: '📁' },
+          { tool: 'evidence-organizer', name: 'Evidence Organizer', icon: '📸' },
+          { tool: 'claim-timeline', name: 'Step-by-Step Guide', icon: '⏰' }
+        ],
+        'stuck': [
+          { tool: 'negotiation-scripts', name: 'Escalation Scripts', icon: '📞' },
+          { tool: 'state-rights', name: 'State Rights', icon: '⚖️' },
+          { tool: 'claim-timeline', name: 'Deadlines & Timeline', icon: '⏰' },
+          { tool: 'situational-advisory', name: 'Situational Advisory', icon: '💡' }
+        ]
+      };
+      
+      const workflow = workflows[situation] || [];
+      
+      if (workflow.length === 0) {
+        workflowContent.innerHTML = '<p class="workflow-placeholder">No workflow found for this situation</p>';
+        return;
+      }
+      
+      // Add a header to show which workflow is active
+      const situationNames = {
+        'denied': 'Claim Denied Workflow',
+        'lowball': 'Lowball Offer Workflow', 
+        'first-time': 'First Time Filing Workflow',
+        'stuck': 'Stuck/No Response Workflow'
+      };
+      
+      workflowContent.innerHTML = `
+        <div style="background: var(--primary); color: white; padding: 0.5rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.9rem; font-weight: 600; text-align: center;">
+          ${situationNames[situation] || 'Custom Workflow'}
+        </div>
+        ${workflow.map(item => `
+          <button class="sidebar-button workflow-tool" data-section="${item.tool}" onclick="showTool('${item.tool}')">
+            ${item.icon} ${item.name}
+          </button>
+        `).join('')}
+      `;
+      
+      // Highlight the selected situation card
+      document.querySelectorAll('.situation-card').forEach(card => {
+        card.style.opacity = '0.6';
+        card.style.transform = 'scale(0.98)';
+      });
+      
+      const selectedCard = document.querySelector(`.${situation}-card`);
+      if (selectedCard) {
+        selectedCard.style.opacity = '1';
+        selectedCard.style.transform = 'scale(1.02)';
+      }
+      
+      console.log('Workflow updated successfully for:', situation);
+    }
+    
+    // Function to reset workflow
+    function resetWorkflow() {
+      const workflowContent = document.getElementById('my-workflow-content');
+      if (workflowContent) {
+        workflowContent.innerHTML = '<p class="workflow-placeholder">Select a situation above to see your personalized workflow</p>';
+      }
+      
+      // Reset all situation cards
+      document.querySelectorAll('.situation-card').forEach(card => {
+        card.style.opacity = '1';
+        card.style.transform = 'scale(1)';
+      });
+    }
     
     // AI Response functions
     async function generateAIResponse() {
@@ -1761,7 +2780,7 @@
         
         if (data.success) {
           content.innerHTML = `
-            <div style="background: #f0f9ff; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">                                                           
+            <div style="background: white; border: 1px solid var(--primary); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">                                                           
               <strong>AI Generated Response:</strong><br>
               ${data.response}
             </div>
@@ -1772,11 +2791,11 @@
       } catch (error) {
         console.error('Error generating AI response:', error);
         content.innerHTML = `
-          <div style="background: #fee2e2; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; color: #dc2626;">                                                           
+          <div style="background: white; border: 1px solid #dc2626; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; color: #dc2626;">                                                           
             <strong>Error:</strong> ${error.message}<br>
             <small>Falling back to template response...</small>
           </div>
-          <div style="background: #f0f9ff; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">                                                           
+          <div style="background: white; border: 1px solid var(--primary); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">                                                           
             <strong>AI Generated Response:</strong><br>
             Based on your input, here's a professional response to the insurance company...                                                                       
           </div>
@@ -1932,11 +2951,11 @@
           console.error('Error analyzing policy:', error);
           // Fallback to template analysis
           resultsDiv.innerHTML = `
-            <div style="color: #dc2626; padding: 1rem; background: #fee2e2; border-radius: 0.5rem; margin-bottom: 1rem;">
+            <div style="color: #dc2626; padding: 1rem; background: white; border: 1px solid #dc2626; border-radius: 0.5rem; margin-bottom: 1rem;">
               <strong>Error:</strong> ${error.message}<br>
               <small>Falling back to template analysis...</small>
             </div>
-            <div style="background: #f0f9ff; padding: 1rem; border-radius: 0.5rem;">
+            <div style="background: white; border: 1px solid var(--primary); padding: 1rem; border-radius: 0.5rem;">
               <h4 style="margin: 0 0 1rem 0; color: var(--primary);">Policy Analysis Results</h4>
               <div style="margin-bottom: 1rem;">
                 <strong>Coverage Summary:</strong><br>
@@ -1970,7 +2989,7 @@
           `;
           
           keyInfoDiv.innerHTML = `
-            <div style="background: #f0f9ff; padding: 0.75rem; border-radius: 6px; border-left: 3px solid var(--primary);">
+            <div style="background: white; border: 1px solid var(--primary); padding: 0.75rem; border-radius: 6px; border-left: 3px solid var(--primary);">
               <strong>Policy Number:</strong> [Extracted from document]<br>
               <strong>Insured:</strong> [Policyholder name]<br>
               <strong>Property Address:</strong> [Property location]<br>
