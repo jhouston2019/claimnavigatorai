@@ -982,6 +982,10 @@
             <div class="tool-item" data-tool="settlement-comparison">Settlement Comparison Tool</div>
             <div class="tool-item" data-tool="financial-calculator">Financial Impact Calculator</div>
             <div class="tool-item" data-tool="professional-marketplace">Professional Marketplace</div>
+            <div class="tool-item" data-tool="claim-timeline-tracker">Claim Timeline Tracker</div>
+            <div class="tool-item" data-tool="documentation-checklist">Documentation Checklist</div>
+            <div class="tool-item" data-tool="deadline-tracker">Deadline Tracker</div>
+            <div class="tool-item" data-tool="claim-stage-tracker">Claim Stage Tracker</div>
             <div class="tool-item" data-tool="evidence-organizer">Evidence Organizer</div>
             <div class="tool-item" data-tool="claim-document-library">Claim Document Library</div>
             <div class="tool-item" data-tool="claim-documentation-guides">Claim Documentation Guides</div>
@@ -1688,6 +1692,10 @@
           'settlement-comparison': 'Settlement Comparison Tool',
           'financial-calculator': 'Financial Impact Calculator',
           'professional-marketplace': 'Professional Marketplace',
+          'claim-timeline-tracker': 'Claim Timeline Tracker',
+          'documentation-checklist': 'Documentation Checklist',
+          'deadline-tracker': 'Deadline Tracker',
+          'claim-stage-tracker': 'Claim Stage Tracker',
           'evidence-organizer': 'Evidence Organizer',
           'claim-document-library': 'Claim Document Library',
           'claim-documentation-guides': 'Claim Documentation Guides',
@@ -2478,7 +2486,11 @@
           `,
           'settlement-comparison': showSettlementComparison(),
           'financial-calculator': showFinancialCalculator(),
-          'professional-marketplace': showProfessionalMarketplace()
+          'professional-marketplace': showProfessionalMarketplace(),
+          'claim-timeline-tracker': showClaimTimelineTracker(),
+          'documentation-checklist': showDocumentationChecklist(),
+          'deadline-tracker': showDeadlineTracker(),
+          'claim-stage-tracker': showClaimStageTracker()
         };
         
         return toolContent[tool] || `
@@ -3574,6 +3586,622 @@
           }
         } catch (error) {
           console.error('Error searching professionals:', error);
+          resultsDiv.innerHTML = `
+            <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dc2626; color: #dc2626;">
+              <strong>Error:</strong> ${error.message}
+            </div>
+          `;
+        }
+      }
+
+      // Claim Timeline Tracker
+      function showClaimTimelineTracker() {
+        const content = `
+          <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">⏰ Claim Timeline Tracker</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Track your claim progress through each phase with automated reminders and deadlines</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+              <div>
+                <h3 style="color: #4b5563; margin-bottom: 1rem;">Claim Information</h3>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Claim Type</label>
+                  <select id="timeline-claim-type" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                    <option value="property">Property</option>
+                    <option value="auto">Auto</option>
+                    <option value="health">Health</option>
+                  </select>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">State</label>
+                  <select id="timeline-state" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                    <option value="CA">California</option>
+                    <option value="TX">Texas</option>
+                    <option value="FL">Florida</option>
+                    <option value="NY">New York</option>
+                  </select>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Date of Loss</label>
+                  <input type="date" id="timeline-loss-date" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+              </div>
+              
+              <div>
+                <h3 style="color: #4b5563; margin-bottom: 1rem;">Current Status</h3>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Current Phase</label>
+                  <select id="timeline-current-phase" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                    <option value="initial">Initial Loss</option>
+                    <option value="claim-setup">Claim Setup</option>
+                    <option value="inspection">Inspection</option>
+                    <option value="estimate-review">Estimate Review</option>
+                    <option value="settlement">Settlement</option>
+                  </select>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Claim Number</label>
+                  <input type="text" id="timeline-claim-number" placeholder="Enter claim number" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+              </div>
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+              <button onclick="loadClaimTimeline()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                Load Timeline
+              </button>
+            </div>
+            
+            <div id="timeline-results" style="display: none;">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        `;
+        return content;
+      }
+
+      async function loadClaimTimeline() {
+        const claimType = document.getElementById('timeline-claim-type').value;
+        const state = document.getElementById('timeline-state').value;
+        const lossDate = document.getElementById('timeline-loss-date').value;
+        const currentPhase = document.getElementById('timeline-current-phase').value;
+        const claimNumber = document.getElementById('timeline-claim-number').value;
+
+        const resultsDiv = document.getElementById('timeline-results');
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = '<div class="spinner"></div> Loading timeline...';
+
+        try {
+          const response = await fetch('/.netlify/functions/claim-timeline-tracker', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              action: 'get-timeline',
+              claimType,
+              state,
+              claimData: {
+                lossDate,
+                currentPhase,
+                claimNumber
+              }
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            const timeline = data.timeline;
+            resultsDiv.innerHTML = `
+              <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">Claim Timeline Progress</h3>
+                <div style="margin-bottom: 1rem;">
+                  <div style="background: #f3f4f6; border-radius: 0.5rem; padding: 0.5rem; margin-bottom: 0.5rem;">
+                    <strong>Overall Progress:</strong> ${timeline.progress}%
+                  </div>
+                  <div style="background: #f3f4f6; border-radius: 0.5rem; padding: 0.5rem; margin-bottom: 0.5rem;">
+                    <strong>Current Phase:</strong> ${timeline.currentPhase}
+                  </div>
+                </div>
+                
+                <div style="display: grid; gap: 1rem; margin-bottom: 1.5rem;">
+                  ${timeline.phases.map(phase => `
+                    <div style="background: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border); border-left: 4px solid ${phase.status === 'completed' ? '#059669' : phase.status === 'current' ? '#3b82f6' : '#e5e7eb'};">
+                      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                        <h4 style="margin: 0; color: var(--primary);">${phase.name}</h4>
+                        <span style="background: ${phase.status === 'completed' ? '#dcfce7' : phase.status === 'current' ? '#dbeafe' : '#f3f4f6'}; color: ${phase.status === 'completed' ? '#166534' : phase.status === 'current' ? '#1e40af' : '#6b7280'}; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.875rem;">
+                          ${phase.status === 'completed' ? '✅ Completed' : phase.status === 'current' ? '🔄 Current' : '⏳ Pending'}
+                        </span>
+                      </div>
+                      <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary);">${phase.description}</p>
+                      <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                        <strong>Requirements:</strong>
+                        <ul style="margin: 0.5rem 0 0 1rem; padding: 0;">
+                          ${phase.requirements.map(req => `<li>${req}</li>`).join('')}
+                        </ul>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+
+                ${timeline.stateDeadlines && Object.keys(timeline.stateDeadlines).length > 0 ? `
+                  <div style="margin-top: 1.5rem;">
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">State Deadlines</h4>
+                    <div style="background: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                      ${Object.entries(timeline.stateDeadlines).map(([deadline, info]) => `
+                        <div style="margin-bottom: 0.5rem;">
+                          <strong>${deadline}:</strong> ${info}
+                        </div>
+                      `).join('')}
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          } else {
+            throw new Error(data.error || 'Failed to load timeline');
+          }
+        } catch (error) {
+          console.error('Error loading claim timeline:', error);
+          resultsDiv.innerHTML = `
+            <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dc2626; color: #dc2626;">
+              <strong>Error:</strong> ${error.message}
+            </div>
+          `;
+        }
+      }
+
+      // Documentation Checklist
+      function showDocumentationChecklist() {
+        const content = `
+          <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📋 Documentation Checklist</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Comprehensive checklist to ensure you document everything immediately and completely</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+              <div>
+                <h3 style="color: #4b5563; margin-bottom: 1rem;">Claim Information</h3>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Claim Type</label>
+                  <select id="checklist-claim-type" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                    <option value="property">Property</option>
+                    <option value="auto">Auto</option>
+                    <option value="health">Health</option>
+                  </select>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Date of Loss</label>
+                  <input type="date" id="checklist-loss-date" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+              </div>
+              
+              <div>
+                <h3 style="color: #4b5563; margin-bottom: 1rem;">Progress Tracking</h3>
+                <div style="background: var(--bg-light); padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                  <div style="text-align: center;">
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary);" id="checklist-progress">0%</div>
+                    <div style="color: var(--text-secondary);">Completion Progress</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+              <button onclick="loadDocumentationChecklist()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                Load Checklist
+              </button>
+            </div>
+            
+            <div id="checklist-results" style="display: none;">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        `;
+        return content;
+      }
+
+      async function loadDocumentationChecklist() {
+        const claimType = document.getElementById('checklist-claim-type').value;
+        const lossDate = document.getElementById('checklist-loss-date').value;
+
+        const resultsDiv = document.getElementById('checklist-results');
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = '<div class="spinner"></div> Loading checklist...';
+
+        try {
+          const response = await fetch('/.netlify/functions/documentation-checklist', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              action: 'get-checklist',
+              claimType,
+              claimData: { lossDate }
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            const checklist = data.checklist;
+            resultsDiv.innerHTML = `
+              <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">${checklist.title}</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                  <div style="background: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border); text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">${checklist.totalItems}</div>
+                    <div style="color: var(--text-secondary);">Total Items</div>
+                  </div>
+                  <div style="background: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border); text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #dc2626;">${checklist.criticalItems}</div>
+                    <div style="color: var(--text-secondary);">Critical Items</div>
+                  </div>
+                  <div style="background: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border); text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #059669;">${checklist.completedItems}</div>
+                    <div style="color: var(--text-secondary);">Completed</div>
+                  </div>
+                </div>
+                
+                <div style="display: grid; gap: 1.5rem;">
+                  ${checklist.categories.map(category => `
+                    <div style="background: white; padding: 1.5rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <h4 style="margin: 0; color: var(--primary);">${category.name}</h4>
+                        <span style="background: ${category.priority === 'critical' ? '#fef2f2' : category.priority === 'high' ? '#fef3c7' : '#f3f4f6'}; color: ${category.priority === 'critical' ? '#dc2626' : category.priority === 'high' ? '#f59e0b' : '#6b7280'}; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.875rem;">
+                          ${category.priority === 'critical' ? '🚨 Critical' : category.priority === 'high' ? '⚠️ High' : '📋 Medium'}
+                        </span>
+                      </div>
+                      
+                      <div style="display: grid; gap: 1rem;">
+                        ${category.items.map(item => `
+                          <div style="display: flex; align-items: start; gap: 1rem; padding: 1rem; background: var(--bg-light); border-radius: 0.5rem; border: 1px solid var(--border);">
+                            <input type="checkbox" id="checklist-${item.id}" style="margin-top: 0.25rem;" onchange="updateChecklistProgress()">
+                            <div style="flex: 1;">
+                              <div style="font-weight: 600; margin-bottom: 0.25rem;">${item.description}</div>
+                              <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">${item.tips}</div>
+                              <div style="display: flex; gap: 0.5rem;">
+                                <span style="background: ${item.importance === 'critical' ? '#fef2f2' : item.importance === 'high' ? '#fef3c7' : '#f3f4f6'}; color: ${item.importance === 'critical' ? '#dc2626' : item.importance === 'high' ? '#f59e0b' : '#6b7280'}; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem;">
+                                  ${item.importance === 'critical' ? '🚨 Critical' : item.importance === 'high' ? '⚠️ High' : '📋 Medium'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        `).join('')}
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `;
+          } else {
+            throw new Error(data.error || 'Failed to load checklist');
+          }
+        } catch (error) {
+          console.error('Error loading documentation checklist:', error);
+          resultsDiv.innerHTML = `
+            <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dc2626; color: #dc2626;">
+              <strong>Error:</strong> ${error.message}
+            </div>
+          `;
+        }
+      }
+
+      function updateChecklistProgress() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const checked = document.querySelectorAll('input[type="checkbox"]:checked');
+        const progress = Math.round((checked.length / checkboxes.length) * 100);
+        
+        document.getElementById('checklist-progress').textContent = `${progress}%`;
+      }
+
+      // Deadline Tracker
+      function showDeadlineTracker() {
+        const content = `
+          <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">⏰ Deadline Tracker</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Track critical deadlines and get automated reminders</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+              <div>
+                <h3 style="color: #4b5563; margin-bottom: 1rem;">Claim Information</h3>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">State</label>
+                  <select id="deadline-state" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                    <option value="CA">California</option>
+                    <option value="TX">Texas</option>
+                    <option value="FL">Florida</option>
+                    <option value="NY">New York</option>
+                  </select>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Claim Type</label>
+                  <select id="deadline-claim-type" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                    <option value="property">Property</option>
+                    <option value="auto">Auto</option>
+                    <option value="health">Health</option>
+                  </select>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Date of Loss</label>
+                  <input type="date" id="deadline-loss-date" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+              </div>
+              
+              <div>
+                <h3 style="color: #4b5563; margin-bottom: 1rem;">Current Status</h3>
+                <div style="background: var(--bg-light); padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                  <div style="text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);" id="deadline-urgent-count">0</div>
+                    <div style="color: var(--text-secondary);">Urgent Deadlines</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+              <button onclick="loadDeadlines()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                Load Deadlines
+              </button>
+            </div>
+            
+            <div id="deadline-results" style="display: none;">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        `;
+        return content;
+      }
+
+      async function loadDeadlines() {
+        const state = document.getElementById('deadline-state').value;
+        const claimType = document.getElementById('deadline-claim-type').value;
+        const lossDate = document.getElementById('deadline-loss-date').value;
+
+        const resultsDiv = document.getElementById('deadline-results');
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = '<div class="spinner"></div> Loading deadlines...';
+
+        try {
+          const response = await fetch('/.netlify/functions/deadline-tracker', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              action: 'get-deadlines',
+              state,
+              claimType,
+              claimData: { lossDate }
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            const deadlines = data.deadlines;
+            const urgentDeadlines = data.urgentDeadlines;
+            
+            document.getElementById('deadline-urgent-count').textContent = urgentDeadlines.length;
+            
+            resultsDiv.innerHTML = `
+              <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">State Deadlines for ${state} - ${claimType} Claims</h3>
+                
+                ${urgentDeadlines.length > 0 ? `
+                  <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dc2626; margin-bottom: 1.5rem;">
+                    <h4 style="color: #dc2626; margin: 0 0 0.5rem 0;">🚨 Urgent Deadlines</h4>
+                    ${urgentDeadlines.map(deadline => `
+                      <div style="margin-bottom: 0.5rem;">
+                        <strong>${deadline.name}:</strong> ${deadline.description}
+                        <br><span style="color: #dc2626; font-size: 0.875rem;">${deadline.consequences}</span>
+                      </div>
+                    `).join('')}
+                  </div>
+                ` : ''}
+                
+                <div style="display: grid; gap: 1rem;">
+                  ${Object.entries(deadlines).map(([deadlineName, deadline]) => `
+                    <div style="background: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border); border-left: 4px solid ${deadline.status === 'urgent' ? '#dc2626' : deadline.status === 'warning' ? '#f59e0b' : '#059669'};">
+                      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                        <h4 style="margin: 0; color: var(--primary);">${deadlineName}</h4>
+                        <span style="background: ${deadline.status === 'urgent' ? '#fef2f2' : deadline.status === 'warning' ? '#fef3c7' : '#dcfce7'}; color: ${deadline.status === 'urgent' ? '#dc2626' : deadline.status === 'warning' ? '#f59e0b' : '#059669'}; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.875rem;">
+                          ${deadline.status === 'urgent' ? '🚨 Urgent' : deadline.status === 'warning' ? '⚠️ Warning' : '✅ OK'}
+                        </span>
+                      </div>
+                      <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary);">${deadline.description}</p>
+                      <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                        <strong>Deadline:</strong> ${deadline.deadline}
+                        ${deadline.actualDate ? `<br><strong>Actual Date:</strong> ${deadline.actualDate}` : ''}
+                        ${deadline.daysRemaining !== null ? `<br><strong>Days Remaining:</strong> ${deadline.daysRemaining}` : ''}
+                        <br><strong>Consequences:</strong> ${deadline.consequences}
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+
+                ${data.recommendations.length > 0 ? `
+                  <div style="margin-top: 1.5rem;">
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Recommendations</h4>
+                    ${data.recommendations.map(rec => `
+                      <div style="background: white; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid ${rec.priority === 'HIGH' ? '#dc2626' : rec.priority === 'MEDIUM' ? '#f59e0b' : '#3b82f6'}; margin-bottom: 1rem;">
+                        <h5 style="margin: 0 0 0.5rem 0; color: #4b5563;">${rec.message}</h5>
+                        <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary);">${rec.action}</p>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                          <strong>Consequences:</strong> ${rec.consequences}
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          } else {
+            throw new Error(data.error || 'Failed to load deadlines');
+          }
+        } catch (error) {
+          console.error('Error loading deadlines:', error);
+          resultsDiv.innerHTML = `
+            <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dc2626; color: #dc2626;">
+              <strong>Error:</strong> ${error.message}
+            </div>
+          `;
+        }
+      }
+
+      // Claim Stage Tracker
+      function showClaimStageTracker() {
+        const content = `
+          <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📊 Claim Stage Tracker</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Visual progress tracker for your claim journey</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+              <div>
+                <h3 style="color: #4b5563; margin-bottom: 1rem;">Claim Information</h3>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Claim Type</label>
+                  <select id="stage-claim-type" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                    <option value="property">Property</option>
+                    <option value="auto">Auto</option>
+                    <option value="health">Health</option>
+                  </select>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Current Stage</label>
+                  <select id="stage-current-stage" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                    <option value="initial">Initial Loss</option>
+                    <option value="claim-setup">Claim Setup</option>
+                    <option value="inspection">Inspection</option>
+                    <option value="estimate-review">Estimate Review</option>
+                    <option value="settlement">Settlement</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div>
+                <h3 style="color: #4b5563; margin-bottom: 1rem;">Progress Overview</h3>
+                <div style="background: var(--bg-light); padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                  <div style="text-align: center;">
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary);" id="stage-progress">0%</div>
+                    <div style="color: var(--text-secondary);">Overall Progress</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+              <button onclick="loadClaimStages()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                Load Stages
+              </button>
+            </div>
+            
+            <div id="stage-results" style="display: none;">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        `;
+        return content;
+      }
+
+      async function loadClaimStages() {
+        const claimType = document.getElementById('stage-claim-type').value;
+        const currentStage = document.getElementById('stage-current-stage').value;
+
+        const resultsDiv = document.getElementById('stage-results');
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = '<div class="spinner"></div> Loading stages...';
+
+        try {
+          const response = await fetch('/.netlify/functions/claim-stage-tracker', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              action: 'get-stages',
+              claimType,
+              currentStage
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            const stages = data.stages;
+            const progress = data.progress;
+            
+            document.getElementById('stage-progress').textContent = `${progress.percentage}%`;
+            
+            resultsDiv.innerHTML = `
+              <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">Claim Process Stages</h3>
+                
+                <div style="display: grid; gap: 1rem; margin-bottom: 1.5rem;">
+                  ${stages.map((stage, index) => `
+                    <div style="background: white; padding: 1.5rem; border-radius: 0.5rem; border: 1px solid var(--border); border-left: 4px solid ${stage.status === 'completed' ? '#059669' : stage.status === 'current' ? '#3b82f6' : '#e5e7eb'};">
+                      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                          <div style="font-size: 2rem;">${stage.icon}</div>
+                          <div>
+                            <h4 style="margin: 0; color: var(--primary);">${stage.name}</h4>
+                            <p style="margin: 0; color: var(--text-secondary);">${stage.description}</p>
+                          </div>
+                        </div>
+                        <span style="background: ${stage.status === 'completed' ? '#dcfce7' : stage.status === 'current' ? '#dbeafe' : '#f3f4f6'}; color: ${stage.status === 'completed' ? '#166534' : stage.status === 'current' ? '#1e40af' : '#6b7280'}; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.875rem;">
+                          ${stage.status === 'completed' ? '✅ Completed' : stage.status === 'current' ? '🔄 Current' : '⏳ Pending'}
+                        </span>
+                      </div>
+                      
+                      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                          <strong>Requirements:</strong>
+                          <ul style="margin: 0.5rem 0 0 1rem; padding: 0; font-size: 0.875rem;">
+                            ${stage.requirements.map(req => `<li>${req}</li>`).join('')}
+                          </ul>
+                        </div>
+                        <div>
+                          <strong>Tools:</strong>
+                          <div style="margin: 0.5rem 0 0 0;">
+                            ${stage.tools.map(tool => `<span style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; margin-right: 0.5rem; margin-bottom: 0.25rem; display: inline-block;">${tool}</span>`).join('')}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                        <strong>Estimated Time:</strong> ${stage.estimatedDays} days
+                        ${stage.critical ? ' • <span style="color: #dc2626;">Critical Stage</span>' : ''}
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+                
+                <div style="background: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                  <h4 style="color: var(--primary); margin-bottom: 1rem;">Progress Summary</h4>
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                    <div style="text-align: center;">
+                      <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">${progress.completedStages}</div>
+                      <div style="color: var(--text-secondary);">Completed</div>
+                    </div>
+                    <div style="text-align: center;">
+                      <div style="font-size: 1.5rem; font-weight: bold; color: #3b82f6;">${progress.currentStage}</div>
+                      <div style="color: var(--text-secondary);">Current Stage</div>
+                    </div>
+                    <div style="text-align: center;">
+                      <div style="font-size: 1.5rem; font-weight: bold; color: #059669;">${progress.percentage}%</div>
+                      <div style="color: var(--text-secondary);">Overall Progress</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          } else {
+            throw new Error(data.error || 'Failed to load stages');
+          }
+        } catch (error) {
+          console.error('Error loading claim stages:', error);
           resultsDiv.innerHTML = `
             <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dc2626; color: #dc2626;">
               <strong>Error:</strong> ${error.message}
