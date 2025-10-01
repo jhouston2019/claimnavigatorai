@@ -71,7 +71,13 @@
     </div>
 
     <div class="test-section">
-        <h2>4. Environment Check</h2>
+        <h2>4. Health Check</h2>
+        <button class="test-button" onclick="healthCheck()">Test Basic Function</button>
+        <div id="health-result" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Environment Check</h2>
         <button class="test-button" onclick="checkEnvironment()">Check Environment</button>
         <div id="env-result" class="result" style="display: none;"></div>
     </div>
@@ -206,6 +212,45 @@
                     <strong>❌ Network Error</strong><br>
                     <strong>Error:</strong> ${error.message}<br>
                     <strong>Possible causes:</strong> Function not deployed, CORS issue, or network problem
+                `;
+            }
+        }
+
+        async function healthCheck() {
+            const resultDiv = document.getElementById('health-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="spinner">Testing basic function...</div>';
+            
+            try {
+                const response = await fetch('/.netlify/functions/health-check', {
+                    method: 'GET'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Basic Function Working!</strong><br>
+                        <strong>Message:</strong> ${data.message}<br>
+                        <strong>Environment:</strong> ${data.environment}<br>
+                        <strong>Region:</strong> ${data.region}<br>
+                        <strong>Timestamp:</strong> ${data.timestamp}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <strong>❌ Basic Function Failed</strong><br>
+                        <strong>Error:</strong> ${data.error || 'Unknown error'}<br>
+                        <strong>Status Code:</strong> ${response.status}
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <strong>❌ Network Error</strong><br>
+                    <strong>Error:</strong> ${error.message}<br>
+                    <strong>This indicates a fundamental deployment issue</strong>
                 `;
             }
         }
