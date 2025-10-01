@@ -1809,61 +1809,51 @@
     // Test error (uncomment to verify)
     // myUndefinedFunction();
 
-    // Language toggle functionality
+    // Simple language toggle
     let currentLang = 'en';
     
     function toggleLanguage() {
-      // Toggle language
+      alert('Language toggle clicked! Current: ' + currentLang);
       currentLang = currentLang === 'en' ? 'es' : 'en';
       
-      // Update document language
-      document.documentElement.lang = currentLang;
+      // Update button text
+      const button = document.getElementById('lang-toggle-btn');
+      if (button) {
+        button.textContent = currentLang === 'en' ? 'ES' : 'EN';
+        alert('Button text updated to: ' + button.textContent);
+      }
       
-      // Update all elements with data-en and data-es attributes
+      // Update page elements
       const elements = document.querySelectorAll('[data-en][data-es]');
-      for (let i = 0; i < elements.length; i++) {
-        const element = elements[i];
+      elements.forEach(function(element) {
         const text = element.getAttribute('data-' + currentLang);
         if (text) {
-          if (element.tagName === 'INPUT' || element.tagName === 'BUTTON') {
+          if (element.tagName === 'BUTTON' || element.tagName === 'INPUT') {
             element.textContent = text;
           } else {
             element.innerHTML = text;
           }
         }
-      }
+      });
       
-      // Update page title
-      if (currentLang === 'es') {
-        document.title = 'ClaimNavigatorAI - Herramientas de Documentación con IA para Reclamos';
-      } else {
-        document.title = 'ClaimNavigatorAI - AI-Powered Claim Documentation Tools';
-      }
+      // Update title
+      document.title = currentLang === 'es' 
+        ? 'ClaimNavigatorAI - Herramientas de Documentación con IA para Reclamos'
+        : 'ClaimNavigatorAI - AI-Powered Claim Documentation Tools';
       
-      // Update language toggle button text
-      const langButton = document.getElementById('lang-toggle-btn');
-      if (langButton) {
-        if (currentLang === 'en') {
-          langButton.textContent = 'ES';
-        } else {
-          langButton.textContent = 'EN';
-        }
-      }
-      
-      // Store preference
+      // Save preference
       localStorage.setItem('preferredLanguage', currentLang);
     }
     
-    // Initialize on page load
+    // Initialize
     document.addEventListener('DOMContentLoaded', function() {
-      const savedLang = localStorage.getItem('preferredLanguage');
-      if (savedLang === 'es') {
+      const saved = localStorage.getItem('preferredLanguage');
+      if (saved === 'es') {
         toggleLanguage();
       } else {
-        // Initialize button text for English
-        const langButton = document.getElementById('lang-toggle-btn');
-        if (langButton) {
-          langButton.textContent = 'ES';
+        const button = document.getElementById('lang-toggle-btn');
+        if (button) {
+          button.textContent = 'ES';
         }
       }
     });
