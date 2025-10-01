@@ -127,33 +127,86 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
     :root {
-      --primary: #1e40af;
+      --primary: #3b82f6;
       --primary-dark: #0f172a;
       --primary-header: #0f172a;
       --accent: #3b82f6;
       --success: #10b981;
-      --text-primary: #111827;
-      --text-secondary: #6b7280;
-      --bg-white: #ffffff;
-      --bg-light: #f9fafb;
-      --bg-gray: #f3f4f6;
-      --border: #e5e7eb;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --bg-white: #0f172a;
+      --bg-light: #1e293b;
+      --bg-gray: #1a202c;
+      --border: #475569;
+      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.2);
     }
     
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       line-height: 1.6;
       color: var(--text-primary);
-      background: var(--bg-white);
+      background: #0f172a;
     }
     
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 20px;
+    }
+    
+    /* Hero Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .hero h1 { animation: fadeIn 0.6s ease-out; }
+    .hero .subtitle { animation: fadeIn 0.8s ease-out 0.2s backwards; }
+    .hero .statistics { animation: fadeIn 1s ease-out 0.4s backwards; }
+    
+    /* Dark theme headers */
+    h2, h3, h4 {
+      color: var(--text-primary);
+    }
+    
+    .price-amount {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #fef3c7;
+      margin: 1rem 0;
+    }
+    
+    .service-col {
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      border: 1px solid #475569;
+    }
+    
+    .service-col h3 {
+      color: #3b82f6;
+    }
+    
+    .service-col ul li {
+      color: #cbd5e1;
+    }
+    
+    .service-col ul li strong {
+      color: #f1f5f9;
+    }
+    
+    .faq-item {
+      background: #1e293b;
+      border: 1px solid #475569;
+    }
+    
+    footer {
+      background: #000000;
+      color: white;
+      padding: 3rem 0;
     }
     
     /* Language Toggle Button */
@@ -846,38 +899,36 @@
   </header>
 
   <!-- Hero -->
-  <section style="background: #0f172a; color: white; padding: 4rem 0; text-align: center;">
+  <section class="hero" style="background: #0f172a; color: white; padding: 4rem 0; text-align: center;">
     <div class="container">
-      <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 1.5rem;">
-        <h1 style="color: #fef3c7; font-size: 2.5rem; font-weight: 700; line-height: 1.2; font-style: italic; white-space: nowrap; margin: 0;" 
-            data-en="Claim Navigator AI Is Your AI-Powered DIY Claim Management System" 
-            data-es="Claim Navigator AI Es Su Sistema De Gestión De Reclamos DIY Impulsado Por IA">
-            Claim Navigator AI Is Your AI-Powered DIY Claim Management System
-          </h1>
-      </div>
-      <div style="text-align: center; margin: 0 auto 2rem;">
-        <p style="color: rgba(255, 255, 255, 0.9); font-size: 1.5rem; font-weight: 700; line-height: 1.5; white-space: nowrap; display: inline-block;" 
-           data-en="Insurance claims are stressful and difficult…and the Insurance Company Is NOT On Your Side" 
-           data-es="Los reclamos de seguro son estresantes y difíciles... y la Compañía de Seguros NO Está De Su Lado">
-           Insurance claims are stressful and difficult…and the Insurance Company Is NOT On Your Side
-          </p>
-        </div>
+      <h1 style="color: #fef3c7; font-size: 2.5rem; font-weight: 700; line-height: 1.2; font-style: italic; margin: 0 0 1.5rem 0;" 
+          data-en="Claim Navigator AI is Your AI-Powered DIY Claim Management System" 
+          data-es="Claim Navigator AI es Su Sistema De Gestión De Reclamos DIY Impulsado Por IA">
+          Claim Navigator AI is Your AI-Powered DIY Claim Management System
+        </h1>
+      
+      <p class="subtitle" style="color: rgba(255, 255, 255, 0.9); font-size: 1.75rem; font-weight: 600; line-height: 1.4; max-width: 900px; margin: 0 auto 2rem;" 
+         data-en="Insurance claims are stressful and difficult…and the Insurance Company Is NOT On Your Side" 
+         data-es="Los reclamos de seguro son estresantes y difíciles...y la Compañía de Seguros NO Está De Su Lado">
+         Insurance claims are stressful and difficult…<br>
+         and the Insurance Company Is NOT On Your Side
+        </p>
       
       <!-- Statistics in Hero -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; max-width: 800px; margin: 0 auto 2rem;">
-        <div style="background: rgba(255, 255, 255, 0.1); padding: 1.5rem; text-align: center; border-radius: 0.75rem; backdrop-filter: blur(10px);">
+      <div class="statistics" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; max-width: 800px; margin: 0 auto 2rem;">
+        <div style="background: rgba(255, 255, 255, 0.1); padding: 2rem 1.5rem; text-align: center; border-radius: 0.75rem; backdrop-filter: blur(10px);">
           <div style="font-size: 3rem; color: #fbbf24; font-weight: 700; margin-bottom: 0.5rem;">73%</div>
           <p style="color: white; font-size: 1.1rem; font-weight: 600; margin: 0;" 
              data-en="of claims underpaid" 
              data-es="de reclamos mal pagados">of claims underpaid</p>
           </div>
-        <div style="background: rgba(255, 255, 255, 0.1); padding: 1.5rem; text-align: center; border-radius: 0.75rem; backdrop-filter: blur(10px);">
+        <div style="background: rgba(255, 255, 255, 0.1); padding: 2rem 1.5rem; text-align: center; border-radius: 0.75rem; backdrop-filter: blur(10px);">
           <div style="font-size: 3rem; color: #fbbf24; font-weight: 700; margin-bottom: 0.5rem;">40%</div>
           <p style="color: white; font-size: 1.1rem; font-weight: 600; margin: 0;" 
              data-en="is the average underpayment of claims" 
              data-es="es el pago insuficiente promedio de reclamos">is the average underpayment of claims</p>
           </div>
-        <div style="background: rgba(255, 255, 255, 0.1); padding: 1.5rem; text-align: center; border-radius: 0.75rem; backdrop-filter: blur(10px);">
+        <div style="background: rgba(255, 255, 255, 0.1); padding: 2rem 1.5rem; text-align: center; border-radius: 0.75rem; backdrop-filter: blur(10px);">
           <div style="font-size: 3rem; color: #fbbf24; font-weight: 700; margin-bottom: 0.5rem;">92%</div>
           <p style="color: white; font-size: 1.1rem; font-weight: 600; margin: 0;" 
              data-en="are never challenged" 
@@ -885,7 +936,7 @@
           </div>
           </div>
       
-          <div style="display: flex; gap: 1rem; justify-content: center; align-items: center; flex-wrap: wrap;">
+      <div style="display: flex; gap: 1.5rem; justify-content: center; align-items: center; flex-wrap: wrap;">
         <button onclick="startCheckout()" class="btn-primary checkout-btn" 
                 data-en="Get Your AI Claim Toolkit →" 
                 data-es="Obtenga Su Kit de Herramientas IA →">Get Your AI Claim Toolkit →</button>
@@ -898,34 +949,34 @@
 
 
   <!-- Critical Facts Section -->
-  <section class="value-props" style="background: #fafafa; padding: 3rem 0;">
+  <section class="value-props" style="background: #1a202c; padding: 3rem 0;">
     <div class="container">
       <div style="max-width: 800px; margin: 0 auto;">
-        <h2 style="color: #1e40af; text-align: center; margin-bottom: 2rem; font-size: 2rem;" 
+        <h2 style="color: #fef3c7; text-align: center; margin-bottom: 2rem; font-size: 2rem;" 
             data-en="YOU MUST PROVE YOUR LOSS!<br>THE INSURANCE COMPANY WON'T DO IT FOR YOU!" 
             data-es="USTED DEBE PROBAR SU PÉRDIDA!<br>LA COMPAÑÍA DE SEGUROS NO LO HARÁ POR USTED!">
             YOU MUST PROVE YOUR LOSS!<br>THE INSURANCE COMPANY WON'T DO IT FOR YOU!
         </h2>
         
-        <div style="background: white; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
-          <p style="margin-bottom: 1rem; color: black;" data-en="FACT #1: YOU have the burden of proof. The insurer only pays what YOU can prove." 
+        <div style="background: #1e293b; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 2px 4px rgba(0,0,0,0.3); margin-bottom: 1.5rem; border: 1px solid #475569;">
+          <p style="margin-bottom: 1rem; color: #f1f5f9;" data-en="FACT #1: YOU have the burden of proof. The insurer only pays what YOU can prove." 
              data-es="HECHO #1: USTED tiene la carga de la prueba. El asegurador solo paga lo que USTED puede probar.">
-            <strong style="color: black;">FACT #1:</strong> <span style="background: #fef3c7; padding: 0.1rem 0.3rem; color: black;">YOU have the burden of proof.</span> The insurer only pays what YOU can prove.
+            <strong style="color: #f1f5f9;">FACT #1:</strong> <span style="background: #fef3c7; padding: 0.1rem 0.3rem; color: black;">YOU have the burden of proof.</span> The insurer only pays what YOU can prove.
           </p>
           
-          <p style="margin-bottom: 1rem; color: black;" data-en="FACT #2: Their adjuster works for THEM, not for the you, the policyholder, and works to protect their interests." 
+          <p style="margin-bottom: 1rem; color: #f1f5f9;" data-en="FACT #2: Their adjuster works for THEM, not for the you, the policyholder, and works to protect their interests." 
              data-es="HECHO #2: Su ajustador trabaja para ELLOS, no para usted, el asegurado, y trabaja para proteger sus intereses.">
-            <strong style="color: black;">FACT #2:</strong> Their adjuster works for THEM, not for the you, the policyholder, and works to protect their interests.
+            <strong style="color: #f1f5f9;">FACT #2:</strong> Their adjuster works for THEM, not for the you, the policyholder, and works to protect their interests.
           </p>
           
-          <p style="margin-bottom: 1rem; color: black;" data-en="FACT #3: If you rely on the insurance company, they will provide an estimate that often doesn't reflect the true value of your loss…so you must provide your own estimate that truly values your loss." 
+          <p style="margin-bottom: 1rem; color: #f1f5f9;" data-en="FACT #3: If you rely on the insurance company, they will provide an estimate that often doesn't reflect the true value of your loss…so you must provide your own estimate that truly values your loss." 
              data-es="HECHO #3: Si confía en la compañía de seguros, proporcionarán un estimado que a menudo no refleja el verdadero valor de su pérdida... por lo que debe proporcionar su propio estimado que valore verdaderamente su pérdida.">
-            <strong style="color: black;">FACT #3:</strong> If you rely on the insurance company, they will provide an estimate that often doesn't reflect the true value of your loss…so you must provide your own estimate that truly values your loss.
+            <strong style="color: #f1f5f9;">FACT #3:</strong> If you rely on the insurance company, they will provide an estimate that often doesn't reflect the true value of your loss…so you must provide your own estimate that truly values your loss.
           </p>
           
-          <p style="margin-bottom: 0.75rem; color: black;" data-en="FACT #4: Without proper documentation you'll: ❌ Accept offers that don't fully compensate for your loss ❌ Miss deadlines ❌ Leave money on the table" 
+          <p style="margin-bottom: 0.75rem; color: #f1f5f9;" data-en="FACT #4: Without proper documentation you'll: ❌ Accept offers that don't fully compensate for your loss ❌ Miss deadlines ❌ Leave money on the table" 
              data-es="HECHO #4: Sin documentación adecuada usted: ❌ Aceptará ofertas que no compensen completamente su pérdida ❌ Perderá fechas límite ❌ Dejará dinero sobre la mesa">
-            <strong style="color: black;">FACT #4:</strong> Without proper documentation you'll: ❌ Accept offers that don't fully compensate for your loss ❌ Miss deadlines ❌ Leave money on the table
+            <strong style="color: #f1f5f9;">FACT #4:</strong> Without proper documentation you'll: ❌ Accept offers that don't fully compensate for your loss ❌ Miss deadlines ❌ Leave money on the table
           </p>
         </div>
         
@@ -1008,13 +1059,13 @@
   </section>
 
   <!-- Compare Your Options Section -->
-  <section style="background: #ffffff; padding: 4rem 0;">
+  <section style="background: #0f172a; padding: 4rem 0;">
     <div class="container">
       <div style="text-align: center; margin-bottom: 3rem;">
-        <h2 style="color: #1e3a8a; font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;" 
+        <h2 style="color: #f1f5f9; font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;" 
             data-en="Compare Your Claim Management Options" 
             data-es="Compare Sus Opciones de Gestión de Reclamos">Compare Your Claim Management Options</h2>
-        <p style="color: #64748b; font-size: 1.2rem; max-width: 600px; margin: 0 auto; white-space: nowrap;" 
+        <p style="color: #cbd5e1; font-size: 1.2rem; max-width: 600px; margin: 0 auto; white-space: nowrap;" 
            data-en="See exactly how much more you keep with ClaimNavigatorAI vs. other options" 
            data-es="Vea exactamente cuánto más se queda con ClaimNavigatorAI vs. otras opciones">
            See exactly how much more you keep with ClaimNavigatorAI vs. other options
@@ -1022,11 +1073,11 @@
       </div>
 
       <!-- Example Claim Box -->
-      <div style="background: #f8fafc; padding: 2rem; border-radius: 0.75rem; margin-bottom: 3rem; text-align: center; border: 1px solid #e5e7eb;">
-        <h3 style="color: #1e40af; font-size: 1.5rem; margin-bottom: 0.5rem;" 
+      <div style="background: #1e293b; padding: 2rem; border-radius: 0.75rem; margin-bottom: 3rem; text-align: center; border: 1px solid #475569;">
+        <h3 style="color: #fef3c7; font-size: 1.5rem; margin-bottom: 0.5rem;" 
             data-en="$75,000 Water Damage Claim Example" 
             data-es="Ejemplo de Reclamo de Daños por Agua de $75,000">$75,000 Water Damage Claim Example</h3>
-        <p style="color: #64748b; font-size: 1.1rem;" 
+        <p style="color: #cbd5e1; font-size: 1.1rem;" 
            data-en="Kitchen, flooring, and structural damage requiring complete restoration" 
            data-es="Daños en cocina, pisos y estructura que requieren restauración completa">
            Kitchen, flooring, and structural damage requiring complete restoration
@@ -1053,49 +1104,49 @@
             </tr>
           </thead>
           <tbody>
-            <tr style="border-bottom: 1px solid #e5e7eb; background: white;">
-              <td style="padding: 1.5rem; color: #111827; font-weight: 600;" 
+            <tr style="border-bottom: 1px solid #475569; background: #1e293b;">
+              <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 600;" 
                   data-en="DIY Alone" 
                   data-es="Hazlo Tú Mismo">DIY Alone</td>
-              <td style="padding: 1.5rem; color: #111827; font-weight: 600; font-size: 1.1rem;">$35,000</td>
-              <td style="padding: 1.5rem; color: #111827; font-weight: 600;" 
+              <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 600; font-size: 1.1rem;">$35,000</td>
+              <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 600;" 
                   data-en="Full but ineffective" 
                   data-es="Completo pero inefectivo">Full but ineffective</td>
-              <td style="padding: 1.5rem; color: #111827; font-weight: 600;" 
+              <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 600;" 
                   data-en="Lost $40,000" 
                   data-es="Perdiste $40,000">Lost $40,000</td>
             </tr>
-            <tr style="border-bottom: 1px solid #e5e7eb; background: white;">
-              <td style="padding: 1.5rem; color: #111827; font-weight: 600;" 
+            <tr style="border-bottom: 1px solid #475569; background: #1e293b;">
+              <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 600;" 
                   data-en="Public Adjuster" 
                   data-es="Ajustador Público">Public Adjuster</td>
-              <td style="padding: 1.5rem; color: #111827; font-weight: 600; font-size: 1.1rem;">$48,750</td>
-              <td style="padding: 1.5rem; color: #111827; font-weight: 600;" 
+              <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 600; font-size: 1.1rem;">$48,750</td>
+              <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 600;" 
                   data-en="Limited" 
                   data-es="Limitado">Limited</td>
-              <td style="padding: 1.5rem; color: #111827; font-weight: 600;" 
+              <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 600;" 
                   data-en="Paid $26,250 in fees" 
                   data-es="Pagaste $26,250 en tarifas">Paid $26,250 in fees</td>
             </tr>
-            <tr style="border-bottom: 1px solid #e5e7eb; background: white;">
-              <td style="padding: 1.5rem; color: #111827; font-weight: 600;" 
+            <tr style="border-bottom: 1px solid #475569; background: #1e293b;">
+              <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 600;" 
                   data-en="Attorney" 
                   data-es="Abogado">Attorney</td>
-              <td style="padding: 1.5rem; color: #111827; font-weight: 600; font-size: 1.1rem;">$50,000</td>
-              <td style="padding: 1.5rem; color: #111827; font-weight: 600;" 
+              <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 600; font-size: 1.1rem;">$50,000</td>
+              <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 600;" 
                   data-en="Very Limited" 
                   data-es="Muy Limitado">Very Limited</td>
-              <td style="padding: 1.5rem; color: #111827; font-weight: 600;" 
+              <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 600;" 
                   data-en="Paid $25,000 in legal fees" 
                   data-es="Pagaste $25,000 en honorarios legales">Paid $25,000 in legal fees</td>
             </tr>
-            <tr style="border-bottom: 1px solid #e5e7eb; background: #dbeafe; border: 3px solid #1e40af; box-shadow: 0 0 0 1px #3b82f6;">
-              <td style="padding: 1.5rem; color: #111827; font-weight: 700; font-size: 1.2rem;">ClaimNavigatorAI</td>
-              <td style="padding: 1.5rem; color: #1e40af; font-weight: 700; font-size: 1.3rem;">$75,000</td>
-              <td style="padding: 1.5rem; color: #1e40af; font-weight: 600; font-size: 1.2rem;" 
+            <tr style="border-bottom: 1px solid #475569; background: #1e3a8a; border: 3px solid #3b82f6; box-shadow: 0 0 0 1px #3b82f6;">
+              <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 700; font-size: 1.2rem;">ClaimNavigatorAI</td>
+              <td style="padding: 1.5rem; color: #fef3c7; font-weight: 700; font-size: 1.3rem;">$75,000</td>
+              <td style="padding: 1.5rem; color: #fef3c7; font-weight: 600; font-size: 1.2rem;" 
                   data-en="Full Control" 
                   data-es="Control Total">Full Control</td>
-              <td style="padding: 1.5rem; color: #1e40af; font-weight: 700; font-size: 1.2rem;" 
+              <td style="padding: 1.5rem; color: #fef3c7; font-weight: 700; font-size: 1.2rem;" 
                   data-en="Keep everything" 
                   data-es="Manténlo todo">Keep everything</td>
             </tr>
@@ -1104,27 +1155,27 @@
       </div>
 
       <!-- The Real Difference Section -->
-      <div style="background: #f8fafc; padding: 3rem; border-radius: 0.75rem; margin-bottom: 3rem;">
-        <h3 style="color: #1e40af; font-size: 2rem; text-align: center; margin-bottom: 2rem;" 
+      <div style="background: #1a202c; padding: 3rem; border-radius: 0.75rem; margin-bottom: 3rem;">
+        <h3 style="color: #f1f5f9; font-size: 2rem; text-align: center; margin-bottom: 2rem;" 
             data-en="The Real Difference" 
             data-es="La Diferencia Real">The Real Difference</h3>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
-          <div style="background: white; padding: 2rem; border-radius: 0.5rem; border-left: 4px solid #6b7280; border: 1px solid #e5e7eb;">
-            <h4 style="color: #374151; margin-bottom: 1rem; font-size: 1.2rem;" 
+          <div style="background: #1e293b; padding: 2rem; border-radius: 0.5rem; border-left: 4px solid #6b7280; border: 1px solid #475569;">
+            <h4 style="color: #cbd5e1; margin-bottom: 1rem; font-size: 1.2rem;" 
                 data-en="Without ClaimNavigatorAI:" 
                 data-es="Sin ClaimNavigatorAI:">Without ClaimNavigatorAI:</h4>
-            <p style="color: #374151; font-style: italic; font-size: 1.1rem; line-height: 1.6;" 
+            <p style="color: #94a3b8; font-style: italic; font-size: 1.1rem; line-height: 1.6;" 
                data-en="\"The insurance company offered $35,000. I don't know if that's fair, but I can't prove it's worth more.\"" 
                data-es="\"La compañía de seguros ofreció $35,000. No sé si es justo, pero no puedo probar que valga más.\"">
                "The insurance company offered $35,000. I don't know if that's fair, but I can't prove it's worth more."
         </p>
       </div>
-          <div style="background: #dbeafe; padding: 2rem; border-radius: 0.5rem; border-left: 4px solid #3b82f6; border: 2px solid #3b82f6;">
-            <h4 style="color: #1e40af; margin-bottom: 1rem; font-size: 1.2rem;" 
+          <div style="background: #1e3a8a; padding: 2rem; border-radius: 0.5rem; border-left: 4px solid #3b82f6; border: 2px solid #3b82f6;">
+            <h4 style="color: #fef3c7; margin-bottom: 1rem; font-size: 1.2rem;" 
                 data-en="With ClaimNavigatorAI:" 
                 data-es="Con ClaimNavigatorAI:">With ClaimNavigatorAI:</h4>
-            <p style="color: #374151; font-style: italic; font-size: 1.1rem; line-height: 1.6;" 
+            <p style="color: #f1f5f9; font-style: italic; font-size: 1.1rem; line-height: 1.6;" 
                data-en="\"Here's my complete claim package with photos, estimates, replacement costs, code requirements, and depreciation schedules showing exactly why this is a $75,000 loss.\"" 
                data-es="\"Aquí está mi paquete completo de reclamo con fotos, estimados, costos de reemplazo, requisitos de código y cronogramas de depreciación que muestran exactamente por qué esta es una pérdida de $75,000.\"">
                "Here's my complete claim package with photos, estimates, replacement costs, code requirements, and depreciation schedules showing exactly why this is a $75,000 loss."
@@ -1132,32 +1183,32 @@
         </div>
         </div>
 
-        <div style="background: #f8fafc; color: #1e40af; padding: 2.5rem; border-radius: 0.5rem; text-align: center; border: 2px solid #1e40af;">
-          <h4 style="margin-bottom: 1.5rem; font-size: 1.5rem; color: #000000;" 
+        <div style="background: #1e293b; color: #f1f5f9; padding: 2.5rem; border-radius: 0.5rem; text-align: center; border: 2px solid #3b82f6;">
+          <h4 style="margin-bottom: 1.5rem; font-size: 1.5rem; color: #f1f5f9;" 
               data-en="Why This Matters" 
               data-es="Por Qué Esto Importa">Why This Matters</h4>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; text-align: center;">
             <div>
-              <h5 style="margin-bottom: 0.5rem; color: #1e40af; font-size: 1.5rem;">Financial Impact</h5>
-              <p style="margin: 0; font-size: 1.5rem; line-height: 1.5; color: #374151;" 
+              <h5 style="margin-bottom: 0.5rem; color: #3b82f6; font-size: 1.5rem;">Financial Impact</h5>
+              <p style="margin: 0; font-size: 1.5rem; line-height: 1.5; color: #cbd5e1;" 
                  data-en="Keep $25,000-$40,000 MORE than other options" 
                  data-es="Mantén $25,000-$40,000 MÁS que otras opciones">Keep $25,000-$40,000 MORE than other options</p>
         </div>
             <div>
-              <h5 style="margin-bottom: 0.5rem; color: #1e40af; font-size: 1.5rem;">Control & Speed</h5>
-              <p style="margin: 0; font-size: 1.5rem; line-height: 1.5; color: #374151;" 
+              <h5 style="margin-bottom: 0.5rem; color: #3b82f6; font-size: 1.5rem;">Control & Speed</h5>
+              <p style="margin: 0; font-size: 1.5rem; line-height: 1.5; color: #cbd5e1;" 
                  data-en="Full control with faster resolution (1-3 months)" 
                  data-es="Control total con resolución más rápida (1-3 meses)">Full control with faster resolution (1-3 months)</p>
         </div>
             <div>
-              <h5 style="margin-bottom: 0.5rem; color: #1e40af; font-size: 1.5rem;">Peace of Mind</h5>
-              <p style="margin: 0; font-size: 1.5rem; line-height: 1.5; color: #374151;" 
+              <h5 style="margin-bottom: 0.5rem; color: #3b82f6; font-size: 1.5rem;">Peace of Mind</h5>
+              <p style="margin: 0; font-size: 1.5rem; line-height: 1.5; color: #cbd5e1;" 
                  data-en="Professional results without the stress" 
                  data-es="Resultados profesionales sin el estrés">Professional results without the stress</p>
         </div>
         </div>
-          <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #1e40af;">
-            <p style="font-size: 2.3rem; font-weight: 700; margin: 0; color: #000000;" 
+          <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #3b82f6;">
+            <p style="font-size: 2.3rem; font-weight: 700; margin: 0; color: #fef3c7;" 
                data-en="Your claim. Your recovery. Your money." 
                data-es="Tu reclamo. Tu recuperación. Tu dinero.">
                Your claim. Your recovery. Your money.
@@ -1188,41 +1239,41 @@
       </div>
       
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
-        <div style="background: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-          <h3 style="color: #1e40af; margin-bottom: 1.5rem; text-align: center;" data-en="Strategy & Guidance" data-es="Estrategia y Orientación">Strategy & Guidance</h3>
+        <div style="background: #1e293b; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid #475569;">
+          <h3 style="color: #3b82f6; margin-bottom: 1.5rem; text-align: center;" data-en="Strategy & Guidance" data-es="Estrategia y Orientación">Strategy & Guidance</h3>
           <ul style="list-style: none; padding: 0;">
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Claim Playbook</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Claim Timeline & Sequence Guide</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Insurance Company Tactics</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Maximize Your Claim</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• State-Specific Rights & Deadlines</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Claim Playbook</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Claim Timeline & Sequence Guide</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Insurance Company Tactics</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Maximize Your Claim</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• State-Specific Rights & Deadlines</li>
           </ul>
         </div>
         
-        <div style="background: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-          <h3 style="color: #1e40af; margin-bottom: 1.5rem; text-align: center;" data-en="Core Claim Tools" data-es="Herramientas Principales de Reclamo">Core Claim Tools</h3>
+        <div style="background: #1e293b; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid #475569;">
+          <h3 style="color: #3b82f6; margin-bottom: 1.5rem; text-align: center;" data-en="Core Claim Tools" data-es="Herramientas Principales de Reclamo">Core Claim Tools</h3>
           <ul style="list-style: none; padding: 0;">
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• AI Response & Analysis Agent</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Claim Analysis Tools</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Damage Assessment Calculator</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Estimate Review</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Business Interruption Calculator</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Expert Opinion Request Generator</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Settlement Analysis & Negotiation</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Situational Advisory</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Document Generator</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Evidence Organizer</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Claim Document Library</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Claim Documentation Guides</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Negotiation Scripts & Escalation</li>
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• My Claims Tracking Journal</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• AI Response & Analysis Agent</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Claim Analysis Tools</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Damage Assessment Calculator</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Estimate Review</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Business Interruption Calculator</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Expert Opinion Request Generator</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Settlement Analysis & Negotiation</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Situational Advisory</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Document Generator</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Evidence Organizer</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Claim Document Library</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Claim Documentation Guides</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Negotiation Scripts & Escalation</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• My Claims Tracking Journal</li>
           </ul>
         </div>
         
-        <div style="background: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-          <h3 style="color: #1e40af; margin-bottom: 1.5rem; text-align: center;" data-en="Advanced Tools" data-es="Herramientas Avanzadas">Advanced Tools</h3>
+        <div style="background: #1e293b; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid #475569;">
+          <h3 style="color: #3b82f6; margin-bottom: 1.5rem; text-align: center;" data-en="Advanced Tools" data-es="Herramientas Avanzadas">Advanced Tools</h3>
           <ul style="list-style: none; padding: 0;">
-            <li style="margin-bottom: 0.75rem; color: #374151; font-weight: bold;">• Recommended Resources</li>
+            <li style="margin-bottom: 0.75rem; color: #cbd5e1; font-weight: bold;">• Recommended Resources</li>
           </ul>
         </div>
       </div>
@@ -1233,12 +1284,12 @@
   <section style="background: white; padding: 4rem 0;">
     <div class="container">
       <div style="max-width: 1000px; margin: 0 auto;">
-        <h2 style="font-size: 2.5rem; text-align: center; margin-bottom: 1rem; color: var(--text-primary);"
+        <h2 style="font-size: 2.5rem; text-align: center; margin-bottom: 1rem; color: #000000;"
             data-en="AI-POWERED POLICY ANALYSIS:"
             data-es="ANÁLISIS DE PÓLIZA CON IA:">
             AI-POWERED POLICY ANALYSIS:
         </h2>
-        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; font-size: 1.1rem;"
+        <p style="text-align: center; color: #000000; margin-bottom: 3rem; font-size: 1.1rem;"
            data-en="Upload your insurance policy for instant AI analysis and customized documentation"
            data-es="Suba su póliza de seguro para análisis instantáneo con IA y documentación personalizada">
            Upload your insurance policy for instant AI analysis and customized documentation
@@ -1544,7 +1595,7 @@
     <div class="container">
       <div class="pricing-card" style="text-align: center;">
         <h3 data-en="THE COMPLETE CLAIM NAVIGATOR AI CLAIM MANAGEMENT SYSTEM" data-es="EL SISTEMA COMPLETO DE GESTIÓN DE RECLAMOS CLAIM NAVIGATOR AI">THE COMPLETE CLAIM NAVIGATOR AI CLAIM MANAGEMENT SYSTEM</h3>
-        <div class="price-amount">$997</div>
+        <div class="price-amount" style="color: white;">$997</div>
         <p class="price-description" 
            data-en="One-time fee • Instant access • All property damage types covered" 
            data-es="Tarifa única • Acceso instantáneo • Todos los tipos de daños a la propiedad cubiertos">
