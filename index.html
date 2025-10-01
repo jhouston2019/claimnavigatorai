@@ -277,13 +277,17 @@
       border-radius: 0.5rem;
       text-decoration: none;
       font-weight: 600;
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       transition: all 0.2s;
       border: none;
       display: inline-block;
       cursor: pointer;
       text-align: center;
-      min-width: 140px;
+      min-width: 200px;
+      max-width: 250px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     
     .btn-primary:hover {
@@ -299,24 +303,40 @@
     }
     
     .btn-secondary {
-      background: #e0f2fe;
-      color: #000080 !important;
+      background: #1e3a8a;
+      color: white !important;
       padding: 0.75rem 1.5rem;
       border-radius: 0.5rem;
       text-decoration: none;
       font-weight: 600;
-      font-size: 0.875rem;
-      border: 1px solid #7dd3fc;
+      font-size: 0.8rem;
+      border: 1px solid #1e3a8a;
       transition: all 0.2s;
       display: inline-block;
       text-align: center;
-      min-width: 140px;
+      min-width: 200px;
+      max-width: 250px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     
     .btn-secondary:hover {
-      background: #bae6fd;
-      color: #000080 !important;
-      border-color: #38bdf8;
+      background: #1e40af;
+      color: white !important;
+      border-color: #1e40af;
+    }
+    
+    .checkout-btn {
+      background: #dc2626 !important;
+      color: white !important;
+      border: 1px solid #dc2626 !important;
+    }
+    
+    .checkout-btn:hover {
+      background: #b91c1c !important;
+      color: white !important;
+      border-color: #b91c1c !important;
     }
     
     /* Hero Section */
@@ -889,10 +909,10 @@
           <a href="#blog" data-en="Guides" data-es="Guías">Guides</a>
           <a href="#process" data-en="Process" data-es="Proceso">Process</a>
           <a href="#pricing" data-en="Pricing" data-es="Precios">Pricing</a>
-          <button onclick="toggleLanguage()" class="lang-toggle">ES/EN</button>
+          <button onclick="toggleLanguage()" class="lang-toggle" id="lang-toggle-btn">ES/EN</button>
           <a href="app/login.html" class="btn-primary" data-en="Login" data-es="Iniciar Sesión">Login</a>
           <a href="app/professional-dashboard.html" class="btn-secondary" data-en="Professional Dashboard" data-es="Panel Profesional">Professional Dashboard</a>
-          <a href="#pricing" class="btn-primary checkout-btn" data-en="Get My AI-Powered Claim Toolkit" data-es="Obtener Mi Kit de Herramientas IA">Get My AI-Powered Claim Toolkit</a>
+          <a href="#pricing" class="btn-primary checkout-btn" data-en="Get Your Claim Toolkit" data-es="Obtener Su Kit de Herramientas">Get Your Claim Toolkit</a>
         </div>
       </nav>
     </div>
@@ -938,8 +958,8 @@
       
       <div style="display: flex; gap: 1.5rem; justify-content: center; align-items: center; flex-wrap: wrap;">
         <button onclick="startCheckout()" class="btn-primary checkout-btn" 
-                data-en="Get Your AI Claim Toolkit →" 
-                data-es="Obtenga Su Kit de Herramientas IA →">Get Your AI Claim Toolkit →</button>
+                data-en="Get Your Claim Toolkit →" 
+                data-es="Obtener Su Kit de Herramientas →">Get Your Claim Toolkit →</button>
         <a href="app/login.html" class="btn-primary" style="text-decoration: none;" 
            data-en="Login to Access Tools" 
            data-es="Iniciar Sesión para Acceder a Herramientas">Login to Access Tools</a>
@@ -1047,8 +1067,8 @@
       <div style="text-align: center;">
         <div style="display: flex; gap: 1rem; justify-content: center; align-items: center; flex-wrap: wrap;">
         <button onclick="startCheckout()" class="btn-primary checkout-btn" 
-                data-en="Get Your AI Claim Toolkit →" 
-                data-es="Obtenga Su Kit de Herramientas IA →">Get Your AI Claim Toolkit →</button>
+                data-en="Get Your Claim Toolkit →" 
+                data-es="Obtener Su Kit de Herramientas →">Get Your Claim Toolkit →</button>
           <a href="app/login.html" class="btn-primary" style="text-decoration: none;" 
              data-en="Login to Access Tools" 
              data-es="Iniciar Sesión para Acceder a Herramientas">Login to Access Tools</a>
@@ -1217,17 +1237,6 @@
         </div>
       </div>
 
-      <!-- CTA Section -->
-      <div style="text-align: center;">
-        <button onclick="startCheckout()" class="btn-primary checkout-btn" style="font-size: 1.2rem; padding: 1.2rem 2.5rem; margin-bottom: 1rem;" 
-                data-en="Start Your Free Claim Review" 
-                data-es="Comience Su Revisión Gratuita de Reclamo">Start Your Free Claim Review</button>
-        <p style="color: #64748b; font-size: 0.9rem; margin: 0;" 
-           data-en="*Based on typical $75,000 property damage claim. Individual results vary." 
-           data-es="*Basado en reclamo típico de daños a la propiedad de $75,000. Los resultados individuales varían.">
-           *Based on typical $75,000 property damage claim. Individual results vary.
-        </p>
-      </div>
     </div>
   </section>
 
@@ -1826,6 +1835,12 @@
         ? 'ClaimNavigatorAI - Herramientas de Documentación con IA para Reclamos' 
         : 'ClaimNavigatorAI - AI-Powered Claim Documentation Tools';
       
+      // Update language toggle button text
+      const langButton = document.getElementById('lang-toggle-btn');
+      if (langButton) {
+        langButton.textContent = currentLang === 'en' ? 'ES' : 'EN';
+      }
+      
       // Store preference
       localStorage.setItem('preferredLanguage', currentLang);
     }
@@ -1835,6 +1850,12 @@
       const savedLang = localStorage.getItem('preferredLanguage');
       if (savedLang && savedLang === 'es') {
         toggleLanguage();
+      } else {
+        // Initialize button text for English
+        const langButton = document.getElementById('lang-toggle-btn');
+        if (langButton) {
+          langButton.textContent = 'ES';
+        }
       }
     });
     
@@ -1874,7 +1895,7 @@
         
         buttons.forEach(btn => {
           btn.disabled = false;
-          btn.textContent = originalTexts.get(btn) || (currentLang === 'es' ? 'Obtener Mi Kit de Herramientas IA' : 'Get My AI-Powered Claim Toolkit');
+          btn.textContent = originalTexts.get(btn) || (currentLang === 'es' ? 'Obtener Su Kit de Herramientas' : 'Get Your Claim Toolkit');
         });
       }
     }
