@@ -51,6 +51,13 @@
 <body>
     <h1>🔧 Netlify Functions Test</h1>
     <p>Testing if the backend functions are working properly.</p>
+    
+    <div class="test-section" style="background: #fef3c7; border: 1px solid #f59e0b;">
+        <h2>⚠️ Testing Environment</h2>
+        <div id="env-check" class="result warning">
+            <strong>Checking your testing environment...</strong>
+        </div>
+    </div>
 
     <div class="test-section">
         <h2>1. Test Generate Response Function</h2>
@@ -83,6 +90,41 @@
     </div>
 
     <script>
+        // Check testing environment on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const envCheck = document.getElementById('env-check');
+            const protocol = window.location.protocol;
+            const hostname = window.location.hostname;
+            
+            if (protocol === 'file:') {
+                envCheck.className = 'result error';
+                envCheck.innerHTML = `
+                    <strong>❌ LOCAL TESTING DETECTED</strong><br>
+                    <strong>Protocol:</strong> ${protocol}<br>
+                    <strong>Issue:</strong> Netlify functions only work when deployed to Netlify<br>
+                    <strong>Solution:</strong> Deploy your site to Netlify first, then test at:<br>
+                    <code>https://your-site.netlify.app/test-functions.html</code><br><br>
+                    <strong>For local testing:</strong> Use <a href="test-functions-local.html">test-functions-local.html</a>
+                `;
+            } else if (hostname.includes('netlify.app') || hostname.includes('netlify.com')) {
+                envCheck.className = 'result success';
+                envCheck.innerHTML = `
+                    <strong>✅ NETLIFY DEPLOYMENT DETECTED</strong><br>
+                    <strong>Protocol:</strong> ${protocol}<br>
+                    <strong>Hostname:</strong> ${hostname}<br>
+                    <strong>Status:</strong> Ready to test Netlify functions
+                `;
+            } else {
+                envCheck.className = 'result warning';
+                envCheck.innerHTML = `
+                    <strong>⚠️ UNKNOWN ENVIRONMENT</strong><br>
+                    <strong>Protocol:</strong> ${protocol}<br>
+                    <strong>Hostname:</strong> ${hostname}<br>
+                    <strong>Note:</strong> Functions may not work on this domain
+                `;
+            }
+        });
+
         async function testGenerateResponse() {
             const resultDiv = document.getElementById('response-result');
             resultDiv.style.display = 'block';
