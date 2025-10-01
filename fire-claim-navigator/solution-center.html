@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solution Center - ClaimNavigatorAI</title>
+  <meta name="description" content="Get help with your claim documentation needs. Contact our support team for assistance.">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #1e40af;
+      --primary-dark: #0f172a;
+      --primary-header: #0f172a;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --error: #ef4444;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --bg-white: #ffffff;
+      --bg-light: #f9fafb;
+      --bg-gray: #f3f4f6;
+      --border: #e5e7eb;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-white);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header */
+    header {
+      background: var(--primary-header);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+      margin-right: 2rem;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: white;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      display: inline-block;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .btn-primary:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .btn-primary:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* Language Toggle Button */
+    .lang-toggle {
+      background: #87ceeb;
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      border: 1px solid rgba(255,255,255,0.3);
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+    
+    .lang-toggle:hover {
+      background: #add8e6;
+    }
+    
+    /* Main Content */
+    .main-content {
+      padding: 4rem 0;
+      background: var(--bg-light);
+      min-height: calc(100vh - 200px);
+    }
+    
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .page-header h1 {
+      font-size: 2.5rem;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+    
+    .page-header p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    /* Form Container */
+    .form-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: var(--bg-white);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .form-group .error {
+      color: var(--error);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    
+    .form-group .required {
+      color: var(--error);
+    }
+    
+    /* Messages */
+    .message {
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+    
+    .message.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+    
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+    
+    /* Footer */
+    footer {
+      background: var(--text-primary);
+      color: white;
+      padding: 2rem 0;
+      text-align: center;
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      
+      .page-header h1 {
+        font-size: 2rem;
+      }
+      
+      .form-container {
+        margin: 0 1rem;
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">ClaimNavigatorAI</div>
+        <div class="nav-links">
+          <a href="index.html#services" data-en="Services" data-es="Servicios">Services</a>
+          <a href="index.html#resources" data-en="Resources" data-es="Recursos">Resources</a>
+          <a href="index.html#blog" data-en="Guides" data-es="Guías">Guides</a>
+          <a href="index.html#process" data-en="Process" data-es="Proceso">Process</a>
+          <a href="index.html#pricing" data-en="Pricing" data-es="Precios">Pricing</a>
+          <a href="solution-center.html" data-en="Solution Center" data-es="Centro de Soluciones">Solution Center</a>
+          <button onclick="toggleLanguage()" class="lang-toggle">ES/EN</button>
+          <a href="app/login.html" class="btn-primary" data-en="Login" data-es="Iniciar Sesión">Login</a>
+          <a href="index.html#pricing" class="btn-primary checkout-btn" data-en="Get My AI-Powered Claim Toolkit" data-es="Obtener Mi Kit de Herramientas IA">Get My AI-Powered Claim Toolkit</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      <div class="page-header">
+        <h1 data-en="Solution Center" data-es="Centro de Soluciones">Solution Center</h1>
+        <p data-en="Need help with your claim documentation? Our support team is here to assist you. Send us a message and we'll get back to you as soon as possible." 
+           data-es="¿Necesita ayuda con su documentación de reclamo? Nuestro equipo de soporte está aquí para ayudarle. Envíenos un mensaje y le responderemos lo antes posible.">
+           Need help with your claim documentation? Our support team is here to assist you. Send us a message and we'll get back to you as soon as possible.
+        </p>
+      </div>
+
+      <div class="form-container">
+        <div id="message-container"></div>
+        
+        <form id="support-form">
+          <div class="form-group">
+            <label for="user_name" data-en="Name" data-es="Nombre">Name <span class="required">*</span></label>
+            <input type="text" id="user_name" name="user_name" required>
+            <div class="error" id="user_name_error"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="user_email" data-en="Email" data-es="Correo Electrónico">Email <span class="required">*</span></label>
+            <input type="email" id="user_email" name="user_email" required>
+            <div class="error" id="user_email_error"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="subject" data-en="Subject" data-es="Asunto">Subject <span class="required">*</span></label>
+            <input type="text" id="subject" name="subject" required>
+            <div class="error" id="subject_error"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="message" data-en="Message" data-es="Mensaje">Message <span class="required">*</span></label>
+            <textarea id="message" name="message" required placeholder="Please describe your question or issue in detail..."></textarea>
+            <div class="error" id="message_error"></div>
+          </div>
+
+          <button type="submit" class="btn-primary" style="width: 100%;" data-en="Send Message" data-es="Enviar Mensaje">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <p data-en="© 2025 ClaimNavigatorAI. All rights reserved. | Documentation tools only – not legal advice or adjusting." 
+         data-es="© 2025 ClaimNavigatorAI. Todos los derechos reservados. | Solo herramientas de documentación – no asesoría legal o ajuste.">
+         © 2025 ClaimNavigatorAI. All rights reserved. | Documentation tools only – not legal advice or adjusting.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Language toggle functionality
+    let currentLang = 'en';
+    
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'es' : 'en';
+      document.documentElement.lang = currentLang;
+      
+      // Update all elements with data-en and data-es attributes
+      const elements = document.querySelectorAll('[data-en][data-es]');
+      elements.forEach(element => {
+        const text = element.getAttribute(`data-${currentLang}`);
+        if (text) {
+          if (element.tagName === 'INPUT' || element.tagName === 'BUTTON') {
+            element.textContent = text;
+          } else {
+            element.innerHTML = text;
+          }
+        }
+      });
+      
+      // Update page title
+      document.title = currentLang === 'es' 
+        ? 'Centro de Soluciones - ClaimNavigatorAI' 
+        : 'Solution Center - ClaimNavigatorAI';
+      
+      // Store preference
+      localStorage.setItem('preferredLanguage', currentLang);
+    }
+    
+    // Load preferred language on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedLang = localStorage.getItem('preferredLanguage');
+      if (savedLang && savedLang === 'es') {
+        toggleLanguage();
+      }
+    });
+
+    // Form validation and submission
+    document.getElementById('support-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // Clear previous errors and messages
+      clearMessages();
+      clearErrors();
+      
+      // Get form data
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData);
+      
+      // Validate form
+      if (!validateForm(data)) {
+        return;
+      }
+      
+      // Show loading state
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = currentLang === 'es' ? 'Enviando...' : 'Sending...';
+      
+      try {
+        // Submit to Netlify function
+        const response = await fetch('/.netlify/functions/submit-support-message', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          showMessage('success', currentLang === 'es' 
+            ? '¡Mensaje enviado exitosamente! Nos pondremos en contacto contigo pronto.' 
+            : 'Message sent successfully! We\'ll get back to you soon.');
+          this.reset();
+        } else {
+          throw new Error(result.error || 'Failed to send message');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showMessage('error', currentLang === 'es' 
+          ? 'Error al enviar el mensaje. Por favor, inténtalo de nuevo.' 
+          : 'Error sending message. Please try again.');
+      } finally {
+        // Reset button state
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+    });
+    
+    function validateForm(data) {
+      let isValid = true;
+      
+      // Validate name
+      if (!data.user_name || data.user_name.trim().length < 2) {
+        showError('user_name_error', currentLang === 'es' 
+          ? 'El nombre debe tener al menos 2 caracteres' 
+          : 'Name must be at least 2 characters long');
+        isValid = false;
+      }
+      
+      // Validate email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!data.user_email || !emailRegex.test(data.user_email)) {
+        showError('user_email_error', currentLang === 'es' 
+          ? 'Por favor, ingrese un correo electrónico válido' 
+          : 'Please enter a valid email address');
+        isValid = false;
+      }
+      
+      // Validate subject
+      if (!data.subject || data.subject.trim().length < 5) {
+        showError('subject_error', currentLang === 'es' 
+          ? 'El asunto debe tener al menos 5 caracteres' 
+          : 'Subject must be at least 5 characters long');
+        isValid = false;
+      }
+      
+      // Validate message
+      if (!data.message || data.message.trim().length < 10) {
+        showError('message_error', currentLang === 'es' 
+          ? 'El mensaje debe tener al menos 10 caracteres' 
+          : 'Message must be at least 10 characters long');
+        isValid = false;
+      }
+      
+      return isValid;
+    }
+    
+    function showError(elementId, message) {
+      const errorElement = document.getElementById(elementId);
+      if (errorElement) {
+        errorElement.textContent = message;
+      }
+    }
+    
+    function clearErrors() {
+      const errorElements = document.querySelectorAll('.error');
+      errorElements.forEach(element => {
+        element.textContent = '';
+      });
+    }
+    
+    function showMessage(type, message) {
+      const container = document.getElementById('message-container');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+      messageDiv.textContent = message;
+      container.appendChild(messageDiv);
+      
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        if (messageDiv.parentNode) {
+          messageDiv.parentNode.removeChild(messageDiv);
+        }
+      }, 5000);
+    }
+    
+    function clearMessages() {
+      const container = document.getElementById('message-container');
+      container.innerHTML = '';
+    }
+  </script>
+</body>
+</html>

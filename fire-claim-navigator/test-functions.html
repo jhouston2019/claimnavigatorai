@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Netlify Functions - ClaimNavigatorAI</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f8fafc;
+        }
+        .test-section {
+            background: white;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+        }
+        .test-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        .test-button:hover {
+            background: #2563eb;
+        }
+        .result {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #3b82f6;
+        }
+        .error {
+            border-left-color: #dc2626;
+            background: #fef2f2;
+        }
+        .success {
+            border-left-color: #059669;
+            background: #f0fdf4;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Netlify Functions Test</h1>
+    <p>Testing if the backend functions are working properly.</p>
+    
+    <div class="test-section" style="background: #fef3c7; border: 1px solid #f59e0b;">
+        <h2>⚠️ Testing Environment</h2>
+        <div id="env-check" class="result warning">
+            <strong>Checking your testing environment...</strong>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>1. Test Generate Response Function</h2>
+        <button class="test-button" onclick="testGenerateResponse()">Test AI Response Generation</button>
+        <div id="response-result" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test List Documents Function</h2>
+        <button class="test-button" onclick="testListDocuments()">Test Document Loading</button>
+        <div id="documents-result" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Test Policy Analysis Function</h2>
+        <button class="test-button" onclick="testPolicyAnalysis()">Test Policy Analysis</button>
+        <div id="policy-result" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Health Check</h2>
+        <button class="test-button" onclick="healthCheck()">Test Basic Function</button>
+        <div id="health-result" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Environment Check</h2>
+        <button class="test-button" onclick="checkEnvironment()">Check Environment</button>
+        <div id="env-result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Check testing environment on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const envCheck = document.getElementById('env-check');
+            const protocol = window.location.protocol;
+            const hostname = window.location.hostname;
+            
+            if (protocol === 'file:') {
+                envCheck.className = 'result error';
+                envCheck.innerHTML = `
+                    <strong>❌ LOCAL TESTING DETECTED</strong><br>
+                    <strong>Protocol:</strong> ${protocol}<br>
+                    <strong>Issue:</strong> Netlify functions only work when deployed to Netlify<br>
+                    <strong>Solution:</strong> Deploy your site to Netlify first, then test at:<br>
+                    <code>https://your-site.netlify.app/test-functions.html</code><br><br>
+                    <strong>For local testing:</strong> Use <a href="test-functions-local.html">test-functions-local.html</a>
+                `;
+            } else if (hostname.includes('netlify.app') || hostname.includes('netlify.com')) {
+                envCheck.className = 'result success';
+                envCheck.innerHTML = `
+                    <strong>✅ NETLIFY DEPLOYMENT DETECTED</strong><br>
+                    <strong>Protocol:</strong> ${protocol}<br>
+                    <strong>Hostname:</strong> ${hostname}<br>
+                    <strong>Status:</strong> Ready to test Netlify functions
+                `;
+            } else {
+                envCheck.className = 'result warning';
+                envCheck.innerHTML = `
+                    <strong>⚠️ UNKNOWN ENVIRONMENT</strong><br>
+                    <strong>Protocol:</strong> ${protocol}<br>
+                    <strong>Hostname:</strong> ${hostname}<br>
+                    <strong>Note:</strong> Functions may not work on this domain
+                `;
+            }
+        });
+
+        async function testGenerateResponse() {
+            const resultDiv = document.getElementById('response-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="spinner">Testing generate-response function...</div>';
+            
+            try {
+                const response = await fetch('/.netlify/functions/generate-response-simple', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        input: 'Test claim response generation',
+                        type: 'claim_response'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Generate Response Function Working!</strong><br>
+                        <strong>Response:</strong> ${data.response.substring(0, 200)}...<br>
+                        <strong>Confidence:</strong> ${data.confidence || 'N/A'}<br>
+                        <strong>Status Code:</strong> ${response.status}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <strong>❌ Generate Response Function Failed</strong><br>
+                        <strong>Error:</strong> ${data.error || 'Unknown error'}<br>
+                        <strong>Status Code:</strong> ${response.status}
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <strong>❌ Network Error</strong><br>
+                    <strong>Error:</strong> ${error.message}<br>
+                    <strong>Possible causes:</strong> Function not deployed, CORS issue, or network problem
+                `;
+            }
+        }
+
+        async function testListDocuments() {
+            const resultDiv = document.getElementById('documents-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="spinner">Testing list-documents function...</div>';
+            
+            try {
+                const response = await fetch('/.netlify/functions/list-documents-simple', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        language: 'en',
+                        type: 'claim_documents'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ List Documents Function Working!</strong><br>
+                        <strong>Documents Found:</strong> ${data.documents ? data.documents.length : 0}<br>
+                        <strong>Status Code:</strong> ${response.status}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <strong>❌ List Documents Function Failed</strong><br>
+                        <strong>Error:</strong> ${data.error || 'Unknown error'}<br>
+                        <strong>Status Code:</strong> ${response.status}
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <strong>❌ Network Error</strong><br>
+                    <strong>Error:</strong> ${error.message}<br>
+                    <strong>Possible causes:</strong> Function not deployed, CORS issue, or network problem
+                `;
+            }
+        }
+
+        async function testPolicyAnalysis() {
+            const resultDiv = document.getElementById('policy-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="spinner">Testing analyze-policy function...</div>';
+            
+            try {
+                const response = await fetch('/.netlify/functions/analyze-policy', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        policyText: 'Test policy text for analysis',
+                        analysisType: 'comprehensive_policy_review'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Policy Analysis Function Working!</strong><br>
+                        <strong>Analysis Length:</strong> ${data.analysis ? data.analysis.length : 0} characters<br>
+                        <strong>Status Code:</strong> ${response.status}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <strong>❌ Policy Analysis Function Failed</strong><br>
+                        <strong>Error:</strong> ${data.error || 'Unknown error'}<br>
+                        <strong>Status Code:</strong> ${response.status}
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <strong>❌ Network Error</strong><br>
+                    <strong>Error:</strong> ${error.message}<br>
+                    <strong>Possible causes:</strong> Function not deployed, CORS issue, or network problem
+                `;
+            }
+        }
+
+        async function healthCheck() {
+            const resultDiv = document.getElementById('health-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="spinner">Testing basic function...</div>';
+            
+            try {
+                const response = await fetch('/.netlify/functions/health-check', {
+                    method: 'GET'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Basic Function Working!</strong><br>
+                        <strong>Message:</strong> ${data.message}<br>
+                        <strong>Environment:</strong> ${data.environment}<br>
+                        <strong>Region:</strong> ${data.region}<br>
+                        <strong>Timestamp:</strong> ${data.timestamp}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <strong>❌ Basic Function Failed</strong><br>
+                        <strong>Error:</strong> ${data.error || 'Unknown error'}<br>
+                        <strong>Status Code:</strong> ${response.status}
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <strong>❌ Network Error</strong><br>
+                    <strong>Error:</strong> ${error.message}<br>
+                    <strong>This indicates a fundamental deployment issue</strong>
+                `;
+            }
+        }
+
+        async function checkEnvironment() {
+            const resultDiv = document.getElementById('env-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="spinner">Checking environment...</div>';
+            
+            try {
+                const response = await fetch('/.netlify/functions/debug-env', {
+                    method: 'GET'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Environment Check Complete</strong><br>
+                        <strong>Environment:</strong> ${data.environment || 'Unknown'}<br>
+                        <strong>Node Version:</strong> ${data.nodeVersion || 'Unknown'}<br>
+                        <strong>Available Variables:</strong> ${data.availableVars ? data.availableVars.length : 0}
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <strong>❌ Environment Check Failed</strong><br>
+                        <strong>Error:</strong> ${data.error || 'Unknown error'}<br>
+                        <strong>Status Code:</strong> ${response.status}
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <strong>❌ Network Error</strong><br>
+                    <strong>Error:</strong> ${error.message}<br>
+                    <strong>Possible causes:</strong> Function not deployed, CORS issue, or network problem
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

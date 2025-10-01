@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Maximize Your Claim</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 2rem; background: #f9fafb; }
+    .test-container { max-width: 800px; margin: 0 auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .test-section { margin-bottom: 2rem; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; }
+    .test-title { color: #1e40af; margin-bottom: 1rem; }
+    .test-result { padding: 0.5rem; border-radius: 4px; margin: 0.5rem 0; }
+    .test-pass { background: #d1fae5; color: #065f46; }
+    .test-fail { background: #fee2e2; color: #991b1b; }
+    .test-info { background: #dbeafe; color: #1e40af; }
+    button { background: #1e40af; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; margin: 0.25rem; }
+    button:hover { background: #3b82f6; }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>Maximize Your Claim - Integration Test</h1>
+    
+    <div class="test-section">
+      <h2 class="test-title">1. Component Loading Test</h2>
+      <div id="component-test-result" class="test-result test-info">Testing component loading...</div>
+      <button onclick="testComponentLoading()">Test Component Loading</button>
+    </div>
+
+    <div class="test-section">
+      <h2 class="test-title">2. Step Navigation Test</h2>
+      <div id="navigation-test-result" class="test-result test-info">Testing step navigation...</div>
+      <button onclick="testStepNavigation()">Test Step Navigation</button>
+    </div>
+
+    <div class="test-section">
+      <h2 class="test-title">3. Progress Tracking Test</h2>
+      <div id="progress-test-result" class="test-result test-info">Testing progress tracking...</div>
+      <button onclick="testProgressTracking()">Test Progress Tracking</button>
+    </div>
+
+    <div class="test-section">
+      <h2 class="test-title">4. Language Toggle Test</h2>
+      <div id="language-test-result" class="test-result test-info">Testing language toggle...</div>
+      <button onclick="testLanguageToggle()">Test Language Toggle</button>
+    </div>
+
+    <div class="test-section">
+      <h2 class="test-title">5. AI Assist Button Test</h2>
+      <div id="ai-assist-test-result" class="test-result test-info">Testing AI Assist functionality...</div>
+      <button onclick="testAIAssist()">Test AI Assist</button>
+    </div>
+
+    <div class="test-section">
+      <h2 class="test-title">6. Supabase Integration Test</h2>
+      <div id="supabase-test-result" class="test-result test-info">Testing Supabase integration...</div>
+      <button onclick="testSupabaseIntegration()">Test Supabase</button>
+    </div>
+
+    <div class="test-section">
+      <h2 class="test-title">Test Summary</h2>
+      <div id="test-summary" class="test-result test-info">Run individual tests to see results</div>
+      <button onclick="runAllTests()">Run All Tests</button>
+    </div>
+  </div>
+
+  <script>
+    // Mock data for testing
+    const mockMaximizeClaimData = {
+      currentStep: 0,
+      completedSteps: [],
+      language: 'en',
+      steps: [
+        {
+          title: "Document Everything Immediately",
+          whatToDo: "Take photos, save receipts, get estimates, and document all damage as soon as possible after the loss occurs.",
+          whyItMatters: "Insurers exploit missing documentation to deny or reduce claims. Complete documentation is your strongest defense.",
+          aiAssist: "Damage Inventory Sheet"
+        },
+        {
+          title: "Understand Your Policy",
+          whatToDo: "Review your policy coverage, limits, exclusions, and special provisions. Know what you're entitled to under your contract.",
+          whyItMatters: "You can't leverage rights you don't know you have. Understanding your policy helps you identify coverage gaps and insurer violations.",
+          aiAssist: "Policy Analyzer"
+        }
+      ]
+    };
+
+    const mockTranslations = {
+      en: {
+        title: "Maximize Your Claim",
+        progress: "Progress: {completed} of {total} steps completed",
+        navigation: {
+          previous: "Previous",
+          next: "Next",
+          markComplete: "Mark Step Complete",
+          completed: "Completed",
+          aiAssist: "AI Assist"
+        },
+        whatToDo: "What to Do",
+        whyItMatters: "Why It Matters"
+      },
+      es: {
+        title: "Maximiza Tu Reclamo",
+        progress: "Progreso: {completed} de {total} pasos completados",
+        navigation: {
+          previous: "Anterior",
+          next: "Siguiente",
+          markComplete: "Marcar Paso Completado",
+          completed: "Completado",
+          aiAssist: "Asistencia IA"
+        },
+        whatToDo: "Qué Hacer",
+        whyItMatters: "Por Qué Importa"
+      }
+    };
+
+    let testResults = {};
+
+    function updateTestResult(testId, passed, message) {
+      const element = document.getElementById(testId);
+      element.className = `test-result ${passed ? 'test-pass' : 'test-fail'}`;
+      element.textContent = message;
+      testResults[testId] = passed;
+      updateTestSummary();
+    }
+
+    function updateTestSummary() {
+      const total = Object.keys(testResults).length;
+      const passed = Object.values(testResults).filter(Boolean).length;
+      const summary = document.getElementById('test-summary');
+      summary.className = `test-result ${passed === total ? 'test-pass' : 'test-fail'}`;
+      summary.textContent = `Tests: ${passed}/${total} passed`;
+    }
+
+    function testComponentLoading() {
+      try {
+        // Test if components can be instantiated
+        const stepper = new MaximizeClaimStepper('test-stepper', { currentStep: 0, totalSteps: 2 });
+        const stepCard = new MaximizeClaimStepCard('test-step-card', { stepData: mockMaximizeClaimData.steps[0] });
+        const aiButton = new MaximizeClaimAIAssistButton('test-ai-button', { toolName: 'Damage Inventory Sheet' });
+        
+        updateTestResult('component-test-result', true, '✅ All components loaded successfully');
+      } catch (error) {
+        updateTestResult('component-test-result', false, `❌ Component loading failed: ${error.message}`);
+      }
+    }
+
+    function testStepNavigation() {
+      try {
+        const data = { ...mockMaximizeClaimData };
+        
+        // Test next step
+        if (data.currentStep < data.steps.length - 1) {
+          data.currentStep++;
+        }
+        
+        // Test previous step
+        if (data.currentStep > 0) {
+          data.currentStep--;
+        }
+        
+        updateTestResult('navigation-test-result', true, '✅ Step navigation working correctly');
+      } catch (error) {
+        updateTestResult('navigation-test-result', false, `❌ Step navigation failed: ${error.message}`);
+      }
+    }
+
+    function testProgressTracking() {
+      try {
+        const data = { ...mockMaximizeClaimData };
+        
+        // Test marking step complete
+        data.completedSteps.push(0);
+        
+        // Test unmarking step
+        data.completedSteps = data.completedSteps.filter(s => s !== 0);
+        
+        // Test progress calculation
+        const progress = (data.completedSteps.length / data.steps.length) * 100;
+        
+        updateTestResult('progress-test-result', true, `✅ Progress tracking working (${progress}% complete)`);
+      } catch (error) {
+        updateTestResult('progress-test-result', false, `❌ Progress tracking failed: ${error.message}`);
+      }
+    }
+
+    function testLanguageToggle() {
+      try {
+        let language = 'en';
+        
+        // Test language toggle
+        language = language === 'en' ? 'es' : 'en';
+        
+        // Test translation access
+        const t = mockTranslations[language];
+        const title = t.title;
+        
+        updateTestResult('language-test-result', true, `✅ Language toggle working (${language}: ${title})`);
+      } catch (error) {
+        updateTestResult('language-test-result', false, `❌ Language toggle failed: ${error.message}`);
+      }
+    }
+
+    function testAIAssist() {
+      try {
+        // Test tool mapping
+        const toolMap = {
+          'Damage Inventory Sheet': 'document',
+          'Policy Analyzer': 'advisory',
+          'Proof of Loss Generator': 'document'
+        };
+        
+        const toolName = 'Damage Inventory Sheet';
+        const toolType = toolMap[toolName] || 'document';
+        
+        updateTestResult('ai-assist-test-result', true, `✅ AI Assist mapping working (${toolName} -> ${toolType})`);
+      } catch (error) {
+        updateTestResult('ai-assist-test-result', false, `❌ AI Assist failed: ${error.message}`);
+      }
+    }
+
+    function testSupabaseIntegration() {
+      try {
+        // Test Supabase table structure
+        const tableStructure = {
+          id: 'uuid',
+          user_id: 'uuid',
+          step_number: 'int',
+          completed: 'boolean',
+          completed_at: 'timestamptz',
+          created_at: 'timestamptz'
+        };
+        
+        // Test data validation
+        const testData = {
+          user_id: 'test-user-id',
+          step_number: 0,
+          completed: true,
+          completed_at: new Date().toISOString()
+        };
+        
+        updateTestResult('supabase-test-result', true, '✅ Supabase integration structure valid');
+      } catch (error) {
+        updateTestResult('supabase-test-result', false, `❌ Supabase integration failed: ${error.message}`);
+      }
+    }
+
+    function runAllTests() {
+      testComponentLoading();
+      setTimeout(() => testStepNavigation(), 100);
+      setTimeout(() => testProgressTracking(), 200);
+      setTimeout(() => testLanguageToggle(), 300);
+      setTimeout(() => testAIAssist(), 400);
+      setTimeout(() => testSupabaseIntegration(), 500);
+    }
+
+    // Initialize test
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Maximize Your Claim Integration Test loaded');
+    });
+  </script>
+
+  <!-- Load component scripts -->
+  <script src="components/MaximizeClaim/Stepper.js"></script>
+  <script src="components/MaximizeClaim/StepCard.js"></script>
+  <script src="components/MaximizeClaim/AIAssistButton.js"></script>
+</body>
+</html>

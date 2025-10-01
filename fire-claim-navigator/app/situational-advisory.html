@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Situational Advisory - ClaimNavigatorAI</title>
+  <meta name="description" content="Get personalized next-step advice based on your current claim situation with AI-powered situational advisory.">
+  <style>
+    :root {
+      --primary: #1e40af;
+      --accent: #3b82f6;
+      --border: #e5e7eb;
+      --text-secondary: #6b7280;
+      --bg-light: #f9fafb;
+      --success: #10b981;
+      --error: #ef4444;
+    }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      background: #fff; 
+      line-height: 1.6;
+    }
+    
+    header { 
+      background: #0f172a; 
+      padding: 1rem; 
+      color: #fff; 
+      position: sticky; 
+      top: 0; 
+      z-index: 100;
+    }
+    
+    nav { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .logo { 
+      font-size: 1.5rem; 
+      font-weight: bold; 
+      margin-right: 2rem; 
+    }
+    
+    .nav-links { 
+      display: flex; 
+      gap: 1rem; 
+      align-items: center;
+    }
+    
+    .nav-links a { 
+      color: #fff; 
+      text-decoration: none; 
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: background-color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .language-toggle {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    
+    .lang-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      padding: 0.25rem 0.75rem;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .lang-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    
+    .main-content { 
+      padding: 2rem; 
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    .page-subtitle {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .form-section, .results-section {
+      background: var(--bg-light);
+      padding: 2rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #374151;
+    }
+    
+    .form-description {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+    }
+    
+    .form-select, .form-textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    
+    .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+      width: 1rem;
+      height: 1rem;
+      accent-color: var(--accent);
+    }
+    
+    .checkbox-label {
+      font-size: 0.875rem;
+      color: #374151;
+    }
+    
+    .btn-primary { 
+      background: var(--primary); 
+      color: #fff; 
+      border: none; 
+      border-radius: 0.5rem; 
+      padding: 0.75rem 2rem; 
+      cursor: pointer; 
+      text-decoration: none; 
+      display: inline-block; 
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background-color 0.2s;
+      width: 100%;
+    }
+    
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+    
+    .btn-primary:disabled {
+      background: var(--text-secondary);
+      cursor: not-allowed;
+    }
+    
+    .btn-secondary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    
+    .btn-secondary:hover {
+      background: #2563eb;
+    }
+    
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: var(--text-secondary);
+    }
+    
+    .spinner {
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid var(--border);
+      border-top: 2px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .error-message {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: var(--error);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .success-message {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: var(--success);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .results-content {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+    
+    .results-content h1, .results-content h2, .results-content h3 {
+      color: var(--primary);
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+    
+    .results-content h1 {
+      font-size: 1.5rem;
+    }
+    
+    .results-content h2 {
+      font-size: 1.25rem;
+    }
+    
+    .results-content h3 {
+      font-size: 1.125rem;
+    }
+    
+    .results-content strong {
+      color: #374151;
+    }
+    
+    .results-content em {
+      color: var(--text-secondary);
+    }
+    
+    .tool-button {
+      margin-top: 1rem;
+      text-align: center;
+    }
+    
+    .disclaimer {
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .credits-display {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      color: #fff;
+    }
+    
+    .btn-buy-credits {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 0.375rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: background-color 0.2s;
+    }
+    
+    .btn-buy-credits:hover {
+      background: #2563eb;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo">ClaimNavigatorAI</div>
+      <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="../product.html">Product</a>
+        <a href="/solution-center.html">Get Help</a>
+        <a href="response-center.html">Claim Resource & AI Response Center</a>
+        <a href="settings.html">Settings</a>
+        <div class="credits-display">
+          <span id="user-credits-display">Credits: Loading...</span>
+          <button class="btn-buy-credits" onclick="buyMoreCredits()">Buy More</button>
+        </div>
+        <div class="language-toggle">
+          <button class="lang-btn active" onclick="switchLanguage('en')" id="lang-en">EN</button>
+          <button class="lang-btn" onclick="switchLanguage('es')" id="lang-es">ES</button>
+        </div>
+        <a href="#" onclick="logout()">Logout</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title" data-i18n="situationalAdvisory.title">Situational Advisory</h1>
+      <p class="page-subtitle" data-i18n="situationalAdvisory.subtitle">Get personalized next-step advice based on your current claim situation</p>
+    </div>
+
+    <div class="content-grid">
+      <!-- Form Section -->
+      <div class="form-section">
+        <form id="advisory-form">
+          <div class="form-group">
+            <label class="form-label" data-i18n="situationalAdvisory.form.claimStage.label">Claim Stage</label>
+            <select class="form-select" id="claim-stage" name="claimStage" required>
+              <option value="" data-i18n="situationalAdvisory.form.claimStage.placeholder">Select your current claim stage</option>
+              <option value="Filed" data-i18n="situationalAdvisory.form.claimStage.options.Filed">Filed</option>
+              <option value="Under Review" data-i18n="situationalAdvisory.form.claimStage.options.Under Review">Under Review</option>
+              <option value="Denied" data-i18n="situationalAdvisory.form.claimStage.options.Denied">Denied</option>
+              <option value="Offer Made" data-i18n="situationalAdvisory.form.claimStage.options.Offer Made">Offer Made</option>
+              <option value="Delayed" data-i18n="situationalAdvisory.form.claimStage.options.Delayed">Delayed</option>
+              <option value="Disputed" data-i18n="situationalAdvisory.form.claimStage.options.Disputed">Disputed</option>
+              <option value="Settlement Pending" data-i18n="situationalAdvisory.form.claimStage.options.Settlement Pending">Settlement Pending</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="situationalAdvisory.form.insurerBehavior.label">Insurer Behavior</label>
+            <p class="form-description" data-i18n="situationalAdvisory.form.insurerBehavior.description">Select all that apply</p>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" id="behavior-delayed" name="insurerBehavior" value="Delayed response">
+                <label class="checkbox-label" for="behavior-delayed" data-i18n="situationalAdvisory.form.insurerBehavior.options.Delayed response">Delayed response</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="behavior-denied" name="insurerBehavior" value="Denied">
+                <label class="checkbox-label" for="behavior-denied" data-i18n="situationalAdvisory.form.insurerBehavior.options.Denied">Denied</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="behavior-lowball" name="insurerBehavior" value="Lowball offer">
+                <label class="checkbox-label" for="behavior-lowball" data-i18n="situationalAdvisory.form.insurerBehavior.options.Lowball offer">Lowball offer</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="behavior-exclusion" name="insurerBehavior" value="Misapplied exclusion">
+                <label class="checkbox-label" for="behavior-exclusion" data-i18n="situationalAdvisory.form.insurerBehavior.options.Misapplied exclusion">Misapplied exclusion</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="behavior-docs" name="insurerBehavior" value="Requested excessive docs">
+                <label class="checkbox-label" for="behavior-docs" data-i18n="situationalAdvisory.form.insurerBehavior.options.Requested excessive docs">Requested excessive docs</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="behavior-payout" name="insurerBehavior" value="Offered quick payout">
+                <label class="checkbox-label" for="behavior-payout" data-i18n="situationalAdvisory.form.insurerBehavior.options.Offered quick payout">Offered quick payout</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="situationalAdvisory.form.claimType.label">Claim Type</label>
+            <select class="form-select" id="claim-type" name="claimType" required>
+              <option value="" data-i18n="situationalAdvisory.form.claimType.placeholder">Select your claim type</option>
+              <option value="Property" data-i18n="situationalAdvisory.form.claimType.options.Property">Property</option>
+              <option value="Auto" data-i18n="situationalAdvisory.form.claimType.options.Auto">Auto</option>
+              <option value="Health" data-i18n="situationalAdvisory.form.claimType.options.Health">Health</option>
+              <option value="Business Interruption" data-i18n="situationalAdvisory.form.claimType.options.Business Interruption">Business Interruption</option>
+              <option value="Other" data-i18n="situationalAdvisory.form.claimType.options.Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="situationalAdvisory.form.userConcern.label">Your Concern</label>
+            <p class="form-description" data-i18n="situationalAdvisory.form.userConcern.description">Provide details about what's happening with your claim</p>
+            <textarea 
+              class="form-textarea" 
+              id="user-concern" 
+              name="userConcern" 
+              placeholder="Describe your specific situation and concerns..."
+              data-i18n-placeholder="situationalAdvisory.form.userConcern.placeholder"
+              required
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="situationalAdvisory.form.state.label">State (Optional)</label>
+            <select class="form-select" id="state" name="state">
+              <option value="" data-i18n="situationalAdvisory.form.state.placeholder">Select your state for state-specific advice</option>
+              <option value="AL">Alabama</option>
+              <option value="AK">Alaska</option>
+              <option value="AZ">Arizona</option>
+              <option value="AR">Arkansas</option>
+              <option value="CA">California</option>
+              <option value="CO">Colorado</option>
+              <option value="CT">Connecticut</option>
+              <option value="DE">Delaware</option>
+              <option value="FL">Florida</option>
+              <option value="GA">Georgia</option>
+              <option value="HI">Hawaii</option>
+              <option value="ID">Idaho</option>
+              <option value="IL">Illinois</option>
+              <option value="IN">Indiana</option>
+              <option value="IA">Iowa</option>
+              <option value="KS">Kansas</option>
+              <option value="KY">Kentucky</option>
+              <option value="LA">Louisiana</option>
+              <option value="ME">Maine</option>
+              <option value="MD">Maryland</option>
+              <option value="MA">Massachusetts</option>
+              <option value="MI">Michigan</option>
+              <option value="MN">Minnesota</option>
+              <option value="MS">Mississippi</option>
+              <option value="MO">Missouri</option>
+              <option value="MT">Montana</option>
+              <option value="NE">Nebraska</option>
+              <option value="NV">Nevada</option>
+              <option value="NH">New Hampshire</option>
+              <option value="NJ">New Jersey</option>
+              <option value="NM">New Mexico</option>
+              <option value="NY">New York</option>
+              <option value="NC">North Carolina</option>
+              <option value="ND">North Dakota</option>
+              <option value="OH">Ohio</option>
+              <option value="OK">Oklahoma</option>
+              <option value="OR">Oregon</option>
+              <option value="PA">Pennsylvania</option>
+              <option value="RI">Rhode Island</option>
+              <option value="SC">South Carolina</option>
+              <option value="SD">South Dakota</option>
+              <option value="TN">Tennessee</option>
+              <option value="TX">Texas</option>
+              <option value="UT">Utah</option>
+              <option value="VT">Vermont</option>
+              <option value="VA">Virginia</option>
+              <option value="WA">Washington</option>
+              <option value="WV">West Virginia</option>
+              <option value="WI">Wisconsin</option>
+              <option value="WY">Wyoming</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn-primary" id="submit-btn" data-i18n="situationalAdvisory.form.submitButton">
+            Get Advisory
+          </button>
+        </form>
+      </div>
+
+      <!-- Results Section -->
+      <div class="results-section">
+        <h2 data-i18n="situationalAdvisory.results.title">Your Advisory</h2>
+        <div id="results-content" class="hidden">
+          <div class="results-content" id="advisory-content">
+            <!-- AI-generated content will be inserted here -->
+          </div>
+          <div class="tool-button">
+            <button class="btn-secondary" id="use-tool-btn" data-i18n="situationalAdvisory.results.useToolButton">
+              Use Suggested Tool
+            </button>
+          </div>
+          <div class="disclaimer" data-i18n="situationalAdvisory.results.disclaimer">
+            This advisory is AI-generated and not legal advice.
+          </div>
+        </div>
+        <div id="loading-message" class="hidden">
+          <div class="loading">
+            <div class="spinner"></div>
+            <span data-i18n="situationalAdvisory.form.generating">Generating advisory...</span>
+          </div>
+        </div>
+        <div id="error-message" class="hidden">
+          <div class="error-message" id="error-content">
+            <!-- Error content will be inserted here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Global variables
+    let currentLanguage = 'en';
+    let translations = {};
+    let supabase = null;
+    let currentUser = null;
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeAuth();
+      loadTranslations();
+      setupEventListeners();
+    });
+
+    // Initialize authentication
+    async function initializeAuth() {
+      try {
+        // Load Supabase dynamically
+        const { createClient } = await import('https://cdn.skypack.dev/@supabase/supabase-js@2');
+        
+        supabase = createClient(
+          'https://your-project.supabase.co', // Replace with actual URL
+          'your-anon-key' // Replace with actual anon key
+        );
+
+        // Check if user is logged in
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          currentUser = user;
+          updateCreditsDisplay();
+        } else {
+          // Redirect to login if not authenticated
+          window.location.href = '/index.html';
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        // In development mode, continue without auth
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          console.log('Development mode: Continuing without authentication');
+        } else {
+          window.location.href = '/index.html';
+        }
+      }
+    }
+
+    // Load translations
+    async function loadTranslations() {
+      try {
+        const response = await fetch(`/locales/${currentLanguage}.json`);
+        translations = await response.json();
+        updateUI();
+      } catch (error) {
+        console.error('Error loading translations:', error);
+      }
+    }
+
+    // Update UI with translations
+    function updateUI() {
+      const elements = document.querySelectorAll('[data-i18n]');
+      elements.forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        const text = getNestedTranslation(translations, key);
+        if (text) {
+          element.textContent = text;
+        }
+      });
+
+      // Update placeholders
+      const placeholderElements = document.querySelectorAll('[data-i18n-placeholder]');
+      placeholderElements.forEach(element => {
+        const key = element.getAttribute('data-i18n-placeholder');
+        const text = getNestedTranslation(translations, key);
+        if (text) {
+          element.placeholder = text;
+        }
+      });
+    }
+
+    // Get nested translation value
+    function getNestedTranslation(obj, path) {
+      return path.split('.').reduce((current, key) => current && current[key], obj);
+    }
+
+    // Switch language
+    async function switchLanguage(lang) {
+      currentLanguage = lang;
+      
+      // Update active language button
+      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`lang-${lang}`).classList.add('active');
+      
+      await loadTranslations();
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      const form = document.getElementById('advisory-form');
+      form.addEventListener('submit', handleFormSubmit);
+    }
+
+    // Handle form submission
+    async function handleFormSubmit(event) {
+      event.preventDefault();
+      
+      const formData = new FormData(event.target);
+      const data = {
+        claimStage: formData.get('claimStage'),
+        insurerBehavior: formData.getAll('insurerBehavior'),
+        claimType: formData.get('claimType'),
+        userConcern: formData.get('userConcern'),
+        state: formData.get('state') || undefined,
+        lang: currentLanguage
+      };
+
+      // Validate form
+      if (!data.claimStage || !data.insurerBehavior.length || !data.claimType || !data.userConcern) {
+        showError('Please fill in all required fields.');
+        return;
+      }
+
+      // Show loading state
+      showLoading();
+
+      try {
+        const response = await fetch('/netlify/functions/getAdvisory', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': currentUser ? `Bearer ${currentUser.access_token}` : ''
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          showResults(result.adviceHtml, result.recommendedTool);
+        } else {
+          showError(result.error || 'Failed to generate advisory');
+        }
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        showError('Network error. Please try again.');
+      }
+    }
+
+    // Show loading state
+    function showLoading() {
+      document.getElementById('results-content').classList.add('hidden');
+      document.getElementById('error-message').classList.add('hidden');
+      document.getElementById('loading-message').classList.remove('hidden');
+    }
+
+    // Show results
+    function showResults(adviceHtml, recommendedTool) {
+      document.getElementById('loading-message').classList.add('hidden');
+      document.getElementById('error-message').classList.add('hidden');
+      
+      const resultsContent = document.getElementById('results-content');
+      const advisoryContent = document.getElementById('advisory-content');
+      const useToolBtn = document.getElementById('use-tool-btn');
+      
+      advisoryContent.innerHTML = adviceHtml;
+      
+      // Set up tool button
+      useToolBtn.onclick = () => {
+        const toolUrl = getToolUrl(recommendedTool);
+        if (toolUrl) {
+          window.open(toolUrl, '_blank');
+        }
+      };
+      
+      resultsContent.classList.remove('hidden');
+    }
+
+    // Show error
+    function showError(message) {
+      document.getElementById('loading-message').classList.add('hidden');
+      document.getElementById('results-content').classList.add('hidden');
+      
+      const errorContent = document.getElementById('error-content');
+      errorContent.textContent = message;
+      document.getElementById('error-message').classList.remove('hidden');
+    }
+
+    // Get tool URL based on recommended tool
+    function getToolUrl(toolName) {
+      const toolUrls = {
+        'Proof of Loss': '/app/document-generator.html?type=proof-of-loss',
+        'Appeal Letter': '/app/document-generator.html?type=appeal-letter',
+        'Demand Letter': '/app/document-generator.html?type=demand-letter',
+        'Notice of Delay': '/app/document-generator.html?type=delay-complaint',
+        'ROM Estimator': '/app/rom-estimator.html',
+        'Policy Analyzer': '/app/policy-analyzer.html',
+        'Document Generator': '/app/document-generator.html'
+      };
+      
+      return toolUrls[toolName] || '/app/document-generator.html';
+    }
+
+    // Update credits display
+    async function updateCreditsDisplay() {
+      if (!currentUser) return;
+      
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('credits, subscription_status')
+          .eq('id', currentUser.id)
+          .single();
+        
+        if (profile) {
+          const creditsText = profile.subscription_status === 'active' 
+            ? 'Unlimited' 
+            : `${profile.credits || 0} remaining`;
+          document.getElementById('user-credits-display').textContent = `Credits: ${creditsText}`;
+        }
+      } catch (error) {
+        console.error('Error updating credits:', error);
+      }
+    }
+
+    // Buy more credits
+    function buyMoreCredits() {
+      window.location.href = '/app/credits.html';
+    }
+
+    // Logout
+    async function logout() {
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
+      window.location.href = '/index.html';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Generator - ClaimNavigatorAI</title>
+    <meta name="description" content="Generate professional insurance claim documents with AI assistance">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom styles -->
+    <style>
+        /* Custom styles for document generator */
+        .doc-gen-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .language-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+        }
+        
+        .result-panel {
+            display: none;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+        }
+        
+        .result-panel.show {
+            display: block;
+        }
+        
+        .preview-content {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .download-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .download-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: #3b82f6;
+            color: #ffffff;
+            border: none;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+        
+        .download-btn:hover {
+            background: #2563eb;
+        }
+        
+        .download-btn.secondary {
+            background: #6b7280;
+        }
+        
+        .download-btn.secondary:hover {
+            background: #4b5563;
+        }
+        
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .success-message {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .limit-warning {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            color: #92400e;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .doc-gen-container {
+                padding: 1rem;
+            }
+            
+            .language-toggle {
+                position: static;
+                margin-bottom: 1rem;
+            }
+            
+            .download-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">Document Generator</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/response-center.html" class="text-blue-600 hover:text-blue-800">← Back to Claim Resource & AI Response Center</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Language Toggle -->
+    <div class="language-toggle">
+        <button id="languageToggle" class="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <span id="languageText">EN</span>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <main class="doc-gen-container">
+        <!-- Introduction -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Generate Professional Documents</h2>
+            <p class="text-lg text-gray-600 mb-6">
+                Create professional insurance claim documents with AI assistance. Choose from 10 different document types to help with your claim process.
+            </p>
+            
+            <!-- Usage Limits -->
+            <div id="usageLimits" class="mb-6">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-700">
+                                <span id="limitText">Free users: 2 documents per month. Subscribers: Unlimited.</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Generator Interface -->
+        <div id="documentGenerator" class="bg-white rounded-2xl shadow-lg p-6">
+            <!-- Tabs will be inserted here -->
+            <div id="tabsContainer"></div>
+            
+            <!-- Forms will be inserted here -->
+            <div id="formsContainer"></div>
+        </div>
+
+        <!-- Results Panel -->
+        <div id="resultPanel" class="result-panel">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Generated Document</h3>
+            
+            <!-- Preview -->
+            <div class="mb-4">
+                <h4 class="text-lg font-medium text-gray-700 mb-2">Preview</h4>
+                <div id="previewContent" class="preview-content">
+                    <!-- Generated content will appear here -->
+                </div>
+            </div>
+            
+            <!-- Download Buttons -->
+            <div class="download-buttons">
+                <a id="downloadPdf" href="#" class="download-btn" style="display: none;">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Download PDF
+                </a>
+                <a id="downloadDocx" href="#" class="download-btn" style="display: none;">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Download DOCX
+                </a>
+                <a id="saveToDocuments" href="#" class="download-btn secondary" style="display: none;">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    Save to My Documents
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="/components/DocGen/Tabs.js"></script>
+    <script src="/components/DocGen/FormShell.js"></script>
+    <script src="/components/DocGen/forms/ProofOfLossForm.js"></script>
+    
+    <script>
+        // Document Generator Application
+        class DocumentGeneratorApp {
+            constructor() {
+                this.currentLocale = localStorage.getItem('docGenLocale') || 'en';
+                this.currentDocType = 'proof-of-loss';
+                this.tabs = null;
+                this.formShell = null;
+                this.currentForm = null;
+                
+                this.init();
+            }
+
+            init() {
+                this.setupLanguageToggle();
+                this.setupTabs();
+                this.setupForm();
+                this.loadUsageLimits();
+            }
+
+            setupLanguageToggle() {
+                const toggle = document.getElementById('languageToggle');
+                const text = document.getElementById('languageText');
+                
+                toggle.addEventListener('click', () => {
+                    this.currentLocale = this.currentLocale === 'en' ? 'es' : 'en';
+                    localStorage.setItem('docGenLocale', this.currentLocale);
+                    text.textContent = this.currentLocale.toUpperCase();
+                    
+                    // Update all text content
+                    this.updateLocale();
+                });
+                
+                // Set initial state
+                text.textContent = this.currentLocale.toUpperCase();
+            }
+
+            setupTabs() {
+                const tabsContainer = document.getElementById('tabsContainer');
+                
+                this.tabs = new DocumentGeneratorTabs(tabsContainer, {
+                    onTabChange: (index, docType) => {
+                        this.currentDocType = docType.id;
+                        this.loadForm(docType.id);
+                    }
+                });
+            }
+
+            setupForm() {
+                const formsContainer = document.getElementById('formsContainer');
+                
+                this.formShell = new DocumentGeneratorFormShell(formsContainer, {
+                    locale: this.currentLocale,
+                    onSubmit: (data) => this.handleFormSubmit(data)
+                });
+                
+                // Load initial form
+                this.loadForm(this.currentDocType);
+            }
+
+            loadForm(docType) {
+                if (this.currentForm) {
+                    this.currentForm.container.remove();
+                }
+                
+                const formContainer = document.createElement('div');
+                this.formShell.getFormContent().appendChild(formContainer);
+                
+                // Create appropriate form based on docType
+                switch (docType) {
+                    case 'proof-of-loss':
+                        this.currentForm = new ProofOfLossForm(formContainer, {
+                            locale: this.currentLocale,
+                            onSubmit: (data) => this.handleFormSubmit(data)
+                        });
+                        break;
+                    // Add other form types here
+                    default:
+                        console.warn(`Form type ${docType} not implemented yet`);
+                        formContainer.innerHTML = `<p>Form for ${docType} coming soon...</p>`;
+                }
+            }
+
+            async handleFormSubmit(data) {
+                try {
+                    this.showLoading(true);
+                    this.hideResultPanel();
+                    
+                    const response = await fetch('/.netlify/functions/generateDocument', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.getAuthToken()}`
+                        },
+                        body: JSON.stringify({
+                            docType: this.currentDocType,
+                            lang: this.currentLocale,
+                            input: data
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (!response.ok) {
+                        if (response.status === 402) {
+                            this.showUpgradeRequired(result);
+                        } else {
+                            this.showError(result.error || 'Failed to generate document');
+                        }
+                        return;
+                    }
+                    
+                    this.showResult(result);
+                    
+                } catch (error) {
+                    console.error('Document generation error:', error);
+                    this.showError('An unexpected error occurred. Please try again.');
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            showResult(result) {
+                const resultPanel = document.getElementById('resultPanel');
+                const previewContent = document.getElementById('previewContent');
+                const downloadPdf = document.getElementById('downloadPdf');
+                const downloadDocx = document.getElementById('downloadDocx');
+                const saveToDocuments = document.getElementById('saveToDocuments');
+                
+                // Show preview
+                previewContent.innerHTML = result.html;
+                
+                // Set download links
+                downloadPdf.href = result.pdfUrl;
+                downloadDocx.href = result.docxUrl;
+                saveToDocuments.href = `/my-documents.html?id=${result.docId}`;
+                
+                // Show buttons
+                downloadPdf.style.display = 'flex';
+                downloadDocx.style.display = 'flex';
+                saveToDocuments.style.display = 'flex';
+                
+                // Show result panel
+                resultPanel.classList.add('show');
+                
+                // Scroll to result
+                resultPanel.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            showError(message) {
+                const resultPanel = document.getElementById('resultPanel');
+                resultPanel.innerHTML = `
+                    <div class="error-message">
+                        <strong>Error:</strong> ${message}
+                    </div>
+                `;
+                resultPanel.classList.add('show');
+            }
+
+            showUpgradeRequired(result) {
+                const resultPanel = document.getElementById('resultPanel');
+                resultPanel.innerHTML = `
+                    <div class="limit-warning">
+                        <strong>Document Limit Reached</strong><br>
+                        You have reached your monthly limit of ${result.limit} documents.
+                        <a href="/upgrade.html" class="text-blue-600 hover:text-blue-800 underline">Upgrade now</a> for unlimited documents.
+                    </div>
+                `;
+                resultPanel.classList.add('show');
+            }
+
+            showLoading(show) {
+                const submitBtn = document.querySelector('.doc-gen-submit-btn');
+                if (submitBtn) {
+                    submitBtn.disabled = show;
+                    const spinner = submitBtn.querySelector('.btn-spinner');
+                    if (spinner) {
+                        spinner.style.display = show ? 'inline-block' : 'none';
+                    }
+                }
+            }
+
+            hideResultPanel() {
+                const resultPanel = document.getElementById('resultPanel');
+                resultPanel.classList.remove('show');
+            }
+
+            updateLocale() {
+                // Update all text content based on current locale
+                // This would typically load from locale files
+                const texts = {
+                    en: {
+                        limitText: 'Free users: 2 documents per month. Subscribers: Unlimited.'
+                    },
+                    es: {
+                        limitText: 'Usuarios gratuitos: 2 documentos por mes. Suscriptores: Ilimitados.'
+                    }
+                };
+                
+                const limitText = document.getElementById('limitText');
+                if (limitText) {
+                    limitText.textContent = texts[this.currentLocale].limitText;
+                }
+                
+                // Update form locale
+                if (this.currentForm && this.currentForm.setLocale) {
+                    this.currentForm.setLocale(this.currentLocale);
+                }
+            }
+
+            async loadUsageLimits() {
+                try {
+                    const response = await fetch('/.netlify/functions/get-user-credits', {
+                        headers: {
+                            'Authorization': `Bearer ${this.getAuthToken()}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Update usage display based on response
+                        console.log('Usage data:', data);
+                    }
+                } catch (error) {
+                    console.error('Failed to load usage limits:', error);
+                }
+            }
+
+            getAuthToken() {
+                // Get auth token from localStorage or session
+                return localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+            }
+        }
+
+        // Initialize app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new DocumentGeneratorApp();
+        });
+    </script>
+</body>
+</html>

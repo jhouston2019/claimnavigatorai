@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Insurance Tactics - ClaimNavigatorAI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
+    }
+    .test-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .test-section {
+      margin-bottom: 30px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .test-title {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .test-result {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>Insurance Tactics Implementation Test</h1>
+    
+    <div class="test-section">
+      <h2 class="test-title">1. Component Loading Test</h2>
+      <div id="component-test-result" class="test-result info">Testing component loading...</div>
+      <button onclick="testComponentLoading()">Test Component Loading</button>
+    </div>
+
+    <div class="test-section">
+      <h2 class="test-title">2. Accordion Functionality Test</h2>
+      <div id="accordion-test-result" class="test-result info">Testing accordion functionality...</div>
+      <button onclick="testAccordionFunctionality()">Test Accordion</button>
+    </div>
+
+    <div class="test-section">
+      <h2 class="test-title">3. Tactic Panel Test</h2>
+      <div id="tactic-panel-test-result" class="test-result info">Testing tactic panel creation...</div>
+      <button onclick="testTacticPanel()">Test Tactic Panel</button>
+    </div>
+
+    <div class="test-section">
+      <h2 class="test-title">4. Language Toggle Test</h2>
+      <div id="language-test-result" class="test-result info">Testing language toggle...</div>
+      <button onclick="testLanguageToggle()">Test Language Toggle</button>
+    </div>
+
+    <div class="test-section">
+      <h2 class="test-title">5. AI Assist Button Test</h2>
+      <div id="ai-assist-test-result" class="test-result info">Testing AI assist functionality...</div>
+      <button onclick="testAiAssist()">Test AI Assist</button>
+    </div>
+
+    <div class="test-section">
+      <h2 class="test-title">6. Logging Test</h2>
+      <div id="logging-test-result" class="test-result info">Testing logging functionality...</div>
+      <button onclick="testLogging()">Test Logging</button>
+    </div>
+
+    <div class="test-section">
+      <h2 class="test-title">7. Full Integration Test</h2>
+      <div id="integration-test-result" class="test-result info">Testing full integration...</div>
+      <button onclick="testFullIntegration()">Test Full Integration</button>
+    </div>
+
+    <div id="test-accordion-container" style="margin-top: 20px; display: none;">
+      <h3>Test Accordion</h3>
+      <div id="test-accordion"></div>
+    </div>
+  </div>
+
+  <script>
+    // Test results
+    let testResults = {
+      componentLoading: false,
+      accordionFunctionality: false,
+      tacticPanel: false,
+      languageToggle: false,
+      aiAssist: false,
+      logging: false,
+      fullIntegration: false
+    };
+
+    function updateTestResult(elementId, success, message) {
+      const element = document.getElementById(elementId);
+      element.className = `test-result ${success ? 'success' : 'error'}`;
+      element.textContent = message;
+    }
+
+    function testComponentLoading() {
+      try {
+        // Test if components are available
+        const accordionAvailable = typeof TacticsAccordion !== 'undefined';
+        const tacticPanelAvailable = typeof TacticPanel !== 'undefined';
+        const loggingAvailable = typeof tacticsLogging !== 'undefined';
+
+        if (accordionAvailable && tacticPanelAvailable && loggingAvailable) {
+          testResults.componentLoading = true;
+          updateTestResult('component-test-result', true, '✅ All components loaded successfully');
+        } else {
+          updateTestResult('component-test-result', false, 
+            `❌ Missing components - Accordion: ${accordionAvailable}, TacticPanel: ${tacticPanelAvailable}, Logging: ${loggingAvailable}`);
+        }
+      } catch (error) {
+        updateTestResult('component-test-result', false, `❌ Error: ${error.message}`);
+      }
+    }
+
+    function testAccordionFunctionality() {
+      try {
+        // Create a test accordion
+        const testContainer = document.getElementById('test-accordion');
+        testContainer.innerHTML = `
+          <div data-accordion-panel>
+            <div data-accordion-header style="padding: 10px; background: #f0f0f0; cursor: pointer; border: 1px solid #ccc;">
+              Test Panel 1
+            </div>
+            <div data-accordion-content style="padding: 10px; background: #fff; border: 1px solid #ccc;">
+              Test content for panel 1
+            </div>
+          </div>
+          <div data-accordion-panel>
+            <div data-accordion-header style="padding: 10px; background: #f0f0f0; cursor: pointer; border: 1px solid #ccc;">
+              Test Panel 2
+            </div>
+            <div data-accordion-content style="padding: 10px; background: #fff; border: 1px solid #ccc;">
+              Test content for panel 2
+            </div>
+          </div>
+        `;
+
+        // Initialize accordion
+        const accordion = new TacticsAccordion('test-accordion', { allowMultiple: false });
+        
+        if (accordion && accordion.getPanelCount() === 2) {
+          testResults.accordionFunctionality = true;
+          updateTestResult('accordion-test-result', true, '✅ Accordion functionality working');
+          document.getElementById('test-accordion-container').style.display = 'block';
+        } else {
+          updateTestResult('accordion-test-result', false, '❌ Accordion initialization failed');
+        }
+      } catch (error) {
+        updateTestResult('accordion-test-result', false, `❌ Error: ${error.message}`);
+      }
+    }
+
+    function testTacticPanel() {
+      try {
+        const testTactic = {
+          title: 'Test Tactic',
+          whatInsurersDo: 'Test what insurers do',
+          why: 'Test why they do it',
+          yourMove: 'Test your move',
+          aiAssistTool: 'Test AI Tool'
+        };
+
+        const tacticPanel = new TacticPanel(testTactic, 0, 'en');
+        const panelElement = tacticPanel.render();
+
+        if (panelElement && panelElement.querySelector('.tactic-title h3').textContent === 'Test Tactic') {
+          testResults.tacticPanel = true;
+          updateTestResult('tactic-panel-test-result', true, '✅ Tactic panel creation working');
+        } else {
+          updateTestResult('tactic-panel-test-result', false, '❌ Tactic panel creation failed');
+        }
+      } catch (error) {
+        updateTestResult('tactic-panel-test-result', false, `❌ Error: ${error.message}`);
+      }
+    }
+
+    function testLanguageToggle() {
+      try {
+        const testTactic = {
+          title: 'Test Tactic',
+          whatInsurersDo: 'Test what insurers do',
+          why: 'Test why they do it',
+          yourMove: 'Test your move',
+          aiAssistTool: 'Test AI Tool'
+        };
+
+        const tacticPanel = new TacticPanel(testTactic, 0, 'en');
+        const panelElement = tacticPanel.render();
+        
+        // Test language update
+        tacticPanel.updateLanguage('es');
+        
+        const labels = tacticPanel.getLabels();
+        if (labels.whatInsurersDo === 'Lo que hacen las aseguradoras') {
+          testResults.languageToggle = true;
+          updateTestResult('language-test-result', true, '✅ Language toggle working');
+        } else {
+          updateTestResult('language-test-result', false, '❌ Language toggle failed');
+        }
+      } catch (error) {
+        updateTestResult('language-test-result', false, `❌ Error: ${error.message}`);
+      }
+    }
+
+    function testAiAssist() {
+      try {
+        // Test AI assist event handling
+        let eventReceived = false;
+        
+        document.addEventListener('tactic:aiAssist', (event) => {
+          eventReceived = true;
+          if (event.detail.tacticIndex === 0 && event.detail.aiTools === 'Test AI Tool') {
+            testResults.aiAssist = true;
+            updateTestResult('ai-assist-test-result', true, '✅ AI assist functionality working');
+          }
+        });
+
+        // Simulate AI assist click
+        const testTactic = {
+          title: 'Test Tactic',
+          whatInsurersDo: 'Test what insurers do',
+          why: 'Test why they do it',
+          yourMove: 'Test your move',
+          aiAssistTool: 'Test AI Tool'
+        };
+
+        const tacticPanel = new TacticPanel(testTactic, 0, 'en');
+        const panelElement = tacticPanel.render();
+        
+        // Find and click AI assist button
+        const aiAssistBtn = panelElement.querySelector('.ai-assist-btn');
+        if (aiAssistBtn) {
+          aiAssistBtn.click();
+          
+          // Check if event was received
+          setTimeout(() => {
+            if (!eventReceived) {
+              updateTestResult('ai-assist-test-result', false, '❌ AI assist event not received');
+            }
+          }, 100);
+        } else {
+          updateTestResult('ai-assist-test-result', false, '❌ AI assist button not found');
+        }
+      } catch (error) {
+        updateTestResult('ai-assist-test-result', false, `❌ Error: ${error.message}`);
+      }
+    }
+
+    function testLogging() {
+      try {
+        if (typeof tacticsLogging !== 'undefined') {
+          // Test logging functionality
+          tacticsLogging.logToConsole(1, true, { test: true });
+          
+          testResults.logging = true;
+          updateTestResult('logging-test-result', true, '✅ Logging functionality working');
+        } else {
+          updateTestResult('logging-test-result', false, '❌ Logging utility not available');
+        }
+      } catch (error) {
+        updateTestResult('logging-test-result', false, `❌ Error: ${error.message}`);
+      }
+    }
+
+    function testFullIntegration() {
+      try {
+        const allTestsPassed = Object.values(testResults).every(result => result === true);
+        
+        if (allTestsPassed) {
+          testResults.fullIntegration = true;
+          updateTestResult('integration-test-result', true, '✅ All tests passed - Full integration working');
+        } else {
+          const failedTests = Object.entries(testResults)
+            .filter(([key, value]) => !value)
+            .map(([key]) => key)
+            .join(', ');
+          updateTestResult('integration-test-result', false, `❌ Some tests failed: ${failedTests}`);
+        }
+      } catch (error) {
+        updateTestResult('integration-test-result', false, `❌ Error: ${error.message}`);
+      }
+    }
+
+    // Auto-run component loading test on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        testComponentLoading();
+      }, 1000);
+    });
+  </script>
+
+  <!-- Load the components -->
+  <script src="lib/supabase/tactics-logging.js"></script>
+  <script src="components/Tactics/Accordion.js"></script>
+  <script src="components/Tactics/TacticPanel.js"></script>
+</body>
+</html>
