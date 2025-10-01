@@ -979,6 +979,9 @@
             <div class="tool-item" data-tool="claim-analysis">Claim Analysis Tools</div>
             <div class="tool-item" data-tool="situational-advisory">Situational Advisory</div>
             <div class="tool-item" data-tool="document-generator">Document Generator</div>
+            <div class="tool-item" data-tool="settlement-comparison">Settlement Comparison Tool</div>
+            <div class="tool-item" data-tool="financial-calculator">Financial Impact Calculator</div>
+            <div class="tool-item" data-tool="professional-marketplace">Professional Marketplace</div>
             <div class="tool-item" data-tool="evidence-organizer">Evidence Organizer</div>
             <div class="tool-item" data-tool="claim-document-library">Claim Document Library</div>
             <div class="tool-item" data-tool="claim-documentation-guides">Claim Documentation Guides</div>
@@ -1682,6 +1685,9 @@
           'ai-policy-analyzer': 'AI Policy Analyzer',
           'claim-analysis': 'Claim Analysis Tools',
           'document-generator': 'Document Generator',
+          'settlement-comparison': 'Settlement Comparison Tool',
+          'financial-calculator': 'Financial Impact Calculator',
+          'professional-marketplace': 'Professional Marketplace',
           'evidence-organizer': 'Evidence Organizer',
           'claim-document-library': 'Claim Document Library',
           'claim-documentation-guides': 'Claim Documentation Guides',
@@ -2469,7 +2475,10 @@
               </div>
 
             </div>
-          `
+          `,
+          'settlement-comparison': showSettlementComparison(),
+          'financial-calculator': showFinancialCalculator(),
+          'professional-marketplace': showProfessionalMarketplace()
         };
         
         return toolContent[tool] || `
@@ -3084,6 +3093,492 @@
         } catch (error) {
           console.error('Error saving policy analysis:', error);
           alert('Failed to save policy analysis. Please try again.');
+        }
+      }
+
+      // Settlement Comparison Tool
+      function showSettlementComparison() {
+        const content = `
+          <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">💰 Settlement Comparison Tool</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Compare insurer offers with your estimates and calculate potential additional recovery</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+              <div>
+                <h3 style="color: #4b5563; margin-bottom: 1rem;">Your Information</h3>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Insurer's Offer ($)</label>
+                  <input type="number" id="insurer-offer" placeholder="Enter insurer's offer" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Your Estimate ($)</label>
+                  <input type="number" id="claimant-estimate" placeholder="Enter your estimate" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Deductible ($)</label>
+                  <input type="number" id="deductible" placeholder="Enter deductible" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+              </div>
+              
+              <div>
+                <h3 style="color: #4b5563; margin-bottom: 1rem;">Contractor Estimates</h3>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Estimate 1 ($)</label>
+                  <input type="number" id="contractor-1" placeholder="Contractor estimate 1" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Estimate 2 ($)</label>
+                  <input type="number" id="contractor-2" placeholder="Contractor estimate 2" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Estimate 3 ($)</label>
+                  <input type="number" id="contractor-3" placeholder="Contractor estimate 3" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+              </div>
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+              <button onclick="calculateSettlementComparison()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                Calculate Comparison
+              </button>
+            </div>
+            
+            <div id="settlement-results" style="display: none;">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        `;
+        return content;
+      }
+
+      async function calculateSettlementComparison() {
+        const insurerOffer = parseFloat(document.getElementById('insurer-offer').value) || 0;
+        const claimantEstimate = parseFloat(document.getElementById('claimant-estimate').value) || 0;
+        const deductible = parseFloat(document.getElementById('deductible').value) || 0;
+        
+        const contractorEstimates = [
+          parseFloat(document.getElementById('contractor-1').value) || 0,
+          parseFloat(document.getElementById('contractor-2').value) || 0,
+          parseFloat(document.getElementById('contractor-3').value) || 0
+        ].filter(est => est > 0);
+
+        if (!insurerOffer || !claimantEstimate) {
+          alert('Please enter both insurer offer and your estimate');
+          return;
+        }
+
+        const resultsDiv = document.getElementById('settlement-results');
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = '<div class="spinner"></div> Calculating comparison...';
+
+        try {
+          const response = await fetch('/.netlify/functions/settlement-comparison', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              insurerOffer,
+              claimantEstimate,
+              contractorEstimates: contractorEstimates.map(amount => ({ amount })),
+              deductible
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            const comparison = data.comparison;
+            resultsDiv.innerHTML = `
+              <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">Settlement Comparison Results</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                  <div style="background: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                    <h4 style="color: #dc2626; margin: 0 0 0.5rem 0;">Insurer Offer</h4>
+                    <p style="font-size: 1.5rem; font-weight: bold; margin: 0;">$${comparison.insurerOffer.toLocaleString()}</p>
+                  </div>
+                  <div style="background: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                    <h4 style="color: #059669; margin: 0 0 0.5rem 0;">Your Estimate</h4>
+                    <p style="font-size: 1.5rem; font-weight: bold; margin: 0;">$${comparison.claimantEstimate.toLocaleString()}</p>
+                  </div>
+                  <div style="background: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                    <h4 style="color: #f59e0b; margin: 0 0 0.5rem 0;">Difference</h4>
+                    <p style="font-size: 1.5rem; font-weight: bold; margin: 0;">$${Math.abs(comparison.difference).toLocaleString()}</p>
+                  </div>
+                  <div style="background: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                    <h4 style="color: #3b82f6; margin: 0 0 0.5rem 0;">% Difference</h4>
+                    <p style="font-size: 1.5rem; font-weight: bold; margin: 0;">${comparison.percentageDifference.toFixed(1)}%</p>
+                  </div>
+                </div>
+
+                ${comparison.recommendations.length > 0 ? `
+                  <div style="margin-top: 1.5rem;">
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Recommendations</h4>
+                    ${comparison.recommendations.map(rec => `
+                      <div style="background: white; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid ${rec.priority === 'HIGH' ? '#dc2626' : rec.priority === 'MEDIUM' ? '#f59e0b' : '#3b82f6'}; margin-bottom: 1rem;">
+                        <h5 style="margin: 0 0 0.5rem 0; color: #4b5563;">${rec.title}</h5>
+                        <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary);">${rec.description}</p>
+                        <ul style="margin: 0; padding-left: 1.5rem;">
+                          ${rec.actions.map(action => `<li>${action}</li>`).join('')}
+                        </ul>
+                      </div>
+                    `).join('')}
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          } else {
+            throw new Error(data.error || 'Failed to calculate comparison');
+          }
+        } catch (error) {
+          console.error('Error calculating settlement comparison:', error);
+          resultsDiv.innerHTML = `
+            <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dc2626; color: #dc2626;">
+              <strong>Error:</strong> ${error.message}
+            </div>
+          `;
+        }
+      }
+
+      // Financial Impact Calculator
+      function showFinancialCalculator() {
+        const content = `
+          <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">💰 Financial Impact Calculator</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Calculate the cost-benefit of hiring professionals vs. handling your claim yourself</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+              <div>
+                <h3 style="color: #4b5563; margin-bottom: 1rem;">Claim Information</h3>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Total Claim Value ($)</label>
+                  <input type="number" id="claim-amount" placeholder="Enter total claim value" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Current Offer ($)</label>
+                  <input type="number" id="current-offer" placeholder="Enter current offer" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Claim Type</label>
+                  <select id="claim-type" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                    <option value="property">Property</option>
+                    <option value="auto">Auto</option>
+                    <option value="health">Health</option>
+                    <option value="business">Business</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div>
+                <h3 style="color: #4b5563; margin-bottom: 1rem;">Time Investment</h3>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Hours per Week</label>
+                  <input type="number" id="hours-per-week" placeholder="5" value="5" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Weeks to Resolution</label>
+                  <input type="number" id="weeks-to-resolution" placeholder="12" value="12" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Your Hourly Rate ($)</label>
+                  <input type="number" id="hourly-rate" placeholder="25" value="25" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+              </div>
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+              <button onclick="calculateFinancialImpact()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                Calculate Financial Impact
+              </button>
+            </div>
+            
+            <div id="financial-results" style="display: none;">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        `;
+        return content;
+      }
+
+      async function calculateFinancialImpact() {
+        const claimAmount = parseFloat(document.getElementById('claim-amount').value) || 0;
+        const currentOffer = parseFloat(document.getElementById('current-offer').value) || 0;
+        const claimType = document.getElementById('claim-type').value;
+        const hoursPerWeek = parseFloat(document.getElementById('hours-per-week').value) || 5;
+        const weeksToResolution = parseFloat(document.getElementById('weeks-to-resolution').value) || 12;
+        const hourlyRate = parseFloat(document.getElementById('hourly-rate').value) || 25;
+
+        if (!claimAmount || !currentOffer) {
+          alert('Please enter both claim amount and current offer');
+          return;
+        }
+
+        const resultsDiv = document.getElementById('financial-results');
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = '<div class="spinner"></div> Calculating financial impact...';
+
+        try {
+          const response = await fetch('/.netlify/functions/financial-impact-calculator', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              claimAmount,
+              currentOffer,
+              claimType,
+              timeInvestment: {
+                hoursPerWeek,
+                weeksToResolution,
+                hourlyRate
+              }
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            const analysis = data.analysis;
+            resultsDiv.innerHTML = `
+              <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">Financial Impact Analysis</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                  ${analysis.scenarios.map(scenario => `
+                    <div style="background: white; padding: 1rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                      <h4 style="color: var(--primary); margin: 0 0 0.5rem 0;">${scenario.name}</h4>
+                      <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary);">${scenario.description}</p>
+                      <div style="margin-bottom: 0.5rem;">
+                        <strong>Gross Recovery:</strong> $${scenario.grossRecovery.toLocaleString()}
+                      </div>
+                      <div style="margin-bottom: 0.5rem;">
+                        <strong>Fees:</strong> $${scenario.fees.toLocaleString()}
+                      </div>
+                      <div style="font-size: 1.2rem; font-weight: bold; color: ${scenario.netRecovery > 0 ? '#059669' : '#dc2626'};">
+                        <strong>Net Recovery:</strong> $${scenario.netRecovery.toLocaleString()}
+                      </div>
+                      <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+                        Success Rate: ${(scenario.successRate * 100).toFixed(0)}%
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+
+                ${analysis.recommendations.length > 0 ? `
+                  <div style="margin-top: 1.5rem;">
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Recommendations</h4>
+                    ${analysis.recommendations.map(rec => `
+                      <div style="background: white; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid ${rec.priority === 'HIGH' ? '#dc2626' : rec.priority === 'MEDIUM' ? '#f59e0b' : '#3b82f6'}; margin-bottom: 1rem;">
+                        <h5 style="margin: 0 0 0.5rem 0; color: #4b5563;">${rec.title}</h5>
+                        <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary);">${rec.description}</p>
+                        <ul style="margin: 0; padding-left: 1.5rem;">
+                          ${rec.actions.map(action => `<li>${action}</li>`).join('')}
+                        </ul>
+                      </div>
+                    `).join('')}
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          } else {
+            throw new Error(data.error || 'Failed to calculate financial impact');
+          }
+        } catch (error) {
+          console.error('Error calculating financial impact:', error);
+          resultsDiv.innerHTML = `
+            <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dc2626; color: #dc2626;">
+              <strong>Error:</strong> ${error.message}
+            </div>
+          `;
+        }
+      }
+
+      // Professional Marketplace
+      function showProfessionalMarketplace() {
+        const content = `
+          <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">👥 Professional Marketplace</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Find qualified professionals to help with your claim</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+              <div>
+                <h3 style="color: #4b5563; margin-bottom: 1rem;">Search Criteria</h3>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Location</label>
+                  <input type="text" id="search-location" placeholder="City, State" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Professional Type</label>
+                  <select id="professional-type" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                    <option value="">All Types</option>
+                    <option value="public_adjuster">Public Adjuster</option>
+                    <option value="attorney">Attorney</option>
+                    <option value="expert">Expert</option>
+                  </select>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Claim Type</label>
+                  <select id="search-claim-type" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                    <option value="">All Types</option>
+                    <option value="property">Property</option>
+                    <option value="auto">Auto</option>
+                    <option value="health">Health</option>
+                    <option value="business">Business</option>
+                  </select>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Claim Amount ($)</label>
+                  <input type="number" id="search-claim-amount" placeholder="Enter claim amount" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                </div>
+              </div>
+              
+              <div>
+                <h3 style="color: #4b5563; margin-bottom: 1rem;">State</h3>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">State</label>
+                  <select id="search-state" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem;">
+                    <option value="">All States</option>
+                    <option value="CA">California</option>
+                    <option value="TX">Texas</option>
+                    <option value="FL">Florida</option>
+                    <option value="NY">New York</option>
+                    <option value="IL">Illinois</option>
+                    <option value="PA">Pennsylvania</option>
+                    <option value="OH">Ohio</option>
+                    <option value="GA">Georgia</option>
+                    <option value="NC">North Carolina</option>
+                    <option value="MI">Michigan</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+              <button onclick="searchProfessionals()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                Search Professionals
+              </button>
+            </div>
+            
+            <div id="professional-results" style="display: none;">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        `;
+        return content;
+      }
+
+      async function searchProfessionals() {
+        const location = document.getElementById('search-location').value;
+        const professionalType = document.getElementById('professional-type').value;
+        const claimType = document.getElementById('search-claim-type').value;
+        const claimAmount = parseFloat(document.getElementById('search-claim-amount').value) || 0;
+        const state = document.getElementById('search-state').value;
+
+        const resultsDiv = document.getElementById('professional-results');
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = '<div class="spinner"></div> Searching professionals...';
+
+        try {
+          const response = await fetch('/.netlify/functions/professional-marketplace', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              location,
+              professionalType,
+              claimType,
+              claimAmount,
+              state
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            resultsDiv.innerHTML = `
+              <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">Professional Search Results</h3>
+                <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Found ${data.totalFound} professionals matching your criteria</p>
+                
+                ${data.professionals.map(professional => `
+                  <div style="background: white; padding: 1.5rem; border-radius: 0.5rem; border: 1px solid var(--border); margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                      <div>
+                        <h4 style="color: var(--primary); margin: 0 0 0.5rem 0;">${professional.name}</h4>
+                        <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary);">${professional.description}</p>
+                        <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
+                          <span style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.875rem;">
+                            ⭐ ${professional.rating}/5.0
+                          </span>
+                          <span style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.875rem;">
+                            ${professional.experienceYears} years experience
+                          </span>
+                          <span style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.875rem;">
+                            ${professional.recentCases} recent cases
+                          </span>
+                        </div>
+                      </div>
+                      <div style="text-align: right;">
+                        <div style="background: ${professional.matchScore > 80 ? '#dcfce7' : professional.matchScore > 60 ? '#fef3c7' : '#fef2f2'}; color: ${professional.matchScore > 80 ? '#166534' : professional.matchScore > 60 ? '#92400e' : '#991b1b'}; padding: 0.5rem; border-radius: 0.25rem; font-weight: 600;">
+                          ${professional.matchScore}% Match
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                      <div>
+                        <strong>Location:</strong> ${professional.location}
+                      </div>
+                      <div>
+                        <strong>Service Areas:</strong> ${professional.serviceAreas.join(', ')}
+                      </div>
+                      <div>
+                        <strong>Fee Structure:</strong> ${professional.feeStructure}
+                      </div>
+                      <div>
+                        <strong>Average Recovery:</strong> ${(professional.averageRecovery * 100).toFixed(0)}% of claim value
+                      </div>
+                    </div>
+                    
+                    <div style="border-top: 1px solid var(--border); padding-top: 1rem;">
+                      <h5 style="margin: 0 0 0.5rem 0; color: #4b5563;">Contact Information</h5>
+                      <div style="display: flex; gap: 1rem;">
+                        <span>📞 ${professional.contactInfo.phone}</span>
+                        <span>✉️ ${professional.contactInfo.email}</span>
+                        <span>🌐 ${professional.contactInfo.website}</span>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+
+                ${data.recommendations.length > 0 ? `
+                  <div style="margin-top: 1.5rem;">
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Recommendations</h4>
+                    ${data.recommendations.map(rec => `
+                      <div style="background: white; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid ${rec.priority === 'HIGH' ? '#dc2626' : rec.priority === 'MEDIUM' ? '#f59e0b' : '#3b82f6'}; margin-bottom: 1rem;">
+                        <h5 style="margin: 0 0 0.5rem 0; color: #4b5563;">${rec.title}</h5>
+                        <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary);">${rec.description}</p>
+                        <ul style="margin: 0; padding-left: 1.5rem;">
+                          ${rec.actions.map(action => `<li>${action}</li>`).join('')}
+                        </ul>
+                      </div>
+                    `).join('')}
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          } else {
+            throw new Error(data.error || 'Failed to search professionals');
+          }
+        } catch (error) {
+          console.error('Error searching professionals:', error);
+          resultsDiv.innerHTML = `
+            <div style="background: #fef2f2; padding: 1rem; border-radius: 0.5rem; border: 1px solid #dc2626; color: #dc2626;">
+              <strong>Error:</strong> ${error.message}
+            </div>
+          `;
         }
       }
   </script>
