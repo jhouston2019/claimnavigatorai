@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Professional Dashboard - ClaimNavigatorAI</title>
+  <script src="../assets/js/professional-auth.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -566,6 +567,12 @@
 
     // Check authentication and role on page load
     document.addEventListener('DOMContentLoaded', async () => {
+      // Check professional authentication first
+      if (!ProfessionalAuth.isAuthenticated()) {
+        window.location.href = '../professional-login.html';
+        return;
+      }
+      
       await checkAuth();
       if (currentUser && currentProfessional) {
         // Check for success parameters in URL
@@ -840,8 +847,8 @@
     }
 
     async function logout() {
-      await supabase.auth.signOut();
-      window.location.href = '/';
+      // Use professional authentication logout
+      ProfessionalAuth.logout();
     }
 
     // Make functions globally available
