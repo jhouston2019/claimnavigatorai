@@ -242,9 +242,8 @@
     nav {
       display: flex;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: space-between;
       padding: 1rem 0;
-      gap: 2rem;
     }
     
     .logo {
@@ -257,21 +256,36 @@
       min-width: max-content;
     }
     
-    .nav-links {
+    .nav-left {
+      display: flex;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+    
+    .nav-center {
       display: flex;
       gap: 1.5rem;
       align-items: center;
+      flex: 1;
+      justify-content: center;
+    }
+    
+    .nav-right {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex: 0 0 auto;
       flex-wrap: wrap;
     }
     
-    .nav-links a {
+    .nav-center a {
       color: rgba(255, 255, 255, 0.9);
       text-decoration: none;
       font-weight: 500;
       transition: color 0.2s;
     }
     
-    .nav-links a:hover {
+    .nav-center a:hover {
       color: white;
     }
     
@@ -885,8 +899,14 @@
         padding: 0.5rem 0;
       }
       
-      .nav-links {
+      .nav-center {
         display: none;
+      }
+      
+      .nav-right {
+        flex-direction: column;
+        gap: 0.75rem;
+        width: 100%;
       }
       
       .logo {
@@ -914,13 +934,17 @@
   <header>
     <div class="container">
       <nav>
-        <div class="logo">Claim Navigator AI</div>
-        <div class="nav-links">
+        <div class="nav-left">
+          <div class="logo">Claim Navigator AI</div>
+        </div>
+        <div class="nav-center">
           <a href="#services" data-en="Services" data-es="Servicios">Services</a>
           <a href="#resources" data-en="Resources" data-es="Recursos">Resources</a>
           <a href="#blog" data-en="Guides" data-es="Guías">Guides</a>
           <a href="#process" data-en="Process" data-es="Proceso">Process</a>
           <a href="#pricing" data-en="Pricing" data-es="Precios">Pricing</a>
+        </div>
+        <div class="nav-right">
           <button onclick="toggleLanguage()" class="lang-toggle" id="lang-toggle-btn">For Spanish</button>
           <a href="app/login.html" class="btn-primary" data-en="Login" data-es="Iniciar Sesión">Login</a>
           <a href="professional-login.html" class="btn-secondary" data-en="Professional Dashboard" data-es="Panel Profesional">Professional Dashboard</a>
