@@ -894,6 +894,7 @@
     @media (max-width: 768px) {
       .hero-content {
         grid-template-columns: 1fr;
+        gap: 2rem;
       }
       
       nav {
@@ -907,9 +908,11 @@
       }
       
       .nav-right {
-        flex-direction: column;
-        gap: 0.75rem;
-        width: 100%;
+        display: none;
+      }
+      
+      .mobile-menu-toggle {
+        display: flex;
       }
       
       .logo {
@@ -923,10 +926,273 @@
       
       h1 {
         font-size: 2rem;
+        line-height: 1.3;
+      }
+      
+      .subtitle {
+        font-size: 1.1rem;
+        line-height: 1.5;
+      }
+      
+      .btn-primary, .btn-secondary {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        min-height: 48px;
+        width: 100%;
+        max-width: 300px;
+      }
+      
+      .statistics {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .statistics > div {
+        padding: 1.5rem 1rem;
+      }
+      
+      .statistics > div > div {
+        font-size: 2.5rem;
+      }
+      
+      .statistics > div > p {
+        font-size: 1rem;
+      }
+      
+      .value-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .process-steps {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .services-columns {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .service-col {
+        padding: 1.5rem;
+      }
+      
+      .resource-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .blog-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .case-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
       }
       
       .footer-content {
         grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      
+      .pricing-card {
+        padding: 2rem 1.5rem;
+        margin: 2rem auto;
+      }
+      
+      .price-amount {
+        font-size: 2.5rem;
+      }
+      
+      .price-features {
+        text-align: left;
+      }
+      
+      .price-features li {
+        padding: 1rem 0;
+        font-size: 1rem;
+      }
+      
+      /* Mobile-specific improvements */
+      .container {
+        padding: 0 1rem;
+      }
+      
+      .hero {
+        padding: 3rem 0;
+      }
+      
+      .value-props, .process, .services, .resources, .blog, .case-studies, .pricing, .faq {
+        padding: 3rem 0;
+      }
+      
+      /* Better touch targets */
+      .nav-links a {
+        padding: 0.75rem 1rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      /* Mobile menu toggle - hidden by default */
+      .mobile-menu-toggle {
+        display: none;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        flex-direction: column;
+        gap: 4px;
+      }
+      
+      .mobile-menu-toggle .hamburger {
+        width: 25px;
+        height: 3px;
+        background: white;
+        transition: all 0.3s ease;
+      }
+      
+      .mobile-menu-toggle.active .hamburger:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+      }
+      
+      .mobile-menu-toggle.active .hamburger:nth-child(2) {
+        opacity: 0;
+      }
+      
+      .mobile-menu-toggle.active .hamburger:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -6px);
+      }
+      
+      /* Mobile menu overlay */
+      .mobile-menu-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
+      
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 280px;
+        height: 100%;
+        background: white;
+        z-index: 1000;
+        padding: 2rem 1.5rem;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+        overflow-y: auto;
+      }
+      
+      .mobile-menu.active {
+        display: block;
+      }
+      
+      .mobile-menu-overlay.active {
+        display: block;
+      }
+      
+      .mobile-menu h3 {
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        font-size: 1.25rem;
+      }
+      
+      .mobile-menu a {
+        display: block;
+        padding: 0.75rem 0;
+        color: var(--text-primary);
+        text-decoration: none;
+        border-bottom: 1px solid var(--border);
+        font-size: 1rem;
+      }
+      
+      .mobile-menu a:hover {
+        color: var(--primary);
+      }
+      
+      .mobile-menu .btn {
+        width: 100%;
+        margin: 0.5rem 0;
+        text-align: center;
+      }
+      
+      /* Improved readability */
+      .service-col ul li {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 0.5rem;
+      }
+      
+      .faq-question {
+        padding: 1.25rem;
+        font-size: 1.1rem;
+      }
+      
+      .faq-answer {
+        padding: 0 1.25rem 1.25rem;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        padding: 0 0.75rem;
+      }
+      
+      h1 {
+        font-size: 1.75rem;
+        line-height: 1.2;
+      }
+      
+      .subtitle {
+        font-size: 1rem;
+      }
+      
+      .btn-primary, .btn-secondary {
+        padding: 0.875rem 1.25rem;
+        font-size: 0.95rem;
+      }
+      
+      .statistics > div > div {
+        font-size: 2rem;
+      }
+      
+      .statistics > div > p {
+        font-size: 0.9rem;
+      }
+      
+      .hero {
+        padding: 2rem 0;
+      }
+      
+      .value-props, .process, .services, .resources, .blog, .case-studies, .pricing, .faq {
+        padding: 2rem 0;
+      }
+      
+      .service-col {
+        padding: 1.25rem;
+      }
+      
+      .pricing-card {
+        padding: 1.5rem 1rem;
+      }
+      
+      .price-amount {
+        font-size: 2rem;
       }
     }
   </style>
@@ -953,9 +1219,34 @@
           <a href="professional-login.html" class="btn-secondary" data-en="Professional Dashboard" data-es="Panel Profesional">Professional Dashboard</a>
           <button onclick="toggleLanguage()" class="lang-toggle" id="lang-toggle-btn">For Spanish</button>
         </div>
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle mobile menu">
+          <span class="hamburger"></span>
+          <span class="hamburger"></span>
+          <span class="hamburger"></span>
+        </button>
       </nav>
     </div>
   </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu-overlay" id="mobile-menu-overlay" onclick="closeMobileMenu()"></div>
+  <div class="mobile-menu" id="mobile-menu">
+    <h3 data-en="Navigation" data-es="Navegación">Navigation</h3>
+    <a href="#services" data-en="Services" data-es="Servicios">Services</a>
+    <a href="#resources" data-en="Resources" data-es="Recursos">Resources</a>
+    <a href="#blog" data-en="Guides" data-es="Guías">Guides</a>
+    <a href="#process" data-en="Process" data-es="Proceso">Process</a>
+    <a href="#pricing" data-en="Pricing" data-es="Precios">Pricing</a>
+    
+    <h3 data-en="Account" data-es="Cuenta" style="margin-top: 2rem;">Account</h3>
+    <a href="app/login.html" class="btn btn-primary" data-en="Login" data-es="Iniciar Sesión">Login</a>
+    <a href="professional-login.html" class="btn btn-secondary" data-en="Professional Dashboard" data-es="Panel Profesional">Professional Dashboard</a>
+    <a href="#pricing" class="btn btn-primary checkout-btn" data-en="Get Your Claim Toolkit" data-es="Obtener Su Kit de Herramientas">Get Your Claim Toolkit</a>
+    
+    <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+      <button onclick="toggleLanguage()" class="btn btn-secondary" style="width: 100%;" id="mobile-lang-toggle-btn" data-en="For Spanish" data-es="For English">For Spanish</button>
+    </div>
+  </div>
 
   <!-- Hero - Updated title formatting -->
   <section class="hero" style="background: #0f172a; color: white; padding: 4rem 0; text-align: center;">
@@ -1877,9 +2168,13 @@
       
       // Update button text
       const button = document.getElementById('lang-toggle-btn');
+      const mobileButton = document.getElementById('mobile-lang-toggle-btn');
       if (button) {
         button.textContent = currentLang === 'en' ? 'For Spanish' : 'For English';
         console.log('Language toggled to:', currentLang, 'Button text:', button.textContent);
+      }
+      if (mobileButton) {
+        mobileButton.textContent = currentLang === 'en' ? 'For Spanish' : 'For English';
       }
       
       // Update page elements
@@ -1902,6 +2197,41 @@
       
       // Save preference
       localStorage.setItem('preferredLanguage', currentLang);
+    }
+    
+    // Mobile menu functions
+    function toggleMobileMenu() {
+      const overlay = document.getElementById('mobile-menu-overlay');
+      const menu = document.getElementById('mobile-menu');
+      const toggle = document.querySelector('.mobile-menu-toggle');
+      
+      if (menu.classList.contains('active')) {
+        closeMobileMenu();
+      } else {
+        openMobileMenu();
+      }
+    }
+    
+    function openMobileMenu() {
+      const overlay = document.getElementById('mobile-menu-overlay');
+      const menu = document.getElementById('mobile-menu');
+      const toggle = document.querySelector('.mobile-menu-toggle');
+      
+      overlay.classList.add('active');
+      menu.classList.add('active');
+      toggle.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeMobileMenu() {
+      const overlay = document.getElementById('mobile-menu-overlay');
+      const menu = document.getElementById('mobile-menu');
+      const toggle = document.querySelector('.mobile-menu-toggle');
+      
+      overlay.classList.remove('active');
+      menu.classList.remove('active');
+      toggle.classList.remove('active');
+      document.body.style.overflow = '';
     }
     
     // Initialize
