@@ -705,23 +705,31 @@ th {
 @media (max-width: 768px) {
   .nav-center,
   .nav-right {
-    display: none;
+    display: none !important;
   }
   
   .hamburger-menu {
-    display: flex;
+    display: flex !important;
+  }
+  
+  .nav-dropdown {
+    display: none;
+  }
+  
+  .nav-dropdown.open {
+    display: block !important;
   }
 }
 
 /* Show regular navigation on desktop, hide hamburger */
 @media (min-width: 769px) {
   .hamburger-menu {
-    display: none;
+    display: none !important;
   }
   
   .nav-center,
   .nav-right {
-    display: flex;
+    display: flex !important;
   }
   
   .nav-dropdown {
@@ -729,30 +737,31 @@ th {
   }
 }
 
-/* Language toggle button - consistent sizing across all devices */
+/* Language toggle button - match login button styling */
 .lang-toggle {
-  background: #374151 !important;
+  background: var(--primary) !important;
   color: white !important;
-  padding: 0.5rem 1rem !important;
-  border-radius: 0.375rem !important;
-  border: 1px solid #374151 !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 0.5rem !important;
+  border: none !important;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   font-size: 0.875rem !important;
-  min-width: 120px !important;
   min-height: 44px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   text-align: center !important;
   white-space: nowrap !important;
+  text-decoration: none !important;
 }
 
 .lang-toggle:hover {
-  background: #1f2937 !important;
+  background: var(--primary-dark) !important;
   color: white !important;
-  transform: none !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-md) !important;
 }
 
 .lang-toggle:focus {
