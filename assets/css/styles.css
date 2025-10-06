@@ -398,7 +398,221 @@ p {
   color: #1e40af;
 }
 
-/* Responsive Design - Disabled for consistent mobile/desktop experience */
+/* Mobile Optimizations - Touch-friendly improvements while maintaining layout consistency */
+
+/* Touch-friendly button improvements */
+.btn {
+  min-height: 44px; /* iOS touch target minimum */
+  min-width: 44px;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* Improve touch targets for navigation */
+.nav-center a,
+.nav-right a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s ease;
+}
+
+.nav-center a:hover,
+.nav-right a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Improve form inputs for mobile */
+.form-input,
+.form-textarea {
+  font-size: 16px; /* Prevents zoom on iOS */
+  min-height: 44px;
+  padding: 0.875rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--border);
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Improve card interactions */
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Improve table readability on mobile */
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Better focus states for accessibility */
+.btn:focus,
+.form-input:focus,
+.form-textarea:focus,
+.nav-center a:focus,
+.nav-right a:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Improve button spacing */
+.btn + .btn {
+  margin-left: 0.5rem;
+}
+
+/* Mobile-optimized spacing */
+.container {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+/* Improve text readability */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Better mobile typography */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+/* Improve mobile navigation spacing */
+nav {
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.nav-left,
+.nav-center,
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Mobile-optimized grid layouts */
+.grid-cols-2,
+.grid-cols-3,
+.grid-cols-4 {
+  gap: 1.5rem;
+}
+
+/* Improve mobile form layouts */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* Mobile-optimized hero section */
+.hero {
+  padding: 3rem 0;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+}
+
+/* Improve mobile section spacing */
+section {
+  padding: 3rem 0;
+}
+
+/* Better mobile footer */
+footer {
+  padding: 2rem 0;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: center;
+}
+
+/* Mobile-optimized pricing cards */
+.pricing-card {
+  padding: 2rem;
+  margin: 1rem 0;
+}
+
+/* Improve mobile button groups */
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.btn-group .btn {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Mobile-optimized tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th, td {
+  padding: 1rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  font-weight: 600;
+  background: var(--bg-light);
+}
+
+/* Mobile-optimized status badges */
+.status-badge {
+  padding: 0.375rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: inline-block;
+  min-width: 60px;
+  text-align: center;
+}
 
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {
