@@ -247,7 +247,27 @@
           <a href="app/login.html" class="btn-primary" data-en="Login" data-es="Iniciar Sesión">Login</a>
           <a href="index.html#pricing" class="btn-primary checkout-btn" data-en="Get My AI-Powered Claim Toolkit" data-es="Obtener Mi Kit de Herramientas IA">Get My AI-Powered Claim Toolkit</a>
         </div>
+        <button class="hamburger-menu" onclick="toggleHamburgerMenu()" aria-label="Toggle navigation menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </nav>
+      
+      <!-- Mobile Navigation Dropdown -->
+      <div class="nav-dropdown" id="nav-dropdown">
+        <div class="nav-dropdown-content">
+          <a href="index.html#services" data-en="Services" data-es="Servicios" onclick="closeHamburgerMenu()">Services</a>
+          <a href="index.html#resources" data-en="Resources" data-es="Recursos" onclick="closeHamburgerMenu()">Resources</a>
+          <a href="index.html#blog" data-en="Guides" data-es="Guías" onclick="closeHamburgerMenu()">Guides</a>
+          <a href="index.html#process" data-en="Process" data-es="Proceso" onclick="closeHamburgerMenu()">Process</a>
+          <a href="index.html#pricing" data-en="Pricing" data-es="Precios" onclick="closeHamburgerMenu()">Pricing</a>
+          <a href="solution-center.html" data-en="Solution Center" data-es="Centro de Soluciones" onclick="closeHamburgerMenu()">Solution Center</a>
+          <button onclick="toggleLanguage(); closeHamburgerMenu();" class="lang-toggle">ES/EN</button>
+          <a href="app/login.html" class="btn-primary" data-en="Login" data-es="Iniciar Sesión" onclick="closeHamburgerMenu()">Login</a>
+          <a href="index.html#pricing" class="btn-primary" data-en="Get My AI-Powered Claim Toolkit" data-es="Obtener Mi Kit de Herramientas IA" onclick="closeHamburgerMenu()">Get My AI-Powered Claim Toolkit</a>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -309,6 +329,46 @@
   <script>
     // Language toggle functionality
     let currentLang = 'en';
+    
+    // Hamburger menu functions
+    function toggleHamburgerMenu() {
+      const hamburgerMenu = document.querySelector('.hamburger-menu');
+      const navDropdown = document.getElementById('nav-dropdown');
+      
+      if (hamburgerMenu && navDropdown) {
+        hamburgerMenu.classList.toggle('active');
+        navDropdown.classList.toggle('open');
+      }
+    }
+    
+    function closeHamburgerMenu() {
+      const hamburgerMenu = document.querySelector('.hamburger-menu');
+      const navDropdown = document.getElementById('nav-dropdown');
+      
+      if (hamburgerMenu && navDropdown) {
+        hamburgerMenu.classList.remove('active');
+        navDropdown.classList.remove('open');
+      }
+    }
+    
+    // Close hamburger menu when clicking outside
+    document.addEventListener('click', function(event) {
+      const hamburgerMenu = document.querySelector('.hamburger-menu');
+      const navDropdown = document.getElementById('nav-dropdown');
+      
+      if (hamburgerMenu && navDropdown && 
+          !hamburgerMenu.contains(event.target) && 
+          !navDropdown.contains(event.target)) {
+        closeHamburgerMenu();
+      }
+    });
+    
+    // Close hamburger menu on window resize
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) {
+        closeHamburgerMenu();
+      }
+    });
     
     function toggleLanguage() {
       currentLang = currentLang === 'en' ? 'es' : 'en';
