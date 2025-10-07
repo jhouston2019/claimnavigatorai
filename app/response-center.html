@@ -1388,8 +1388,12 @@
           
           if (section === 'dashboard') {
             showDashboard();
+          } else if (section === 'how-to-use') {
+            showTool('how-to-use');
           } else if (subsection) {
             showTool(subsection);
+          } else if (section) {
+            showTool(section);
           } else {
             showCategory(section);
           }
@@ -2037,7 +2041,13 @@
       
       function showTool(tool) {
         const toolContent = getToolContent(tool);
-        document.getElementById('content-area').innerHTML = toolContent;
+        
+        // If toolContent is a function, call it; otherwise use the content directly
+        if (typeof toolContent === 'function') {
+          document.getElementById('content-area').innerHTML = toolContent();
+        } else {
+          document.getElementById('content-area').innerHTML = toolContent;
+        }
       }
       
       function getToolContent(tool) {
@@ -2845,19 +2855,19 @@
 
             </div>
           `,
-          'document-generator': showDocumentGenerator(),
-          'situational-advisory': showSituationalAdvisory(),
-          'maximize-claim': showMaximizeClaim(),
-          'insurance-tactics': showInsuranceTactics(),
-          'settlement-comparison': showSettlementComparison(),
-          'financial-calculator': showFinancialCalculator(),
-          'professional-marketplace': showProfessionalMarketplace(),
-          'claim-timeline-tracker': showClaimTimelineTracker(),
-          'documentation-checklist': showDocumentationChecklist(),
-          'deadline-tracker': showDeadlineTracker(),
-          'claim-stage-tracker': showClaimStageTracker(),
-          'ai-advisory': showAIAdvisory(),
-          'document-integration': showDocumentIntegration()
+          'document-generator': showDocumentGenerator,
+          'situational-advisory': showSituationalAdvisory,
+          'maximize-claim': showMaximizeClaim,
+          'insurance-tactics': showInsuranceTactics,
+          'settlement-comparison': showSettlementComparison,
+          'financial-calculator': showFinancialCalculator,
+          'professional-marketplace': showProfessionalMarketplace,
+          'claim-timeline-tracker': showClaimTimelineTracker,
+          'documentation-checklist': showDocumentationChecklist,
+          'deadline-tracker': showDeadlineTracker,
+          'claim-stage-tracker': showClaimStageTracker,
+          'ai-advisory': showAIAdvisory,
+          'document-integration': showDocumentIntegration
         };
         
         return toolContent[tool] || `
