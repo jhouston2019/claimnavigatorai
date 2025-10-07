@@ -1,16 +1,18 @@
 const { createClient } = require('@supabase/supabase-js');
 
-exports.handler = async (event) => {
+exports.handler = async (event, context) => {
   try {
-    // Get the authorization header
-    const authHeader = event.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    // Check if user is authenticated via Netlify Identity
+    const user = context.clientContext && context.clientContext.user;
+    if (!user) {
       return {
         statusCode: 401,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'Unauthorized' })
+        body: JSON.stringify({ error: 'Unauthorized - Please login first' })
       };
     }
+
+    console.log('✅ Authenticated user:', user.email);
 
     // Initialize Supabase client
     const supabase = createClient(
@@ -18,13 +20,10 @@ exports.handler = async (event) => {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    // Get user from Netlify Identity token
-    const token = authHeader.replace('Bearer ', '');
-    
     // For now, return default credits for paid users
     // In a full implementation, you would:
-    // 1. Verify the JWT token with Netlify Identity
-    // 2. Look up user credits in your database
+    // 1. Look up user credits in your database based on user.email
+    // 2. Check if user has valid payment record
     // 3. Return the actual credit count
 
     return {
@@ -32,6 +31,7 @@ exports.handler = async (event) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
         credits: 20, // Default credits for paid users
+        user: user.email,
         message: 'Credits loaded successfully' 
       })
     };

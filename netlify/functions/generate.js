@@ -1,16 +1,18 @@
 const { createClient } = require('@supabase/supabase-js');
 
-exports.handler = async (event) => {
+exports.handler = async (event, context) => {
   try {
-    // Get the authorization header
-    const authHeader = event.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    // Check if user is authenticated via Netlify Identity
+    const user = context.clientContext && context.clientContext.user;
+    if (!user) {
       return {
         statusCode: 401,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'Unauthorized' })
+        body: JSON.stringify({ error: 'Unauthorized - Please login first' })
       };
     }
+
+    console.log('✅ Authenticated user generating response:', user.email);
 
     const { text, language } = JSON.parse(event.body);
 
@@ -24,11 +26,10 @@ exports.handler = async (event) => {
 
     // For now, return a placeholder response
     // In a full implementation, you would:
-    // 1. Verify the JWT token with Netlify Identity
-    // 2. Check user credits in database
-    // 3. Call OpenAI API to generate response
-    // 4. Deduct credits from user account
-    // 5. Generate PDF/DOCX files
+    // 1. Check user credits in database
+    // 2. Call OpenAI API to generate response
+    // 3. Deduct credits from user account
+    // 4. Generate PDF/DOCX files
 
     const generatedResponse = `This is a placeholder AI-generated response for the insurer's letter. 
 
@@ -40,6 +41,7 @@ The actual implementation would:
 
 Language: ${language}
 Original text length: ${text.length} characters
+Generated for user: ${user.email}
 
 [This is where the actual AI-generated content would appear]`;
 
@@ -51,6 +53,7 @@ Original text length: ${text.length} characters
         creditsRemaining: 19, // Decrement credits
         pdf: '#', // Placeholder for PDF download
         docx: '#', // Placeholder for DOCX download
+        user: user.email,
         message: 'Response generated successfully' 
       })
     };
