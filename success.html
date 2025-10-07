@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Payment Success - ClaimNavigatorAI</title>
   
-  <!-- Netlify Identity Widget - Removed to fix 404 errors -->
+  <!-- Netlify Identity Widget -->
+  <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -229,6 +230,16 @@
   </div>
 
   <script>
+    // Initialize Netlify Identity with explicit site URL
+    if (window.netlifyIdentity) {
+      netlifyIdentity.init({
+        APIUrl: "https://claimnavigatorai.com/.netlify/identity"
+      });
+    }
+    
+    let currentUser = null;
+    let userCredits = 0;
+    
     // Check for session_id in URL
     const urlParams = new URLSearchParams(window.location.search);
     const sessionId = urlParams.get('session_id');
@@ -241,12 +252,10 @@
         document.getElementById('payment-error').style.display = 'block';
       } else {
         document.getElementById("status").innerText = "✅ Payment Verified Successfully";
-        // Payment was just completed - show success immediately
+        // Payment was just completed
         setTimeout(() => {
           document.getElementById('verifying-payment').style.display = 'none';
           document.getElementById('payment-confirmed').style.display = 'block';
-          // Auto-show the response center since payment is verified
-          showResponseCenter();
         }, 2000);
       }
     }
@@ -263,22 +272,77 @@
       
       authMessage.innerHTML = '<p>Processing...</p>';
       
-      // Simple authentication - just show success for now
-      setTimeout(() => {
-        authMessage.innerHTML = '<p class="success">Access granted! Welcome to your Claim Toolkit.</p>';
+      // Open Netlify Identity modal for signup/login
+      if (window.netlifyIdentity) {
+        netlifyIdentity.open('signup');
+      } else {
+        authMessage.innerHTML = '<p class="error">Authentication service not available. Please refresh the page.</p>';
+      }
+    }
+    
+    // Handle Netlify Identity events
+    if (window.netlifyIdentity) {
+      netlifyIdentity.on('login', user => {
+        currentUser = user;
+        document.getElementById('auth-message').innerHTML = '<p class="success">Login successful!</p>';
         showResponseCenter();
-      }, 1000);
+        netlifyIdentity.close();
+      });
+      
+      netlifyIdentity.on('signup', user => {
+        currentUser = user;
+        document.getElementById('auth-message').innerHTML = '<p class="success">Account created successfully!</p>';
+        showResponseCenter();
+        netlifyIdentity.close();
+      });
+      
+      netlifyIdentity.on('error', err => {
+        document.getElementById('auth-message').innerHTML = `<p class="error">Error: ${err.message}</p>`;
+      });
     }
     
     async function showResponseCenter() {
       document.getElementById('auth-section').style.display = 'none';
       document.getElementById('response-center').style.display = 'block';
       
-      // Set initial credits for paid user
-      document.getElementById('response-count').textContent = '20';
+      // Load user credits
+      await loadUserCredits();
+    }
+    
+    async function loadUserCredits() {
+      if (!currentUser) {
+        // Set initial credits for paid user
+        document.getElementById('response-count').textContent = '20';
+        return;
+      }
+      
+      try {
+        const token = await currentUser.jwt();
+        const response = await fetch('/.netlify/functions/get-user-credits', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          userCredits = data.credits || 20; // Default to 20 for paid users
+          document.getElementById('response-count').textContent = userCredits;
+        } else {
+          document.getElementById('response-count').textContent = '20';
+        }
+      } catch (error) {
+        console.error('Failed to load credits:', error);
+        document.getElementById('response-count').textContent = '20';
+      }
     }
     
     async function generateResponse() {
+      if (!currentUser) {
+        alert('Please login first');
+        return;
+      }
+      
       const text = document.getElementById('claimText').value.trim();
       const language = document.querySelector('input[name="language"]:checked').value;
       const button = document.getElementById('generateBtn');
@@ -295,6 +359,13 @@
         return;
       }
       
+      if (userCredits <= 0) {
+        errorDiv.textContent = 'No credits remaining. Please purchase additional responses.';
+        errorDiv.style.display = 'block';
+        successDiv.style.display = 'none';
+        return;
+      }
+      
       // Reset UI
       errorDiv.style.display = 'none';
       successDiv.style.display = 'none';
@@ -303,21 +374,39 @@
       loading.classList.add('active');
       
       try {
-        // Simulate AI response generation
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        const token = await currentUser.jwt();
         
-        // Show success message and downloads
-        successDiv.textContent = 'AI Response generated successfully!';
-        successDiv.style.display = 'block';
-        downloads.style.display = 'block';
+        const response = await fetch('/.netlify/functions/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ text, language })
+        });
         
-        // Update download links (placeholder for now)
-        document.getElementById('pdf-link').href = '#';
-        document.getElementById('docx-link').href = '#';
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Generation failed');
+        }
+        
+        // Update credits display
+        userCredits = data.creditsRemaining;
+        document.getElementById('response-count').textContent = userCredits;
         
         // Show response preview
         document.getElementById('response-preview').textContent = 
-          'Your AI-generated response will appear here. This is a placeholder for the actual generated content.';
+          data.text.substring(0, 200) + '...';
+        
+        // Update download links
+        document.getElementById('pdf-link').href = data.pdf;
+        document.getElementById('docx-link').href = data.docx;
+        
+        // Show success message and downloads
+        successDiv.textContent = 'Response generated successfully!';
+        successDiv.style.display = 'block';
+        downloads.style.display = 'block';
         
         // Clear the textarea
         document.getElementById('claimText').value = '';
@@ -336,12 +425,26 @@
       window.location.href = '/#pricing';
     }
     
-    function logout() {
+    async function logout() {
+      if (currentUser && window.netlifyIdentity) {
+        await netlifyIdentity.logout();
+      }
       window.location.href = '/';
     }
     
     // Initialize when page loads
     init();
+    
+    // Refresh token periodically
+    setInterval(async () => {
+      if (currentUser) {
+        try {
+          await currentUser.jwt(true);
+        } catch (error) {
+          console.error('Token refresh failed:', error);
+        }
+      }
+    }, 3600000); // Every hour
   </script>
 </body>
 </html>
