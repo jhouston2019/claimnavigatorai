@@ -559,6 +559,39 @@
       color: #1e3a8a;
       transform: translateY(-1px);
     }
+
+    /* Document Generator Styles */
+    .doc-tab-btn {
+      background: white;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .doc-tab-btn:hover {
+      background: var(--bg-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .doc-tab-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .doc-content {
+      display: none;
+    }
+
+    .doc-content.active {
+      display: block;
+    }
     
     .btn-secondary {
       background: white;
@@ -2640,6 +2673,7 @@
 
             </div>
           `,
+          'document-generator': showDocumentGenerator(),
           'settlement-comparison': showSettlementComparison(),
           'financial-calculator': showFinancialCalculator(),
           'professional-marketplace': showProfessionalMarketplace(),
@@ -3264,6 +3298,128 @@
           console.error('Error saving policy analysis:', error);
           alert('Failed to save policy analysis. Please try again.');
         }
+      }
+
+      // Document Generator Tool
+      function showDocumentGenerator() {
+        const content = `
+          <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📄 Document Generator</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Generate professional documents for your claim with AI assistance</p>
+            
+            <!-- Document Type Tabs -->
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 2px solid var(--border); padding-bottom: 1rem;">
+              <button class="doc-tab-btn active" data-doc="proof-of-loss" onclick="switchDocTab('proof-of-loss')">Proof of Loss</button>
+              <button class="doc-tab-btn" data-doc="appeal-letter" onclick="switchDocTab('appeal-letter')">Appeal Letter</button>
+              <button class="doc-tab-btn" data-doc="demand-letter" onclick="switchDocTab('demand-letter')">Demand Letter</button>
+              <button class="doc-tab-btn" data-doc="damage-inventory" onclick="switchDocTab('damage-inventory')">Damage Inventory</button>
+              <button class="doc-tab-btn" data-doc="claim-timeline-diary" onclick="switchDocTab('claim-timeline-diary')">Claim Timeline Diary</button>
+              <button class="doc-tab-btn" data-doc="repair-worksheet" onclick="switchDocTab('repair-worksheet')">Repair Worksheet</button>
+              <button class="doc-tab-btn" data-doc="out-of-pocket-log" onclick="switchDocTab('out-of-pocket-log')">Out of Pocket Log</button>
+              <button class="doc-tab-btn" data-doc="appraisal-demand" onclick="switchDocTab('appraisal-demand')">Appraisal Demand</button>
+              <button class="doc-tab-btn" data-doc="notice-of-delay" onclick="switchDocTab('notice-of-delay')">Notice of Delay</button>
+              <button class="doc-tab-btn" data-doc="coverage-clarification" onclick="switchDocTab('coverage-clarification')">Coverage Clarification</button>
+            </div>
+            
+            <!-- Document Content Area -->
+            <div id="doc-content-area">
+              <!-- Proof of Loss Content -->
+              <div id="proof-of-loss-content" class="doc-content active">
+                <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                  <h3 style="color: var(--primary); margin: 0 0 1rem 0;">📋 Proof of Loss Document</h3>
+                  <p style="margin: 0 0 1rem 0; color: var(--text-secondary);">Comprehensive documentation of all losses and damages for your insurance claim</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                  <div>
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Document Details</h4>
+                    <div style="margin-bottom: 1rem;">
+                      <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Policy Number:</label>
+                      <input type="text" id="policy-number" placeholder="Enter policy number" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                      <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Claim Number:</label>
+                      <input type="text" id="claim-number" placeholder="Enter claim number" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                      <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Loss Date:</label>
+                      <input type="date" id="loss-date" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                      <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Property Address:</label>
+                      <textarea id="property-address" placeholder="Enter property address" style="width: 100%; min-height: 80px; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px;"></textarea>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Loss Description</h4>
+                    <div style="margin-bottom: 1rem;">
+                      <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Describe the loss:</label>
+                      <textarea id="loss-description" placeholder="Describe what happened and the damage caused..." style="width: 100%; min-height: 120px; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px;"></textarea>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                      <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Estimated Total Loss:</label>
+                      <input type="number" id="total-loss" placeholder="Enter estimated total loss amount" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px;">
+                    </div>
+                  </div>
+                </div>
+                
+                <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                  <button class="btn-primary" onclick="generateDocument('proof-of-loss')">🤖 Generate with AI</button>
+                  <button class="btn-secondary" onclick="downloadDocument('proof-of-loss')">📄 Download PDF</button>
+                  <button class="btn-secondary" onclick="saveDocument('proof-of-loss')">💾 Save Draft</button>
+                </div>
+                
+                <div id="proof-of-loss-output" style="display: none; margin-top: 2rem; padding: 1.5rem; background: white; border: 1px solid var(--border); border-radius: 8px;">
+                  <h4 style="color: var(--primary); margin-bottom: 1rem;">Generated Document Preview:</h4>
+                  <div id="proof-of-loss-preview" style="white-space: pre-wrap; font-family: monospace; background: #f8f9fa; padding: 1rem; border-radius: 4px; max-height: 400px; overflow-y: auto;"></div>
+                </div>
+              </div>
+              
+              <!-- Appeal Letter Content -->
+              <div id="appeal-letter-content" class="doc-content" style="display: none;">
+                <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                  <h3 style="color: var(--primary); margin: 0 0 1rem 0;">📝 Appeal Letter</h3>
+                  <p style="margin: 0 0 1rem 0; color: var(--text-secondary);">Professional appeal letter to challenge a denied claim</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                  <div>
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Appeal Details</h4>
+                    <div style="margin-bottom: 1rem;">
+                      <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Denial Date:</label>
+                      <input type="date" id="denial-date" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                      <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Denial Reason:</label>
+                      <textarea id="denial-reason" placeholder="What reason did they give for the denial?" style="width: 100%; min-height: 80px; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px;"></textarea>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Your Response</h4>
+                    <div style="margin-bottom: 1rem;">
+                      <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Why the denial is wrong:</label>
+                      <textarea id="appeal-arguments" placeholder="Explain why the denial is incorrect..." style="width: 100%; min-height: 120px; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px;"></textarea>
+                    </div>
+                  </div>
+                </div>
+                
+                <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                  <button class="btn-primary" onclick="generateDocument('appeal-letter')">🤖 Generate with AI</button>
+                  <button class="btn-secondary" onclick="downloadDocument('appeal-letter')">📄 Download PDF</button>
+                  <button class="btn-secondary" onclick="saveDocument('appeal-letter')">💾 Save Draft</button>
+                </div>
+                
+                <div id="appeal-letter-output" style="display: none; margin-top: 2rem; padding: 1.5rem; background: white; border: 1px solid var(--border); border-radius: 8px;">
+                  <h4 style="color: var(--primary); margin-bottom: 1rem;">Generated Document Preview:</h4>
+                  <div id="appeal-letter-preview" style="white-space: pre-wrap; font-family: monospace; background: #f8f9fa; padding: 1rem; border-radius: 4px; max-height: 400px; overflow-y: auto;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        return content;
       }
 
       // Settlement Comparison Tool
@@ -5176,6 +5332,177 @@
             </div>
           </div>
         `;
+      }
+
+      // Document Generator Functions
+      function switchDocTab(docType) {
+        // Hide all doc content
+        const allContents = document.querySelectorAll('.doc-content');
+        allContents.forEach(content => content.style.display = 'none');
+        
+        // Remove active class from all tabs
+        const allTabs = document.querySelectorAll('.doc-tab-btn');
+        allTabs.forEach(tab => tab.classList.remove('active'));
+        
+        // Show selected content
+        const selectedContent = document.getElementById(docType + '-content');
+        if (selectedContent) {
+          selectedContent.style.display = 'block';
+        }
+        
+        // Add active class to selected tab
+        const selectedTab = document.querySelector(`[data-doc="${docType}"]`);
+        if (selectedTab) {
+          selectedTab.classList.add('active');
+        }
+      }
+
+      async function generateDocument(docType) {
+        const outputDiv = document.getElementById(docType + '-output');
+        const previewDiv = document.getElementById(docType + '-preview');
+        
+        if (!outputDiv || !previewDiv) {
+          alert('Document type not found. Please try again.');
+          return;
+        }
+
+        // Show loading state
+        outputDiv.style.display = 'block';
+        previewDiv.innerHTML = '<div style="text-align: center; padding: 2rem;">🤖 Generating document with AI...</div>';
+
+        try {
+          // Collect form data based on document type
+          let formData = {};
+          
+          if (docType === 'proof-of-loss') {
+            formData = {
+              policyNumber: document.getElementById('policy-number')?.value || '',
+              claimNumber: document.getElementById('claim-number')?.value || '',
+              lossDate: document.getElementById('loss-date')?.value || '',
+              propertyAddress: document.getElementById('property-address')?.value || '',
+              lossDescription: document.getElementById('loss-description')?.value || '',
+              totalLoss: document.getElementById('total-loss')?.value || ''
+            };
+          } else if (docType === 'appeal-letter') {
+            formData = {
+              denialDate: document.getElementById('denial-date')?.value || '',
+              denialReason: document.getElementById('denial-reason')?.value || '',
+              appealArguments: document.getElementById('appeal-arguments')?.value || ''
+            };
+          }
+
+          // Call the document generation function
+          const response = await fetch('/.netlify/functions/document-generator-integration', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              documentType: docType,
+              formData: formData
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          
+          if (data.document) {
+            previewDiv.innerHTML = data.document;
+            outputDiv.style.display = 'block';
+          } else {
+            throw new Error(data.error || 'Failed to generate document');
+          }
+        } catch (error) {
+          console.error('Error generating document:', error);
+          previewDiv.innerHTML = `
+            <div style="color: #dc2626; padding: 1rem; background: #fef2f2; border: 1px solid #dc2626; border-radius: 0.5rem;">
+              <strong>Error:</strong> ${error.message}<br>
+              <small>Please try again or contact support if the issue persists.</small>
+            </div>
+          `;
+          outputDiv.style.display = 'block';
+        }
+      }
+
+      async function downloadDocument(docType) {
+        const previewDiv = document.getElementById(docType + '-preview');
+        
+        if (!previewDiv || !previewDiv.textContent.trim()) {
+          alert('Please generate a document first.');
+          return;
+        }
+
+        try {
+          const response = await fetch('/.netlify/functions/generate-document-simple', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              content: previewDiv.textContent,
+              format: 'pdf',
+              documentType: docType
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${docType}-${new Date().toISOString().split('T')[0]}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        } catch (error) {
+          console.error('Error downloading document:', error);
+          alert('Failed to download document. Please try again.');
+        }
+      }
+
+      async function saveDocument(docType) {
+        const previewDiv = document.getElementById(docType + '-preview');
+        
+        if (!previewDiv || !previewDiv.textContent.trim()) {
+          alert('Please generate a document first.');
+          return;
+        }
+
+        try {
+          const response = await fetch('/.netlify/functions/save-draft', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              content: previewDiv.textContent,
+              title: `${docType.charAt(0).toUpperCase() + docType.slice(1).replace('-', ' ')} - ${new Date().toLocaleDateString()}`,
+              type: docType
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          
+          if (data.success) {
+            alert('Document saved successfully!');
+          } else {
+            throw new Error(data.error || 'Failed to save document');
+          }
+        } catch (error) {
+          console.error('Error saving document:', error);
+          alert('Failed to save document. Please try again.');
+        }
       }
   </script>
 </body>
