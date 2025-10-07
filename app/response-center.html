@@ -2674,6 +2674,7 @@
             </div>
           `,
           'document-generator': showDocumentGenerator(),
+          'situational-advisory': showSituationalAdvisory(),
           'settlement-comparison': showSettlementComparison(),
           'financial-calculator': showFinancialCalculator(),
           'professional-marketplace': showProfessionalMarketplace(),
@@ -3414,6 +3415,116 @@
                 <div id="appeal-letter-output" style="display: none; margin-top: 2rem; padding: 1.5rem; background: white; border: 1px solid var(--border); border-radius: 8px;">
                   <h4 style="color: var(--primary); margin-bottom: 1rem;">Generated Document Preview:</h4>
                   <div id="appeal-letter-preview" style="white-space: pre-wrap; font-family: monospace; background: #f8f9fa; padding: 1rem; border-radius: 4px; max-height: 400px; overflow-y: auto;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        return content;
+      }
+
+      // Situational Advisory Tool
+      function showSituationalAdvisory() {
+        const content = `
+          <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">🧭 Situational Advisory</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Get personalized advice based on your specific claim situation and circumstances</p>
+            
+            <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border-left: 5px solid var(--primary);">
+              <h3 style="color: var(--primary); margin: 0 0 1rem 0;">How It Works</h3>
+              <p style="margin: 0; color: var(--text-secondary);">Answer a few questions about your situation, and our AI will provide specific, actionable advice tailored to your circumstances.</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+              <div>
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">Your Situation</h4>
+                
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Loss Type:</label>
+                  <select id="loss-type" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px;">
+                    <option value="">Select loss type...</option>
+                    <option value="fire">Fire Damage</option>
+                    <option value="water">Water Damage</option>
+                    <option value="wind">Wind/Hurricane Damage</option>
+                    <option value="theft">Theft/Burglary</option>
+                    <option value="auto">Auto Accident</option>
+                    <option value="liability">Liability Claim</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Claim Stage:</label>
+                  <select id="claim-stage" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px;">
+                    <option value="">Select current stage...</option>
+                    <option value="just-filed">Just Filed</option>
+                    <option value="under-review">Under Review</option>
+                    <option value="adjuster-assigned">Adjuster Assigned</option>
+                    <option value="inspection-scheduled">Inspection Scheduled</option>
+                    <option value="offer-received">Offer Received</option>
+                    <option value="denied">Claim Denied</option>
+                    <option value="stalled">Stalled/No Response</option>
+                  </select>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Insurer Behavior:</label>
+                  <select id="insurer-behavior" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px;">
+                    <option value="">Select behavior...</option>
+                    <option value="responsive">Responsive & Helpful</option>
+                    <option value="slow">Slow to Respond</option>
+                    <option value="difficult">Difficult to Work With</option>
+                    <option value="denying">Denying Everything</option>
+                    <option value="lowballing">Making Low Offers</option>
+                    <option value="stalling">Stalling/Delaying</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div>
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">Additional Details</h4>
+                
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Key Deadlines:</label>
+                  <input type="text" id="deadlines" placeholder="Any important deadlines?" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px;">
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Main Concerns:</label>
+                  <textarea id="concerns" placeholder="What are your main concerns or challenges?" style="width: 100%; min-height: 100px; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px;"></textarea>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Specific Questions:</label>
+                  <textarea id="specific-questions" placeholder="Any specific questions you need answered?" style="width: 100%; min-height: 80px; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px;"></textarea>
+                </div>
+              </div>
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+              <button onclick="getSituationalAdvice()" style="background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                🤖 Get AI Advisory
+              </button>
+            </div>
+            
+            <div id="advisory-results" style="display: none;">
+              <!-- Results will be populated here -->
+            </div>
+            
+            <div style="background: white; border: 2px solid var(--border); padding: 1.5rem; border-radius: 12px; margin-top: 2rem; border-left: 5px solid #f59e0b;">
+              <h3 style="margin: 0 0 1rem 0; color: #92400e;">💡 Sample Advisory Outputs</h3>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+                <div style="background: #fef3c7; padding: 1rem; border-radius: 6px; border: 1px solid #f59e0b;">
+                  <h4 style="margin: 0 0 0.5rem 0; color: #92400e;">Fire Claim Low Offer</h4>
+                  <p style="margin: 0; font-size: 0.9rem; color: #92400e;">→ Generate Demand Letter with contractor estimates</p>
+                </div>
+                <div style="background: #fef3c7; padding: 1rem; border-radius: 6px; border: 1px solid #f59e0b;">
+                  <h4 style="margin: 0 0 0.5rem 0; color: #92400e;">Health Denial</h4>
+                  <p style="margin: 0; font-size: 0.9rem; color: #92400e;">→ Create Appeal Letter with medical evidence</p>
+                </div>
+                <div style="background: #fef3c7; padding: 1rem; border-radius: 6px; border: 1px solid #f59e0b;">
+                  <h4 style="margin: 0 0 0.5rem 0; color: #92400e;">Hurricane Delay</h4>
+                  <p style="margin: 0; font-size: 0.9rem; color: #92400e;">→ Send Notice of Delay to trigger response</p>
                 </div>
               </div>
             </div>
@@ -5502,6 +5613,149 @@
         } catch (error) {
           console.error('Error saving document:', error);
           alert('Failed to save document. Please try again.');
+        }
+      }
+
+      // Situational Advisory Functions
+      async function getSituationalAdvice() {
+        const resultsDiv = document.getElementById('advisory-results');
+        
+        if (!resultsDiv) {
+          alert('Advisory results container not found.');
+          return;
+        }
+
+        // Collect form data
+        const formData = {
+          lossType: document.getElementById('loss-type')?.value || '',
+          claimStage: document.getElementById('claim-stage')?.value || '',
+          insurerBehavior: document.getElementById('insurer-behavior')?.value || '',
+          deadlines: document.getElementById('deadlines')?.value || '',
+          concerns: document.getElementById('concerns')?.value || '',
+          specificQuestions: document.getElementById('specific-questions')?.value || ''
+        };
+
+        // Validate required fields
+        if (!formData.lossType || !formData.claimStage) {
+          alert('Please select at least the loss type and claim stage.');
+          return;
+        }
+
+        // Show loading state
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = '<div style="text-align: center; padding: 2rem;">🤖 Analyzing your situation and generating personalized advice...</div>';
+
+        try {
+          const response = await fetch('/.netlify/functions/ai-advisory-system', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              situation: `Loss Type: ${formData.lossType}, Stage: ${formData.claimStage}, Behavior: ${formData.insurerBehavior}`,
+              claimType: formData.lossType,
+              specificQuestions: formData.specificQuestions,
+              concerns: formData.concerns,
+              deadlines: formData.deadlines
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          
+          if (data.advisoryResponse) {
+            resultsDiv.innerHTML = `
+              <div style="background: white; padding: 2rem; border-radius: 8px; border: 1px solid var(--border);">
+                <h3 style="color: var(--primary); margin-bottom: 1.5rem;">🎯 Your Personalized Advisory</h3>
+                
+                <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px; border: 1px solid #0ea5e9; margin-bottom: 2rem;">
+                  <h4 style="color: #0369a1; margin: 0 0 1rem 0;">Immediate Next Steps</h4>
+                  <div style="white-space: pre-wrap; color: #0369a1;">${data.advisoryResponse}</div>
+                </div>
+                
+                ${data.recommendations && data.recommendations.length > 0 ? `
+                  <div style="margin-bottom: 2rem;">
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">📋 Recommended Actions</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                      ${data.recommendations.map(rec => `<li style="margin-bottom: 0.5rem;">${rec}</li>`).join('')}
+                    </ul>
+                  </div>
+                ` : ''}
+                
+                ${data.nextSteps && data.nextSteps.length > 0 ? `
+                  <div style="margin-bottom: 2rem;">
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">🚀 Next Steps</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                      ${data.nextSteps.map(step => `<li style="margin-bottom: 0.5rem;">${step}</li>`).join('')}
+                    </ul>
+                  </div>
+                ` : ''}
+                
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2rem;">
+                  <button onclick="generateAdvisoryDocument()" style="background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">
+                    📄 Generate Document Now
+                  </button>
+                  <button onclick="saveAdvisoryResults()" style="background: var(--text-secondary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">
+                    💾 Save Advisory
+                  </button>
+                </div>
+              </div>
+            `;
+          } else {
+            throw new Error(data.error || 'Failed to generate advisory');
+          }
+        } catch (error) {
+          console.error('Error getting situational advice:', error);
+          resultsDiv.innerHTML = `
+            <div style="color: #dc2626; padding: 1rem; background: #fef2f2; border: 1px solid #dc2626; border-radius: 0.5rem;">
+              <strong>Error:</strong> ${error.message}<br>
+              <small>Please try again or contact support if the issue persists.</small>
+            </div>
+          `;
+        }
+      }
+
+      async function generateAdvisoryDocument() {
+        // This would link to the Document Generator with pre-filled data
+        alert('Redirecting to Document Generator with your advisory recommendations...');
+        // In a real implementation, this would switch to the document generator tab
+        // and pre-fill the form with the advisory recommendations
+      }
+
+      async function saveAdvisoryResults() {
+        const resultsDiv = document.getElementById('advisory-results');
+        const advisoryContent = resultsDiv.textContent;
+        
+        try {
+          const response = await fetch('/.netlify/functions/save-draft', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              content: advisoryContent,
+              title: `Situational Advisory - ${new Date().toLocaleDateString()}`,
+              type: 'advisory'
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          
+          if (data.success) {
+            alert('Advisory results saved successfully!');
+          } else {
+            throw new Error(data.error || 'Failed to save advisory');
+          }
+        } catch (error) {
+          console.error('Error saving advisory:', error);
+          alert('Failed to save advisory results. Please try again.');
         }
       }
   </script>
