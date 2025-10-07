@@ -274,8 +274,19 @@
               priceId: 'price_additional_ai_response' // You'll need to set this in your Stripe dashboard
             })
           });
+          
+          // Check if response is ok and content type is JSON
           if (!resp.ok) {
+            const errorText = await resp.text();
+            console.error('Checkout error response:', errorText);
             throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+          }
+          
+          const contentType = resp.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            const htmlText = await resp.text();
+            console.error('Non-JSON response:', htmlText);
+            throw new Error('Server returned HTML instead of JSON');
           }
           
           const data = await resp.json();
