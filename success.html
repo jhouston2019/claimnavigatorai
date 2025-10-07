@@ -145,6 +145,7 @@
     <div id="verifying-payment" class="verification-status">
       <h2>⏳ Verifying Your Payment...</h2>
       <p>Please wait while we confirm your purchase...</p>
+      <div id="status"></div>
     </div>
     
     <div id="payment-confirmed" style="display:none;">
@@ -241,21 +242,17 @@
     
     // Initialize on page load
     async function init() {
-      if (sessionId) {
+      if (!sessionId) {
+        document.getElementById("status").innerText = "❌ Payment Verification Failed";
+        document.getElementById('verifying-payment').style.display = 'none';
+        document.getElementById('payment-error').style.display = 'block';
+      } else {
+        document.getElementById("status").innerText = "✅ Payment Verified Successfully";
         // Payment was just completed
         setTimeout(() => {
           document.getElementById('verifying-payment').style.display = 'none';
           document.getElementById('payment-confirmed').style.display = 'block';
         }, 2000);
-      } else {
-        // Direct access - check if user is logged in
-        currentUser = netlifyIdentity.currentUser();
-        if (currentUser) {
-          showResponseCenter();
-        } else {
-          document.getElementById('verifying-payment').style.display = 'none';
-          document.getElementById('payment-error').style.display = 'block';
-        }
       }
     }
     

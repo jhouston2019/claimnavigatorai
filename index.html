@@ -1317,7 +1317,7 @@
           </div>
       
       <div style="display: flex; gap: 1.5rem; justify-content: center; align-items: center; flex-wrap: wrap;">
-        <button onclick="startCheckout()" class="btn-primary checkout-btn" 
+        <button onclick="startCheckout('price_1Q8X9X2eZvKYlo2C1234567890')" class="btn-primary checkout-btn" 
                 data-en="Get Your Claim Toolkit →" 
                 data-es="Obtener Su Kit de Herramientas →">Get Your Claim Toolkit →</button>
         <a href="app/login.html" class="btn-primary" style="text-decoration: none;" 
@@ -1425,7 +1425,7 @@
       
       <div style="text-align: center;">
         <div style="display: flex; gap: 1rem; justify-content: center; align-items: center; flex-wrap: wrap;">
-        <button onclick="startCheckout()" class="btn-primary checkout-btn" 
+        <button onclick="startCheckout('price_1Q8X9X2eZvKYlo2C1234567890')" class="btn-primary checkout-btn" 
                 data-en="Get Your Claim Toolkit →" 
                 data-es="Obtener Su Kit de Herramientas →">Get Your Claim Toolkit →</button>
           <a href="app/login.html" class="btn-primary" style="text-decoration: none;" 
@@ -2000,7 +2000,7 @@
           <li data-en="✓ Public adjuster comparison tools" data-es="✓ Herramientas de comparación de ajustadores públicos">✓ Public adjuster comparison tools</li>
           <li data-en="✓ 90-day claim timeline & settlement planner" data-es="✓ Planificador de cronograma de reclamo de 90 días y acuerdo">✓ 90-day claim timeline & settlement planner</li>
         </ul>
-        <button onclick="startCheckout()" class="btn-primary checkout-btn" style="display: block; margin: 0 auto; max-width: 400px;" 
+        <button onclick="startCheckout('price_1Q8X9X2eZvKYlo2C1234567890')" class="btn-primary checkout-btn" style="display: block; margin: 0 auto; max-width: 400px;" 
                 data-en="Get Instant Access" 
                 data-es="Obtener Acceso Instantáneo">Get Instant Access</button>
         <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary); font-size: 0.875rem;" 
@@ -2260,43 +2260,19 @@
     });
     
     // Stripe Checkout Integration
-    async function startCheckout() {
-      const buttons = document.querySelectorAll('.checkout-btn');
-      const originalTexts = new Map();
-      
+    async function startCheckout(priceId) {
       try {
-        buttons.forEach(btn => {
-          originalTexts.set(btn, btn.textContent);
-          btn.disabled = true;
-          btn.textContent = currentLang === 'es' ? 'Cargando pago...' : 'Loading checkout...';
+        const res = await fetch("/.netlify/functions/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ priceId }),
         });
-        
-        const response = await fetch('/.netlify/functions/checkout', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ language: currentLang })
-        });
-        
-        const data = await response.json();
-        
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          throw new Error(data.error || 'Checkout failed');
-        }
-      } catch (error) {
-        console.error('Checkout error:', error);
-        const message = currentLang === 'es' 
-          ? 'Lo sentimos, el pago no está disponible temporalmente. Por favor intente de nuevo.'
-          : 'Sorry, checkout is temporarily unavailable. Please try again in a moment.';
-        alert(message);
-        
-        buttons.forEach(btn => {
-          btn.disabled = false;
-          btn.textContent = originalTexts.get(btn) || (currentLang === 'es' ? 'Obtener Su Kit de Herramientas' : 'Get Your Claim Toolkit');
-        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Invalid request");
+        window.location.href = data.url;
+      } catch (err) {
+        console.error("Checkout error:", err);
+        alert(err.message);
       }
     }
     
