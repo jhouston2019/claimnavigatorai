@@ -1,78 +1,9 @@
-[build]
-  publish = "."
-  command = "echo 'No build required'"
-
-[build.environment]
-  NODE_VERSION = "18"
-  NODE_ENV = "${NODE_ENV}"
-  OPENAI_API_KEY = "${OPENAI_API_KEY}"
-  SUPABASE_URL = "${SUPABASE_URL}"
-  SUPABASE_ANON_KEY = "${SUPABASE_ANON_KEY}"
-  SUPABASE_SERVICE_ROLE_KEY = "${SUPABASE_SERVICE_ROLE_KEY}"
-  STRIPE_PUBLIC_KEY = "${STRIPE_PUBLIC_KEY}"
-  STRIPE_SECRET_KEY = "${STRIPE_SECRET_KEY}"
-  STRIPE_WEBHOOK_SECRET = "${STRIPE_WEBHOOK_SECRET}"
-  STRIPE_PRICE_CLAIM_NAVIGATOR_DIY_TOOLKIT = "${STRIPE_PRICE_CLAIM_NAVIGATOR_DIY_TOOLKIT}"
-  STRIPE_PRICE_CLAIM_NAVIGATOR_APPEAL_BUILDER = "${STRIPE_PRICE_CLAIM_NAVIGATOR_APPEAL_BUILDER}"
-  STRIPE_CHECKOUT_SUCCESS_URL = "${STRIPE_CHECKOUT_SUCCESS_URL}"
-  STRIPE_CHECKOUT_CANCEL_URL = "${STRIPE_CHECKOUT_CANCEL_URL}"
-  SENDGRID_API_KEY = "${SENDGRID_API_KEY}"
-  FROM_EMAIL = "${FROM_EMAIL}"
-  SUPPORT_EMAIL = "${SUPPORT_EMAIL}"
-  ADMIN_EMAIL = "${ADMIN_EMAIL}"
-  GA4_ID = "${GA4_ID}"
-  SENTRY_DSN = "${SENTRY_DSN}"
-  AFFILIATE_ID = "${AFFILIATE_ID}"
-  ADSENSE_ID = "${ADSENSE_ID}"
-  AD_PROVIDER_KEY = "${AD_PROVIDER_KEY}"
-  EMAIL_REPLY_TO = "${EMAIL_REPLY_TO}"
-  JWT_SECRET = "${JWT_SECRET}"
-  CACHE_TTL = "${CACHE_TTL}"
-
-[functions]
-  directory = "netlify/functions"
-  node_bundler = "esbuild"
-
-[functions.scheduled]
-  function = "scheduled-daily-digest"
-  schedule = "0 7 * * *"
-
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-[[redirects]]
-  from = "https://www.claimnavigatorai.netlify.app/*"
-  to = "https://claimnavigatorai.com/:splat"
-  status = 301
-  force = true
+from = "/*"
+to = "/index.html"
+status = 200
 
 [[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
-
-[[headers]]
-  for = "/*.js"
-  [headers.values]
-    Cache-Control = "public, max-age=604800, immutable"
-
-[[headers]]
-  for = "/*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=604800, immutable"
-
-[[headers]]
-  for = "/*.html"
-  [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+for = "/*.@(png|jpg|jpeg|gif|svg|webp|ico|json|webmanifest)"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"

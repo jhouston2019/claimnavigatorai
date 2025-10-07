@@ -219,13 +219,25 @@
         return;
       }
 
-      // ✅ Logged in user: Redirect to proper Response Center
+      // ✅ Logged in user: Show dashboard with purchases panel
       document.body.innerHTML = `
-        <div style="padding:40px;max-width:700px;margin:auto;text-align:center;font-family:sans-serif;">
+        <div style="padding:40px;max-width:900px;margin:auto;font-family:sans-serif;">
           <h2>✅ Payment Confirmed</h2>
           <p>Welcome, <strong>${user.email}</strong></p>
+          
+          <div id="my-purchases" style="margin-top:20px;padding:20px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb;">
+            <h3>My Claim Tools</h3>
+            <ul id="tool-list" style="margin:10px 0;padding-left:20px;">
+              <li>AI Response & Analysis Center</li>
+              <li>Claim Document Library</li>
+              <li>Claim Playbook</li>
+            </ul>
+            <p><strong>Credits Remaining:</strong> <span id="credits-count">Loading…</span></p>
+            <button id="buy-more" style="padding:8px 16px;background:#1e40af;color:white;border:none;border-radius:4px;cursor:pointer;">Buy More Responses ($29)</button>
+          </div>
+          
           <div style="margin:20px 0;padding:20px;background:#f0f9ff;border-radius:8px;border:1px solid #0ea5e9;">
-            <h3>🎯 Redirecting to your Claim Resource & AI Response Center...</h3>
+            <h3>🎯 Access Your Claim Resource & AI Response Center</h3>
             <p>You'll have access to:</p>
             <ul style="text-align:left;margin:10px 0;">
               <li>🤖 AI Response Generator</li>
@@ -233,15 +245,46 @@
               <li>🛠️ Claim Analysis Tools</li>
               <li>📊 Professional Templates</li>
             </ul>
+            <a href="/app/response-center-simple.html" style="display:inline-block;padding:10px 20px;background:#1e40af;color:white;text-decoration:none;border-radius:4px;margin-top:10px;">Access Response Center</a>
           </div>
-          <p style="margin-top:20px;">If you're not redirected automatically, <a href="/app/response-center-simple.html" style="color:#1e40af;">click here</a></p>
         </div>
       `;
 
-      // Redirect to the proper Response Center after a short delay
-      setTimeout(() => {
-        window.location.href = '/app/response-center-simple.html';
-      }, 3000);
+      // Load user credits
+      const { data: creditsData, error } = await supabase
+        .from('user_credits')
+        .select('credits')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Credit fetch error:', error);
+        document.getElementById('credits-count').innerText = 'Error loading credits';
+      } else {
+        document.getElementById('credits-count').innerText = creditsData?.credits ?? 0;
+      }
+
+      // Handle buy more responses
+      document.getElementById('buy-more').onclick = async () => {
+        try {
+          const resp = await fetch('/.netlify/functions/create-checkout-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              priceId: 'price_additional_ai_response' // You'll need to set this in your Stripe dashboard
+            })
+          });
+          const data = await resp.json();
+          if (data.url) {
+            window.location.href = data.url;
+          } else {
+            alert('Unable to create checkout session. Please try again.');
+          }
+        } catch (error) {
+          console.error('Checkout error:', error);
+          alert('Error creating checkout session. Please try again.');
+        }
+      };
     }
 
     // Initialize dashboard
