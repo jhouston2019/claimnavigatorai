@@ -2675,6 +2675,7 @@
           `,
           'document-generator': showDocumentGenerator(),
           'situational-advisory': showSituationalAdvisory(),
+          'maximize-claim': showMaximizeClaim(),
           'settlement-comparison': showSettlementComparison(),
           'financial-calculator': showFinancialCalculator(),
           'professional-marketplace': showProfessionalMarketplace(),
@@ -3527,6 +3528,196 @@
                   <p style="margin: 0; font-size: 0.9rem; color: #92400e;">→ Send Notice of Delay to trigger response</p>
                 </div>
               </div>
+            </div>
+          </div>
+        `;
+        return content;
+      }
+
+      // Maximize Your Claim Tool
+      function showMaximizeClaim() {
+        const content = `
+          <div style="padding: 2rem; background: white; border-radius: 8px; border: 1px solid var(--border);">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📈 Maximize Your Claim</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">Follow this 7-step guide to maximize your insurance claim value and ensure fair compensation</p>
+            
+            <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border-left: 5px solid var(--primary);">
+              <h3 style="color: var(--primary); margin: 0 0 1rem 0;">Complete Guide Overview</h3>
+              <p style="margin: 0; color: var(--text-secondary);">This comprehensive guide will walk you through each step with AI assistance and professional tools to maximize your claim value.</p>
+            </div>
+            
+            <div style="max-width: 1200px; margin: 0 auto;">
+              <!-- Step 1 -->
+              <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <div style="background: white; border: 2px solid var(--primary); color: var(--primary); padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleMaximizeStep('step1')">
+                  <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">1</div>
+                  <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Document Everything</div>
+                  <div style="font-size: 1.5rem; transition: transform 0.3s;" id="step1-toggle">▼</div>
+                </div>
+                <div id="step1-body" style="display: none; padding: 2rem; background: #fafbfc;">
+                  <h4>Comprehensive Documentation Strategy</h4>
+                  <ul style="margin-bottom: 1.5rem;">
+                    <li>Take detailed photos from multiple angles</li>
+                    <li>Record video walkthroughs of damage</li>
+                    <li>Keep all receipts and invoices</li>
+                    <li>Document conversations with insurance representatives</li>
+                    <li>Maintain a detailed damage log with dates and descriptions</li>
+                  </ul>
+                  <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button onclick="showTool('evidence-organizer')" style="background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">📂 Evidence Organizer</button>
+                    <button onclick="showTool('claim-timeline-tracker')" style="background: var(--text-secondary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">⏰ Timeline Tracker</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Step 2 -->
+              <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <div style="background: white; border: 2px solid var(--primary); color: var(--primary); padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleMaximizeStep('step2')">
+                  <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">2</div>
+                  <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Understand Your Policy</div>
+                  <div style="font-size: 1.5rem; transition: transform 0.3s;" id="step2-toggle">▼</div>
+                </div>
+                <div id="step2-body" style="display: none; padding: 2rem; background: #fafbfc;">
+                  <h4>Policy Analysis & Coverage Review</h4>
+                  <ul style="margin-bottom: 1.5rem;">
+                    <li>Review all coverage types and limits</li>
+                    <li>Identify exclusions and limitations</li>
+                    <li>Understand your deductible and how it applies</li>
+                    <li>Check for additional living expenses coverage</li>
+                    <li>Verify replacement cost vs. actual cash value</li>
+                  </ul>
+                  <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button onclick="showTool('ai-policy-analyzer')" style="background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">📋 Policy Analyzer</button>
+                    <button onclick="showTool('situational-advisory')" style="background: var(--text-secondary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">🧭 Get Advisory</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Step 3 -->
+              <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <div style="background: white; border: 2px solid var(--primary); color: var(--primary); padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleMaximizeStep('step3')">
+                  <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">3</div>
+                  <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Submit Complete Claim</div>
+                  <div style="font-size: 1.5rem; transition: transform 0.3s;" id="step3-toggle">▼</div>
+                </div>
+                <div id="step3-body" style="display: none; padding: 2rem; background: #fafbfc;">
+                  <h4>Comprehensive Claim Submission</h4>
+                  <ul style="margin-bottom: 1.5rem;">
+                    <li>Submit all required documentation upfront</li>
+                    <li>Include detailed damage assessments</li>
+                    <li>Provide contractor estimates and bids</li>
+                    <li>Submit proof of loss statements</li>
+                    <li>Include any expert reports or appraisals</li>
+                  </ul>
+                  <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button onclick="showTool('document-generator')" style="background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">📄 Document Generator</button>
+                    <button onclick="showTool('documentation-checklist')" style="background: var(--text-secondary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">📋 Checklist</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Step 4 -->
+              <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <div style="background: white; border: 2px solid var(--primary); color: var(--primary); padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleMaximizeStep('step4')">
+                  <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">4</div>
+                  <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Track Deadlines</div>
+                  <div style="font-size: 1.5rem; transition: transform 0.3s;" id="step4-toggle">▼</div>
+                </div>
+                <div id="step4-body" style="display: none; padding: 2rem; background: #fafbfc;">
+                  <h4>Deadline Management & Compliance</h4>
+                  <ul style="margin-bottom: 1.5rem;">
+                    <li>Track all statutory deadlines</li>
+                    <li>Monitor insurance company response times</li>
+                    <li>Set reminders for follow-up actions</li>
+                    <li>Document all deadline communications</li>
+                    <li>Escalate if deadlines are missed</li>
+                  </ul>
+                  <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button onclick="showTool('deadline-tracker')" style="background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">⏰ Deadline Tracker</button>
+                    <button onclick="showTool('state-rights')" style="background: var(--text-secondary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">🏛️ State Rights</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Step 5 -->
+              <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <div style="background: white; border: 2px solid var(--primary); color: var(--primary); padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleMaximizeStep('step5')">
+                  <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">5</div>
+                  <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Compare Offers</div>
+                  <div style="font-size: 1.5rem; transition: transform 0.3s;" id="step5-toggle">▼</div>
+                </div>
+                <div id="step5-body" style="display: none; padding: 2rem; background: #fafbfc;">
+                  <h4>Offer Analysis & Negotiation</h4>
+                  <ul style="margin-bottom: 1.5rem;">
+                    <li>Compare insurer offers with your estimates</li>
+                    <li>Analyze coverage gaps and discrepancies</li>
+                    <li>Calculate additional living expenses</li>
+                    <li>Review depreciation vs. replacement cost</li>
+                    <li>Prepare counter-offers with supporting documentation</li>
+                  </ul>
+                  <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button onclick="showTool('settlement-comparison')" style="background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">💰 Settlement Comparison</button>
+                    <button onclick="showTool('financial-calculator')" style="background: var(--text-secondary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">🧮 Financial Calculator</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Step 6 -->
+              <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <div style="background: white; border: 2px solid var(--primary); color: var(--primary); padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleMaximizeStep('step6')">
+                  <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">6</div>
+                  <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Escalate Strategically</div>
+                  <div style="font-size: 1.5rem; transition: transform 0.3s;" id="step6-toggle">▼</div>
+                </div>
+                <div id="step6-body" style="display: none; padding: 2rem; background: #fafbfc;">
+                  <h4>Strategic Escalation & Advocacy</h4>
+                  <ul style="margin-bottom: 1.5rem;">
+                    <li>Request supervisor review when appropriate</li>
+                    <li>File complaints with state insurance department</li>
+                    <li>Consider appraisal process for disputed amounts</li>
+                    <li>Document all escalation attempts</li>
+                    <li>Prepare for potential litigation if necessary</li>
+                  </ul>
+                  <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button onclick="showTool('negotiation-scripts')" style="background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">🗣️ Negotiation Scripts</button>
+                    <button onclick="showTool('insurance-tactics')" style="background: var(--text-secondary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">🚫 Insurance Tactics</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Step 7 -->
+              <div style="background: #fff; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <div style="background: white; border: 2px solid var(--primary); color: var(--primary); padding: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;" onclick="toggleMaximizeStep('step7')">
+                  <div style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">7</div>
+                  <div style="font-size: 1.3rem; font-weight: 600; flex: 1;">Leverage Professionals</div>
+                  <div style="font-size: 1.5rem; transition: transform 0.3s;" id="step7-toggle">▼</div>
+                </div>
+                <div id="step7-body" style="display: none; padding: 2rem; background: #fafbfc;">
+                  <h4>Professional Assistance & Support</h4>
+                  <ul style="margin-bottom: 1.5rem;">
+                    <li>Consult with public adjusters for complex claims</li>
+                    <li>Engage contractors for detailed estimates</li>
+                    <li>Consider legal representation for denied claims</li>
+                    <li>Work with restoration specialists</li>
+                    <li>Leverage professional networks and referrals</li>
+                  </ul>
+                  <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button onclick="showTool('professional-marketplace')" style="background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">🧑‍🔧 Professional Marketplace</button>
+                    <button onclick="showTool('situational-advisory')" style="background: var(--text-secondary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;">🧭 Get Advisory</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div style="background: white; border: 2px solid var(--border); padding: 1.5rem; border-radius: 12px; margin-top: 2rem; border-left: 5px solid #10b981;">
+              <h3 style="margin: 0 0 1rem 0; color: #047857;">🎯 Success Tips</h3>
+              <ul style="margin: 0; padding-left: 1.5rem;">
+                <li><strong>Stay Organized:</strong> Keep all documents in a dedicated folder</li>
+                <li><strong>Be Persistent:</strong> Follow up regularly but professionally</li>
+                <li><strong>Document Everything:</strong> Record all communications and interactions</li>
+                <li><strong>Know Your Rights:</strong> Understand your state's insurance laws</li>
+                <li><strong>Get Help When Needed:</strong> Don't hesitate to consult professionals</li>
+              </ul>
             </div>
           </div>
         `;
@@ -5756,6 +5947,22 @@
         } catch (error) {
           console.error('Error saving advisory:', error);
           alert('Failed to save advisory results. Please try again.');
+        }
+      }
+
+      // Maximize Claim Functions
+      function toggleMaximizeStep(stepId) {
+        const body = document.getElementById(stepId + '-body');
+        const toggle = document.getElementById(stepId + '-toggle');
+        
+        if (body && toggle) {
+          if (body.style.display === 'none' || body.style.display === '') {
+            body.style.display = 'block';
+            toggle.textContent = '▲';
+          } else {
+            body.style.display = 'none';
+            toggle.textContent = '▼';
+          }
         }
       }
   </script>
