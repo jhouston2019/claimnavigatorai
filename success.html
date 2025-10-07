@@ -230,13 +230,22 @@
   </div>
 
   <script>
-    // Initialize Supabase client
-    const supabaseUrl = 'https://your-project-id.supabase.co'; // Replace with your Supabase URL
-    const supabaseKey = 'your-anon-key'; // Replace with your Supabase anon key
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-    
+    // Initialize Supabase client with configuration from environment
+    let supabase = null;
     let currentUser = null;
     let userCredits = 0;
+    
+    // Load Supabase configuration
+    async function initSupabase() {
+      try {
+        const response = await fetch('/.netlify/functions/get-supabase-config');
+        const config = await response.json();
+        supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+        console.log('✅ Supabase initialized');
+      } catch (error) {
+        console.error('❌ Failed to initialize Supabase:', error);
+      }
+    }
     
     // Check for session_id in URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -443,7 +452,12 @@
     }
     
     // Initialize when page loads
-    init();
+    async function startApp() {
+      await initSupabase();
+      init();
+    }
+    
+    startApp();
   </script>
 </body>
 </html>
