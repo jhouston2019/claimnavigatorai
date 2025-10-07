@@ -1,6 +1,14 @@
+# Redirect all requests to index.html except for static assets
 [[redirects]]
 from = "/*"
 to = "/index.html"
+status = 200
+conditions = {Role = ["admin"], Country = ["!*"]}
+
+# Don't redirect static assets
+[[redirects]]
+from = "/*.@(png|jpg|jpeg|gif|svg|webp|ico|json|webmanifest|css|js)"
+to = "/:splat"
 status = 200
 
 [[headers]]

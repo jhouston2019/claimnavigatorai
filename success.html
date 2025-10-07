@@ -267,13 +267,17 @@
       // Handle buy more responses
       document.getElementById('buy-more').onclick = async () => {
         try {
-          const resp = await fetch('/.netlify/functions/create-checkout-session', {
+          const resp = await fetch('/.netlify/functions/checkout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               priceId: 'price_additional_ai_response' // You'll need to set this in your Stripe dashboard
             })
           });
+          if (!resp.ok) {
+            throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+          }
+          
           const data = await resp.json();
           if (data.url) {
             window.location.href = data.url;
