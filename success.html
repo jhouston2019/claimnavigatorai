@@ -166,128 +166,125 @@
 
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    // Initialize Supabase client with dynamic configuration
+    let supabase = null;
     
-    const supabase = createClient(
-      import.meta.env.VITE_SUPABASE_URL,
-      import.meta.env.VITE_SUPABASE_ANON_KEY
-    );
-
-    async function init() {
-      // Check for session_id in URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const sessionId = urlParams.get('session_id');
-      
-      if (!sessionId) {
-        document.getElementById("verifying-payment").style.display = 'none';
-        document.getElementById('payment-error').style.display = 'block';
-        return;
+    async function initSupabase() {
+      try {
+        const response = await fetch('/.netlify/functions/get-supabase-config');
+        const config = await response.json();
+        supabase = createClient(config.supabaseUrl, config.supabaseAnonKey);
+        console.log('✅ Supabase initialized');
+      } catch (error) {
+        console.error('❌ Failed to initialize Supabase:', error);
+        document.body.innerHTML = `
+          <div style="padding:40px;text-align:center;">
+            <h2>Configuration Error</h2>
+            <p>Unable to connect to the service. Please try again later.</p>
+          </div>
+        `;
+        return false;
       }
+      return true;
+    }
 
-      // Show payment confirmed
-      document.getElementById("verifying-payment").style.display = 'none';
-      document.getElementById('payment-confirmed').style.display = 'block';
+    // Initial loading message
+    document.body.innerHTML = `
+      <div style="padding:40px;max-width:700px;margin:auto;text-align:center;">
+        <h2>Loading your Claim Resource Center...</h2>
+        <p>Please wait while we verify your account.</p>
+      </div>
+    `;
 
-      // Check if user is logged in
+    async function loadUserDashboard() {
       const { data: { user } } = await supabase.auth.getUser();
+
       if (!user) {
-        // Redirect to login if not authenticated
-        window.location.href = '/login';
+        // If no user session, prompt login
+        document.body.innerHTML = `
+          <div style="padding:40px;text-align:center;">
+            <h2>Login Required</h2>
+            <p>Enter your email to access your Claim Resource Center.</p>
+            <input id="email" type="email" placeholder="Enter your email" style="padding:10px;width:260px;"><br><br>
+            <button id="loginBtn">Send Login Link</button>
+          </div>
+        `;
+        document.getElementById('loginBtn').onclick = async () => {
+          const email = document.getElementById('email').value;
+          if (!email) return alert('Enter a valid email.');
+          await supabase.auth.signInWithOtp({ email });
+          alert('Login link sent! Check your email.');
+        };
         return;
       }
 
-      // Display user email
-      document.querySelector('#user-email').innerText = user.email;
+      // ✅ Logged in user: Load dashboard UI
+      document.body.innerHTML = `
+        <div style="padding:40px;max-width:900px;margin:auto;font-family:sans-serif;">
+          <h2>✅ Payment Confirmed</h2>
+          <p>Welcome, <strong>${user.email}</strong></p>
+          <div id="credits" style="margin:10px 0; font-weight:bold;">Checking credits...</div>
 
-      // Load user credits
-      const { data: credits } = await supabase
+          <textarea id="letter" placeholder="Paste insurer letter here..." style="width:100%;height:140px;padding:10px;font-size:14px;"></textarea>
+          <br><button id="generate" style="margin-top:10px;padding:10px 20px;">Generate AI Response</button>
+
+          <div id="output" style="white-space:pre-wrap;margin-top:20px;border-top:1px solid #ccc;padding-top:15px;"></div>
+
+          <div style="margin-top:30px;font-size:13px;">
+            <p>Need more responses? Purchase additional AI responses for $29 each.</p>
+            <button id="buyMore">Buy More Responses</button>
+          </div>
+        </div>
+      `;
+
+      // Fetch credits from Supabase
+      const { data: creditsData, error } = await supabase
         .from('user_credits')
         .select('credits')
         .eq('user_id', user.id)
         .single();
 
-      document.querySelector('#credits').innerText = credits?.credits ?? 0;
-    }
-
-    async function generateResponse() {
-      const text = document.querySelector('#input-text').value.trim();
-      const button = document.getElementById('generate');
-      const loading = document.getElementById('loading');
-      const errorDiv = document.getElementById('error');
-      const successDiv = document.getElementById('success');
-      const output = document.getElementById('output');
-      
-      if (!text) {
-        showError('Please paste the insurer letter first.');
-        return;
+      if (error) {
+        console.error('Credit fetch error:', error);
+        document.getElementById('credits').innerText = 'Error loading credits.';
+      } else {
+        document.getElementById('credits').innerText = `Responses Available: ${creditsData?.credits ?? 0}`;
       }
-      
-      // Reset UI
-      hideMessages();
-      button.disabled = true;
-      loading.classList.add('active');
-      
-      try {
+
+      // Handle AI Response Generation
+      document.getElementById('generate').onclick = async () => {
+        const letter = document.getElementById('letter').value.trim();
+        if (!letter) return alert('Please paste an insurer letter.');
+
+        document.getElementById('output').innerText = '⏳ Generating response...';
+
         const resp = await fetch('/.netlify/functions/generate-response', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ letter: text })
+          body: JSON.stringify({ letter })
         });
 
         const data = await resp.json();
-        
-        if (!resp.ok) {
-          throw new Error(data.error || 'Generation failed');
-        }
+        document.getElementById('output').innerText = data.response || '⚠️ No response generated.';
+        await loadUserDashboard();
+      };
 
-        // Show AI response
-        output.textContent = data.response;
-        output.style.display = 'block';
-        
-        // Update credits display
-        document.querySelector('#credits').innerText = data.creditsRemaining;
-        
-        showSuccess('AI response generated successfully!');
-        
-        // Clear the textarea
-        document.querySelector('#input-text').value = '';
-        
-      } catch (error) {
-        console.error('Generation error:', error);
-        showError(error.message || 'Failed to generate response. Please try again.');
-      } finally {
-        button.disabled = false;
-        loading.classList.remove('active');
+      // Buy more responses → Stripe checkout
+      document.getElementById('buyMore').onclick = () => {
+        window.location.href = '/checkout';
+      };
+    }
+
+    // Initialize dashboard
+    async function startApp() {
+      const supabaseReady = await initSupabase();
+      if (supabaseReady) {
+        loadUserDashboard();
       }
     }
-
-    async function logout() {
-      await supabase.auth.signOut();
-      window.location.href = '/';
-    }
-
-    // Utility functions
-    function showError(message) {
-      const errorDiv = document.getElementById('error');
-      errorDiv.textContent = message;
-      errorDiv.style.display = 'block';
-    }
     
-    function showSuccess(message) {
-      const successDiv = document.getElementById('success');
-      successDiv.textContent = message;
-      successDiv.style.display = 'block';
-    }
-    
-    function hideMessages() {
-      document.getElementById('error').style.display = 'none';
-      document.getElementById('success').style.display = 'none';
-    }
-
-    // Event listeners
-    document.querySelector('#generate').onclick = generateResponse;
-    
-    // Initialize on page load
-    init();
+    startApp();
   </script>
 </body>
 </html>
