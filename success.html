@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Payment Success - ClaimNavigatorAI</title>
   
-  <!-- Netlify Identity Widget -->
-  <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <!-- Supabase Auth -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -230,12 +230,10 @@
   </div>
 
   <script>
-    // Initialize Netlify Identity with explicit site URL
-    if (window.netlifyIdentity) {
-      netlifyIdentity.init({
-        APIUrl: "https://claimnavigatorai.com/.netlify/identity"
-      });
-    }
+    // Initialize Supabase client
+    const supabaseUrl = 'https://your-project-id.supabase.co'; // Replace with your Supabase URL
+    const supabaseKey = 'your-anon-key'; // Replace with your Supabase anon key
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
     
     let currentUser = null;
     let userCredits = 0;
@@ -272,33 +270,37 @@
       
       authMessage.innerHTML = '<p>Processing...</p>';
       
-      // Open Netlify Identity modal for signup/login
-      if (window.netlifyIdentity) {
-        netlifyIdentity.open('signup');
-      } else {
-        authMessage.innerHTML = '<p class="error">Authentication service not available. Please refresh the page.</p>';
+      try {
+        // Try to sign in first
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+        
+        if (signInData.user) {
+          currentUser = signInData.user;
+          authMessage.innerHTML = '<p class="success">Login successful!</p>';
+          showResponseCenter();
+        } else if (signInError && signInError.message.includes('Invalid login credentials')) {
+          // If login fails, try to sign up
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email: email,
+            password: password
+          });
+          
+          if (signUpData.user) {
+            currentUser = signUpData.user;
+            authMessage.innerHTML = '<p class="success">Account created successfully! Please check your email to confirm your account.</p>';
+            showResponseCenter();
+          } else {
+            authMessage.innerHTML = `<p class="error">Error: ${signUpError.message}</p>`;
+          }
+        } else {
+          authMessage.innerHTML = `<p class="error">Error: ${signInError.message}</p>`;
+        }
+      } catch (error) {
+        authMessage.innerHTML = `<p class="error">Authentication error: ${error.message}</p>`;
       }
-    }
-    
-    // Handle Netlify Identity events
-    if (window.netlifyIdentity) {
-      netlifyIdentity.on('login', user => {
-        currentUser = user;
-        document.getElementById('auth-message').innerHTML = '<p class="success">Login successful!</p>';
-        showResponseCenter();
-        netlifyIdentity.close();
-      });
-      
-      netlifyIdentity.on('signup', user => {
-        currentUser = user;
-        document.getElementById('auth-message').innerHTML = '<p class="success">Account created successfully!</p>';
-        showResponseCenter();
-        netlifyIdentity.close();
-      });
-      
-      netlifyIdentity.on('error', err => {
-        document.getElementById('auth-message').innerHTML = `<p class="error">Error: ${err.message}</p>`;
-      });
     }
     
     async function showResponseCenter() {
@@ -317,10 +319,15 @@
       }
       
       try {
-        const token = await currentUser.jwt();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          document.getElementById('response-count').textContent = '20';
+          return;
+        }
+        
         const response = await fetch('/.netlify/functions/get-user-credits', {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${session.access_token}`
           }
         });
         
@@ -374,13 +381,16 @@
       loading.classList.add('active');
       
       try {
-        const token = await currentUser.jwt();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          throw new Error('No valid session');
+        }
         
         const response = await fetch('/.netlify/functions/generate', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${session.access_token}`
           },
           body: JSON.stringify({ text, language })
         });
@@ -426,25 +436,14 @@
     }
     
     async function logout() {
-      if (currentUser && window.netlifyIdentity) {
-        await netlifyIdentity.logout();
+      if (currentUser) {
+        await supabase.auth.signOut();
       }
       window.location.href = '/';
     }
     
     // Initialize when page loads
     init();
-    
-    // Refresh token periodically
-    setInterval(async () => {
-      if (currentUser) {
-        try {
-          await currentUser.jwt(true);
-        } catch (error) {
-          console.error('Token refresh failed:', error);
-        }
-      }
-    }, 3600000); // Every hour
   </script>
 </body>
 </html>

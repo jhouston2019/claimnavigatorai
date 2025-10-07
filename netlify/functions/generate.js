@@ -1,14 +1,32 @@
 const { createClient } = require('@supabase/supabase-js');
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   try {
-    // Check if user is authenticated via Netlify Identity
-    const user = context.clientContext && context.clientContext.user;
-    if (!user) {
+    // Get the authorization header
+    const authHeader = event.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return {
         statusCode: 401,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ error: 'Unauthorized - Please login first' })
+      };
+    }
+
+    // Initialize Supabase client
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
+    // Verify the JWT token with Supabase
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !user) {
+      return {
+        statusCode: 401,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Invalid authentication token' })
       };
     }
 
