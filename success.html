@@ -245,7 +245,8 @@
               <li>🛠️ Claim Analysis Tools</li>
               <li>📊 Professional Templates</li>
             </ul>
-            <a href="/app/response-center-simple.html" style="display:inline-block;padding:10px 20px;background:#1e40af;color:white;text-decoration:none;border-radius:4px;margin-top:10px;">Access Response Center</a>
+            <a href="/app/response-center.html" style="display:inline-block;padding:10px 20px;background:#1e40af;color:white;text-decoration:none;border-radius:4px;margin-top:10px;">Access Response Center</a>
+            <p style="margin-top:10px;font-size:14px;color:#666;">⏱️ You'll be automatically redirected to the Response Center in <span id="countdown">5</span> seconds...</p>
           </div>
         </div>
       `;
@@ -263,6 +264,21 @@
       } else {
         document.getElementById('credits-count').innerText = creditsData?.credits ?? 0;
       }
+
+      // Auto-redirect to response center after 5 seconds with countdown
+      let countdown = 5;
+      const countdownElement = document.getElementById('countdown');
+      
+      const countdownInterval = setInterval(() => {
+        countdown--;
+        if (countdownElement) {
+          countdownElement.textContent = countdown;
+        }
+        if (countdown <= 0) {
+          clearInterval(countdownInterval);
+          window.location.href = '/app/response-center.html';
+        }
+      }, 1000);
 
       // Handle buy more responses
       document.getElementById('buy-more').onclick = async () => {
