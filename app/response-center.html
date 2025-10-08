@@ -2043,17 +2043,28 @@
       
       // Claim Timeline Functions
       function toggleTimelinePhase(phaseId) {
+        console.log('🔄 Toggling timeline phase:', phaseId);
         const body = document.getElementById(phaseId + '-body');
         const toggle = document.getElementById(phaseId + '-toggle');
+        
+        if (!body || !toggle) {
+          console.error('❌ Timeline elements not found:', phaseId);
+          return;
+        }
         
         if (body.style.display === 'none' || body.style.display === '') {
           body.style.display = 'block';
           toggle.innerHTML = '▲';
+          console.log('✅ Timeline phase expanded:', phaseId);
         } else {
           body.style.display = 'none';
           toggle.innerHTML = '▼';
+          console.log('✅ Timeline phase collapsed:', phaseId);
         }
       }
+      
+      // Make function globally accessible
+      window.toggleTimelinePhase = toggleTimelinePhase;
       
       function showCategory(category) {
         const categoryNames = {
