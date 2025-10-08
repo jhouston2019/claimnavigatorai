@@ -1335,7 +1335,7 @@
           <div class="tools-list">
             <div class="tool-item" data-tool="ai-agent">AI Response & Analysis Agent</div>
             <div class="tool-item" data-tool="ai-policy-analyzer">AI Policy Analyzer</div>
-            <a href="response-center/claim-analysis-tools/index.html" class="tool-item" style="text-decoration: none; color: inherit;">Claim Analysis Tools</a>
+            <div class="tool-item" data-tool="claim-analysis">Claim Analysis Tools</div>
             <div class="tool-item" data-tool="situational-advisory">Situational Advisory</div>
             <div class="tool-item" data-tool="document-generator">Document Generator</div>
             <div class="tool-item" data-tool="settlement-comparison">Settlement Comparison Tool</div>
@@ -6455,8 +6455,15 @@
         }
       }
       
-      // Ensure function is globally accessible
+      // Ensure functions are globally accessible
       window.toggleTimelinePhase = toggleTimelinePhase;
+      window.generateResponse = generateResponse;
+      window.filterDocuments = filterDocuments;
+      window.uploadDocument = uploadDocument;
+      window.loadDocuments = loadDocuments;
+      window.setLang = setLang;
+      window.downloadDocument = downloadDocument;
+      window.previewDocument = previewDocument;
       
       // Diagnostic script to auto-check JS imports
       async function checkScriptIntegrity() {
@@ -6488,6 +6495,24 @@
         return results;
       }
 
+      // Missing functions
+      function downloadDocument(id, name) {
+        alert(`Downloading ${name || id}... (Functionality to be implemented)`);
+      }
+      
+      function previewDocument(id) {
+        alert(`Previewing document ${id}... (Functionality to be implemented)`);
+      }
+      
+      function setLang(lang) {
+        // Update language buttons
+        document.getElementById('lang-en').className = lang === 'en' ? 'btn-primary' : 'btn-secondary';
+        document.getElementById('lang-es').className = lang === 'es' ? 'btn-primary' : 'btn-secondary';
+        
+        // Reload documents with new language
+        loadDocuments(lang);
+      }
+      
       // Run diagnostic on page load
       window.addEventListener("load", checkScriptIntegrity);
   </script>
