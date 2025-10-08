@@ -38,3 +38,4 @@ CREATE POLICY "Users can delete their own profile" ON user_profiles
 
 -- Add comment
 COMMENT ON TABLE user_profiles IS 'User profile information including personal details and claim preferences';
+

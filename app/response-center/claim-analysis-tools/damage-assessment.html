@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Damage Assessment Calculator - ClaimNavigatorAI</title>
+  <meta name="description" content="Professional damage assessment calculator for property insurance claims.">
+  
+  <style>
+    :root {
+      --primary: #1e40af;
+      --accent: #3b82f6;
+      --border: #e5e7eb;
+      --text-secondary: #6b7280;
+      --bg-light: #f9fafb;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      background: #f8fafc; 
+    }
+    
+    /* Header */
+    header { 
+      background: #0f172a; 
+      padding: 1rem; 
+      color: #fff; 
+      position: sticky; 
+      top: 0; 
+      z-index: 100;
+    }
+    
+    nav { 
+      display: flex;
+      justify-content: space-between; 
+      align-items: center;
+    }
+    
+    .logo { 
+      margin-right: 2rem; 
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    
+    .nav-links { 
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .nav-links a { 
+      color: #fff; 
+      text-decoration: none; 
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      transition: background-color 0.2s;
+    }
+    
+    .nav-links a:hover { 
+      background: rgba(255,255,255,0.1);
+    }
+    
+    /* Main Content */
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+    }
+    
+    .content-area {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    
+    .sidebar {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+    
+    .page-header {
+      margin-bottom: 2rem;
+    }
+    
+    .page-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .page-description {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+    
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      transition: all 0.2s;
+    }
+    
+    .back-button:hover {
+      color: #1e3a8a;
+    }
+    
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-input,
+    .form-textarea,
+    .form-select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+    }
+    
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .damage-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .damage-item {
+      background: var(--bg-light);
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    
+    .damage-item h4 {
+      margin: 0 0 0.5rem 0;
+      color: var(--primary);
+      font-size: 1rem;
+    }
+    
+    .damage-item input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+    
+    /* Buttons */
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 1rem;
+    }
+    
+    .btn-primary:hover {
+      background: #1e3a8a;
+      transform: translateY(-1px);
+    }
+    
+    .btn-primary:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* Results */
+    .results-container {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: var(--bg-light);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      display: none;
+    }
+    
+    .results-container.show {
+      display: block;
+    }
+    
+    .results-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    .results-content {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      color: #374151;
+    }
+    
+    /* Loading */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+    
+    .loading.show {
+      display: block;
+    }
+    
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Sidebar */
+    .sidebar-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    .download-item {
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .download-item:hover {
+      background: var(--bg-light);
+      border-color: var(--primary);
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+      }
+      
+      .sidebar {
+        position: static;
+        margin-top: 2rem;
+      }
+      
+      .page-title {
+        font-size: 1.75rem;
+      }
+      
+      .damage-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo">🏠 ClaimNavigatorAI</div>
+      <div class="nav-links">
+        <a href="index.html">← Back to Tools</a>
+        <a href="../response-center.html">Resource Center</a>
+        <a href="../../index.html">Home</a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="main-content">
+    <div class="content-area">
+      <a href="index.html" class="back-button">
+        ← Back to Claim Analysis Tools
+      </a>
+      
+      <div class="page-header">
+        <h1 class="page-title">🔍 Damage Assessment Calculator</h1>
+        <p class="page-description">
+          Calculate and document property damage with professional assessment tools. Generate detailed damage reports and cost estimates.
+        </p>
+      </div>
+      
+      <form id="damage-assessment-form">
+        <div class="form-group">
+          <label class="form-label" for="property-type">Property Type</label>
+          <select class="form-select" id="property-type" required>
+            <option value="">Select Property Type</option>
+            <option value="residential">Residential Home</option>
+            <option value="commercial">Commercial Building</option>
+            <option value="condo">Condominium</option>
+            <option value="mobile-home">Mobile Home</option>
+            <option value="apartment">Apartment</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="damage-type">Type of Damage</label>
+          <select class="form-select" id="damage-type" required>
+            <option value="">Select Damage Type</option>
+            <option value="water">Water Damage</option>
+            <option value="fire">Fire Damage</option>
+            <option value="wind">Wind Damage</option>
+            <option value="hail">Hail Damage</option>
+            <option value="flood">Flood Damage</option>
+            <option value="theft">Theft/Vandalism</option>
+            <option value="structural">Structural Damage</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Damage Assessment</label>
+          <div class="damage-grid">
+            <div class="damage-item">
+              <h4>Structural Damage</h4>
+              <input type="number" id="structural-damage" placeholder="0" min="0" step="0.01">
+            </div>
+            <div class="damage-item">
+              <h4>Roof Damage</h4>
+              <input type="number" id="roof-damage" placeholder="0" min="0" step="0.01">
+            </div>
+            <div class="damage-item">
+              <h4>Interior Damage</h4>
+              <input type="number" id="interior-damage" placeholder="0" min="0" step="0.01">
+            </div>
+            <div class="damage-item">
+              <h4>Personal Property</h4>
+              <input type="number" id="personal-property" placeholder="0" min="0" step="0.01">
+            </div>
+            <div class="damage-item">
+              <h4>Additional Living Expenses</h4>
+              <input type="number" id="ale-expenses" placeholder="0" min="0" step="0.01">
+            </div>
+            <div class="damage-item">
+              <h4>Other Expenses</h4>
+              <input type="number" id="other-expenses" placeholder="0" min="0" step="0.01">
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="damage-description">Detailed Damage Description</label>
+          <textarea class="form-textarea" id="damage-description" placeholder="Provide a detailed description of the damage, including affected areas, extent of damage, and any special circumstances."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="repair-timeline">Estimated Repair Timeline</label>
+          <select class="form-select" id="repair-timeline">
+            <option value="">Select Timeline</option>
+            <option value="immediate">Immediate (0-7 days)</option>
+            <option value="short">Short-term (1-4 weeks)</option>
+            <option value="medium">Medium-term (1-3 months)</option>
+            <option value="long">Long-term (3+ months)</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="special-circumstances">Special Circumstances</label>
+          <textarea class="form-textarea" id="special-circumstances" placeholder="Any special circumstances, accessibility issues, or unique factors that might affect repair costs or timeline."></textarea>
+        </div>
+        
+        <button type="submit" class="btn-primary" id="assess-btn">
+          🔍 Generate Damage Assessment
+        </button>
+      </form>
+      
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Calculating damage assessment...</p>
+      </div>
+      
+      <div class="results-container" id="results">
+        <h3 class="results-title">📊 Damage Assessment Report</h3>
+        <div class="results-content" id="results-content"></div>
+      </div>
+    </div>
+    
+    <div class="sidebar">
+      <h3 class="sidebar-title">📥 Download Templates</h3>
+      <div class="download-item" onclick="downloadTemplate('damage-assessment-worksheet')">
+        📋 Damage Assessment Worksheet
+      </div>
+      <div class="download-item" onclick="downloadTemplate('repair-cost-estimator')">
+        💰 Repair Cost Estimator
+      </div>
+      <div class="download-item" onclick="downloadTemplate('damage-photo-checklist')">
+        📸 Damage Photo Checklist
+      </div>
+      <div class="download-item" onclick="downloadTemplate('contractor-bid-comparison')">
+        🔨 Contractor Bid Comparison
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Form submission
+    document.getElementById('damage-assessment-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = {
+        propertyType: document.getElementById('property-type').value,
+        damageType: document.getElementById('damage-type').value,
+        structuralDamage: parseFloat(document.getElementById('structural-damage').value) || 0,
+        roofDamage: parseFloat(document.getElementById('roof-damage').value) || 0,
+        interiorDamage: parseFloat(document.getElementById('interior-damage').value) || 0,
+        personalProperty: parseFloat(document.getElementById('personal-property').value) || 0,
+        aleExpenses: parseFloat(document.getElementById('ale-expenses').value) || 0,
+        otherExpenses: parseFloat(document.getElementById('other-expenses').value) || 0,
+        damageDescription: document.getElementById('damage-description').value,
+        repairTimeline: document.getElementById('repair-timeline').value,
+        specialCircumstances: document.getElementById('special-circumstances').value,
+        toolType: 'damage-assessment'
+      };
+      
+      // Calculate total damage
+      const totalDamage = formData.structuralDamage + formData.roofDamage + formData.interiorDamage + 
+                         formData.personalProperty + formData.aleExpenses + formData.otherExpenses;
+      
+      formData.totalDamage = totalDamage;
+      
+      // Show loading
+      document.getElementById('loading').classList.add('show');
+      document.getElementById('assess-btn').disabled = true;
+      
+      try {
+        const response = await fetch('/.netlify/functions/generate-response', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.response) {
+          document.getElementById('results-content').textContent = data.response;
+          document.getElementById('results').classList.add('show');
+        } else {
+          throw new Error(data.error || 'Failed to assess damage');
+        }
+      } catch (error) {
+        console.error('Error assessing damage:', error);
+        document.getElementById('results-content').textContent = `Error: ${error.message}`;
+        document.getElementById('results').classList.add('show');
+      } finally {
+        document.getElementById('loading').classList.remove('show');
+        document.getElementById('assess-btn').disabled = false;
+      }
+    });
+    
+    // Download template function
+    function downloadTemplate(templateType) {
+      const templates = {
+        'damage-assessment-worksheet': 'Damage Assessment Worksheet.pdf',
+        'repair-cost-estimator': 'Repair Cost Estimator.pdf',
+        'damage-photo-checklist': 'Damage Photo Checklist.pdf',
+        'contractor-bid-comparison': 'Contractor Bid Comparison.pdf'
+      };
+      
+      const templateName = templates[templateType];
+      if (templateName) {
+        alert(`Downloading ${templateName}...`);
+        // In a real implementation, this would fetch from Supabase storage
+        // window.open(`/templates/${templateName}`, '_blank');
+      }
+    }
+  </script>
+</body>
+</html>

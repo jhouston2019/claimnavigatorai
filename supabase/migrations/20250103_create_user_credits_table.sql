@@ -25,3 +25,4 @@ create policy "Service role can manage all credits" on user_credits
 
 -- Add comment
 comment on table user_credits is 'User credit tracking for AI response generation';
+
