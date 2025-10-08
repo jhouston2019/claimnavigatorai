@@ -1641,6 +1641,9 @@
         loadDocuments(lang);
       }
       
+      // Make setLang globally accessible
+      window.setLang = setLang;
+      
       async function loadDocuments(lang = 'en') {
         const container = document.getElementById('documents-container');
         container.innerHTML = '<div class="spinner"></div> Loading documents...';
@@ -1721,6 +1724,11 @@
           loadDocuments();
         }
       }
+      
+      // Make document functions globally accessible
+      window.filterDocuments = filterDocuments;
+      window.uploadDocument = uploadDocument;
+      window.loadDocuments = loadDocuments;
       
       async function downloadDocument(id, name) {
         try {
@@ -2087,6 +2095,24 @@
       
       function showTool(tool) {
         console.log('🔧 showTool called with:', tool);
+        
+        // Redirect to dedicated pages for tools that have them
+        const toolPages = {
+          'document-generator': 'document-generator.html',
+          'financial-calculator': 'financial-calculator.html',
+          'insurance-tactics': 'insurance-tactics.html',
+          'situational-advisory': 'situational-advisory.html',
+          'stage-tracker': 'stage-tracker.html',
+          'state-rights': 'state-rights.html',
+          'timeline': 'timeline.html',
+          'claim-analysis': 'response-center/claim-analysis-tools/index.html'
+        };
+        
+        if (toolPages[tool]) {
+          console.log('🚀 Redirecting to dedicated page:', toolPages[tool]);
+          window.location.href = toolPages[tool];
+          return;
+        }
         
         const contentArea = document.getElementById('content-area');
         if (!contentArea) {
@@ -6460,12 +6486,6 @@
       
       // Ensure functions are globally accessible
       window.toggleTimelinePhase = toggleTimelinePhase;
-      window.filterDocuments = filterDocuments;
-      window.uploadDocument = uploadDocument;
-      window.loadDocuments = loadDocuments;
-      window.setLang = setLang;
-      window.downloadDocument = downloadDocument;
-      window.previewDocument = previewDocument;
       
       // Diagnostic script to auto-check JS imports
       async function checkScriptIntegrity() {
@@ -6514,6 +6534,10 @@
         // Reload documents with new language
         loadDocuments(lang);
       }
+      
+      // Make all functions globally accessible
+      window.downloadDocument = downloadDocument;
+      window.previewDocument = previewDocument;
       
       // Run diagnostic on page load
       window.addEventListener("load", checkScriptIntegrity);
