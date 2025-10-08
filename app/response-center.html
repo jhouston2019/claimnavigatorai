@@ -1374,6 +1374,15 @@
     document.addEventListener('DOMContentLoaded', function() {
       console.log('✅ Clean Response Center loaded successfully');
       
+      // Test basic functionality
+      console.log('🧪 Testing basic functionality...');
+      const contentArea = document.getElementById('content-area');
+      if (contentArea) {
+        console.log('✅ Content area found');
+      } else {
+        console.error('❌ Content area not found!');
+      }
+      
       // Handle sidebar navigation
       const sidebarButtons = document.querySelectorAll('.sidebar-button, .subsection-button');
       sidebarButtons.forEach(button => {
@@ -1402,9 +1411,11 @@
       
       // Handle tool items in main content
       const toolItems = document.querySelectorAll('.tool-item');
+      console.log('🔍 Found tool items:', toolItems.length);
       toolItems.forEach(item => {
         item.addEventListener('click', function() {
           const tool = this.dataset.tool;
+          console.log('🖱️ Tool item clicked:', tool);
           showTool(tool);
           
           // Update sidebar active state
@@ -1419,6 +1430,15 @@
       function showDashboard() {
         document.getElementById('content-area').innerHTML = '';
       }
+      
+      // Test function to verify tools work
+      function testToolFunction() {
+        console.log('🧪 Testing tool function...');
+        showTool('ai-agent');
+      }
+      
+      // Make test function available globally
+      window.testToolFunction = testToolFunction;
       
       // AI Response & Analysis Agent Functions
       async function generateResponse() {
@@ -2040,14 +2060,25 @@
       }
       
       function showTool(tool) {
+        console.log('🔧 showTool called with:', tool);
+        
+        const contentArea = document.getElementById('content-area');
+        if (!contentArea) {
+          console.error('❌ Content area not found!');
+          return;
+        }
+        
         const toolContent = getToolContent(tool);
+        console.log('📄 Tool content retrieved:', typeof toolContent);
         
         // If toolContent is a function, call it; otherwise use the content directly
         if (typeof toolContent === 'function') {
-          document.getElementById('content-area').innerHTML = toolContent();
+          contentArea.innerHTML = toolContent();
         } else {
-          document.getElementById('content-area').innerHTML = toolContent;
+          contentArea.innerHTML = toolContent;
         }
+        
+        console.log('✅ Content updated successfully');
       }
       
       function getToolContent(tool) {
