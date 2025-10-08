@@ -91,12 +91,11 @@ const writeIfMissing = (file, content) => {
 };
 
 const topLevelTemplate = (title, file) => {
-  const assets = depthPrefix(file);
-  const backHref = file === 'public/index.html' ? '#' : '../index.html';
+  const backHref = '../index.html';
   return `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>${title}</title>
-<link rel="stylesheet" href="../${assets.replace('assets','assets')}/css/style.css"/>
+<link rel="stylesheet" href="../assets/css/style.css"/>
 </head><body>
 <header><nav class="container"><div class="logo">${title}</div><div class="nav-links"><a href="${backHref}" style="color:#fff">← Back</a></div></nav></header>
 <main class="container">
@@ -105,7 +104,7 @@ const topLevelTemplate = (title, file) => {
     <p class="lead">Page scaffold. Connect buttons/actions as needed.</p>
   </div>
 </main>
-<script type="module" src="../${assets}/js/diagnostics.js"></script>
+<script type="module" src="../assets/js/diagnostics.js"></script>
 </body></html>`;
 };
 
@@ -159,7 +158,7 @@ const analysisTemplate = (slug) => {
   return `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>${m.title}</title>
-<link rel="stylesheet" href="../../assets/css/style.css"/></head><body>
+<link rel="stylesheet" href="../../../assets/css/style.css"/></head><body>
 <header><nav class="container"><div class="logo">🔍 ${m.title}</div><div class="nav-links"><a href="./index.html" style="color:#fff">← All Analysis Tools</a></div></nav></header>
 <main class="container">
   <div class="card">
@@ -177,8 +176,8 @@ const analysisTemplate = (slug) => {
   </div>
 </main>
 <script type="module">
-import { analyzeClaim, createDoc } from '../../assets/js/api-client.js';
-import { qs, on } from '../../assets/js/ui-helpers.js';
+import { analyzeClaim, createDoc } from '../../../assets/js/api-client.js';
+import { qs, on } from '../../../assets/js/ui-helpers.js';
 const analysisType='${m.type}';
 on(qs('#run'),'click', async ()=>{
   const v=qs('#tool-input').value.trim(); if(!v) return alert('Enter details first.');
@@ -197,7 +196,7 @@ on(qs('#export'),'click', async ()=>{
   const url=r.url||r.downloadUrl; if(url) location.href=url; else alert('Export failed');
 });
 </script>
-<script type="module" src="../../assets/js/diagnostics.js"></script>
+<script type="module" src="../../../assets/js/diagnostics.js"></script>
 </body></html>`;
 };
 
