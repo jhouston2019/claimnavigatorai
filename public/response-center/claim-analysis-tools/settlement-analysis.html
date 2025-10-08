@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>💰 Settlement Analysis</title>
+<link rel="stylesheet" href="../../assets/css/style.css"/></head><body>
+<header><nav class="container"><div class="logo">🔍 💰 Settlement Analysis</div><div class="nav-links"><a href="./index.html" style="color:#fff">← All Analysis Tools</a></div></nav></header>
+<main class="container">
+  <div class="card">
+    <h1 class="section-h">💰 Settlement Analysis</h1>
+    <p class="lead">Offer fairness & gap analysis.</p>
+    <div class="card">
+      <label>Input</label>
+      <textarea id="tool-input" style="width:100%;min-height:120px;border:1px solid var(--border);border-radius:10px;padding:12px"></textarea>
+      <div style="display:flex;gap:.5rem;margin-top:.5rem;flex-wrap:wrap">
+        <button class="btn btn-solid" id="run">Run Analysis</button>
+        <button class="btn" id="export">Export PDF</button>
+      </div>
+      <div id="tool-output" class="card" style="margin-top:1rem"></div>
+    </div>
+  </div>
+</main>
+<script type="module">
+import { analyzeClaim, createDoc } from '../../assets/js/api-client.js';
+import { qs, on } from '../../assets/js/ui-helpers.js';
+const analysisType='settlement_analysis';
+on(qs('#run'),'click', async ()=>{
+  const v=qs('#tool-input').value.trim(); if(!v) return alert('Enter details first.');
+  qs('#tool-output').innerHTML='<span class="spinner"></span> Running...';
+  try{
+    const res = await analyzeClaim({ analysisType, text:v });
+    const html = res.assessment || res.comparison || res.report || res.analysis || JSON.stringify(res);
+    qs('#tool-output').innerHTML = html || '(no output)';
+  }catch(e){
+    qs('#tool-output').innerHTML = `<div style="color:#dc2626">Error: ${e.message}</div>`;
+  }
+});
+on(qs('#export'),'click', async ()=>{
+  const html=qs('#tool-output').innerHTML.trim(); if(!html) return alert('Run analysis first.');
+  const r=await createDoc({content:html,format:'pdf',type:analysisType,filename:`${analysisType}_${Date.now()}`});
+  const url=r.url||r.downloadUrl; if(url) location.href=url; else alert('Export failed');
+});
+</script>
+<script type="module" src="../../assets/js/diagnostics.js"></script>
+</body></html>

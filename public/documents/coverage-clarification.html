@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Coverage Clarification Request</title>
+<link rel="stylesheet" href="../assets/css/style.css"/></head><body>
+<header><nav class="container"><div class="logo">📄 Coverage Clarification Request</div><div class="nav-links"><a href="./index.html" style="color:#fff">← Documents</a></div></nav></header>
+<main class="container">
+  <div class="card">
+    <h1 class="section-h">Coverage Clarification Request</h1>
+    <div class="card">
+      <div style="display:grid;gap:.5rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-bottom:.75rem">
+        <input id="name" placeholder="Policyholder Name" style="padding:.6rem;border:1px solid var(--border);border-radius:10px"/>
+        <input id="policy" placeholder="Policy #" style="padding:.6rem;border:1px solid var(--border);border-radius:10px"/>
+        <input id="claim" placeholder="Claim #" style="padding:.6rem;border:1px solid var(--border);border-radius:10px"/>
+      </div>
+      <textarea id="details" placeholder="Enter details/context..." style="width:100%;min-height:140px;padding:12px;border:1px solid var(--border);border-radius:10px"></textarea>
+      <div style="display:flex;gap:.5rem;margin-top:.5rem;flex-wrap:wrap">
+        <button class="btn btn-solid" id="draft">Draft with AI</button>
+        <button class="btn" id="pdf">Export PDF</button>
+        <button class="btn" id="docx">Export DOCX</button>
+      </div>
+      <div id="out" class="card" style="margin-top:1rem"></div>
+    </div>
+  </div>
+</main>
+<script type="module">
+import { callAI, createDoc } from '../assets/js/api-client.js';
+import { qs, on } from '../assets/js/ui-helpers.js';
+const slug='coverage-clarification';
+on(qs('#draft'),'click', async ()=>{
+  const body={type:slug, name:qs('#name').value, policy:qs('#policy').value, claim:qs('#claim').value, details:qs('#details').value};
+  qs('#out').innerHTML='<span class="spinner"></span> Drafting...';
+  try{ const r=await callAI(JSON.stringify(body),{type:slug}); qs('#out').innerHTML=r.response||'(no content)'; }
+  catch(e){ qs('#out').innerHTML=`<div style="color:#dc2626">Error: ${e.message}</div>`; }
+});
+async function exportAs(format){
+  const content=qs('#out').innerHTML.trim(); if(!content) return alert('Draft first.');
+  const r=await createDoc({content, format, type:slug, filename:`${slug}_${Date.now()}`});
+  const url=r.url||r.downloadUrl; if(url) location.href=url; else alert('Export failed');
+}
+on(qs('#pdf'),'click', ()=>exportAs('pdf'));
+on(qs('#docx'),'click', ()=>exportAs('docx'));
+</script>
+<script type="module" src="../assets/js/diagnostics.js"></script>
+</body></html>
