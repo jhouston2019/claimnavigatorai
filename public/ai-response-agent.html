@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Response Agent - ClaimNavigatorAI</title>
+    <meta name="description" content="Generate intelligent responses to insurance correspondence with AI assistance">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">← Back to Resource Center</a>
+            <div class="nav-links">
+                <a href="#help">Help</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-container">
+        <div class="section">
+            <h1>🤖 AI Response Agent</h1>
+            <p>Get intelligent responses to insurance correspondence and build compelling arguments for your claim.</p>
+            
+            <form id="ai-form">
+                <div class="form-group">
+                    <label for="ai-input">Enter your insurance correspondence or question:</label>
+                    <textarea 
+                        id="ai-input" 
+                        name="ai-input" 
+                        placeholder="Paste the insurance company's letter, email, or your question here..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="ai-file">Upload supporting documents (optional):</label>
+                    <input type="file" id="ai-file" name="ai-file" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png">
+                </div>
+
+                <div class="form-group">
+                    <label for="response-type">Response Type:</label>
+                    <select id="response-type" name="response-type">
+                        <option value="general">General Response</option>
+                        <option value="appeal">Appeal Letter</option>
+                        <option value="negotiation">Negotiation Letter</option>
+                        <option value="documentation">Documentation Request</option>
+                        <option value="timeline">Timeline Inquiry</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn" id="ai-generate">
+                    Generate AI Response
+                </button>
+            </form>
+        </div>
+
+        <div id="ai-output" class="section hidden">
+            <h2>AI Generated Response:</h2>
+            <div id="output-content" class="form-group" style="background: rgba(0, 0, 0, 0.3); padding: 1.5rem; border-radius: 8px; white-space: pre-wrap; font-family: 'Courier New', monospace;"></div>
+        </div>
+
+        <div id="error-message" class="error-message hidden"></div>
+        <div id="success-message" class="success-message hidden"></div>
+    </main>
+
+    <!-- Scripts -->
+    <script type="module" src="/assets/js/api-client.js"></script>
+    <script type="module" src="/assets/js/validation-utils.js"></script>
+    <script type="module" src="/assets/js/error-handler.js"></script>
+    <script type="module" src="/assets/js/ui-helpers.js"></script>
+    <script type="module" src="/assets/js/diagnostics.js"></script>
+    
+    <script type="module">
+        import { callAI } from '/assets/js/api-client.js';
+        import { validateForm, showValidationError, clearValidationError } from '/assets/js/validation-utils.js';
+        import { handleApiError } from '/assets/js/error-handler.js';
+        import { setLoadingState, storeOriginalText } from '/assets/js/ui-helpers.js';
+        import { initializeDiagnostics } from '/assets/js/diagnostics.js';
+
+        // Initialize page
+        initializeDiagnostics('ai-response-agent', {
+            requiredNodes: [
+                'body',
+                'main',
+                '#ai-form',
+                '#ai-output'
+            ],
+            testEndpoints: ['generate-response']
+        });
+
+        // Get DOM elements
+        const form = document.getElementById('ai-form');
+        const generateBtn = document.getElementById('ai-generate');
+        const outputSection = document.getElementById('ai-output');
+        const outputContent = document.getElementById('output-content');
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+
+        // Store original button text
+        storeOriginalText('ai-generate');
+
+        // Form handling
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Clear previous messages
+            errorMessage.classList.add('hidden');
+            successMessage.classList.add('hidden');
+            outputSection.classList.add('hidden');
+
+            // Validate form
+            const formData = {
+                'ai-input': document.getElementById('ai-input').value,
+                'response-type': document.getElementById('response-type').value
+            };
+
+            const validationRules = {
+                'ai-input': { required: true, label: 'Input text' }
+            };
+
+            const validation = validateForm(formData, validationRules);
+            
+            if (!validation.isValid) {
+                Object.keys(validation.errors).forEach(field => {
+                    showValidationError(field, validation.errors[field]);
+                });
+                return;
+            }
+
+            // Clear validation errors
+            clearValidationError('ai-input');
+
+            try {
+                // Set loading state
+                setLoadingState('ai-generate', true);
+
+                // Prepare request data
+                const requestData = {
+                    letter: formData['ai-input'],
+                    type: formData['response-type'],
+                    timestamp: new Date().toISOString()
+                };
+
+                // Call AI API
+                const response = await callAI(requestData.letter, { type: requestData.type });
+                
+                // Display response
+                outputContent.textContent = response.response || response.message || 'No response generated';
+                outputSection.classList.remove('hidden');
+                
+                // Show success message
+                successMessage.textContent = 'AI response generated successfully!';
+                successMessage.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('AI generation error:', error);
+                handleApiError(error, 'AI Response Generation');
+                
+                errorMessage.textContent = 'Failed to generate AI response. Please try again.';
+                errorMessage.classList.remove('hidden');
+            } finally {
+                // Reset loading state
+                setLoadingState('ai-generate', false);
+            }
+        });
+    </script>
+</body>
+</html>
