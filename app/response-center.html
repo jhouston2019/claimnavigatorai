@@ -270,6 +270,8 @@
       line-height: 1.4;
       margin: 0;
     }
+    
+    .workflow-step {
       padding-left: 0.5rem;
     }
     
@@ -1439,6 +1441,16 @@
       
       // Make test function available globally
       window.testToolFunction = testToolFunction;
+      
+      // Add a simple test on page load
+      setTimeout(() => {
+        console.log('🧪 Running automatic test...');
+        const testButton = document.createElement('button');
+        testButton.textContent = 'Test AI Agent';
+        testButton.style.cssText = 'position: fixed; top: 10px; right: 10px; z-index: 9999; background: #007bff; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;';
+        testButton.onclick = () => showTool('ai-agent');
+        document.body.appendChild(testButton);
+      }, 1000);
       
       // AI Response & Analysis Agent Functions
       async function generateResponse() {
