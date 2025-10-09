@@ -1,40 +1,25 @@
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Payroll Interruption Log</title>
-<link rel="stylesheet" href="/app/assets/css/style.css"/></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Payroll Interruption Log</title><link rel="stylesheet" href="/app/assets/css/style.css"/></head><body>
 <header class="header"><div class="bar container"><div class="brand"><div class="logo"></div><div>Payroll Interruption Log</div></div>
 <nav class="nav"><a href="/app/documents/index.html">← Documents</a></nav></div></header>
 <main class="container" id="main">
-  <div class="card"><h2>Payroll Interruption Log</h2></div>
   <div class="card">
-    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
-      <label>Policyholder<input id="name" placeholder="Policyholder"/></label>
-      <label>Policy #<input id="policy" placeholder="Policy #"/></label>
-      <label>Claim #<input id="claim" placeholder="Claim #"/></label>
-      <label>Date of Loss<input id="dol" placeholder="YYYY-MM-DD"/></label>
-    </div>
-    <label style="display:block;margin-top:8px">Details<textarea id="details" placeholder="Provide specifics to tailor the draft…"></textarea></label>
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="btn btn-primary" id="draft">Draft with AI</button>
-      <button class="btn" id="pdf">Export PDF</button>
-      <button class="btn" id="docx">Export DOCX</button>
-    </div>
+    <p class="small">CSV format: <code>date, employee, hours lost, hourly rate</code></p>
+    <textarea id="csv" placeholder="2025-03-02, Smith, 16, 28"></textarea>
+    <div style="margin-top:8px"><button class="btn btn-primary" id="sum">Summarize</button></div>
     <div id="out" class="card" style="margin-top:12px"></div>
   </div>
 </main>
 <script type="module">
   import {qs,on} from '/app/assets/js/ui-helpers.js';
-  import { callAI, createDoc } from '/app/assets/js/api-client.js';
-  const slug='payroll-interruption-log';
-  // URL prefill
-  const u=new URL(location.href); ['policy','claim','name','dol'].forEach(k=>{ const v=u.searchParams.get(k); if(v) qs('#'+k).value=v; });
-  on(qs('#draft'),'click', async ()=>{
-    const body={type:slug,name:qs('#name').value,policy:qs('#policy').value,claim:qs('#claim').value,dol:qs('#dol').value,details:qs('#details').value};
-    qs('#out').innerHTML='Drafting…'; const r=await callAI(body,{type:slug}); qs('#out').innerHTML=r.response||r.analysis||'(no content)';
+  import { parseCSV } from '/app/assets/js/csv-utils.js';
+  import { fmtMoney } from '/app/assets/js/validation-utils.js';
+  on(qs('#sum'),'click', ()=>{
+    const rows = parseCSV(qs('#csv').value).map(r=>({date:r[0], emp:r[1], hours:Number(r[2]||0), rate:Number(r[3]||0)}));
+    const total = rows.reduce((s,x)=>s+(x.hours*x.rate),0);
+    const body = rows.map(x=>`<tr><td>${x.date}</td><td>${x.emp}</td><td style="text-align:right">${x.hours}</td><td style="text-align:right">${fmtMoney(x.rate)}</td><td style="text-align:right"><b>${fmtMoney(x.hours*x.rate)}</b></td></tr>`).join('');
+    qs('#out').innerHTML = `<table><thead><tr><th>Date</th><th>Employee</th><th style="text-align:right">Hours</th><th style="text-align:right">Rate</th><th style="text-align:right">Total</th></tr></thead><tbody>${body}</tbody><tfoot><tr><td colspan="4" style="text-align:right">TOTAL</td><td style="text-align:right"><b>${fmtMoney(total)}</b></td></tr></tfoot></table>`;
   });
-  async function exportAs(fmt){ const html=qs('#out').innerHTML.trim(); if(!html) return alert('Draft first.');
-    const r=await createDoc({content:html,format:fmt,type:slug,filename:`${slug}_${Date.now()}`}); location.href=r.url||r.downloadUrl; }
-  on(qs('#pdf'),'click',()=>exportAs('pdf')); on(qs('#docx'),'click',()=>exportAs('docx'));
 </script>
 <script type="module" src="/app/assets/js/diagnostics.js"></script>
 </body></html>

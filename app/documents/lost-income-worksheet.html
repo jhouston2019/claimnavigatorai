@@ -1,23 +1,33 @@
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Lost Income Worksheet</title>
-<link rel="stylesheet" href="/app/assets/css/style.css"/></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Lost Income Worksheet</title><link rel="stylesheet" href="/app/assets/css/style.css"/></head><body>
 <header class="header"><div class="bar container"><div class="brand"><div class="logo"></div><div>Lost Income Worksheet</div></div>
 <nav class="nav"><a href="/app/documents/index.html">← Documents</a></nav></div></header>
 <main class="container" id="main">
-  <div class="card"><h2>Lost Income Worksheet</h2></div>
   <div class="card">
-    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
-      <label>Policyholder<input id="name" placeholder="Policyholder"/></label>
-      <label>Policy #<input id="policy" placeholder="Policy #"/></label>
-      <label>Claim #<input id="claim" placeholder="Claim #"/></label>
-      <label>Date of Loss<input id="dol" placeholder="YYYY-MM-DD"/></label>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+      <label>Baseline Monthly Revenue<input id="baseline" placeholder="$"/></label>
+      <label>Trend % (YoY)<input id="trend" placeholder="e.g., 5"/></label>
+      <label>Outage Days<input id="outage" placeholder="e.g., 14"/></label>
+      <label>Period (months)<input id="months" placeholder="e.g., 1"/></label>
     </div>
-    <label style="display:block;margin-top:8px">Details<textarea id="details" placeholder="Provide specifics to tailor the draft…"></textarea></label>
-    <div style="display:flex;gap:8px;margin-top:10px">
+    <div style="margin-top:8px"><button class="btn btn-primary" id="calc">Calculate</button></div>
+    <div id="summary" class="card" style="margin-top:12px"></div>
+  </div>
+
+  <div class="card">
+    <h3>Supporting Transactions (CSV)</h3>
+    <p class="small">CSV format: <code>date, label, amount</code></p>
+    <textarea id="csv" placeholder="2025-01-02, Catering order canceled, 1200"></textarea>
+    <div style="margin-top:8px"><button class="btn" id="sum">Summarize CSV</button></div>
+    <div id="csvout" class="card" style="margin-top:12px"></div>
+  </div>
+
+  <div class="card">
+    <h3>Draft BI Narrative</h3>
+    <textarea id="details" placeholder="Describe how the interruption reduced income, include dates, cancellations, capacity constraints, etc."></textarea>
+    <div style="margin-top:8px;display:flex;gap:8px">
       <button class="btn btn-primary" id="draft">Draft with AI</button>
       <button class="btn" id="pdf">Export PDF</button>
-      <button class="btn" id="docx">Export DOCX</button>
     </div>
     <div id="out" class="card" style="margin-top:12px"></div>
   </div>
@@ -25,16 +35,25 @@
 <script type="module">
   import {qs,on} from '/app/assets/js/ui-helpers.js';
   import { callAI, createDoc } from '/app/assets/js/api-client.js';
-  const slug='lost-income-worksheet';
-  // URL prefill
-  const u=new URL(location.href); ['policy','claim','name','dol'].forEach(k=>{ const v=u.searchParams.get(k); if(v) qs('#'+k).value=v; });
-  on(qs('#draft'),'click', async ()=>{
-    const body={type:slug,name:qs('#name').value,policy:qs('#policy').value,claim:qs('#claim').value,dol:qs('#dol').value,details:qs('#details').value};
-    qs('#out').innerHTML='Drafting…'; const r=await callAI(body,{type:slug}); qs('#out').innerHTML=r.response||r.analysis||'(no content)';
+  import { computeLostIncome, summarizeCSV } from '/app/assets/js/bi-tools.js';
+  on(qs('#calc'),'click', ()=>{
+    const res = computeLostIncome({ baselineMonthly:qs('#baseline').value, trendPct:qs('#trend').value, outageDays:qs('#outage').value, periodMonths:qs('#months').value });
+    qs('#summary').innerHTML = `Daily Revenue: ${res.daily}<br/>Projected Period Revenue: ${res.projected}<br/><b>Estimated Lost Income:</b> ${res.lost}`;
   });
-  async function exportAs(fmt){ const html=qs('#out').innerHTML.trim(); if(!html) return alert('Draft first.');
-    const r=await createDoc({content:html,format:fmt,type:slug,filename:`${slug}_${Date.now()}`}); location.href=r.url||r.downloadUrl; }
-  on(qs('#pdf'),'click',()=>exportAs('pdf')); on(qs('#docx'),'click',()=>exportAs('docx'));
+  on(qs('#sum'),'click', ()=>{
+    const s = summarizeCSV(qs('#csv').value);
+    const rows = s.rows.map(r=>`<tr><td>${r.date}</td><td>${r.label}</td><td style="text-align:right">${r.amount}</td></tr>`).join('');
+    qs('#csvout').innerHTML = `<table><thead><tr><th>Date</th><th>Label</th><th style="text-align:right">Amount</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="2" style="text-align:right">TOTAL</td><td style="text-align:right"><b>${s.totalFmt}</b></td></tr></tfoot></table>`;
+  });
+  on(qs('#draft'),'click', async ()=>{
+    const text = `BI Summary:\n${qs('#summary').innerText}\n\nTransactions:\n${qs('#csv').value}\n\nDetails:\n${qs('#details').value}`;
+    qs('#out').innerHTML='Drafting…';
+    const r = await callAI({inputText:text,type:'lost-income-worksheet'}); qs('#out').innerHTML=r.response||'(no content)';
+  });
+  on(qs('#pdf'),'click', async ()=>{
+    const html=qs('#out').innerHTML.trim(); if(!html) return alert('Draft first.');
+    const r=await createDoc({content:html,format:'pdf',type:'lost-income-worksheet',filename:'lost_income_'+Date.now()}); location.href=r.url||r.downloadUrl;
+  });
 </script>
 <script type="module" src="/app/assets/js/diagnostics.js"></script>
 </body></html>
