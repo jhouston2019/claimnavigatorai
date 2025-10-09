@@ -141,7 +141,7 @@ async function runPageSmokeTests(pageName, options = {}) {
   
   const {
     requiredNodes = [],
-    testEndpoints = ['generate-response'],
+    testEndpoints = ['generate-response-public'],
     testNavigation = false,
     navigationUrls = []
   } = options;
@@ -215,7 +215,7 @@ function initializeDiagnostics(pageName, options = {}) {
  */
 async function testAIEndpoint() {
   try {
-    const response = await fetch('/.netlify/functions/generate-response', {
+    const response = await fetch('/.netlify/functions/generate-response-public', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -281,7 +281,7 @@ if (typeof window !== 'undefined') {
       'body',
       'main, .main, #main'
     ],
-    testEndpoints: ['generate-response'],
+    testEndpoints: ['generate-response-public'],
     testNavigation: pageName === 'index',
     navigationUrls: [
       'ai-response-agent.html',

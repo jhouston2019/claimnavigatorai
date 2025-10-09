@@ -22,7 +22,7 @@ window.addEventListener('unhandledrejection', function(event) {
  * @param {string} message - Error message to display
  * @param {string} type - Type of error (error, warning, info)
  */
-export function showErrorNotification(message, type = 'error') {
+window.showErrorNotification = function(message, type = 'error') {
   // Remove existing notifications
   const existingNotifications = document.querySelectorAll('.error-notification');
   existingNotifications.forEach(notification => notification.remove());
@@ -91,7 +91,7 @@ export function showErrorNotification(message, type = 'error') {
  * Shows success notification to user
  * @param {string} message - Success message to display
  */
-export function showSuccessNotification(message) {
+window.showSuccessNotification = function(message) {
   showErrorNotification(message, 'info');
 }
 
@@ -100,7 +100,7 @@ export function showSuccessNotification(message) {
  * @param {Error} error - Error object
  * @param {string} context - Context where error occurred
  */
-export function handleApiError(error, context = 'API call') {
+window.handleApiError = function(error, context = 'API call') {
   console.error(`${context} error:`, error);
   
   let userMessage = 'An error occurred. Please try again.';
@@ -126,7 +126,7 @@ export function handleApiError(error, context = 'API call') {
  * Handles form validation errors
  * @param {Object} errors - Validation errors object
  */
-export function handleValidationErrors(errors) {
+window.handleValidationErrors = function(errors) {
   for (const field in errors) {
     const element = document.getElementById(field);
     if (element) {
@@ -140,7 +140,7 @@ export function handleValidationErrors(errors) {
  * @param {string} message - Error message
  * @param {Object} data - Additional error data
  */
-export function logError(message, data = {}) {
+window.logError = function(message, data = {}) {
   console.error(`[ClaimNavigatorAI Error] ${message}`, data);
   
   // In production, you might want to send this to an error tracking service
@@ -157,7 +157,7 @@ export function logError(message, data = {}) {
  * @param {number} delay - Initial delay in milliseconds
  * @returns {Promise} - Promise that resolves with function result
  */
-export async function retryWithBackoff(fn, maxRetries = 3, delay = 1000) {
+window.retryWithBackoff = async function(fn, maxRetries = 3, delay = 1000) {
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await fn();
@@ -178,7 +178,7 @@ export async function retryWithBackoff(fn, maxRetries = 3, delay = 1000) {
  * @param {Error} error - Upload error
  * @param {string} fileName - Name of file being uploaded
  */
-export function handleUploadError(error, fileName) {
+window.handleUploadError = function(error, fileName) {
   console.error(`Upload error for ${fileName}:`, error);
   
   let userMessage = `Failed to upload ${fileName}. Please try again.`;
@@ -197,7 +197,7 @@ export function handleUploadError(error, fileName) {
  * @param {Error} error - AI generation error
  * @param {string} type - Type of AI generation
  */
-export function handleAIError(error, type) {
+window.handleAIError = function(error, type) {
   console.error(`AI generation error for ${type}:`, error);
   
   let userMessage = `Failed to generate ${type}. Please try again.`;
