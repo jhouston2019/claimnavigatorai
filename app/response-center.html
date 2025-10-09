@@ -8,9 +8,12 @@
   
   <!-- Admin Authentication - DISABLED for public access -->
   <!-- <script type="module"  src="/app/assets/js/admin-auth.js"></script> -->
-  <script type="module"  src="/app/assets/js/validation-utils.js"></script>
-  <script type="module"  src="/app/assets/js/error-handler.js"></script>
+  <script type="module" src="/app/assets/js/validation-utils.js"></script>
+  <script type="module" src="/app/assets/js/error-handler.js"></script>
   <script type="module" src="/app/assets/js/api-client.js"></script>
+  <script type="module" src="/app/assets/js/response-center.js"></script>
+  <script type="module" src="/app/assets/js/window-bridge.js"></script>
+  <script type="module" src="/app/assets/js/diagnostics.js"></script>
   
   <style>
     :root {
@@ -1062,6 +1065,7 @@
   </style>
 </head>
 <body>
+  <main id="main" class="main">
   <header>
     <nav>
       <div class="logo">🏠 ClaimNavigatorAI</div>
@@ -1370,59 +1374,6 @@
       </div>
     </div>
   </div>
-
-  <script>
-    // Simple navigation functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('✅ Clean Response Center loaded successfully');
-      
-      // Test basic functionality
-      console.log('🧪 Testing basic functionality...');
-      const contentArea = document.getElementById('content-area');
-      if (contentArea) {
-        console.log('✅ Content area found');
-      } else {
-        console.error('❌ Content area not found!');
-      }
-      
-      // Handle sidebar navigation
-      const sidebarButtons = document.querySelectorAll('.sidebar-button, .subsection-button');
-      sidebarButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          // Remove active class from all buttons
-          sidebarButtons.forEach(btn => btn.classList.remove('active'));
-          // Add active class to clicked button
-          this.classList.add('active');
-          
-          const section = this.dataset.section;
-          const subsection = this.dataset.subsection;
-          
-          if (section === 'dashboard') {
-            showDashboard();
-          } else if (section === 'how-to-use') {
-            showTool('how-to-use');
-          } else if (subsection) {
-            showTool(subsection);
-          } else if (section) {
-            showTool(section);
-          } else {
-            showCategory(section);
-          }
-        });
-      });
-      
-      // Handle tool items in main content
-      const toolItems = document.querySelectorAll('.tool-item');
-      console.log('🔍 Found tool items:', toolItems.length);
-      toolItems.forEach(item => {
-        item.addEventListener('click', function() {
-          const tool = this.dataset.tool;
-          console.log('🖱️ Tool item clicked:', tool);
-          showTool(tool);
-          
-          // Update sidebar active state
-          const sidebarButton = document.querySelector(`[data-subsection="${tool}"]`);
-          if (sidebarButton) {
             sidebarButtons.forEach(btn => btn.classList.remove('active'));
             sidebarButton.classList.add('active');
           }
@@ -6493,44 +6444,7 @@
       // Ensure functions are globally accessible
       window.toggleTimelinePhase = toggleTimelinePhase;
       
-      // Diagnostic script to auto-check JS imports
-      async function checkScriptIntegrity() {
-        const scripts = Array.from(document.querySelectorAll("script[src]"));
-        const results = [];
 
-        for (const script of scripts) {
-          try {
-            const res = await fetch(script.src);
-            const text = await res.text();
-            if (text.trim().startsWith("<")) {
-              console.warn(`⚠️ Script likely returning HTML instead of JS: ${script.src}`);
-              results.push(script.src);
-            } else {
-              console.log(`✅ Script loaded successfully: ${script.src}`);
-            }
-          } catch (err) {
-            console.error(`❌ Failed to fetch script: ${script.src}`, err);
-            results.push(script.src);
-          }
-        }
-
-        if (results.length === 0) {
-          console.log("✅ All imported scripts return valid JavaScript.");
-        } else {
-          console.log(`🚨 ${results.length} problematic script(s) detected. Check console warnings above.`);
-        }
-        
-        return results;
-      }
-
-      // Missing functions
-      function downloadDocument(id, name) {
-        alert(`Downloading ${name || id}... (Functionality to be implemented)`);
-      }
-      
-      function previewDocument(id) {
-        alert(`Previewing document ${id}... (Functionality to be implemented)`);
-      }
       
       function setLang(lang) {
         // Update language buttons
@@ -6550,7 +6464,6 @@
       // Run diagnostic on page load
       window.addEventListener("load", checkScriptIntegrity);
   </script>
-<script type="module" src="/app/assets/js/diagnostics.js"></script>
-<script type="module" src="/app/assets/js/window-bridge.js"></script>
+  </main>
 </body>
 </html>

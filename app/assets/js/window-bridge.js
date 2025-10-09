@@ -1,14 +1,41 @@
-import { callAI } from '/app/assets/js/api-client.js';
-/** Bridge legacy inline calls -> module-safe window functions */
-window.togglePhase = (id)=>document.getElementById(id)?.classList.toggle('open');
-window.toggleTimelinePhase = (id)=>document.getElementById(id)?.classList.toggle('open');
-window.generateResponse = async ()=>{
-  const input = document.getElementById('ai-input')?.value?.trim();
-  const out = document.getElementById('ai-output');
-  if(!input||!out) return;
-  out.innerHTML = '<span class="spinner"></span> Generating...';
-  try{
-    const r = await callAI(input,{type:'claim_response'});
-    out.innerHTML = r.response || '(no content)';
-  }catch(e){ out.innerHTML = `<div style="color:#dc2626">Error: ${e.message}</div>`; }
-};
+// Import ESM utilities and page module
+import * as ValidationUtils from '/app/assets/js/validation-utils.js';
+import * as errorHandler from '/app/assets/js/error-handler.js';
+import * as apiClient from '/app/assets/js/api-client.js';
+import {
+  toggleTimelinePhase,
+  togglePhase,
+  toggleQuickStart,
+  toggleHowToUse,
+  generateResponse,
+  saveDraft,
+  exportDoc,
+  copyResponse,
+  downloadResponse,
+  addToSessionHistory,
+  showTool,
+  getToolContent,
+  setLang
+} from '/app/assets/js/response-center.js';
+
+// Expose ESM utils to legacy inline HTML expectations
+window.ValidationUtils = ValidationUtils;
+window.errorHandler = errorHandler;
+window.apiClient = apiClient;
+
+// Expose page functions used by onclick/data-attributes
+Object.assign(window, {
+  toggleTimelinePhase,
+  togglePhase,
+  toggleQuickStart,
+  toggleHowToUse,
+  generateResponse,
+  saveDraft,
+  exportDoc,
+  copyResponse,
+  downloadResponse,
+  addToSessionHistory,
+  showTool,
+  getToolContent,
+  setLang
+});
