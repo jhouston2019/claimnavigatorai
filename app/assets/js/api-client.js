@@ -46,7 +46,7 @@ export async function postJSON(url, body) {
  * @returns {Promise} - AI response
  */
 export async function callAI(prompt, meta = {}) {
-  return postJSON('demo-response', {
+  return postJSON('generate-response-public', {
     inputText: prompt,
     type: meta.type || 'general',
     ...meta
@@ -68,7 +68,7 @@ export async function getSignedUrl(path) {
  * @returns {Promise} - Created document
  */
 export async function createDoc(payload) {
-  return postJSON('demo-document', payload);
+  return postJSON('generate-document-public', payload);
 }
 
 /**
@@ -96,7 +96,7 @@ export async function analyzePolicyText(text) {
  * @returns {Promise} - Analysis result
  */
 export async function analyzeClaim(body) {
-  return postJSON('demo-analyze', body);
+  return postJSON('analyze-claim-public', body);
 }
 
 /**
