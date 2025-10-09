@@ -3,7 +3,7 @@
   --primary:#5da8ff; --accent:#7a5cff; --ok:#06b6d4; --warn:#f59e0b; --err:#ef4444; --border:#203055;
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%}
+html,body{margin:0;height:100%;width:100%;overflow-x:hidden}
 body{background:linear-gradient(180deg,#070b18, #0c1430 40%, #0e1638); color:var(--text); font:400 16px/1.5 Inter,system-ui,Segoe UI,Roboto,Arial}
 a{color:inherit;text-decoration:none}
 .container{width:100%;margin:0;padding:24px 16px}
@@ -283,9 +283,10 @@ body:has(.main-grid) .menu-list a:hover {
 
 .search-container {
   display: flex;
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
   gap: 12px;
+  width: 100%;
 }
 
 .main-search {
@@ -506,9 +507,10 @@ body:has(.main-grid) .menu-list a:hover {
   display: grid;
   grid-template-columns: 380px 1fr;
   gap: 32px;
-  width: 100%;
+  width: 100vw;
   margin: 0;
   padding: 0 20px;
+  box-sizing: border-box;
 }
 
 /* Sidebar Styles */
@@ -730,6 +732,35 @@ body:has(.main-grid) .menu-list a:hover {
 /* Main Content Area */
 .main-content {
   min-height: 600px;
+  width: 100%;
+  max-width: none;
+}
+
+/* Hero Section */
+.hero-section {
+  text-align: center;
+  padding: 40px 0;
+  width: 100%;
+  max-width: none;
+}
+
+/* Content Columns */
+.content-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  width: 100%;
+  max-width: none;
+  padding: 0;
+}
+
+.content-column {
+  background: #ffffff;
+  border: 2px solid #1e3a8a;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
+  width: 100%;
 }
 
 .side-menu {
@@ -828,7 +859,9 @@ body:has(.main-grid) .menu-list a:hover {
 
 .tool-grid {
   display: grid;
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  width: 100%;
 }
 
 .tool-card {
