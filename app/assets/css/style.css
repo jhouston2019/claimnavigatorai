@@ -6,7 +6,7 @@
 html,body{margin:0;height:100%}
 body{background:linear-gradient(180deg,#070b18, #0c1430 40%, #0e1638); color:var(--text); font:400 16px/1.5 Inter,system-ui,Segoe UI,Roboto,Arial}
 a{color:inherit;text-decoration:none}
-.container{max-width:1200px;margin:0 auto;padding:24px 16px}
+.container{width:100%;margin:0;padding:24px 16px}
 .header{position:sticky;top:0;z-index:50;background:rgba(11,16,32,.75);backdrop-filter:blur(10px);border-bottom:1px solid #19244a}
 .header .bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px}
 .brand{display:flex;gap:10px;align-items:center;font-weight:800}
@@ -504,10 +504,11 @@ body:has(.main-grid) .menu-list a:hover {
 /* New Main Layout with Sidebar */
 .main-layout {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
+  grid-template-columns: 380px 1fr;
+  gap: 32px;
+  width: 100%;
+  margin: 0;
+  padding: 0 20px;
 }
 
 /* Sidebar Styles */
@@ -515,11 +516,12 @@ body:has(.main-grid) .menu-list a:hover {
   background: #ffffff;
   border: 2px solid #1e3a8a;
   border-radius: 12px;
-  padding: 20px;
+  padding: 24px;
   height: fit-content;
   position: sticky;
   top: 100px;
   box-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
+  min-width: 350px;
 }
 
 .sidebar-section {
@@ -705,8 +707,10 @@ body:has(.main-grid) .menu-list a:hover {
   border: 1px solid #e2e8f0;
   border-top: none;
   border-radius: 0 0 8px 8px;
-  padding: 8px 0;
+  padding: 16px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  max-height: 500px;
+  overflow-y: auto;
 }
 
 .dropdown-content a {
@@ -872,12 +876,14 @@ body:has(.main-grid) .menu-list a:hover {
   .main-layout {
     grid-template-columns: 1fr;
     gap: 16px;
+    padding: 0 16px;
   }
   
   .sidebar {
     position: static;
     order: 2;
     margin-bottom: 20px;
+    min-width: auto;
   }
   
   .content-columns {
