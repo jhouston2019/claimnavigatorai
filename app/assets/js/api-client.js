@@ -1,228 +1,56 @@
-// API client utilities for ClaimNavigatorAI Resource Center
-// Provides centralized API communication functions
+export async function postJSON(url, body){
+  const r = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok){ const t = await r.text().catch(()=> ''); throw new Error(`HTTP ${r.status} ${t.slice(0,200)}`); }
+  return r.json();
+}
 
-/**
- * Base API configuration
- */
-const API_CONFIG = {
-  baseUrl: '/.netlify/functions',
-  timeout: 30000,
-  retries: 3
-};
-
-/**
- * Makes a POST request with JSON body
- * @param {string} url - API endpoint
- * @param {Object} body - Request body
- * @returns {Promise} - API response
- */
-export async function postJSON(url, body) {
-  const fullUrl = url.startsWith('http') ? url : `${API_CONFIG.baseUrl}/${url}`;
-  
-  try {
-    const response = await fetch(fullUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body)
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error(`API request failed for ${url}:`, error);
-    throw error;
+/** Robust AI call: try generate-response, then generate-response-simple */
+export async function callAI(inputText, meta={}){
+  const body = typeof inputText==='string' ? { inputText } : inputText;
+  const payload = { ...body, ...meta };
+  try { return await postJSON('/.netlify/functions/generate-response', payload); }
+  catch(e1){
+    try { return await postJSON('/.netlify/functions/generate-response-simple', payload); }
+    catch(e2){ throw new Error(`AI call failed: ${e1.message} | fallback: ${e2.message}`); }
   }
 }
 
-/**
- * Calls AI with prompt and metadata
- * @param {string} prompt - AI prompt
- * @param {Object} meta - Additional metadata
- * @returns {Promise} - AI response
- */
-export async function callAI(prompt, meta = {}) {
-  return postJSON('generate-response-public', {
-    inputText: prompt,
-    type: meta.type || 'general',
-    ...meta
-  });
-}
-
-/**
- * Gets signed URL for protected downloads
- * @param {string} path - File path
- * @returns {Promise} - Signed URL
- */
-export async function getSignedUrl(path) {
-  return postJSON('generate-signed-url', { path });
-}
-
-/**
- * Creates document with AI
- * @param {Object} payload - Document creation payload
- * @returns {Promise} - Created document
- */
-export async function createDoc(payload) {
-  return postJSON('generate-document-public', payload);
-}
-
-/**
- * Lists documents by language and type
- * @param {string} lang - Language code
- * @param {string} type - Document type
- * @returns {Promise} - Document list
- */
-export async function listDocs(lang = 'en', type = 'claim_documents') {
-  return postJSON('list-documents-simple', { lang, type });
-}
-
-/**
- * Analyzes policy text
- * @param {string} text - Policy text to analyze
- * @returns {Promise} - Analysis result
- */
-export async function analyzePolicyText(text) {
-  return postJSON('policyAnalyzer', { text });
-}
-
-/**
- * Analyzes claim data
- * @param {Object} body - Claim analysis data
- * @returns {Promise} - Analysis result
- */
-export async function analyzeClaim(body) {
-  return postJSON('analyze-claim-public', body);
-}
-
-/**
- * Creates Stripe checkout session
- * @param {string} priceId - Stripe price ID
- * @param {Object} meta - Additional metadata
- * @returns {Promise} - Checkout session
- */
-export async function createCheckoutSession(priceId, meta = {}) {
-  return postJSON('create-checkout-session', {
-    priceId,
-    ...meta
-  });
-}
-
-/**
- * Generates AI response with specific type
- * @param {string} type - Response type
- * @param {Object} data - Input data
- * @returns {Promise} - AI response
- */
-export async function generateResponse(type, data) {
-  return postJSON('generate-response', {
-    type,
-    ...data
-  });
-}
-
-/**
- * Tracks claim timeline
- * @param {Object} data - Timeline data
- * @returns {Promise} - Tracking result
- */
-export async function trackTimeline(data) {
-  return postJSON('claim-timeline-tracker', data);
-}
-
-/**
- * Tracks deadlines
- * @param {Object} data - Deadline data
- * @returns {Promise} - Tracking result
- */
-export async function trackDeadlines(data) {
-  return postJSON('deadline-tracker', data);
-}
-
-/**
- * Calculates financial impact
- * @param {Object} data - Calculation data
- * @returns {Promise} - Calculation result
- */
-export async function calculateFinancialImpact(data) {
-  return postJSON('financial-impact-calculator', data);
-}
-
-/**
- * Compares settlements
- * @param {Object} data - Settlement data
- * @returns {Promise} - Comparison result
- */
-export async function compareSettlements(data) {
-  return postJSON('settlement-comparison', data);
-}
-
-/**
- * Gets professional marketplace data
- * @param {Object} filters - Filter options
- * @returns {Promise} - Marketplace data
- */
-export async function getMarketplace(filters = {}) {
-  return postJSON('professional-marketplace', filters);
-}
-
-/**
- * Uploads file to storage
- * @param {File} file - File to upload
- * @param {string} type - File type
- * @returns {Promise} - Upload result
- */
-export async function uploadFile(file, type = 'document') {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('type', type);
-  
-  const response = await fetch(`${API_CONFIG.baseUrl}/upload-file`, {
-    method: 'POST',
-    body: formData
-  });
-  
-  if (!response.ok) {
-    throw new Error(`Upload failed: ${response.status}`);
+/** Coverage analyzer with fallback name */
+export async function analyzePolicyText(policyText, analysisType='coverage_review'){
+  const body = { policyText, analysisType };
+  try { return await postJSON('/.netlify/functions/policyAnalyzer', body); }
+  catch(e1){
+    try { return await postJSON('/.netlify/functions/policy-analyzer', body); }
+    catch(e2){ throw new Error(`policyAnalyzer failed: ${e1.message} | fallback: ${e2.message}`); }
   }
-  
-  return await response.json();
 }
 
-/**
- * Downloads file by ID
- * @param {string} fileId - File ID
- * @returns {Promise} - Download URL
- */
-export async function downloadFile(fileId) {
-  return postJSON(`download/${fileId}`);
+/** Claim analysis with flexible analysisType */
+export async function analyzeClaim(body){
+  try { return await postJSON('/.netlify/functions/analyze-claim', body); }
+  catch(e1){
+    try { return await postJSON('/.netlify/functions/analyze-claim-simple', body); }
+    catch(e2){ throw new Error(`analyze-claim failed: ${e1.message} | fallback: ${e2.message}`); }
+  }
 }
 
-/**
- * Gets user credits
- * @returns {Promise} - User credits
- */
-export async function getUserCredits() {
-  return postJSON('get-user-credits');
+/** Document creation */
+export async function createDoc(payload){
+  // support both names
+  try { return await postJSON('/.netlify/functions/generate-document', payload); }
+  catch(e1){
+    try { return await postJSON('/.netlify/functions/generate-document-simple', payload); }
+    catch(e2){ throw new Error(`generate-document failed: ${e1.message} | fallback: ${e2.message}`); }
+  }
 }
 
-/**
- * Saves draft content
- * @param {Object} data - Draft data
- * @returns {Promise} - Save result
- */
-export async function saveDraft(data) {
-  return postJSON('save-draft', data);
+/** Signed URL */
+export async function getSignedUrl(filePath){
+  try { return await postJSON('/.netlify/functions/get-doc', { filePath }); }
+  catch(e){ throw new Error(`get-doc failed: ${e.message}`); }
 }
 
-/**
- * Gets Supabase configuration
- * @returns {Promise} - Supabase config
- */
-export async function getSupabaseConfig() {
-  return postJSON('get-supabase-config');
+/** Stripe */
+export async function createCheckoutSession(priceId, meta={}){
+  return postJSON('/.netlify/functions/create-checkout-session', { priceId, meta });
 }
