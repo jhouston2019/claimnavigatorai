@@ -1,4 +1,4 @@
-// Error handling utilities for ClaimNavigatorAI
+// Error handling utilities for ClaimNavigatorAI Resource Center
 // Provides centralized error handling and user feedback
 
 /**
@@ -22,7 +22,7 @@ window.addEventListener('unhandledrejection', function(event) {
  * @param {string} message - Error message to display
  * @param {string} type - Type of error (error, warning, info)
  */
-function showErrorNotification(message, type = 'error') {
+export function showErrorNotification(message, type = 'error') {
   // Remove existing notifications
   const existingNotifications = document.querySelectorAll('.error-notification');
   existingNotifications.forEach(notification => notification.remove());
@@ -47,7 +47,7 @@ function showErrorNotification(message, type = 'error') {
   // Set background color based on type
   switch (type) {
     case 'error':
-      notification.style.backgroundColor = '#dc2626';
+      notification.style.backgroundColor = '#ef4444';
       break;
     case 'warning':
       notification.style.backgroundColor = '#f59e0b';
@@ -91,7 +91,7 @@ function showErrorNotification(message, type = 'error') {
  * Shows success notification to user
  * @param {string} message - Success message to display
  */
-function showSuccessNotification(message) {
+export function showSuccessNotification(message) {
   showErrorNotification(message, 'info');
 }
 
@@ -100,7 +100,7 @@ function showSuccessNotification(message) {
  * @param {Error} error - Error object
  * @param {string} context - Context where error occurred
  */
-function handleApiError(error, context = 'API call') {
+export function handleApiError(error, context = 'API call') {
   console.error(`${context} error:`, error);
   
   let userMessage = 'An error occurred. Please try again.';
@@ -126,7 +126,7 @@ function handleApiError(error, context = 'API call') {
  * Handles form validation errors
  * @param {Object} errors - Validation errors object
  */
-function handleValidationErrors(errors) {
+export function handleValidationErrors(errors) {
   for (const field in errors) {
     const element = document.getElementById(field);
     if (element) {
@@ -140,7 +140,7 @@ function handleValidationErrors(errors) {
  * @param {string} message - Error message
  * @param {Object} data - Additional error data
  */
-function logError(message, data = {}) {
+export function logError(message, data = {}) {
   console.error(`[ClaimNavigatorAI Error] ${message}`, data);
   
   // In production, you might want to send this to an error tracking service
@@ -157,7 +157,7 @@ function logError(message, data = {}) {
  * @param {number} delay - Initial delay in milliseconds
  * @returns {Promise} - Promise that resolves with function result
  */
-async function retryWithBackoff(fn, maxRetries = 3, delay = 1000) {
+export async function retryWithBackoff(fn, maxRetries = 3, delay = 1000) {
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await fn();
@@ -171,6 +171,44 @@ async function retryWithBackoff(fn, maxRetries = 3, delay = 1000) {
       await new Promise(resolve => setTimeout(resolve, backoffDelay));
     }
   }
+}
+
+/**
+ * Handles file upload errors
+ * @param {Error} error - Upload error
+ * @param {string} fileName - Name of file being uploaded
+ */
+export function handleUploadError(error, fileName) {
+  console.error(`Upload error for ${fileName}:`, error);
+  
+  let userMessage = `Failed to upload ${fileName}. Please try again.`;
+  
+  if (error.message.includes('size')) {
+    userMessage = `File ${fileName} is too large. Please choose a smaller file.`;
+  } else if (error.message.includes('type')) {
+    userMessage = `File type not supported for ${fileName}. Please choose a different file.`;
+  }
+  
+  showErrorNotification(userMessage);
+}
+
+/**
+ * Handles AI generation errors
+ * @param {Error} error - AI generation error
+ * @param {string} type - Type of AI generation
+ */
+export function handleAIError(error, type) {
+  console.error(`AI generation error for ${type}:`, error);
+  
+  let userMessage = `Failed to generate ${type}. Please try again.`;
+  
+  if (error.message.includes('timeout')) {
+    userMessage = `AI generation timed out. Please try again with a shorter prompt.`;
+  } else if (error.message.includes('quota')) {
+    userMessage = `AI service quota exceeded. Please try again later.`;
+  }
+  
+  showErrorNotification(userMessage);
 }
 
 // Add CSS for notification animations
@@ -188,15 +226,3 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
-
-// Export functions for use in other scripts
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    showErrorNotification,
-    showSuccessNotification,
-    handleApiError,
-    handleValidationErrors,
-    logError,
-    retryWithBackoff
-  };
-}

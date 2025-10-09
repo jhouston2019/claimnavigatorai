@@ -1,505 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Policy Review & Coverage Analysis - ClaimNavigatorAI</title>
-  <meta name="description" content="AI-powered policy review and coverage analysis tool for insurance claims.">
-  
-  <style>
-    :root {
-      --primary: #1e40af;
-      --accent: #3b82f6;
-      --border: #e5e7eb;
-      --text-secondary: #6b7280;
-      --bg-light: #f9fafb;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-    
-    body { 
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-      margin: 0; 
-      padding: 0; 
-      background: #f8fafc; 
-    }
-    
-    /* Header */
-    header { 
-      background: #0f172a; 
-      padding: 1rem; 
-      color: #fff; 
-      position: sticky; 
-      top: 0; 
-      z-index: 100;
-    }
-    
-    nav { 
-      display: flex;
-      justify-content: space-between; 
-      align-items: center;
-    }
-    
-    .logo { 
-      margin-right: 2rem; 
-      font-weight: bold;
-      font-size: 1.2rem;
-    }
-    
-    .nav-links { 
-      display: flex;
-      gap: 1rem;
-    }
-    
-    .nav-links a { 
-      color: #fff; 
-      text-decoration: none; 
-      padding: 0.5rem 1rem;
-      border-radius: 0.375rem;
-      transition: background-color 0.2s;
-    }
-    
-    .nav-links a:hover { 
-      background: rgba(255,255,255,0.1);
-    }
-    
-    /* Main Content */
-    .main-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: 2rem;
-    }
-    
-    .content-area {
-      background: white;
-      border-radius: 12px;
-      padding: 2rem;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-    }
-    
-    .sidebar {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      height: fit-content;
-      position: sticky;
-      top: 100px;
-    }
-    
-    .page-header {
-      margin-bottom: 2rem;
-    }
-    
-    .page-title {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-    }
-    
-    .page-description {
-      color: var(--text-secondary);
-      font-size: 1.1rem;
-    }
-    
-    .back-button {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 600;
-      margin-bottom: 2rem;
-      transition: all 0.2s;
-    }
-    
-    .back-button:hover {
-      color: #1e3a8a;
-    }
-    
-    /* Form Styles */
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-    
-    .form-label {
-      display: block;
-      font-weight: 600;
-      color: #374151;
-      margin-bottom: 0.5rem;
-    }
-    
-    .form-input,
-    .form-textarea,
-    .form-select {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: border-color 0.2s;
-    }
-    
-    .form-input:focus,
-    .form-textarea:focus,
-    .form-select:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
-    }
-    
-    .form-textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-    
-    .file-upload {
-      border: 2px dashed var(--border);
-      border-radius: 8px;
-      padding: 2rem;
-      text-align: center;
-      transition: all 0.2s;
-      cursor: pointer;
-    }
-    
-    .file-upload:hover {
-      border-color: var(--primary);
-      background: var(--bg-light);
-    }
-    
-    .file-upload.dragover {
-      border-color: var(--primary);
-      background: rgba(30, 64, 175, 0.05);
-    }
-    
-    /* Buttons */
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 1rem;
-    }
-    
-    .btn-primary:hover {
-      background: #1e3a8a;
-      transform: translateY(-1px);
-    }
-    
-    .btn-primary:disabled {
-      background: #9ca3af;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    /* Results */
-    .results-container {
-      margin-top: 2rem;
-      padding: 1.5rem;
-      background: var(--bg-light);
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      display: none;
-    }
-    
-    .results-container.show {
-      display: block;
-    }
-    
-    .results-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 1rem;
-    }
-    
-    .results-content {
-      white-space: pre-wrap;
-      line-height: 1.6;
-      color: #374151;
-    }
-    
-    /* Loading */
-    .loading {
-      display: none;
-      text-align: center;
-      padding: 2rem;
-    }
-    
-    .loading.show {
-      display: block;
-    }
-    
-    .spinner {
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid var(--primary);
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    /* Sidebar */
-    .sidebar-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 1rem;
-    }
-    
-    .download-item {
-      padding: 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      margin-bottom: 0.5rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .download-item:hover {
-      background: var(--bg-light);
-      border-color: var(--primary);
-    }
-    
-    /* Mobile Responsive */
-    @media (max-width: 768px) {
-      .main-content {
-        grid-template-columns: 1fr;
-        padding: 1rem;
-      }
-      
-      .sidebar {
-        position: static;
-        margin-top: 2rem;
-      }
-      
-      .page-title {
-        font-size: 1.75rem;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Policy Review & Coverage Analysis - ClaimNavigatorAI</title>
+    <meta name="description" content="Analyze your insurance policy to identify coverage gaps and potential claim opportunities">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/app/assets/css/style.css">
 </head>
 <body>
-  <header>
-    <nav>
-      <div class="logo">🏠 ClaimNavigatorAI</div>
-      <div class="nav-links">
-        <a href="index.html">← Back to Tools</a>
-        <a href="../response-center.html">Resource Center</a>
-        <a href="../../index.html">Home</a>
-      </div>
-    </nav>
-  </header>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">← Back to Analysis Tools</a>
+            <div class="nav-links">
+                <a href="#help">Help</a>
+            </div>
+        </nav>
+    </header>
 
-  <div class="main-content">
-    <div class="content-area">
-      <a href="index.html" class="back-button">
-        ← Back to Claim Analysis Tools
-      </a>
-      
-      <div class="page-header">
-        <h1 class="page-title">📋 Policy Review & Coverage Analysis</h1>
-        <p class="page-description">
-          Upload your insurance policy documents for AI-powered coverage analysis. Identify coverage gaps, exclusions, and potential claim issues.
-        </p>
-      </div>
-      
-      <form id="policy-review-form">
-        <div class="form-group">
-          <label class="form-label" for="policy-type">Policy Type</label>
-          <select class="form-select" id="policy-type" required>
-            <option value="">Select Policy Type</option>
-            <option value="homeowners">Homeowners Insurance</option>
-            <option value="auto">Auto Insurance</option>
-            <option value="commercial">Commercial Property</option>
-            <option value="renters">Renters Insurance</option>
-            <option value="flood">Flood Insurance</option>
-            <option value="other">Other</option>
-          </select>
+    <main class="main-container">
+        <div class="section">
+            <h1>📋 Policy Review & Coverage Analysis</h1>
+            <p>Analyze your insurance policy to identify coverage gaps and potential claim opportunities.</p>
+            
+            <form id="policy-review-form">
+                <div class="form-group">
+                    <label for="policy-text">Policy Text:</label>
+                    <textarea 
+                        id="policy-text" 
+                        name="policy-text" 
+                        placeholder="Paste your insurance policy text here..."
+                        required
+                    ></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="claim-type">Claim Type:</label>
+                    <select id="claim-type" name="claim-type">
+                        <option value="property">Property Damage</option>
+                        <option value="business">Business Interruption</option>
+                        <option value="liability">Liability</option>
+                        <option value="auto">Auto</option>
+                        <option value="health">Health</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="incident-description">Incident Description:</label>
+                    <textarea 
+                        id="incident-description" 
+                        name="incident-description" 
+                        placeholder="Describe the incident that led to your claim..."
+                    ></textarea>
+                </div>
+                
+                <button type="submit" class="btn" id="run-analysis">
+                    Run Policy Analysis
+                </button>
+            </form>
         </div>
-        
-        <div class="form-group">
-          <label class="form-label" for="policy-number">Policy Number</label>
-          <input type="text" class="form-input" id="policy-number" placeholder="Enter your policy number" required>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label" for="insurer">Insurance Company</label>
-          <input type="text" class="form-input" id="insurer" placeholder="Enter insurance company name" required>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label" for="claim-type">Claim Type</label>
-          <select class="form-select" id="claim-type" required>
-            <option value="">Select Claim Type</option>
-            <option value="property-damage">Property Damage</option>
-            <option value="water-damage">Water Damage</option>
-            <option value="fire-damage">Fire Damage</option>
-            <option value="wind-damage">Wind Damage</option>
-            <option value="theft">Theft</option>
-            <option value="liability">Liability</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label" for="policy-details">Policy Details & Questions</label>
-          <textarea class="form-textarea" id="policy-details" placeholder="Describe your specific coverage questions or concerns. Include any policy language you'd like analyzed."></textarea>
-        </div>
-        
-        <div class="form-group">
-          <label class="form-label">Upload Policy Documents (Optional)</label>
-          <div class="file-upload" id="file-upload">
-            <p>📄 Drag and drop policy documents here or click to browse</p>
-            <p style="font-size: 0.9rem; color: var(--text-secondary);">PDF, DOC, DOCX files accepted</p>
-            <input type="file" id="policy-files" multiple accept=".pdf,.doc,.docx" style="display: none;">
-          </div>
-        </div>
-        
-        <button type="submit" class="btn-primary" id="analyze-btn">
-          🔍 Analyze Policy Coverage
-        </button>
-      </form>
-      
-      <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <p>Analyzing your policy coverage...</p>
-      </div>
-      
-      <div class="results-container" id="results">
-        <h3 class="results-title">📊 Coverage Analysis Results</h3>
-        <div class="results-content" id="results-content"></div>
-      </div>
-    </div>
-    
-    <div class="sidebar">
-      <h3 class="sidebar-title">📥 Download Templates</h3>
-      <div class="download-item" onclick="downloadTemplate('policy-review-checklist')">
-        📋 Policy Review Checklist
-      </div>
-      <div class="download-item" onclick="downloadTemplate('coverage-analysis-worksheet')">
-        📊 Coverage Analysis Worksheet
-      </div>
-      <div class="download-item" onclick="downloadTemplate('exclusion-identification-guide')">
-        ⚠️ Exclusion Identification Guide
-      </div>
-      <div class="download-item" onclick="downloadTemplate('coverage-gap-analysis')">
-        🔍 Coverage Gap Analysis
-      </div>
-    </div>
-  </div>
 
-  <script>
-    // File upload handling
-    const fileUpload = document.getElementById('file-upload');
-    const fileInput = document.getElementById('policy-files');
+        <div id="analysis-results" class="section hidden">
+            <h2>Analysis Results:</h2>
+            <div id="results-content" class="form-group" style="background: rgba(0, 0, 0, 0.3); padding: 1.5rem; border-radius: 8px; white-space: pre-wrap; font-family: 'Courier New', monospace;"></div>
+            <div class="text-center mt-4">
+                <button class="btn" id="export-pdf">Export PDF</button>
+                <button class="btn btn-secondary" id="save-draft">Save Draft</button>
+            </div>
+        </div>
+
+        <div id="error-message" class="error-message hidden"></div>
+        <div id="success-message" class="success-message hidden"></div>
+    </main>
+
+    <!-- Scripts -->
+    <script type="module" type="module" src="/app/assets/js/api-client.js"></script>
+    <script type="module" src="/app/assets/js/validation-utils.js"></script>
+    <script type="module" src="/app/assets/js/error-handler.js"></script>
+    <script type="module" type="module" src="/app/assets/js/ui-helpers.js"></script>
+    <script type="module" type="module" src="/app/assets/js/diagnostics.js"></script>
     
-    fileUpload.addEventListener('click', () => fileInput.click());
-    fileUpload.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      fileUpload.classList.add('dragover');
-    });
-    fileUpload.addEventListener('dragleave', () => {
-      fileUpload.classList.remove('dragover');
-    });
-    fileUpload.addEventListener('drop', (e) => {
-      e.preventDefault();
-      fileUpload.classList.remove('dragover');
-      fileInput.files = e.dataTransfer.files;
-      updateFileDisplay();
-    });
-    
-    fileInput.addEventListener('change', updateFileDisplay);
-    
-    function updateFileDisplay() {
-      const files = fileInput.files;
-      if (files.length > 0) {
-        fileUpload.innerHTML = `
-          <p>📄 ${files.length} file(s) selected</p>
-          <p style="font-size: 0.9rem; color: var(--text-secondary);">Click to change files</p>
-        `;
-      }
-    }
-    
-    // Form submission
-    document.getElementById('policy-review-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const formData = {
-        policyType: document.getElementById('policy-type').value,
-        policyNumber: document.getElementById('policy-number').value,
-        insurer: document.getElementById('insurer').value,
-        claimType: document.getElementById('claim-type').value,
-        policyDetails: document.getElementById('policy-details').value,
-        toolType: 'policy-review'
-      };
-      
-      // Show loading
-      document.getElementById('loading').classList.add('show');
-      document.getElementById('analyze-btn').disabled = true;
-      
-      try {
-        const response = await fetch('/.netlify/functions/generate-response', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData)
+    <script type="module">
+        import { analyzePolicyText, createDoc, saveDraft } from '/assets/js/api-client.js';
+        import { validateForm, showValidationError, clearValidationError } from '/assets/js/validation-utils.js';
+        import { handleApiError } from '/assets/js/error-handler.js';
+        import { setLoadingState, storeOriginalText } from '/assets/js/ui-helpers.js';
+        import { initializeDiagnostics } from '/assets/js/diagnostics.js';
+
+        // Initialize page
+        initializeDiagnostics('policy-review', {
+            requiredNodes: [
+                'body',
+                'main',
+                '#policy-review-form',
+                '#analysis-results'
+            ],
+            testEndpoints: ['policyAnalyzer']
         });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.response) {
-          document.getElementById('results-content').textContent = data.response;
-          document.getElementById('results').classList.add('show');
-        } else {
-          throw new Error(data.error || 'Failed to analyze policy');
-        }
-      } catch (error) {
-        console.error('Error analyzing policy:', error);
-        document.getElementById('results-content').textContent = `Error: ${error.message}`;
-        document.getElementById('results').classList.add('show');
-      } finally {
-        document.getElementById('loading').classList.remove('show');
-        document.getElementById('analyze-btn').disabled = false;
-      }
-    });
-    
-    // Download template function
-    function downloadTemplate(templateType) {
-      const templates = {
-        'policy-review-checklist': 'Policy Review Checklist.pdf',
-        'coverage-analysis-worksheet': 'Coverage Analysis Worksheet.pdf',
-        'exclusion-identification-guide': 'Exclusion Identification Guide.pdf',
-        'coverage-gap-analysis': 'Coverage Gap Analysis.pdf'
-      };
-      
-      const templateName = templates[templateType];
-      if (templateName) {
-        alert(`Downloading ${templateName}...`);
-        // In a real implementation, this would fetch from Supabase storage
-        // window.open(`/templates/${templateName}`, '_blank');
-      }
-    }
-  </script>
+
+        // Get DOM elements
+        const form = document.getElementById('policy-review-form');
+        const runBtn = document.getElementById('run-analysis');
+        const resultsSection = document.getElementById('analysis-results');
+        const resultsContent = document.getElementById('results-content');
+        const exportBtn = document.getElementById('export-pdf');
+        const saveBtn = document.getElementById('save-draft');
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+
+        // Store original button text
+        storeOriginalText('run-analysis');
+
+        // Form handling
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Clear previous messages
+            errorMessage.classList.add('hidden');
+            successMessage.classList.add('hidden');
+            resultsSection.classList.add('hidden');
+
+            // Validate form
+            const formData = {
+                'policy-text': document.getElementById('policy-text').value,
+                'claim-type': document.getElementById('claim-type').value,
+                'incident-description': document.getElementById('incident-description').value
+            };
+
+            const validationRules = {
+                'policy-text': { required: true, label: 'Policy text' }
+            };
+
+            const validation = validateForm(formData, validationRules);
+            
+            if (!validation.isValid) {
+                Object.keys(validation.errors).forEach(field => {
+                    showValidationError(field, validation.errors[field]);
+                });
+                return;
+            }
+
+            // Clear validation errors
+            clearValidationError('policy-text');
+
+            try {
+                // Set loading state
+                setLoadingState('run-analysis', true);
+
+                // Prepare analysis data
+                const analysisData = {
+                    text: formData['policy-text'],
+                    claimType: formData['claim-type'],
+                    incidentDescription: formData['incident-description'],
+                    timestamp: new Date().toISOString()
+                };
+
+                // Call policy analysis API
+                const response = await analyzePolicyText(analysisData.text);
+                
+                // Display results
+                resultsContent.textContent = response.analysis || response.result || response.message || 'Analysis completed successfully.';
+                resultsSection.classList.remove('hidden');
+                
+                // Show success message
+                successMessage.textContent = 'Policy analysis completed successfully!';
+                successMessage.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Policy analysis error:', error);
+                handleApiError(error, 'Policy Analysis');
+                
+                errorMessage.textContent = 'Failed to analyze policy. Please try again.';
+                errorMessage.classList.remove('hidden');
+            } finally {
+                // Reset loading state
+                setLoadingState('run-analysis', false);
+            }
+        });
+
+        // Export PDF
+        exportBtn.addEventListener('click', async () => {
+            try {
+                setLoadingState('export-pdf', true);
+                
+                const content = resultsContent.textContent;
+                const response = await createDoc({
+                    content,
+                    format: 'pdf',
+                    type: 'policy-analysis',
+                    title: 'Policy Analysis Report'
+                });
+                
+                if (response.downloadUrl) {
+                    window.open(response.downloadUrl, '_blank');
+                    successMessage.textContent = 'PDF exported successfully!';
+                    successMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                handleApiError(error, 'PDF Export');
+            } finally {
+                setLoadingState('export-pdf', false);
+            }
+        });
+
+        // Save draft
+        saveBtn.addEventListener('click', async () => {
+            try {
+                setLoadingState('save-draft', true);
+                
+                const draftData = {
+                    type: 'policy-analysis',
+                    content: resultsContent.textContent,
+                    timestamp: new Date().toISOString()
+                };
+                
+                await saveDraft(draftData);
+                
+                successMessage.textContent = 'Draft saved successfully!';
+                successMessage.classList.remove('hidden');
+            } catch (error) {
+                handleApiError(error, 'Save Draft');
+            } finally {
+                setLoadingState('save-draft', false);
+            }
+        });
+    </script>
+<script type="module" src="/app/assets/js/window-bridge.js"></script>
 </body>
 </html>

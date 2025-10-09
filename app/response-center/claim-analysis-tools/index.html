@@ -1,390 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Claim Analysis Tools - ClaimNavigatorAI</title>
-  <meta name="description" content="Professional claim analysis tools for policy review, damage assessment, and settlement analysis.">
-  
-  <style>
-    :root {
-      --primary: #1e40af;
-      --accent: #3b82f6;
-      --border: #e5e7eb;
-      --text-secondary: #6b7280;
-      --bg-light: #f9fafb;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-    
-    body { 
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-      margin: 0; 
-      padding: 0; 
-      background: #f8fafc; 
-    }
-    
-    /* Header */
-    header { 
-      background: #0f172a; 
-      padding: 1rem; 
-      color: #fff; 
-      position: sticky; 
-      top: 0; 
-      z-index: 100;
-    }
-    
-    nav { 
-      display: flex;
-      justify-content: space-between; 
-      align-items: center;
-    }
-    
-    .logo { 
-      margin-right: 2rem; 
-      font-weight: bold;
-      font-size: 1.2rem;
-    }
-    
-    .nav-links { 
-      display: flex;
-      gap: 1rem;
-    }
-    
-    .nav-links a { 
-      color: #fff; 
-      text-decoration: none; 
-      padding: 0.5rem 1rem;
-      border-radius: 0.375rem;
-      transition: background-color 0.2s;
-    }
-    
-    .nav-links a:hover { 
-      background: rgba(255,255,255,0.1);
-    }
-    
-    /* Main Content */
-    .main-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-    
-    .page-header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-    
-    .page-title {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin-bottom: 1rem;
-    }
-    
-    .page-description {
-      font-size: 1.2rem;
-      color: var(--text-secondary);
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    
-    /* Tools Grid */
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-      gap: 2rem;
-      margin-bottom: 3rem;
-    }
-    
-    .tool-card {
-      background: white;
-      border-radius: 12px;
-      padding: 2rem;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .tool-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
-      border-color: var(--primary);
-    }
-    
-    .tool-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, var(--primary), var(--accent));
-    }
-    
-    .tool-icon {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      display: block;
-    }
-    
-    .tool-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 0.75rem;
-    }
-    
-    .tool-description {
-      color: var(--text-secondary);
-      margin-bottom: 1.5rem;
-      line-height: 1.6;
-      font-size: 1rem;
-    }
-    
-    .tool-actions {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-      display: inline-block;
-      text-align: center;
-    }
-    
-    .btn-primary:hover {
-      background: #1e3a8a;
-      transform: translateY(-1px);
-    }
-    
-    .btn-secondary {
-      background: white;
-      color: var(--primary);
-      border: 2px solid var(--primary);
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-      display: inline-block;
-      text-align: center;
-    }
-    
-    .btn-secondary:hover {
-      background: var(--primary);
-      color: white;
-      transform: translateY(-1px);
-    }
-    
-    /* Back Button */
-    .back-button {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 600;
-      margin-bottom: 2rem;
-      transition: all 0.2s;
-    }
-    
-    .back-button:hover {
-      color: #1e3a8a;
-    }
-    
-    /* Mobile Responsive */
-    @media (max-width: 768px) {
-      .main-content {
-        padding: 1rem;
-      }
-      
-      .tools-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-      }
-      
-      .tool-card {
-        padding: 1.5rem;
-      }
-      
-      .page-title {
-        font-size: 2rem;
-      }
-      
-      .tool-actions {
-        flex-direction: column;
-      }
-      
-      .btn-primary,
-      .btn-secondary {
-        width: 100%;
-        text-align: center;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .tool-card {
-        padding: 1rem;
-      }
-      
-      .page-title {
-        font-size: 1.75rem;
-      }
-      
-      .tool-title {
-        font-size: 1.25rem;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Analysis Tools - ClaimNavigatorAI</title>
+    <meta name="description" content="Comprehensive claim analysis tools including policy review, damage assessment, and settlement comparison">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/app/assets/css/style.css">
 </head>
 <body>
-  <header>
-    <nav>
-      <div class="logo">🏠 ClaimNavigatorAI</div>
-      <div class="nav-links">
-        <a href="../response-center.html">← Back to Resource Center</a>
-        <a href="../../index.html">Home</a>
-        <a href="../../product.html">Product</a>
-      </div>
-    </nav>
-  </header>
+    <header>
+        <nav>
+            <a href="/" class="logo">← Back to Resource Center</a>
+            <div class="nav-links">
+                <a href="#help">Help</a>
+            </div>
+        </nav>
+    </header>
 
-  <div class="main-content">
-    <a href="../response-center.html" class="back-button">
-      ← Back to Resource Center
-    </a>
-    
-    <div class="page-header">
-      <h1 class="page-title">Claim Analysis Tools</h1>
-      <p class="page-description">
-        Professional tools to analyze your claim, review coverage, assess damages, and optimize your settlement. Each tool provides detailed analysis and actionable insights.
-      </p>
-    </div>
-    
-    <div class="tools-grid">
-      <!-- Policy Review Tool -->
-      <div class="tool-card">
-        <span class="tool-icon">📋</span>
-        <h2 class="tool-title">Policy Review & Coverage Analysis</h2>
-        <p class="tool-description">
-          Upload your insurance policy documents for AI-powered coverage analysis. Identify coverage gaps, exclusions, and potential claim issues.
-        </p>
-        <div class="tool-actions">
-          <a href="policy-review.html" class="btn-primary">Open Tool</a>
-          <a href="#" class="btn-secondary" onclick="downloadTemplate('policy-review')">Download Template</a>
+    <main class="main-container">
+        <div class="text-center mb-4">
+            <h1>📊 Claim Analysis Tools</h1>
+            <p>Comprehensive analysis suite including policy review, damage assessment, and settlement comparison tools.</p>
         </div>
-      </div>
-      
-      <!-- Damage Assessment Tool -->
-      <div class="tool-card">
-        <span class="tool-icon">🔍</span>
-               <h2 class="tool-title">Damage Assessment Calculator</h2>
-        <p class="tool-description">
-          Calculate and document property damage with professional assessment tools. Generate detailed damage reports and cost estimates.
-        </p>
-        <div class="tool-actions">
-          <a href="damage-assessment.html" class="btn-primary">Open Tool</a>
-          <a href="#" class="btn-secondary" onclick="downloadTemplate('damage-assessment')">Download Template</a>
-        </div>
-      </div>
-      
-      <!-- Estimate Comparison Tool -->
-      <div class="tool-card">
-        <span class="tool-icon">⚖️</span>
-        <h2 class="tool-title">Estimate Comparison Tool</h2>
-        <p class="tool-description">
-          Compare multiple repair estimates to identify discrepancies and ensure fair pricing. Analyze contractor estimates for accuracy.
-        </p>
-        <div class="tool-actions">
-          <a href="estimate-comparison.html" class="btn-primary">Open Tool</a>
-          <a href="#" class="btn-secondary" onclick="downloadTemplate('estimate-comparison')">Download Template</a>
-        </div>
-      </div>
-      
-      <!-- Business Interruption Tool -->
-      <div class="tool-card">
-        <span class="tool-icon">💼</span>
-        <h2 class="tool-title">Business Interruption Analysis</h2>
-        <p class="tool-description">
-          Calculate business interruption losses and lost income. Generate professional reports for commercial property claims.
-        </p>
-        <div class="tool-actions">
-          <a href="business-interruption.html" class="btn-primary">Open Tool</a>
-          <a href="#" class="btn-secondary" onclick="downloadTemplate('business-interruption')">Download Template</a>
-        </div>
-      </div>
-      
-      <!-- Expert Opinion Tool -->
-      <div class="tool-card">
-        <span class="tool-icon">👨‍💼</span>
-        <h2 class="tool-title">Expert Opinion Generator</h2>
-        <p class="tool-description">
-          Generate professional expert opinions and technical analysis reports. Create compelling evidence for your claim.
-        </p>
-        <div class="tool-actions">
-          <a href="expert-opinion.html" class="btn-primary">Open Tool</a>
-          <a href="#" class="btn-secondary" onclick="downloadTemplate('expert-opinion')">Download Template</a>
-        </div>
-      </div>
-      
-      <!-- Settlement Analysis Tool -->
-      <div class="tool-card">
-        <span class="tool-icon">💰</span>
-        <h2 class="tool-title">Settlement Analysis</h2>
-        <p class="tool-description">
-          Analyze settlement offers and determine fair compensation. Compare multiple settlement options and identify negotiation opportunities.
-        </p>
-        <div class="tool-actions">
-          <a href="settlement-analysis.html" class="btn-primary">Open Tool</a>
-          <a href="#" class="btn-secondary" onclick="downloadTemplate('settlement-analysis')">Download Template</a>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <script>
-    // Download template function
-    function downloadTemplate(toolType) {
-      // This would integrate with Supabase to fetch the appropriate template
-      const templates = {
-        'policy-review': 'Policy Review Checklist.pdf',
-        'damage-assessment': 'Damage Assessment Worksheet.pdf',
-        'estimate-comparison': 'Estimate Comparison Template.pdf',
-        'business-interruption': 'Business Interruption Calculator.pdf',
-        'expert-opinion': 'Expert Opinion Template.pdf',
-        'settlement-analysis': 'Settlement Analysis Worksheet.pdf'
-      };
-      
-      const templateName = templates[toolType];
-      if (templateName) {
-        // In a real implementation, this would fetch from Supabase storage
-        alert(`Downloading ${templateName}...`);
-        // window.open(`/templates/${templateName}`, '_blank');
-      }
-    }
+        <div class="tools-grid">
+            <!-- Policy Review -->
+            <a href="policy-review.html" class="tool-card double-size">
+                <h3>📋 Policy Review & Coverage Analysis</h3>
+                <p>Analyze your insurance policy to identify coverage gaps and potential claim opportunities. Get detailed insights into your policy language and coverage limits.</p>
+            </a>
+
+            <!-- Damage Assessment -->
+            <a href="damage-assessment.html" class="tool-card double-size">
+                <h3>🔍 Damage Assessment Calculator</h3>
+                <p>Calculate and document property damage with detailed cost breakdowns. Get accurate estimates for repair and replacement costs.</p>
+            </a>
+
+            <!-- Estimate Comparison -->
+            <a href="estimate-comparison.html" class="tool-card double-size">
+                <h3>⚖️ Estimate Review & Comparison</h3>
+                <p>Compare multiple repair estimates to identify discrepancies and maximize claim value. Find hidden costs and missing items.</p>
+            </a>
+
+            <!-- Business Interruption -->
+            <a href="business-interruption.html" class="tool-card double-size">
+                <h3>💼 Business Interruption Calculator</h3>
+                <p>Calculate lost revenue and additional expenses due to business interruption. Get comprehensive BI loss calculations.</p>
+            </a>
+
+            <!-- Settlement Analysis -->
+            <a href="settlement-analysis.html" class="tool-card double-size">
+                <h3>💰 Settlement Analysis & Negotiation</h3>
+                <p>Analyze settlement offers and develop negotiation strategies. Compare offers against market rates and policy limits.</p>
+            </a>
+        </div>
+
+        <div class="section">
+            <h2>How to Use These Tools</h2>
+            <p>Each analysis tool is designed to help you maximize your claim value:</p>
+            <ul style="color: var(--text-muted); margin-left: 2rem;">
+                <li><strong>Policy Review:</strong> Understand your coverage and identify potential claim opportunities</li>
+                <li><strong>Damage Assessment:</strong> Get accurate estimates for all damages and losses</li>
+                <li><strong>Estimate Comparison:</strong> Find discrepancies between different estimates</li>
+                <li><strong>Business Interruption:</strong> Calculate lost income and additional expenses</li>
+                <li><strong>Settlement Analysis:</strong> Evaluate settlement offers and develop negotiation strategies</li>
+            </ul>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script type="module" type="module" src="/app/assets/js/diagnostics.js"></script>
+    <script type="module" type="module" src="/app/assets/js/ui-helpers.js"></script>
+    <script type="module" src="/app/assets/js/error-handler.js"></script>
     
-    // Add smooth scrolling for better UX
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-          behavior: 'smooth'
+    <script type="module">
+        import { initializeDiagnostics } from '/assets/js/diagnostics.js';
+
+        // Initialize page
+        initializeDiagnostics('claim-analysis-tools', {
+            requiredNodes: [
+                'body',
+                'main',
+                '.tools-grid'
+            ],
+            testEndpoints: ['analyze-claim', 'policyAnalyzer']
         });
-      });
-    });
-  </script>
+    </script>
+<script type="module" src="/app/assets/js/window-bridge.js"></script>
 </body>
 </html>

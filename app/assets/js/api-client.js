@@ -1,4 +1,4 @@
-// API client utilities for ClaimNavigatorAI
+// API client utilities for ClaimNavigatorAI Resource Center
 // Provides centralized API communication functions
 
 /**
@@ -11,155 +11,117 @@ const API_CONFIG = {
 };
 
 /**
- * Makes an API request with error handling and retries
- * @param {string} endpoint - API endpoint
- * @param {Object} options - Request options
+ * Makes a POST request with JSON body
+ * @param {string} url - API endpoint
+ * @param {Object} body - Request body
  * @returns {Promise} - API response
  */
-async function apiRequest(endpoint, options = {}) {
-  const url = `${API_CONFIG.baseUrl}/${endpoint}`;
-  const defaultOptions = {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    timeout: API_CONFIG.timeout
-  };
-  
-  const requestOptions = { ...defaultOptions, ...options };
+export async function postJSON(url, body) {
+  const fullUrl = url.startsWith('http') ? url : `${API_CONFIG.baseUrl}/${url}`;
   
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
-    
-    const response = await fetch(url, {
-      ...requestOptions,
-      signal: controller.signal
+    const response = await fetch(fullUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body)
     });
-    
-    clearTimeout(timeoutId);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    const data = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error(`API request failed for ${endpoint}:`, error);
+    console.error(`API request failed for ${url}:`, error);
     throw error;
   }
 }
 
 /**
- * Generates AI response
- * @param {Object} data - Request data
+ * Calls AI with prompt and metadata
+ * @param {string} prompt - AI prompt
+ * @param {Object} meta - Additional metadata
  * @returns {Promise} - AI response
  */
-async function generateAiResponse(data) {
-  return apiRequest('generate-response', {
-    method: 'POST',
-    body: JSON.stringify(data)
+export async function callAI(prompt, meta = {}) {
+  return postJSON('generate-response', {
+    letter: prompt,
+    type: meta.type || 'general',
+    ...meta
   });
 }
 
 /**
- * Generates document
- * @param {Object} data - Document data
- * @returns {Promise} - Generated document
+ * Gets signed URL for protected downloads
+ * @param {string} path - File path
+ * @returns {Promise} - Signed URL
  */
-async function generateDocument(data) {
-  return apiRequest('document-generator-integration', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  });
+export async function getSignedUrl(path) {
+  return postJSON('generate-signed-url', { path });
 }
 
 /**
- * Analyzes claim
- * @param {Object} data - Claim data
+ * Creates document with AI
+ * @param {Object} payload - Document creation payload
+ * @returns {Promise} - Created document
+ */
+export async function createDoc(payload) {
+  return postJSON('generate-document-simple', payload);
+}
+
+/**
+ * Lists documents by language and type
+ * @param {string} lang - Language code
+ * @param {string} type - Document type
+ * @returns {Promise} - Document list
+ */
+export async function listDocs(lang = 'en', type = 'claim_documents') {
+  return postJSON('list-documents-simple', { lang, type });
+}
+
+/**
+ * Analyzes policy text
+ * @param {string} text - Policy text to analyze
  * @returns {Promise} - Analysis result
  */
-async function analyzeClaim(data) {
-  return apiRequest('analyze-claim', {
-    method: 'POST',
-    body: JSON.stringify(data)
+export async function analyzePolicyText(text) {
+  return postJSON('policyAnalyzer', { text });
+}
+
+/**
+ * Analyzes claim data
+ * @param {Object} body - Claim analysis data
+ * @returns {Promise} - Analysis result
+ */
+export async function analyzeClaim(body) {
+  return postJSON('analyze-claim', body);
+}
+
+/**
+ * Creates Stripe checkout session
+ * @param {string} priceId - Stripe price ID
+ * @param {Object} meta - Additional metadata
+ * @returns {Promise} - Checkout session
+ */
+export async function createCheckoutSession(priceId, meta = {}) {
+  return postJSON('create-checkout-session', {
+    priceId,
+    ...meta
   });
 }
 
 /**
- * Gets user credits
- * @returns {Promise} - User credits data
+ * Generates AI response with specific type
+ * @param {string} type - Response type
+ * @param {Object} data - Input data
+ * @returns {Promise} - AI response
  */
-async function getUserCredits() {
-  return apiRequest('get-user-credits');
-}
-
-/**
- * Saves draft content
- * @param {Object} data - Draft data
- * @returns {Promise} - Save result
- */
-async function saveDraft(data) {
-  return apiRequest('save-draft', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  });
-}
-
-/**
- * Gets Supabase configuration
- * @returns {Promise} - Supabase config
- */
-async function getSupabaseConfig() {
-  return apiRequest('get-supabase-config');
-}
-
-/**
- * Processes Stripe checkout
- * @param {Object} data - Checkout data
- * @returns {Promise} - Checkout result
- */
-async function processCheckout(data) {
-  return apiRequest('checkout', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  });
-}
-
-/**
- * Gets professional marketplace data
- * @param {Object} filters - Filter options
- * @returns {Promise} - Marketplace data
- */
-async function getProfessionalMarketplace(filters = {}) {
-  return apiRequest('professional-marketplace', {
-    method: 'POST',
-    body: JSON.stringify(filters)
-  });
-}
-
-/**
- * Calculates financial impact
- * @param {Object} data - Calculation data
- * @returns {Promise} - Calculation result
- */
-async function calculateFinancialImpact(data) {
-  return apiRequest('financial-impact-calculator', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  });
-}
-
-/**
- * Tracks claim stage
- * @param {Object} data - Stage data
- * @returns {Promise} - Tracking result
- */
-async function trackClaimStage(data) {
-  return apiRequest('claim-stage-tracker', {
-    method: 'POST',
-    body: JSON.stringify(data)
+export async function generateResponse(type, data) {
+  return postJSON('generate-response', {
+    type,
+    ...data
   });
 }
 
@@ -168,11 +130,8 @@ async function trackClaimStage(data) {
  * @param {Object} data - Timeline data
  * @returns {Promise} - Tracking result
  */
-async function trackClaimTimeline(data) {
-  return apiRequest('claim-timeline-tracker', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  });
+export async function trackTimeline(data) {
+  return postJSON('claim-timeline-tracker', data);
 }
 
 /**
@@ -180,11 +139,17 @@ async function trackClaimTimeline(data) {
  * @param {Object} data - Deadline data
  * @returns {Promise} - Tracking result
  */
-async function trackDeadlines(data) {
-  return apiRequest('deadline-tracker', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  });
+export async function trackDeadlines(data) {
+  return postJSON('deadline-tracker', data);
+}
+
+/**
+ * Calculates financial impact
+ * @param {Object} data - Calculation data
+ * @returns {Promise} - Calculation result
+ */
+export async function calculateFinancialImpact(data) {
+  return postJSON('financial-impact-calculator', data);
 }
 
 /**
@@ -192,97 +157,72 @@ async function trackDeadlines(data) {
  * @param {Object} data - Settlement data
  * @returns {Promise} - Comparison result
  */
-async function compareSettlements(data) {
-  return apiRequest('settlement-comparison', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  });
+export async function compareSettlements(data) {
+  return postJSON('settlement-comparison', data);
 }
 
 /**
- * Gets AI advisory
- * @param {Object} data - Advisory data
- * @returns {Promise} - Advisory result
+ * Gets professional marketplace data
+ * @param {Object} filters - Filter options
+ * @returns {Promise} - Marketplace data
  */
-async function getAiAdvisory(data) {
-  return apiRequest('ai-advisory-system', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  });
+export async function getMarketplace(filters = {}) {
+  return postJSON('professional-marketplace', filters);
 }
 
 /**
- * Gets documentation checklist
- * @param {Object} data - Checklist data
- * @returns {Promise} - Checklist result
- */
-async function getDocumentationChecklist(data) {
-  return apiRequest('documentation-checklist', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  });
-}
-
-/**
- * Analyzes policy
- * @param {Object} data - Policy data
- * @returns {Promise} - Analysis result
- */
-async function analyzePolicy(data) {
-  return apiRequest('policyAnalyzer', {
-    method: 'POST',
-    body: JSON.stringify(data)
-  });
-}
-
-/**
- * Handles file upload
+ * Uploads file to storage
  * @param {File} file - File to upload
  * @param {string} type - File type
  * @returns {Promise} - Upload result
  */
-async function uploadFile(file, type = 'document') {
+export async function uploadFile(file, type = 'document') {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('type', type);
   
-  return apiRequest('upload-file', {
+  const response = await fetch(`${API_CONFIG.baseUrl}/upload-file`, {
     method: 'POST',
-    body: formData,
-    headers: {} // Let browser set Content-Type for FormData
+    body: formData
   });
+  
+  if (!response.ok) {
+    throw new Error(`Upload failed: ${response.status}`);
+  }
+  
+  return await response.json();
 }
 
 /**
- * Downloads file
+ * Downloads file by ID
  * @param {string} fileId - File ID
  * @returns {Promise} - Download URL
  */
-async function downloadFile(fileId) {
-  return apiRequest(`download-file/${fileId}`);
+export async function downloadFile(fileId) {
+  return postJSON(`download/${fileId}`);
 }
 
-// Export functions for use in other scripts
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    apiRequest,
-    generateAiResponse,
-    generateDocument,
-    analyzeClaim,
-    getUserCredits,
-    saveDraft,
-    getSupabaseConfig,
-    processCheckout,
-    getProfessionalMarketplace,
-    calculateFinancialImpact,
-    trackClaimStage,
-    trackClaimTimeline,
-    trackDeadlines,
-    compareSettlements,
-    getAiAdvisory,
-    getDocumentationChecklist,
-    analyzePolicy,
-    uploadFile,
-    downloadFile
-  };
+/**
+ * Gets user credits
+ * @returns {Promise} - User credits
+ */
+export async function getUserCredits() {
+  return postJSON('get-user-credits');
+}
+
+/**
+ * Saves draft content
+ * @param {Object} data - Draft data
+ * @returns {Promise} - Save result
+ */
+export async function saveDraft(data) {
+  return postJSON('save-draft', data);
+}
+
+/**
+ * Gets Supabase configuration
+ * @returns {Promise} - Supabase config
+ */
+export async function getSupabaseConfig() {
+  return postJSON('get-supabase-config');
 }

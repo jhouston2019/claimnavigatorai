@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proof of Loss - ClaimNavigatorAI</title>
+    <meta name="description" content="Generate comprehensive proof of loss documentation for your insurance claim">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">← Back to Documents</a>
+            <div class="nav-links">
+                <a href="#help">Help</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-container">
+        <div class="section">
+            <h1>📋 Proof of Loss Document</h1>
+            <p>Comprehensive documentation of all losses and damages for your insurance claim.</p>
+            
+            <!-- Claim Information Section -->
+            <div class="section" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);">
+                <h3>Claim Information (for document watermarking)</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div class="form-group">
+                        <label for="claimant-name">Claimant Name:</label>
+                        <input type="text" id="claimant-name" name="claimant-name" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="policy-number">Policy Number:</label>
+                        <input type="text" id="policy-number" name="policy-number" placeholder="Enter policy number">
+                    </div>
+                    <div class="form-group">
+                        <label for="claim-number">Claim Number:</label>
+                        <input type="text" id="claim-number" name="claim-number" placeholder="Enter claim number">
+                    </div>
+                </div>
+            </div>
+            
+            <form id="proof-of-loss-form">
+                <div class="form-group">
+                    <label for="incident-date">Incident Date:</label>
+                    <input type="date" id="incident-date" name="incident-date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="incident-description">Incident Description:</label>
+                    <textarea 
+                        id="incident-description" 
+                        name="incident-description" 
+                        placeholder="Describe what happened in detail..."
+                        required
+                    ></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="damage-description">Damage Description:</label>
+                    <textarea 
+                        id="damage-description" 
+                        name="damage-description" 
+                        placeholder="Describe all damage and losses in detail..."
+                        required
+                    ></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="total-loss-amount">Total Loss Amount:</label>
+                    <input type="number" id="total-loss-amount" name="total-loss-amount" placeholder="Enter total loss amount" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="supporting-documents">Supporting Documents:</label>
+                    <textarea 
+                        id="supporting-documents" 
+                        name="supporting-documents" 
+                        placeholder="List all supporting documents (photos, receipts, estimates, etc.)..."
+                    ></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="additional-notes">Additional Notes:</label>
+                    <textarea 
+                        id="additional-notes" 
+                        name="additional-notes" 
+                        placeholder="Any additional information relevant to your claim..."
+                    ></textarea>
+                </div>
+                
+                <button type="submit" class="btn" id="draft-with-ai">
+                    Draft with AI
+                </button>
+            </form>
+        </div>
+
+        <div id="document-output" class="section hidden">
+            <h2>Generated Proof of Loss Document:</h2>
+            <div id="output-content" class="form-group" style="background: rgba(0, 0, 0, 0.3); padding: 1.5rem; border-radius: 8px; white-space: pre-wrap; font-family: 'Courier New', monospace;"></div>
+            <div class="text-center mt-4">
+                <button class="btn" id="export-pdf">Export PDF</button>
+                <button class="btn btn-secondary" id="export-docx">Export DOCX</button>
+                <button class="btn btn-secondary" id="get-signed-download">Get Signed Download</button>
+            </div>
+        </div>
+
+        <div id="error-message" class="error-message hidden"></div>
+        <div id="success-message" class="success-message hidden"></div>
+    </main>
+
+    <!-- Scripts -->
+    <script type="module" type="module" src="/app/assets/js/api-client.js"></script>
+    <script type="module" src="/app/assets/js/validation-utils.js"></script>
+    <script type="module" src="/app/assets/js/error-handler.js"></script>
+    <script type="module" type="module" src="/app/assets/js/ui-helpers.js"></script>
+    <script type="module" type="module" src="/app/assets/js/diagnostics.js"></script>
+    
+    <script type="module">
+        import { callAI, createDoc, getSignedUrl } from '/assets/js/api-client.js';
+        import { validateForm, showValidationError, clearValidationError } from '/assets/js/validation-utils.js';
+        import { handleApiError } from '/assets/js/error-handler.js';
+        import { setLoadingState, storeOriginalText } from '/assets/js/ui-helpers.js';
+        import { initializeDiagnostics } from '/assets/js/diagnostics.js';
+
+        // Initialize page
+        initializeDiagnostics('proof-of-loss', {
+            requiredNodes: [
+                'body',
+                'main',
+                '#proof-of-loss-form',
+                '#document-output'
+            ],
+            testEndpoints: ['generate-response', 'generate-document-simple']
+        });
+
+        // Get DOM elements
+        const form = document.getElementById('proof-of-loss-form');
+        const draftBtn = document.getElementById('draft-with-ai');
+        const outputSection = document.getElementById('document-output');
+        const outputContent = document.getElementById('output-content');
+        const exportPdfBtn = document.getElementById('export-pdf');
+        const exportDocxBtn = document.getElementById('export-docx');
+        const signedDownloadBtn = document.getElementById('get-signed-download');
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+
+        // Store original button text
+        storeOriginalText('draft-with-ai');
+
+        // Form handling
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Clear previous messages
+            errorMessage.classList.add('hidden');
+            successMessage.classList.add('hidden');
+            outputSection.classList.add('hidden');
+
+            // Validate form
+            const formData = {
+                'incident-date': document.getElementById('incident-date').value,
+                'incident-description': document.getElementById('incident-description').value,
+                'damage-description': document.getElementById('damage-description').value,
+                'total-loss-amount': document.getElementById('total-loss-amount').value
+            };
+
+            const validationRules = {
+                'incident-date': { required: true, label: 'Incident date' },
+                'incident-description': { required: true, label: 'Incident description' },
+                'damage-description': { required: true, label: 'Damage description' },
+                'total-loss-amount': { required: true, amount: true, label: 'Total loss amount' }
+            };
+
+            const validation = validateForm(formData, validationRules);
+            
+            if (!validation.isValid) {
+                Object.keys(validation.errors).forEach(field => {
+                    showValidationError(field, validation.errors[field]);
+                });
+                return;
+            }
+
+            // Clear validation errors
+            Object.keys(validation.errors).forEach(field => {
+                clearValidationError(field);
+            });
+
+            try {
+                // Set loading state
+                setLoadingState('draft-with-ai', true);
+
+                // Get watermark info
+                const watermarkInfo = {
+                    claimantName: document.getElementById('claimant-name').value,
+                    policyNumber: document.getElementById('policy-number').value,
+                    claimNumber: document.getElementById('claim-number').value
+                };
+
+                // Prepare AI prompt
+                const aiPrompt = `Create a professional Proof of Loss document with the following information:
+
+Incident Date: ${formData['incident-date']}
+Incident Description: ${formData['incident-description']}
+Damage Description: ${formData['damage-description']}
+Total Loss Amount: $${formData['total-loss-amount']}
+Supporting Documents: ${document.getElementById('supporting-documents').value}
+Additional Notes: ${document.getElementById('additional-notes').value}
+
+Claimant: ${watermarkInfo.claimantName}
+Policy Number: ${watermarkInfo.policyNumber}
+Claim Number: ${watermarkInfo.claimNumber}
+
+Please create a comprehensive, professional Proof of Loss document that includes:
+1. Proper legal formatting and structure
+2. Detailed description of all losses
+3. Supporting documentation references
+4. Professional language and tone
+5. All required legal elements`;
+
+                // Call AI API
+                const response = await callAI(aiPrompt, { type: 'proof-of-loss' });
+                
+                // Display results
+                outputContent.textContent = response.response || response.message || 'Document generated successfully.';
+                outputSection.classList.remove('hidden');
+                
+                // Show success message
+                successMessage.textContent = 'Proof of Loss document generated successfully!';
+                successMessage.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Document generation error:', error);
+                handleApiError(error, 'Proof of Loss Generation');
+                
+                errorMessage.textContent = 'Failed to generate document. Please try again.';
+                errorMessage.classList.remove('hidden');
+            } finally {
+                // Reset loading state
+                setLoadingState('draft-with-ai', false);
+            }
+        });
+
+        // Export PDF
+        exportPdfBtn.addEventListener('click', async () => {
+            try {
+                setLoadingState('export-pdf', true);
+                
+                const content = outputContent.textContent;
+                const watermarkInfo = {
+                    claimantName: document.getElementById('claimant-name').value,
+                    policyNumber: document.getElementById('policy-number').value,
+                    claimNumber: document.getElementById('claim-number').value
+                };
+                
+                const response = await createDoc({
+                    content,
+                    format: 'pdf',
+                    type: 'proof-of-loss',
+                    title: 'Proof of Loss Document',
+                    watermark: watermarkInfo
+                });
+                
+                if (response.downloadUrl) {
+                    window.open(response.downloadUrl, '_blank');
+                    successMessage.textContent = 'PDF exported successfully!';
+                    successMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                handleApiError(error, 'PDF Export');
+            } finally {
+                setLoadingState('export-pdf', false);
+            }
+        });
+
+        // Export DOCX
+        exportDocxBtn.addEventListener('click', async () => {
+            try {
+                setLoadingState('export-docx', true);
+                
+                const content = outputContent.textContent;
+                const watermarkInfo = {
+                    claimantName: document.getElementById('claimant-name').value,
+                    policyNumber: document.getElementById('policy-number').value,
+                    claimNumber: document.getElementById('claim-number').value
+                };
+                
+                const response = await createDoc({
+                    content,
+                    format: 'docx',
+                    type: 'proof-of-loss',
+                    title: 'Proof of Loss Document',
+                    watermark: watermarkInfo
+                });
+                
+                if (response.downloadUrl) {
+                    window.open(response.downloadUrl, '_blank');
+                    successMessage.textContent = 'DOCX exported successfully!';
+                    successMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                handleApiError(error, 'DOCX Export');
+            } finally {
+                setLoadingState('export-docx', false);
+            }
+        });
+
+        // Get signed download
+        signedDownloadBtn.addEventListener('click', async () => {
+            try {
+                setLoadingState('get-signed-download', true);
+                
+                const response = await getSignedUrl('proof-of-loss-template.pdf');
+                
+                if (response.signedUrl) {
+                    window.open(response.signedUrl, '_blank');
+                    successMessage.textContent = 'Signed download link generated!';
+                    successMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                handleApiError(error, 'Signed Download');
+            } finally {
+                setLoadingState('get-signed-download', false);
+            }
+        });
+    </script>
+<script type="module" src="/app/assets/js/window-bridge.js"></script>
+</body>
+</html>
