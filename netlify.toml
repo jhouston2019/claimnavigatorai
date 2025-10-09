@@ -1,9 +1,9 @@
 [build]
   publish = "."
-
 [functions]
   directory = "netlify/functions"
 
+# keep functions & assets from SPA rewrite
 [[redirects]]
   from = "/.netlify/*"
   to = "/.netlify/:splat"
@@ -14,11 +14,7 @@
   to = "/app/assets/:splat"
   status = 200
 
-[[redirects]]
-  from = "/assets/*"
-  to = "/assets/:splat"
-  status = 200
-
+# optional SPA fallback for /app (place last)
 [[redirects]]
   from = "/app/*"
   to = "/app/index.html"

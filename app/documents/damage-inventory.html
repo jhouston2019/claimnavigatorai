@@ -2,67 +2,42 @@
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Damage Inventory Sheet</title>
 <link rel="stylesheet" href="/app/assets/css/style.css"/></head><body>
-<header><nav class="container"><div class="logo">📄 Damage Inventory Sheet</div><div class="nav-links"><a href="./index.html" style="color:#fff">← Documents</a></div></nav></header>
-<main class="container">
+<header class="header"><div class="bar container"><div class="brand"><div class="logo"></div><div>Damage Inventory Sheet</div></div>
+<nav class="nav"><a href="/app/documents/index.html">← Documents</a></nav></div></header>
+<main class="container" id="main">
+  <div class="card"><h2>Damage Inventory Sheet</h2></div>
   <div class="card">
-    <h1 class="section-h">Damage Inventory Sheet</h1>
-    <div class="card">
-      <div style="display:grid;gap:.5rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-bottom:.75rem">
-        <input id="name" placeholder="Policyholder Name" style="padding:.6rem;border:1px solid var(--border);border-radius:10px"/>
-        <input id="policy" placeholder="Policy #" style="padding:.6rem;border:1px solid var(--border);border-radius:10px"/>
-        <input id="claim" placeholder="Claim #" style="padding:.6rem;border:1px solid var(--border);border-radius:10px"/>
-      </div>
-      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.5rem">
-    <label style="display:flex;flex-direction:column;font-weight:600">Location / Room
-      <input id="location" style="padding:.6rem;border:1px solid var(--border);border-radius:10px"/>
-    </label>
-<label style="display:flex;flex-direction:column;font-weight:600">Items (CSV: qty,name,desc,preValue,postValue)
-      <input id="items" style="padding:.6rem;border:1px solid var(--border);border-radius:10px"/>
-    </label>
-<label style="display:flex;flex-direction:column;font-weight:600">Valuation Method (ACV/RCV)
-      <input id="method" style="padding:.6rem;border:1px solid var(--border);border-radius:10px"/>
-    </label>
-<label style="display:flex;flex-direction:column;font-weight:600">Notes
-      <input id="notes" style="padding:.6rem;border:1px solid var(--border);border-radius:10px"/>
-    </label>
-  </div>
-  <label style="display:block;margin-top:.5rem;font-weight:600">Additional Details
-    <textarea id="details" style="width:100%;min-height:120px;padding:12px;border:1px solid var(--border);border-radius:10px"></textarea>
-  </label>
-      <div style="display:flex;gap:.5rem;margin-top:.5rem;flex-wrap:wrap">
-        <button class="btn btn-solid" id="draft">Draft with AI</button>
-        <button class="btn" id="pdf">Export PDF</button>
-        <button class="btn" id="docx">Export DOCX</button>
-      </div>
-      <div id="out" class="card" style="margin-top:1rem"></div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+      <label>Policyholder<input id="name" placeholder="Policyholder Name"/></label>
+      <label>Policy #<input id="policy" placeholder="Policy #"/></label>
+      <label>Claim #<input id="claim" placeholder="Claim #"/></label>
     </div>
+    <label style="display:block;margin-top:8px">Details<textarea id="details" placeholder="Enter details/context..."></textarea></label>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn btn-primary" id="draft">Draft with AI</button>
+      <button class="btn" id="pdf">Export PDF</button>
+      <button class="btn" id="docx">Export DOCX</button>
+    </div>
+    <div id="out" class="card" style="margin-top:12px"></div>
   </div>
 </main>
 <script type="module">
-import { callAI, createDoc } from '../assets/js/api-client.js';
-import { qs, on } from '../assets/js/ui-helpers.js';
-const slug='damage-inventory';
-on(qs('#draft'),'click', async ()=>{
-  const data = { 
-    type: slug,
-    fields: {
-      location: qs('#location')?.value||'',items: qs('#items')?.value||'',method: qs('#method')?.value||'',notes: qs('#notes')?.value||''
-    },
-    details: qs('#details')?.value||''
-  };
-  qs('#out').innerHTML='<span class="spinner"></span> Drafting...';
-  try{ const r=await callAI(data,{type:slug}); qs('#out').innerHTML=r.response||'(no content)'; }
-  catch(e){ qs('#out').innerHTML=`<div style="color:#dc2626">Error: ${e.message}</div>`; }
-});
-async function exportAs(fmt){
-  const html = qs('#out')?.innerHTML?.trim(); if(!html) return alert('Draft first.');
-  const r = await createDoc({content:html,format:fmt,type:slug,filename:`${slug}_${Date.now()}`});
-  const url = r.url||r.downloadUrl; if(url) location.href=url; else alert('Export failed');
-}
-on(qs('#pdf'),'click',()=>exportAs('pdf'));
-on(qs('#docx'),'click',()=>exportAs('docx'));
+  import {qs,on,toast} from '/app/assets/js/ui-helpers.js';
+  import { callAI, createDoc } from '/app/assets/js/api-client.js';
+  const slug='damage-inventory';
+  on(qs('#draft'),'click', async ()=>{
+    const body={type:slug,name:qs('#name').value,policy:qs('#policy').value,claim:qs('#claim').value,details:qs('#details').value};
+    qs('#out').innerHTML='Drafting…';
+    try{ const r=await callAI(body,{type:slug}); qs('#out').innerHTML=r.response||r.analysis||JSON.stringify(r)||'(no content)';}
+    catch(e){ qs('#out').innerHTML='<div style="color:#ef4444">'+e.message+'</div>'; }
+  });
+  async function exportAs(fmt){
+    const html=qs('#out').innerHTML.trim(); if(!html) return toast('Draft first');
+    const r = await createDoc({content:html,format:fmt,type:slug,filename:`${slug}_${Date.now()}`});
+    location.href = r.url||r.downloadUrl;
+  }
+  on(qs('#pdf'),'click',()=>exportAs('pdf'));
+  on(qs('#docx'),'click',()=>exportAs('docx'));
 </script>
-<script type="module" type="module" src="/app/assets/js/diagnostics.js"></script>
-<script type="module" src="/app/assets/js/window-bridge.js"></script>
-<script type="module" src="/app/assets/js/doc-forms.js"></script>
+<script type="module" src="/app/assets/js/diagnostics.js"></script>
 </body></html>

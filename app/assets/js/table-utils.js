@@ -1,36 +1,12 @@
 import { fmtMoney, parseMoney } from './validation-utils.js';
 export function renderTable(host,{columns,rows,calcTotal}){
-  host.innerHTML='';
-  const table=document.createElement('table'); table.style.width='100%'; table.style.borderCollapse='collapse';
-  const thead=document.createElement('thead'), tr=document.createElement('tr');
-  columns.forEach(c=>{ const th=document.createElement('th'); th.textContent=c.label; th.style.textAlign=c.align||'left'; th.style.borderBottom='1px solid #e5e7eb'; th.style.cursor='pointer';
-    th.addEventListener('click',()=>sortBy(c.key)); tr.appendChild(th);});
-  thead.appendChild(tr); table.appendChild(thead);
-  const tbody=document.createElement('tbody'); table.appendChild(tbody);
+  host.innerHTML=''; const t=document.createElement('table'), thead=document.createElement('thead'), tr=document.createElement('tr'); let asc=true, key=columns[0].key;
+  columns.forEach(c=>{const th=document.createElement('th'); th.textContent=c.label; th.style.cursor='pointer'; th.onclick=()=>{ key=c.key; asc=!asc; paint(); }; tr.appendChild(th);}); thead.appendChild(tr); t.appendChild(thead);
+  const tbody=document.createElement('tbody'); t.appendChild(tbody);
   function paint(){
-    tbody.innerHTML='';
-    rows.forEach(r=>{
-      const tr=document.createElement('tr');
-      columns.forEach(c=>{
-        const td=document.createElement('td'); let v=r[c.key]; if(c.money) v=fmtMoney(parseMoney(v)); td.textContent=v??''; td.style.padding='6px 4px'; tr.appendChild(td);
-      });
-      tbody.appendChild(tr);
-    });
-    if(calcTotal){
-      const tot=rows.reduce((s,r)=>s+(parseMoney(r.amount)||0),0);
-      const f=document.createElement('tfoot'); const tr=document.createElement('tr');
-      const td=document.createElement('td'); td.colSpan=columns.length-1; td.textContent='TOTAL'; td.style.fontWeight='700';
-      const td2=document.createElement('td'); td2.textContent=fmtMoney(tot); td2.style.fontWeight='700';
-      tr.appendChild(td); tr.appendChild(td2); f.appendChild(tr); table.appendChild(f);
-    }
+    tbody.innerHTML=''; const list=[...rows].sort((a,b)=>{const A=a[key]??'',B=b[key]??''; const na=parseFloat(A), nb=parseFloat(B); return (isNaN(na)||isNaN(nb)? String(A).localeCompare(String(B)) : na-nb)*(asc?1:-1);});
+    list.forEach(r=>{const tr=document.createElement('tr'); columns.forEach(c=>{const td=document.createElement('td'); let v=r[c.key]; if(c.money) v=fmtMoney(parseMoney(v)); td.textContent=v??''; tr.appendChild(td);}); tbody.appendChild(tr);});
+    if(calcTotal){ const tot=rows.reduce((s,r)=>s+(parseMoney(r.amount)||0),0); const tf=document.createElement('tfoot'); const tr=document.createElement('tr'); const td=document.createElement('td'); td.colSpan=columns.length-1; td.textContent='TOTAL'; const td2=document.createElement('td'); td2.textContent=fmtMoney(tot); tr.appendChild(td); tr.appendChild(td2); tf.appendChild(tr); t.appendChild(tf); }
   }
-  let asc=true;
-  function sortBy(key){
-    rows.sort((a,b)=>{ const av=a[key]??'', bv=b[key]??''; const na=parseFloat(av), nb=parseFloat(bv);
-      if(!isNaN(na) && !isNaN(nb)) return asc?na-nb:nb-na;
-      return asc?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av)); });
-    asc=!asc; paint();
-  }
-  host.appendChild(table); paint();
-  return {update:(r)=>{rows=r;paint();}};
+  host.appendChild(t); paint(); return {update:(r)=>{rows=r; paint();}};
 }

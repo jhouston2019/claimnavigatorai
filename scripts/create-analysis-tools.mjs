@@ -1,11 +1,22 @@
-<!doctype html><html lang="en"><head>
+import { writeFileSync } from 'fs';
+
+const tools = [
+  ['policy-review', '📋 Policy Review', 'Coverage analysis & key limits.', 'coverage_review'],
+  ['damage-assessment', '🔎 Damage Assessment', 'ROM estimate & scope recommendations.', 'damage_assessment'],
+  ['estimate-comparison', '⚖️ Estimate Comparison', 'Compare contractor vs insurer vs ROM.', 'estimate_comparison'],
+  ['business-interruption', '💼 Business Interruption', 'Lost income / P&L analysis.', 'business_interruption'],
+  ['settlement-analysis', '💰 Settlement Analysis', 'Offer fairness & gap analysis.', 'settlement_analysis']
+];
+
+for (const [slug, title, desc, atype] of tools) {
+  const html = `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>💼 Business Interruption</title>
+<title>${title}</title>
 <link rel="stylesheet" href="/app/assets/css/style.css"/></head><body>
-<header class="header"><div class="bar container"><div class="brand"><div class="logo"></div><div>💼 Business Interruption</div></div>
+<header class="header"><div class="bar container"><div class="brand"><div class="logo"></div><div>${title}</div></div>
 <nav class="nav"><a href="/app/response-center/claim-analysis-tools/index.html">← All Tools</a></nav></div></header>
 <main class="container">
-  <div class="card"><h2>💼 Business Interruption</h2><p>Lost income / P&L analysis.</p></div>
+  <div class="card"><h2>${title}</h2><p>${desc}</p></div>
   <div class="card">
     <label>Input</label>
     <textarea id="tool-input" placeholder="Paste details, estimates, offers…"></textarea>
@@ -19,7 +30,7 @@
 <script type="module">
   import {qs,on} from '/app/assets/js/ui-helpers.js';
   import { analyzeClaim, createDoc, analyzePolicyText } from '/app/assets/js/api-client.js';
-  const type='business_interruption';
+  const type='${atype}';
   on(qs('#run'),'click', async ()=>{
     const v=qs('#tool-input').value.trim(); if(!v) return alert('Enter details first.');
     qs('#tool-output').innerHTML='<span class="small">Running…</span>';
@@ -35,4 +46,8 @@
   });
 </script>
 <script type="module" src="/app/assets/js/diagnostics.js"></script>
-</body></html>
+</body></html>`;
+  
+  writeFileSync(`app/response-center/claim-analysis-tools/${slug}.html`, html);
+  console.log(`Created ${slug}.html`);
+}

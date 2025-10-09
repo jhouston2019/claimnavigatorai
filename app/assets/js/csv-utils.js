@@ -1,13 +1,2 @@
-export function parseCSV(text){
-  if(!text) return [];
-  const rows=[]; let i=0, field='', row=[], inQ=false; text=text.replace(/\r/g,'')+'\n';
-  while(i<text.length){
-    const c=text[i++];
-    if(c==='\"'){ inQ=!inQ; }
-    else if(c===',' && !inQ){ row.push(field); field=''; }
-    else if((c==='\n') && !inQ){ row.push(field); rows.push(row); row=[]; field=''; }
-    else{ field+=c; }
-  }
-  return rows.filter(r=>r.some(c=>String(c).trim()!==''));
-}
-export function toCSV(rows){ return rows.map(r=>r.map(c=>/[,\"\n]/.test(c)?`"${String(c).replace(/"/g,'""')}"`:String(c)).join(',')).join('\n'); }
+export function parseCSV(s){ if(!s) return []; s=s.replace(/\r/g,'')+'\n'; let i=0, f='', row=[], rows=[], q=false; while(i<s.length){const c=s[i++]; if(c=='"') q=!q; else if(c==','&&!q){row.push(f);f='';} else if(c=='\n'&&!q){ row.push(f); rows.push(row); row=[]; f=''; } else f+=c;} return rows.filter(r=>r.some(x=>String(x).trim()!==''));}
+export const toCSV=rows=>rows.map(r=>r.map(c=>/[,\"\n]/.test(c)?`"${String(c).replace(/"/g,'""')}"`:String(c)).join(',')).join('\n');

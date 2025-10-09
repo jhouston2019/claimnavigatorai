@@ -1,11 +1,34 @@
-<!doctype html><html lang="en"><head>
+import { writeFileSync } from 'fs';
+
+const docs = [
+  ['proof-of-loss', 'Proof of Loss'],
+  ['appeal-letter', 'Appeal Letter'],
+  ['demand-letter', 'Demand Letter'],
+  ['damage-inventory', 'Damage Inventory Sheet'],
+  ['claim-timeline', 'Claim Timeline / Diary'],
+  ['repair-vs-replace', 'Repair or Replacement Cost Worksheet'],
+  ['expenses-log', 'Out-of-Pocket Expense Log'],
+  ['appraisal-demand', 'Appraisal Demand Letter'],
+  ['delay-complaint', 'Notice of Delay Complaint'],
+  ['coverage-clarification', 'Coverage Clarification Request'],
+  ['notice-of-claim', 'Notice of Claim'],
+  ['medical-expense-summary', 'Medical Expense Summary'],
+  ['rom-estimate-report', 'ROM Estimate Report'],
+  ['photograph-log', 'Photograph Log'],
+  ['document-index', 'Document Index'],
+  ['comparative-estimates', 'Comparative Estimates'],
+  ['settlement-comparison-sheet', 'Settlement Comparison Sheet']
+];
+
+for (const [slug, title] of docs) {
+  const html = `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Notice of Delay Complaint</title>
+<title>${title}</title>
 <link rel="stylesheet" href="/app/assets/css/style.css"/></head><body>
-<header class="header"><div class="bar container"><div class="brand"><div class="logo"></div><div>Notice of Delay Complaint</div></div>
+<header class="header"><div class="bar container"><div class="brand"><div class="logo"></div><div>${title}</div></div>
 <nav class="nav"><a href="/app/documents/index.html">← Documents</a></nav></div></header>
 <main class="container" id="main">
-  <div class="card"><h2>Notice of Delay Complaint</h2></div>
+  <div class="card"><h2>${title}</h2></div>
   <div class="card">
     <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
       <label>Policyholder<input id="name" placeholder="Policyholder Name"/></label>
@@ -24,7 +47,7 @@
 <script type="module">
   import {qs,on,toast} from '/app/assets/js/ui-helpers.js';
   import { callAI, createDoc } from '/app/assets/js/api-client.js';
-  const slug='delay-complaint';
+  const slug='${slug}';
   on(qs('#draft'),'click', async ()=>{
     const body={type:slug,name:qs('#name').value,policy:qs('#policy').value,claim:qs('#claim').value,details:qs('#details').value};
     qs('#out').innerHTML='Drafting…';
@@ -33,11 +56,15 @@
   });
   async function exportAs(fmt){
     const html=qs('#out').innerHTML.trim(); if(!html) return toast('Draft first');
-    const r = await createDoc({content:html,format:fmt,type:slug,filename:`${slug}_${Date.now()}`});
+    const r = await createDoc({content:html,format:fmt,type:slug,filename:\`\${slug}_\${Date.now()}\`});
     location.href = r.url||r.downloadUrl;
   }
   on(qs('#pdf'),'click',()=>exportAs('pdf'));
   on(qs('#docx'),'click',()=>exportAs('docx'));
 </script>
 <script type="module" src="/app/assets/js/diagnostics.js"></script>
-</body></html>
+</body></html>`;
+  
+  writeFileSync(`app/documents/${slug}.html`, html);
+  console.log(`Created ${slug}.html`);
+}
