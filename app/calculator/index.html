@@ -1,34 +1,25 @@
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>💵 Financial Impact Calculator</title>
-<link rel="stylesheet" href="/app/assets/css/style.css"/></head><body>
-<header class="header"><div class="bar container"><div class="brand"><div class="logo"></div><div>💵 Financial Impact Calculator</div></div>
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>💵 Financial Impact Calculator</title><link rel="stylesheet" href="/app/assets/css/style.css"/></head><body>
+<header class="header"><div class="bar container"><div class="brand"><div class="logo"></div><div>Financial Impact</div></div>
 <nav class="nav"><a href="/app/response-center.html">← Resource Center</a></nav></div></header>
 <main class="container" id="main">
-  <div class="card"><h2>💵 Financial Impact Calculator</h2><p>Cost-benefit of hiring pros.</p></div>
-  <div class="card">
-    <label>Notes</label>
-    <textarea id="notes" placeholder="Describe your situation or paste data…"></textarea>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button class="btn btn-primary" id="go">Run</button>
-      <button class="btn" id="pdf">Export PDF</button>
+  <div class="card"><h2>ROI of Hiring Professionals</h2>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+      <label>Insurer Offer<input id="offer" placeholder="$"/></label>
+      <label>Estimated True Cost<input id="value" placeholder="$"/></label>
+      <label>Contingency % (e.g., 10)<input id="fee" placeholder="10"/></label>
     </div>
+    <div style="margin-top:8px"><button class="btn" id="calc">Calculate</button></div>
     <div id="out" class="card" style="margin-top:12px"></div>
   </div>
 </main>
 <script type="module">
   import {qs,on} from '/app/assets/js/ui-helpers.js';
-  import { callAI, createDoc, analyzeClaim } from '/app/assets/js/api-client.js';
-  on(qs('#go'),'click', async ()=>{
-    const v=qs('#notes').value.trim(); if(!v) return;
-    qs('#out').innerHTML='Working…';
-    try{ const r = await callAI({inputText:v,type:'calculator'},{type:'calculator'}); qs('#out').innerHTML=r.response||r.analysis||JSON.stringify(r)||'(no content)'; }
-    catch(e){ qs('#out').innerHTML='<div style="color:#ef4444">'+e.message+'</div>'; }
-  });
-  on(qs('#pdf'),'click', async ()=>{
-    const html=qs('#out').innerHTML.trim(); if(!html) return alert('Run first.');
-    const r=await createDoc({content:html,format:'pdf',type:'calculator',filename:'calculator_'+Date.now()}); location.href=r.url||r.downloadUrl;
+  import { parseMoney, fmtMoney } from '/app/assets/js/validation-utils.js';
+  on(qs('#calc'),'click', ()=>{
+    const offer=parseMoney(qs('#offer').value), value=parseMoney(qs('#value').value), fee=Number(qs('#fee').value||0)/100;
+    const delta = Math.max(0, value-offer), cost = value*fee, net = delta - cost;
+    qs('#out').innerHTML = `Potential Increase: ${fmtMoney(delta)}<br/>Est. Professional Cost: ${fmtMoney(cost)}<br/><b>Net Benefit:</b> ${fmtMoney(net)}`;
   });
 </script>
-<script type="module" src="/app/assets/js/diagnostics.js"></script>
-</body></html>
+<script type="module" src="/app/assets/js/diagnostics.js"></script></body></html>

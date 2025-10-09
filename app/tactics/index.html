@@ -1,34 +1,18 @@
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>🧠 Insurance Company Tactics</title>
-<link rel="stylesheet" href="/app/assets/css/style.css"/></head><body>
-<header class="header"><div class="bar container"><div class="brand"><div class="logo"></div><div>🧠 Insurance Company Tactics</div></div>
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>🧠 Insurance Tactics</title><link rel="stylesheet" href="/app/assets/css/style.css"/></head><body>
+<header class="header"><div class="bar container"><div class="brand"><div class="logo"></div><div>Insurance Company Tactics</div></div>
 <nav class="nav"><a href="/app/response-center.html">← Resource Center</a></nav></div></header>
 <main class="container" id="main">
-  <div class="card"><h2>🧠 Insurance Company Tactics</h2><p>Common tactics and counters.</p></div>
-  <div class="card">
-    <label>Notes</label>
-    <textarea id="notes" placeholder="Describe your situation or paste data…"></textarea>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button class="btn btn-primary" id="go">Run</button>
-      <button class="btn" id="pdf">Export PDF</button>
-    </div>
-    <div id="out" class="card" style="margin-top:12px"></div>
-  </div>
+  <section class="grid">
+    <details class="card"><summary>Delay Until You Give Up</summary><p>Track statutory deadlines. Use Notice of Delay.</p></details>
+    <details class="card"><summary>Misinformation & Confusion</summary><p>Request coverage position in writing. Use Clarification letter.</p></details>
+    <details class="card"><summary>Deny First</summary><p>Appeal with facts, policy cites, and evidence attachments.</p></details>
+    <details class="card"><summary>Lowball Offers</summary><p>Run Estimate Comparison & Settlement Analysis; counter with specifics.</p></details>
+    <details class="card"><summary>Refuse/Stall Payment</summary><p>Escalate per state timelines and unfair practice statutes.</p></details>
+    <details class="card"><summary>Misapply Standards & Exclusions</summary><p>Use Policy Review tool to identify misapplied provisions.</p></details>
+    <details class="card"><summary>Divide & Confuse</summary><p>Keep a clear written record; funnel communications to a single thread.</p></details>
+    <details class="card"><summary>Quick but Low Settlement</summary><p>Avoid signing early releases; compare values first.</p></details>
+    <details class="card"><summary>Withhold Certified Policy Copy</summary><p>Request immediately; it governs all rights/obligations.</p></details>
+  </section>
 </main>
-<script type="module">
-  import {qs,on} from '/app/assets/js/ui-helpers.js';
-  import { callAI, createDoc, analyzeClaim } from '/app/assets/js/api-client.js';
-  on(qs('#go'),'click', async ()=>{
-    const v=qs('#notes').value.trim(); if(!v) return;
-    qs('#out').innerHTML='Working…';
-    try{ const r = await callAI({inputText:v,type:'tactics'},{type:'tactics'}); qs('#out').innerHTML=r.response||r.analysis||JSON.stringify(r)||'(no content)'; }
-    catch(e){ qs('#out').innerHTML='<div style="color:#ef4444">'+e.message+'</div>'; }
-  });
-  on(qs('#pdf'),'click', async ()=>{
-    const html=qs('#out').innerHTML.trim(); if(!html) return alert('Run first.');
-    const r=await createDoc({content:html,format:'pdf',type:'tactics',filename:'tactics_'+Date.now()}); location.href=r.url||r.downloadUrl;
-  });
-</script>
-<script type="module" src="/app/assets/js/diagnostics.js"></script>
-</body></html>
+<script type="module" src="/app/assets/js/diagnostics.js"></script></body></html>
