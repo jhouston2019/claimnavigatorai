@@ -1,0 +1,74 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>📚 Document Library</title>
+<link rel="stylesheet" href="/app/assets/css/style.css">
+</head><body>
+<header class="header"><div class="bar container">
+  <div class="brand"><div class="logo"></div><div>Document Library</div></div>
+  <nav class="nav"><a href="/app/response-center.html">← Resource Center</a></nav>
+</div></header>
+<main class="container" id="main">
+  <div class="card">
+    <div class="grid" style="grid-template-columns:1fr 200px 200px;">
+      <input id="q" placeholder="Search PDFs / templates">
+      <select id="bucket"><option value="documents">documents</option></select>
+      <input id="prefix" placeholder="Prefix (e.g., templates/, pdfs/)" value="templates/">
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary" id="load">Load</button>
+      <a class="btn" href="/app/documents/index.html">Open Document Generator</a>
+    </div>
+  </div>
+  <div id="warning" class="card" style="display:none;color:#f59e0b"></div>
+  <div id="list" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:12px"></div>
+</main>
+<script type="module">
+  import {listFiles,filePublicUrl,hasSupabase} from '/app/assets/js/supabase.js';
+  import {qs,on} from '/app/assets/js/ui-helpers.js';
+
+  function card(f,bucket,prefix){
+    const path = (prefix||'') + (f.name||'');
+    const url = filePublicUrl({bucket, path});
+    return `<div class="card">
+      <div class="small">${path}</div>
+      <h3>${f.name}</h3>
+      <div class="small">${(f.metadata?.mimetype)||'file'}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <a class="btn" href="${url}" target="_blank">Open</a>
+        <a class="btn" href="/app/documents/demand-letter.html?prefill=${encodeURIComponent(f.name)}">Draft Demand</a>
+        <a class="btn" href="/app/documents/appeal-letter.html?prefill=${encodeURIComponent(f.name)}">Draft Appeal</a>
+      </div>
+    </div>`;
+  }
+
+  async function load(){
+    const warn = qs('#warning'), list = qs('#list');
+    warn.style.display='none'; list.innerHTML='';
+    if(!hasSupabase()){
+      warn.style.display='block';
+      warn.innerHTML = 'Supabase is not configured. Set <code>window.__SUPABASE_URL</code> and <code>window.__SUPABASE_ANON_KEY</code> globally. See bottom of this file for how.';
+      return;
+    }
+    const bucket = qs('#bucket').value || 'documents';
+    const prefix = qs('#prefix').value || '';
+    const q = (qs('#q').value||'').toLowerCase();
+
+    const files = await listFiles({bucket, prefix});
+    const filtered = files.filter(f=>!f.id || f.name) // only objects
+                         .filter(f=> !q || (f.name||'').toLowerCase().includes(q));
+    list.innerHTML = filtered.map(f=>card(f,bucket,prefix)).join('') || '<em>No files found.</em>';
+  }
+
+  on(qs('#load'),'click', load);
+  on(qs('#q'),'input', ()=> load());
+  // auto-load on first open
+  load();
+</script>
+<!-- Provide these in a global script tag (e.g., in /app/index.html or Netlify _headers/_redirects inject) 
+<script>
+  window.__SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
+  window.__SUPABASE_ANON_KEY = "YOUR-ANON-KEY";
+</script>
+-->
+<script type="module" src="/app/assets/js/diagnostics.js"></script>
+</body></html>

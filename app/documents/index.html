@@ -5,6 +5,21 @@
 <header class="header"><div class="bar container"><div class="brand"><div class="logo"></div><div>Document Generator</div></div>
 <nav class="nav"><a href="/app/response-center.html">← Resource Center</a></nav></div></header>
 <main class="container">
+  <div class="card" data-tabbar>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="btn btn-secondary" href="#proof-of-loss">Proof of Loss</a>
+      <a class="btn btn-secondary" href="#appeal-letter">Appeal</a>
+      <a class="btn btn-secondary" href="#demand-letter">Demand</a>
+      <a class="btn btn-secondary" href="#damage-inventory">Inventory</a>
+      <a class="btn btn-secondary" href="#claim-timeline">Diary</a>
+      <a class="btn btn-secondary" href="#repair-vs-replace">Repair/Replace</a>
+      <a class="btn btn-secondary" href="#expenses-log">Out-of-Pocket</a>
+      <a class="btn btn-secondary" href="#appraisal-demand">Appraisal</a>
+      <a class="btn btn-secondary" href="#delay-complaint">Delay Complaint</a>
+      <a class="btn btn-secondary" href="#coverage-clarification">Coverage Clarification</a>
+            </div>
+    <div class="small">Tip: bookmark a sub-tab (it deep-links to the right page below).</div>
+        </div>
   <section class="grid tools">
     <a class="card tool" href="/app/documents/proof-of-loss.html"><span class="badge">Core</span><h3>Proof of Loss</h3><p>Sworn statement of damages.</p></a>
     <a class="card tool" href="/app/documents/appeal-letter.html"><span class="badge">Core</span><h3>Appeal Letter</h3><p>Denied/underpaid? Appeal.</p></a>
@@ -25,5 +40,20 @@
     <a class="card tool" href="/app/documents/settlement-comparison-sheet.html"><span class="badge">Support</span><h3>Settlement Sheet</h3><p>Offer vs value.</p></a>
   </section>
     </main>
+    <script type="module">
+  import {qs} from '/app/assets/js/ui-helpers.js';
+  const map = (slug)=> '/app/documents/'+slug+'.html';
+  function route(){
+    const slug = (location.hash||'').replace(/^#/, '');
+    if(!slug) return;
+    const href = map(slug);
+    const a = Array.from(document.querySelectorAll('[data-tabbar] a')).find(x=>x.getAttribute('href')==='#'+slug);
+    if(a) a.classList.add('btn-primary');
+    // redirect to the page for that document (keeps single-source templates)
+    location.href = href + location.search;
+  }
+  window.addEventListener('hashchange', route);
+  route();
+    </script>
 <script type="module" src="/app/assets/js/diagnostics.js"></script>
 </body></html>
