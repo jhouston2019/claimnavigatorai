@@ -45,7 +45,7 @@ async function testApiEndpoint(endpoint) {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ test: true, type: 'smoke' })
+      body: JSON.stringify({ inputText: 'ping', language: 'en' })
     });
     
     if (response.ok) {
@@ -215,16 +215,12 @@ function initializeDiagnostics(pageName, options = {}) {
  */
 async function testAIEndpoint() {
   try {
-    const response = await fetch('/.netlify/functions/generate-response-public', {
+    const response = await fetch('/.netlify/functions/generate-response', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ 
-        type: 'smoke',
-        letter: 'Test smoke signal',
-        test: true 
-      })
+      body: JSON.stringify({ inputText: 'ping', language: 'en' })
     });
     
     if (response.ok) {
@@ -251,10 +247,7 @@ async function testSignedUrlEndpoint() {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ 
-        path: 'test.pdf',
-        test: true 
-      })
+      body: JSON.stringify({ inputText: 'ping', language: 'en' })
     });
     
     if (response.ok) {
