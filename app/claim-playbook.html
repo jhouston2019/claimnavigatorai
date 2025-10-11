@@ -1,13 +1,128 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Claim Playbook – Complete Insurance Claim Management | ClaimNavigatorAI</title>
-  <meta name="description" content="Comprehensive, interactive playbook to manage and maximize any insurance claim with AI-supported tools and state-specific callouts." />
-  <link rel="preload" href="/claim-playbook/playbook.css" as="style" />
-  <link rel="stylesheet" href="/claim-playbook/playbook.css" />
-  <script defer src="/claim-playbook/playbook.js"></script>
+  <title>Claim Playbook – Complete Insurance Claim Management (50 Sections) | ClaimNavigatorAI</title>
+  <meta name="description" content="Comprehensive, interactive playbook to manage and maximize any insurance claim with AI-supported tools and state-specific callouts. 50 sections with If→Then→Tool rails and deep-linked actions." />
+  <style>
+:root{
+  --bg:#ffffff;
+  --panel:#f7f9fc;
+  --muted:#6b7280;
+  --text:#0f172a;
+  --brand:#0b1b3a;      /* dark navy accent */
+  --accent:#0b1b3a;     /* same dark navy */
+  --border:#e5e7eb;
+  --ok:#16a34a; --warn:#eab308; --err:#ef4444;
+}
+[data-theme="light"]{
+  --bg:#ffffff; --panel:#f7f9fc; --muted:#6b7280; --text:#0f172a;
+  --brand:#0b1b3a; --accent:#0b1b3a; --border:#e5e7eb;
+}
+
+*{box-sizing:border-box} html,body{height:100%}
+body{
+  margin:0;
+  font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--text);
+  background:var(--bg);
+}
+
+/* Header */
+.cn-header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--border)}
+.cn-header__inner{max-width:1200px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.brand{color:var(--brand);text-decoration:none;font-weight:800;letter-spacing:.2px}
+.brand span{color:var(--brand)}
+.top-actions .btn{margin-left:8px}
+
+/* Buttons & links */
+.btn{border:1px solid var(--border);background:#fff;color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer}
+.btn.small{padding:8px 10px;font-size:13px}
+.btn.outline{background:#fff;border:1px solid var(--border);color:var(--text)}
+.btn:hover{box-shadow:0 0 0 3px rgba(11,27,58,.08)}
+.link{appearance:none;background:none;border:none;color:var(--brand);cursor:pointer;padding:0;text-decoration:underline}
+
+/* Layout */
+.cn-main{display:grid;grid-template-columns:300px 1fr;gap:0}
+@media (max-width: 980px){.cn-main{grid-template-columns:1fr}}
+.cn-sidebar{border-right:1px solid var(--border);padding:16px;background:var(--panel)}
+.sidebar-header{display:flex;flex-direction:column;gap:10px}
+.sidebar-title{margin:0 0 2px;font-size:18px}
+.search{padding:10px;border:1px solid var(--border);background:#fff;color:var(--text);border-radius:8px}
+
+.toc ol{list-style:none;margin:14px 0;padding:0; max-height:60vh; overflow:auto}
+.toc a{display:block;padding:8px 10px;border-radius:8px;color:var(--text);text-decoration:none}
+.toc a.active,.toc a:hover{background:#eef2f7}
+
+.sidebar-quick{display:flex;gap:8px;margin:12px 0 0}
+.sidebar-widget{margin:18px 0;padding:12px;border:1px solid var(--border);border-radius:10px;background:#fff}
+.widget-title{margin:0 0 6px;font-size:14px}
+.row{display:flex;gap:8px;align-items:center}
+.select{flex:1;padding:9px;border:1px solid var(--border);background:#fff;color:var(--text);border-radius:8px}
+
+/* Content */
+.cn-content{max-width:900px;padding:24px;margin:0 auto}
+.chapter{margin:26px 0 36px}
+.chapter h1,.chapter h2{margin:0 0 10px}
+.lead{color:var(--muted);font-size:16px}
+
+/* Callouts */
+.callout{padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:#fff;margin:12px 0}
+.callout.info{border-left:4px solid var(--brand)}
+.callout.warn{border-left:4px solid var(--warn)}
+.callout.tip{border-left:4px solid var(--ok)}
+
+/* Tools grid */
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:16px 0}
+.tool{display:block;width:100%;text-align:center;padding:10px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--text);cursor:pointer}
+.tool:hover{border-color:var(--brand);box-shadow:0 0 0 3px rgba(11,27,58,.08)}
+
+/* Details blocks */
+details{border:1px solid var(--border);border-radius:10px;background:#fff;margin:12px 0}
+summary{cursor:pointer;padding:12px 14px;font-weight:600;background:#f8fafc;border-radius:10px 10px 0 0}
+details[open] summary{border-bottom:1px solid var(--border)}
+details > *:not(summary){padding:10px 14px}
+
+/* Lists */
+.steps, .bullets{margin:0;padding-left:18px}
+.steps li{margin:6px 0}
+.bullets li{margin:4px 0}
+.two-col{columns:2;column-gap:28px}
+@media (max-width: 720px){.two-col{columns:1}}
+.steps.numbered{list-style:decimal;padding-left:22px}
+
+/* If→Then→Tool */
+.ift-grid{display:grid;grid-template-columns: 1fr 1fr;gap:10px;margin:12px 0}
+@media (max-width: 900px){.ift-grid{grid-template-columns:1fr}}
+.ift{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff}
+.ift > div{padding:10px 12px}
+.ift .if{background:#f3f6fb;font-weight:600}
+.ift .then{border-top:1px dashed var(--border)}
+.ift .tool{border-top:1px dashed var(--border)}
+
+/* Templates */
+.template{border:1px solid var(--border);border-radius:10px;margin:12px 0;background:#fff}
+.template h4{margin:0;padding:10px 12px;border-bottom:1px solid var(--border);background:#f0f3f8}
+.template textarea{width:100%;min-height:170px;border:none;background:#fff;color:var(--text);padding:12px;border-radius:0 0 10px 10px;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+
+/* Checklists & glossary */
+.checklist{columns:2;column-gap:28px}
+.glossary{columns:2;column-gap:28px}
+
+/* Footer */
+.cn-footer{border-top:1px solid var(--border);margin-top:24px}
+.cn-footer__inner{max-width:1200px;margin:0 auto;padding:16px;color:var(--muted);font-size:13px}
+
+/* Print */
+@media print{
+  body{background:#fff;color:#000}
+  .cn-sidebar,.cn-header,.tools-grid,.sidebar-widget{display:none}
+  .cn-main{display:block}
+  details{border:1px solid #ccc}
+  details[open] summary{border-bottom:1px solid #ccc}
+}
+  </style>
 </head>
 <body>
 <header class="cn-header">
@@ -15,7 +130,7 @@
     <a href="/" class="brand">ClaimNavigator<span>AI</span></a>
     <nav class="top-actions">
       <button class="btn small outline" data-action="toggle-theme" aria-label="Toggle theme">Theme</button>
-      <a class="btn small" href="/app/response-center.html">← Resource Center</a>
+      <a class="btn small" href="/app/response-center.html">Open Response Center</a>
     </nav>
   </div>
 </header>
@@ -31,20 +146,56 @@
     <nav class="toc" id="toc">
       <ol>
         <li><a href="#title">Start</a></li>
-        <li><a href="#pre-claim-preparation">1. Pre-Claim Preparation</a></li>
-        <li><a href="#immediate-post-loss-actions">2. Immediate Post-Loss Actions</a></li>
-        <li><a href="#filing-your-claim">3. Filing Your Claim</a></li>
-        <li><a href="#the-inspection-process">4. The Inspection Process</a></li>
-        <li><a href="#estimate-review-negotiation">5. Estimate Review & Negotiation</a></li>
-        <li><a href="#settlement-strategies">6. Settlement Strategies</a></li>
-        <li><a href="#dispute-resolution">7. Dispute Resolution</a></li>
-        <li><a href="#post-settlement-management">8. Post-Settlement Management</a></li>
-        <li><a href="#special-circumstances">9. Special Circumstances</a></li>
-        <li><a href="#advanced-strategies">10. Advanced Strategies</a></li>
-        <li><a href="#specific-peril-strategies">11. Specific Peril Strategies</a></li>
-        <li><a href="#property-type-specializations">12. Property Type Specializations</a></li>
-        <li><a href="#continuation">13–50. (Index)</a></li>
-        <li><a href="#final-thoughts">Final Thoughts</a></li>
+        <li><a href="#s1">1. Pre-Claim Preparation</a></li>
+        <li><a href="#s2">2. Immediate Post-Loss Actions</a></li>
+        <li><a href="#s3">3. Filing Your Claim</a></li>
+        <li><a href="#s4">4. The Inspection Process</a></li>
+        <li><a href="#s5">5. Estimate Review & Negotiation</a></li>
+        <li><a href="#s6">6. Settlement Strategies</a></li>
+        <li><a href="#s7">7. Dispute Resolution</a></li>
+        <li><a href="#s8">8. Post-Settlement Management</a></li>
+        <li><a href="#s9">9. Special Circumstances</a></li>
+        <li><a href="#s10">10. Advanced Strategies</a></li>
+        <li><a href="#s11">11. Specific Peril Strategies</a></li>
+        <li><a href="#s12">12. Property Type Specializations</a></li>
+        <li><a href="#s13">13. Insurance Company Tactics Deep Dive</a></li>
+        <li><a href="#s14">14. State-by-State Claim Requirements</a></li>
+        <li><a href="#s15">15. Complex Coverage Intersections</a></li>
+        <li><a href="#s16">16. Advanced Documentation Strategies</a></li>
+        <li><a href="#s17">17. Contractor & Vendor Management</a></li>
+        <li><a href="#s18">18. Time-Sensitive Emergency Actions</a></li>
+        <li><a href="#s19">19. Maximum Recovery Strategies</a></li>
+        <li><a href="#s20">20. Dealing with Claim Denials</a></li>
+        <li><a href="#s21">21. Special Policy Provisions</a></li>
+        <li><a href="#s22">22. Mortgage Company Complications</a></li>
+        <li><a href="#s23">23. Public Adjuster Deep Dive</a></li>
+        <li><a href="#s24">24. Attorney Involvement Strategies</a></li>
+        <li><a href="#s25">25. Fraud Prevention and Awareness</a></li>
+        <li><a href="#s26">26. Understanding Deductibles</a></li>
+        <li><a href="#s27">27. Overhead and Profit (O&P) Issues</a></li>
+        <li><a href="#s28">28. Matching and Uniformity</a></li>
+        <li><a href="#s29">29. Business Income Claims</a></li>
+        <li><a href="#s30">30. Pollution and Contamination</a></li>
+        <li><a href="#s31">31. Examination Under Oath (EUO)</a></li>
+        <li><a href="#s32">32. Reservation of Rights (ROR)</a></li>
+        <li><a href="#s33">33. Subrogation Issues</a></li>
+        <li><a href="#s34">34. Additional Structures Coverage</a></li>
+        <li><a href="#s35">35. Personal Property Strategies</a></li>
+        <li><a href="#s36">36. Loss of Use Complexities</a></li>
+        <li><a href="#s37">37. Flood Insurance Coordination</a></li>
+        <li><a href="#s38">38. Earthquake Claims</a></li>
+        <li><a href="#s39">39. Wildfire Claims</a></li>
+        <li><a href="#s40">40. Advanced Negotiation Tactics</a></li>
+        <li><a href="#s41">41. Technology Tools for Claims</a></li>
+        <li><a href="#s42">42. Specific Adjuster Types</a></li>
+        <li><a href="#s43">43. Medical Expenses in Property Claims</a></li>
+        <li><a href="#s44">44. Unique Property Features</a></li>
+        <li><a href="#s45">45. Seasonal Considerations</a></li>
+        <li><a href="#s46">46. Alternative Dispute Resolution</a></li>
+        <li><a href="#s47">47. Insurance Policy Interpretation</a></li>
+        <li><a href="#s48">48. Claim File Management</a></li>
+        <li><a href="#s49">49. Special Endorsements</a></li>
+        <li><a href="#s50">50. Recovery Maximization Tactics</a></li>
       </ol>
       <div class="sidebar-quick">
         <button class="btn small outline" data-action="expand-all">Expand All</button>
@@ -58,9 +209,7 @@
       <div class="row">
         <select id="state-select" class="select">
           <option value="">Select state…</option>
-          <option>CA</option><option>FL</option><option>TX</option>
-          <option>NY</option><option>IL</option><option>GA</option>
-          <!-- Add remaining states as needed -->
+          <option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option><option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option><option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option><option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option><option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option><option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option><option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option><option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option><option>SD</option><option>TN</option><option>TX</option><option>UT</option><option>VT</option><option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option>
         </select>
         <button class="btn small" data-tool="open-state-rules">Open</button>
       </div>
@@ -85,742 +234,616 @@
         <button class="tool" data-tool="open-coverage-decoder">Open Coverage Decoder</button>
       </div>
 
-      <div class="callout info">
-        <strong>How to use:</strong> Work section by section. Each area includes examples, decision trees, and an <em>If → Then → Tool</em> rail at the end so you always know the next best move and the right Claim Navigator tool to click.
-      </div>
+      <div class="callout info"><strong>How to use:</strong> Work section by section. Each area includes examples, decision trees, and an <em>If → Then → Tool</em> rail at the end so you always know the next best move and the right Claim Navigator tool to click.</div>
     </article>
 
-    <!-- 1. Pre-Claim Preparation -->
-    <article id="pre-claim-preparation" class="chapter" data-keywords="policy binder inventory preloss documentation cloud receipts serial numbers">
-      <h2>1. Pre-Claim Preparation</h2>
+    <!-- ====================== SECTIONS 1–12 (rich detail) ====================== -->
+    <!-- For brevity here, 1–12 include concise but complete steps; expand as needed. -->
 
+    <article id="s1" class="chapter" data-keywords="policy binder inventory preloss documentation cloud receipts serial numbers">
+      <h2>1. Pre-Claim Preparation</h2>
       <details open>
         <summary>Policy Documentation System</summary>
-        <p><strong>Action Required:</strong> Create a comprehensive binder: dec pages, riders/endorsements, premium proof (3y), all correspondence, prior claims, renewals, coverage changes.</p>
-        <p><strong>Example:</strong> John's RCV endorsement on hand avoided an ACV-only opening offer and shaved 3 days off processing.</p>
-        <h4>Digital Backup</h4>
-        <ul class="bullets">
-          <li>Cloud folders: Year → Policy Type → Document Type</li>
-          <li>Password-protect sensitive docs; share with trusted contact</li>
-          <li>Quarterly updates</li>
-        </ul>
-        <div class="inline-tools">
-          <button class="btn small" data-tool="open-doc-organizer">Auto-Create Folder Set</button>
-          <button class="btn small" data-tool="open-ai-agent" data-intent="policy-audit">AI: Policy Coverage Audit</button>
-        </div>
-
+        <p><strong>Action:</strong> Binder with dec pages, endorsements, premium proof (3y), correspondence, prior claims, renewals, coverage changes. Digital mirror in cloud with quarterly updates and shared access.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-doc-organizer">Auto-Create Folder Set</button> <button class="btn small" data-tool="open-ai-agent" data-intent="policy-audit">AI: Policy Coverage Audit</button></div>
         <h3>If → Then → Tool</h3>
-        <div class="ift-grid">
-          <div class="ift">
-            <div class="if">Can't find full policy forms</div>
-            <div class="then">Request certified copy citing state timeframe</div>
-            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="coverage-clarification">Generate Request</button> · <button class="link" data-tool="open-state-rules">Open State Rules</button></div>
-          </div>
-          <div class="ift">
-            <div class="if">Unsure if RCV or ACV applies</div>
-            <div class="then">Run coverage decoder and flag endorsements</div>
-            <div class="tool"><button class="link" data-tool="open-coverage-decoder">Coverage Decoder</button></div>
-          </div>
-        </div>
+        <div class="ift-grid"><div class="ift"><div class="if">Can't find full policy</div><div class="then">Request certified copy citing state timeframe</div><div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="coverage-clarification">Generate Request</button> · <button class="link" data-tool="open-state-rules">Open State Rules</button></div></div><div class="ift"><div class="if">Unsure RCV vs ACV</div><div class="then">Run coverage decoder; flag endorsements</div><div class="tool"><button class="link" data-tool="open-coverage-decoder">Coverage Decoder</button></div></div></div>
       </details>
-
       <details>
         <summary>Home Inventory Documentation</summary>
-        <p>Room-by-room list with model/serials, purchase date, cost & current replacement; photos (multi-angle), receipts, video walkthrough narration.</p>
-        <p><strong>Case:</strong> Sarah's theft claim recovered $47k vs $28k initial due to receipts + appraisals + annual video.</p>
-        <div class="inline-tools">
-          <button class="btn small" data-tool="open-inventory-starter">Start Inventory Starter</button>
-          <button class="btn small" data-tool="open-evidence-vault">Open Evidence Vault</button>
-        </div>
-
+        <p>Room-by-room items with model/serials, purchase date, cost and current replacement, photos/video, receipts. Appraise jewelry/art every 3 years.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-inventory-starter">Start Inventory Starter</button> <button class="btn small" data-tool="open-evidence-vault">Open Evidence Vault</button></div>
         <h3>If → Then → Tool</h3>
-        <div class="ift-grid">
-          <div class="ift">
-            <div class="if">No receipts for older items</div>
-            <div class="then">Use alt proofs: bank/CC statements, Amazon history, photos, social posts, warranty regs</div>
-            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="alt-proof-builder">AI: Ownership Proof Builder</button></div>
-          </div>
-          <div class="ift">
-            <div class="if">High-value items (jewelry/art)</div>
-            <div class="then">Obtain/refresh appraisals; check sub-limits and schedule</div>
-            <div class="tool"><button class="link" data-tool="open-coverage-decoder">Check Sub-limits</button></div>
-          </div>
-        </div>
+        <div class="ift-grid"><div class="ift"><div class="if">No receipts</div><div class="then">Use bank/CC statements, Amazon history, photos, social posts, warranties</div><div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="alt-proof-builder">Ownership Proof Builder</button></div></div><div class="ift"><div class="if">High-value items</div><div class="then">Get appraisals; check sub-limits and schedule</div><div class="tool"><button class="link" data-tool="open-coverage-decoder">Check Sub-limits</button></div></div></div>
       </details>
-
       <details>
         <summary>Pre-Loss Property Documentation</summary>
-        <p>Monthly exterior photos (all sides/roofline), systems (HVAC/plumbing/electrical), flooring and finishes; date-stamp. Counters "pre-existing wear."</p>
-        <div class="inline-tools">
-          <button class="btn small" data-tool="open-ai-agent" data-intent="preloss-checklist">AI: Pre-Loss Checklist</button>
-        </div>
-
+        <p>Monthly exterior & systems photos with date-stamps to counter pre-existing wear arguments.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="preloss-checklist">AI: Pre-Loss Checklist</button></div>
         <h3>If → Then → Tool</h3>
-        <div class="ift-grid">
-          <div class="ift">
-            <div class="if">Carrier claims pre-existing</div>
-            <div class="then">Submit prior-condition photos and maintenance logs</div>
-            <div class="tool"><button class="link" data-tool="open-document-generator" data-doc="prior-condition-brief">Generate Prior-Condition Brief</button></div>
-          </div>
-        </div>
+        <div class="ift-grid"><div class="ift"><div class="if">Carrier alleges pre-existing</div><div class="then">Submit prior-condition photos & maintenance logs</div><div class="tool"><button class="link" data-tool="open-document-generator" data-doc="prior-condition-brief">Prior-Condition Brief</button></div></div></div>
       </details>
     </article>
 
-    <!-- 2. Immediate Post-Loss Actions -->
-    <article id="immediate-post-loss-actions" class="chapter" data-keywords="first 24 hours safety mitigation documentation initial call">
+    <article id="s2" class="chapter" data-keywords="first 24 hours safety mitigation documentation initial call">
       <h2>2. Immediate Post-Loss Actions</h2>
-
       <details open>
         <summary>Hour 1–2: Safety & Mitigation</summary>
-        <h4>Fire</h4>
-        <ul class="steps">
-          <li>Evacuate; wait for clearance</li>
-          <li>Board-up if needed; save invoices</li>
-          <li>Start safe-distance photos</li>
-        </ul>
-        <h4>Water</h4>
-        <ul class="steps">
-          <li>Shut off source; video active leak</li>
-          <li>Emergency extraction; dry & dehumidify</li>
-          <li>Move undamaged items</li>
-        </ul>
-        <div class="callout warn"><strong>Critical:</strong> Policies require reasonable mitigation. Don't wait for adjuster permission—document and keep receipts.</div>
-        <div class="inline-tools">
-          <button class="btn small" data-tool="open-incident-log">Log Incident</button>
-          <button class="btn small" data-tool="open-evidence-vault">Upload Photos</button>
-        </div>
-
+        <p>Fire: evacuate, board-up, photo from safe distance. Water: shutoff, video leak, extraction, drying, move items. Policies require reasonable mitigation—document and keep receipts.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-incident-log">Log Incident</button> <button class="btn small" data-tool="open-evidence-vault">Upload Photos</button></div>
         <h3>If → Then → Tool</h3>
-        <div class="ift-grid">
-          <div class="ift">
-            <div class="if">Home is uninhabitable</div>
-            <div class="then">Request ALE advance and lodging authorization</div>
-            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="ale-advance-request">AI: ALE Advance Request</button></div>
-          </div>
-          <div class="ift">
-            <div class="if">Vendor requires insurer pre-approval</div>
-            <div class="then">Proceed with emergency-only scope; notify carrier in writing with photos</div>
-            <div class="tool"><button class="link" data-tool="open-document-generator" data-doc="emergency-mitigation-notice">Emergency Mitigation Notice</button></div>
-          </div>
-        </div>
+        <div class="ift-grid"><div class="ift"><div class="if">Home uninhabitable</div><div class="then">Request ALE advance & lodging authorization</div><div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="ale-advance-request">ALE Advance Request</button></div></div><div class="ift"><div class="if">Vendor demands pre-approval</div><div class="then">Proceed emergency-only; notify carrier with photos</div><div class="tool"><button class="link" data-tool="open-document-generator" data-doc="emergency-mitigation-notice">Mitigation Notice</button></div></div></div>
       </details>
-
       <details>
         <summary>Hour 2–6: Documentation</summary>
-        <p>Wide → medium → close photos; serials; water/smoke lines; undamaged comparisons; written log of time/cause/weather/witnesses/actions.</p>
-        <div class="inline-tools">
-          <button class="btn small" data-tool="open-evidence-vault">Evidence Vault</button>
-          <button class="btn small" data-tool="open-claim-diary">Claim Diary</button>
-        </div>
-
+        <p>Wide→medium→close photos; serials; water/smoke lines; undamaged comparisons; diary log of time/cause/weather/witnesses/actions.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-evidence-vault">Evidence Vault</button> <button class="btn small" data-tool="open-claim-diary">Claim Diary</button></div>
         <h3>If → Then → Tool</h3>
-        <div class="ift-grid">
-          <div class="ift">
-            <div class="if">Lost critical receipts</div>
-            <div class="then">Pull bank/CC PDFs; request store duplicates; annotate inventory</div>
-            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="receipt-reconstruction">AI: Receipt Reconstruction</button></div>
-          </div>
-        </div>
+        <div class="ift-grid"><div class="ift"><div class="if">Lost receipts</div><div class="then">Bank/CC PDFs, vendor reprints, annotate inventory</div><div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="receipt-reconstruction">Receipt Reconstruction</button></div></div></div>
       </details>
-
       <details>
         <summary>Hour 6–24: Initial Claim Contact</summary>
-        <p>Prepare policy #, time/date, cause, report numbers, temp contact, emergency expenses. Use factual script.</p>
-        <div class="inline-tools">
-          <button class="btn small" data-tool="open-document-generator" data-doc="initial-claim-notice">Generate Notice Letter</button>
-          <button class="btn small" data-tool="open-ai-agent" data-intent="first-call-script">AI: First Call Script</button>
-        </div>
-
+        <p>Prepare policy #, date/time, cause, report #s, temp contact, emergency spend. Use factual script. Request claim #, adjuster, inspection date, portal.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-document-generator" data-doc="initial-claim-notice">Initial Claim Notice</button> <button class="btn small" data-tool="open-ai-agent" data-intent="first-call-script">First Call Script</button></div>
         <h3>If → Then → Tool</h3>
-        <div class="ift-grid">
-          <div class="ift">
-            <div class="if">No acknowledgment in state timeframe</div>
-            <div class="then">Send Delay Notice citing statute; request written status</div>
-            <div class="tool"><button class="link" data-tool="open-state-rules">Open State Rules</button> · <button class="link" data-tool="open-ai-agent" data-intent="delay-notice">Delay Notice</button></div>
-          </div>
-        </div>
+        <div class="ift-grid"><div class="ift"><div class="if">No acknowledgment in timeframe</div><div class="then">Send Delay Notice citing statute</div><div class="tool"><button class="link" data-tool="open-state-rules">State Rules</button> · <button class="link" data-tool="open-ai-agent" data-intent="delay-notice">Delay Notice</button></div></div></div>
       </details>
     </article>
 
-      <!-- PHASE 2 -->
-      <article id="phase-2" class="chapter" data-keywords="file claim properly notice of loss inventory schedule proof of loss completeness attachments">
-        <h2>Phase 2 – File the Claim Properly (Complete & Compliant)</h2>
-
-        <details open>
-          <summary>1) Build Your Initial Submission Packet</summary>
-          <ol class="steps numbered">
-            <li><strong>Cover Letter:</strong> Basic facts, claim #, date of loss, short damage summary, attachments list.</li>
-            <li><strong>Damage Inventory Sheet:</strong> Room-by-room contents list (qty, age, condition, price, source).</li>
-            <li><strong>Proof of Loss (POL):</strong> Policy #, cause, claimed amount, signature.</li>
-            <li><strong>Evidence Bundle:</strong> Photos/videos, receipts, mitigation invoices, contractor estimates.</li>
-          </ol>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-document-generator" data-doc="damage-inventory">Open Damage Inventory Sheet</button>
-            <button class="btn small" data-tool="open-proof-of-loss">Proof of Loss Builder</button>
-          </div>
-          <div class="callout tip">
-            <strong>Pro Tip:</strong> Use consistent filenames (e.g., <code>Kitchen_Cabinets_Receipts.pdf</code>) and reference them inside your letter for clarity.
-          </div>
-        </details>
-
-        <details>
-          <summary>2) Policy Mapping (Coverage A–D)</summary>
-          <p>Map each claimed item to a coverage bucket:</p>
-          <ul class="bullets two-col">
-            <li><strong>A – Dwelling:</strong> Structure, finishes</li>
-            <li><strong>B – Other Structures:</strong> Detached garage, shed, fence</li>
-            <li><strong>C – Personal Property:</strong> Contents</li>
-            <li><strong>D – Loss of Use:</strong> ALE/temporary housing</li>
-          </ul>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-ai-agent" data-intent="coverage-mapping">AI: Map Items to Coverage</button>
-          </div>
-        </details>
-
-        <details>
-          <summary>3) Deductibles, Limits, Sub-limits</summary>
-          <p>Calculate deductible impact; check special sub-limits (jewelry, cash, business property at home, mold limits).</p>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-coverage-decoder">Open Coverage Decoder</button>
-          </div>
-        </details>
-
-        <details>
-          <summary>4) Submit & Confirm</summary>
-          <p>Submit via the carrier portal or email. Immediately send a confirmation email listing all attachments and requesting a written acknowledgment + inspection date.</p>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="template" data-template="#tmpl-submission-email">Copy: Submission Email</button>
-          </div>
-        </details>
-
-        <h3>If → Then → Tool (Phase 2)</h3>
-        <div class="ift-grid">
-          <div class="ift">
-            <div class="if">Carrier requests "more info" without specificity</div>
-            <div class="then">Ask for a <em>precise list</em> of missing docs</div>
-            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="specificity-request">AI: Specificity Request</button></div>
-          </div>
-          <div class="ift">
-            <div class="if">Carrier rejects your inventory format</div>
-            <div class="then">Regenerate in their columns, keep your master</div>
-            <div class="tool"><button class="link" data-tool="open-document-generator" data-doc="inventory-converter">Inventory Converter</button></div>
-          </div>
-        </div>
-      </article>
-
-      <!-- PHASE 3 -->
-      <article id="phase-3" class="chapter" data-keywords="adjuster inspection site visit scope walk-through etiquette recorded statement traps">
-        <h2>Phase 3 – Adjuster Interaction (Inspection + Communications)</h2>
-
-        <details open>
-          <summary>1) Pre-Inspection Prep</summary>
-          <ul class="steps">
-            <li>Create a <strong>Scope Walk List</strong> by room with must-see items.</li>
-            <li>Lay out receipts, estimates, and mitigation invoices in one folder.</li>
-            <li>Decide who speaks; avoid speculative opinions; stick to facts.</li>
-          </ul>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-claim-diary">Add Walk List to Diary</button>
-            <button class="btn small" data-tool="template" data-template="#tmpl-walk-list">Copy: Walk List Outline</button>
-          </div>
-        </details>
-
-        <details>
-          <summary>2) During Inspection</summary>
-          <p>Walk room by room. Show hidden/less obvious damage (behind cabinets, under flooring). Photograph the adjuster measuring key areas (context for later).</p>
-          <div class="callout warn">
-            <strong>Recorded statements:</strong> If requested on the spot, you can defer until prepared. Use the Recorded Statement Guide to plan answers.
-          </div>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-ai-agent" data-intent="recorded-statement-guide">Open Recorded Statement Guide</button>
-          </div>
-        </details>
-
-        <details>
-          <summary>3) Post-Inspection Confirmation</summary>
-          <p>Send an email summarizing what was examined, any areas deferred, and next steps with dates.</p>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="template" data-template="#tmpl-post-inspection-email">Copy: Post-Inspection Email</button>
-          </div>
-        </details>
-
-        <h3>If → Then → Tool (Phase 3)</h3>
-        <div class="ift-grid">
-          <div class="ift">
-            <div class="if">Adjuster rushes & skips rooms</div>
-            <div class="then">Politely request full walk-through; document refusal</div>
-            <div class="tool"><button class="link" data-tool="open-claim-diary">Log + Confirm in Writing</button></div>
-          </div>
-          <div class="ift">
-            <div class="if">Adjuster makes verbal promise</div>
-            <div class="then">Confirm by email within 24h</div>
-            <div class="tool"><button class="link" data-tool="template" data-template="#tmpl-confirmation-email">Copy Email</button></div>
-          </div>
-        </div>
-      </article>
-
-      <!-- PHASE 4 -->
-      <article id="phase-4" class="chapter" data-keywords="documentation diary timeline foldering evidence naming estimates experts ocr">
-        <h2>Phase 4 – Documentation Mastery</h2>
-
-        <details open>
-          <summary>1) Folder Structure & Naming</summary>
-          <p>Mirror this structure digitally (and optionally physically): Policy / Photos / Receipts / Estimates / Insurer Letters / Diary / AI Docs.</p>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-doc-organizer">Auto-Create Folder Set</button>
-          </div>
-        </details>
-
-        <details>
-          <summary>2) Evidence Hygiene</summary>
-          <ul class="bullets two-col">
-            <li>Use OCR PDFs</li><li>Embed dates in filenames</li>
-            <li>Store originals + watermarked share copies</li><li>Hash or checksum large files (optional)</li>
-          </ul>
-        </details>
-
-        <details>
-          <summary>3) Estimates & Expert Reports</summary>
-          <p>Obtain at least one independent estimate; for complex losses consider specialists (industrial hygienist, structural engineer).</p>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-ai-agent" data-intent="scope-gap-check">AI: Scope Gap Check</button>
-          </div>
-        </details>
-
-        <h3>If → Then → Tool (Phase 4)</h3>
-        <div class="ift-grid">
-          <div class="ift">
-            <div class="if">Carrier says "insufficient documentation"</div>
-            <div class="then">Request a <em>specific</em> itemized list of what is missing</div>
-            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="specificity-request">AI: Specificity Request</button></div>
-          </div>
-          <div class="ift">
-            <div class="if">Carrier rejects contractor estimate</div>
-            <div class="then">Submit competing estimate + code citations</div>
-            <div class="tool"><button class="link" data-tool="open-document-generator" data-doc="estimate-cover">Generate Cover Letter</button></div>
-          </div>
-        </div>
-      </article>
-
-      <!-- PHASE 5 -->
-      <article id="phase-5" class="chapter" data-keywords="insurer letters decode denial partial delay exclusions depreciation acv rcv">
-        <h2>Phase 5 – Decode Insurer Letters</h2>
-
-        <details open>
-          <summary>1) Letter Triage</summary>
-          <ul class="steps">
-            <li><strong>Acknowledgment/Next Steps</strong></li>
-            <li><strong>Request for Info (RFI)</strong></li>
-            <li><strong>Coverage Position</strong> (accept/partial/deny)</li>
-            <li><strong>Payment Explanation</strong> (ACV/RCV/depreciation)</li>
-          </ul>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-ai-agent" data-intent="decode-letter">Upload Letter to Decode</button>
-          </div>
-        </details>
-
-        <details>
-          <summary>2) Common Tactics</summary>
-          <ul class="bullets two-col">
-            <li>"Wear & tear" catch-all</li><li>"Pre-existing" assertions</li>
-            <li>Low scope pricing</li><li>Excessive depreciation</li>
-            <li>Repeated generic RFIs</li><li>Delay loops</li>
-          </ul>
-        </details>
-
-        <h3>If → Then → Tool (Phase 5)</h3>
-        <div class="ift-grid">
-          <div class="ift">
-            <div class="if">Partial denial citing exclusion</div>
-            <div class="then">Request precise clause + facts + photos relied upon</div>
-            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="clause-proof-request">Clause & Proof Request</button></div>
-          </div>
-          <div class="ift">
-            <div class="if">Payment shows heavy depreciation</div>
-            <div class="then">Challenge depreciation schedule with market lifespan sources</div>
-            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="depreciation-challenge">AI: Depreciation Challenge</button></div>
-          </div>
-        </div>
-      </article>
-
-      <!-- PHASE 6 -->
-      <article id="phase-6" class="chapter" data-keywords="responses appeal demand coverage clarification legal citations state rules deadlines bad faith">
-        <h2>Phase 6 – Strategic Responses</h2>
-
-        <details open>
-          <summary>1) Match Response to Letter Type</summary>
-          <ul class="bullets">
-            <li><strong>Delay →</strong> Notice of Delay + State Rule</li>
-            <li><strong>RFI (vague) →</strong> Specificity Demand</li>
-            <li><strong>Partial Denial →</strong> Appeal (facts + clauses + evidence)</li>
-            <li><strong>Lowball Offer →</strong> Line-item Rebuttal + comparables</li>
-          </ul>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-document-generator" data-doc="appeal-letter">Generate Appeal Letter</button>
-            <button class="btn small" data-tool="open-document-generator" data-doc="demand-letter">Generate Demand Letter</button>
-          </div>
-        </details>
-
-        <details>
-          <summary>2) Cite State Rules</summary>
-          <p>Use State Rule Lookup + AI Agent to insert acknowledgment, investigation, payment, and communication timeframe rules into your letters.</p>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-state-rules">Open State Rules</button>
-            <button class="btn small" data-tool="open-ai-agent" data-intent="insert-state-citations">AI: Insert Citations</button>
-          </div>
-        </details>
-
-        <h3>If → Then → Tool (Phase 6)</h3>
-        <div class="ift-grid">
-          <div class="ift">
-            <div class="if">Carrier stops responding</div>
-            <div class="then">Send escalation notice with statutory timelines + regulator CC</div>
-            <div class="tool"><button class="link" data-tool="open-document-generator" data-doc="escalation-notice">Escalation Notice</button></div>
-          </div>
-          <div class="ift">
-            <div class="if">Carrier cites "wear & tear" vaguely</div>
-            <div class="then">Request engineering basis + photos + tests relied upon</div>
-            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="engineering-proof-request">Engineering Proof Request</button></div>
-          </div>
-        </div>
-      </article>
-
-      <!-- PHASE 7 -->
-      <article id="phase-7" class="chapter" data-keywords="escalation appraisal regulator complaint attorney public adjuster negotiation anchors">
-        <h2>Phase 7 – Escalation & Negotiation</h2>
-
-        <details open>
-          <summary>1) Escalation Options</summary>
-          <ul class="bullets">
-            <li><strong>Appraisal</strong> (scope/pricing disputes)</li>
-            <li><strong>Regulator Complaint</strong> (unfair claims practices)</li>
-            <li><strong>Public Adjuster</strong> (representation/negotiation)</li>
-            <li><strong>Attorney</strong> (coverage/denial/bad-faith)</li>
-          </ul>
-          <div class="callout info">
-            <strong>State callout:</strong> Appraisal clauses vary by policy and state practice. Verify if mandated, optional, or waived by conduct.
-          </div>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-ai-agent" data-intent="appraisal-readiness-check">AI: Appraisal Readiness Check</button>
-            <button class="btn small" data-tool="open-document-generator" data-doc="appraisal-demand">Generate Appraisal Demand</button>
-          </div>
-        </details>
-
-        <details>
-          <summary>2) Negotiation Framework</summary>
-          <ul class="steps">
-            <li><strong>Anchor</strong> with your full documented scope.</li>
-            <li><strong>Trade issues, not positions:</strong> pricing lines, code upgrades, timelines.</li>
-            <li><strong>Always add new proof</strong> when moving on price.</li>
-          </ul>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-ai-agent" data-intent="negotiation-script">AI: Negotiation Script</button>
-          </div>
-        </details>
-
-        <h3>If → Then → Tool (Phase 7)</h3>
-        <div class="ift-grid">
-          <div class="ift">
-            <div class="if">Carrier refuses appraisal</div>
-            <div class="then">Cite policy language + seek regulator guidance or counsel</div>
-            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="appraisal-refusal-letter">Refusal Response</button></div>
-          </div>
-          <div class="ift">
-            <div class="if">Negotiations stall</div>
-            <div class="then">Escalate with timeline leverage + documentation packet</div>
-            <div class="tool"><button class="link" data-tool="open-document-generator" data-doc="negotiation-brief">Negotiation Brief</button></div>
-          </div>
-        </div>
-      </article>
-
-      <!-- PHASE 8 -->
-      <article id="phase-8" class="chapter" data-keywords="offer settlement acv rcv depreciation holdback scope compare line by line">
-        <h2>Phase 8 – Offer & Settlement Review</h2>
-
-        <details open>
-          <summary>1) Line-by-Line Comparison</summary>
-          <p>Compare carrier scope/estimate to your master. Flag missing line items, underpriced trades, and code upgrades.</p>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-ai-agent" data-intent="compare-estimates">AI: Compare Estimates</button>
-          </div>
-        </details>
-
-        <details>
-          <summary>2) ACV vs RCV & Depreciation</summary>
-          <p>Confirm whether payment is actual cash value (ACV) or replacement cost value (RCV) and the holdback terms. Challenge unreasonable depreciation.</p>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-ai-agent" data-intent="depreciation-review">AI: Depreciation Review</button>
-          </div>
-        </details>
-
-        <details>
-          <summary>3) Settlement Letter & Reservations</summary>
-          <p>When accepting partial payment, preserve rights to pursue supplements or appeals.</p>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="template" data-template="#tmpl-conditional-acceptance">Copy: Conditional Acceptance</button>
-          </div>
-        </details>
-
-        <h3>If → Then → Tool (Phase 8)</h3>
-        <div class="ift-grid">
-          <div class="ift">
-            <div class="if">Offer omits code upgrades</div>
-            <div class="then">Submit code citations + inspector notes</div>
-            <div class="tool"><button class="link" data-tool="open-document-generator" data-doc="code-upgrade-brief">Code Upgrade Brief</button></div>
-          </div>
-          <div class="ift">
-            <div class="if">Carrier delays payment after agreement</div>
-            <div class="then">Send payment deadline reminder with state rule cite</div>
-            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="payment-deadline-reminder">Deadline Reminder</button></div>
-          </div>
-        </div>
-      </article>
-
-      <!-- PHASE 9 -->
-      <article id="phase-9" class="chapter" data-keywords="supplement additional payment missed items appeal formal appeal package">
-        <h2>Phase 9 – Supplements & Appeals</h2>
-
-        <details open>
-          <summary>1) When to Supplement</summary>
-          <ul class="bullets">
-            <li>Hidden damage discovered during repairs</li>
-            <li>New expert findings</li>
-            <li>Pricing changes or code mandates</li>
-          </ul>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-document-generator" data-doc="supplement-package">Generate Supplement Package</button>
-          </div>
-        </details>
-
-        <details>
-          <summary>2) Formal Appeal Package</summary>
-          <ol class="steps numbered">
-            <li>Appeal Letter (issues + relief requested)</li>
-            <li>Policy citations & state rules</li>
-            <li>Evidence index + exhibits</li>
-            <li>Timeline of correspondence</li>
-          </ol>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-document-generator" data-doc="appeal-package">Build Appeal Package</button>
-          </div>
-        </details>
-
-        <h3>If → Then → Tool (Phase 9)</h3>
-        <div class="ift-grid">
-          <div class="ift">
-            <div class="if">Appeal window is short</div>
-            <div class="then">Send intent-to-appeal preserving rights, then follow with full package</div>
-            <div class="tool"><button class="link" data-tool="template" data-template="#tmpl-intent-to-appeal">Copy: Intent to Appeal</button></div>
-          </div>
-          <div class="ift">
-            <div class="if">Appeal ignored</div>
-            <div class="then">Escalate to regulator/counsel with record of delay</div>
-            <div class="tool"><button class="link" data-tool="open-document-generator" data-doc="regulator-complaint">Regulator Complaint</button></div>
-          </div>
-        </div>
-      </article>
-
-      <!-- PHASE 10 -->
-      <article id="phase-10" class="chapter" data-keywords="closeout holdback release lessons learned prevention preparedness">
-        <h2>Phase 10 – Closeout & Prevention</h2>
-
-        <details open>
-          <summary>1) Final Accounting</summary>
-          <ul class="steps">
-            <li>Confirm all payments (ACV + holdback) and categories (A–D).</li>
-            <li>Match checks to estimate lines; reconcile differences.</li>
-            <li>Retain claim archive for 7–10 years (and digital backup).</li>
-          </ul>
-        </details>
-
-        <details>
-          <summary>2) Releases & Reservations</summary>
-          <p>Avoid overbroad releases that waive supplements/unknowns unless you're truly done and paid.</p>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-ai-agent" data-intent="release-review">AI: Review Release Language</button>
-          </div>
-        </details>
-
-        <details>
-          <summary>3) Prevention & Readiness</summary>
-          <ul class="bullets two-col">
-            <li>Annual photo/video scan of home</li><li>Receipt vaulting for big items</li>
-            <li>Policy review before renewal</li><li>Inventory update (room-by-room)</li>
-          </ul>
-          <div class="inline-tools">
-            <button class="btn small" data-tool="open-inventory-starter">Start Inventory Starter</button>
-          </div>
-        </details>
-      </article>
-
-      <!-- APPENDICES -->
-      <article id="appendices" class="chapter" data-keywords="glossary deadlines templates samples state rules checklist">
-        <h2>Appendices</h2>
-
-        <details open>
-          <summary>A) Quick Checklists</summary>
-          <ul class="checklist">
-            <li>Phase 1: Safety, mitigate, photos, diary, notice, policy, POL draft</li>
-            <li>Phase 2: Cover letter, inventory, POL, evidence bundle, submit + confirm</li>
-            <li>Phase 3: Walk list, on-site facts, post-inspection confirmation</li>
-            <li>Phase 4: Foldering, OCR, estimates, gap checks</li>
-            <li>Phase 5: Decode letter, tactic ID, targeted response</li>
-            <li>Phase 6: Match response type, cite state rules</li>
-            <li>Phase 7: Appraisal/regulator/PA/attorney options</li>
-            <li>Phase 8: Line-by-line review, ACV/RCV, conditional acceptance</li>
-            <li>Phase 9: Supplements, appeals, regulator escalation</li>
-            <li>Phase 10: Final accounting, releases, prevention</li>
-          </ul>
-        </details>
-
-        <details>
-          <summary>B) Templates (Copy & Use)</summary>
-
-          <div class="template">
-            <h4>Confirmation Email (Verbal Promise)</h4>
-            <textarea id="tmpl-confirmation-email" readonly>
-Subject: Claim #[CLAIM #] – Confirmation of Today's Conversation
-
-Hello [Adjuster Name],
-
-Thank you for speaking with me on [date]. To confirm, you stated:
-• [Promise 1]
-• [Promise 2]
-
-Next steps:
-• [Carrier next step + date]
-• [My next step + date]
-
-If anything is inaccurate, please correct me in writing.
-
-Regards,
-[Your Name]
-[Policy #] – [Property Address]
-            </textarea>
-            <button class="btn small" data-copy="#tmpl-confirmation-email">Copy</button>
-          </div>
-
-          <div class="template">
-            <h4>Submission Email (Initial Packet)</h4>
-            <textarea id="tmpl-submission-email" readonly>
-Subject: Claim #[CLAIM #] – Initial Submission Packet
-
-Hello [Adjuster Name],
-
-Attached are the following documents for my claim:
-1) Cover Letter
-2) Damage Inventory Sheet
-3) Proof of Loss (signed)
-4) Evidence bundle (photos, receipts, mitigation, estimates)
-
-Please confirm receipt and provide the planned inspection date. If additional information is needed, kindly provide a specific itemized list.
-
-Thank you,
-[Your Name]
-            </textarea>
-            <button class="btn small" data-copy="#tmpl-submission-email">Copy</button>
-          </div>
-
-          <div class="template">
-            <h4>Post-Inspection Email</h4>
-            <textarea id="tmpl-post-inspection-email" readonly>
-Subject: Claim #[CLAIM #] – Post-Inspection Summary
-
-Hello [Adjuster Name],
-
-Thank you for the inspection on [date]. We reviewed:
-• [Rooms/areas]
-• [Contents categories]
-• Outstanding items to be revisited: [items]
-
-Next steps discussed:
-• [Carrier step] by [date]
-• [My step] by [date]
-
-Please confirm that this summary is accurate, or correct it in writing.
-
-Sincerely,
-[Your Name]
-            </textarea>
-            <button class="btn small" data-copy="#tmpl-post-inspection-email">Copy</button>
-          </div>
-
-          <div class="template">
-            <h4>Conditional Acceptance of Payment</h4>
-            <textarea id="tmpl-conditional-acceptance" readonly>
-Subject: Claim #[CLAIM #] – Conditional Acceptance of Payment
-
-Hello [Adjuster Name],
-
-I am depositing the enclosed payment(s) related to Claim #[CLAIM #] as a partial/conditional acceptance. This does not constitute a full and final settlement, and I expressly reserve my rights to pursue additional amounts via supplements and/or appeal for items not yet addressed or newly discovered.
-
-Regards,
-[Your Name]
-            </textarea>
-            <button class="btn small" data-copy="#tmpl-conditional-acceptance">Copy</button>
-          </div>
-
-          <div class="template">
-            <h4>Intent to Appeal</h4>
-            <textarea id="tmpl-intent-to-appeal" readonly>
-Subject: Claim #[CLAIM #] – Intent to Appeal
-
-Hello [Adjuster/Supervisor],
-
-Please accept this notice of my intent to appeal the coverage determination issued on [date]. I will submit a full appeal package within [X] days. Kindly preserve all related records and provide any additional materials relied upon in making the determination, including photos, expert reports, and internal notes.
-
-Thank you,
-[Your Name]
-            </textarea>
-            <button class="btn small" data-copy="#tmpl-intent-to-appeal">Copy</button>
-          </div>
-
-          <div class="template">
-            <h4>Scope Walk List (Outline)</h4>
-            <textarea id="tmpl-walk-list" readonly>
+    <article id="s3" class="chapter" data-keywords="proof of loss inventory organization timeline">
+      <h2>3. Filing Your Claim</h2>
+      <details open>
+        <summary>Proof of Loss & Packet</summary>
+        <p>POL: policy/claim #, date/cause, full inventory, RCV/ACV calcs, references. Packet: exec summary, room-by-room, indexed photos, 3 estimates, code upgrades, ALE projections.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-proof-of-loss">Proof of Loss Builder</button> <button class="btn small" data-tool="open-document-generator" data-doc="damage-inventory">Damage Inventory</button> <button class="btn small" data-tool="open-ai-agent" data-intent="packet-builder">Packet Builder</button></div>
+        <h3>If → Then → Tool</h3>
+        <div class="ift-grid"><div class="ift"><div class="if">Vague "more info" demand</div><div class="then">Request specific, itemized missing list</div><div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="specificity-request">Specificity Request</button></div></div><div class="ift"><div class="if">Inventory format rejected</div><div class="then">Convert to carrier columns; keep master</div><div class="tool"><button class="link" data-tool="open-document-generator" data-doc="inventory-converter">Inventory Converter</button></div></div></div>
+      </details>
+      <details>
+        <summary>Timeline Management</summary>
+        <p>Days 1–3: report/mitigate/document · Days 4–7: inventory/estimates/submit · Weeks 2–3: inspection/estimate/review · Weeks 4–6: supplements/negotiation · >6 weeks: appraisal/attorney/DOI.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-claim-diary">Add Deadlines to Diary</button> <button class="btn small" data-tool="open-ai-agent" data-intent="pol-extension">POL Extension Request</button></div>
+      </details>
+    </article>
+
+    <article id="s4" class="chapter" data-keywords="inspection prep walk list onsite etiquette recording follow-up">
+      <h2>4. The Inspection Process</h2>
+      <details open>
+        <summary>Pre-Inspection</summary>
+        <p>Have policy highlights, photos/video, 3+ estimates, mitigation receipts, item list + values, code docs, question list, witness.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="template" data-template="#tmpl-walk-list">Copy: Walk List</button> <button class="btn small" data-tool="open-claim-diary">Add Walk List to Diary</button></div>
+        <h3>If → Then → Tool</h3>
+        <div class="ift-grid"><div class="ift"><div class="if">Adjuster limits rooms</div><div class="then">Request full walk; log & recap in writing</div><div class="tool"><button class="link" data-tool="template" data-template="#tmpl-post-inspection-email">Post-Inspection Recap</button></div></div></div>
+      </details>
+      <details>
+        <summary>During Inspection</summary>
+        <p>Lead room-by-room; show hidden damage; avoid speculation; defer recorded statement until prepared.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="recorded-statement-guide">Recorded Statement Guide</button></div>
+        <h3>If → Then → Tool</h3>
+        <div class="ift-grid"><div class="ift"><div class="if">"Wear & tear" claim</div><div class="then">Submit pre-loss photos + weather + contractor findings</div><div class="tool"><button class="link" data-tool="open-document-generator" data-doc="causation-brief">Causation Brief</button></div></div></div>
+      </details>
+      <details>
+        <summary>Post-Inspection</summary>
+        <p>Same-day summary; attach photos; list agreed vs needs review; dates for next steps.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="template" data-template="#tmpl-post-inspection-email">Copy: Post-Inspection Email</button></div>
+      </details>
+    </article>
+
+    <article id="s5" class="chapter" data-keywords="line item analysis supplements 3 estimates pricing">
+      <h2>5. Estimate Review & Negotiation</h2>
+      <details open>
+        <summary>Line-Item Analysis (Bathroom Example)</summary>
+        <p>Counter omissions: moisture-resistant board, primer + 2 coats, plumbing wax ring, mitigation days, antimicrobial, monitoring, subfloor, GFCI + inspection. Adjuster $715 vs proper $2,797.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="compare-estimates">AI: Compare Estimates</button> <button class="btn small" data-tool="open-document-generator" data-doc="estimate-cover">Rebuttal Cover</button></div>
+        <h3>If → Then → Tool</h3>
+        <div class="ift-grid"><div class="ift"><div class="if">Omitted code items</div><div class="then">Submit citations, inspector notes, 3 contractor lines</div><div class="tool"><button class="link" data-tool="open-document-generator" data-doc="code-upgrade-brief">Code Upgrade Brief</button></div></div><div class="ift"><div class="if">Unreasonable depreciation</div><div class="then">Challenge lifespan; request schedule & basis</div><div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="depreciation-challenge">Depreciation Challenge</button></div></div></div>
+      </details>
+      <details>
+        <summary>Three-Estimate Strategy (Roof)</summary>
+        <p>Conservative / Moderate / Comprehensive bids to anchor scope; negotiate to mid with documentation.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="negotiation-script">AI: Negotiation Script</button></div>
+      </details>
+      <details>
+        <summary>Supplements</summary>
+        <p>Hidden damage, code adds, price changes, missed items. Provide discovery photos, expert notes, estimates.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-document-generator" data-doc="supplement-package">Supplement Package</button></div>
+      </details>
+    </article>
+
+    <article id="s6" class="chapter" data-keywords="acv rcv depreciation payments conditional acceptance">
+      <h2>6. Settlement Strategies</h2>
+      <details open>
+        <summary>ACV vs RCV (Roof Example)</summary>
+        <p>RCV $20k, depreciation $4k, deductible $2.5k → ACV $13.5k. Replace & submit docs to recover $4k holdback. Negotiate contractor to reduce out-of-pocket.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="template" data-template="#tmpl-conditional-acceptance">Conditional Acceptance</button></div>
+        <h3>If → Then → Tool</h3>
+        <div class="ift-grid"><div class="ift"><div class="if">Payment delayed after agreement</div><div class="then">Send payment deadline reminder with statute</div><div class="tool"><button class="link" data-tool="open-state-rules">State Rules</button> · <button class="link" data-tool="open-ai-agent" data-intent="payment-deadline-reminder">Deadline Reminder</button></div></div></div>
+      </details>
+      <details>
+        <summary>Final Settlement Negotiation</summary>
+        <p>Use clause requests, item adjustments, manager escalation, written timelines; don't sign immediately.</p>
+      </details>
+      <details>
+        <summary>Payment Structures</summary>
+        <ul class="bullets two-col"><li>Single payment</li><li>ACV/RCV two-part</li><li>Milestones</li><li>Direct-to-vendor</li></ul>
+      </details>
+    </article>
+
+    <article id="s7" class="chapter" data-keywords="appeal appraisal public adjuster DOI complaint">
+      <h2>7. Dispute Resolution</h2>
+      <details open>
+        <summary>Internal Appeals</summary>
+        <p>Appeal: undervaluation, overlooked damage, code, policy quotes, request statutory-timed response.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-document-generator" data-doc="appeal-letter">Appeal Letter</button></div>
+        <h3>If → Then → Tool</h3>
+        <div class="ift-grid"><div class="ift"><div class="if">Denied as "gradual"</div><div class="then">Submit plumber sudden-failure report + neighbor affidavit + prior inspection</div><div class="tool"><button class="link" data-tool="open-document-generator" data-doc="appeal-evidence-index">Appeal Evidence Index</button></div></div></div>
+      </details>
+      <details>
+        <summary>Appraisal</summary>
+        <p>For amount-of-loss disputes; costs vs recovery; timing windows vary by policy/state.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="appraisal-readiness-check">Appraisal Readiness</button> <button class="btn small" data-tool="open-document-generator" data-doc="appraisal-demand">Appraisal Demand</button></div>
+      </details>
+      <details>
+        <summary>Public Adjuster & DOI Complaint</summary>
+        <p>When to hire PA (value/complexity). DOI complaint for delays/unfair practices/misrep.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="doi-complaint">DOI Complaint Draft</button></div>
+      </details>
+    </article>
+
+    <article id="s8" class="chapter" data-keywords="contractor management rcv documentation depreciation release">
+      <h2>8. Post-Settlement Management</h2>
+      <details open>
+        <summary>Managing Repairs</summary>
+        <p>Vetting, milestone payments, lien waivers, warranties, supplement support.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-document-generator" data-doc="contract-checklist">Contract Checklist</button></div>
+        <h3>If → Then → Tool</h3>
+        <div class="ift-grid"><div class="ift"><div class="if">Contractor requests >30% upfront</div><div class="then">Renegotiate milestones; require lien waivers</div><div class="tool"><button class="link" data-tool="open-document-generator" data-doc="milestone-schedule">Milestone Schedule</button></div></div></div>
+      </details>
+      <details>
+        <summary>RCV Recovery</summary>
+        <p>Submit completion photos, invoices, proof of payment, permits/inspections, warranties to release holdback.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="rcv-package-checklist">RCV Package Checklist</button></div>
+      </details>
+      <details>
+        <summary>Releases & Reservations</summary>
+        <p>Avoid overbroad releases; preserve supplement rights; archive 7–10 years.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="release-review">Review Release Language</button></div>
+      </details>
+    </article>
+
+    <article id="s9" class="chapter" data-keywords="total loss business interruption catastrophe multiple policies">
+      <h2>9. Special Circumstances</h2>
+      <details open>
+        <summary>Total Loss</summary>
+        <p>Emergency advance, rental, start contents from memory, obtain reports, pull purchase histories.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-document-generator" data-doc="emergency-advance-request">Emergency Advance Request</button></div>
+        <h3>If → Then → Tool</h3>
+        <div class="ift-grid"><div class="ift"><div class="if">Mortgage holds checks</div><div class="then">Submit draw schedule + contractor contract + inspection proof</div><div class="tool"><button class="link" data-tool="open-document-generator" data-doc="mortgage-draw-request">Mortgage Draw Request</button></div></div></div>
+      </details>
+      <details>
+        <summary>Business Interruption</summary>
+        <p>Docs: 3y tax returns, 12-mo P&L, projections, seasonal factors, contracts; compute lost revenue + continuing + extra expenses.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="bi-calculator">BI Calculator</button></div>
+      </details>
+      <details>
+        <summary>Catastrophe & Multiple Policies</summary>
+        <p>Wind vs flood causation; FEMA; coordinate homeowners, NFIP, auto liability, umbrella; subrogation can offset deductibles.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="dual-policy-brief">Dual-Policy Brief</button></div>
+      </details>
+    </article>
+
+    <article id="s10" class="chapter" data-keywords="experts attorneys bad faith ale file request">
+      <h2>10. Advanced Strategies</h2>
+      <details open>
+        <summary>Experts & Legal</summary>
+        <p>When to hire engineers, meteorologists, hygienists, cause/origin; attorney fee models based on claim size/complexity.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="expert-scope">Expert Scope Builder</button></div>
+        <h3>If → Then → Tool</h3>
+        <div class="ift-grid"><div class="ift"><div class="if">Causation denial</div><div class="then">Commission C&O + weather; submit rebuttal</div><div class="tool"><button class="link" data-tool="open-document-generator" data-doc="expert-rebuttal-brief">Expert Rebuttal Brief</button></div></div></div>
+      </details>
+      <details>
+        <summary>Bad Faith</summary>
+        <p>Red flags: delays, lowball w/o basis, misrep policy, refusal to provide docs, poor investigation, unnecessary demands, threats, altered reports.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="bad-faith-log">Bad Faith Log Builder</button></div>
+      </details>
+      <details>
+        <summary>ALE & Claim File</summary>
+        <p>Missed ALE: mileage, utilities, storage, pet boarding, meals, laundromat. Request full claim file under statute.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-document-generator" data-doc="claim-file-request">Claim File Request</button></div>
+      </details>
+    </article>
+
+    <article id="s11" class="chapter" data-keywords="lightning theft vandalism water burst pipes wind hail matching">
+      <h2>11. Specific Peril Strategies</h2>
+      <details open>
+        <summary>Lightning Strike</summary>
+        <p>Hidden damage: HVAC boards, well pump controllers, landscape transformers, garage openers, doorbell transformers, irrigation controllers, pool/spa systems, low-voltage wiring, ISP/cable gear, security, smart hubs, appliance boards.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="lightning-inspection-plan">Full-System Inspection Plan</button></div>
+        <h3>If → Then → Tool</h3>
+        <div class="ift-grid"><div class="ift"><div class="if">Only obvious electronics listed</div><div class="then">Submit technician reports + itemized systems</div><div class="tool"><button class="link" data-tool="open-document-generator" data-doc="lightning-supplement">Lightning Supplement</button></div></div></div>
+      </details>
+      <details>
+        <summary>Theft & Vandalism</summary>
+        <p>Police report essentials; ownership proof via receipts/statements/photos/social posts/registrations/warranties/riders/appraisals.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="theft-proof-builder">Ownership Proof Builder</button></div>
+      </details>
+      <details>
+        <summary>Water (Burst Pipes) / Wind & Hail</summary>
+        <p>Moisture mapping; occupancy evidence (winter); weather docs; matching & uniformity with manufacturer discontinuation + code.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-document-generator" data-doc="moisture-map-brief">Moisture Map Brief</button> <button class="btn small" data-tool="open-document-generator" data-doc="matching-uniformity-brief">Matching & Uniformity Brief</button></div>
+      </details>
+    </article>
+
+    <article id="s12" class="chapter" data-keywords="condo rental vacation ho6 master loss assessment rent loss valuation occupancy vacancy">
+      <h2>12. Property Type Specializations</h2>
+      <details open>
+        <summary>Condominiums (Master vs HO-6)</summary>
+        <p>Master: structure/common; HO-6: interior/contents; loss assessment coverage; betterments/improvements.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="condo-coordination">Condo Coordination Plan</button></div>
+        <h3>If → Then → Tool</h3>
+        <div class="ift-grid"><div class="ift"><div class="if">Master deductible passed to unit</div><div class="then">Invoke loss assessment coverage; cite bylaws & policy</div><div class="tool"><button class="link" data-tool="open-document-generator" data-doc="loss-assessment-claim">Loss Assessment Claim</button></div></div></div>
+      </details>
+      <details>
+        <summary>Rental / Vacation Homes</summary>
+        <p>Loss of rent: lease, rent roll, comps, manager letter, occupancy rates. Vacancy disputes: utilities, security logs, smart data, inspections.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="rent-loss-calculator">Fair Rental Value Calculator</button> <button class="btn small" data-tool="open-document-generator" data-doc="vacancy-rebuttal">Vacancy Rebuttal</button></div>
+      </details>
+    </article>
+
+    <!-- ====================== SECTIONS 13–50 (concise but comprehensive) ====================== -->
+
+    <article id="s13" class="chapter" data-keywords="carrier tactics lowball delay rfi loop preexisting wear and tear">
+      <h2>13. Insurance Company Tactics Deep Dive</h2>
+      <details open>
+        <summary>Common Tactics & Counters</summary>
+        <ul class="bullets two-col">
+          <li>Lowball anchoring → Counter with 3 estimates + codes</li>
+          <li>Delay loops → Statutory timelines + DOI leverage</li>
+          <li>Vague RFIs → Specificity demand</li>
+          <li>Pre-existing / wear & tear → Pre-loss photos + maintenance logs</li>
+          <li>Excessive depreciation → Market lifespan sources</li>
+          <li>Scope minimization → Room-by-room walk list + photos</li>
+        </ul>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="tactic-detector">AI: Letter Tactic Detector</button></div>
+        <h3>If → Then → Tool</h3><div class="ift-grid"><div class="ift"><div class="if">Endless RFIs</div><div class="then">Request itemized needs + decision date</div><div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="specificity-request">Specificity Request</button></div></div><div class="ift"><div class="if">Carrier cherry-picks expert lines</div><div class="then">Submit full-scope expert summary + exhibits</div><div class="tool"><button class="link" data-tool="open-document-generator" data-doc="expert-exhibit-pack">Expert Exhibit Pack</button></div></div></div>
+      </details>
+    </article>
+
+    <article id="s14" class="chapter" data-keywords="state deadlines acknowledgment investigation payment unfair claims practices">
+      <h2>14. State-by-State Claim Requirements</h2>
+      <details open>
+        <summary>Timelines You Must Track</summary>
+        <ul class="bullets two-col"><li>Acknowledgment window</li><li>Investigation period</li><li>Decision/deny deadlines</li><li>Prompt payment rules</li><li>Communication cadence</li><li>Interest/penalties</li></ul>
+        <div class="inline-tools"><button class="btn small" data-tool="open-state-rules">Open State Rules</button> <button class="btn small" data-tool="open-ai-agent" data-intent="insert-state-citations">Insert Citations</button></div>
+        <h3>If → Then → Tool</h3><div class="ift-grid"><div class="ift"><div class="if">Carrier misses a statutory deadline</div><div class="then">Send notice with rule cite; copy DOI if recurring</div><div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="deadline-enforcement">Deadline Enforcement Notice</button></div></div></div>
+      </details>
+    </article>
+
+    <article id="s15" class="chapter" data-keywords="overlap policies ho nfip auto umbrella condo master subrogation">
+      <h2>15. Complex Coverage Intersections</h2>
+      <details open>
+        <summary>Coordinating Multiple Policies</summary>
+        <p>Homeowners, NFIP, auto liability, umbrella, condo master. Sequence claims; avoid double recovery; use subrogation to recoup deductible.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="coverage-map">AI: Coverage Intersection Map</button></div>
+        <h3>If → Then → Tool</h3><div class="ift-grid"><div class="ift"><div class="if">Cause overlaps (wind/flood)</div><div class="then">Commission causation report; apportion damages</div><div class="tool"><button class="link" data-tool="open-document-generator" data-doc="causation-brief">Causation Brief</button></div></div></div>
+      </details>
+    </article>
+
+    <article id="s16" class="chapter" data-keywords="evidence ocr indexing hash watermarks timelines exhibits">
+      <h2>16. Advanced Documentation Strategies</h2>
+      <details open>
+        <summary>Evidence Hygiene</summary>
+        <ul class="bullets two-col"><li>OCR PDFs</li><li>Consistent filenames</li><li>Date-embed</li><li>Originals + watermarked copies</li><li>Exhibit indexes</li><li>Timeline synthesis</li></ul>
+        <div class="inline-tools"><button class="btn small" data-tool="open-doc-organizer">Auto-Create Folder Set</button></div>
+        <h3>If → Then → Tool</h3><div class="ift-grid"><div class="ift"><div class="if">Carrier claims "insufficient documentation"</div><div class="then">Request itemized missing list; provide exhibit index</div><div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="specificity-request">Specificity Request</button></div></div></div>
+      </details>
+    </article>
+
+    <article id="s17" class="chapter" data-keywords="contractors vetting bids schedules lien waivers warranties change orders">
+      <h2>17. Contractor & Vendor Management</h2>
+      <details open>
+        <summary>Vetting & Contracts</summary>
+        <p>Verify license/insurance, references, written scope, warranty, insurance compliance, lien waivers, change-order process, supplement assistance.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-document-generator" data-doc="contract-checklist">Contract Checklist</button></div>
+        <h3>If → Then → Tool</h3><div class="ift-grid"><div class="ift"><div class="if">Contract lacks milestones</div><div class="then">Add milestone payment schedule tied to inspections</div><div class="tool"><button class="link" data-tool="open-document-generator" data-doc="milestone-schedule">Milestone Schedule</button></div></div></div>
+      </details>
+    </article>
+
+    <article id="s18" class="chapter" data-keywords="emergency actions board up tarping dryout secure property">
+      <h2>18. Time-Sensitive Emergency Actions</h2>
+      <details open>
+        <summary>48-Hour Window</summary>
+        <ul class="bullets two-col"><li>Board-up/tarping</li><li>Dry-out & dehumidify</li><li>Secure openings</li><li>Prevent mold</li><li>Document receipts</li><li>Notify carrier</li></ul>
+        <div class="inline-tools"><button class="btn small" data-tool="open-document-generator" data-doc="emergency-mitigation-notice">Mitigation Notice</button></div>
+        <h3>If → Then → Tool</h3><div class="ift-grid"><div class="ift"><div class="if">Carrier disputes emergency spend</div><div class="then">Provide policy duty citations + photos + invoices</div><div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="duty-to-mitigate-brief">Duty-to-Mitigate Brief</button></div></div></div>
+      </details>
+    </article>
+
+    <article id="s19" class="chapter" data-keywords="maximize recovery comps codes supplements depreciation holdback">
+      <h2>19. Maximum Recovery Strategies</h2>
+      <details open>
+        <summary>Levers</summary>
+        <ul class="bullets two-col"><li>Code upgrades</li><li>Comparable pricing</li><li>Multiple estimates</li><li>Supplements</li><li>Depreciation recovery</li><li>Timeline leverage</li></ul>
+        <div class="inline-tools"><button class="btn small" data-tool="open-ai-agent" data-intent="max-recovery-plan">AI: Max Recovery Plan</button></div>
+      </details>
+    </article>
+
+    <article id="s20" class="chapter" data-keywords="denials appeal evidence regulator">
+      <h2>20. Dealing with Claim Denials</h2>
+      <details open>
+        <summary>Denial Playbook</summary>
+        <p>Request full basis (policy clause + facts + photos); gather counter-evidence; file structured appeal; consider DOI and legal review.</p>
+        <div class="inline-tools"><button class="btn small" data-tool="open-document-generator" data-doc="denial-appeal">Denial Appeal</button></div>
+        <h3>If → Then → Tool</h3><div class="ift-grid"><div class="ift"><div class="if">Carrier refuses underlying evidence</div><div class="then">Request claim file per statute</div><div class="tool"><button class="link" data-tool="open-document-generator" data-doc="claim-file-request">Claim File Request</button></div></div></div>
+      </details>
+    </article>
+
+    <article id="s21" class="chapter" data-keywords="endorsements exclusions acc wording ordinance or law matching"></article>
+    <script>
+      // We'll continue injecting the remaining sections via JS to keep this canvas message manageable and still deliver full functionality.
+      // The remaining sections (21–50) are defined as data below and rendered on load with the same structure and working If→Then→Tool rails.
+      const remainingSections = [
+        {id:'s21', title:'21. Special Policy Provisions', keywords:'endorsements exclusions acc wording ordinance or law matching', blocks:[
+          {summary:'Key Provisions to Leverage', html:'<ul class="bullets two-col"><li>Ordinance or Law (code upgrades)</li><li>Matching endorsements</li><li>Extended replacement</li><li>Debris removal</li><li>Tree/landscaping</li><li>Service line</li><li>Water backup</li></ul>', tools:[{t:'open-coverage-decoder', label:'Coverage Decoder'}], ifthen:[{if:'Ordinance or Law applies', then:'Submit code citations + inspector letters + cost lines', tool:[{t:'open-document-generator', label:'Code Upgrade Brief', doc:'code-upgrade-brief'}]}, {if:'Discontinued materials', then:'Provide manufacturer letter + photos demonstrating mismatch', tool:[{t:'open-document-generator', label:'Matching & Uniformity Brief', doc:'matching-uniformity-brief'}]}]}
+        ]},
+        {id:'s22', title:'22. Mortgage Company Complications', keywords:'mortgage loss payee draws inspections endorsements', blocks:[
+          {summary:'Working with Loss Payees', html:'<p>Expect checks payable to you and mortgagee. Provide contractor contract, permits, photos, and inspection reports to release draws. Track lender timelines.</p>', tools:[{t:'open-document-generator', label:'Mortgage Draw Request', doc:'mortgage-draw-request'}], ifthen:[{if:'Lender holds funds unreasonably', then:'Escalate with draw schedule and completion proofs', tool:[{t:'open-ai-agent', label:'Escalation Letter', intent:'lender-escalation'}]}]}
+        ]},
+        {id:'s23', title:'23. Public Adjuster Deep Dive', keywords:'pa fee structure selection scope negotiation', blocks:[
+          {summary:'When and How to Use a PA', html:'<ul class="bullets two-col"><li>Claims >$50k or complex causation</li><li>Multiple carriers</li><li>Denials/undervaluation</li><li>Time constraints</li></ul><p>Vet licensing, references, success on similar losses; success-based fees; clear scope.</p>', tools:[{t:'open-ai-agent', label:'PA Cost-Benefit', intent:'pa-cost-benefit'}], ifthen:[{if:'Carrier non-responsive with PA engaged', then:'Have PA send regulator-ready timeline with cites', tool:[{t:'open-ai-agent', label:'Regulator-Ready Timeline', intent:'regulator-timeline'}]}]}
+        ]},
+        {id:'s24', title:'24. Attorney Involvement Strategies', keywords:'legal counsel contingency hourly bad faith', blocks:[
+          {summary:'When to Retain Counsel', html:'<ul class="bullets"><li>Coverage denial</li><li>Bad faith indicators</li><li>Large value dispute</li><li>Complex policy interpretation</li></ul><p>Fee models: contingency (25–40%), hourly ($250–500).</p>', tools:[{t:'open-ai-agent', label:'Case Readiness Review', intent:'attorney-readiness'}], ifthen:[{if:'Bad faith suspected', then:'Preserve communications; send notice with exhibits', tool:[{t:'open-document-generator', label:'Bad Faith Notice', doc:'bad-faith-notice'}]}]}
+        ]},
+        {id:'s25', title:'25. Fraud Prevention and Awareness', keywords:'red flags vendors assignment benefits aob scams', blocks:[
+          {summary:'Protect Yourself', html:'<ul class="bullets two-col"><li>Beware AOB traps</li><li>No blank contracts</li><li>Verify vendor credentials</li><li>Keep payment controls</li><li>Document materials delivered</li></ul>', tools:[{t:'open-ai-agent', label:'Vendor Vetting Checklist', intent:'vendor-vetting'}], ifthen:[{if:'Vendor inflates invoices', then:'Request itemization; compare to estimates; replace vendor if needed', tool:[{t:'open-ai-agent', label:'Invoice Audit', intent:'invoice-audit'}]}]}
+        ]},
+        {id:'s26', title:'26. Understanding Deductibles', keywords:'all perils hurricane wind hail percentage calendar year', blocks:[
+          {summary:'Types & Strategy', html:'<ul class="bullets two-col"><li>All-perils flat</li><li>Hurricane percentage</li><li>Wind/hail percentage</li><li>Per occurrence vs calendar year</li></ul><p>Plan repairs and supplements with deductible math in mind.</p>', tools:[{t:'open-ai-agent', label:'Deductible Planner', intent:'deductible-planner'}], ifthen:[{if:'Multiple events in short window', then:'Confirm which deductible applies; avoid misapplication', tool:[{t:'open-ai-agent', label:'Deductible Application Check', intent:'deductible-check'}]}]}
+        ]},
+        {id:'s27', title:'27. Overhead and Profit (O&P) Issues', keywords:'general contractor 10 and 10 complexity trades', blocks:[
+          {summary:'When O&P Applies', html:'<p>Usually warranted with multiple trades, sequencing, complexity, or supervision needs (e.g., 3+ trades, structural, code coordination).</p>', tools:[{t:'open-document-generator', label:'O&P Justification', doc:'op-justification'}], ifthen:[{if:'Carrier removes O&P', then:'Show trade count, dependencies, schedule; GC contract/quote', tool:[{t:'open-ai-agent', label:'O&P Argument', intent:'op-argument'}]}]}
+        ]},
+        {id:'s28', title:'28. Matching and Uniformity', keywords:'discontinued materials color blend code hoa', blocks:[
+          {summary:'Uniform Appearance', html:'<p>Support with manufacturer discontinuation letters, color mismatch photos, code/HOA requirements, realtor valuation impact.</p>', tools:[{t:'open-document-generator', label:'Matching & Uniformity Brief', doc:'matching-uniformity-brief'}], ifthen:[{if:'Carrier offers patching only', then:'Argue uniform appearance & market impact with documentation', tool:[{t:'open-ai-agent', label:'Matching Argument', intent:'matching-argument'}]}]}
+        ]},
+        {id:'s29', title:'29. Business Income Claims', keywords:'lost revenue continuing expense extra expense seasonal', blocks:[
+          {summary:'BI Framework', html:'<ul class="bullets"><li>Pre-loss trend</li><li>Projected vs actual</li><li>Continuing expenses</li><li>Extra expense mitigation</li><li>Seasonality adjustments</li></ul>', tools:[{t:'open-ai-agent', label:'BI Calculator', intent:'bi-calculator'}], ifthen:[{if:'Carrier disputes projections', then:'Provide customer orders, comps, and expert CPA letter', tool:[{t:'open-document-generator', label:'BI Support Pack', doc:'bi-support-pack'}]}]}
+        ]},
+        {id:'s30', title:'30. Pollution and Contamination', keywords:'mold asbestos lead hazardous cleanup limits', blocks:[
+          {summary:'Hazard Claims', html:'<p>Check sub-limits & exclusions. Use hygienist/industrial reports, lab tests, remediation protocols, post-clearance tests.</p>', tools:[{t:'open-ai-agent', label:'Remediation Plan', intent:'remediation-plan'}], ifthen:[{if:'Sub-limit invoked incorrectly', then:'Show coverage path (sudden event) + policy language', tool:[{t:'open-document-generator', label:'Sub-limit Rebuttal', doc:'sublimit-rebuttal'}]}]}
+        ]},
+        {id:'s31', title:'31. Examination Under Oath (EUO)', keywords:'euo prep counsel scope questions documents', blocks:[
+          {summary:'Prepare & Protect', html:'<p>Review policy, timeline, diary, docs; limit answers to facts; bring counsel if complex; request transcript.</p>', tools:[{t:'open-ai-agent', label:'EUO Prep Guide', intent:'euo-prep'}], ifthen:[{if:'Overbroad document demand', then:'Negotiate scope; provide index; assert privileges', tool:[{t:'open-ai-agent', label:'EUO Scope Response', intent:'euo-scope'}]}]}
+        ]},
+        {id:'s32', title:'32. Reservation of Rights (ROR)', keywords:'coverage uncertainty rights preserved response strategy', blocks:[
+          {summary:'Responding to ROR', html:'<p>Ask for specific bases; provide targeted facts; avoid admissions; maintain cooperation; track deadlines.</p>', tools:[{t:'open-document-generator', label:'ROR Response', doc:'ror-response'}], ifthen:[{if:'ROR persists without decision', then:'Request firm timeline and decision criteria', tool:[{t:'open-ai-agent', label:'Decision Timeline Request', intent:'ror-timeline'}]}]}
+        ]},
+        {id:'s33', title:'33. Subrogation Issues', keywords:'third party recovery deductible waiver coordination', blocks:[
+          {summary:'Protect Your Interests', html:'<p>When third parties at fault, coordinate subrogation; ensure deductible recovery; preserve evidence chain.</p>', tools:[{t:'open-ai-agent', label:'Subrogation Plan', intent:'subrogation-plan'}], ifthen:[{if:'Third-party carrier contacts you', then:'Route through your carrier/attorney; avoid statements', tool:[{t:'open-ai-agent', label:'Third-Party Contact Script', intent:'third-party-script'}]}]}
+        ]},
+        {id:'s34', title:'34. Additional Structures Coverage', keywords:'detached garage fence shed pool deck', blocks:[
+          {summary:'Coverage B Strategy', html:'<p>Separate scope for outbuildings/fences/pools/decks. Confirm percentage limit (often 10% of Coverage A) and endorsements.</p>', tools:[{t:'open-coverage-decoder', label:'Coverage Decoder'}], ifthen:[{if:'Coverage B inadequate', then:'Check endorsements; consider reallocation or supplements', tool:[{t:'open-ai-agent', label:'Coverage Reallocation', intent:'coverage-reallocation'}]}]}
+        ]},
+        {id:'s35', title:'35. Personal Property Strategies', keywords:'contents inventory valuation depreciation salvage', blocks:[
+          {summary:'Contents Tactics', html:'<ul class="bullets two-col"><li>Room-by-room inventory</li><li>RCV sources (links/catalogs)</li><li>Depreciation challenge</li><li>Salvage negotiation</li></ul>', tools:[{t:'open-document-generator', label:'Contents Inventory Sheet', doc:'damage-inventory'}], ifthen:[{if:'Carrier underprices contents', then:'Provide replacement links and retailer quotes', tool:[{t:'open-ai-agent', label:'RCV Link Pack', intent:'rcv-links'}]}]}
+        ]},
+        {id:'s36', title:'36. Loss of Use Complexities', keywords:'ale lodging meals utilities mileage pets storage', blocks:[
+          {summary:'ALE Optimization', html:'<ul class="bullets two-col"><li>Lodging</li><li>Meal allowances</li><li>Utility differentials</li><li>Mileage</li><li>Storage</li><li>Pet boarding</li></ul>', tools:[{t:'open-ai-agent', label:'ALE Calculator', intent:'ale-calculator'}], ifthen:[{if:'Carrier caps daily rates unrealistically', then:'Submit market comps + necessity letter', tool:[{t:'open-document-generator', label:'ALE Necessity Letter', doc:'ale-necessity-letter'}]}]}
+        ]},
+        {id:'s37', title:'37. Flood Insurance Coordination', keywords:'nfip proof of loss fema wind vs flood', blocks:[
+          {summary:'NFIP + Homeowners', html:'<p>Separate proofs and scopes; respect NFIP timelines; coordinate causation for overlapping wind/flood claims.</p>', tools:[{t:'open-ai-agent', label:'NFIP Checklist', intent:'nfip-checklist'}], ifthen:[{if:'Wind preceded flood', then:'Engineer report + weather timeline to secure HO coverage', tool:[{t:'open-document-generator', label:'Wind-First Brief', doc:'wind-first-brief'}]}]}
+        ]},
+        {id:'s38', title:'38. Earthquake Claims', keywords:'eq endorsements deductibles masonry cripple walls bracing', blocks:[
+          {summary:'EQ Specifics', html:'<p>High deductibles; structural engineer scope; masonry cracking patterns; cripple wall/bracing upgrades; contents breakage.</p>', tools:[{t:'open-ai-agent', label:'EQ Scope Planner', intent:'eq-scope'}], ifthen:[{if:'Hairline cracks dismissed', then:'Engineer pattern analysis; pre/post photos', tool:[{t:'open-document-generator', label:'Cracking Pattern Brief', doc:'cracking-brief'}]}]}
+        ]},
+        {id:'s39', title:'39. Wildfire Claims', keywords:'smoke soot hvac duct cleaning ale debris removal code', blocks:[
+          {summary:'Wildfire Scope', html:'<p>Smoke/soot testing; HVAC duct cleaning/replacement; soft goods cleaning; ALE for displacement; debris removal allowances; defensible space rebuild codes.</p>', tools:[{t:'open-ai-agent', label:'Wildfire Scope Builder', intent:'wildfire-scope'}], ifthen:[{if:'Carrier offers wipe-down only', then:'Submit lab particulates + HVAC reports', tool:[{t:'open-document-generator', label:'Smoke Damage Brief', doc:'smoke-brief'}]}]}
+        ]},
+        {id:'s40', title:'40. Advanced Negotiation Tactics', keywords:'anchors concessions packages deadlines', blocks:[
+          {summary:'Dealcraft', html:'<ul class="bullets"><li>Anchor with full documented scope</li><li>Trade issues, not positions</li><li>Bundle concessions</li><li>Use deadlines & timeline leverage</li></ul>', tools:[{t:'open-ai-agent', label:'Negotiation Script', intent:'negotiation-script'}], ifthen:[{if:'Stall at mid-offer', then:'Add new proof; propose conditional acceptance with timeline', tool:[{t:'open-document-generator', label:'Conditional Acceptance', doc:'conditional-acceptance'}]}]}
+        ]},
+        {id:'s41', title:'41. Technology Tools for Claims', keywords:'photoscan ocr timeline email parsing versioning', blocks:[
+          {summary:'Tooling Stack', html:'<ul class="bullets two-col"><li>Photo scan apps</li><li>OCR & PDF merge</li><li>Timeline generators</li><li>Email -> ticketing</li><li>Version control for estimates</li></ul>', tools:[{t:'open-ai-agent', label:'Tech Stack Recs', intent:'tech-stack'}], ifthen:[{if:'Manual doc chaos', then:'Adopt folder template + naming + OCR flow', tool:[{t:'open-doc-organizer', label:'Auto-Create Folder Set'}]}]}
+        ]},
+        {id:'s42', title:'42. Specific Adjuster Types', keywords:'field desk independent cat tpa', blocks:[
+          {summary:'Know Who You're Dealing With', html:'<p>Field vs Desk vs Independent vs CAT vs TPA; tailor communications and escalation paths accordingly.</p>', tools:[{t:'open-ai-agent', label:'Adjuster Strategy', intent:'adjuster-strategy'}], ifthen:[{if:'Desk adjuster blocks scope', then:'Request field reinspection or supervisor review', tool:[{t:'open-ai-agent', label:'Supervisor Request', intent:'supervisor-request'}]}]}
+        ]},
+        {id:'s43', title:'43. Medical Expenses in Property Claims', keywords:'injury premises medpay liability', blocks:[
+          {summary:'When Med/MedPay Enters', html:'<p>Slip/fall during loss, smoke inhalation, cleanup injuries—capture medical bills, incident reports; review medpay/ liability coverage.</p>', tools:[{t:'open-ai-agent', label:'Med Expense Pack', intent:'med-expense-pack'}], ifthen:[{if:'Carrier says unrelated', then:'Tie temporally and causally; physician statement', tool:[{t:'open-document-generator', label:'Medical Causation Letter', doc:'medical-causation'}]}]}
+        ]},
+        {id:'s44', title:'44. Unique Property Features', keywords:'historic home green builds solar smart systems', blocks:[
+          {summary:'Special Features', html:'<ul class="bullets two-col"><li>Historic materials & methods</li><li>Green building credits</li><li>Solar arrays & inverters</li><li>Smart home systems</li></ul>', tools:[{t:'open-ai-agent', label:'Unique Feature Scope', intent:'unique-scope'}], ifthen:[{if:'Historic methods required', then:'Submit preservation requirements + skilled labor rates', tool:[{t:'open-document-generator', label:'Historic Methods Brief', doc:'historic-brief'}]}]}
+        ]},
+        {id:'s45', title:'45. Seasonal Considerations', keywords:'freeze hurricane wildfire storm seasons', blocks:[
+          {summary:'Timing & Risk', html:'<p>Seasonal prep (freeze/hurricane/wildfire). Pre-storm scans; generator safety; vacancy prep; vendor pre-booking.</p>', tools:[{t:'open-ai-agent', label:'Seasonal Prep Plan', intent:'seasonal-prep'}], ifthen:[{if:'Storm approaching post-loss', then:'Prioritize tarping/board-up; notify carrier of increased risk', tool:[{t:'open-document-generator', label:'Storm Risk Notice', doc:'storm-risk-notice'}]}]}
+        ]},
+        {id:'s46', title:'46. Alternative Dispute Resolution', keywords:'mediation arbitration umpire', blocks:[
+          {summary:'ADR Paths', html:'<p>Mediation, arbitration, umpire processes; costs/benefit; confidentiality; enforceability.</p>', tools:[{t:'open-ai-agent', label:'ADR Selection Guide', intent:'adr-guide'}], ifthen:[{if:'Carrier offers mediation', then:'Prepare brief, exhibits, negotiation ranges', tool:[{t:'open-document-generator', label:'Mediation Brief', doc:'mediation-brief'}]}]}
+        ]},
+        {id:'s47', title:'47. Insurance Policy Interpretation', keywords:'contra proferentem ambiguity exclusions burden', blocks:[
+          {summary:'Reading the Policy', html:'<p>Structure: declarations → insuring agreement → definitions → exclusions → conditions → endorsements. Ambiguities construed against drafter (jurisdiction-specific).</p>', tools:[{t:'open-ai-agent', label:'Policy Interpretation Aid', intent:'policy-interpretation'}], ifthen:[{if:'Ambiguous exclusion', then:'Cite interpretive canons and jurisdictional cases (if available)', tool:[{t:'open-ai-agent', label:'Ambiguity Argument', intent:'ambiguity-argument'}]}]}
+        ]},
+        {id:'s48', title:'48. Claim File Management', keywords:'diary timeline exhibits naming retention', blocks:[
+          {summary:'Operational Discipline', html:'<ul class="bullets two-col"><li>Daily diary</li><li>Timeline with dates</li><li>Exhibit indexing</li><li>Consistent naming</li><li>Retention plan (7–10y)</li></ul>', tools:[{t:'open-claim-diary', label:'Open Claim Diary'}], ifthen:[{if:'Multiple adjusters rotate in', then:'Send continuity memo with timeline + exhibits', tool:[{t:'open-document-generator', label:'Continuity Memo', doc:'continuity-memo'}]}]}
+        ]},
+        {id:'s49', title:'49. Special Endorsements', keywords:'backup sewer service line ordinance green upgrades', blocks:[
+          {summary:'Don't Miss Add-Ons', html:'<ul class="bullets two-col"><li>Water backup</li><li>Service line</li><li>Green upgrades</li><li>Equipment breakdown</li></ul>', tools:[{t:'open-coverage-decoder', label:'Coverage Decoder'}], ifthen:[{if:'Endorsement overlooked by carrier', then:'Cite endorsement language and attach evidence', tool:[{t:'open-ai-agent', label:'Endorsement Cite Letter', intent:'endorsement-cite'}]}]}
+        ]},
+        {id:'s50', title:'50. Recovery Maximization Tactics', keywords:'holistic closeout supplements depreciation final audit', blocks:[
+          {summary:'Final Sweep', html:'<ul class="bullets two-col"><li>Line-by-line audit</li><li>Outstanding supplements</li><li>Depreciation recovery</li><li>ALE reconciliation</li><li>Lien waivers & warranties</li></ul>', tools:[{t:'open-ai-agent', label:'Final Audit Checklist', intent:'final-audit'}], ifthen:[{if:'Any gap remains', then:'File targeted supplement or appeal before closeout', tool:[{t:'open-document-generator', label:'Targeted Supplement', doc:'supplement-package'}]}]}
+        ]}
+      ];
+
+      function renderSections(){
+        const anchor = document.getElementById('s21');
+        if(!anchor) return;
+        const parent = anchor.parentNode;
+        remainingSections.forEach(sec=>{
+          let art = document.getElementById(sec.id);
+          if(!art){ art = document.createElement('article'); art.id = sec.id; art.className='chapter'; art.setAttribute('data-keywords', sec.keywords||''); }
+          let html = `<h2>${sec.title}</h2>`;
+          (sec.blocks||[]).forEach(b=>{
+            html += `<details open><summary>${b.summary}</summary>${b.html||''}`;
+            if(b.tools && b.tools.length){
+              html += `<div class="inline-tools">` + b.tools.map(btn=>renderToolBtn(btn)).join(' ') + `</div>`;
+            }
+            if(b.ifthen && b.ifthen.length){
+              html += `<h3>If → Then → Tool</h3><div class="ift-grid">` + b.ifthen.map(row=>{
+                return `<div class="ift"><div class="if">${row.if}</div><div class="then">${row.then}</div><div class="tool">${(row.tool||[]).map(t=>renderLinkBtn(t)).join(' ')}</div></div>`;
+              }).join('') + `</div>`;
+            }
+            html += `</details>`;
+          });
+          art.innerHTML = html;
+          if(document.getElementById(sec.id)){
+            document.getElementById(sec.id).replaceWith(art);
+          }else{
+            parent.appendChild(art);
+          }
+        });
+      }
+
+      function renderToolBtn(btn){
+        const attrs = [`class="btn small"`, `data-tool="${btn.t}"`];
+        if(btn.doc) attrs.push(`data-doc="${btn.doc}"`);
+        if(btn.intent) attrs.push(`data-intent="${btn.intent}"`);
+        return `<button ${attrs.join(' ')}>${btn.label}</button>`;
+      }
+      function renderLinkBtn(btn){
+        const attrs = [`class="link"`, `data-tool="${btn.t}"`];
+        if(btn.doc) attrs.push(`data-doc="${btn.doc}"`);
+        if(btn.intent) attrs.push(`data-intent="${btn.intent}"`);
+        return `<button ${attrs.join(' ')}>${btn.label}</button>`;
+      }
+      renderSections();
+    </script>
+
+    <!-- Final Thoughts & Templates -->
+    <article id="final-thoughts" class="chapter" data-keywords="ten commandments best practices conclusion">
+      <h2>Final Thoughts & Best Practices</h2>
+      <details open>
+        <summary>The 10 Commandments of Claim Management</summary>
+        <ol class="steps numbered">
+          <li>Document everything</li>
+          <li>Never accept first offer</li>
+          <li>Understand your policy</li>
+          <li>Mitigate immediately</li>
+          <li>Get multiple estimates</li>
+          <li>Be persistent</li>
+          <li>Know your rights (state rules)</li>
+          <li>Get help when needed</li>
+          <li>Stay organized</li>
+          <li>Think long-term (supplements)</li>
+        </ol>
+      </details>
+      <div class="callout info"><strong>Disclaimer:</strong> Educational content, not legal advice. For legal questions, consult an attorney in your state.</div>
+    </article>
+
+    <textarea id="tmpl-post-inspection-email" hidden readonly>
+Subject: Claim #[Number] - Inspection Follow-Up - [Date]
+Dear [Adjuster Name],
+Thank you for inspecting my property today regarding claim #[Number].
+To confirm our discussion:
+AGREED DAMAGE IDENTIFIED:
+- [...]
+ITEMS REQUIRING FURTHER REVIEW:
+- [...]
+NEXT STEPS DISCUSSED:
+- You will provide written estimate by [date]
+- I will submit contractor estimates by [date]
+Please confirm receipt and let me know if I've missed anything.
+Attached: Photos from today's inspection
+Best regards,
+[Your name]
+    </textarea>
+
+    <textarea id="tmpl-walk-list" hidden readonly>
 Room: Kitchen
 • Cabinets: Water damage bottom boxes; toe-kick swelling
 • Flooring: Buckling under fridge; moisture readings attached
 • Drywall: Staining at soffit; thermal images attached
-
 Room: Living
-• Ceiling: Crack telegraphing from attic leak; moisture reading 18%
+• Ceiling: Crack telegraphing; moisture reading 18%
 • Baseboards: Swell + separation
 • Contents: Sofa foam saturated; receipts attached
-            </textarea>
-            <button class="btn small" data-copy="#tmpl-walk-list">Copy</button>
-          </div>
+    </textarea>
 
-        </details>
-
-        <details>
-          <summary>C) Glossary (Plain English)</summary>
-          <ul class="glossary">
-            <li><strong>ACV:</strong> Actual Cash Value (RCV minus depreciation).</li>
-            <li><strong>RCV:</strong> Replacement Cost Value (full replacement price).</li>
-            <li><strong>Depreciation:</strong> Reduction for age/condition; often recoverable when repairs completed (RCV policies).</li>
-            <li><strong>Appraisal:</strong> Policy process to resolve scope/pricing disputes via neutral appraisers and umpire.</li>
-            <li><strong>Duties After Loss:</strong> Your obligations post-loss (mitigation, documentation, cooperation, etc.).</li>
-          </ul>
-        </details>
-
-        <details>
-          <summary>D) State-Specific Issues (Use Lookup)</summary>
-          <p>Deadlines and insurer duties (acknowledgment, investigation, payment timing, claim communications, unfair practices) vary by state and policy type. Use the <strong>State Rule Lookup</strong> with the <strong>AI Response Agent</strong> to insert the correct citations into your letters.</p>
-          <ul class="bullets">
-            <li><strong>Examples to watch:</strong> time to acknowledge claim; time to decide/deny; prompt payment rules; appraisal handling; interest/penalties for late payment; required disclosures.</li>
-            <li><strong>Specialty lines:</strong> Condo master vs unit policy, business interruption documentation, code upgrade endorsements, anti-concurrent causation wording.</li>
-          </ul>
-        </details>
-      </article>
+    <textarea id="tmpl-conditional-acceptance" hidden readonly>
+Subject: Claim #[CLAIM #] – Conditional Acceptance of Payment
+Hello [Adjuster Name],
+I am depositing the enclosed payment(s) related to Claim #[CLAIM #] as a partial/conditional acceptance. This does not constitute a full and final settlement, and I expressly reserve my rights to pursue additional amounts via supplements and/or appeal for items not yet addressed or newly discovered.
+Regards,
+[Your Name]
+    </textarea>
 
   </section>
 </main>
 
-  <footer class="cn-footer">
-    <div class="cn-footer__inner">
-      <p>© <span id="year"></span> ClaimNavigatorAI. This Playbook is educational; it is not legal advice. For legal guidance, consult an attorney in your state.</p>
-    </div>
-  </footer>
+<footer class="cn-footer">
+  <div class="cn-footer__inner">
+    <p>© <span id="year"></span> ClaimNavigatorAI. Educational content; not legal advice.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const $ = (sel, ctx=document) => ctx.querySelector(sel);
+  const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
+
+  // Year
+  const y = $("#year"); if(y) y.textContent = new Date().getFullYear();
+
+  // Theme toggle
+  const root = document.documentElement; const tbtn = $('[data-action="toggle-theme"]');
+  const savedTheme = localStorage.getItem('cn-theme'); if(savedTheme) root.setAttribute('data-theme', savedTheme);
+  tbtn?.addEventListener('click', ()=>{ const cur = root.getAttribute('data-theme')==='light'?'dark':'light'; root.setAttribute('data-theme',cur); localStorage.setItem('cn-theme',cur); });
+
+  // Scrollspy
+  const sections = $$('.chapter[id]'); const tocLinks = $$('#toc a');
+  const onScroll = ()=>{ let current = sections[0]?.id; sections.forEach(sec=>{ const top = sec.getBoundingClientRect().top; if(top<=120) current=sec.id; }); tocLinks.forEach(a=>{ a.classList.toggle('active', a.getAttribute('href')==='#'+current); }); };
+  document.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  // Expand/Collapse
+  $('[data-action="expand-all"]').addEventListener('click', ()=> $$('#content details').forEach(d=> d.open=true));
+  $('[data-action="collapse-all"]').addEventListener('click', ()=> $$('#content details').forEach(d=> d.open=false));
+
+  // Search
+  const search = $('#playbook-search');
+  search?.addEventListener('input', ()=>{ const q = search.value.trim().toLowerCase(); sections.forEach(sec=>{ const keys=(sec.getAttribute('data-keywords')||'').toLowerCase(); const text=sec.textContent.toLowerCase(); const hit=!q || keys.includes(q) || text.includes(q); sec.style.display = hit?'':'none'; }); });
+
+  // Copy template buttons
+  const copyBtns = $$('[data-copy]'); copyBtns.forEach(btn=> btn.addEventListener('click', ()=>{ const target = $(btn.getAttribute('data-copy')); if(!target) return; navigator.clipboard.writeText(target.value||target.textContent||'').then(()=>{ btn.textContent='Copied!'; setTimeout(()=>btn.textContent='Copy',1000); }); }));
+  const tmplBtns = $$('[data-template]'); tmplBtns.forEach(btn=> btn.addEventListener('click', ()=>{ const target=$(btn.getAttribute('data-template')); if(!target) return; navigator.clipboard.writeText(target.value||'').then(()=>{ btn.textContent='Copied!'; setTimeout(()=>btn.textContent='Copy',1000); }); }));
+
+  // Deep-link route map (granular pages/functions)
+  const routeMap = {
+    'open-ai-agent': '/app/response-center.html?tab=ai-agent',
+    'open-document-generator': '/app/response-center.html?tab=documents',
+    'open-claim-diary': '/app/response-center.html?tab=diary',
+    'open-evidence-vault': '/app/response-center.html?tab=evidence',
+    'open-proof-of-loss': '/app/response-center.html?tab=pol',
+    'open-coverage-decoder': '/app/response-center.html?tab=coverage-decoder',
+    'open-doc-organizer': '/app/response-center.html?tab=organizer',
+    'open-state-rules': '/app/response-center.html?tab=state-rules',
+    'open-inventory-starter': '/app/response-center.html?tab=inventory-starter'
+  };
+
+  function openTool(btn){
+    const tool = btn.getAttribute('data-tool'); if(!tool) return;
+    const base = routeMap[tool]; if(!base){ console.warn('No route for', tool); return; }
+    const url = new URL(base, window.location.origin);
+    const doc = btn.getAttribute('data-doc'); const intent = btn.getAttribute('data-intent'); const state = $('#state-select')?.value || '';
+    if(doc) url.searchParams.set('doc', doc);
+    if(intent) url.searchParams.set('intent', intent);
+    if(tool==='open-state-rules' && state) url.searchParams.set('state', state);
+    window.location.href = url.toString();
+  }
+  $$('.tool,[data-tool]').forEach(btn=> btn.addEventListener('click', ()=> openTool(btn)));
+
+  // Preserve hash navigation offset
+  if(location.hash){ const el = $(location.hash); el && el.scrollIntoView({behavior:'smooth', block:'start'}); }
+})();
+</script>
 </body>
 </html>
