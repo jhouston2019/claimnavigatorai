@@ -178,36 +178,32 @@ class ResponseCenterContent {
 
   createMyDocumentsContent() {
     return `
-      <h2>Claim Document Library</h2>
-      <p>Access your claim documents and templates.</p>
-      
-      <div class="tool-card">
-        <h3>Document Search</h3>
-        <input type="text" id="document-search" placeholder="Search documents..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 1rem;">
-        <button class="btn-primary" onclick="searchDocuments()">Search</button>
-      </div>
-      
-      <div class="tool-card">
-        <h3>My Documents</h3>
-        <div id="documents-list">
-          <div class="document-item">
-            <h4>Notice of Loss</h4>
-            <p>Template for reporting your claim</p>
-            <button class="btn-secondary">Download Template</button>
-            <button class="btn-secondary">View Sample</button>
+      <div class="documents-section">
+        <div class="section-header">
+          <h2>Claim Document Library</h2>
+          <p>Access your complete library of 122 professional claim documents and templates.</p>
+          
+          <div class="language-toggle">
+            <button id="lang-en" class="lang-btn active" data-lang="en">English</button>
+            <button id="lang-es" class="lang-btn" data-lang="es">Español</button>
           </div>
-          <div class="document-item">
-            <h4>Property Inventory</h4>
-            <p>Comprehensive damage documentation</p>
-            <button class="btn-secondary">Download Template</button>
-            <button class="btn-secondary">View Sample</button>
+        </div>
+        
+        <div class="tool-card">
+          <h3>Document Search</h3>
+          <input type="text" id="document-search" placeholder="Search documents..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 1rem;">
+          <button class="btn-primary" onclick="searchDocuments()">Search</button>
+        </div>
+        
+        <div class="tool-card">
+          <h3>My Documents</h3>
+          <div id="documents-list">
+            <div class="loading">Loading documents...</div>
           </div>
-          <div class="document-item">
-            <h4>Additional Living Expenses Log</h4>
-            <p>Track your ALE expenses</p>
-            <button class="btn-secondary">Download Template</button>
-            <button class="btn-secondary">View Sample</button>
-          </div>
+        </div>
+        
+        <div id="document-count" class="info-box" style="display: none;">
+          <strong>📄 <span id="document-count-text">0</span> documents available in <span id="current-language">English</span></strong>
         </div>
       </div>
     `;
@@ -396,7 +392,21 @@ class ResponseCenterContent {
       if (e.target.classList.contains('tab')) {
         this.switchTab(e.target.dataset.tab);
       }
+      
+      // Language toggle events
+      if (e.target.matches('.lang-btn')) {
+        const lang = e.target.dataset.lang;
+        this.switchLanguage(lang);
+      }
     });
+    
+    // Document search events
+    const searchInput = this.container.querySelector('#document-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        this.searchDocuments(e.target.value);
+      });
+    }
   }
 
   switchTab(tabId) {
@@ -412,6 +422,12 @@ class ResponseCenterContent {
     if (selectedContent) selectedContent.classList.add('active');
     
     this.currentTab = tabId;
+    
+    // Load documents when My Documents tab is selected
+    if (tabId === 'my-documents') {
+      // Load English documents by default
+      this.loadDocuments('en');
+    }
     
     // Trigger callback
     if (this.options.onContentChange) {
@@ -647,6 +663,120 @@ class ResponseCenterContent {
             padding: 1rem;
           }
         }
+
+        /* Document Library Styles */
+        .documents-section {
+          max-width: 100%;
+        }
+
+        .section-header {
+          text-align: center;
+          margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+          color: var(--primary);
+          margin-bottom: 0.5rem;
+        }
+
+        .language-toggle {
+          display: flex;
+          gap: 0.5rem;
+          justify-content: center;
+          margin-top: 1rem;
+        }
+
+        .lang-btn {
+          padding: 0.5rem 1rem;
+          border: 2px solid var(--border);
+          background: white;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .lang-btn.active {
+          background: var(--primary);
+          color: white;
+          border-color: var(--primary);
+        }
+
+        .lang-btn:hover {
+          border-color: var(--primary);
+        }
+
+        .document-item {
+          background: white;
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          padding: 1.5rem;
+          margin-bottom: 1rem;
+          transition: all 0.3s ease;
+        }
+
+        .document-item:hover {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          border-color: var(--primary);
+        }
+
+        .document-header h4 {
+          color: var(--primary);
+          margin-bottom: 0.5rem;
+          font-size: 1.1rem;
+        }
+
+        .document-header p {
+          color: #666;
+          margin-bottom: 1rem;
+          line-height: 1.5;
+        }
+
+        .document-actions {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+
+        .document-actions .btn-secondary {
+          padding: 0.5rem 1rem;
+          background: var(--bg-light);
+          border: 1px solid var(--border);
+          border-radius: 4px;
+          color: var(--text);
+          text-decoration: none;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .document-actions .btn-secondary:hover {
+          background: var(--primary);
+          color: white;
+          border-color: var(--primary);
+        }
+
+        .info-box {
+          background: #e0f2fe;
+          border: 1px solid #b3e5fc;
+          border-radius: 8px;
+          padding: 1rem;
+          margin-top: 1rem;
+          text-align: center;
+          color: #0277bd;
+        }
+
+        .loading {
+          text-align: center;
+          padding: 2rem;
+          color: #666;
+        }
+
+        .error-message {
+          background: #ffebee;
+          border: 1px solid #ffcdd2;
+          border-radius: 8px;
+          padding: 1rem;
+          color: #c62828;
+        }
       </style>
     `;
     
@@ -689,8 +819,107 @@ window.generateAIResponse = function() {
   output.style.display = 'block';
 };
 
+// Document loading methods
+ResponseCenterContent.prototype.loadDocuments = async function(language = 'en') {
+  try {
+    const docsUrl = language === 'es' ? '/assets/docs/es/documents.json' : '/assets/data/documents.json';
+    const response = await fetch(docsUrl);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to load documents: ${response.status}`);
+    }
+    
+    const docsData = await response.json();
+    
+    // Convert object to array and sort by label
+    const docsArray = Object.values(docsData).sort((a, b) => a.label.localeCompare(b.label));
+    
+    this.renderDocuments(docsArray, language);
+    this.updateDocumentCount(docsArray.length, language);
+    
+  } catch (error) {
+    console.error('Error loading documents:', error);
+    this.showDocumentError(error.message);
+  }
+};
+
+ResponseCenterContent.prototype.renderDocuments = function(documents, language) {
+  const documentsList = this.container.querySelector('#documents-list');
+  if (!documentsList) return;
+
+  const documentsHtml = documents.map(doc => `
+    <div class="document-item">
+      <div class="document-header">
+        <h4>${doc.label}</h4>
+        <p>${doc.description}</p>
+      </div>
+      <div class="document-actions">
+        ${doc.templatePath ? `<button class="btn-secondary" onclick="downloadDocument('${doc.templatePath}', 'template')">Download Template</button>` : ''}
+        ${doc.samplePath ? `<button class="btn-secondary" onclick="downloadDocument('${doc.samplePath}', 'sample')">View Sample</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  documentsList.innerHTML = documentsHtml;
+};
+
+ResponseCenterContent.prototype.updateDocumentCount = function(count, language) {
+  const countElement = this.container.querySelector('#document-count-text');
+  const langElement = this.container.querySelector('#current-language');
+  const countBox = this.container.querySelector('#document-count');
+  
+  if (countElement) countElement.textContent = count;
+  if (langElement) langElement.textContent = language === 'es' ? 'Spanish' : 'English';
+  if (countBox) countBox.style.display = 'block';
+};
+
+ResponseCenterContent.prototype.showDocumentError = function(message) {
+  const documentsList = this.container.querySelector('#documents-list');
+  if (documentsList) {
+    documentsList.innerHTML = `<div class="error-message" style="color: red; padding: 1rem; text-align: center;">Error loading documents: ${message}</div>`;
+  }
+};
+
+ResponseCenterContent.prototype.switchLanguage = function(language) {
+  // Update language button states
+  this.container.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  this.container.querySelector(`[data-lang="${language}"]`).classList.add('active');
+  
+  // Load documents for the selected language
+  this.loadDocuments(language);
+};
+
+ResponseCenterContent.prototype.searchDocuments = function(query) {
+  const documentItems = this.container.querySelectorAll('.document-item');
+  const searchTerm = query.toLowerCase();
+  
+  documentItems.forEach(item => {
+    const title = item.querySelector('h4').textContent.toLowerCase();
+    const description = item.querySelector('p').textContent.toLowerCase();
+    
+    if (title.includes(searchTerm) || description.includes(searchTerm)) {
+      item.style.display = 'block';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+};
+
 window.downloadResponse = function() {
   alert('Download functionality would be implemented here.');
+};
+
+window.downloadDocument = function(filePath, type) {
+  // Create a link to download the document
+  const link = document.createElement('a');
+  link.href = `/Document Library - Final ${type === 'template' ? 'English' : 'English'}/${filePath}`;
+  link.download = filePath;
+  link.target = '_blank';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
 window.copyResponse = function() {

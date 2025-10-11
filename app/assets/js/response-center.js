@@ -255,6 +255,15 @@ function showTool(tool) {
   const content = getToolContent(tool);
   contentArea.innerHTML = content;
   
+  // Load documents when documents tool is selected
+  if (tool === 'documents') {
+    // Load English documents by default
+    setTimeout(() => {
+      loadDocuments('en');
+      setupDocumentLibraryEvents();
+    }, 100);
+  }
+  
   // Update active state
   document.querySelectorAll('.sidebar-item').forEach(item => {
     item.classList.remove('active');
@@ -282,6 +291,11 @@ function getToolContent(tool) {
   
   const toolName = toolNames[tool] || tool;
   
+  // Special handling for document library
+  if (tool === 'documents') {
+    return getDocumentLibraryContent();
+  }
+  
   return `
     <div class="tool-content">
       <h2>${toolName}</h2>
@@ -292,6 +306,159 @@ function getToolContent(tool) {
       </div>
     </div>
   `;
+}
+
+// Document Library Content
+function getDocumentLibraryContent() {
+  return `
+    <div class="tool-content">
+      <div class="documents-section">
+        <div class="section-header">
+          <h2>Claim Document Library</h2>
+          <p>Access your complete library of 122 professional claim documents and templates.</p>
+          
+          <div class="language-toggle">
+            <button id="lang-en" class="lang-btn active" data-lang="en">English</button>
+            <button id="lang-es" class="lang-btn" data-lang="es">Español</button>
+          </div>
+        </div>
+        
+        <div class="tool-card">
+          <h3>Document Search</h3>
+          <input type="text" id="document-search" placeholder="Search documents..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 1rem;">
+          <button class="btn-primary" onclick="searchDocuments()">Search</button>
+        </div>
+        
+        <div class="tool-card">
+          <h3>My Documents</h3>
+          <div id="documents-list">
+            <div class="loading">Loading documents...</div>
+          </div>
+        </div>
+        
+        <div id="document-count" class="info-box" style="display: none;">
+          <strong>📄 <span id="document-count-text">0</span> documents available in <span id="current-language">English</span></strong>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Document loading functions
+async function loadDocuments(language = 'en') {
+  try {
+    const docsUrl = language === 'es' ? '/assets/docs/es/documents.json' : '/assets/data/documents.json';
+    const response = await fetch(docsUrl);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to load documents: ${response.status}`);
+    }
+    
+    const docsData = await response.json();
+    
+    // Convert object to array and sort by label
+    const docsArray = Object.values(docsData).sort((a, b) => a.label.localeCompare(b.label));
+    
+    renderDocuments(docsArray, language);
+    updateDocumentCount(docsArray.length, language);
+    
+  } catch (error) {
+    console.error('Error loading documents:', error);
+    showDocumentError(error.message);
+  }
+}
+
+function renderDocuments(documents, language) {
+  const documentsList = document.querySelector('#documents-list');
+  if (!documentsList) return;
+
+  const documentsHtml = documents.map(doc => `
+    <div class="document-item">
+      <div class="document-header">
+        <h4>${doc.label}</h4>
+        <p>${doc.description}</p>
+      </div>
+      <div class="document-actions">
+        ${doc.templatePath ? `<button class="btn-secondary" onclick="downloadDocument('${doc.templatePath}', 'template')">Download Template</button>` : ''}
+        ${doc.samplePath ? `<button class="btn-secondary" onclick="downloadDocument('${doc.samplePath}', 'sample')">View Sample</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  documentsList.innerHTML = documentsHtml;
+}
+
+function updateDocumentCount(count, language) {
+  const countElement = document.querySelector('#document-count-text');
+  const langElement = document.querySelector('#current-language');
+  const countBox = document.querySelector('#document-count');
+  
+  if (countElement) countElement.textContent = count;
+  if (langElement) langElement.textContent = language === 'es' ? 'Spanish' : 'English';
+  if (countBox) countBox.style.display = 'block';
+}
+
+function showDocumentError(message) {
+  const documentsList = document.querySelector('#documents-list');
+  if (documentsList) {
+    documentsList.innerHTML = `<div class="error-message" style="color: red; padding: 1rem; text-align: center;">Error loading documents: ${message}</div>`;
+  }
+}
+
+function switchLanguage(language) {
+  // Update language button states
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  document.querySelector(`[data-lang="${language}"]`).classList.add('active');
+  
+  // Load documents for the selected language
+  loadDocuments(language);
+}
+
+function searchDocuments(query) {
+  const documentItems = document.querySelectorAll('.document-item');
+  const searchTerm = (query || '').toLowerCase();
+  
+  documentItems.forEach(item => {
+    const title = item.querySelector('h4').textContent.toLowerCase();
+    const description = item.querySelector('p').textContent.toLowerCase();
+    
+    if (title.includes(searchTerm) || description.includes(searchTerm)) {
+      item.style.display = 'block';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+
+function setupDocumentLibraryEvents() {
+  // Language toggle events
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const lang = this.dataset.lang;
+      switchLanguage(lang);
+    });
+  });
+  
+  // Document search events
+  const searchInput = document.querySelector('#document-search');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      searchDocuments(this.value);
+    });
+  }
+}
+
+function downloadDocument(filePath, type) {
+  // Create a link to download the document
+  const link = document.createElement('a');
+  link.href = `/Document Library - Final ${type === 'template' ? 'English' : 'English'}/${filePath}`;
+  link.download = filePath;
+  link.target = '_blank';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 // Language management
