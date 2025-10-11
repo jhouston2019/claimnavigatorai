@@ -110,9 +110,13 @@
     <div class="card tool tool-xl tool-card">
       <h3>💰 Financial Impact Calculator</h3>
       <p>Calculate the financial impact of hiring professional help vs DIY approach</p>
-      <div class="tool-actions">
-        <button class="btn btn-primary" onclick="openFinancialCalculator()">Open Calculator</button>
-        <button class="btn btn-secondary" onclick="downloadFinancialGuide()">Download Guide</button>
+      <div class="tool-input">
+        <textarea id="financial-input" placeholder="Enter your claim details, professional costs, and DIY estimates..."></textarea>
+        <div class="tool-actions">
+          <button class="btn btn-primary" onclick="calculateFinancialImpact()">Calculate Impact</button>
+          <button class="btn btn-secondary" onclick="downloadFinancialGuide()">Download Guide</button>
+        </div>
+        <div id="financial-output" class="tool-output" style="display: none;"></div>
       </div>
     </div>
 
@@ -248,8 +252,27 @@ window.downloadDamageForm = function() {
 };
 
 // Financial Impact Calculator
-window.openFinancialCalculator = function() {
-  window.open('/app/response-center/financial-calculator.html', '_blank');
+window.calculateFinancialImpact = async function() {
+  const input = document.getElementById('financial-input').value.trim();
+  const output = document.getElementById('financial-output');
+  
+  if (!input) {
+    alert('Please enter your claim details and cost information.');
+    return;
+  }
+  
+  output.style.display = 'block';
+  output.innerHTML = '<div class="spinner"></div> Calculating financial impact...';
+  
+  try {
+    const result = await analyzeClaim({ analysisType: 'financial_impact', text: input });
+    output.innerHTML = `
+      <h4>Financial Impact Analysis:</h4>
+      <div class="analysis-content">${result.analysis || 'Financial impact calculation completed. Review the cost-benefit analysis of professional help vs DIY approach.'}</div>
+    `;
+  } catch (error) {
+    output.innerHTML = `<div style="color: #ef4444;">Error: ${error.message}</div>`;
+  }
 };
 
 window.downloadFinancialGuide = function() {
