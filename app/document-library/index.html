@@ -9,60 +9,155 @@
 </div></header>
 <main class="container" id="main">
   <div class="card">
-    <div class="grid" style="grid-template-columns:1fr 200px 200px;">
-      <input id="q" placeholder="Search PDFs / templates">
-      <select id="bucket"><option value="documents">documents</option></select>
-      <input id="prefix" placeholder="Prefix (e.g., templates/, pdfs/)" value="templates/">
+    <div class="section-header">
+      <h2>Claim Document Library</h2>
+      <p>Access your complete library of 122 professional claim documents and templates.</p>
+      
+      <div class="language-toggle">
+        <button id="lang-en" class="lang-btn active" data-lang="en">English</button>
+        <button id="lang-es" class="lang-btn" data-lang="es">Español</button>
+      </div>
     </div>
-    <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-primary" id="load">Load</button>
+    
+    <div class="search-section">
+      <input id="q" placeholder="Search documents..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 1rem;">
+      <button class="btn btn-primary" id="load">Load Documents</button>
       <a class="btn" href="/app/documents/index.html">Open Document Generator</a>
     </div>
   </div>
   <div id="warning" class="card" style="display:none;color:#f59e0b"></div>
-  <div id="list" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:12px"></div>
+  <div id="document-count" class="info-box" style="display:none;margin-top:1rem;">
+    <strong>📄 <span id="document-count-text">0</span> documents available in <span id="current-language">English</span></strong>
+  </div>
+  <div id="list" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-top:12px"></div>
 </main>
 <script type="module">
-  import {listFiles,filePublicUrl,hasSupabase} from '/app/assets/js/supabase.js';
   import {qs,on} from '/app/assets/js/ui-helpers.js';
 
-  function card(f,bucket,prefix){
-    const path = (prefix||'') + (f.name||'');
-    const url = filePublicUrl({bucket, path});
-    return `<div class="card">
-      <div class="small">${path}</div>
-      <h3>${f.name}</h3>
-      <div class="small">${(f.metadata?.mimetype)||'file'}</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-        <a class="btn" href="${url}" target="_blank">Open</a>
-        <a class="btn" href="/app/documents/demand-letter.html?prefill=${encodeURIComponent(f.name)}">Draft Demand</a>
-        <a class="btn" href="/app/documents/appeal-letter.html?prefill=${encodeURIComponent(f.name)}">Draft Appeal</a>
+  let currentLanguage = 'en';
+  let allDocuments = [];
+
+  function createDocumentCard(doc) {
+    return `<div class="card document-item">
+      <div class="document-header">
+        <h3>${doc.label}</h3>
+        <p>${doc.description}</p>
+      </div>
+      <div class="document-actions">
+        ${doc.templatePath ? `<button class="btn btn-secondary" onclick="downloadDocument('${doc.templatePath}', 'template')">Download Template</button>` : ''}
+        ${doc.samplePath ? `<button class="btn btn-secondary" onclick="downloadDocument('${doc.samplePath}', 'sample')">View Sample</button>` : ''}
       </div>
     </div>`;
   }
 
-  async function load(){
-    const warn = qs('#warning'), list = qs('#list');
-    warn.style.display='none'; list.innerHTML='';
-    if(!hasSupabase()){
-      warn.style.display='block';
-      warn.innerHTML = 'Supabase is not configured. Set <code>window.__SUPABASE_URL</code> and <code>window.__SUPABASE_ANON_KEY</code> globally. See bottom of this file for how.';
-      return;
+  async function loadDocuments(language = 'en') {
+    const warn = qs('#warning');
+    const list = qs('#list');
+    const countBox = qs('#document-count');
+    const countText = qs('#document-count-text');
+    const langText = qs('#current-language');
+    
+    warn.style.display = 'none';
+    list.innerHTML = '<div class="loading">Loading documents...</div>';
+    
+    try {
+      const docsUrl = language === 'es' ? '/assets/docs/es/documents.json' : '/assets/data/documents.json';
+      const response = await fetch(docsUrl);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to load documents: ${response.status}`);
+      }
+      
+      const docsData = await response.json();
+      
+      // Convert object to array and sort by label
+      allDocuments = Object.values(docsData).sort((a, b) => a.label.localeCompare(b.label));
+      
+      renderDocuments(allDocuments);
+      updateDocumentCount(allDocuments.length, language);
+      
+    } catch (error) {
+      console.error('Error loading documents:', error);
+      list.innerHTML = `<div class="error-message" style="color: red; padding: 1rem; text-align: center;">Error loading documents: ${error.message}</div>`;
     }
-    const bucket = qs('#bucket').value || 'documents';
-    const prefix = qs('#prefix').value || '';
-    const q = (qs('#q').value||'').toLowerCase();
-
-    const files = await listFiles({bucket, prefix});
-    const filtered = files.filter(f=>!f.id || f.name) // only objects
-                         .filter(f=> !q || (f.name||'').toLowerCase().includes(q));
-    list.innerHTML = filtered.map(f=>card(f,bucket,prefix)).join('') || '<em>No files found.</em>';
   }
 
-  on(qs('#load'),'click', load);
-  on(qs('#q'),'input', ()=> load());
-  // auto-load on first open
-  load();
+  function renderDocuments(documents) {
+    const list = qs('#list');
+    const searchTerm = (qs('#q').value || '').toLowerCase();
+    
+    const filtered = documents.filter(doc => {
+      const title = doc.label.toLowerCase();
+      const description = doc.description.toLowerCase();
+      return title.includes(searchTerm) || description.includes(searchTerm);
+    });
+    
+    if (filtered.length === 0) {
+      list.innerHTML = '<div class="no-results">No documents found matching your search.</div>';
+      return;
+    }
+    
+    list.innerHTML = filtered.map(doc => createDocumentCard(doc)).join('');
+  }
+
+  function updateDocumentCount(count, language) {
+    const countText = qs('#document-count-text');
+    const langText = qs('#current-language');
+    const countBox = qs('#document-count');
+    
+    if (countText) countText.textContent = count;
+    if (langText) langText.textContent = language === 'es' ? 'Spanish' : 'English';
+    if (countBox) countBox.style.display = 'block';
+  }
+
+  function switchLanguage(language) {
+    currentLanguage = language;
+    
+    // Update language button states
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    document.querySelector(`[data-lang="${language}"]`).classList.add('active');
+    
+    // Load documents for the selected language
+    loadDocuments(language);
+  }
+
+  function searchDocuments() {
+    renderDocuments(allDocuments);
+  }
+
+  function downloadDocument(filePath, type) {
+    // Create a link to download the document
+    const link = document.createElement('a');
+    const libraryPath = currentLanguage === 'es' ? 'Document Library - Final Spanish' : 'Document Library - Final English';
+    link.href = `/${libraryPath}/${filePath}`;
+    link.download = filePath;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // Make functions globally available
+  window.downloadDocument = downloadDocument;
+  window.switchLanguage = switchLanguage;
+  window.searchDocuments = searchDocuments;
+
+  // Event listeners
+  on(qs('#load'), 'click', () => loadDocuments(currentLanguage));
+  on(qs('#q'), 'input', searchDocuments);
+  
+  // Language toggle events
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const lang = this.dataset.lang;
+      switchLanguage(lang);
+    });
+  });
+  
+  // Auto-load English documents on page load
+  loadDocuments('en');
 </script>
 <!-- Provide these in a global script tag (e.g., in /app/index.html or Netlify _headers/_redirects inject) 
 <script>
@@ -71,4 +166,134 @@
 </script>
 -->
 <script type="module" src="/app/assets/js/diagnostics.js"></script>
+
+<style>
+/* Document Library Styles */
+.section-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section-header h2 {
+  color: var(--primary, #2563eb);
+  margin-bottom: 0.5rem;
+}
+
+.language-toggle {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.lang-btn {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--border, #e5e7eb);
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.lang-btn.active {
+  background: var(--primary, #2563eb);
+  color: white;
+  border-color: var(--primary, #2563eb);
+}
+
+.lang-btn:hover {
+  border-color: var(--primary, #2563eb);
+}
+
+.document-item {
+  background: white;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.document-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary, #2563eb);
+}
+
+.document-header h3 {
+  color: var(--primary, #2563eb);
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.document-header p {
+  color: #666;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.document-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.document-actions .btn-secondary {
+  padding: 0.5rem 1rem;
+  background: var(--bg-light, #f8fafc);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 4px;
+  color: var(--text, #374151);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.document-actions .btn-secondary:hover {
+  background: var(--primary, #2563eb);
+  color: white;
+  border-color: var(--primary, #2563eb);
+}
+
+.info-box {
+  background: #e0f2fe;
+  border: 1px solid #b3e5fc;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  color: #0277bd;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.error-message {
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 8px;
+  padding: 1rem;
+  color: #c62828;
+}
+
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .document-actions {
+    flex-direction: column;
+  }
+  
+  .language-toggle {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+</style>
+
 </body></html>
