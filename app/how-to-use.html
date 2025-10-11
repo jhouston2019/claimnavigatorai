@@ -405,7 +405,108 @@
             <div class="brand"><div class="logo"></div><div>ClaimNavigatorAI</div></div>
             <nav class="nav">
                 <a href="/app/index.html">Home</a>
-                <a href="/app/response-center.html">← Resource Center</a>
+                
+                <!-- How to Use Dropdown -->
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('how-to-use')">
+                        📖 How to Use <span class="nav-arrow">▼</span>
+                    </button>
+                    <div class="nav-dropdown-content" id="how-to-use">
+                        <div class="how-to-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Describe Your Situation</h4>
+                                    <p>Use the search bar or Situational Advisory to get started.</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Generate Documents</h4>
+                                    <p>Create letters, forms, and evidence with AI assistance.</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Analyze & Compare</h4>
+                                    <p>Review policies, compare estimates, and assess damage.</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h4>Track Progress</h4>
+                                    <p>Use Trackers & Timeline to monitor your claim journey.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="/app/how-to-use.html" class="nav-link">View Detailed Guide →</a>
+                    </div>
+                </div>
+
+                <!-- AI Agent Dropdown -->
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('ai-agent')">
+                        🤖 AI Agent <span class="nav-arrow">▼</span>
+                    </button>
+                    <div class="nav-dropdown-content" id="ai-agent">
+                        <a href="/app/response-center.html#ai-agent">AI Response Generator</a>
+                        <a href="/app/response-center.html#ai-agent">Policy Analyzer</a>
+                        <a href="/app/response-center.html#ai-agent">Claim Analysis Tools</a>
+                        <a href="/app/response-center.html#ai-agent">Situational Advisory</a>
+                    </div>
+                </div>
+
+                <!-- My Claims -->
+                <a href="/app/claims.html">📋 My Claims</a>
+
+                <!-- Document Generator Dropdown -->
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('document-generator')">
+                        📄 Documents <span class="nav-arrow">▼</span>
+                    </button>
+                    <div class="nav-dropdown-content" id="document-generator">
+                        <a href="/app/response-center/document-generator">Document Generator</a>
+                        <a href="/app/response-center/document-generator">Letter Templates</a>
+                        <a href="/app/response-center/document-generator">Form Builder</a>
+                        <a href="/app/response-center/document-generator">Evidence Organizer</a>
+                    </div>
+                </div>
+
+                <!-- Situational Advisory -->
+                <a href="/app/response-center/situational-advisory">💡 Advisory</a>
+
+                <!-- Maximize Claim -->
+                <a href="/app/response-center/maximize-claim">📈 Maximize</a>
+
+                <!-- Insurance Tactics -->
+                <a href="/app/response-center/insurance-tactics">🎯 Tactics</a>
+
+                <!-- Advanced Tools -->
+                <a href="/app/response-center/advanced-tools">⚡ Advanced</a>
+
+                <!-- Analysis Tools -->
+                <a href="/app/response-center/claim-analysis-tools">🔍 Analysis</a>
+
+                <!-- Claim Playbook -->
+                <a href="/app/response-center.html#claim-playbook">📖 Playbook</a>
+
+                <!-- Timeline -->
+                <a href="/app/response-center.html#claim-timeline-guide">⏰ Timeline</a>
+
+                <!-- Documentation Guides -->
+                <a href="/app/response-center.html#claim-documentation-guides">📝 Guides</a>
+
+                <!-- Resources -->
+                <a href="/app/response-center.html#recommended-resources">🔗 Resources</a>
+
+                <!-- Appeal Builder -->
+                <a href="/app/response-center.html#appeal-builder">⚖️ Appeals</a>
+
+                <!-- Settings -->
+                <a href="/app/response-center.html#settings">⚙️ Settings</a>
             </nav>
         </div>
     </header>
@@ -884,6 +985,31 @@
             // Add active class to clicked tab
             event.target.classList.add('active');
         }
+
+        // Navigation dropdown functionality
+        function toggleNavDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            const isOpen = dropdown.style.display === 'block';
+            
+            // Close all dropdowns
+            document.querySelectorAll('.nav-dropdown-content').forEach(dd => {
+                dd.style.display = 'none';
+            });
+            
+            // Toggle current dropdown
+            if (!isOpen) {
+                dropdown.style.display = 'block';
+            }
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.nav-dropdown')) {
+                document.querySelectorAll('.nav-dropdown-content').forEach(dropdown => {
+                    dropdown.style.display = 'none';
+                });
+            }
+        });
     </script>
 </body>
 </html>
