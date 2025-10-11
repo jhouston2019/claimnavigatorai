@@ -81,16 +81,16 @@
 
   // Tool launchers – route these to your existing pages/modals
   const routeMap = {
-    'open-incident-log': '/response-center?tab=incident-log',
-    'open-document-generator': '/response-center?tab=documents',
-    'open-ai-agent': '/response-center?tab=ai-agent',
-    'open-claim-diary': '/response-center?tab=diary',
-    'open-evidence-vault': '/response-center?tab=evidence',
-    'open-proof-of-loss': '/response-center?tab=pol',
-    'open-coverage-decoder': '/response-center?tab=coverage-decoder',
-    'open-doc-organizer': '/response-center?tab=organizer',
-    'open-state-rules': '/response-center?tab=state-rules',
-    'open-inventory-starter': '/response-center?tab=inventory-starter'
+    'open-incident-log': '/app/response-center.html?tab=incident-log',
+    'open-document-generator': '/app/response-center.html?tab=documents',
+    'open-ai-agent': '/app/response-center.html?tab=ai-agent',
+    'open-claim-diary': '/app/response-center.html?tab=diary',
+    'open-evidence-vault': '/app/response-center.html?tab=evidence',
+    'open-proof-of-loss': '/app/response-center.html?tab=pol',
+    'open-coverage-decoder': '/app/response-center.html?tab=coverage-decoder',
+    'open-doc-organizer': '/app/response-center.html?tab=organizer',
+    'open-state-rules': '/app/response-center.html?tab=state-rules',
+    'open-inventory-starter': '/app/response-center.html?tab=inventory-starter'
   };
 
   $$('.tool,[data-tool]').forEach(btn => {
@@ -115,7 +115,7 @@
   // State Rule Lookup button
   $('[data-tool="open-state-rules"]')?.addEventListener('click', () => {
     const state = $('#state-select')?.value || '';
-    const url = new URL('/response-center', window.location.origin);
+    const url = new URL('/app/response-center.html', window.location.origin);
     url.searchParams.set('tab','state-rules');
     if (state) url.searchParams.set('state', state);
     window.location.href = url.toString();

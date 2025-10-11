@@ -1,19 +1,759 @@
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Claim Playbook</title>
-<link rel="stylesheet" href="/app/assets/css/style.css">
-</head><body>
-<header class="header"><div class="bar container">
-  <div class="brand"><div class="logo"></div><div>Claim Playbook</div></div>
-  <nav class="nav"><a href="/app/response-center.html">← Resource Center</a></nav>
-</div></header>
-<main class="container">
-  <section class="grid">
-    <details class="card"><summary>1) Documentation</summary><p>Start a <a href="/app/documents/claim-timeline.html">Claim Diary</a>, <a href="/app/documents/photograph-log.html">Photo Log</a>, and save receipts.</p></details>
-    <details class="card"><summary>2) Policy & Coverage</summary><p>Run a <a href="/app/response-center/claim-analysis-tools/policy-review.html">Policy Review</a>. Note limits/exclusions.</p></details>
-    <details class="card"><summary>3) Compare Numbers</summary><p>Use <a href="/app/response-center/claim-analysis-tools/estimate-comparison.html">Estimate Comparison</a> and <a href="/app/settlement/index.html">Settlement Tool</a>.</p></details>
-    <details class="card"><summary>4) Escalate if Delayed/Denied</summary><p>Use <a href="/app/documents/appeal-letter.html">Appeal</a> and <a href="/app/documents/delay-complaint.html">Delay Complaint</a>.</p></details>
-  </section>
-</main>
-<script type="module" src="/app/assets/js/diagnostics.js"></script>
-</body></html>
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Claim Playbook – How to Manage & Maximize Your Claim | ClaimNavigatorAI</title>
+  <meta name="description" content="Step-by-step, interactive playbook for policyholders to manage and maximize insurance claims with AI-supported tools." />
+  <link rel="preload" href="/claim-playbook/playbook.css" as="style" />
+  <link rel="stylesheet" href="/claim-playbook/playbook.css" />
+  <script defer src="/claim-playbook/playbook.js"></script>
+</head>
+<body>
+  <header class="cn-header">
+    <div class="cn-header__inner">
+      <a href="/" class="brand">ClaimNavigator<span>AI</span></a>
+      <nav class="top-actions">
+        <button class="btn small outline" data-action="toggle-theme" aria-label="Toggle theme">Theme</button>
+        <a class="btn small" href="/app/response-center.html">← Resource Center</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="cn-main">
+    <!-- Sidebar -->
+    <aside class="cn-sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2 class="sidebar-title">Claim Playbook</h2>
+        <input id="playbook-search" class="search" type="search" placeholder="Search steps, issues, tools…" />
+      </div>
+      <nav class="toc" id="toc">
+        <ol>
+          <li><a href="#intro">Introduction</a></li>
+          <li><a href="#phase-1">Phase 1 – Immediate Response</a></li>
+          <li><a href="#phase-2">Phase 2 – File the Claim Properly</a></li>
+          <li><a href="#phase-3">Phase 3 – Adjuster Interaction</a></li>
+          <li><a href="#phase-4">Phase 4 – Documentation Mastery</a></li>
+          <li><a href="#phase-5">Phase 5 – Decode Insurer Letters</a></li>
+          <li><a href="#phase-6">Phase 6 – Strategic Responses</a></li>
+          <li><a href="#phase-7">Phase 7 – Escalation & Negotiation</a></li>
+          <li><a href="#phase-8">Phase 8 – Offer & Settlement Review</a></li>
+          <li><a href="#phase-9">Phase 9 – Supplements & Appeals</a></li>
+          <li><a href="#phase-10">Phase 10 – Closeout & Prevention</a></li>
+          <li><a href="#appendices">Appendices</a></li>
+        </ol>
+        <div class="sidebar-quick">
+          <button class="btn small outline" data-action="expand-all">Expand All</button>
+          <button class="btn small outline" data-action="collapse-all">Collapse All</button>
+        </div>
+      </nav>
+
+      <div class="sidebar-widget">
+        <h3 class="widget-title">State Rule Lookup</h3>
+        <p class="muted">Deadlines and insurer duties vary by state. Use the lookup to auto-insert rules into your letters.</p>
+        <div class="row">
+          <select id="state-select" class="select">
+            <option value="">Select state…</option>
+            <option>CA</option><option>FL</option><option>TX</option>
+            <option>NY</option><option>IL</option><option>GA</option>
+            <!-- Add all states; JS hook reads value -->
+          </select>
+          <button class="btn small" data-tool="open-state-rules">Open</button>
+        </div>
+        <small class="muted">Tip: Use with the AI Response Agent to cite exact timelines.</small>
+      </div>
+    </aside>
+
+    <!-- Content -->
+    <section class="cn-content" id="content">
+
+      <!-- INTRO -->
+      <article id="intro" class="chapter" data-keywords="introduction burden of proof overview why this matters insurer dynamics">
+        <h1>The Claim Playbook: How to Manage & Maximize Your Insurance Claim</h1>
+        <p class="lead">You carry the burden of proof. The insurer pays what <em>you</em> can prove. This Playbook shows you exactly how to secure, document, file, respond, negotiate, and close your claim — with AI support at every step.</p>
+
+        <div class="callout info">
+          <strong>How to use this:</strong> Work through Phases 1 → 10. Each phase contains collapsible steps, "If → Then → Tool" grids, copy-ready templates, examples, and state-specific callouts where relevant.
+        </div>
+
+        <div class="tools-grid">
+          <button class="tool" data-tool="open-incident-log">Open Incident Log</button>
+          <button class="tool" data-tool="open-document-generator">Open Document Generator</button>
+          <button class="tool" data-tool="open-ai-agent">Open AI Response Agent</button>
+          <button class="tool" data-tool="open-claim-diary">Open Claim Diary</button>
+          <button class="tool" data-tool="open-evidence-vault">Open Evidence Vault</button>
+          <button class="tool" data-tool="open-proof-of-loss">Open Proof of Loss Builder</button>
+        </div>
+      </article>
+
+      <!-- PHASE 1 -->
+      <article id="phase-1" class="chapter" data-keywords="first 24 hours mitigate safety photos videos notice of loss diary policy copy proof of loss">
+        <h2>Phase 1 – Immediate Response (First 24 Hours)</h2>
+
+        <details open>
+          <summary>1) Secure & Mitigate</summary>
+          <ul class="steps">
+            <li><strong>Safety first:</strong> Evacuate if needed; shut off utilities. Obtain incident report # if authorities respond.</li>
+            <li><strong>Mitigate:</strong> Tarp, board, dry, move contents. Keep receipts for all materials/labor.</li>
+            <li><strong>Log actions:</strong> Create a timestamped entry describing mitigation steps.</li>
+          </ul>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-incident-log">Log Incident</button>
+            <button class="btn small" data-tool="open-evidence-vault">Upload Photos</button>
+          </div>
+          <div class="callout tip">
+            <strong>State callout:</strong> Many policies require "reasonable steps" to prevent further damage. Failure may reduce payment under Duties After Loss. Keep proof of mitigation.
+          </div>
+        </details>
+
+        <details>
+          <summary>2) Document Everything</summary>
+          <p>Capture **wide → medium → close** for each room and item. Include serial numbers and before/after mitigation.</p>
+          <ul class="bullets two-col">
+            <li>Overall rooms & exterior</li><li>Close-ups with scale</li>
+            <li>Serials (appliances/HVAC)</li><li>Receipts & invoices</li>
+            <li>Temporary housing (Loss of Use)</li><li>Contractor site photos</li>
+          </ul>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-evidence-vault">Open Evidence Vault</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>3) Start Your Claim Diary</summary>
+          <p>Record calls, visits, promises, and next steps. Confirm verbal statements in writing within 24 hours.</p>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-claim-diary">Open Claim Diary</button>
+            <button class="btn small" data-tool="template" data-template="#tmpl-confirmation-email">Copy: Confirmation Email Template</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>4) Notify Your Insurer (Notice of Loss)</summary>
+          <p>Report facts only. Ask for claim #, adjuster name, inspection date, and preferred communications channel.</p>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-document-generator" data-doc="initial-claim-notice">Generate Notice Letter</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>5) Policy & Declarations</summary>
+          <p>Locate Declarations Page and full policy forms. Identify coverages, deductibles, exclusions, and endorsements.</p>
+          <div class="callout info">
+            <strong>State callout:</strong> In several states (e.g., CA/FL/TX), carriers must provide a certified copy of your policy upon written request within a statutory time frame. Use the State Rule Lookup + AI Response Agent to cite the deadline and statute in your request.
+          </div>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-ai-agent" data-intent="coverage-clarification">Generate Coverage Clarification Request</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>6) Draft Proof of Loss (policies vary)</summary>
+          <p>Begin a draft early (even if not yet requested) to structure your damages logically.</p>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-proof-of-loss">Open Proof of Loss Builder</button>
+          </div>
+        </details>
+
+        <h3>If → Then → Tool (Phase 1)</h3>
+        <div class="ift-grid">
+          <div class="ift">
+            <div class="if">Carrier doesn't acknowledge claim w/in expected window</div>
+            <div class="then">Send Notice of Delay citing state rule</div>
+            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="delay-notice">AI Response Agent</button></div>
+          </div>
+          <div class="ift">
+            <div class="if">Adjuster requests recorded statement immediately</div>
+            <div class="then">Politely defer until you've reviewed policy + prepared</div>
+            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="recorded-statement-guide">Recorded Statement Guide</button></div>
+          </div>
+          <div class="ift">
+            <div class="if">You find additional damage after initial report</div>
+            <div class="then">Submit Supplemental Notice & update diary</div>
+            <div class="tool"><button class="link" data-tool="open-document-generator" data-doc="supplement-notice">Document Generator</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- PHASE 2 -->
+      <article id="phase-2" class="chapter" data-keywords="file claim properly notice of loss inventory schedule proof of loss completeness attachments">
+        <h2>Phase 2 – File the Claim Properly (Complete & Compliant)</h2>
+
+        <details open>
+          <summary>1) Build Your Initial Submission Packet</summary>
+          <ol class="steps numbered">
+            <li><strong>Cover Letter:</strong> Basic facts, claim #, date of loss, short damage summary, attachments list.</li>
+            <li><strong>Damage Inventory Sheet:</strong> Room-by-room contents list (qty, age, condition, price, source).</li>
+            <li><strong>Proof of Loss (POL):</strong> Policy #, cause, claimed amount, signature.</li>
+            <li><strong>Evidence Bundle:</strong> Photos/videos, receipts, mitigation invoices, contractor estimates.</li>
+          </ol>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-document-generator" data-doc="damage-inventory">Open Damage Inventory Sheet</button>
+            <button class="btn small" data-tool="open-proof-of-loss">Proof of Loss Builder</button>
+          </div>
+          <div class="callout tip">
+            <strong>Pro Tip:</strong> Use consistent filenames (e.g., <code>Kitchen_Cabinets_Receipts.pdf</code>) and reference them inside your letter for clarity.
+          </div>
+        </details>
+
+        <details>
+          <summary>2) Policy Mapping (Coverage A–D)</summary>
+          <p>Map each claimed item to a coverage bucket:</p>
+          <ul class="bullets two-col">
+            <li><strong>A – Dwelling:</strong> Structure, finishes</li>
+            <li><strong>B – Other Structures:</strong> Detached garage, shed, fence</li>
+            <li><strong>C – Personal Property:</strong> Contents</li>
+            <li><strong>D – Loss of Use:</strong> ALE/temporary housing</li>
+          </ul>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-ai-agent" data-intent="coverage-mapping">AI: Map Items to Coverage</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>3) Deductibles, Limits, Sub-limits</summary>
+          <p>Calculate deductible impact; check special sub-limits (jewelry, cash, business property at home, mold limits).</p>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-coverage-decoder">Open Coverage Decoder</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>4) Submit & Confirm</summary>
+          <p>Submit via the carrier portal or email. Immediately send a confirmation email listing all attachments and requesting a written acknowledgment + inspection date.</p>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="template" data-template="#tmpl-submission-email">Copy: Submission Email</button>
+          </div>
+        </details>
+
+        <h3>If → Then → Tool (Phase 2)</h3>
+        <div class="ift-grid">
+          <div class="ift">
+            <div class="if">Carrier requests "more info" without specificity</div>
+            <div class="then">Ask for a <em>precise list</em> of missing docs</div>
+            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="specificity-request">AI: Specificity Request</button></div>
+          </div>
+          <div class="ift">
+            <div class="if">Carrier rejects your inventory format</div>
+            <div class="then">Regenerate in their columns, keep your master</div>
+            <div class="tool"><button class="link" data-tool="open-document-generator" data-doc="inventory-converter">Inventory Converter</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- PHASE 3 -->
+      <article id="phase-3" class="chapter" data-keywords="adjuster inspection site visit scope walk-through etiquette recorded statement traps">
+        <h2>Phase 3 – Adjuster Interaction (Inspection + Communications)</h2>
+
+        <details open>
+          <summary>1) Pre-Inspection Prep</summary>
+          <ul class="steps">
+            <li>Create a <strong>Scope Walk List</strong> by room with must-see items.</li>
+            <li>Lay out receipts, estimates, and mitigation invoices in one folder.</li>
+            <li>Decide who speaks; avoid speculative opinions; stick to facts.</li>
+          </ul>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-claim-diary">Add Walk List to Diary</button>
+            <button class="btn small" data-tool="template" data-template="#tmpl-walk-list">Copy: Walk List Outline</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>2) During Inspection</summary>
+          <p>Walk room by room. Show hidden/less obvious damage (behind cabinets, under flooring). Photograph the adjuster measuring key areas (context for later).</p>
+          <div class="callout warn">
+            <strong>Recorded statements:</strong> If requested on the spot, you can defer until prepared. Use the Recorded Statement Guide to plan answers.
+          </div>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-ai-agent" data-intent="recorded-statement-guide">Open Recorded Statement Guide</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>3) Post-Inspection Confirmation</summary>
+          <p>Send an email summarizing what was examined, any areas deferred, and next steps with dates.</p>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="template" data-template="#tmpl-post-inspection-email">Copy: Post-Inspection Email</button>
+          </div>
+        </details>
+
+        <h3>If → Then → Tool (Phase 3)</h3>
+        <div class="ift-grid">
+          <div class="ift">
+            <div class="if">Adjuster rushes & skips rooms</div>
+            <div class="then">Politely request full walk-through; document refusal</div>
+            <div class="tool"><button class="link" data-tool="open-claim-diary">Log + Confirm in Writing</button></div>
+          </div>
+          <div class="ift">
+            <div class="if">Adjuster makes verbal promise</div>
+            <div class="then">Confirm by email within 24h</div>
+            <div class="tool"><button class="link" data-tool="template" data-template="#tmpl-confirmation-email">Copy Email</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- PHASE 4 -->
+      <article id="phase-4" class="chapter" data-keywords="documentation diary timeline foldering evidence naming estimates experts ocr">
+        <h2>Phase 4 – Documentation Mastery</h2>
+
+        <details open>
+          <summary>1) Folder Structure & Naming</summary>
+          <p>Mirror this structure digitally (and optionally physically): Policy / Photos / Receipts / Estimates / Insurer Letters / Diary / AI Docs.</p>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-doc-organizer">Auto-Create Folder Set</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>2) Evidence Hygiene</summary>
+          <ul class="bullets two-col">
+            <li>Use OCR PDFs</li><li>Embed dates in filenames</li>
+            <li>Store originals + watermarked share copies</li><li>Hash or checksum large files (optional)</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>3) Estimates & Expert Reports</summary>
+          <p>Obtain at least one independent estimate; for complex losses consider specialists (industrial hygienist, structural engineer).</p>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-ai-agent" data-intent="scope-gap-check">AI: Scope Gap Check</button>
+          </div>
+        </details>
+
+        <h3>If → Then → Tool (Phase 4)</h3>
+        <div class="ift-grid">
+          <div class="ift">
+            <div class="if">Carrier says "insufficient documentation"</div>
+            <div class="then">Request a <em>specific</em> itemized list of what is missing</div>
+            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="specificity-request">AI: Specificity Request</button></div>
+          </div>
+          <div class="ift">
+            <div class="if">Carrier rejects contractor estimate</div>
+            <div class="then">Submit competing estimate + code citations</div>
+            <div class="tool"><button class="link" data-tool="open-document-generator" data-doc="estimate-cover">Generate Cover Letter</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- PHASE 5 -->
+      <article id="phase-5" class="chapter" data-keywords="insurer letters decode denial partial delay exclusions depreciation acv rcv">
+        <h2>Phase 5 – Decode Insurer Letters</h2>
+
+        <details open>
+          <summary>1) Letter Triage</summary>
+          <ul class="steps">
+            <li><strong>Acknowledgment/Next Steps</strong></li>
+            <li><strong>Request for Info (RFI)</strong></li>
+            <li><strong>Coverage Position</strong> (accept/partial/deny)</li>
+            <li><strong>Payment Explanation</strong> (ACV/RCV/depreciation)</li>
+          </ul>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-ai-agent" data-intent="decode-letter">Upload Letter to Decode</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>2) Common Tactics</summary>
+          <ul class="bullets two-col">
+            <li>"Wear & tear" catch-all</li><li>"Pre-existing" assertions</li>
+            <li>Low scope pricing</li><li>Excessive depreciation</li>
+            <li>Repeated generic RFIs</li><li>Delay loops</li>
+          </ul>
+        </details>
+
+        <h3>If → Then → Tool (Phase 5)</h3>
+        <div class="ift-grid">
+          <div class="ift">
+            <div class="if">Partial denial citing exclusion</div>
+            <div class="then">Request precise clause + facts + photos relied upon</div>
+            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="clause-proof-request">Clause & Proof Request</button></div>
+          </div>
+          <div class="ift">
+            <div class="if">Payment shows heavy depreciation</div>
+            <div class="then">Challenge depreciation schedule with market lifespan sources</div>
+            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="depreciation-challenge">AI: Depreciation Challenge</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- PHASE 6 -->
+      <article id="phase-6" class="chapter" data-keywords="responses appeal demand coverage clarification legal citations state rules deadlines bad faith">
+        <h2>Phase 6 – Strategic Responses</h2>
+
+        <details open>
+          <summary>1) Match Response to Letter Type</summary>
+          <ul class="bullets">
+            <li><strong>Delay →</strong> Notice of Delay + State Rule</li>
+            <li><strong>RFI (vague) →</strong> Specificity Demand</li>
+            <li><strong>Partial Denial →</strong> Appeal (facts + clauses + evidence)</li>
+            <li><strong>Lowball Offer →</strong> Line-item Rebuttal + comparables</li>
+          </ul>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-document-generator" data-doc="appeal-letter">Generate Appeal Letter</button>
+            <button class="btn small" data-tool="open-document-generator" data-doc="demand-letter">Generate Demand Letter</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>2) Cite State Rules</summary>
+          <p>Use State Rule Lookup + AI Agent to insert acknowledgment, investigation, payment, and communication timeframe rules into your letters.</p>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-state-rules">Open State Rules</button>
+            <button class="btn small" data-tool="open-ai-agent" data-intent="insert-state-citations">AI: Insert Citations</button>
+          </div>
+        </details>
+
+        <h3>If → Then → Tool (Phase 6)</h3>
+        <div class="ift-grid">
+          <div class="ift">
+            <div class="if">Carrier stops responding</div>
+            <div class="then">Send escalation notice with statutory timelines + regulator CC</div>
+            <div class="tool"><button class="link" data-tool="open-document-generator" data-doc="escalation-notice">Escalation Notice</button></div>
+          </div>
+          <div class="ift">
+            <div class="if">Carrier cites "wear & tear" vaguely</div>
+            <div class="then">Request engineering basis + photos + tests relied upon</div>
+            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="engineering-proof-request">Engineering Proof Request</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- PHASE 7 -->
+      <article id="phase-7" class="chapter" data-keywords="escalation appraisal regulator complaint attorney public adjuster negotiation anchors">
+        <h2>Phase 7 – Escalation & Negotiation</h2>
+
+        <details open>
+          <summary>1) Escalation Options</summary>
+          <ul class="bullets">
+            <li><strong>Appraisal</strong> (scope/pricing disputes)</li>
+            <li><strong>Regulator Complaint</strong> (unfair claims practices)</li>
+            <li><strong>Public Adjuster</strong> (representation/negotiation)</li>
+            <li><strong>Attorney</strong> (coverage/denial/bad-faith)</li>
+          </ul>
+          <div class="callout info">
+            <strong>State callout:</strong> Appraisal clauses vary by policy and state practice. Verify if mandated, optional, or waived by conduct.
+          </div>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-ai-agent" data-intent="appraisal-readiness-check">AI: Appraisal Readiness Check</button>
+            <button class="btn small" data-tool="open-document-generator" data-doc="appraisal-demand">Generate Appraisal Demand</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>2) Negotiation Framework</summary>
+          <ul class="steps">
+            <li><strong>Anchor</strong> with your full documented scope.</li>
+            <li><strong>Trade issues, not positions:</strong> pricing lines, code upgrades, timelines.</li>
+            <li><strong>Always add new proof</strong> when moving on price.</li>
+          </ul>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-ai-agent" data-intent="negotiation-script">AI: Negotiation Script</button>
+          </div>
+        </details>
+
+        <h3>If → Then → Tool (Phase 7)</h3>
+        <div class="ift-grid">
+          <div class="ift">
+            <div class="if">Carrier refuses appraisal</div>
+            <div class="then">Cite policy language + seek regulator guidance or counsel</div>
+            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="appraisal-refusal-letter">Refusal Response</button></div>
+          </div>
+          <div class="ift">
+            <div class="if">Negotiations stall</div>
+            <div class="then">Escalate with timeline leverage + documentation packet</div>
+            <div class="tool"><button class="link" data-tool="open-document-generator" data-doc="negotiation-brief">Negotiation Brief</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- PHASE 8 -->
+      <article id="phase-8" class="chapter" data-keywords="offer settlement acv rcv depreciation holdback scope compare line by line">
+        <h2>Phase 8 – Offer & Settlement Review</h2>
+
+        <details open>
+          <summary>1) Line-by-Line Comparison</summary>
+          <p>Compare carrier scope/estimate to your master. Flag missing line items, underpriced trades, and code upgrades.</p>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-ai-agent" data-intent="compare-estimates">AI: Compare Estimates</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>2) ACV vs RCV & Depreciation</summary>
+          <p>Confirm whether payment is actual cash value (ACV) or replacement cost value (RCV) and the holdback terms. Challenge unreasonable depreciation.</p>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-ai-agent" data-intent="depreciation-review">AI: Depreciation Review</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>3) Settlement Letter & Reservations</summary>
+          <p>When accepting partial payment, preserve rights to pursue supplements or appeals.</p>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="template" data-template="#tmpl-conditional-acceptance">Copy: Conditional Acceptance</button>
+          </div>
+        </details>
+
+        <h3>If → Then → Tool (Phase 8)</h3>
+        <div class="ift-grid">
+          <div class="ift">
+            <div class="if">Offer omits code upgrades</div>
+            <div class="then">Submit code citations + inspector notes</div>
+            <div class="tool"><button class="link" data-tool="open-document-generator" data-doc="code-upgrade-brief">Code Upgrade Brief</button></div>
+          </div>
+          <div class="ift">
+            <div class="if">Carrier delays payment after agreement</div>
+            <div class="then">Send payment deadline reminder with state rule cite</div>
+            <div class="tool"><button class="link" data-tool="open-ai-agent" data-intent="payment-deadline-reminder">Deadline Reminder</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- PHASE 9 -->
+      <article id="phase-9" class="chapter" data-keywords="supplement additional payment missed items appeal formal appeal package">
+        <h2>Phase 9 – Supplements & Appeals</h2>
+
+        <details open>
+          <summary>1) When to Supplement</summary>
+          <ul class="bullets">
+            <li>Hidden damage discovered during repairs</li>
+            <li>New expert findings</li>
+            <li>Pricing changes or code mandates</li>
+          </ul>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-document-generator" data-doc="supplement-package">Generate Supplement Package</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>2) Formal Appeal Package</summary>
+          <ol class="steps numbered">
+            <li>Appeal Letter (issues + relief requested)</li>
+            <li>Policy citations & state rules</li>
+            <li>Evidence index + exhibits</li>
+            <li>Timeline of correspondence</li>
+          </ol>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-document-generator" data-doc="appeal-package">Build Appeal Package</button>
+          </div>
+        </details>
+
+        <h3>If → Then → Tool (Phase 9)</h3>
+        <div class="ift-grid">
+          <div class="ift">
+            <div class="if">Appeal window is short</div>
+            <div class="then">Send intent-to-appeal preserving rights, then follow with full package</div>
+            <div class="tool"><button class="link" data-tool="template" data-template="#tmpl-intent-to-appeal">Copy: Intent to Appeal</button></div>
+          </div>
+          <div class="ift">
+            <div class="if">Appeal ignored</div>
+            <div class="then">Escalate to regulator/counsel with record of delay</div>
+            <div class="tool"><button class="link" data-tool="open-document-generator" data-doc="regulator-complaint">Regulator Complaint</button></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- PHASE 10 -->
+      <article id="phase-10" class="chapter" data-keywords="closeout holdback release lessons learned prevention preparedness">
+        <h2>Phase 10 – Closeout & Prevention</h2>
+
+        <details open>
+          <summary>1) Final Accounting</summary>
+          <ul class="steps">
+            <li>Confirm all payments (ACV + holdback) and categories (A–D).</li>
+            <li>Match checks to estimate lines; reconcile differences.</li>
+            <li>Retain claim archive for 7–10 years (and digital backup).</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>2) Releases & Reservations</summary>
+          <p>Avoid overbroad releases that waive supplements/unknowns unless you're truly done and paid.</p>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-ai-agent" data-intent="release-review">AI: Review Release Language</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>3) Prevention & Readiness</summary>
+          <ul class="bullets two-col">
+            <li>Annual photo/video scan of home</li><li>Receipt vaulting for big items</li>
+            <li>Policy review before renewal</li><li>Inventory update (room-by-room)</li>
+          </ul>
+          <div class="inline-tools">
+            <button class="btn small" data-tool="open-inventory-starter">Start Inventory Starter</button>
+          </div>
+        </details>
+      </article>
+
+      <!-- APPENDICES -->
+      <article id="appendices" class="chapter" data-keywords="glossary deadlines templates samples state rules checklist">
+        <h2>Appendices</h2>
+
+        <details open>
+          <summary>A) Quick Checklists</summary>
+          <ul class="checklist">
+            <li>Phase 1: Safety, mitigate, photos, diary, notice, policy, POL draft</li>
+            <li>Phase 2: Cover letter, inventory, POL, evidence bundle, submit + confirm</li>
+            <li>Phase 3: Walk list, on-site facts, post-inspection confirmation</li>
+            <li>Phase 4: Foldering, OCR, estimates, gap checks</li>
+            <li>Phase 5: Decode letter, tactic ID, targeted response</li>
+            <li>Phase 6: Match response type, cite state rules</li>
+            <li>Phase 7: Appraisal/regulator/PA/attorney options</li>
+            <li>Phase 8: Line-by-line review, ACV/RCV, conditional acceptance</li>
+            <li>Phase 9: Supplements, appeals, regulator escalation</li>
+            <li>Phase 10: Final accounting, releases, prevention</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>B) Templates (Copy & Use)</summary>
+
+          <div class="template">
+            <h4>Confirmation Email (Verbal Promise)</h4>
+            <textarea id="tmpl-confirmation-email" readonly>
+Subject: Claim #[CLAIM #] – Confirmation of Today's Conversation
+
+Hello [Adjuster Name],
+
+Thank you for speaking with me on [date]. To confirm, you stated:
+• [Promise 1]
+• [Promise 2]
+
+Next steps:
+• [Carrier next step + date]
+• [My next step + date]
+
+If anything is inaccurate, please correct me in writing.
+
+Regards,
+[Your Name]
+[Policy #] – [Property Address]
+            </textarea>
+            <button class="btn small" data-copy="#tmpl-confirmation-email">Copy</button>
+          </div>
+
+          <div class="template">
+            <h4>Submission Email (Initial Packet)</h4>
+            <textarea id="tmpl-submission-email" readonly>
+Subject: Claim #[CLAIM #] – Initial Submission Packet
+
+Hello [Adjuster Name],
+
+Attached are the following documents for my claim:
+1) Cover Letter
+2) Damage Inventory Sheet
+3) Proof of Loss (signed)
+4) Evidence bundle (photos, receipts, mitigation, estimates)
+
+Please confirm receipt and provide the planned inspection date. If additional information is needed, kindly provide a specific itemized list.
+
+Thank you,
+[Your Name]
+            </textarea>
+            <button class="btn small" data-copy="#tmpl-submission-email">Copy</button>
+          </div>
+
+          <div class="template">
+            <h4>Post-Inspection Email</h4>
+            <textarea id="tmpl-post-inspection-email" readonly>
+Subject: Claim #[CLAIM #] – Post-Inspection Summary
+
+Hello [Adjuster Name],
+
+Thank you for the inspection on [date]. We reviewed:
+• [Rooms/areas]
+• [Contents categories]
+• Outstanding items to be revisited: [items]
+
+Next steps discussed:
+• [Carrier step] by [date]
+• [My step] by [date]
+
+Please confirm that this summary is accurate, or correct it in writing.
+
+Sincerely,
+[Your Name]
+            </textarea>
+            <button class="btn small" data-copy="#tmpl-post-inspection-email">Copy</button>
+          </div>
+
+          <div class="template">
+            <h4>Conditional Acceptance of Payment</h4>
+            <textarea id="tmpl-conditional-acceptance" readonly>
+Subject: Claim #[CLAIM #] – Conditional Acceptance of Payment
+
+Hello [Adjuster Name],
+
+I am depositing the enclosed payment(s) related to Claim #[CLAIM #] as a partial/conditional acceptance. This does not constitute a full and final settlement, and I expressly reserve my rights to pursue additional amounts via supplements and/or appeal for items not yet addressed or newly discovered.
+
+Regards,
+[Your Name]
+            </textarea>
+            <button class="btn small" data-copy="#tmpl-conditional-acceptance">Copy</button>
+          </div>
+
+          <div class="template">
+            <h4>Intent to Appeal</h4>
+            <textarea id="tmpl-intent-to-appeal" readonly>
+Subject: Claim #[CLAIM #] – Intent to Appeal
+
+Hello [Adjuster/Supervisor],
+
+Please accept this notice of my intent to appeal the coverage determination issued on [date]. I will submit a full appeal package within [X] days. Kindly preserve all related records and provide any additional materials relied upon in making the determination, including photos, expert reports, and internal notes.
+
+Thank you,
+[Your Name]
+            </textarea>
+            <button class="btn small" data-copy="#tmpl-intent-to-appeal">Copy</button>
+          </div>
+
+          <div class="template">
+            <h4>Scope Walk List (Outline)</h4>
+            <textarea id="tmpl-walk-list" readonly>
+Room: Kitchen
+• Cabinets: Water damage bottom boxes; toe-kick swelling
+• Flooring: Buckling under fridge; moisture readings attached
+• Drywall: Staining at soffit; thermal images attached
+
+Room: Living
+• Ceiling: Crack telegraphing from attic leak; moisture reading 18%
+• Baseboards: Swell + separation
+• Contents: Sofa foam saturated; receipts attached
+            </textarea>
+            <button class="btn small" data-copy="#tmpl-walk-list">Copy</button>
+          </div>
+
+        </details>
+
+        <details>
+          <summary>C) Glossary (Plain English)</summary>
+          <ul class="glossary">
+            <li><strong>ACV:</strong> Actual Cash Value (RCV minus depreciation).</li>
+            <li><strong>RCV:</strong> Replacement Cost Value (full replacement price).</li>
+            <li><strong>Depreciation:</strong> Reduction for age/condition; often recoverable when repairs completed (RCV policies).</li>
+            <li><strong>Appraisal:</strong> Policy process to resolve scope/pricing disputes via neutral appraisers and umpire.</li>
+            <li><strong>Duties After Loss:</strong> Your obligations post-loss (mitigation, documentation, cooperation, etc.).</li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>D) State-Specific Issues (Use Lookup)</summary>
+          <p>Deadlines and insurer duties (acknowledgment, investigation, payment timing, claim communications, unfair practices) vary by state and policy type. Use the <strong>State Rule Lookup</strong> with the <strong>AI Response Agent</strong> to insert the correct citations into your letters.</p>
+          <ul class="bullets">
+            <li><strong>Examples to watch:</strong> time to acknowledge claim; time to decide/deny; prompt payment rules; appraisal handling; interest/penalties for late payment; required disclosures.</li>
+            <li><strong>Specialty lines:</strong> Condo master vs unit policy, business interruption documentation, code upgrade endorsements, anti-concurrent causation wording.</li>
+          </ul>
+        </details>
+      </article>
+
+    </section>
+  </main>
+
+  <footer class="cn-footer">
+    <div class="cn-footer__inner">
+      <p>© <span id="year"></span> ClaimNavigatorAI. This Playbook is educational; it is not legal advice. For legal guidance, consult an attorney in your state.</p>
+    </div>
+  </footer>
+</body>
+</html>
