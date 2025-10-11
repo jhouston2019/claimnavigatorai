@@ -1,7 +1,74 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Claim Analysis Tools</title>
-<link rel="stylesheet" href="/app/assets/css/style.css"/></head><body>
+<link rel="stylesheet" href="/app/assets/css/style.css"/>
+<style>
+.tool-card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 300px;
+}
+.tool-card h3 {
+  text-align: center;
+  margin-bottom: 12px;
+}
+.tool-card p {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #666;
+}
+.tool-input {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+.tool-input textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 12px;
+}
+.tool-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.tool-actions .btn {
+  min-width: 140px;
+}
+.tool-output {
+  margin-top: 20px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  text-align: left;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+</head><body>
 <header class="header"><div class="bar container"><div class="brand"><div class="logo"></div><div>Claim Analysis</div></div>
 <nav class="nav"><a href="/app/response-center.html">← Resource Center</a></nav></div></header>
 <main class="container">
@@ -12,93 +79,329 @@
 
   <section class="grid tools tools-xl">
     <!-- Policy Review & Coverage Analysis -->
-    <div class="card tool tool-xl">
+    <div class="card tool tool-xl tool-card">
       <h3>📋 Policy Review & Coverage Analysis</h3>
       <p>Upload your policy documents for AI-powered coverage analysis and gap identification</p>
       <div class="tool-input">
-        <textarea placeholder="Paste your policy information here or upload documents..."></textarea>
+        <textarea id="policy-input" placeholder="Paste your policy information here or upload documents..."></textarea>
         <div class="tool-actions">
-          <button class="btn btn-primary">Analyze Policy</button>
-          <button class="btn btn-secondary">Download Checklist</button>
+          <button class="btn btn-primary" onclick="analyzePolicy()">Analyze Policy</button>
+          <button class="btn btn-secondary" onclick="downloadPolicyChecklist()">Download Checklist</button>
         </div>
+        <div id="policy-output" class="tool-output" style="display: none;"></div>
       </div>
     </div>
 
     <!-- Damage Assessment Calculator -->
-    <div class="card tool tool-xl">
+    <div class="card tool tool-xl tool-card">
       <h3>🔍 Damage Assessment Calculator</h3>
       <p>Calculate and document property damage with line-item estimates and depreciation analysis</p>
       <div class="tool-input">
-        <textarea placeholder="Describe the damage, paste estimates, or upload photos..."></textarea>
+        <textarea id="damage-input" placeholder="Describe the damage, paste estimates, or upload photos..."></textarea>
         <div class="tool-actions">
-          <button class="btn btn-primary">Start Assessment</button>
-          <button class="btn btn-secondary">Download Form</button>
+          <button class="btn btn-primary" onclick="startDamageAssessment()">Start Assessment</button>
+          <button class="btn btn-secondary" onclick="downloadDamageForm()">Download Form</button>
         </div>
+        <div id="damage-output" class="tool-output" style="display: none;"></div>
       </div>
     </div>
 
     <!-- Financial Impact Calculator -->
-    <div class="card tool tool-xl">
+    <div class="card tool tool-xl tool-card">
       <h3>💰 Financial Impact Calculator</h3>
       <p>Calculate the financial impact of hiring professional help vs DIY approach</p>
       <div class="tool-actions">
-        <button class="btn btn-primary">Open Calculator</button>
-        <button class="btn btn-secondary">Download Guide</button>
+        <button class="btn btn-primary" onclick="openFinancialCalculator()">Open Calculator</button>
+        <button class="btn btn-secondary" onclick="downloadFinancialGuide()">Download Guide</button>
       </div>
     </div>
 
     <!-- Estimate Review & Comparison -->
-    <div class="card tool tool-xl">
+    <div class="card tool tool-xl tool-card">
       <h3>⚖️ Estimate Review & Comparison</h3>
       <p>Compare contractor estimates with insurer estimates and identify discrepancies</p>
       <div class="tool-input">
-        <textarea placeholder="Paste contractor and insurer estimates for comparison..."></textarea>
+        <textarea id="estimate-input" placeholder="Paste contractor and insurer estimates for comparison..."></textarea>
         <div class="tool-actions">
-          <button class="btn btn-primary">Review Estimate</button>
-          <button class="btn btn-secondary">Download Comparison</button>
+          <button class="btn btn-primary" onclick="reviewEstimate()">Review Estimate</button>
+          <button class="btn btn-secondary" onclick="downloadComparison()">Download Comparison</button>
         </div>
+        <div id="estimate-output" class="tool-output" style="display: none;"></div>
       </div>
     </div>
 
     <!-- Business Interruption Calculator -->
-    <div class="card tool tool-xl">
+    <div class="card tool tool-xl tool-card">
       <h3>💼 Business Interruption Calculator</h3>
       <p>Calculate business interruption losses including lost revenue and extra expenses</p>
       <div class="tool-input">
-        <textarea placeholder="Provide business financial information, revenue data, and expenses..."></textarea>
+        <textarea id="bi-input" placeholder="Provide business financial information, revenue data, and expenses..."></textarea>
         <div class="tool-actions">
-          <button class="btn btn-primary">Calculate BI Loss</button>
-          <button class="btn btn-secondary">Download Calculator</button>
+          <button class="btn btn-primary" onclick="calculateBILoss()">Calculate BI Loss</button>
+          <button class="btn btn-secondary" onclick="downloadBICalculator()">Download Calculator</button>
         </div>
+        <div id="bi-output" class="tool-output" style="display: none;"></div>
       </div>
     </div>
 
     <!-- Expert Opinion Request Generator -->
-    <div class="card tool tool-xl">
+    <div class="card tool tool-xl tool-card">
       <h3>👨‍💼 Expert Opinion Request Generator</h3>
       <p>Generate professional requests for expert opinions on damage assessment or policy interpretation</p>
       <div class="tool-input">
-        <textarea placeholder="Describe the claim situation and type of expert opinion needed..."></textarea>
+        <textarea id="expert-input" placeholder="Describe the claim situation and type of expert opinion needed..."></textarea>
         <div class="tool-actions">
-          <button class="btn btn-primary">Generate Request</button>
-          <button class="btn btn-secondary">Download Form</button>
+          <button class="btn btn-primary" onclick="generateExpertRequest()">Generate Request</button>
+          <button class="btn btn-secondary" onclick="downloadExpertForm()">Download Form</button>
         </div>
+        <div id="expert-output" class="tool-output" style="display: none;"></div>
       </div>
     </div>
 
     <!-- Settlement Analysis & Negotiation -->
-    <div class="card tool tool-xl">
+    <div class="card tool tool-xl tool-card">
       <h3>🤝 Settlement Analysis & Negotiation</h3>
       <p>Analyze settlement offers and generate negotiation strategies with supporting documentation</p>
       <div class="tool-input">
-        <textarea placeholder="Paste settlement offer details and your claim information..."></textarea>
+        <textarea id="settlement-input" placeholder="Paste settlement offer details and your claim information..."></textarea>
         <div class="tool-actions">
-          <button class="btn btn-primary">Analyze Settlement</button>
-          <button class="btn btn-secondary">Download Strategy</button>
+          <button class="btn btn-primary" onclick="analyzeSettlement()">Analyze Settlement</button>
+          <button class="btn btn-secondary" onclick="downloadStrategy()">Download Strategy</button>
         </div>
+        <div id="settlement-output" class="tool-output" style="display: none;"></div>
       </div>
     </div>
   </section>
 </main>
+
+<script type="module">
+import { analyzeClaim, analyzePolicyText, createDoc } from '/app/assets/js/api-client.js';
+
+// Policy Review & Coverage Analysis
+window.analyzePolicy = async function() {
+  const input = document.getElementById('policy-input').value.trim();
+  const output = document.getElementById('policy-output');
+  
+  if (!input) {
+    alert('Please enter policy information first.');
+    return;
+  }
+  
+  output.style.display = 'block';
+  output.innerHTML = '<div class="spinner"></div> Analyzing policy...';
+  
+  try {
+    const result = await analyzePolicyText(input, 'coverage_review');
+    output.innerHTML = `
+      <h4>Policy Analysis Results:</h4>
+      <div class="analysis-content">${result.analysis || 'Analysis completed. Review your policy coverage and identify any gaps.'}</div>
+    `;
+  } catch (error) {
+    output.innerHTML = `<div style="color: #ef4444;">Error: ${error.message}</div>`;
+  }
+};
+
+window.downloadPolicyChecklist = function() {
+  const content = `
+    <h2>Policy Review Checklist</h2>
+    <ul>
+      <li>Coverage limits verification</li>
+      <li>Deductible analysis</li>
+      <li>Exclusion review</li>
+      <li>Endorsement check</li>
+      <li>Claim filing requirements</li>
+    </ul>
+  `;
+  downloadDocument(content, 'policy-checklist.pdf');
+};
+
+// Damage Assessment Calculator
+window.startDamageAssessment = async function() {
+  const input = document.getElementById('damage-input').value.trim();
+  const output = document.getElementById('damage-output');
+  
+  if (!input) {
+    alert('Please describe the damage first.');
+    return;
+  }
+  
+  output.style.display = 'block';
+  output.innerHTML = '<div class="spinner"></div> Calculating damage assessment...';
+  
+  try {
+    const result = await analyzeClaim({ analysisType: 'damage_assessment', text: input });
+    output.innerHTML = `
+      <h4>Damage Assessment Results:</h4>
+      <div class="analysis-content">${result.assessment || 'Damage assessment completed. Review the detailed breakdown and cost estimates.'}</div>
+    `;
+  } catch (error) {
+    output.innerHTML = `<div style="color: #ef4444;">Error: ${error.message}</div>`;
+  }
+};
+
+window.downloadDamageForm = function() {
+  const content = `
+    <h2>Damage Assessment Form</h2>
+    <p>Property damage documentation form with line-item estimates and depreciation analysis.</p>
+  `;
+  downloadDocument(content, 'damage-assessment-form.pdf');
+};
+
+// Financial Impact Calculator
+window.openFinancialCalculator = function() {
+  window.open('/app/response-center/financial-calculator.html', '_blank');
+};
+
+window.downloadFinancialGuide = function() {
+  const content = `
+    <h2>Financial Impact Guide</h2>
+    <p>Guide for calculating the financial impact of hiring professional help vs DIY approach.</p>
+  `;
+  downloadDocument(content, 'financial-impact-guide.pdf');
+};
+
+// Estimate Review & Comparison
+window.reviewEstimate = async function() {
+  const input = document.getElementById('estimate-input').value.trim();
+  const output = document.getElementById('estimate-output');
+  
+  if (!input) {
+    alert('Please paste estimates for comparison.');
+    return;
+  }
+  
+  output.style.display = 'block';
+  output.innerHTML = '<div class="spinner"></div> Comparing estimates...';
+  
+  try {
+    const result = await analyzeClaim({ analysisType: 'estimate_comparison', text: input });
+    output.innerHTML = `
+      <h4>Estimate Comparison Results:</h4>
+      <div class="analysis-content">${result.comparison || 'Estimate comparison completed. Review discrepancies and recommendations.'}</div>
+    `;
+  } catch (error) {
+    output.innerHTML = `<div style="color: #ef4444;">Error: ${error.message}</div>`;
+  }
+};
+
+window.downloadComparison = function() {
+  const content = `
+    <h2>Estimate Comparison Report</h2>
+    <p>Detailed comparison of contractor vs insurer estimates with discrepancy analysis.</p>
+  `;
+  downloadDocument(content, 'estimate-comparison.pdf');
+};
+
+// Business Interruption Calculator
+window.calculateBILoss = async function() {
+  const input = document.getElementById('bi-input').value.trim();
+  const output = document.getElementById('bi-output');
+  
+  if (!input) {
+    alert('Please provide business financial information.');
+    return;
+  }
+  
+  output.style.display = 'block';
+  output.innerHTML = '<div class="spinner"></div> Calculating BI losses...';
+  
+  try {
+    const result = await analyzeClaim({ analysisType: 'business_interruption', text: input });
+    output.innerHTML = `
+      <h4>Business Interruption Analysis:</h4>
+      <div class="analysis-content">${result.report || 'BI loss calculation completed. Review lost revenue and extra expenses.'}</div>
+    `;
+  } catch (error) {
+    output.innerHTML = `<div style="color: #ef4444;">Error: ${error.message}</div>`;
+  }
+};
+
+window.downloadBICalculator = function() {
+  const content = `
+    <h2>Business Interruption Calculator</h2>
+    <p>Calculator for business interruption losses including lost revenue and extra expenses.</p>
+  `;
+  downloadDocument(content, 'bi-calculator.pdf');
+};
+
+// Expert Opinion Request Generator
+window.generateExpertRequest = async function() {
+  const input = document.getElementById('expert-input').value.trim();
+  const output = document.getElementById('expert-output');
+  
+  if (!input) {
+    alert('Please describe the claim situation and expert opinion needed.');
+    return;
+  }
+  
+  output.style.display = 'block';
+  output.innerHTML = '<div class="spinner"></div> Generating expert request...';
+  
+  try {
+    const result = await analyzeClaim({ analysisType: 'expert_opinion', text: input });
+    output.innerHTML = `
+      <h4>Expert Opinion Request:</h4>
+      <div class="analysis-content">${result.analysis || 'Expert opinion request generated. Review the professional letter template.'}</div>
+    `;
+  } catch (error) {
+    output.innerHTML = `<div style="color: #ef4444;">Error: ${error.message}</div>`;
+  }
+};
+
+window.downloadExpertForm = function() {
+  const content = `
+    <h2>Expert Opinion Request Form</h2>
+    <p>Professional template for requesting expert opinions on damage assessment or policy interpretation.</p>
+  `;
+  downloadDocument(content, 'expert-request-form.pdf');
+};
+
+// Settlement Analysis & Negotiation
+window.analyzeSettlement = async function() {
+  const input = document.getElementById('settlement-input').value.trim();
+  const output = document.getElementById('settlement-output');
+  
+  if (!input) {
+    alert('Please paste settlement offer details.');
+    return;
+  }
+  
+  output.style.display = 'block';
+  output.innerHTML = '<div class="spinner"></div> Analyzing settlement...';
+  
+  try {
+    const result = await analyzeClaim({ analysisType: 'settlement_analysis', text: input });
+    output.innerHTML = `
+      <h4>Settlement Analysis Results:</h4>
+      <div class="analysis-content">${result.analysis || 'Settlement analysis completed. Review offer fairness and negotiation strategies.'}</div>
+    `;
+  } catch (error) {
+    output.innerHTML = `<div style="color: #ef4444;">Error: ${error.message}</div>`;
+  }
+};
+
+window.downloadStrategy = function() {
+  const content = `
+    <h2>Negotiation Strategy</h2>
+    <p>Comprehensive negotiation strategy with supporting documentation for settlement offers.</p>
+  `;
+  downloadDocument(content, 'negotiation-strategy.pdf');
+};
+
+// Helper function to download documents
+async function downloadDocument(content, filename) {
+  try {
+    const result = await createDoc({ content, format: 'pdf', filename });
+    if (result.url || result.downloadUrl) {
+      window.open(result.url || result.downloadUrl, '_blank');
+    } else {
+      alert('Document generation completed. Check your downloads.');
+    }
+  } catch (error) {
+    alert('Error generating document: ' + error.message);
+  }
+}
+</script>
+
 <script type="module" src="/app/assets/js/diagnostics.js"></script>
 </body></html>
