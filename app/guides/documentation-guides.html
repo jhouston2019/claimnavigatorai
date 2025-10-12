@@ -8,11 +8,11 @@
 <link rel="stylesheet" href="/app/assets/css/style.css">
 <style>
 :root {
-  --navy: #0f172a;         /* Deep navy background */
-  --blue: #1e3a8a;         /* Primary accent */
-  --light-blue: #2563eb;   /* Bright link blue */
+  --navy: #0f172a;         /* Deep navy background - matches site */
+  --blue: #0f172a;         /* Dark navy - matches navigation */
+  --light-blue: #1e40af;   /* Primary blue - matches site */
   --white: #ffffff;
-  --gray-text: #f1f5f9;
+  --dark-text: #000000;    /* Black text for white backgrounds */
   --border: #1e40af;
 }
 
@@ -57,18 +57,26 @@ main {
 }
 
 .blue-card p, .blue-card li {
-  color: var(--gray-text);
+  color: #ffffff;
   line-height: 1.7;
 }
 
 /* White Sub-Cards */
 .white-subcard {
   background: var(--white);
-  color: var(--navy);
+  color: var(--dark-text);
   padding: 1.5rem 2rem;
   border-radius: 4px;
   margin: 1.25rem 0;
   border-left: 5px solid var(--light-blue);
+}
+
+.white-subcard h3, .white-subcard h4 {
+  color: var(--dark-text);
+}
+
+.white-subcard p, .white-subcard li {
+  color: var(--dark-text);
 }
 
 /* Typography */
@@ -113,10 +121,15 @@ strong {
   font-weight: 600;
 }
 
+/* Ensure all text in white areas is dark */
+.white-subcard strong {
+  color: var(--light-blue);
+}
+
 /* Table of Contents */
 .toc-bar {
   background: var(--white);
-  color: var(--navy);
+  color: var(--dark-text);
   text-align: center;
   padding: 1rem 0;
   border-bottom: 2px solid var(--border);
@@ -142,7 +155,7 @@ table {
   width: 100%;
   border-collapse: collapse;
   background: var(--white);
-  color: var(--navy);
+  color: var(--dark-text);
   margin: 1.5rem 0;
   font-size: 0.95rem;
 }
@@ -157,10 +170,12 @@ th {
 td {
   border: 1px solid #e5e7eb;
   padding: 0.65rem 0.8rem;
+  color: var(--dark-text);
 }
 
 tr:nth-child(even) td { 
   background: #f8fafc; 
+  color: var(--dark-text);
 }
 
 /* Two Column Layout */
@@ -283,7 +298,7 @@ a:hover {
 }
 
 .header .brand {
-  color: var(--navy);
+  color: var(--dark-text);
   font-weight: 700;
 }
 
