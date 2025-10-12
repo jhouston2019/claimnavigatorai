@@ -7,6 +7,17 @@
 <main class="container">
   <div class="card"><h2>⚖️ Estimate Comparison</h2><p>Compare contractor vs insurer vs ROM.</p></div>
   <div class="card">
+    <h3>Claim Information</h3>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px">
+      <label>Your Name<input id="claimantName" placeholder="Your Name"/></label>
+      <label>Policy #<input id="policyNumber" placeholder="Policy #"/></label>
+      <label>Claim #<input id="claimNumber" placeholder="Claim #"/></label>
+      <label>Date of Loss<input id="dateOfLoss" type="date"/></label>
+      <label>Insurance Company<input id="insurerName" placeholder="Insurance Company"/></label>
+      <label>Phone Number<input id="phoneNumber" type="tel" placeholder="Phone Number"/></label>
+      <label>Email Address<input id="email" type="email" placeholder="Email Address"/></label>
+      <label>Your Address<input id="claimantAddress" placeholder="Your Address"/></label>
+    </div>
     <label>Input</label>
     <textarea id="tool-input" placeholder="Paste details, estimates, offers…"></textarea>
     <div style="display:flex;gap:8px;margin-top:8px">
@@ -22,11 +33,44 @@
   const type='estimate_comparison';
   on(qs('#run'),'click', async ()=>{
     const v=qs('#tool-input').value.trim(); if(!v) return alert('Enter details first.');
+    
+    // Collect claim information
+    const claimInfo = {
+      claimantName: qs('#claimantName').value || 'Not provided',
+      policyNumber: qs('#policyNumber').value || 'Not provided',
+      claimNumber: qs('#claimNumber').value || 'Not provided',
+      dateOfLoss: qs('#dateOfLoss').value || 'Not provided',
+      insurerName: qs('#insurerName').value || 'Not provided',
+      phoneNumber: qs('#phoneNumber').value || 'Not provided',
+      email: qs('#email').value || 'Not provided',
+      claimantAddress: qs('#claimantAddress').value || 'Not provided'
+    };
+    
+    // Generate claim header
+    const claimHeader = `CLAIM INFORMATION
+================
+Policyholder: ${claimInfo.claimantName}
+Address: ${claimInfo.claimantAddress}
+Phone: ${claimInfo.phoneNumber}
+Email: ${claimInfo.email}
+
+Policy Number: ${claimInfo.policyNumber}
+Claim Number: ${claimInfo.claimNumber}
+Date of Loss: ${claimInfo.dateOfLoss}
+Insurance Company: ${claimInfo.insurerName}
+
+Generated: ${new Date().toLocaleDateString()}
+Document Type: ESTIMATE COMPARISON
+
+========================================
+
+`;
+    
     qs('#tool-output').innerHTML='<span class="small">Running…</span>';
     try{
       const res = type==='coverage_review' ? await analyzePolicyText(v,type) : await analyzeClaim({analysisType:type, text:v});
       const html = res.analysis||res.assessment||res.comparison||res.report||JSON.stringify(res);
-      qs('#tool-output').innerHTML = html || '(no output)';
+      qs('#tool-output').innerHTML = claimHeader + (html || '(no output)');
     }catch(e){ qs('#tool-output').innerHTML = '<div style="color:#ef4444">'+e.message+'</div>'; }
   });
   on(qs('#export'),'click', async ()=>{
