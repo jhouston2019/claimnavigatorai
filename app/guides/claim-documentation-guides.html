@@ -17,6 +17,8 @@
   --border: #e2e8f0;
 }
 
+html { scroll-behavior: smooth; }
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -27,12 +29,13 @@ body {
   padding: 0;
 }
 
-
-main.container {
-  width: 100%;
-  max-width: none;
+main {
+  max-width: 920px;
+  margin: 0 auto;
   padding: 2rem 1.25rem;
   background: var(--bg-light);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 /* Headings */
@@ -49,13 +52,8 @@ h3 { font-size: 1.3rem; color: var(--primary); }
 h4 { font-size: 1.1rem; color: var(--text); font-weight: 600; }
 
 /* Paragraphs & Lists */
-p, li {
-  color: var(--text);
-  margin-bottom: 0.6rem;
-}
-ul, ol {
-  margin-left: 1.5rem;
-}
+p, li { color: var(--text); margin-bottom: 0.6rem; }
+ul, ol { margin-left: 1.5rem; }
 
 /* Tables */
 table {
@@ -74,9 +72,7 @@ th {
   color: #fff;
   font-weight: 600;
 }
-tr:nth-child(even) td {
-  background: #f1f5f9;
-}
+tr:nth-child(even) td { background: #f1f5f9; }
 
 /* Section Boxes */
 .section-box {
@@ -84,18 +80,11 @@ tr:nth-child(even) td {
   border: 1px solid var(--border);
   border-left: 5px solid var(--accent);
   border-radius: 8px;
-  padding: 1.5rem 2rem;
-  margin: 1.5rem 0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
 }
-.protips {
-  border-left-color: #16a34a;
-  background: #f0fdf4;
-}
-.mistakes {
-  border-left-color: #dc2626;
-  background: #fef2f2;
-}
+.protips { border-left-color: #16a34a; background: #f0fdf4; }
+.mistakes { border-left-color: #dc2626; background: #fef2f2; }
 
 /* Code/Pre */
 pre, code {
@@ -118,35 +107,44 @@ pre, code {
   display: inline-block;
   margin: 0.5rem 0.5rem 0.5rem 0;
 }
-.primary-btn:hover {
-  background: var(--primary);
-}
-a {
-  color: var(--accent);
-  text-decoration: none;
-  font-weight: 500;
-}
-a:hover {
-  text-decoration: underline;
-}
+.primary-btn:hover { background: var(--primary); }
+a { color: var(--accent); text-decoration: none; font-weight: 500; }
+a:hover { text-decoration: underline; }
 
 /* Layout Condensation */
-section {
-  margin-bottom: 1.5rem;
-}
+section { margin-bottom: 1.5rem; }
 h1:first-child { margin-top: 0; }
 p + h2, ul + h2 { margin-top: 1.25rem; }
 
-/* Two-column lists */
-.two-column {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+/* TOC Styles */
+#toc {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
   margin: 1.5rem 0;
 }
+#toc h2 {
+  margin-top: 0;
+  color: var(--accent);
+}
+#toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#toc li {
+  margin: 0.4rem 0;
+}
+#toc a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+#toc a:hover { color: var(--accent); }
 
-/* Back to Top Button */
-.back-to-top {
+/* Back to Top */
+#backToTop {
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -154,16 +152,19 @@ p + h2, ul + h2 { margin-top: 1.25rem; }
   color: #fff;
   padding: 8px 12px;
   border-radius: 6px;
-  text-decoration: none;
   font-weight: 600;
-  font-size: 14px;
+  text-decoration: none;
   display: none;
   z-index: 1000;
 }
-.back-to-top:hover {
-  background: var(--primary);
-  color: #fff;
-  text-decoration: none;
+#backToTop:hover { background: var(--primary); }
+
+/* Two-column lists */
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
 }
 
 /* Responsive */
@@ -174,10 +175,6 @@ p + h2, ul + h2 { margin-top: 1.25rem; }
   .two-column {
     grid-template-columns: 1fr;
   }
-  .back-to-top {
-    bottom: 16px;
-    right: 16px;
-  }
 }
 </style>
 </head>
@@ -185,15 +182,33 @@ p + h2, ul + h2 { margin-top: 1.25rem; }
 <header class="header">
   <div class="bar container">
     <div class="brand"><div class="logo"></div><div>Complete Property Claim Documentation System</div></div>
-  <nav class="nav"><a href="/app/response-center.html">← Resource Center</a></nav>
+    <nav class="nav"><a href="/app/response-center.html">← Resource Center</a></nav>
   </div>
 </header>
 
-<main class="container">
+<main>
   <h1>📋 Complete Property Claim Documentation System</h1>
   <p>Everything you need to document, organize, and maximize your insurance claim. Follow this comprehensive step-by-step system for professional results.</p>
   
-  <div class="section-box">
+  <div id="toc">
+    <h2>📘 Table of Contents</h2>
+    <ul>
+      <li><a href="#overview">System Overview</a></li>
+      <li><a href="#step1">Step 1: Essential Tools & Apps</a></li>
+      <li><a href="#step2">Step 2: Professional Photography Techniques</a></li>
+      <li><a href="#step3">Step 3: Document Organization System</a></li>
+      <li><a href="#step4">Step 4: Business Interruption Documentation</a></li>
+      <li><a href="#core-setup">Section 1: Core Setup & Essential Tools</a></li>
+      <li><a href="#financial-docs">Section 2: Property Loss Financial Documentation</a></li>
+      <li><a href="#communication">Section 3: Property Claim Communication</a></li>
+      <li><a href="#specialized">Section 4: Specialized Property Documentation</a></li>
+      <li><a href="#verification">Section 5: Verification & Submission</a></li>
+      <li><a href="#advanced">Section 6: Advanced Property Claim Strategies</a></li>
+      <li><a href="#checklist">Property Claim Success Checklist</a></li>
+    </ul>
+  </div>
+
+  <div class="section-box" id="overview">
     <h3>🎯 System Overview</h3>
     <p>This complete system covers every aspect of property claim documentation from initial setup through final submission and negotiation.</p>
     <div class="two-column">
@@ -227,7 +242,7 @@ p + h2, ul + h2 { margin-top: 1.25rem; }
     </div>
   </div>
 
-  <section>
+  <section id="step1">
     <h2>📱 Essential Tools & Apps</h2>
     <p>Set up your digital toolkit with these essential apps and tools for claim documentation.</p>
 
@@ -300,7 +315,7 @@ p + h2, ul + h2 { margin-top: 1.25rem; }
     </div>
   </section>
 
-  <section>
+  <section id="step2">
     <h2>📸 Professional Photography Techniques</h2>
     <p>Learn how to document property damage like a professional adjuster.</p>
 
@@ -368,7 +383,7 @@ p + h2, ul + h2 { margin-top: 1.25rem; }
     </div>
   </section>
 
-  <section>
+  <section id="step3">
     <h2>📁 Document Organization System</h2>
     <p>Set up a professional filing system to manage all your claim documents.</p>
 
@@ -433,7 +448,7 @@ p + h2, ul + h2 { margin-top: 1.25rem; }
     </div>
   </section>
 
-  <section>
+  <section id="step4">
     <h2>💰 Business Interruption Documentation</h2>
     <p>Essential tools and reports for proving business losses and maximizing BI claims.</p>
 
@@ -522,7 +537,7 @@ p + h2, ul + h2 { margin-top: 1.25rem; }
     </div>
   </section>
 
-  <section>
+  <section id="core-setup">
     <h2>📋 Section 1: Core Setup & Essential Tools</h2>
     <p>Professional setup for maximum claim success. These tools and processes form the foundation of your documentation system.</p>
 
@@ -613,7 +628,7 @@ p + h2, ul + h2 { margin-top: 1.25rem; }
     </div>
   </section>
 
-  <section>
+  <section id="financial-docs">
     <h2>💰 Section 2: Property Loss Financial Documentation</h2>
     <p>Comprehensive financial tracking and documentation for maximum claim recovery.</p>
 
@@ -716,7 +731,7 @@ p + h2, ul + h2 { margin-top: 1.25rem; }
     </div>
   </section>
 
-  <section>
+  <section id="communication">
     <h2>📞 Section 3: Property Claim Communication</h2>
     <p>Professional communication strategies and documentation for claim success.</p>
 
@@ -772,7 +787,7 @@ p + h2, ul + h2 { margin-top: 1.25rem; }
     </div>
   </section>
 
-  <section>
+  <section id="specialized">
     <h2>🌪️ Section 4: Specialized Property Documentation</h2>
     <p>Advanced documentation for complex property claims and specialized situations.</p>
 
@@ -827,7 +842,7 @@ p + h2, ul + h2 { margin-top: 1.25rem; }
     </div>
   </section>
 
-  <section>
+  <section id="verification">
     <h2>✅ Section 5: Verification & Submission</h2>
     <p>Final verification and professional submission processes for maximum claim success.</p>
 
@@ -885,7 +900,7 @@ p + h2, ul + h2 { margin-top: 1.25rem; }
     </div>
   </section>
 
-  <section>
+  <section id="advanced">
     <h2>🎯 Section 6: Advanced Property Claim Strategies</h2>
     <p>Professional strategies for evidence authentication, negotiation, and claim maximization.</p>
 
@@ -964,7 +979,7 @@ p + h2, ul + h2 { margin-top: 1.25rem; }
     </div>
   </section>
 
-  <section>
+  <section id="checklist">
     <h2>✅ Property Claim Success Checklist</h2>
     <p>Use this comprehensive checklist to ensure you've completed all necessary documentation for maximum claim success.</p>
 
@@ -1052,17 +1067,17 @@ p + h2, ul + h2 { margin-top: 1.25rem; }
   </div>
 </main>
 
-<a href="#" class="back-to-top" id="backToTop">⬆ Back to Top</a>
+<a href="#" id="backToTop">⬆ Back to Top</a>
+
+<footer style="text-align:center; color:var(--text-secondary); margin-top:2rem; padding-top:1rem; border-top:1px solid var(--border);">
+ClaimNavigatorAI © 2025 – All Rights Reserved | Affiliate Disclosure: This page contains affiliate links that may earn a commission at no extra cost to you.
+</footer>
 
 <script>
-// Back to top functionality
-window.addEventListener('scroll', function() {
-  const backToTop = document.getElementById('backToTop');
-  if (window.pageYOffset > 300) {
-    backToTop.style.display = 'block';
-  } else {
-    backToTop.style.display = 'none';
-  }
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('backToTop');
+  if (window.scrollY > 600) btn.style.display = 'block';
+  else btn.style.display = 'none';
 });
 
 document.getElementById('backToTop').addEventListener('click', function(e) {
