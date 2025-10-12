@@ -47,6 +47,21 @@
       <p class="hero-subtitle">Get personalized AI-powered advice for your insurance claim situation. Describe your situation and receive expert guidance on next steps.</p>
       
       <div class="ai-input-container">
+        <!-- Claim Information Form -->
+        <div class="claim-info-form" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <h3 style="margin-bottom: 15px; color: #1e3a5f;">Claim Information</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+            <input type="text" id="claimantName" placeholder="Your Name" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;" />
+            <input type="text" id="policyNumber" placeholder="Policy Number" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;" />
+            <input type="text" id="claimNumber" placeholder="Claim Number" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;" />
+            <input type="date" id="dateOfLoss" placeholder="Date of Loss" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;" />
+            <input type="text" id="insurerName" placeholder="Insurance Company" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;" />
+            <input type="tel" id="phoneNumber" placeholder="Phone Number" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;" />
+            <input type="email" id="email" placeholder="Email Address" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;" />
+            <input type="text" id="claimantAddress" placeholder="Your Address" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;" />
+          </div>
+        </div>
+        
         <form class="ai-input-form" id="ai-advisory-form">
           <input 
             type="text" 
@@ -160,6 +175,18 @@
       const situation = document.getElementById('situation-input').value.trim();
       if (!situation) return;
 
+      // Collect claim information
+      const claimInfo = {
+        claimantName: document.getElementById('claimantName').value.trim(),
+        policyNumber: document.getElementById('policyNumber').value.trim(),
+        claimNumber: document.getElementById('claimNumber').value.trim(),
+        dateOfLoss: document.getElementById('dateOfLoss').value,
+        insurerName: document.getElementById('insurerName').value.trim(),
+        phoneNumber: document.getElementById('phoneNumber').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        claimantAddress: document.getElementById('claimantAddress').value.trim()
+      };
+
       const analyzeBtn = document.getElementById('analyze-btn');
       const aiResults = document.getElementById('ai-results');
       
@@ -168,17 +195,46 @@
       analyzeBtn.textContent = 'Analyzing...';
       
       try {
-        const response = await fetch('/netlify/functions/ai-advisory', {
+        const response = await fetch('/netlify/functions/ai-advisory-simple', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ situation })
+          body: JSON.stringify({ 
+            situation,
+            claimInfo 
+          })
         });
 
         const result = await response.json();
 
         if (response.ok) {
+          // Generate claim header
+          const claimHeader = `CLAIM INFORMATION
+================
+Policyholder: ${claimInfo.claimantName || 'Not provided'}
+Address: ${claimInfo.claimantAddress || 'Not provided'}
+Phone: ${claimInfo.phoneNumber || 'Not provided'}
+Email: ${claimInfo.email || 'Not provided'}
+
+Policy Number: ${claimInfo.policyNumber || 'Not provided'}
+Claim Number: ${claimInfo.claimNumber || 'Not provided'}
+Date of Loss: ${claimInfo.dateOfLoss || 'Not provided'}
+Insurance Company: ${claimInfo.insurerName || 'Not provided'}
+
+Generated: ${new Date().toLocaleDateString()}
+Document Type: SITUATIONAL ADVISORY
+
+========================================
+
+`;
+          
+          // Add claim header to all result sections
+          result.nextSteps = claimHeader + (result.nextSteps || 'No specific steps provided');
+          result.explanation = claimHeader + (result.explanation || 'No explanation provided');
+          result.recommendedDocument = claimHeader + (result.recommendedDocument || 'No document recommended');
+          result.exampleText = claimHeader + (result.exampleText || 'No example provided');
+          
           displayAIResults(result);
           aiResults.classList.add('show', 'fade-in');
         } else {
