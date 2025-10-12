@@ -1,4 +1,4 @@
-import { json, readBody } from './_utils.js';
+import { json, readBody, openaiChat } from './_utils.js';
 
 export default async (req) => {
   try {
