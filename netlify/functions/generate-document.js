@@ -9,8 +9,20 @@ export const handler = async (event) => {
   }
 
   try {
-    const { documentId, title, fields } = JSON.parse(event.body || "{}");
-    if (!fields || !title) {
+    const requestData = JSON.parse(event.body || "{}");
+    
+    // Handle both old format (documentId, title, fields) and new format (documentType, claimDetails)
+    let title, fields;
+    
+    if (requestData.documentType && requestData.claimDetails) {
+      // New format from Situational Advisory
+      title = requestData.documentType;
+      fields = requestData.claimDetails;
+    } else if (requestData.fields && requestData.title) {
+      // Old format from Document Generator
+      title = requestData.title;
+      fields = requestData.fields;
+    } else {
       return {
         statusCode: 400,
         body: JSON.stringify({ error: "Missing document data." }),
@@ -18,6 +30,7 @@ export const handler = async (event) => {
     }
 
     const fieldSummary = Object.entries(fields)
+      .filter(([key, val]) => val && val.toString().trim() !== '')
       .map(([key, val]) => `${key.replace(/_/g, " ")}: ${val}`)
       .join("\n");
 
@@ -64,7 +77,12 @@ Output the HTML only (no markdown, no backticks). Use <p> and <h2> tags where ap
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
       },
-      body: JSON.stringify({ html: aiText }),
+      body: JSON.stringify({ 
+        document: aiText,
+        html: aiText,
+        documentType: title,
+        generatedAt: new Date().toISOString()
+      }),
     };
   } catch (err) {
     console.error("AI generation error:", err);
