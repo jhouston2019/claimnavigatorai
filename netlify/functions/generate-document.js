@@ -83,21 +83,90 @@ export const handler = async (event) => {
 
 function mapDocumentType(documentType) {
   const typeMapping = {
-    'proof-of-loss': 'Proof of Loss',
+    // Core Claim Documents
+    'sworn-statement-proof-of-loss': 'Sworn Statement in Proof of Loss',
     'appeal-letter': 'Appeal Letter',
-    'demand-letter': 'Demand Letter',
-    'damage-inventory': 'Damage Inventory',
+    'final-demand-payment': 'Final Demand for Payment Letter',
+    'personal-property-inventory': 'Personal Property Inventory Claim Form',
     'claim-timeline': 'Claim Timeline / Diary',
-    'repair-replace': 'Repair vs Replace',
-    'out-of-pocket': 'Out-of-Pocket Log',
-    'appraisal-demand': 'Appraisal Demand',
+    'ale-reimbursement-request': 'ALE Reimbursement Request',
+    'claim-expense-tracking': 'Claim Expense Tracking Log',
+    'appraisal-demand': 'Appraisal Demand Letter',
     'notice-of-delay': 'Notice of Delay',
     'coverage-clarification': 'Coverage Clarification Request',
-    'notice-of-claim': 'Notice of Claim',
-    'bad-faith-letter': 'Bad Faith Letter',
+    'first-notice-loss': 'First Notice of Loss (FNOL)',
+    'bad-faith-complaint': 'Bad Faith Complaint',
     'follow-up-letter': 'Follow-up Letter',
-    'business-interruption': 'Business Interruption Claim',
-    'settlement-comparison': 'Settlement Comparison Sheet'
+    'business-interruption-claim': 'Business Interruption Claim',
+    'settlement-negotiation': 'Settlement Negotiation Letter',
+    
+    // Damage-Specific Documents
+    'fire-damage-claim': 'Fire Damage Claim Documentation',
+    'water-damage-claim': 'Water Damage Claim Documentation',
+    'flood-damage-claim': 'Flood Damage Claim Documentation',
+    'hurricane-windstorm-claim': 'Hurricane/Windstorm Claim Documentation',
+    'roof-damage-claim': 'Roof Damage Claim Documentation',
+    'mold-claim': 'Mold Claim Documentation',
+    'vandalism-theft-claim': 'Vandalism and Theft Claim',
+    
+    // Professional Services
+    'attorney-referral': 'Attorney Referral Engagement Letter',
+    'expert-engineer-engagement': 'Expert Engineer Engagement Letter',
+    'arbitration-demand': 'Arbitration Demand Letter',
+    'mediation-request': 'Request for Mediation Letter',
+    
+    // Regulatory & Legal
+    'doi-complaint': 'Department of Insurance Complaint Letter',
+    'notice-intent-litigate': 'Notice of Intent to Litigate Letter',
+    'unfair-claims-complaint': 'Complaint for Unfair Claims Practices',
+    
+    // Commercial & Business
+    'commercial-lease-interruption': 'Commercial Lease Interruption Notice',
+    'commercial-tenant-damage': 'Commercial Tenant Damage Claim',
+    'restaurant-loss-claim': 'Restaurant Loss Claim Documentation',
+    'industrial-loss-claim': 'Industrial Loss Claim Documentation',
+    
+    // Financial & Settlement
+    'advance-payment-request': 'Request for Advance Payment Letter',
+    'withheld-depreciation-release': 'Withheld Depreciation Release Request',
+    'settlement-rejection-counteroffer': 'Settlement Rejection and Counteroffer',
+    'final-settlement-acceptance': 'Final Settlement Acceptance Letter',
+    
+    // Documentation & Evidence
+    'claim-evidence-checklist': 'Claim Evidence Checklist',
+    'photo-documentation-log': 'Evidence and Photo Documentation Log',
+    'communication-tracking': 'Communication Tracking System with Carrier',
+    'carrier-contact-log': 'Insurance Carrier Contact Log',
+    
+    // Estimates & Valuations
+    'line-item-estimate': 'Line Item Estimate Template',
+    'professional-estimate': 'Professional Estimate for Restoration',
+    'damage-valuation-report': 'Damage Valuation Report',
+    'scope-loss-summary': 'Scope of Loss Summary',
+    
+    // Property & Construction
+    'property-inspection-request': 'Property Inspection Scheduling Request',
+    'property-damage-verification': 'Property Damage Verification Statement',
+    'residential-construction-contract': 'Residential Construction Contract',
+    'temporary-housing-lease': 'Temporary Housing Lease Agreement',
+    
+    // Administrative
+    'authorization-endorse-proceeds': 'Authorization to Endorse Insurance Proceeds',
+    'authorization-release-info': 'Authorization for Release of Claim Information',
+    'check-endorsement-instructions': 'Check Endorsement Instructions Letter',
+    'mortgagee-notification': 'Mortgagee Notification Letter',
+    
+    // Rebuttals & Responses
+    'rebuttal-partial-denial': 'Rebuttal to Carrier Partial Denial of Coverage',
+    'rebuttal-wrongful-denial': 'Rebuttal to Wrongful Claim Denial',
+    'response-reservation-rights': 'Response to Reservation of Rights Letter',
+    'reserve-information-request': 'Reserve Information Request Letter',
+    
+    // Supplemental & Additional
+    'supplemental-claim-documentation': 'Supplemental Claim Documentation Letter',
+    'claim-submission-checklist': 'Property Claim Submission Checklist',
+    'claim-summary-report': 'Claim Summary Report',
+    'rom-worksheet': 'Rough Order of Magnitude (ROM) Worksheet'
   };
   
   return typeMapping[documentType] || documentType;
