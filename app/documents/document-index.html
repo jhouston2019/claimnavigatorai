@@ -7,10 +7,16 @@
 <main class="container" id="main">
   <div class="card"><h2>Document Index</h2></div>
   <div class="card">
-    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
-      <label>Policyholder<input id="name" placeholder="Policyholder Name"/></label>
+    <h3>Claim Information</h3>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+      <label>Your Name<input id="name" placeholder="Your Name"/></label>
       <label>Policy #<input id="policy" placeholder="Policy #"/></label>
       <label>Claim #<input id="claim" placeholder="Claim #"/></label>
+      <label>Date of Loss<input id="dateOfLoss" type="date"/></label>
+      <label>Insurance Company<input id="insurerName" placeholder="Insurance Company"/></label>
+      <label>Phone Number<input id="phoneNumber" type="tel" placeholder="Phone Number"/></label>
+      <label>Email Address<input id="email" type="email" placeholder="Email Address"/></label>
+      <label>Your Address<input id="claimantAddress" placeholder="Your Address"/></label>
     </div>
     <label style="display:block;margin-top:8px">Details<textarea id="details" placeholder="Enter details/context..."></textarea></label>
     <div style="display:flex;gap:8px;margin-top:10px">
@@ -26,9 +32,45 @@
   import { callAI, createDoc } from '/app/assets/js/api-client.js';
   const slug='document-index';
   on(qs('#draft'),'click', async ()=>{
+    // Collect claim information
+    const claimInfo = {
+      name: qs('#name').value || 'Not provided',
+      policy: qs('#policy').value || 'Not provided',
+      claim: qs('#claim').value || 'Not provided',
+      dateOfLoss: qs('#dateOfLoss').value || 'Not provided',
+      insurerName: qs('#insurerName').value || 'Not provided',
+      phoneNumber: qs('#phoneNumber').value || 'Not provided',
+      email: qs('#email').value || 'Not provided',
+      claimantAddress: qs('#claimantAddress').value || 'Not provided'
+    };
+    
+    // Generate claim header
+    const claimHeader = `CLAIM INFORMATION
+================
+Policyholder: ${claimInfo.name}
+Address: ${claimInfo.claimantAddress}
+Phone: ${claimInfo.phoneNumber}
+Email: ${claimInfo.email}
+
+Policy Number: ${claimInfo.policy}
+Claim Number: ${claimInfo.claim}
+Date of Loss: ${claimInfo.dateOfLoss}
+Insurance Company: ${claimInfo.insurerName}
+
+Generated: ${new Date().toLocaleDateString()}
+Document Type: DOCUMENT INDEX
+
+========================================
+
+`;
+    
     const body={type:slug,name:qs('#name').value,policy:qs('#policy').value,claim:qs('#claim').value,details:qs('#details').value};
     qs('#out').innerHTML='Drafting…';
-    try{ const r=await callAI(body,{type:slug}); qs('#out').innerHTML=r.response||r.analysis||JSON.stringify(r)||'(no content)';}
+    try{ 
+      const r=await callAI(body,{type:slug}); 
+      const response = r.response||r.analysis||JSON.stringify(r)||'(no content)';
+      qs('#out').innerHTML = claimHeader + response;
+    }
     catch(e){ qs('#out').innerHTML='<div style="color:#ef4444">'+e.message+'</div>'; }
   });
   async function exportAs(fmt){

@@ -5,8 +5,25 @@
 <header class="header"><div class="bar container"><div class="brand"><div class="logo"></div><div>AI Response & Analysis Agent</div></div>
 <nav class="nav"><a href="/app/response-center.html">← Resource Center</a></nav></div></header>
 <main class="container" id="main">
-  <div class="card"><h2>Paste Insurer Letter / Email</h2></div>
+  <div class="card"><h2>AI Response & Analysis Agent</h2></div>
+  
+  <!-- Claim Information Form -->
   <div class="card">
+    <h3>Claim Information</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <input type="text" id="claimantName" placeholder="Your Name" />
+      <input type="text" id="policyNumber" placeholder="Policy Number" />
+      <input type="text" id="claimNumber" placeholder="Claim Number" />
+      <input type="date" id="dateOfLoss" placeholder="Date of Loss" />
+      <input type="text" id="insurerName" placeholder="Insurance Company" />
+      <input type="tel" id="phoneNumber" placeholder="Phone Number" />
+      <input type="email" id="email" placeholder="Email Address" />
+      <input type="text" id="claimantAddress" placeholder="Your Address" />
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3>Paste Insurer Letter / Email</h3>
     <textarea id="input" placeholder="Paste the insurer message here…"></textarea>
     <div style="display:flex;gap:8px;margin-top:8px">
       <button class="btn btn-primary" id="analyze">Analyze & Draft Reply</button>
@@ -21,8 +38,45 @@
   const seed=sessionStorage.getItem('ai_seed'); if(seed){ qs('#input').value=seed; sessionStorage.removeItem('ai_seed'); }
   on(qs('#analyze'),'click', async ()=>{
     const v=qs('#input').value.trim(); if(!v) return;
+    
+    // Collect claim information
+    const claimInfo = {
+      claimantName: qs('#claimantName').value.trim(),
+      policyNumber: qs('#policyNumber').value.trim(),
+      claimNumber: qs('#claimNumber').value.trim(),
+      dateOfLoss: qs('#dateOfLoss').value,
+      insurerName: qs('#insurerName').value.trim(),
+      phoneNumber: qs('#phoneNumber').value.trim(),
+      email: qs('#email').value.trim(),
+      claimantAddress: qs('#claimantAddress').value.trim()
+    };
+    
+    // Generate claim header
+    const claimHeader = `CLAIM INFORMATION
+================
+Policyholder: ${claimInfo.claimantName || 'Not provided'}
+Address: ${claimInfo.claimantAddress || 'Not provided'}
+Phone: ${claimInfo.phoneNumber || 'Not provided'}
+Email: ${claimInfo.email || 'Not provided'}
+
+Policy Number: ${claimInfo.policyNumber || 'Not provided'}
+Claim Number: ${claimInfo.claimNumber || 'Not provided'}
+Date of Loss: ${claimInfo.dateOfLoss || 'Not provided'}
+Insurance Company: ${claimInfo.insurerName || 'Not provided'}
+
+Generated: ${new Date().toLocaleDateString()}
+Document Type: AI RESPONSE AGENT
+
+========================================
+
+`;
+    
     qs('#out').innerHTML='Working…';
-    try{ const r=await callAI({inputText:v,type:'ai-agent'}); qs('#out').innerHTML=r.response||r.analysis||JSON.stringify(r)||'(no content)'; }
+    try{ 
+      const r=await callAI({inputText:v,type:'ai-agent'}); 
+      const response = r.response||r.analysis||JSON.stringify(r)||'(no content)';
+      qs('#out').innerHTML = claimHeader + response;
+    }
     catch(e){ qs('#out').innerHTML='<div style="color:#ef4444">'+e.message+'</div>'; }
   });
   on(qs('#export'),'click', async ()=>{

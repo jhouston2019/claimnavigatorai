@@ -31,13 +31,22 @@ Focus on protecting the policyholder's rights and maximizing claim value.`;
 
     const userPrompt = `Generate a professional ${documentType.replace(/-/g, ' ')} document for the following claim situation:
 
-CLAIM DETAILS:
-- Policy Number: ${claimData.policyNumber}
-- Claim Number: ${claimData.claimNumber}
-- Date of Loss: ${claimData.dateOfLoss}
-- Claimant: ${claimData.claimantName}
-- Address: ${claimData.claimantAddress}
-- Insurance Company: ${claimData.insurerName}
+CLAIM INFORMATION
+================
+Policyholder: ${claimData.claimantName}
+Address: ${claimData.claimantAddress}
+Phone: ${claimData.phoneNumber || 'Not provided'}
+Email: ${claimData.email || 'Not provided'}
+
+Policy Number: ${claimData.policyNumber}
+Claim Number: ${claimData.claimNumber}
+Date of Loss: ${claimData.dateOfLoss}
+Insurance Company: ${claimData.insurerName}
+
+Generated: ${new Date().toLocaleDateString()}
+Document Type: ${documentType.replace(/-/g, ' ').toUpperCase()}
+
+========================================
 
 SITUATION DESCRIPTION:
 ${claimData.situationDetails}
@@ -45,12 +54,13 @@ ${claimData.situationDetails}
 DOCUMENT TYPE: ${documentType}
 
 Please generate a comprehensive, professional document that:
-1. Uses the claimant's actual information (no placeholders)
-2. Addresses the specific situation described
-3. Includes relevant legal references and policy language
-4. Provides clear, actionable next steps
-5. Is professionally formatted and ready to send
-6. Maximizes the policyholder's rights and claim value
+1. STARTS with the claim information header shown above
+2. Uses the claimant's actual information (no placeholders)
+3. Addresses the specific situation described
+4. Includes relevant legal references and policy language
+5. Provides clear, actionable next steps
+6. Is professionally formatted and ready to send
+7. Maximizes the policyholder's rights and claim value
 
 Make the document specific, detailed, and immediately actionable.`;
 

@@ -4,10 +4,19 @@
 <nav class="nav"><a href="/app/response-center.html">← Resource Center</a></nav></div></header>
 <main class="container" id="main">
   <div class="card">
-    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
-      <label>Name <input id="name"/></label>
+    <h3>Claim Information</h3>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+      <label>Your Name <input id="name"/></label>
       <label>Policy # <input id="policy"/></label>
       <label>Claim # <input id="claim"/></label>
+      <label>Date of Loss <input id="date_of_loss" type="date"/></label>
+      <label>Insurance Company <input id="insurer_name"/></label>
+      <label>Phone Number <input id="phone_number" type="tel"/></label>
+      <label>Email Address <input id="email" type="email"/></label>
+      <label>Your Address <input id="address"/></label>
+    </div>
+    <h3 style="margin-top: 20px;">Negotiation Details</h3>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
       <label>Insurer Offer <input id="insurer_offer" placeholder="$"/></label>
       <label>Contractor Estimate <input id="contractor_amount" placeholder="$"/></label>
       <label>Coverage Basis <input id="coverage_basis" placeholder="RCV/ACV etc."/></label>
@@ -20,7 +29,43 @@
   import TPL from '/app/assets/data/negotiation-scripts.json' assert { type:'json' };
   import {qs,on} from '/app/assets/js/ui-helpers.js';
   function fill(s){ return s.replace(/{{(\w+)}}/g,(_,k)=>qs('#'+k)?.value||''); }
-  function card(label, text){ return `<div class="card"><h3>${label}</h3><pre style="white-space:pre-wrap">${text}</pre><button class="btn" data-copy="${encodeURIComponent(text)}">Copy</button></div>`; }
+  
+  function generateClaimHeader() {
+    const name = qs('#name')?.value || 'Not provided';
+    const policy = qs('#policy')?.value || 'Not provided';
+    const claim = qs('#claim')?.value || 'Not provided';
+    const dateOfLoss = qs('#date_of_loss')?.value || 'Not provided';
+    const insurerName = qs('#insurer_name')?.value || 'Not provided';
+    const phone = qs('#phone_number')?.value || 'Not provided';
+    const email = qs('#email')?.value || 'Not provided';
+    const address = qs('#address')?.value || 'Not provided';
+    
+    return `CLAIM INFORMATION
+================
+Policyholder: ${name}
+Address: ${address}
+Phone: ${phone}
+Email: ${email}
+
+Policy Number: ${policy}
+Claim Number: ${claim}
+Date of Loss: ${dateOfLoss}
+Insurance Company: ${insurerName}
+
+Generated: ${new Date().toLocaleDateString()}
+Document Type: NEGOTIATION SCRIPTS
+
+========================================
+
+`;
+  }
+  
+  function card(label, text){ 
+    const claimHeader = generateClaimHeader();
+    const fullText = claimHeader + text;
+    return `<div class="card"><h3>${label}</h3><pre style="white-space:pre-wrap">${fullText}</pre><button class="btn" data-copy="${encodeURIComponent(fullText)}">Copy</button></div>`; 
+  }
+  
   on(qs('#build'),'click', ()=>{
     const blocks = Object.entries(TPL).map(([k,v])=>card(k.replace(/_/g,' '), fill(v)));
     qs('#out').innerHTML = blocks.join('');

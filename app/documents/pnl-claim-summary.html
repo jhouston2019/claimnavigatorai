@@ -12,6 +12,17 @@
     <div id="out" class="card" style="margin-top:12px"></div>
   </div>
   <div class="card">
+    <h3>Claim Information</h3>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px">
+      <label>Your Name<input id="claimantName" placeholder="Your Name"/></label>
+      <label>Policy #<input id="policyNumber" placeholder="Policy #"/></label>
+      <label>Claim #<input id="claimNumber" placeholder="Claim #"/></label>
+      <label>Date of Loss<input id="dateOfLoss" type="date"/></label>
+      <label>Insurance Company<input id="insurerName" placeholder="Insurance Company"/></label>
+      <label>Phone Number<input id="phoneNumber" type="tel" placeholder="Phone Number"/></label>
+      <label>Email Address<input id="email" type="email" placeholder="Email Address"/></label>
+      <label>Your Address<input id="claimantAddress" placeholder="Your Address"/></label>
+    </div>
     <h3>Draft Narrative</h3>
     <textarea id="details" placeholder="Context: seasonality, contracts lost, constraints, mitigation…"></textarea>
     <button class="btn" id="draft">Draft with AI</button>
@@ -28,9 +39,43 @@
     qs('#out').innerHTML = `<b>Revenue:</b> ${R.totalFmt}<br/><b>Expenses:</b> ${E.totalFmt}<br/><b>Net Impact:</b> ${(new Intl.NumberFormat(undefined,{style:'currency',currency:'USD'})).format(net)}`;
   });
   on(qs('#draft'),'click', async ()=>{
+    // Collect claim information
+    const claimInfo = {
+      claimantName: qs('#claimantName').value || 'Not provided',
+      policyNumber: qs('#policyNumber').value || 'Not provided',
+      claimNumber: qs('#claimNumber').value || 'Not provided',
+      dateOfLoss: qs('#dateOfLoss').value || 'Not provided',
+      insurerName: qs('#insurerName').value || 'Not provided',
+      phoneNumber: qs('#phoneNumber').value || 'Not provided',
+      email: qs('#email').value || 'Not provided',
+      claimantAddress: qs('#claimantAddress').value || 'Not provided'
+    };
+    
+    // Generate claim header
+    const claimHeader = `CLAIM INFORMATION
+================
+Policyholder: ${claimInfo.claimantName}
+Address: ${claimInfo.claimantAddress}
+Phone: ${claimInfo.phoneNumber}
+Email: ${claimInfo.email}
+
+Policy Number: ${claimInfo.policyNumber}
+Claim Number: ${claimInfo.claimNumber}
+Date of Loss: ${claimInfo.dateOfLoss}
+Insurance Company: ${claimInfo.insurerName}
+
+Generated: ${new Date().toLocaleDateString()}
+Document Type: P&L CLAIM SUMMARY
+
+========================================
+
+`;
+    
     const payload = `Revenue CSV:\n${qs('#rev').value}\n\nExpenses CSV:\n${qs('#exp').value}\n\nNotes:\n${qs('#details').value}`;
     qs('#draftout').innerHTML='Drafting…';
-    const r=await callAI({inputText:payload,type:'pnl-claim-summary'}); qs('#draftout').innerHTML=r.response||'(no content)';
+    const r=await callAI({inputText:payload,type:'pnl-claim-summary'}); 
+    const response = r.response||'(no content)';
+    qs('#draftout').innerHTML = claimHeader + response;
   });
 </script>
 <script type="module" src="/app/assets/js/diagnostics.js"></script>

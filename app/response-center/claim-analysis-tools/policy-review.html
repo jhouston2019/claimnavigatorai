@@ -26,7 +26,28 @@
     try{
       const res = type==='coverage_review' ? await analyzePolicyText(v,type) : await analyzeClaim({analysisType:type, text:v});
       const html = res.analysis||res.assessment||res.comparison||res.report||JSON.stringify(res);
-      qs('#tool-output').innerHTML = html || '(no output)';
+      
+      // Generate claim header
+      const claimHeader = `CLAIM INFORMATION
+================
+Policyholder: Not provided
+Address: Not provided
+Phone: Not provided
+Email: Not provided
+
+Policy Number: Not provided
+Claim Number: Not provided
+Date of Loss: Not provided
+Insurance Company: Not provided
+
+Generated: ${new Date().toLocaleDateString()}
+Document Type: POLICY REVIEW
+
+========================================
+
+`;
+      
+      qs('#tool-output').innerHTML = claimHeader + (html || '(no output)');
     }catch(e){ qs('#tool-output').innerHTML = '<div style="color:#ef4444">'+e.message+'</div>'; }
   });
   on(qs('#export'),'click', async ()=>{
