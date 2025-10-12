@@ -954,9 +954,36 @@
             }
 
             async callAIGeneration(data) {
-                // This would be replaced with actual API call to your backend
-                // For now, we'll simulate the response
-                
+                // Use AI to generate rich, applicable documents
+                try {
+                    const response = await fetch('/netlify/functions/generate-document', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            documentType: this.selectedType,
+                            claimData: data
+                        })
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        return {
+                            content: result.content,
+                            success: true
+                        };
+                    } else {
+                        throw new Error('AI generation failed');
+                    }
+                } catch (error) {
+                    console.error('AI Generation Error:', error);
+                    // Fallback to static templates if AI fails
+                    return this.generateFallbackDocument(data);
+                }
+            }
+
+            generateFallbackDocument(data) {
                 const documentTemplates = {
                     'appeal-letter': this.generateAppealLetter(data),
                     'demand-letter': this.generateDemandLetter(data),
@@ -1017,42 +1044,60 @@
             }
 
             generateAppealLetter(data) {
-                return `[Your Name]
+                return `${data.claimantName}
 ${data.claimantAddress}
 
-[Date]
+${new Date().toLocaleDateString()}
 
-[Insurance Company Name]
 ${data.insurerName}
+Claims Department
 [Insurance Company Address]
 
-Re: Policy Number: ${data.policyNumber}
+Re: APPEAL OF CLAIM DENIAL/UNDERPAYMENT
+Policy Number: ${data.policyNumber}
 Claim Number: ${data.claimNumber}
 Date of Loss: ${data.dateOfLoss}
 
 Dear Claims Department,
 
-I am writing to formally appeal the decision regarding my insurance claim filed on ${data.dateOfLoss}. I believe the decision to deny/underpay my claim was made in error and request a thorough review of the following:
+I am writing to formally appeal the decision regarding my insurance claim filed on ${data.dateOfLoss}. After careful review of your determination, I believe this decision was made in error and request immediate reconsideration based on the following:
 
 CLAIM DETAILS:
 - Policy Number: ${data.policyNumber}
 - Claim Number: ${data.claimNumber}
 - Date of Loss: ${data.dateOfLoss}
-- Type of Loss: [Describe your loss]
+- Claimant: ${data.claimantName}
+- Property Address: ${data.claimantAddress}
 
-SITUATION:
+SITUATION ANALYSIS:
 ${data.situationDetails}
 
-I respectfully request that you:
-1. Review all submitted documentation
-2. Reconsider the coverage determination
-3. Provide a detailed explanation for any denial
-4. Schedule a reinspection if necessary
+LEGAL BASIS FOR APPEAL:
+1. The denial/underpayment appears to be based on insufficient investigation
+2. All policy provisions and coverage terms have not been properly considered
+3. The decision may violate state insurance regulations regarding fair claims practices
+4. Additional documentation and evidence support coverage under the policy
 
-I look forward to your prompt response and resolution of this matter.
+SPECIFIC DEMANDS:
+I respectfully demand that you:
+1. Immediately review all submitted documentation and evidence
+2. Reconsider the coverage determination with proper policy interpretation
+3. Provide a detailed written explanation for any denial, citing specific policy language
+4. Schedule a reinspection with an independent adjuster if necessary
+5. Respond to this appeal within 30 days as required by state law
+
+FAILURE TO RESPOND APPROPRIATELY:
+If this appeal is not resolved satisfactorily, I reserve the right to:
+- File a complaint with the state insurance department
+- Seek legal counsel to protect my rights
+- Pursue all available remedies under the law
+
+I expect a prompt and thorough review of this appeal. Please provide your response in writing within 30 days.
 
 Sincerely,
-${data.claimantName}`;
+${data.claimantName}
+
+CC: State Insurance Department (if applicable)`;
             }
 
             generateDemandLetter(data) {
