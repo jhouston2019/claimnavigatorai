@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Generator - ClaimNavigatorAI</title>
+    <meta name="description" content="Generate professional insurance claim documents with AI assistance">
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: #1e40af;
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+        }
+
+        .nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 0.75rem 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .breadcrumb a {
+            color: #1e40af;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .main-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.125rem;
+            color: #6b7280;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .document-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .document-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .document-card:hover {
+            border-color: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.15);
+        }
+
+        .document-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1e40af, #3b82f6);
+            transform: scaleX(0);
+            transition: transform 0.2s;
+        }
+
+        .document-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .document-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .document-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+        }
+
+        .document-card p {
+            color: #6b7280;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .document-card .description {
+            color: #9ca3af;
+            font-size: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: #1e40af;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e3a8a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .features-section {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .feature-icon {
+            background: #dbeafe;
+            color: #1e40af;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .feature-content h4 {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-content p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .document-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .header .container {
+                padding: 0 1rem;
+            }
+
+            .breadcrumb {
+                padding: 0.75rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="header">
+        <div class="container">
+            <div class="brand">
+                <div>📄</div>
+                <div>Document Generator</div>
+            </div>
+            <nav class="nav">
+                <a href="/app/response-center.html">← Resource Center</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="/app/response-center.html">← Resource Center</a> / Document Generator
+    </div>
+
+    <main class="main-container">
+        <div class="page-header">
+            <h1>📄 Document Generator</h1>
+            <p>Generate professional insurance claim documents with AI assistance. Choose from 15+ document types to create the perfect document for your claim.</p>
+        </div>
+
+        <!-- Document Types Grid -->
+        <div class="document-grid">
+            <!-- Core Documents -->
+            <div class="document-card" data-type="proof-of-loss">
+                <span class="document-icon">📄</span>
+                <h3>Proof of Loss</h3>
+                <p>Sworn statement of damages</p>
+                <div class="description">Create a comprehensive sworn statement documenting all damages and losses for your insurance claim.</div>
+                <div class="card-actions">
+                    <a href="forms/proof-of-loss.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+            
+            <div class="document-card" data-type="appeal-letter">
+                <span class="document-icon">📝</span>
+                <h3>Appeal Letter</h3>
+                <p>Appeal denied or underpaid claims</p>
+                <div class="description">Professional appeal letter to challenge denied or underpaid insurance claims with strong legal arguments.</div>
+                <div class="card-actions">
+                    <a href="forms/appeal-letter.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+            
+            <div class="document-card" data-type="demand-letter">
+                <span class="document-icon">⚖️</span>
+                <h3>Demand Letter</h3>
+                <p>Formal payment request</p>
+                <div class="description">Strong demand letter requesting fair settlement from your insurance company with legal backing.</div>
+                <div class="card-actions">
+                    <a href="forms/demand-letter.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+            
+            <div class="document-card" data-type="damage-inventory">
+                <span class="document-icon">📋</span>
+                <h3>Damage Inventory</h3>
+                <p>Line-item damage list</p>
+                <div class="description">Comprehensive line-item inventory of all damages with detailed descriptions and values.</div>
+                <div class="card-actions">
+                    <a href="forms/damage-inventory.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+            
+            <div class="document-card" data-type="claim-timeline">
+                <span class="document-icon">📅</span>
+                <h3>Claim Timeline</h3>
+                <p>Chronological claim diary</p>
+                <div class="description">Detailed chronological log of all claim events, communications, and important dates.</div>
+                <div class="card-actions">
+                    <a href="forms/claim-timeline.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+            
+            <div class="document-card" data-type="repair-replace">
+                <span class="document-icon">🔧</span>
+                <h3>Repair vs Replace</h3>
+                <p>Cost comparison worksheet</p>
+                <div class="description">Professional cost analysis comparing repair versus replacement options for damaged items.</div>
+                <div class="card-actions">
+                    <a href="forms/repair-replace.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+            
+            <div class="document-card" data-type="out-of-pocket">
+                <span class="document-icon">💰</span>
+                <h3>Out-of-Pocket Log</h3>
+                <p>ALE & expense tracking</p>
+                <div class="description">Document all additional living expenses and out-of-pocket costs related to your claim.</div>
+                <div class="card-actions">
+                    <a href="forms/out-of-pocket.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+            
+            <div class="document-card" data-type="appraisal-demand">
+                <span class="document-icon">⚖️</span>
+                <h3>Appraisal Demand</h3>
+                <p>Invoke appraisal clause</p>
+                <div class="description">Formal demand to invoke the appraisal clause in your insurance policy for dispute resolution.</div>
+                <div class="card-actions">
+                    <a href="forms/appraisal-demand.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+            
+            <div class="document-card" data-type="notice-of-delay">
+                <span class="document-icon">⏰</span>
+                <h3>Notice of Delay</h3>
+                <p>Complaint about delays</p>
+                <div class="description">Formal complaint about delayed claim processing and demand for timely resolution.</div>
+                <div class="card-actions">
+                    <a href="forms/notice-of-delay.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+            
+            <div class="document-card" data-type="coverage-clarification">
+                <span class="document-icon">❓</span>
+                <h3>Coverage Clarification</h3>
+                <p>Request coverage interpretation</p>
+                <div class="description">Request clarification on coverage decisions, exclusions, and policy interpretation.</div>
+                <div class="card-actions">
+                    <a href="forms/coverage-clarification.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+            
+            <!-- Support Documents -->
+            <div class="document-card" data-type="notice-of-claim">
+                <span class="document-icon">📢</span>
+                <h3>Notice of Claim</h3>
+                <p>Initial loss report</p>
+                <div class="description">Formal initial notice of claim to your insurance company with all required information.</div>
+                <div class="card-actions">
+                    <a href="forms/notice-of-claim.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+            
+            <div class="document-card" data-type="rom-estimate">
+                <span class="document-icon">📊</span>
+                <h3>ROM Estimate Report</h3>
+                <p>High-level cost range</p>
+                <div class="description">Rough Order of Magnitude estimate report with high-level cost ranges and assumptions.</div>
+                <div class="card-actions">
+                    <a href="forms/rom-estimate.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+            
+            <div class="document-card" data-type="photograph-log">
+                <span class="document-icon">📸</span>
+                <h3>Photograph Log</h3>
+                <p>Photo documentation</p>
+                <div class="description">Organized log of all photographs with captions, descriptions, and timestamps.</div>
+                <div class="card-actions">
+                    <a href="forms/photograph-log.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+            
+            <div class="document-card" data-type="document-index">
+                <span class="document-icon">📑</span>
+                <h3>Document Index</h3>
+                <p>Auto-generated list</p>
+                <div class="description">Comprehensive index of all claim-related documents with descriptions and dates.</div>
+                <div class="card-actions">
+                    <a href="forms/document-index.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+            
+            <div class="document-card" data-type="comparative-estimates">
+                <span class="document-icon">📊</span>
+                <h3>Comparative Estimates</h3>
+                <p>Side-by-side comparison</p>
+                <div class="description">Professional side-by-side comparison of multiple repair estimates with analysis.</div>
+                <div class="card-actions">
+                    <a href="forms/comparative-estimates.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+            
+            <div class="document-card" data-type="settlement-sheet">
+                <span class="document-icon">📋</span>
+                <h3>Settlement Sheet</h3>
+                <p>Offer vs value analysis</p>
+                <div class="description">Detailed analysis comparing insurance offers against actual damages and policy coverage.</div>
+                <div class="card-actions">
+                    <a href="forms/settlement-sheet.html" class="btn btn-primary">Generate Document</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-section">
+            <h2 style="color: #1e40af; margin-bottom: 1rem; text-align: center;">Why Use Our Document Generator?</h2>
+            <p style="text-align: center; color: #6b7280; margin-bottom: 2rem;">Professional documents created with AI assistance to strengthen your insurance claim.</p>
+            
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🤖</div>
+                    <div class="feature-content">
+                        <h4>AI-Powered Generation</h4>
+                        <p>Advanced AI creates professional, legally-sound documents tailored to your specific situation.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-content">
+                        <h4>Quick & Easy</h4>
+                        <p>Generate professional documents in minutes with our intuitive form-based interface.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">📄</div>
+                    <div class="feature-content">
+                        <h4>Multiple Formats</h4>
+                        <p>Export your documents as PDF or DOCX files for easy sharing and printing.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-content">
+                        <h4>Claim-Specific</h4>
+                        <p>Each document is customized for your specific claim type and insurance situation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Add smooth scrolling and enhanced interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers for document cards
+            const cards = document.querySelectorAll('.document-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on the button
+                    if (e.target.classList.contains('btn')) return;
+                    
+                    const link = this.querySelector('.btn-primary');
+                    if (link) {
+                        window.location.href = link.href;
+                    }
+                });
+            });
+
+            // Add keyboard navigation
+            cards.forEach(card => {
+                card.setAttribute('tabindex', '0');
+                card.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        const link = this.querySelector('.btn-primary');
+                        if (link) {
+                            window.location.href = link.href;
+                        }
+                    }
+                });
+            });
+            });
+        });
+    </script>
+</body>
+</html>
