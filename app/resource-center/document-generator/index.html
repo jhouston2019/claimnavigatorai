@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Generator - ClaimNavigatorAI</title>
+    <meta name="description" content="Generate professional insurance claim documents with AI assistance">
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/document-generator.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-docx-js/0.4.1/html-docx.js"></script>
+</head>
+<body class="main-grid">
+    <!-- Navigation Header -->
+    <header class="header">
+        <div class="bar container">
+            <div class="brand">
+                <div class="logo"></div>
+                <div>Document Generator</div>
+            </div>
+            <nav class="nav">
+                <a href="/app/response-center.html">← Resource Center</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="document-generator">
+        <div class="text-center mb-4">
+            <h1>📄 Document Generator</h1>
+            <p>Generate professional claim documents instantly — describe your situation and AI will create the perfect document for you.</p>
+        </div>
+
+        <!-- Topic Input Section -->
+        <div class="topic-input-section">
+            <h2>Describe Your Claim Situation</h2>
+            <p>Tell us what you need help with, and our AI will automatically determine the best document type and generate it for you.</p>
+            
+            <div class="form-group">
+                <label for="claimTopic">What's your claim situation or what do you need help with?</label>
+                <textarea 
+                    id="claimTopic" 
+                    name="claimTopic" 
+                    class="topic-textarea" 
+                    rows="4" 
+                    placeholder="Example: My insurer denied my roof damage claim saying it was pre-existing damage. I need to appeal this decision and get proper compensation for the storm damage."
+                    required
+                ></textarea>
+            </div>
+        </div>
+
+        <!-- Claim Information Section -->
+        <div class="claim-info-section">
+            <h2>Claim Information (Optional)</h2>
+            <p>Provide your claim details to personalize the document. You can skip this section if you prefer.</p>
+            
+            <form id="claimInfoForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" class="form-control" placeholder="John Doe">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="policyNumber">Policy Number</label>
+                        <input type="text" id="policyNumber" name="policyNumber" class="form-control" placeholder="ABC123456">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="claimNumber">Claim Number</label>
+                        <input type="text" id="claimNumber" name="claimNumber" class="form-control" placeholder="CLM-789012">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dateOfLoss">Date of Loss</label>
+                        <input type="date" id="dateOfLoss" name="dateOfLoss" class="form-control">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="insuranceCompany">Insurance Company</label>
+                        <input type="text" id="insuranceCompany" name="insuranceCompany" class="form-control" placeholder="State Farm Insurance">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="your.email@example.com">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Your Address</label>
+                    <textarea id="address" name="address" class="form-control" rows="2" placeholder="123 Main Street, City, State 12345"></textarea>
+                </div>
+            </form>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button type="button" class="btn-primary" id="generateDocumentBtn">
+                Generate Document
+            </button>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading" id="loadingState">
+            <div class="spinner"></div>
+            <p>AI is analyzing your situation and generating the perfect document...</p>
+        </div>
+
+        <!-- Results -->
+        <div class="result-container" id="resultContainer">
+            <div class="result-header">
+                <h3 id="documentTypeLabel">Generated Document</h3>
+                <p id="documentDescription">Your AI-generated document is ready</p>
+            </div>
+            
+            <div class="result-content" id="resultContent"></div>
+            
+            <div class="result-actions">
+                <button class="action-btn primary" id="exportPdfBtn">
+                    📄 Export PDF
+                </button>
+                <button class="action-btn secondary" id="exportDocxBtn">
+                    📝 Export DOCX
+                </button>
+                <button class="action-btn secondary" id="copyTextBtn">
+                    📋 Copy Text
+                </button>
+                <button class="action-btn secondary" id="regenerateBtn">
+                    🔄 Regenerate
+                </button>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage" style="display: none;">
+            <h4>⚠️ Generation Error</h4>
+            <p id="errorText"></p>
+            <button class="action-btn secondary" onclick="document.getElementById('errorMessage').style.display='none'">
+                Dismiss
+            </button>
+        </div>
+    </main>
+
+    <script src="/app/resource-center/document-generator/generator.js"></script>
+</body>
+</html>
