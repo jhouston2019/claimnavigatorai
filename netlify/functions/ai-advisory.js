@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 
-export async function handler(event) {
+export default async (event) => {
   // CORS headers
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -116,4 +116,4 @@ export async function handler(event) {
       })
     };
   }
-}
+};
