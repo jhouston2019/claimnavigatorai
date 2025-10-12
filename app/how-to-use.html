@@ -374,17 +374,17 @@ ul li:before {
                 <h2 style="margin-bottom: 30px; color: #2c3e50;">How the Resource Center Works</h2>
                 
                 <div class="overview-grid">
-                    <div class="overview-card">
+                    <div class="overview-card" onclick="showSection('strategy')" style="cursor: pointer;">
                         <h3><span class="icon">📋</span> Strategy & Guidance</h3>
                         <p>Learn the process, sequence, and insurer tactics. Master your claim journey with expert guidance and timing strategies.</p>
                     </div>
                     
-                    <div class="overview-card">
+                    <div class="overview-card" onclick="showSection('tools')" style="cursor: pointer;">
                         <h3><span class="icon">🛠️</span> Core Claim Tools</h3>
                         <p>Create, analyze, and organize claim documentation with AI-powered tools and professional templates.</p>
                     </div>
                     
-                    <div class="overview-card">
+                    <div class="overview-card" onclick="showSection('reference')" style="cursor: pointer;">
                         <h3><span class="icon">📚</span> Support Resources</h3>
                         <p>Access reference examples, calculators, and guides to strengthen your claim position.</p>
                     </div>
@@ -824,8 +824,16 @@ ul li:before {
             // Show selected section
             document.getElementById(sectionId).classList.add('active');
             
-            // Add active class to clicked tab
-            event.target.classList.add('active');
+            // Add active class to corresponding tab
+            const tabMap = {
+                'strategy': 1, // Strategy & Guidance tab
+                'tools': 2,    // Core Claim Tools tab
+                'reference': 5 // Quick Reference tab
+            };
+            
+            if (tabMap[sectionId] !== undefined) {
+                tabs[tabMap[sectionId]].classList.add('active');
+            }
         }
 
 
