@@ -2,12 +2,33 @@ class TopicBasedDocumentGenerator {
     constructor() {
         this.generatedContent = null;
         this.documentType = null;
+        this.selectedDocumentType = null;
         this.init();
     }
 
     init() {
+        this.setupDocumentTypeSelection();
         this.setupEventListeners();
         this.setupDownloadButtons();
+    }
+
+    setupDocumentTypeSelection() {
+        const cards = document.querySelectorAll('.document-type-card');
+        
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                // Remove previous selection
+                document.querySelectorAll('.document-type-card').forEach(c => c.classList.remove('selected'));
+                
+                // Select new card
+                card.classList.add('selected');
+                this.selectedDocumentType = card.dataset.type;
+                
+                // Show topic input section
+                document.getElementById('topicInputSection').style.display = 'block';
+                document.getElementById('topicInputSection').scrollIntoView({ behavior: 'smooth' });
+            });
+        });
     }
 
     setupEventListeners() {
@@ -29,6 +50,11 @@ class TopicBasedDocumentGenerator {
     }
 
     async generateDocument() {
+        if (!this.selectedDocumentType) {
+            this.showError('Please select a document type first.');
+            return;
+        }
+
         const topic = document.getElementById('claimTopic').value.trim();
         
         if (!topic) {
@@ -51,7 +77,8 @@ class TopicBasedDocumentGenerator {
                 },
                 body: JSON.stringify({
                     topic: topic,
-                    formData: formData
+                    formData: formData,
+                    documentType: this.selectedDocumentType
                 })
             });
 

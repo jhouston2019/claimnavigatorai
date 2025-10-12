@@ -11,29 +11,31 @@ export const handler = async (event) => {
   try {
     const requestData = JSON.parse(event.body || "{}");
     
-    // Handle both old format (documentId, title, fields) and new format (topic, formData)
-    let topic, formData;
+    // Handle both old format (documentId, title, fields) and new format (topic, formData, documentType)
+    let topic, formData, documentType;
     
     if (requestData.topic && requestData.formData) {
       // New topic-based format
       topic = requestData.topic;
       formData = requestData.formData;
+      documentType = requestData.documentType || determineDocumentType(topic);
     } else if (requestData.fields && requestData.title) {
       // Old format from Document Generator
       topic = requestData.fields.situationDetails || "General claim assistance needed";
       formData = requestData.fields;
+      documentType = requestData.title;
     } else {
       return {
         statusCode: 400,
         body: JSON.stringify({ error: "Missing required data. Please provide either topic and formData, or title and fields." }),
       };
     }
-
-    // Determine document type based on topic analysis
-    const documentType = determineDocumentType(topic);
+    
+    // Map document type to proper name
+    const mappedDocumentType = mapDocumentType(documentType);
     
     // Build the AI prompt
-    const prompt = buildAIPrompt(topic, formData, documentType);
+    const prompt = buildAIPrompt(topic, formData, mappedDocumentType);
 
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
@@ -62,7 +64,7 @@ export const handler = async (event) => {
         "Access-Control-Allow-Origin": "*",
       },
       body: JSON.stringify({ 
-        documentType: documentType,
+        documentType: mappedDocumentType,
         content: aiContent,
         generatedAt: new Date().toISOString()
       }),
@@ -78,6 +80,28 @@ export const handler = async (event) => {
     };
   }
 };
+
+function mapDocumentType(documentType) {
+  const typeMapping = {
+    'proof-of-loss': 'Proof of Loss',
+    'appeal-letter': 'Appeal Letter',
+    'demand-letter': 'Demand Letter',
+    'damage-inventory': 'Damage Inventory',
+    'claim-timeline': 'Claim Timeline / Diary',
+    'repair-replace': 'Repair vs Replace',
+    'out-of-pocket': 'Out-of-Pocket Log',
+    'appraisal-demand': 'Appraisal Demand',
+    'notice-of-delay': 'Notice of Delay',
+    'coverage-clarification': 'Coverage Clarification Request',
+    'notice-of-claim': 'Notice of Claim',
+    'bad-faith-letter': 'Bad Faith Letter',
+    'follow-up-letter': 'Follow-up Letter',
+    'business-interruption': 'Business Interruption Claim',
+    'settlement-comparison': 'Settlement Comparison Sheet'
+  };
+  
+  return typeMapping[documentType] || documentType;
+}
 
 function determineDocumentType(topic) {
   const topicLower = topic.toLowerCase();
