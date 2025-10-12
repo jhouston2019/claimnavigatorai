@@ -6,6 +6,7 @@
     <title>Document Generator - ClaimNavigatorAI</title>
     <meta name="description" content="Generate professional insurance claim documents with AI assistance">
     <link rel="stylesheet" href="/app/assets/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         .document-generator {
             max-width: 1200px;
@@ -89,6 +90,7 @@
             border: 1px solid #d1d5db;
             border-radius: 0.5rem;
             font-size: 1rem;
+            color: #000000;
             transition: border-color 0.2s;
         }
         
@@ -98,6 +100,11 @@
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #6b7280;
         }
         
         .form-group textarea {
@@ -542,6 +549,16 @@
                 <div class="form-group">
                     <label for="dateOfLoss">Date of Loss</label>
                     <input type="date" id="dateOfLoss" name="dateOfLoss" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="(555) 123-4567">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="your.email@example.com">
                 </div>
                 
                 <div class="form-group">
@@ -1043,8 +1060,30 @@
                 };
             }
 
+            generateDocumentHeader(data) {
+                return `CLAIM INFORMATION
+================
+Policyholder: ${data.claimantName}
+Address: ${data.claimantAddress}
+Phone: ${data.phoneNumber || 'Not provided'}
+Email: ${data.email || 'Not provided'}
+
+Policy Number: ${data.policyNumber}
+Claim Number: ${data.claimNumber}
+Date of Loss: ${data.dateOfLoss}
+Insurance Company: ${data.insurerName}
+
+Generated: ${new Date().toLocaleDateString()}
+Document Type: ${this.selectedType.replace(/-/g, ' ').toUpperCase()}
+
+========================================
+
+`;
+            }
+
             generateAppealLetter(data) {
-                return `${data.claimantName}
+                const header = this.generateDocumentHeader(data);
+                return `${header}${data.claimantName}
 ${data.claimantAddress}
 
 ${new Date().toLocaleDateString()}
@@ -1101,7 +1140,8 @@ CC: State Insurance Department (if applicable)`;
             }
 
             generateDemandLetter(data) {
-                return `[Your Name]
+                const header = this.generateDocumentHeader(data);
+                return `${header}[Your Name]
 ${data.claimantAddress}
 
 [Date]
@@ -1139,7 +1179,8 @@ ${data.claimantName}`;
             }
 
             generateNoticeOfDelay(data) {
-                return `[Your Name]
+                const header = this.generateDocumentHeader(data);
+                return `${header}[Your Name]
 ${data.claimantAddress}
 
 [Date]
@@ -2785,9 +2826,60 @@ ${data.claimantName}`;
                 });
                 
                 downloadPdfBtn.addEventListener('click', () => {
-                    // This would generate and download a PDF
-                    alert('PDF download functionality would be implemented here.');
+                    this.generatePDF();
                 });
+            }
+
+            generatePDF() {
+                if (!this.generatedContent) {
+                    alert('No document content to download. Please generate a document first.');
+                    return;
+                }
+
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    
+                    // Set up the document
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica');
+                    
+                    // Split content into lines that fit the page width
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const margin = 20;
+                    const maxWidth = pageWidth - (margin * 2);
+                    
+                    // Split the content into lines
+                    const lines = doc.splitTextToSize(this.generatedContent, maxWidth);
+                    
+                    let yPosition = 20;
+                    const lineHeight = 7;
+                    const pageHeight = doc.internal.pageSize.getHeight();
+                    
+                    // Add each line to the PDF
+                    for (let i = 0; i < lines.length; i++) {
+                        // Check if we need a new page
+                        if (yPosition + lineHeight > pageHeight - 20) {
+                            doc.addPage();
+                            yPosition = 20;
+                        }
+                        
+                        doc.text(lines[i], margin, yPosition);
+                        yPosition += lineHeight;
+                    }
+                    
+                    // Generate filename based on document type and date
+                    const now = new Date();
+                    const dateStr = now.toISOString().split('T')[0];
+                    const filename = `claim-document-${this.selectedType}-${dateStr}.pdf`;
+                    
+                    // Download the PDF
+                    doc.save(filename);
+                    
+                } catch (error) {
+                    console.error('PDF Generation Error:', error);
+                    alert('Failed to generate PDF. Please try again.');
+                }
             }
 
             showError(message) {
