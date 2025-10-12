@@ -158,16 +158,22 @@
       event.preventDefault();
       
       const situation = document.getElementById('situation-input').value.trim();
-      if (!situation) return;
+      if (!situation) {
+        showError('Please enter a situation description.');
+        return;
+      }
 
       const analyzeBtn = document.getElementById('analyze-btn');
       const aiResults = document.getElementById('ai-results');
+      
+      console.log('Starting AI advisory for:', situation);
       
       // Show loading state
       analyzeBtn.disabled = true;
       analyzeBtn.textContent = 'Analyzing...';
       
       try {
+        console.log('Making request to AI advisory function...');
         const response = await fetch('/netlify/functions/ai-advisory', {
           method: 'POST',
           headers: {
@@ -176,17 +182,21 @@
           body: JSON.stringify({ situation })
         });
 
+        console.log('Response status:', response.status);
         const result = await response.json();
+        console.log('AI Response:', result);
 
         if (response.ok) {
           displayAIResults(result);
-          aiResults.classList.add('show', 'fade-in');
+          aiResults.classList.add('show');
+          console.log('AI results displayed successfully');
         } else {
-          showError('Failed to get AI advice. Please try again.');
+          console.error('AI Advisory failed:', result);
+          showError(`Failed to get AI advice: ${result.error || 'Unknown error'}`);
         }
       } catch (error) {
         console.error('AI Advisory Error:', error);
-        showError('Network error. Please try again.');
+        showError(`Network error: ${error.message}. Please try again.`);
       } finally {
         analyzeBtn.disabled = false;
         analyzeBtn.textContent = 'Analyze & Advise';
@@ -303,16 +313,36 @@
 
     // Show error message
     function showError(message) {
+      console.error('Showing error:', message);
+      
+      // Remove any existing error messages
+      const existingErrors = document.querySelectorAll('.error-message');
+      existingErrors.forEach(error => error.remove());
+      
       const errorDiv = document.createElement('div');
       errorDiv.className = 'error-message';
+      errorDiv.style.cssText = `
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin: 1rem 0;
+        font-weight: 500;
+      `;
       errorDiv.textContent = message;
       
       const mainContent = document.querySelector('.main-content');
-      mainContent.insertBefore(errorDiv, mainContent.firstChild);
+      if (mainContent) {
+        mainContent.insertBefore(errorDiv, mainContent.firstChild);
+      } else {
+        // Fallback: add to body
+        document.body.appendChild(errorDiv);
+      }
       
       setTimeout(() => {
         errorDiv.remove();
-      }, 5000);
+      }, 8000);
     }
 
     // Make toggleDetails globally available
