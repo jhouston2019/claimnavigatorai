@@ -30,35 +30,37 @@
         }
         
         .document-type-card {
-            background: white;
-            border: 2px solid #e2e8f0;
+            background: #1e3a8a;
+            border: 2px solid #1e3a8a;
             border-radius: 0.5rem;
             padding: 1.5rem;
             cursor: pointer;
             transition: all 0.2s;
             text-align: center;
+            color: white;
         }
         
         .document-type-card:hover {
-            border-color: #3b82f6;
+            border-color: #1e40af;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+            background: #1e40af;
         }
         
         .document-type-card.selected {
-            border-color: #3b82f6;
-            background: #eff6ff;
+            border-color: #1e40af;
+            background: #1e40af;
         }
         
         .document-type-card h3 {
             font-size: 1.125rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
-            color: #1f2937;
+            color: white;
         }
         
         .document-type-card p {
-            color: #6b7280;
+            color: #e2e8f0;
             font-size: 0.875rem;
             line-height: 1.5;
         }
@@ -100,6 +102,41 @@
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #1e3a8a;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: #000000;
+            background: #ffffff;
+            transition: border-color 0.2s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .btn-primary {
+            background: #1e3a8a;
+            color: white;
+            border: 2px solid #1e3a8a;
+            border-radius: 0.5rem;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            background: #1e40af;
+            border-color: #1e40af;
         }
         
         .form-group input::placeholder,
@@ -270,247 +307,86 @@
             <p>Choose the type of document you need to generate for your claim.</p>
             
             <div class="document-type-grid">
-                <!-- Core Property Documents -->
+                <!-- Core Documents -->
+                <div class="document-type-card" data-type="proof-of-loss">
+                    <h3>📄 Proof of Loss</h3>
+                    <p>Sworn statement of damages</p>
+                </div>
+                
                 <div class="document-type-card" data-type="appeal-letter">
                     <h3>📝 Appeal Letter</h3>
-                    <p>Professional appeal letter for denied or underpaid claims</p>
+                    <p>Denied/underpaid? Appeal</p>
                 </div>
                 
                 <div class="document-type-card" data-type="demand-letter">
                     <h3>⚖️ Demand Letter</h3>
-                    <p>Strong demand letter to insurance company for fair settlement</p>
+                    <p>Formal payment request</p>
+                </div>
+                
+                <div class="document-type-card" data-type="damage-inventory">
+                    <h3>📋 Damage Inventory</h3>
+                    <p>Line-item list</p>
+                </div>
+                
+                <div class="document-type-card" data-type="claim-timeline">
+                    <h3>📅 Claim Timeline / Diary</h3>
+                    <p>Chronological log</p>
+                </div>
+                
+                <div class="document-type-card" data-type="repair-replace">
+                    <h3>🔧 Repair vs Replace</h3>
+                    <p>Cost worksheet</p>
+                </div>
+                
+                <div class="document-type-card" data-type="out-of-pocket">
+                    <h3>💰 Out-of-Pocket Log</h3>
+                    <p>ALE & expenses</p>
+                </div>
+                
+                <div class="document-type-card" data-type="appraisal-demand">
+                    <h3>⚖️ Appraisal Demand</h3>
+                    <p>Invoke appraisal clause</p>
                 </div>
                 
                 <div class="document-type-card" data-type="notice-of-delay">
-                    <h3>⏰ Notice of Delay Complaint</h3>
-                    <p>Formal complaint about delayed claim processing</p>
+                    <h3>⏰ Notice of Delay</h3>
+                    <p>Timelines exceeded</p>
                 </div>
                 
                 <div class="document-type-card" data-type="coverage-clarification">
-                    <h3>❓ Coverage Clarification Request</h3>
-                    <p>Request clarification on coverage decisions and exclusions</p>
+                    <h3>❓ Coverage Clarification</h3>
+                    <p>Ask insurer to interpret</p>
                 </div>
                 
-                <div class="document-type-card" data-type="proof-of-repairs">
-                    <h3>🔧 Proof of Repairs Submission</h3>
-                    <p>Documentation of completed repairs for depreciation release</p>
+                <!-- Support Documents -->
+                <div class="document-type-card" data-type="notice-of-claim">
+                    <h3>📢 Notice of Claim</h3>
+                    <p>Initial loss report</p>
                 </div>
                 
-                <div class="document-type-card" data-type="ordinance-law">
-                    <h3>🏛️ Ordinance & Law Coverage Request</h3>
-                    <p>Request coverage for mandatory code upgrades</p>
+                <div class="document-type-card" data-type="rom-estimate">
+                    <h3>📊 ROM Estimate Report</h3>
+                    <p>High-level cost range</p>
                 </div>
                 
-                <div class="document-type-card" data-type="matching-coverage">
-                    <h3>🎨 Matching Coverage Request</h3>
-                    <p>Request coverage for matching materials and finishes</p>
+                <div class="document-type-card" data-type="photograph-log">
+                    <h3>📸 Photograph Log</h3>
+                    <p>Captions & descriptions</p>
                 </div>
                 
-                <div class="document-type-card" data-type="betterment-dispute">
-                    <h3>💰 Betterment Dispute Letter</h3>
-                    <p>Challenge improper betterment charges</p>
+                <div class="document-type-card" data-type="document-index">
+                    <h3>📑 Document Index</h3>
+                    <p>Auto-generated list</p>
                 </div>
                 
-                <div class="document-type-card" data-type="deductible-verification">
-                    <h3>🔍 Deductible Verification Request</h3>
-                    <p>Verify deductible amount and challenge multiple deductibles</p>
+                <div class="document-type-card" data-type="comparative-estimates">
+                    <h3>📊 Comparative Estimates</h3>
+                    <p>Side-by-side</p>
                 </div>
                 
-                <div class="document-type-card" data-type="supplement-request">
-                    <h3>➕ Supplement Request</h3>
-                    <p>Request additional payment for discovered damage</p>
-                </div>
-                
-                <div class="document-type-card" data-type="emergency-services">
-                    <h3>🚨 Emergency Services Coverage Request</h3>
-                    <p>Request coverage for emergency services and prevention</p>
-                </div>
-                
-                <div class="document-type-card" data-type="contents-inventory">
-                    <h3>📦 Contents Inventory Appeal</h3>
-                    <p>Appeal contents inventory valuation and depreciation</p>
-                </div>
-                
-                <div class="document-type-card" data-type="ale-request">
-                    <h3>🏠 Additional Living Expenses Request</h3>
-                    <p>Request coverage for temporary housing and expenses</p>
-                </div>
-                
-                <div class="document-type-card" data-type="independent-expert">
-                    <h3>👨‍💼 Independent Expert Request</h3>
-                    <p>Request independent expert evaluation</p>
-                </div>
-                
-                <div class="document-type-card" data-type="coverage-analysis">
-                    <h3>📊 Coverage Analysis Request</h3>
-                    <p>Request detailed coverage analysis and limits review</p>
-                </div>
-                
-                <div class="document-type-card" data-type="regulatory-complaint">
-                    <h3>⚖️ Regulatory Complaint</h3>
-                    <p>File complaint with state insurance department</p>
-                </div>
-                
-                <!-- Business Interruption Documents -->
-                <div class="document-type-card" data-type="business-income">
-                    <h3>💼 Business Income Documentation</h3>
-                    <p>Document business income losses and revenue projections</p>
-                </div>
-                
-                <div class="document-type-card" data-type="extra-expense">
-                    <h3>💸 Extra Expense Documentation</h3>
-                    <p>Document extra expenses to minimize business interruption</p>
-                </div>
-                
-                <div class="document-type-card" data-type="restoration-timeline">
-                    <h3>⏱️ Restoration Timeline Analysis</h3>
-                    <p>Analyze and challenge restoration period estimates</p>
-                </div>
-                
-                <div class="document-type-card" data-type="civil-authority">
-                    <h3>🏛️ Civil Authority Coverage Request</h3>
-                    <p>Request coverage for government-ordered closures</p>
-                </div>
-                
-                <div class="document-type-card" data-type="dependent-property">
-                    <h3>🔗 Dependent Property Analysis</h3>
-                    <p>Document dependency on damaged supplier/customer properties</p>
-                </div>
-                
-                <div class="document-type-card" data-type="extended-indemnity">
-                    <h3>📈 Extended Indemnity Request</h3>
-                    <p>Request extended business interruption coverage</p>
-                </div>
-                
-                <div class="document-type-card" data-type="contingent-business">
-                    <h3>🔄 Contingent Business Income Claim</h3>
-                    <p>Claim for losses due to supplier/customer damage</p>
-                </div>
-                
-                <!-- Catastrophe/Disaster Documents -->
-                <div class="document-type-card" data-type="hurricane-damage">
-                    <h3>🌀 Hurricane Damage Documentation</h3>
-                    <p>Document hurricane damage and separate wind vs flood</p>
-                </div>
-                
-                <div class="document-type-card" data-type="flood-coverage">
-                    <h3>🌊 Flood Coverage Analysis</h3>
-                    <p>Analyze flood coverage and document flood vs wind damage</p>
-                </div>
-                
-                <div class="document-type-card" data-type="wildfire-damage">
-                    <h3>🔥 Wildfire Damage Documentation</h3>
-                    <p>Document wildfire damage and smoke vs fire damage</p>
-                </div>
-                
-                <div class="document-type-card" data-type="earthquake-damage">
-                    <h3>🌍 Earthquake Damage Documentation</h3>
-                    <p>Document earthquake damage and structural damage</p>
-                </div>
-                
-                <div class="document-type-card" data-type="tornado-damage">
-                    <h3>🌪️ Tornado Damage Documentation</h3>
-                    <p>Document tornado damage and wind damage</p>
-                </div>
-                
-                <div class="document-type-card" data-type="hail-damage">
-                    <h3>🧊 Hail Damage Documentation</h3>
-                    <p>Document hail damage with weather reports</p>
-                </div>
-                
-                <div class="document-type-card" data-type="lightning-damage">
-                    <h3>⚡ Lightning Damage Documentation</h3>
-                    <p>Document lightning damage and electrical damage</p>
-                </div>
-                
-                <div class="document-type-card" data-type="debris-removal">
-                    <h3>🗑️ Debris Removal Documentation</h3>
-                    <p>Document debris removal costs and necessity</p>
-                </div>
-                
-                <div class="document-type-card" data-type="emergency-repair">
-                    <h3>🔧 Emergency Repair Documentation</h3>
-                    <p>Document emergency repairs and prevention measures</p>
-                </div>
-                
-                <div class="document-type-card" data-type="employee-wage">
-                    <h3>💰 Employee Wage Documentation</h3>
-                    <p>Document employee wage losses during business interruption</p>
-                </div>
-                
-                <div class="document-type-card" data-type="lease-obligation">
-                    <h3>🏢 Lease Obligation Documentation</h3>
-                    <p>Document lease obligations and rental expenses</p>
-                </div>
-                
-                <div class="document-type-card" data-type="utility-expense">
-                    <h3>⚡ Utility Expense Documentation</h3>
-                    <p>Document utility expenses and service interruptions</p>
-                </div>
-                
-                <div class="document-type-card" data-type="professional-services">
-                    <h3>👨‍💼 Professional Services Documentation</h3>
-                    <p>Document professional services and consulting expenses</p>
-                </div>
-                
-                <div class="document-type-card" data-type="marketing-expense">
-                    <h3>📢 Marketing Expense Documentation</h3>
-                    <p>Document marketing expenses and promotional costs</p>
-                </div>
-                
-                <div class="document-type-card" data-type="inventory-loss">
-                    <h3>📦 Inventory Loss Documentation</h3>
-                    <p>Document inventory losses and stock damages</p>
-                </div>
-                
-                <div class="document-type-card" data-type="equipment-rental">
-                    <h3>🔧 Equipment Rental Documentation</h3>
-                    <p>Document equipment rental costs and temporary replacements</p>
-                </div>
-                
-                <div class="document-type-card" data-type="relocation-expense">
-                    <h3>🚚 Relocation Expense Documentation</h3>
-                    <p>Document relocation expenses and moving costs</p>
-                </div>
-                
-                <div class="document-type-card" data-type="contract-loss">
-                    <h3>📄 Contract Loss Documentation</h3>
-                    <p>Document contract losses and business interruption impacts</p>
-                </div>
-                
-                <div class="document-type-card" data-type="ice-storm-damage">
-                    <h3>🧊 Ice Storm Damage Documentation</h3>
-                    <p>Document ice storm damage and winter weather impacts</p>
-                </div>
-                
-                <div class="document-type-card" data-type="blizzard-damage">
-                    <h3>❄️ Blizzard Damage Documentation</h3>
-                    <p>Document blizzard damage and severe winter weather</p>
-                </div>
-                
-                <div class="document-type-card" data-type="drought-damage">
-                    <h3>🌵 Drought Damage Documentation</h3>
-                    <p>Document drought damage and water shortage impacts</p>
-                </div>
-                
-                <div class="document-type-card" data-type="heat-wave-damage">
-                    <h3>🌡️ Heat Wave Damage Documentation</h3>
-                    <p>Document heat wave damage and extreme temperature impacts</p>
-                </div>
-                
-                <div class="document-type-card" data-type="severe-storm-damage">
-                    <h3>⛈️ Severe Storm Damage Documentation</h3>
-                    <p>Document severe storm damage and weather impacts</p>
-                </div>
-                
-                <div class="document-type-card" data-type="power-outage-damage">
-                    <h3>🔌 Power Outage Damage Documentation</h3>
-                    <p>Document power outage damage and electrical service impacts</p>
-                </div>
-                
-                <div class="document-type-card" data-type="storm-water-damage">
-                    <h3>🌧️ Storm Water Damage Documentation</h3>
-                    <p>Document storm water damage and flooding impacts</p>
+                <div class="document-type-card" data-type="settlement-sheet">
+                    <h3>📋 Settlement Sheet</h3>
+                    <p>Offer vs value</p>
                 </div>
             </div>
         </div>
@@ -523,50 +399,50 @@
             <form id="documentForm">
                 <div class="form-group">
                     <label for="claimantName">Your Name</label>
-                    <input type="text" id="claimantName" name="claimantName" required>
+                    <input type="text" id="claimantName" name="claimantName" class="form-control" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="claimantAddress">Your Address</label>
-                    <textarea id="claimantAddress" name="claimantAddress" required></textarea>
+                    <textarea id="claimantAddress" name="claimantAddress" class="form-control" rows="3" required></textarea>
                 </div>
                 
                 <div class="form-group">
                     <label for="insurerName">Insurance Company</label>
-                    <input type="text" id="insurerName" name="insurerName" required>
+                    <input type="text" id="insurerName" name="insurerName" class="form-control" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="policyNumber">Policy Number</label>
-                    <input type="text" id="policyNumber" name="policyNumber" required>
+                    <input type="text" id="policyNumber" name="policyNumber" class="form-control" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="claimNumber">Claim Number</label>
-                    <input type="text" id="claimNumber" name="claimNumber" required>
+                    <input type="text" id="claimNumber" name="claimNumber" class="form-control" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="dateOfLoss">Date of Loss</label>
-                    <input type="date" id="dateOfLoss" name="dateOfLoss" required>
+                    <input type="date" id="dateOfLoss" name="dateOfLoss" class="form-control" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="phoneNumber">Phone Number</label>
-                    <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="(555) 123-4567">
+                    <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="(555) 123-4567">
                 </div>
                 
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" placeholder="your.email@example.com">
+                    <input type="email" id="email" name="email" class="form-control" placeholder="your.email@example.com">
                 </div>
                 
                 <div class="form-group">
                     <label for="situationDetails">Situation Details</label>
-                    <textarea id="situationDetails" name="situationDetails" placeholder="Describe your specific situation and what you need help with..." required></textarea>
+                    <textarea id="situationDetails" name="situationDetails" class="form-control" rows="4" placeholder="Describe your specific situation and what you need help with..." required></textarea>
                 </div>
                 
-                <button type="submit" class="generate-btn" id="generateBtn">
+                <button type="submit" class="btn-primary" id="generateBtn">
                     Generate Document
                 </button>
             </form>
@@ -618,54 +494,22 @@
                 if (type) {
                     // Map document types from advisory page
                     const typeMapping = {
+                        'Proof of Loss': 'proof-of-loss',
                         'Appeal Letter': 'appeal-letter',
                         'Demand Letter': 'demand-letter',
-                        'Notice of Delay Complaint': 'notice-of-delay',
-                        'Coverage Clarification Request': 'coverage-clarification',
-                        'Proof of Repairs Submission': 'proof-of-repairs',
-                        'Ordinance & Law Coverage Request': 'ordinance-law',
-                        'Matching Coverage Request': 'matching-coverage',
-                        'Betterment Dispute Letter': 'betterment-dispute',
-                        'Deductible Verification Request': 'deductible-verification',
-                        'Supplement Request': 'supplement-request',
-                        'Emergency Services Coverage Request': 'emergency-services',
-                        'Contents Inventory Appeal': 'contents-inventory',
-                        'Additional Living Expenses Request': 'ale-request',
-                        'Independent Expert Request': 'independent-expert',
-                        'Coverage Analysis Request': 'coverage-analysis',
-                        'Regulatory Complaint': 'regulatory-complaint',
-                        'Business Income Documentation': 'business-income',
-                        'Extra Expense Documentation': 'extra-expense',
-                        'Restoration Timeline Analysis': 'restoration-timeline',
-                        'Civil Authority Coverage Request': 'civil-authority',
-                        'Dependent Property Analysis': 'dependent-property',
-                        'Extended Indemnity Request': 'extended-indemnity',
-                        'Contingent Business Income Claim': 'contingent-business',
-                        'Hurricane Damage Documentation': 'hurricane-damage',
-                        'Flood Coverage Analysis': 'flood-coverage',
-                        'Wildfire Damage Documentation': 'wildfire-damage',
-                        'Earthquake Damage Documentation': 'earthquake-damage',
-                        'Tornado Damage Documentation': 'tornado-damage',
-                        'Hail Damage Documentation': 'hail-damage',
-                        'Lightning Damage Documentation': 'lightning-damage',
-                        'Debris Removal Documentation': 'debris-removal',
-                        'Emergency Repair Documentation': 'emergency-repair',
-                        'Employee Wage Documentation': 'employee-wage',
-                        'Lease Obligation Documentation': 'lease-obligation',
-                        'Utility Expense Documentation': 'utility-expense',
-                        'Professional Services Documentation': 'professional-services',
-                        'Marketing Expense Documentation': 'marketing-expense',
-                        'Inventory Loss Documentation': 'inventory-loss',
-                        'Equipment Rental Documentation': 'equipment-rental',
-                        'Relocation Expense Documentation': 'relocation-expense',
-                        'Contract Loss Documentation': 'contract-loss',
-                        'Ice Storm Damage Documentation': 'ice-storm-damage',
-                        'Blizzard Damage Documentation': 'blizzard-damage',
-                        'Drought Damage Documentation': 'drought-damage',
-                        'Heat Wave Damage Documentation': 'heat-wave-damage',
-                        'Severe Storm Damage Documentation': 'severe-storm-damage',
-                        'Power Outage Damage Documentation': 'power-outage-damage',
-                        'Storm Water Damage Documentation': 'storm-water-damage'
+                        'Damage Inventory': 'damage-inventory',
+                        'Claim Timeline / Diary': 'claim-timeline',
+                        'Repair vs Replace': 'repair-replace',
+                        'Out-of-Pocket Log': 'out-of-pocket',
+                        'Appraisal Demand': 'appraisal-demand',
+                        'Notice of Delay': 'notice-of-delay',
+                        'Coverage Clarification': 'coverage-clarification',
+                        'Notice of Claim': 'notice-of-claim',
+                        'ROM Estimate Report': 'rom-estimate',
+                        'Photograph Log': 'photograph-log',
+                        'Document Index': 'document-index',
+                        'Comparative Estimates': 'comparative-estimates',
+                        'Settlement Sheet': 'settlement-sheet'
                     };
                     
                     const mappedType = typeMapping[type] || type.toLowerCase().replace(/\s+/g, '-');
@@ -717,6 +561,10 @@
                 const formDescription = document.getElementById('formDescription');
                 
                 const typeInfo = {
+                    'proof-of-loss': {
+                        title: 'Proof of Loss',
+                        description: 'Generate a sworn statement of damages for your claim.'
+                    },
                     'appeal-letter': {
                         title: 'Appeal Letter',
                         description: 'Generate a professional appeal letter for your denied or underpaid claim.'
@@ -725,189 +573,57 @@
                         title: 'Demand Letter',
                         description: 'Create a strong demand letter requesting fair settlement from your insurer.'
                     },
+                    'damage-inventory': {
+                        title: 'Damage Inventory',
+                        description: 'Create a comprehensive line-item list of all damages.'
+                    },
+                    'claim-timeline': {
+                        title: 'Claim Timeline / Diary',
+                        description: 'Generate a chronological log of your claim events.'
+                    },
+                    'repair-replace': {
+                        title: 'Repair vs Replace',
+                        description: 'Create a cost worksheet comparing repair vs replacement options.'
+                    },
+                    'out-of-pocket': {
+                        title: 'Out-of-Pocket Log',
+                        description: 'Document ALE and other out-of-pocket expenses.'
+                    },
+                    'appraisal-demand': {
+                        title: 'Appraisal Demand',
+                        description: 'Invoke the appraisal clause in your policy.'
+                    },
                     'notice-of-delay': {
-                        title: 'Notice of Delay Complaint',
+                        title: 'Notice of Delay',
                         description: 'Generate a formal complaint about delayed claim processing.'
                     },
                     'coverage-clarification': {
-                        title: 'Coverage Clarification Request',
+                        title: 'Coverage Clarification',
                         description: 'Request clarification on coverage decisions and exclusions.'
                     },
-                    'proof-of-repairs': {
-                        title: 'Proof of Repairs Submission',
-                        description: 'Document completed repairs for depreciation release.'
+                    'notice-of-claim': {
+                        title: 'Notice of Claim',
+                        description: 'Generate an initial loss report document.'
                     },
-                    'ordinance-law': {
-                        title: 'Ordinance & Law Coverage Request',
-                        description: 'Request coverage for mandatory code upgrades.'
+                    'rom-estimate': {
+                        title: 'ROM Estimate Report',
+                        description: 'Create a high-level cost range estimate.'
                     },
-                    'matching-coverage': {
-                        title: 'Matching Coverage Request',
-                        description: 'Request coverage for matching materials and finishes.'
+                    'photograph-log': {
+                        title: 'Photograph Log',
+                        description: 'Organize photos with captions and descriptions.'
                     },
-                    'betterment-dispute': {
-                        title: 'Betterment Dispute Letter',
-                        description: 'Challenge improper betterment charges.'
+                    'document-index': {
+                        title: 'Document Index',
+                        description: 'Generate an auto-generated list of all claim documents.'
                     },
-                    'deductible-verification': {
-                        title: 'Deductible Verification Request',
-                        description: 'Verify deductible amount and challenge multiple deductibles.'
+                    'comparative-estimates': {
+                        title: 'Comparative Estimates',
+                        description: 'Create side-by-side comparison of estimates.'
                     },
-                    'supplement-request': {
-                        title: 'Supplement Request',
-                        description: 'Request additional payment for discovered damage.'
-                    },
-                    'emergency-services': {
-                        title: 'Emergency Services Coverage Request',
-                        description: 'Request coverage for emergency services and prevention.'
-                    },
-                    'contents-inventory': {
-                        title: 'Contents Inventory Appeal',
-                        description: 'Appeal contents inventory valuation and depreciation.'
-                    },
-                    'ale-request': {
-                        title: 'Additional Living Expenses Request',
-                        description: 'Request coverage for temporary housing and expenses.'
-                    },
-                    'independent-expert': {
-                        title: 'Independent Expert Request',
-                        description: 'Request independent expert evaluation.'
-                    },
-                    'coverage-analysis': {
-                        title: 'Coverage Analysis Request',
-                        description: 'Request detailed coverage analysis and limits review.'
-                    },
-                    'regulatory-complaint': {
-                        title: 'Regulatory Complaint',
-                        description: 'File complaint with state insurance department.'
-                    },
-                    'business-income': {
-                        title: 'Business Income Documentation',
-                        description: 'Document business income losses and revenue projections.'
-                    },
-                    'extra-expense': {
-                        title: 'Extra Expense Documentation',
-                        description: 'Document extra expenses to minimize business interruption.'
-                    },
-                    'restoration-timeline': {
-                        title: 'Restoration Timeline Analysis',
-                        description: 'Analyze and challenge restoration period estimates.'
-                    },
-                    'civil-authority': {
-                        title: 'Civil Authority Coverage Request',
-                        description: 'Request coverage for government-ordered closures.'
-                    },
-                    'dependent-property': {
-                        title: 'Dependent Property Analysis',
-                        description: 'Document dependency on damaged supplier/customer properties.'
-                    },
-                    'extended-indemnity': {
-                        title: 'Extended Indemnity Request',
-                        description: 'Request extended business interruption coverage.'
-                    },
-                    'contingent-business': {
-                        title: 'Contingent Business Income Claim',
-                        description: 'Claim for losses due to supplier/customer damage.'
-                    },
-                    'hurricane-damage': {
-                        title: 'Hurricane Damage Documentation',
-                        description: 'Document hurricane damage and separate wind vs flood.'
-                    },
-                    'flood-coverage': {
-                        title: 'Flood Coverage Analysis',
-                        description: 'Analyze flood coverage and document flood vs wind damage.'
-                    },
-                    'wildfire-damage': {
-                        title: 'Wildfire Damage Documentation',
-                        description: 'Document wildfire damage and smoke vs fire damage.'
-                    },
-                    'earthquake-damage': {
-                        title: 'Earthquake Damage Documentation',
-                        description: 'Document earthquake damage and structural damage.'
-                    },
-                    'tornado-damage': {
-                        title: 'Tornado Damage Documentation',
-                        description: 'Document tornado damage and wind damage.'
-                    },
-                    'hail-damage': {
-                        title: 'Hail Damage Documentation',
-                        description: 'Document hail damage with weather reports.'
-                    },
-                    'lightning-damage': {
-                        title: 'Lightning Damage Documentation',
-                        description: 'Document lightning damage and electrical damage.'
-                    },
-                    'debris-removal': {
-                        title: 'Debris Removal Documentation',
-                        description: 'Document debris removal costs and necessity.'
-                    },
-                    'emergency-repair': {
-                        title: 'Emergency Repair Documentation',
-                        description: 'Document emergency repairs and prevention measures.'
-                    },
-                    'employee-wage': {
-                        title: 'Employee Wage Documentation',
-                        description: 'Document employee wage losses during business interruption.'
-                    },
-                    'lease-obligation': {
-                        title: 'Lease Obligation Documentation',
-                        description: 'Document lease obligations and rental expenses.'
-                    },
-                    'utility-expense': {
-                        title: 'Utility Expense Documentation',
-                        description: 'Document utility expenses and service interruptions.'
-                    },
-                    'professional-services': {
-                        title: 'Professional Services Documentation',
-                        description: 'Document professional services and consulting expenses.'
-                    },
-                    'marketing-expense': {
-                        title: 'Marketing Expense Documentation',
-                        description: 'Document marketing expenses and promotional costs.'
-                    },
-                    'inventory-loss': {
-                        title: 'Inventory Loss Documentation',
-                        description: 'Document inventory losses and stock damages.'
-                    },
-                    'equipment-rental': {
-                        title: 'Equipment Rental Documentation',
-                        description: 'Document equipment rental costs and temporary replacements.'
-                    },
-                    'relocation-expense': {
-                        title: 'Relocation Expense Documentation',
-                        description: 'Document relocation expenses and moving costs.'
-                    },
-                    'contract-loss': {
-                        title: 'Contract Loss Documentation',
-                        description: 'Document contract losses and business interruption impacts.'
-                    },
-                    'ice-storm-damage': {
-                        title: 'Ice Storm Damage Documentation',
-                        description: 'Document ice storm damage and winter weather impacts.'
-                    },
-                    'blizzard-damage': {
-                        title: 'Blizzard Damage Documentation',
-                        description: 'Document blizzard damage and severe winter weather.'
-                    },
-                    'drought-damage': {
-                        title: 'Drought Damage Documentation',
-                        description: 'Document drought damage and water shortage impacts.'
-                    },
-                    'heat-wave-damage': {
-                        title: 'Heat Wave Damage Documentation',
-                        description: 'Document heat wave damage and extreme temperature impacts.'
-                    },
-                    'severe-storm-damage': {
-                        title: 'Severe Storm Damage Documentation',
-                        description: 'Document severe storm damage and weather impacts.'
-                    },
-                    'power-outage-damage': {
-                        title: 'Power Outage Damage Documentation',
-                        description: 'Document power outage damage and electrical service impacts.'
-                    },
-                    'storm-water-damage': {
-                        title: 'Storm Water Damage Documentation',
-                        description: 'Document storm water damage and flooding impacts.'
+                    'settlement-sheet': {
+                        title: 'Settlement Sheet',
+                        description: 'Compare offer vs actual value.'
                     }
                 };
                 
@@ -1002,54 +718,22 @@
 
             generateFallbackDocument(data) {
                 const documentTemplates = {
+                    'proof-of-loss': this.generateProofOfLoss(data),
                     'appeal-letter': this.generateAppealLetter(data),
                     'demand-letter': this.generateDemandLetter(data),
+                    'damage-inventory': this.generateDamageInventory(data),
+                    'claim-timeline': this.generateClaimTimeline(data),
+                    'repair-replace': this.generateRepairReplace(data),
+                    'out-of-pocket': this.generateOutOfPocket(data),
+                    'appraisal-demand': this.generateAppraisalDemand(data),
                     'notice-of-delay': this.generateNoticeOfDelay(data),
                     'coverage-clarification': this.generateCoverageClarification(data),
-                    'proof-of-repairs': this.generateProofOfRepairs(data),
-                    'ordinance-law': this.generateOrdinanceLaw(data),
-                    'matching-coverage': this.generateMatchingCoverage(data),
-                    'betterment-dispute': this.generateBettermentDispute(data),
-                    'deductible-verification': this.generateDeductibleVerification(data),
-                    'supplement-request': this.generateSupplementRequest(data),
-                    'emergency-services': this.generateEmergencyServices(data),
-                    'contents-inventory': this.generateContentsInventory(data),
-                    'ale-request': this.generateALERequest(data),
-                    'independent-expert': this.generateIndependentExpert(data),
-                    'coverage-analysis': this.generateCoverageAnalysis(data),
-                    'regulatory-complaint': this.generateRegulatoryComplaint(data),
-                    'business-income': this.generateBusinessIncome(data),
-                    'extra-expense': this.generateExtraExpense(data),
-                    'restoration-timeline': this.generateRestorationTimeline(data),
-                    'civil-authority': this.generateCivilAuthority(data),
-                    'dependent-property': this.generateDependentProperty(data),
-                    'extended-indemnity': this.generateExtendedIndemnity(data),
-                    'contingent-business': this.generateContingentBusiness(data),
-                    'hurricane-damage': this.generateHurricaneDamage(data),
-                    'flood-coverage': this.generateFloodCoverage(data),
-                    'wildfire-damage': this.generateWildfireDamage(data),
-                    'earthquake-damage': this.generateEarthquakeDamage(data),
-                    'tornado-damage': this.generateTornadoDamage(data),
-                    'hail-damage': this.generateHailDamage(data),
-                    'lightning-damage': this.generateLightningDamage(data),
-                    'debris-removal': this.generateDebrisRemoval(data),
-                    'emergency-repair': this.generateEmergencyRepair(data),
-                    'employee-wage': this.generateEmployeeWage(data),
-                    'lease-obligation': this.generateLeaseObligation(data),
-                    'utility-expense': this.generateUtilityExpense(data),
-                    'professional-services': this.generateProfessionalServices(data),
-                    'marketing-expense': this.generateMarketingExpense(data),
-                    'inventory-loss': this.generateInventoryLoss(data),
-                    'equipment-rental': this.generateEquipmentRental(data),
-                    'relocation-expense': this.generateRelocationExpense(data),
-                    'contract-loss': this.generateContractLoss(data),
-                    'ice-storm-damage': this.generateIceStormDamage(data),
-                    'blizzard-damage': this.generateBlizzardDamage(data),
-                    'drought-damage': this.generateDroughtDamage(data),
-                    'heat-wave-damage': this.generateHeatWaveDamage(data),
-                    'severe-storm-damage': this.generateSevereStormDamage(data),
-                    'power-outage-damage': this.generatePowerOutageDamage(data),
-                    'storm-water-damage': this.generateStormWaterDamage(data)
+                    'notice-of-claim': this.generateNoticeOfClaim(data),
+                    'rom-estimate': this.generateROMEstimate(data),
+                    'photograph-log': this.generatePhotographLog(data),
+                    'document-index': this.generateDocumentIndex(data),
+                    'comparative-estimates': this.generateComparativeEstimates(data),
+                    'settlement-sheet': this.generateSettlementSheet(data)
                 };
                 
                 const content = documentTemplates[this.selectedType] || 'Document content not available.';
@@ -2799,6 +2483,253 @@ I request coverage for all storm water damage as it is covered under my policy.
 
 Sincerely,
 ${data.claimantName}`;
+            }
+
+            // New document template generators
+            generateProofOfLoss(data) {
+                return `${data.claimantName}
+${data.claimantAddress}
+
+[Date]
+
+[Insurance Company Name]
+${data.insurerName}
+[Insurance Company Address]
+
+Re: Policy Number: ${data.policyNumber}
+Claim Number: ${data.claimNumber}
+Date of Loss: ${data.dateOfLoss}
+
+PROOF OF LOSS
+
+I, ${data.claimantName}, being duly sworn, depose and say:
+
+1. I am the named insured under Policy Number ${data.policyNumber}
+2. The loss occurred on ${data.dateOfLoss}
+3. The loss was caused by [specify cause]
+4. The total amount of loss is $[amount]
+
+DAMAGE DETAILS:
+${data.situationDetails}
+
+I declare under penalty of perjury that the foregoing is true and correct.
+
+Sincerely,
+${data.claimantName}`;
+            }
+
+            generateDamageInventory(data) {
+                return `DAMAGE INVENTORY
+Policy Number: ${data.policyNumber}
+Claim Number: ${data.claimNumber}
+Date of Loss: ${data.dateOfLoss}
+
+ITEMIZED DAMAGES:
+
+${data.situationDetails}
+
+[Add detailed line items with descriptions, quantities, and values]
+
+Total Estimated Loss: $[amount]
+
+Prepared by: ${data.claimantName}
+Date: ${new Date().toLocaleDateString()}`;
+            }
+
+            generateClaimTimeline(data) {
+                return `CLAIM TIMELINE / DIARY
+Policy Number: ${data.policyNumber}
+Claim Number: ${data.claimNumber}
+Date of Loss: ${data.dateOfLoss}
+
+CHRONOLOGICAL LOG:
+
+${data.situationDetails}
+
+[Add timeline entries with dates and descriptions]
+
+Prepared by: ${data.claimantName}
+Date: ${new Date().toLocaleDateString()}`;
+            }
+
+            generateRepairReplace(data) {
+                return `REPAIR vs REPLACE ANALYSIS
+Policy Number: ${data.policyNumber}
+Claim Number: ${data.claimNumber}
+Date of Loss: ${data.dateOfLoss}
+
+COST COMPARISON WORKSHEET:
+
+${data.situationDetails}
+
+[Add detailed cost breakdowns for repair vs replacement options]
+
+Prepared by: ${data.claimantName}
+Date: ${new Date().toLocaleDateString()}`;
+            }
+
+            generateOutOfPocket(data) {
+                return `OUT-OF-POCKET EXPENSE LOG
+Policy Number: ${data.policyNumber}
+Claim Number: ${data.claimNumber}
+Date of Loss: ${data.dateOfLoss}
+
+EXPENSE TRACKING:
+
+${data.situationDetails}
+
+[Add detailed expense entries with dates, descriptions, and amounts]
+
+Total Out-of-Pocket Expenses: $[amount]
+
+Prepared by: ${data.claimantName}
+Date: ${new Date().toLocaleDateString()}`;
+            }
+
+            generateAppraisalDemand(data) {
+                return `${data.claimantName}
+${data.claimantAddress}
+
+[Date]
+
+[Insurance Company Name]
+${data.insurerName}
+[Insurance Company Address]
+
+Re: Policy Number: ${data.policyNumber}
+Claim Number: ${data.claimNumber}
+Date of Loss: ${data.dateOfLoss}
+
+APPRAISAL DEMAND
+
+Dear Claims Department,
+
+I am invoking the appraisal clause of my policy due to disagreement over the amount of loss.
+
+CLAIM DETAILS:
+- Policy Number: ${data.policyNumber}
+- Claim Number: ${data.claimNumber}
+- Date of Loss: ${data.dateOfLoss}
+
+SITUATION:
+${data.situationDetails}
+
+I demand that you appoint an appraiser within 20 days as required by the policy.
+
+Sincerely,
+${data.claimantName}`;
+            }
+
+            generateNoticeOfClaim(data) {
+                return `${data.claimantName}
+${data.claimantAddress}
+
+[Date]
+
+[Insurance Company Name]
+${data.insurerName}
+[Insurance Company Address]
+
+NOTICE OF CLAIM
+
+Dear Claims Department,
+
+I am providing notice of a loss under my policy.
+
+CLAIM DETAILS:
+- Policy Number: ${data.policyNumber}
+- Date of Loss: ${data.dateOfLoss}
+- Location: ${data.claimantAddress}
+
+LOSS DESCRIPTION:
+${data.situationDetails}
+
+I request immediate processing of this claim.
+
+Sincerely,
+${data.claimantName}`;
+            }
+
+            generateROMEstimate(data) {
+                return `ROM ESTIMATE REPORT
+Policy Number: ${data.policyNumber}
+Claim Number: ${data.claimNumber}
+Date of Loss: ${data.dateOfLoss}
+
+HIGH-LEVEL COST RANGE:
+
+${data.situationDetails}
+
+[Add detailed cost breakdowns and estimates]
+
+Estimated Total Loss: $[amount]
+
+Prepared by: ${data.claimantName}
+Date: ${new Date().toLocaleDateString()}`;
+            }
+
+            generatePhotographLog(data) {
+                return `PHOTOGRAPH LOG
+Policy Number: ${data.policyNumber}
+Claim Number: ${data.claimNumber}
+Date of Loss: ${data.dateOfLoss}
+
+PHOTO DOCUMENTATION:
+
+${data.situationDetails}
+
+[Add photo entries with captions and descriptions]
+
+Prepared by: ${data.claimantName}
+Date: ${new Date().toLocaleDateString()}`;
+            }
+
+            generateDocumentIndex(data) {
+                return `DOCUMENT INDEX
+Policy Number: ${data.policyNumber}
+Claim Number: ${data.claimNumber}
+Date of Loss: ${data.dateOfLoss}
+
+CLAIM DOCUMENTS:
+
+${data.situationDetails}
+
+[Auto-generated list of all claim documents]
+
+Prepared by: ${data.claimantName}
+Date: ${new Date().toLocaleDateString()}`;
+            }
+
+            generateComparativeEstimates(data) {
+                return `COMPARATIVE ESTIMATES
+Policy Number: ${data.policyNumber}
+Claim Number: ${data.claimNumber}
+Date of Loss: ${data.dateOfLoss}
+
+SIDE-BY-SIDE COMPARISON:
+
+${data.situationDetails}
+
+[Add detailed comparison of multiple estimates]
+
+Prepared by: ${data.claimantName}
+Date: ${new Date().toLocaleDateString()}`;
+            }
+
+            generateSettlementSheet(data) {
+                return `SETTLEMENT SHEET
+Policy Number: ${data.policyNumber}
+Claim Number: ${data.claimNumber}
+Date of Loss: ${data.dateOfLoss}
+
+OFFER vs VALUE ANALYSIS:
+
+${data.situationDetails}
+
+[Add detailed comparison of offer vs actual value]
+
+Prepared by: ${data.claimantName}
+Date: ${new Date().toLocaleDateString()}`;
             }
 
             displayResults(content) {
