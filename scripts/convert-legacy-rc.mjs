@@ -20,7 +20,7 @@ const map = {
   'claim-stage-tracker': '/app/trackers/index.html',
   'deadline-tracker': '/app/trackers/index.html',
   'document-generator': '/app/documents/index.html',
-  'situational-advisory': '/app/advisory/index.html',
+  'situational-advisory': '/app/response-center/situational-advisory/index.html',
   'maximize-claim': '/app/maximize/index.html',
   'insurance-tactics': '/app/tactics/index.html',
   'state-rights': '/app/state-rights/index.html',
