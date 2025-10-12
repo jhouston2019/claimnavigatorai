@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Situational Advisory System - ClaimNavigatorAI</title>
+  <meta name="description" content="Get personalized AI-powered advice for your insurance claim situation with our comprehensive situational advisory system.">
+  <link rel="stylesheet" href="/assets/css/advisory.css">
+  <style>
+    /* Additional inline styles for specific components */
+    .scenario-card.expanded {
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    }
+    
+    .ai-results .result-section {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .ai-results .result-section:last-child {
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero Section with AI Input -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Situational Advisory System</h1>
+      <p class="hero-subtitle">Get personalized AI-powered advice for your insurance claim situation. Describe your situation and receive expert guidance on next steps.</p>
+      
+      <div class="ai-input-container">
+        <form class="ai-input-form" id="ai-advisory-form">
+          <input 
+            type="text" 
+            class="ai-input" 
+            id="situation-input"
+            placeholder="Describe your situation (e.g., 'My insurer said my roof leak isn't covered due to wear and tear')"
+            required
+          >
+          <button type="submit" class="btn-analyze" id="analyze-btn">
+            Analyze & Advise
+          </button>
+        </form>
+        
+        <!-- AI Results -->
+        <div class="ai-results" id="ai-results">
+          <div class="result-section">
+            <h3 class="result-title">Next Steps</h3>
+            <div class="result-content" id="next-steps"></div>
+          </div>
+          <div class="result-section">
+            <h3 class="result-title">Explanation</h3>
+            <div class="result-content" id="explanation"></div>
+          </div>
+          <div class="result-section">
+            <h3 class="result-title">Recommended Document</h3>
+            <div class="result-content" id="recommended-document"></div>
+          </div>
+          <div class="result-section">
+            <h3 class="result-title">Example Response</h3>
+            <div class="result-content" id="example-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Search and Filter Section -->
+    <section class="search-filter-section">
+      <div class="search-filter-container">
+        <input 
+          type="text" 
+          class="search-input" 
+          id="search-input"
+          placeholder="Search scenarios by keyword..."
+        >
+        <div class="category-tabs">
+          <button class="tab-button active" data-category="all">All Scenarios</button>
+          <button class="tab-button" data-category="Property">Property Claims</button>
+          <button class="tab-button" data-category="Commercial & Business Interruption">Commercial/Business</button>
+          <button class="tab-button" data-category="Catastrophe / Disaster">Catastrophe/Disaster</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scenarios Section -->
+    <section class="scenarios-section">
+      <h2>Pre-defined Scenarios</h2>
+      <p>Browse common claim situations and get instant advice. Click "View Advice" for detailed guidance or "Generate Letter" to create the recommended document.</p>
+      
+      <div class="scenarios-grid" id="scenarios-grid">
+        <!-- Scenarios will be loaded dynamically -->
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Global variables
+    let allScenarios = [];
+    let filteredScenarios = [];
+    let currentCategory = 'all';
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      loadScenarios();
+      setupEventListeners();
+    });
+
+    // Load scenarios from JSON file
+    async function loadScenarios() {
+      try {
+        const response = await fetch('/assets/data/advisory.json');
+        allScenarios = await response.json();
+        filteredScenarios = allScenarios;
+        renderScenarios();
+      } catch (error) {
+        console.error('Error loading scenarios:', error);
+        showError('Failed to load scenarios. Please refresh the page.');
+      }
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      // AI Advisory Form
+      document.getElementById('ai-advisory-form').addEventListener('submit', handleAIAdvisory);
+      
+      // Search functionality
+      document.getElementById('search-input').addEventListener('input', handleSearch);
+      
+      // Category tabs
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => handleCategoryChange(button.dataset.category));
+      });
+    }
+
+    // Handle AI Advisory form submission
+    async function handleAIAdvisory(event) {
+      event.preventDefault();
+      
+      const situation = document.getElementById('situation-input').value.trim();
+      if (!situation) return;
+
+      const analyzeBtn = document.getElementById('analyze-btn');
+      const aiResults = document.getElementById('ai-results');
+      
+      // Show loading state
+      analyzeBtn.disabled = true;
+      analyzeBtn.textContent = 'Analyzing...';
+      
+      try {
+        const response = await fetch('/netlify/functions/ai-advisory', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ situation })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          displayAIResults(result);
+          aiResults.classList.add('show', 'fade-in');
+        } else {
+          showError('Failed to get AI advice. Please try again.');
+        }
+      } catch (error) {
+        console.error('AI Advisory Error:', error);
+        showError('Network error. Please try again.');
+      } finally {
+        analyzeBtn.disabled = false;
+        analyzeBtn.textContent = 'Analyze & Advise';
+      }
+    }
+
+    // Display AI results
+    function displayAIResults(result) {
+      document.getElementById('next-steps').textContent = result.nextSteps || 'No specific steps provided';
+      document.getElementById('explanation').textContent = result.explanation || 'No explanation provided';
+      document.getElementById('recommended-document').textContent = result.recommendedDocument || 'No document recommended';
+      document.getElementById('example-text').textContent = result.exampleText || 'No example provided';
+    }
+
+    // Handle search input
+    function handleSearch(event) {
+      const searchTerm = event.target.value.toLowerCase();
+      filterScenarios(searchTerm);
+    }
+
+    // Handle category change
+    function handleCategoryChange(category) {
+      currentCategory = category;
+      
+      // Update active tab
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`[data-category="${category}"]`).classList.add('active');
+      
+      // Filter scenarios
+      filterScenarios(document.getElementById('search-input').value.toLowerCase());
+    }
+
+    // Filter scenarios based on search and category
+    function filterScenarios(searchTerm) {
+      filteredScenarios = allScenarios.filter(category => {
+        if (currentCategory !== 'all' && category.category !== currentCategory) {
+          return false;
+        }
+        
+        if (searchTerm) {
+          return category.situations.some(situation => 
+            situation.title.toLowerCase().includes(searchTerm) ||
+            situation.summary.toLowerCase().includes(searchTerm) ||
+            situation.details.toLowerCase().includes(searchTerm)
+          );
+        }
+        
+        return true;
+      });
+      
+      renderScenarios();
+    }
+
+    // Render scenarios
+    function renderScenarios() {
+      const grid = document.getElementById('scenarios-grid');
+      grid.innerHTML = '';
+
+      filteredScenarios.forEach(category => {
+        category.situations.forEach(situation => {
+          const card = createScenarioCard(situation, category.category);
+          grid.appendChild(card);
+        });
+      });
+
+      if (grid.children.length === 0) {
+        grid.innerHTML = '<p class="text-center">No scenarios found matching your criteria.</p>';
+      }
+    }
+
+    // Create scenario card
+    function createScenarioCard(situation, category) {
+      const card = document.createElement('div');
+      card.className = 'scenario-card';
+      card.innerHTML = `
+        <h3 class="scenario-title">${situation.title}</h3>
+        <p class="scenario-summary">${situation.summary}</p>
+        <div class="scenario-details" id="details-${situation.title.replace(/\s+/g, '-')}">
+          <h4 class="details-title">Detailed Advice</h4>
+          <p class="details-content">${situation.details}</p>
+        </div>
+        <div class="scenario-actions">
+          <button class="btn-view-advice" onclick="toggleDetails('${situation.title.replace(/\s+/g, '-')}')">
+            View Advice
+          </button>
+          <a href="/app/document-generator.html?type=${encodeURIComponent(situation.document)}" 
+             class="btn-generate-letter" target="_blank">
+            Generate Letter
+          </a>
+        </div>
+      `;
+      return card;
+    }
+
+    // Toggle scenario details
+    function toggleDetails(situationId) {
+      const details = document.getElementById(`details-${situationId}`);
+      const card = details.closest('.scenario-card');
+      
+      if (details.classList.contains('show')) {
+        details.classList.remove('show');
+        card.classList.remove('expanded');
+      } else {
+        // Close other expanded cards
+        document.querySelectorAll('.scenario-card.expanded').forEach(card => {
+          card.classList.remove('expanded');
+          card.querySelector('.scenario-details').classList.remove('show');
+        });
+        
+        details.classList.add('show');
+        card.classList.add('expanded');
+      }
+    }
+
+    // Show error message
+    function showError(message) {
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.textContent = message;
+      
+      const mainContent = document.querySelector('.main-content');
+      mainContent.insertBefore(errorDiv, mainContent.firstChild);
+      
+      setTimeout(() => {
+        errorDiv.remove();
+      }, 5000);
+    }
+
+    // Make toggleDetails globally available
+    window.toggleDetails = toggleDetails;
+  </script>
+</body>
+</html>
