@@ -1,83 +1,79 @@
-import { json, readBody, openaiChat } from './_utils.js';
+import OpenAI from "openai";
 
-export default async (req) => {
+export const handler = async (event) => {
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: "Method not allowed" }),
+    };
+  }
+
   try {
-    const { documentType, claimData } = await readBody(req);
-    
-    if (!documentType || !claimData) {
-      return json(400, { error: 'Document type and claim data are required' });
+    const { documentId, title, fields } = JSON.parse(event.body || "{}");
+    if (!fields || !title) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Missing document data." }),
+      };
     }
 
-    // Create a comprehensive prompt for AI document generation
-    const systemPrompt = `You are Claim Navigator AI, an expert insurance claim advisor and document generator. You specialize in creating professional, legally sound insurance claim documents that maximize policyholder rights and claim value.
+    const fieldSummary = Object.entries(fields)
+      .map(([key, val]) => `${key.replace(/_/g, " ")}: ${val}`)
+      .join("\n");
 
-Your task is to generate a comprehensive, professional document based on the specific document type and claim situation provided. The document should be:
-
-1. PROFESSIONAL: Use formal business letter format with proper structure
-2. LEGALLY SOUND: Include relevant legal references and policy language
-3. SPECIFIC: Tailored to the exact situation and document type
-4. ACTIONABLE: Provide clear next steps and demands
-5. COMPREHENSIVE: Include all necessary details and supporting information
-
-Document Structure:
-- Professional letterhead format
-- Clear subject line and reference numbers
-- Detailed situation analysis
-- Specific legal and policy references
-- Clear demands and next steps
-- Professional closing with contact information
-
-Focus on protecting the policyholder's rights and maximizing claim value.`;
-
-    const userPrompt = `Generate a professional ${documentType.replace(/-/g, ' ')} document for the following claim situation:
-
-CLAIM INFORMATION
-================
-Policyholder: ${claimData.claimantName}
-Address: ${claimData.claimantAddress}
-Phone: ${claimData.phoneNumber || 'Not provided'}
-Email: ${claimData.email || 'Not provided'}
-
-Policy Number: ${claimData.policyNumber}
-Claim Number: ${claimData.claimNumber}
-Date of Loss: ${claimData.dateOfLoss}
-Insurance Company: ${claimData.insurerName}
-
-Generated: ${new Date().toLocaleDateString()}
-Document Type: ${documentType.replace(/-/g, ' ').toUpperCase()}
-
-========================================
-
-SITUATION DESCRIPTION:
-${claimData.situationDetails}
-
-DOCUMENT TYPE: ${documentType}
-
-Please generate a comprehensive, professional document that:
-1. STARTS with the claim information header shown above
-2. Uses the claimant's actual information (no placeholders)
-3. Addresses the specific situation described
-4. Includes relevant legal references and policy language
-5. Provides clear, actionable next steps
-6. Is professionally formatted and ready to send
-7. Maximizes the policyholder's rights and claim value
-
-Make the document specific, detailed, and immediately actionable.`;
-
-    const { content } = await openaiChat(systemPrompt, userPrompt);
-
-    return json(200, {
-      content: content,
-      documentType: documentType,
-      generatedAt: new Date().toISOString()
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
     });
 
-  } catch (error) {
-    console.error('Document Generation Error:', error);
-    
-    return json(500, {
-      error: 'Failed to generate document',
-      details: error.message
+    const prompt = `
+You are an expert public adjuster and claims documentation specialist.
+Generate a professional, polished, plain-English version of a "${title}" insurance document
+based on the following policyholder data. The result should be concise, clear, and formatted
+as an HTML letter with appropriate structure, paragraph breaks, and tone.
+
+If the user input lacks some details, make logical, realistic assumptions to produce a usable draft.
+Keep it factual, assertive, and legally polite. Include placeholders for missing values.
+
+Input details:
+${fieldSummary}
+
+Output the HTML only (no markdown, no backticks). Use <p> and <h2> tags where appropriate.
+    `;
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a professional insurance claim letter generator. Output well-formatted HTML documents only.",
+        },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.6,
+      max_tokens: 800,
     });
+
+    const aiText =
+      completion.choices?.[0]?.message?.content ||
+      "<p>Unable to generate draft at this time.</p>";
+
+    return {
+      statusCode: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({ html: aiText }),
+    };
+  } catch (err) {
+    console.error("AI generation error:", err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: "Failed to generate document",
+        details: err.message,
+      }),
+    };
   }
 };
