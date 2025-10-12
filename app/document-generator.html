@@ -29,41 +29,6 @@
             margin-top: 1rem;
         }
         
-        .document-type-card {
-            background: #e9ecef !important;
-            border: 1px solid #e5e7eb !important;
-            border-radius: 8px !important;
-            padding: 16px !important;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-            color: #1e3a8a !important;
-        }
-        
-        .document-type-card:hover {
-            border-color: #1e3a8a !important;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1) !important;
-        }
-        
-        .document-type-card.selected {
-            border-color: #1e3a8a !important;
-            background: #e9ecef !important;
-        }
-        
-        .document-type-card h3 {
-            font-size: 1.1rem !important;
-            font-weight: 600 !important;
-            margin: 8px 0 4px 0 !important;
-            color: #1e3a8a !important;
-        }
-        
-        .document-type-card p {
-            color: #6b7280 !important;
-            font-size: 0.8rem !important;
-            line-height: 1.4 !important;
-            margin: 0 !important;
-        }
         
         .form-container {
             background: white;
@@ -308,83 +273,83 @@
             
             <div class="document-type-grid">
                 <!-- Core Documents -->
-                <div class="document-type-card" data-type="proof-of-loss">
+                <div class="tool-card" data-type="proof-of-loss">
                     <h3>📄 Proof of Loss</h3>
                     <p>Sworn statement of damages</p>
                 </div>
                 
-                <div class="document-type-card" data-type="appeal-letter">
+                <div class="tool-card" data-type="appeal-letter">
                     <h3>📝 Appeal Letter</h3>
                     <p>Denied/underpaid? Appeal</p>
                 </div>
                 
-                <div class="document-type-card" data-type="demand-letter">
+                <div class="tool-card" data-type="demand-letter">
                     <h3>⚖️ Demand Letter</h3>
                     <p>Formal payment request</p>
                 </div>
                 
-                <div class="document-type-card" data-type="damage-inventory">
+                <div class="tool-card" data-type="damage-inventory">
                     <h3>📋 Damage Inventory</h3>
                     <p>Line-item list</p>
                 </div>
                 
-                <div class="document-type-card" data-type="claim-timeline">
+                <div class="tool-card" data-type="claim-timeline">
                     <h3>📅 Claim Timeline / Diary</h3>
                     <p>Chronological log</p>
                 </div>
                 
-                <div class="document-type-card" data-type="repair-replace">
+                <div class="tool-card" data-type="repair-replace">
                     <h3>🔧 Repair vs Replace</h3>
                     <p>Cost worksheet</p>
                 </div>
                 
-                <div class="document-type-card" data-type="out-of-pocket">
+                <div class="tool-card" data-type="out-of-pocket">
                     <h3>💰 Out-of-Pocket Log</h3>
                     <p>ALE & expenses</p>
                 </div>
                 
-                <div class="document-type-card" data-type="appraisal-demand">
+                <div class="tool-card" data-type="appraisal-demand">
                     <h3>⚖️ Appraisal Demand</h3>
                     <p>Invoke appraisal clause</p>
                 </div>
                 
-                <div class="document-type-card" data-type="notice-of-delay">
+                <div class="tool-card" data-type="notice-of-delay">
                     <h3>⏰ Notice of Delay</h3>
                     <p>Timelines exceeded</p>
                 </div>
                 
-                <div class="document-type-card" data-type="coverage-clarification">
+                <div class="tool-card" data-type="coverage-clarification">
                     <h3>❓ Coverage Clarification</h3>
                     <p>Ask insurer to interpret</p>
                 </div>
                 
                 <!-- Support Documents -->
-                <div class="document-type-card" data-type="notice-of-claim">
+                <div class="tool-card" data-type="notice-of-claim">
                     <h3>📢 Notice of Claim</h3>
                     <p>Initial loss report</p>
                 </div>
                 
-                <div class="document-type-card" data-type="rom-estimate">
+                <div class="tool-card" data-type="rom-estimate">
                     <h3>📊 ROM Estimate Report</h3>
                     <p>High-level cost range</p>
                 </div>
                 
-                <div class="document-type-card" data-type="photograph-log">
+                <div class="tool-card" data-type="photograph-log">
                     <h3>📸 Photograph Log</h3>
                     <p>Captions & descriptions</p>
                 </div>
                 
-                <div class="document-type-card" data-type="document-index">
+                <div class="tool-card" data-type="document-index">
                     <h3>📑 Document Index</h3>
                     <p>Auto-generated list</p>
                 </div>
                 
-                <div class="document-type-card" data-type="comparative-estimates">
+                <div class="tool-card" data-type="comparative-estimates">
                     <h3>📊 Comparative Estimates</h3>
                     <p>Side-by-side</p>
                 </div>
                 
-                <div class="document-type-card" data-type="settlement-sheet">
+                <div class="tool-card" data-type="settlement-sheet">
                     <h3>📋 Settlement Sheet</h3>
                     <p>Offer vs value</p>
                 </div>
@@ -569,13 +534,13 @@
                         this.selectDocumentType(card);
                     } else {
                         console.error('No card found for type:', mappedType);
-                        console.log('Available cards:', document.querySelectorAll('.document-type-card'));
+                        console.log('Available cards:', document.querySelectorAll('.tool-card'));
                     }
                 }
             }
 
             setupDocumentTypeSelection() {
-                const cards = document.querySelectorAll('.document-type-card');
+                const cards = document.querySelectorAll('.tool-card');
                 
                 cards.forEach(card => {
                     card.addEventListener('click', () => {
@@ -589,7 +554,7 @@
                 console.log('Card dataset type:', card.dataset.type);
                 
                 // Remove previous selection
-                document.querySelectorAll('.document-type-card').forEach(c => c.classList.remove('selected'));
+                document.querySelectorAll('.tool-card').forEach(c => c.classList.remove('selected'));
                 
                 // Select new card
                 card.classList.add('selected');
