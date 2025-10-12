@@ -515,6 +515,9 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const type = urlParams.get('type');
                 
+                console.log('URL Parameters:', window.location.search);
+                console.log('Document Type from URL:', type);
+                
                 if (type) {
                     // Map document types from advisory page
                     const typeMapping = {
@@ -553,10 +556,17 @@
                     };
                     
                     const mappedType = typeMapping[type] || type.toLowerCase().replace(/\s+/g, '-');
+                    console.log('Mapped Type:', mappedType);
+                    
                     const card = document.querySelector(`[data-type="${mappedType}"]`);
+                    console.log('Found Card:', card);
                     
                     if (card) {
+                        console.log('Selecting document type:', mappedType);
                         this.selectDocumentType(card);
+                    } else {
+                        console.error('No card found for type:', mappedType);
+                        console.log('Available cards:', document.querySelectorAll('.document-type-card'));
                     }
                 }
             }
@@ -572,12 +582,17 @@
             }
 
             selectDocumentType(card) {
+                console.log('Selecting document type card:', card);
+                console.log('Card dataset type:', card.dataset.type);
+                
                 // Remove previous selection
                 document.querySelectorAll('.document-type-card').forEach(c => c.classList.remove('selected'));
                 
                 // Select new card
                 card.classList.add('selected');
                 this.selectedType = card.dataset.type;
+                
+                console.log('Selected type:', this.selectedType);
                 
                 // Show form
                 this.showForm();
