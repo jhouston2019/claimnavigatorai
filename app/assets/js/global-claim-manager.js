@@ -2,19 +2,95 @@
 class GlobalClaimInfoManager {
     constructor() {
         this.storageKey = 'claimnavigator_global_claim_info';
+        this.claimInfo = {};
         this.init();
     }
 
-    init() {
-        this.loadClaimInfo();
+    async init() {
+        await this.loadClaimInfoFromDatabase();
         this.setupEventListeners();
     }
 
-    loadClaimInfo() {
+    async loadClaimInfoFromDatabase() {
+        try {
+            // Try to get user's claim information from Supabase
+            const response = await fetch('/netlify/functions/list-claims', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${await this.getAuthToken()}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.claims && data.claims.length > 0) {
+                    // Use the most recent claim
+                    const latestClaim = data.claims[0];
+                    this.claimInfo = this.mapClaimToInfo(latestClaim);
+                    this.populateForm(this.claimInfo);
+                    this.showFormWithStatus('✅ Claim information loaded from your account');
+                    return;
+                }
+            }
+            
+            // No claims found
+            this.showFormWithStatus('⚠️ No claim information found. Please enter your details below.');
+        } catch (error) {
+            console.log('Could not load claim from database, using localStorage fallback');
+            this.loadClaimInfoFromStorage();
+        }
+    }
+
+    showFormWithStatus(message) {
+        const statusDiv = document.getElementById('claimInfoStatus');
+        const form = document.getElementById('globalClaimInfoForm');
+        
+        if (statusDiv) {
+            statusDiv.innerHTML = `<div class="status-message">${message}</div>`;
+        }
+        
+        if (form) {
+            form.style.display = 'block';
+        }
+    }
+
+    mapClaimToInfo(claim) {
+        return {
+            name: claim.insured_name || '',
+            policyNumber: claim.policy_number || '',
+            claimNumber: claim.id || '', // Using claim ID as claim number
+            dateOfLoss: claim.date_of_loss || '',
+            insuranceCompany: claim.insurer || '',
+            email: claim.email || '', // This might need to be retrieved from user profile
+            address: this.formatAddress(claim.loss_location),
+            phone: claim.phone_number || ''
+        };
+    }
+
+    formatAddress(lossLocation) {
+        if (!lossLocation) return '';
+        const { address, city, state, zip } = lossLocation;
+        return `${address || ''}, ${city || ''}, ${state || ''} ${zip || ''}`.trim();
+    }
+
+    async getAuthToken() {
+        // Try to get auth token from Supabase client
+        if (window.supabase) {
+            const { data: { session } } = await window.supabase.auth.getSession();
+            return session?.access_token;
+        }
+        return null;
+    }
+
+    loadClaimInfoFromStorage() {
         const savedInfo = localStorage.getItem(this.storageKey);
         if (savedInfo) {
-            const claimInfo = JSON.parse(savedInfo);
-            this.populateForm(claimInfo);
+            this.claimInfo = JSON.parse(savedInfo);
+            this.populateForm(this.claimInfo);
+            this.showFormWithStatus('📝 Using previously saved information');
+        } else {
+            this.showFormWithStatus('⚠️ No claim information found. Please enter your details below.');
         }
     }
 
@@ -43,6 +119,7 @@ class GlobalClaimInfoManager {
             }
         }
         
+        this.claimInfo = claimInfo;
         localStorage.setItem(this.storageKey, JSON.stringify(claimInfo));
         
         // Show success message
@@ -60,8 +137,7 @@ class GlobalClaimInfoManager {
     }
 
     getClaimInfo() {
-        const savedInfo = localStorage.getItem(this.storageKey);
-        return savedInfo ? JSON.parse(savedInfo) : {};
+        return this.claimInfo;
     }
 
     applyWatermark(content, claimInfo) {
