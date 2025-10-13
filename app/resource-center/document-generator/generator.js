@@ -126,7 +126,7 @@ class DocumentGenerator {
         this.hideError();
 
         try {
-            const response = await fetch('/netlify/functions/generate-letter', {
+            const response = await fetch('/netlify/functions/generate-document-simple', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
