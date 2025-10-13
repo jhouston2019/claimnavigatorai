@@ -16,6 +16,9 @@ class DocumentGenerator {
         const urlParams = new URLSearchParams(window.location.search);
         const documentTypeParam = urlParams.get('type');
         
+        // Store the original slug for API calls
+        this.documentTypeSlug = documentTypeParam;
+        
         // Map parameter to document type
         const typeMapping = {
             'appeal-letter': 'Appeal Letter',
@@ -84,6 +87,10 @@ class DocumentGenerator {
         this.documentType = typeMapping[documentTypeParam] || 'Professional Document';
     }
 
+    getDocumentTypeSlug() {
+        return this.documentTypeSlug || 'appeal-letter';
+    }
+
     setupEventListeners() {
         const generateBtn = document.getElementById('generateDocumentBtn');
         const regenerateBtn = document.getElementById('regenerateBtn');
@@ -125,7 +132,7 @@ class DocumentGenerator {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    documentType: this.documentType,
+                    documentType: this.getDocumentTypeSlug(),
                     formData: {
                         ...globalClaimInfo,
                         situationDetails: topic
