@@ -119,15 +119,17 @@ class DocumentGenerator {
         this.hideError();
 
         try {
-            const response = await fetch('/netlify/functions/generate-document', {
+            const response = await fetch('/netlify/functions/generate-letter', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    topic: topic,
-                    formData: globalClaimInfo,
-                    documentType: this.documentType
+                    documentType: this.documentType,
+                    formData: {
+                        ...globalClaimInfo,
+                        situationDetails: topic
+                    }
                 })
             });
 
@@ -141,11 +143,15 @@ class DocumentGenerator {
                 throw new Error(result.error);
             }
 
-            this.generatedContent = result.content;
-            
-            // Apply watermark to the generated content
-            const watermarkedContent = window.globalClaimManager.applyWatermark(result.content, globalClaimInfo);
-            this.displayResults({...result, content: watermarkedContent});
+            if (result.success && result.content && result.documentType) {
+                this.generatedContent = result.content;
+                
+                // Apply watermark to the generated content
+                const watermarkedContent = window.globalClaimManager.applyWatermark(result.content, globalClaimInfo);
+                this.displayResults({...result, content: watermarkedContent});
+            } else {
+                throw new Error('Invalid response format');
+            }
             
         } catch (error) {
             console.error('Generation error:', error);
