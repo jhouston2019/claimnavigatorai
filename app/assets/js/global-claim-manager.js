@@ -146,7 +146,8 @@ class GlobalClaimInfoManager {
         }
 
         const watermarkHeader = this.createWatermarkHeader(claimInfo);
-        return watermarkHeader + content;
+        const watermarkFooter = this.createWatermarkFooter(claimInfo);
+        return watermarkHeader + content + watermarkFooter;
     }
 
     createWatermarkHeader(claimInfo) {
@@ -158,9 +159,6 @@ class GlobalClaimInfoManager {
 
         let watermark = `
 <div style="border: 2px solid #1e3a8a; background: #f0f4ff; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: Arial, sans-serif;">
-    <div style="text-align: center; margin-bottom: 10px;">
-        <strong style="color: #1e3a8a; font-size: 14px;">CLAIM NAVIGATOR AI - GENERATED DOCUMENT</strong>
-    </div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; color: #374151;">
 `;
 
@@ -188,13 +186,27 @@ class GlobalClaimInfoManager {
 
         watermark += `
     </div>
-    <div style="text-align: center; margin-top: 10px; font-size: 11px; color: #6b7280;">
-        Generated on ${today} by ClaimNavigatorAI | ${claimInfo.address || ''}
-    </div>
 </div>
 `;
 
         return watermark;
+    }
+
+    createWatermarkFooter(claimInfo) {
+        const today = new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+
+        return `
+<div style="border-top: 2px solid #1e3a8a; background: #f0f4ff; padding: 10px; margin-top: 30px; border-radius: 8px; font-family: Arial, sans-serif;">
+    <div style="text-align: center; font-size: 9px; color: #6b7280;">
+        <strong style="color: #1e3a8a; font-size: 10px;">CLAIM NAVIGATOR AI - GENERATED DOCUMENT</strong><br>
+        Generated on ${today} | ${claimInfo.address || ''}
+    </div>
+</div>
+`;
     }
 
     setupEventListeners() {
