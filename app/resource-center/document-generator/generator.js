@@ -153,7 +153,9 @@ class DocumentGenerator {
                 this.generatedContent = result.content;
                 
                 // Apply watermark to the generated content
+                console.log('Global claim info:', globalClaimInfo);
                 const watermarkedContent = window.globalClaimManager.applyWatermark(result.content, globalClaimInfo);
+                console.log('Watermarked content length:', watermarkedContent.length);
                 this.displayResults({...result, content: watermarkedContent, documentType: this.documentType});
             } else {
                 throw new Error('Invalid response format');
@@ -253,8 +255,13 @@ class DocumentGenerator {
             doc.setFontSize(12);
             doc.setFont('helvetica');
             
-            // Get text content and split into lines
-            const textContent = document.getElementById('resultContent').textContent;
+            // Get the watermarked content from the display
+            const watermarkedContent = document.getElementById('resultContent').innerHTML;
+            
+            // Convert HTML to text for PDF
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = watermarkedContent;
+            const textContent = tempDiv.textContent || tempDiv.innerText || '';
             const pageWidth = doc.internal.pageSize.getWidth();
             const margin = 20;
             const maxWidth = pageWidth - (margin * 2);
