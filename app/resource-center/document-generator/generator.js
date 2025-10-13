@@ -126,7 +126,7 @@ class DocumentGenerator {
         this.hideError();
 
         try {
-            const response = await fetch('/netlify/functions/generate-document-public', {
+            const response = await fetch('/.netlify/functions/generate-document-public', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -159,9 +159,9 @@ class DocumentGenerator {
             }
             
         } catch (error) {
-            console.error('Generation error:', error);
+            console.error("Generation error:", error);
             if (error.message.includes('404')) {
-                alert("The document generator function could not be reached. Please verify Netlify function deployment.");
+                alert("The document generator function is not deployed or misnamed. Please verify Netlify functions.");
             }
             this.showError(`Failed to generate document: ${error.message}`);
         } finally {
