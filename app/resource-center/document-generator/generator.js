@@ -62,7 +62,8 @@ class TopicBasedDocumentGenerator {
             return;
         }
 
-        const formData = this.collectFormData();
+        // Get global claim information
+        const globalClaimInfo = window.globalClaimManager.getClaimInfo();
         
         // Show loading state
         this.showLoading();
@@ -77,7 +78,7 @@ class TopicBasedDocumentGenerator {
                 },
                 body: JSON.stringify({
                     topic: topic,
-                    formData: formData,
+                    formData: globalClaimInfo,
                     documentType: this.selectedDocumentType
                 })
             });
@@ -95,7 +96,9 @@ class TopicBasedDocumentGenerator {
             this.documentType = result.documentType;
             this.generatedContent = result.content;
             
-            this.displayResults(result);
+            // Apply watermark to the generated content
+            const watermarkedContent = window.globalClaimManager.applyWatermark(result.content, globalClaimInfo);
+            this.displayResults({...result, content: watermarkedContent});
             
         } catch (error) {
             console.error('Generation error:', error);
@@ -105,19 +108,6 @@ class TopicBasedDocumentGenerator {
         }
     }
 
-    collectFormData() {
-        const form = document.getElementById('claimInfoForm');
-        const formData = new FormData(form);
-        const data = {};
-        
-        for (let [key, value] of formData.entries()) {
-            if (value.trim()) {
-                data[key] = value.trim();
-            }
-        }
-        
-        return data;
-    }
 
     displayResults(result) {
         const resultContainer = document.getElementById('resultContainer');

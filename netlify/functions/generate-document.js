@@ -57,6 +57,9 @@ export const handler = async (event) => {
     const aiContent = completion.choices?.[0]?.message?.content || 
       "<p>Unable to generate document at this time. Please try again.</p>";
 
+    // Apply watermark to the generated content
+    const watermarkedContent = applyWatermark(aiContent, formData);
+
     return {
       statusCode: 200,
       headers: {
@@ -65,7 +68,7 @@ export const handler = async (event) => {
       },
       body: JSON.stringify({ 
         documentType: mappedDocumentType,
-        content: aiContent,
+        content: watermarkedContent,
         generatedAt: new Date().toISOString()
       }),
     };
@@ -247,6 +250,40 @@ function determineDocumentType(topic) {
   
   // Default to general appeal letter
   return "Appeal Letter";
+}
+
+function applyWatermark(content, claimInfo) {
+  if (!claimInfo || Object.keys(claimInfo).length === 0) {
+    return content;
+  }
+
+  const today = new Date().toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+
+  const watermarkHeader = `
+<div style="border: 2px solid #1e3a8a; background: #f0f4ff; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: Arial, sans-serif;">
+    <div style="text-align: center; margin-bottom: 10px;">
+        <strong style="color: #1e3a8a; font-size: 14px;">CLAIM NAVIGATOR AI - GENERATED DOCUMENT</strong>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; color: #374151;">
+        ${claimInfo.name ? `<div><strong>Policyholder:</strong> ${claimInfo.name}</div>` : ''}
+        ${claimInfo.policyNumber ? `<div><strong>Policy #:</strong> ${claimInfo.policyNumber}</div>` : ''}
+        ${claimInfo.claimNumber ? `<div><strong>Claim #:</strong> ${claimInfo.claimNumber}</div>` : ''}
+        ${claimInfo.dateOfLoss ? `<div><strong>Date of Loss:</strong> ${claimInfo.dateOfLoss}</div>` : ''}
+        ${claimInfo.insuranceCompany ? `<div><strong>Insurance Co:</strong> ${claimInfo.insuranceCompany}</div>` : ''}
+        ${claimInfo.email ? `<div><strong>Email:</strong> ${claimInfo.email}</div>` : ''}
+        ${claimInfo.phone ? `<div><strong>Phone:</strong> ${claimInfo.phone}</div>` : ''}
+    </div>
+    <div style="text-align: center; margin-top: 10px; font-size: 11px; color: #6b7280;">
+        Generated on ${today} by ClaimNavigatorAI | ${claimInfo.address || ''}
+    </div>
+</div>
+`;
+
+  return watermarkHeader + content;
 }
 
 function buildAIPrompt(topic, formData, documentType) {
