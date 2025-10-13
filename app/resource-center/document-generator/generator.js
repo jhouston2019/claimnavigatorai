@@ -134,7 +134,8 @@ class DocumentGenerator {
                 body: JSON.stringify({
                     content: topic,
                     type: this.documentType,
-                    format: 'html'
+                    format: 'html',
+                    formData: globalClaimInfo
                 })
             });
 
