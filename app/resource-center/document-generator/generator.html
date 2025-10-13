@@ -125,13 +125,17 @@
             
             if (documentType) {
                 updatePageContent(documentType);
+            } else {
+                // Default content if no type specified
+                document.getElementById('documentTitle').textContent = 'Document Generator';
+                document.getElementById('documentDescription').textContent = 'Generate professional claim documents with AI assistance';
             }
         });
 
         function updatePageContent(documentType) {
             const documentInfo = getDocumentInfo(documentType);
             
-            // Update page title
+            // Update page title and description
             document.getElementById('documentTitle').textContent = documentInfo.title;
             document.getElementById('documentDescription').textContent = documentInfo.description;
             document.getElementById('documentTypeTitle').textContent = `About ${documentInfo.title}`;
@@ -141,6 +145,12 @@
             const featuresList = document.querySelector('.document-features ul');
             if (featuresList) {
                 featuresList.innerHTML = documentInfo.features.map(feature => `<li>${feature}</li>`).join('');
+            }
+            
+            // Update the generate button text
+            const generateBtn = document.getElementById('generateDocumentBtn');
+            if (generateBtn) {
+                generateBtn.textContent = `Generate ${documentInfo.title}`;
             }
         }
 
@@ -210,11 +220,76 @@
                         'Professional water damage terminology',
                         'Insurance compliance format'
                     ]
+                },
+                'flood-damage-claim': {
+                    title: 'Flood Damage Claim Generator',
+                    description: 'Generate comprehensive flood damage claim documentation.',
+                    longDescription: 'Flood damage claims require specific documentation of water intrusion, damage extent, and restoration needs.',
+                    features: [
+                        'Flood damage source documentation',
+                        'Water intrusion timeline',
+                        'Structural damage assessment',
+                        'Contents damage inventory',
+                        'Professional flood claim terminology',
+                        'FEMA compliance language'
+                    ]
+                },
+                'hurricane-windstorm-claim': {
+                    title: 'Hurricane/Windstorm Claim Generator',
+                    description: 'Generate professional hurricane and windstorm damage claim documentation.',
+                    longDescription: 'Hurricane and windstorm claims require detailed documentation of wind damage, storm impact, and related losses.',
+                    features: [
+                        'Wind damage assessment',
+                        'Storm timeline documentation',
+                        'Structural damage evaluation',
+                        'Debris removal documentation',
+                        'Professional storm claim language',
+                        'Weather service references'
+                    ]
+                },
+                'roof-damage-claim': {
+                    title: 'Roof Damage Claim Generator',
+                    description: 'Generate comprehensive roof damage claim documentation.',
+                    longDescription: 'Roof damage claims require detailed documentation of structural damage, material assessment, and repair needs.',
+                    features: [
+                        'Roof damage assessment',
+                        'Material condition documentation',
+                        'Structural integrity evaluation',
+                        'Repair estimate preparation',
+                        'Professional roofing terminology',
+                        'Insurance adjuster communication'
+                    ]
+                },
+                'mold-claim': {
+                    title: 'Mold Claim Generator',
+                    description: 'Generate professional mold damage claim documentation.',
+                    longDescription: 'Mold claims require specific documentation of contamination, health impacts, and remediation needs.',
+                    features: [
+                        'Mold contamination documentation',
+                        'Health impact assessment',
+                        'Remediation requirements',
+                        'Environmental testing references',
+                        'Professional mold claim language',
+                        'Health department compliance'
+                    ]
+                },
+                'vandalism-theft-claim': {
+                    title: 'Vandalism & Theft Claim Generator',
+                    description: 'Generate comprehensive vandalism and theft claim documentation.',
+                    longDescription: 'Vandalism and theft claims require detailed documentation of criminal activity, stolen items, and damage assessment.',
+                    features: [
+                        'Criminal activity documentation',
+                        'Stolen property inventory',
+                        'Damage assessment',
+                        'Police report references',
+                        'Professional theft claim language',
+                        'Evidence preservation format'
+                    ]
                 }
             };
             
             return documentTypes[documentType] || {
-                title: 'Document Generator',
+                title: getDefaultTitle(documentType),
                 description: 'Generate a professional document for your claim situation.',
                 longDescription: 'This document will be customized based on your specific situation and needs.',
                 features: [
@@ -224,6 +299,15 @@
                     'Ready-to-submit format'
                 ]
             };
+        }
+
+        function getDefaultTitle(documentType) {
+            // Convert kebab-case to Title Case
+            if (!documentType) return 'Document Generator';
+            return documentType
+                .split('-')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ') + ' Generator';
         }
     </script>
 </body>
