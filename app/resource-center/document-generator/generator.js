@@ -126,17 +126,15 @@ class DocumentGenerator {
         this.hideError();
 
         try {
-            const response = await fetch('/netlify/functions/generate-document-simple', {
+            const response = await fetch('/netlify/functions/generate-document-public', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    documentType: this.getDocumentTypeSlug(),
-                    formData: {
-                        ...globalClaimInfo,
-                        situationDetails: topic
-                    }
+                    content: topic,
+                    type: this.documentType,
+                    format: 'html'
                 })
             });
 
@@ -150,18 +148,21 @@ class DocumentGenerator {
                 throw new Error(result.error);
             }
 
-            if (result.success && result.content && result.documentType) {
+            if (result.success && result.content) {
                 this.generatedContent = result.content;
                 
                 // Apply watermark to the generated content
                 const watermarkedContent = window.globalClaimManager.applyWatermark(result.content, globalClaimInfo);
-                this.displayResults({...result, content: watermarkedContent});
+                this.displayResults({...result, content: watermarkedContent, documentType: this.documentType});
             } else {
                 throw new Error('Invalid response format');
             }
             
         } catch (error) {
             console.error('Generation error:', error);
+            if (error.message.includes('404')) {
+                alert("The document generator function could not be reached. Please verify Netlify function deployment.");
+            }
             this.showError(`Failed to generate document: ${error.message}`);
         } finally {
             this.hideLoading();
