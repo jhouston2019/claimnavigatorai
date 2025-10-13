@@ -1,34 +1,48 @@
-class TopicBasedDocumentGenerator {
+class DocumentGenerator {
     constructor() {
         this.generatedContent = null;
         this.documentType = null;
-        this.selectedDocumentType = null;
         this.init();
     }
 
     init() {
-        this.setupDocumentTypeSelection();
         this.setupEventListeners();
         this.setupDownloadButtons();
+        this.determineDocumentType();
     }
 
-    setupDocumentTypeSelection() {
-        const cards = document.querySelectorAll('.document-type-card');
+    determineDocumentType() {
+        // Get document type from page title or URL
+        const path = window.location.pathname;
+        const filename = path.split('/').pop().replace('.html', '');
         
-        cards.forEach(card => {
-            card.addEventListener('click', () => {
-                // Remove previous selection
-                document.querySelectorAll('.document-type-card').forEach(c => c.classList.remove('selected'));
-                
-                // Select new card
-                card.classList.add('selected');
-                this.selectedDocumentType = card.dataset.type;
-                
-                // Show topic input section
-                document.getElementById('topicInputSection').style.display = 'block';
-                document.getElementById('topicInputSection').scrollIntoView({ behavior: 'smooth' });
-            });
-        });
+        // Map filename to document type
+        const typeMapping = {
+            'appeal-letter': 'Appeal Letter',
+            'sworn-statement-proof-of-loss': 'Sworn Statement in Proof of Loss',
+            'final-demand-payment': 'Final Demand for Payment Letter',
+            'personal-property-inventory': 'Personal Property Inventory Claim Form',
+            'claim-timeline': 'Claim Timeline / Diary',
+            'ale-reimbursement-request': 'ALE Reimbursement Request',
+            'claim-expense-tracking': 'Claim Expense Tracking Log',
+            'appraisal-demand': 'Appraisal Demand Letter',
+            'notice-of-delay': 'Notice of Delay',
+            'coverage-clarification': 'Coverage Clarification Request',
+            'first-notice-loss': 'First Notice of Loss (FNOL)',
+            'bad-faith-complaint': 'Bad Faith Complaint',
+            'follow-up-letter': 'Follow-up Letter',
+            'business-interruption-claim': 'Business Interruption Claim',
+            'settlement-negotiation': 'Settlement Negotiation Letter',
+            'fire-damage-claim': 'Fire Damage Claim Documentation',
+            'water-damage-claim': 'Water Damage Claim Documentation',
+            'flood-damage-claim': 'Flood Damage Claim Documentation',
+            'hurricane-windstorm-claim': 'Hurricane/Windstorm Claim Documentation',
+            'roof-damage-claim': 'Roof Damage Claim Documentation',
+            'mold-claim': 'Mold Claim Documentation',
+            'vandalism-theft-claim': 'Vandalism and Theft Claim'
+        };
+        
+        this.documentType = typeMapping[filename] || 'Professional Document';
     }
 
     setupEventListeners() {
@@ -50,11 +64,6 @@ class TopicBasedDocumentGenerator {
     }
 
     async generateDocument() {
-        if (!this.selectedDocumentType) {
-            this.showError('Please select a document type first.');
-            return;
-        }
-
         const topic = document.getElementById('claimTopic').value.trim();
         
         if (!topic) {
@@ -79,7 +88,7 @@ class TopicBasedDocumentGenerator {
                 body: JSON.stringify({
                     topic: topic,
                     formData: globalClaimInfo,
-                    documentType: this.selectedDocumentType
+                    documentType: this.documentType
                 })
             });
 
@@ -93,7 +102,6 @@ class TopicBasedDocumentGenerator {
                 throw new Error(result.error);
             }
 
-            this.documentType = result.documentType;
             this.generatedContent = result.content;
             
             // Apply watermark to the generated content
@@ -272,5 +280,5 @@ class TopicBasedDocumentGenerator {
 
 // Initialize the document generator when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    new TopicBasedDocumentGenerator();
+    new DocumentGenerator();
 });
