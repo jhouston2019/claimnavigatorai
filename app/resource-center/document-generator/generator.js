@@ -126,16 +126,15 @@ class DocumentGenerator {
         this.hideError();
 
         try {
-            const response = await fetch('/.netlify/functions/generate-document-public', {
+            const response = await fetch('/.netlify/functions/generate-document', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    content: topic,
-                    type: this.documentType,
-                    format: 'html',
-                    formData: globalClaimInfo
+                    documentType: this.getDocumentTypeSlug(),
+                    formData: globalClaimInfo,
+                    content: topic
                 })
             });
 
@@ -156,7 +155,11 @@ class DocumentGenerator {
                 console.log('Global claim info:', globalClaimInfo);
                 const watermarkedContent = window.globalClaimManager.applyWatermark(result.content, globalClaimInfo);
                 console.log('Watermarked content length:', watermarkedContent.length);
-                this.displayResults({...result, content: watermarkedContent, documentType: this.documentType});
+                this.displayResults({
+                    ...result, 
+                    content: watermarkedContent, 
+                    documentType: result.documentType || this.documentType
+                });
             } else {
                 throw new Error('Invalid response format');
             }

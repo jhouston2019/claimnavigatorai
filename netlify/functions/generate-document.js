@@ -1,383 +1,224 @@
-const OpenAI = require("openai");
+const OpenAI = require('openai');
 
-exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") {
+// Import document metadata
+const metadata = require('../../assets/data/document-metadata.json');
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+exports.handler = async (event, context) => {
+  // Handle CORS
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+      },
+      body: ''
+    };
+  }
+
+  if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
-      body: JSON.stringify({ error: "Method not allowed" }),
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ error: 'Method not allowed' }),
     };
   }
 
   try {
-    const requestData = JSON.parse(event.body || "{}");
+    const { documentType, formData, content } = JSON.parse(event.body || '{}');
     
-    // Handle both old format (documentId, title, fields) and new format (topic, formData, documentType)
-    let topic, formData, documentType;
-    
-    if (requestData.topic && requestData.formData) {
-      // New topic-based format
-      topic = requestData.topic;
-      formData = requestData.formData;
-      documentType = requestData.documentType || determineDocumentType(topic);
-    } else if (requestData.fields && requestData.title) {
-      // Old format from Document Generator
-      topic = requestData.fields.situationDetails || "General claim assistance needed";
-      formData = requestData.fields;
-      documentType = requestData.title;
-    } else {
+    if (!documentType) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: "Missing required data. Please provide either topic and formData, or title and fields." }),
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ error: 'Document type is required' }),
       };
     }
-    
-    // Map document type to proper name
-    const mappedDocumentType = mapDocumentType(documentType);
-    
-    // Build the AI prompt
-    const prompt = buildAIPrompt(topic, formData, mappedDocumentType);
 
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+    // Find document metadata
+    const doc = metadata.find((d) => d.id === documentType);
+    
+    if (!doc) {
+      return {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ error: 'Unknown document type' }),
+      };
+    }
 
+    // Build the AI prompt based on document metadata
+    const basePrompt = buildPrompt(doc, formData, content);
+    
+    // Call OpenAI API
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: 'gpt-4o-mini',
       messages: [
         {
-          role: "system",
-          content: "You are ClaimNavigatorAI, an expert insurance documentation assistant. Generate professional, ready-to-submit insurance claim documents. Use proper formatting with HTML tags for structure. Always include appropriate headers, dates, and signature blocks."
+          role: 'system',
+          content: 'You are ClaimNavigatorAI, an expert in insurance documentation. Generate professional, legally sound insurance documents with proper formatting based on the document type and metadata provided.'
         },
-        { role: "user", content: prompt },
+        {
+          role: 'user',
+          content: basePrompt
+        }
       ],
-      temperature: 0.7,
-      max_tokens: 1200,
+      max_tokens: 3000,
+      temperature: 0.6,
     });
 
-    const aiContent = completion.choices?.[0]?.message?.content || 
-      "<p>Unable to generate document at this time. Please try again.</p>";
-
-    // Apply watermark to the generated content
-    const watermarkedContent = applyWatermark(aiContent, formData);
+    const generatedContent = completion.choices[0].message.content;
 
     return {
       statusCode: 200,
       headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ 
-        documentType: mappedDocumentType,
-        content: watermarkedContent,
-        generatedAt: new Date().toISOString()
+      body: JSON.stringify({
+        success: true,
+        documentType: doc.title,
+        content: generatedContent,
+        metadata: doc
       }),
     };
-  } catch (err) {
-    console.error("AI generation error:", err);
+
+  } catch (error) {
+    console.error('Document generation error:', error);
+    
     return {
       statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
-        error: "Failed to generate document",
-        details: err.message,
+        error: 'Failed to generate document',
+        details: error.message,
       }),
     };
   }
 };
 
-function mapDocumentType(documentType) {
-  const typeMapping = {
-    // Core Claim Documents
-    'sworn-statement-proof-of-loss': 'Sworn Statement in Proof of Loss',
-    'appeal-letter': 'Appeal Letter',
-    'final-demand-payment': 'Final Demand for Payment Letter',
-    'personal-property-inventory': 'Personal Property Inventory Claim Form',
-    'claim-timeline': 'Claim Timeline / Diary',
-    'ale-reimbursement-request': 'ALE Reimbursement Request',
-    'claim-expense-tracking': 'Claim Expense Tracking Log',
-    'appraisal-demand': 'Appraisal Demand Letter',
-    'notice-of-delay': 'Notice of Delay',
-    'coverage-clarification': 'Coverage Clarification Request',
-    'first-notice-loss': 'First Notice of Loss (FNOL)',
-    'bad-faith-complaint': 'Bad Faith Complaint',
-    'follow-up-letter': 'Follow-up Letter',
-    'business-interruption-claim': 'Business Interruption Claim',
-    'settlement-negotiation': 'Settlement Negotiation Letter',
-    
-    // Damage-Specific Documents
-    'fire-damage-claim': 'Fire Damage Claim Documentation',
-    'water-damage-claim': 'Water Damage Claim Documentation',
-    'flood-damage-claim': 'Flood Damage Claim Documentation',
-    'hurricane-windstorm-claim': 'Hurricane/Windstorm Claim Documentation',
-    'roof-damage-claim': 'Roof Damage Claim Documentation',
-    'mold-claim': 'Mold Claim Documentation',
-    'vandalism-theft-claim': 'Vandalism and Theft Claim',
-    
-    // Professional Services
-    'attorney-referral': 'Attorney Referral Engagement Letter',
-    'expert-engineer-engagement': 'Expert Engineer Engagement Letter',
-    'arbitration-demand': 'Arbitration Demand Letter',
-    'mediation-request': 'Request for Mediation Letter',
-    
-    // Regulatory & Legal
-    'doi-complaint': 'Department of Insurance Complaint Letter',
-    'notice-intent-litigate': 'Notice of Intent to Litigate Letter',
-    'unfair-claims-complaint': 'Complaint for Unfair Claims Practices',
-    
-    // Commercial & Business
-    'commercial-lease-interruption': 'Commercial Lease Interruption Notice',
-    'commercial-tenant-damage': 'Commercial Tenant Damage Claim',
-    'restaurant-loss-claim': 'Restaurant Loss Claim Documentation',
-    'industrial-loss-claim': 'Industrial Loss Claim Documentation',
-    
-    // Financial & Settlement
-    'advance-payment-request': 'Request for Advance Payment Letter',
-    'withheld-depreciation-release': 'Withheld Depreciation Release Request',
-    'settlement-rejection-counteroffer': 'Settlement Rejection and Counteroffer',
-    'final-settlement-acceptance': 'Final Settlement Acceptance Letter',
-    
-    // Documentation & Evidence
-    'claim-evidence-checklist': 'Claim Evidence Checklist',
-    'photo-documentation-log': 'Evidence and Photo Documentation Log',
-    'communication-tracking': 'Communication Tracking System with Carrier',
-    'carrier-contact-log': 'Insurance Carrier Contact Log',
-    
-    // Estimates & Valuations
-    'line-item-estimate': 'Line Item Estimate Template',
-    'professional-estimate': 'Professional Estimate for Restoration',
-    'damage-valuation-report': 'Damage Valuation Report',
-    'scope-loss-summary': 'Scope of Loss Summary',
-    
-    // Property & Construction
-    'property-inspection-request': 'Property Inspection Scheduling Request',
-    'property-damage-verification': 'Property Damage Verification Statement',
-    'residential-construction-contract': 'Residential Construction Contract',
-    'temporary-housing-lease': 'Temporary Housing Lease Agreement',
-    
-    // Administrative
-    'authorization-endorse-proceeds': 'Authorization to Endorse Insurance Proceeds',
-    'authorization-release-info': 'Authorization for Release of Claim Information',
-    'check-endorsement-instructions': 'Check Endorsement Instructions Letter',
-    'mortgagee-notification': 'Mortgagee Notification Letter',
-    
-    // Rebuttals & Responses
-    'rebuttal-partial-denial': 'Rebuttal to Carrier Partial Denial of Coverage',
-    'rebuttal-wrongful-denial': 'Rebuttal to Wrongful Claim Denial',
-    'response-reservation-rights': 'Response to Reservation of Rights Letter',
-    'reserve-information-request': 'Reserve Information Request Letter',
-    
-    // Supplemental & Additional
-    'supplemental-claim-documentation': 'Supplemental Claim Documentation Letter',
-    'claim-submission-checklist': 'Property Claim Submission Checklist',
-    'claim-summary-report': 'Claim Summary Report',
-    'rom-worksheet': 'Rough Order of Magnitude (ROM) Worksheet',
-    
-    // Additional document types to ensure complete coverage
-    'personal-property-inventory': 'Personal Property Inventory Claim Form',
-    'claim-timeline': 'Claim Timeline / Diary',
-    'ale-reimbursement-request': 'ALE Reimbursement Request',
-    'claim-expense-tracking': 'Claim Expense Tracking Log',
-    'appraisal-demand': 'Appraisal Demand Letter',
-    'notice-of-delay': 'Notice of Delay',
-    'coverage-clarification': 'Coverage Clarification Request',
-    'first-notice-loss': 'First Notice of Loss (FNOL)',
-    'bad-faith-complaint': 'Bad Faith Complaint',
-    'follow-up-letter': 'Follow-up Letter',
-    'business-interruption-claim': 'Business Interruption Claim',
-    'settlement-negotiation': 'Settlement Negotiation Letter',
-    'fire-damage-claim': 'Fire Damage Claim Documentation',
-    'water-damage-claim': 'Water Damage Claim Documentation',
-    'flood-damage-claim': 'Flood Damage Claim Documentation',
-    'hurricane-windstorm-claim': 'Hurricane/Windstorm Claim Documentation',
-    'roof-damage-claim': 'Roof Damage Claim Documentation',
-    'mold-claim': 'Mold Claim Documentation',
-    'vandalism-theft-claim': 'Vandalism and Theft Claim',
-    'attorney-referral': 'Attorney Referral Engagement Letter',
-    'expert-engineer-engagement': 'Expert Engineer Engagement Letter',
-    'arbitration-demand': 'Arbitration Demand Letter',
-    'mediation-request': 'Request for Mediation Letter',
-    'doi-complaint': 'Department of Insurance Complaint Letter',
-    'notice-intent-litigate': 'Notice of Intent to Litigate Letter',
-    'unfair-claims-complaint': 'Complaint for Unfair Claims Practices',
-    'commercial-lease-interruption': 'Commercial Lease Interruption Notice',
-    'commercial-tenant-damage': 'Commercial Tenant Damage Claim',
-    'restaurant-loss-claim': 'Restaurant Loss Claim Documentation',
-    'industrial-loss-claim': 'Industrial Loss Claim Documentation',
-    'advance-payment-request': 'Request for Advance Payment Letter',
-    'withheld-depreciation-release': 'Withheld Depreciation Release Request',
-    'settlement-rejection-counteroffer': 'Settlement Rejection and Counteroffer',
-    'final-settlement-acceptance': 'Final Settlement Acceptance Letter',
-    'claim-evidence-checklist': 'Claim Evidence Checklist',
-    'photo-documentation-log': 'Evidence and Photo Documentation Log',
-    'communication-tracking': 'Communication Tracking System with Carrier',
-    'carrier-contact-log': 'Insurance Carrier Contact Log',
-    'line-item-estimate': 'Line Item Estimate Template',
-    'professional-estimate': 'Professional Estimate for Restoration',
-    'damage-valuation-report': 'Damage Valuation Report',
-    'scope-loss-summary': 'Scope of Loss Summary',
-    'property-inspection-request': 'Property Inspection Scheduling Request',
-    'property-damage-verification': 'Property Damage Verification Statement',
-    'residential-construction-contract': 'Residential Construction Contract',
-    'temporary-housing-lease': 'Temporary Housing Lease Agreement',
-    'authorization-endorse-proceeds': 'Authorization to Endorse Insurance Proceeds',
-    'authorization-release-info': 'Authorization for Release of Claim Information',
-    'check-endorsement-instructions': 'Check Endorsement Instructions Letter',
-    'mortgagee-notification': 'Mortgagee Notification Letter',
-    'rebuttal-partial-denial': 'Rebuttal to Carrier Partial Denial of Coverage',
-    'rebuttal-wrongful-denial': 'Rebuttal to Wrongful Claim Denial',
-    'response-reservation-rights': 'Response to Reservation of Rights Letter',
-    'reserve-information-request': 'Reserve Information Request Letter',
-    'supplemental-claim-documentation': 'Supplemental Claim Documentation Letter',
-    'claim-submission-checklist': 'Property Claim Submission Checklist',
-    'claim-summary-report': 'Claim Summary Report',
-    'rom-worksheet': 'Rough Order of Magnitude (ROM) Worksheet'
-  };
-  
-  return typeMapping[documentType] || documentType;
-}
-
-function determineDocumentType(topic) {
-  const topicLower = topic.toLowerCase();
-  
-  // Appeal and denial related
-  if (topicLower.includes('denied') || topicLower.includes('denial') || 
-      topicLower.includes('appeal') || topicLower.includes('underpaid') ||
-      topicLower.includes('rejected') || topicLower.includes('refused')) {
-    return "Appeal Letter";
-  }
-  
-  // Payment and settlement related
-  if (topicLower.includes('payment') || topicLower.includes('settlement') || 
-      topicLower.includes('final') || topicLower.includes('demand') ||
-      topicLower.includes('compensation') || topicLower.includes('reimbursement')) {
-    return "Final Settlement Negotiation Letter";
-  }
-  
-  // Delay and timeline issues
-  if (topicLower.includes('delay') || topicLower.includes('no response') || 
-      topicLower.includes('timeline') || topicLower.includes('exceeded') ||
-      topicLower.includes('slow') || topicLower.includes('waiting')) {
-    return "Notice of Delay";
-  }
-  
-  // Proof and documentation
-  if (topicLower.includes('proof') || topicLower.includes('sworn') || 
-      topicLower.includes('inventory') || topicLower.includes('damage list') ||
-      topicLower.includes('documentation') || topicLower.includes('evidence')) {
-    return "Proof of Loss";
-  }
-  
-  // Business interruption
-  if (topicLower.includes('business') || topicLower.includes('interruption') || 
-      topicLower.includes('income') || topicLower.includes('revenue') ||
-      topicLower.includes('commercial')) {
-    return "Business Interruption Claim Presentation";
-  }
-  
-  // Coverage questions
-  if (topicLower.includes('coverage') || topicLower.includes('exclusion') || 
-      topicLower.includes('policy') || topicLower.includes('covered') ||
-      topicLower.includes('excluded')) {
-    return "Coverage Clarification Request";
-  }
-  
-  // Appraisal and valuation
-  if (topicLower.includes('appraisal') || topicLower.includes('valuation') || 
-      topicLower.includes('dispute') || topicLower.includes('disagreement') ||
-      topicLower.includes('value') || topicLower.includes('estimate')) {
-    return "Appraisal Demand";
-  }
-  
-  // Initial claim filing
-  if (topicLower.includes('new claim') || topicLower.includes('first time') || 
-      topicLower.includes('initial') || topicLower.includes('report') ||
-      topicLower.includes('file claim')) {
-    return "Notice of Claim";
-  }
-  
-  // Bad faith
-  if (topicLower.includes('bad faith') || topicLower.includes('unfair') || 
-      topicLower.includes('deceptive') || topicLower.includes('malicious') ||
-      topicLower.includes('intentional')) {
-    return "Bad Faith Letter";
-  }
-  
-  // Follow-up
-  if (topicLower.includes('follow up') || topicLower.includes('status') || 
-      topicLower.includes('update') || topicLower.includes('check') ||
-      topicLower.includes('progress')) {
-    return "Follow-up Letter";
-  }
-  
-  // Default to general appeal letter
-  return "Appeal Letter";
-}
-
-function applyWatermark(content, claimInfo) {
-  if (!claimInfo || Object.keys(claimInfo).length === 0) {
-    return content;
-  }
-
-  const today = new Date().toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+function buildPrompt(doc, formData, userContent) {
+  const today = new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   });
 
-  const watermarkHeader = `
-<div style="border: 2px solid #1e3a8a; background: #f0f4ff; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: Arial, sans-serif;">
-    <div style="text-align: center; margin-bottom: 10px;">
-        <strong style="color: #1e3a8a; font-size: 14px;">CLAIM NAVIGATOR AI - GENERATED DOCUMENT</strong>
-    </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; color: #374151;">
-        ${claimInfo.name ? `<div><strong>Policyholder:</strong> ${claimInfo.name}</div>` : ''}
-        ${claimInfo.policyNumber ? `<div><strong>Policy #:</strong> ${claimInfo.policyNumber}</div>` : ''}
-        ${claimInfo.claimNumber ? `<div><strong>Claim #:</strong> ${claimInfo.claimNumber}</div>` : ''}
-        ${claimInfo.dateOfLoss ? `<div><strong>Date of Loss:</strong> ${claimInfo.dateOfLoss}</div>` : ''}
-        ${claimInfo.insuranceCompany ? `<div><strong>Insurance Co:</strong> ${claimInfo.insuranceCompany}</div>` : ''}
-        ${claimInfo.email ? `<div><strong>Email:</strong> ${claimInfo.email}</div>` : ''}
-        ${claimInfo.phone ? `<div><strong>Phone:</strong> ${claimInfo.phone}</div>` : ''}
-    </div>
-    <div style="text-align: center; margin-top: 10px; font-size: 11px; color: #6b7280;">
-        Generated on ${today} by ClaimNavigatorAI | ${claimInfo.address || ''}
-    </div>
-</div>
+  let prompt = `Generate a professional ${doc.title} (${doc.category}) with the following specifications:
+
+DOCUMENT METADATA:
+- Type: ${doc.title}
+- Category: ${doc.category}
+- Format: ${doc.format}
+${doc.tone ? `- Tone: ${doc.tone}` : ''}
+${doc.sections ? `- Sections: ${doc.sections.join(', ')}` : ''}
+${doc.fields ? `- Fields: ${doc.fields.join(', ')}` : ''}
+${doc.columns ? `- Columns: ${doc.columns.join(', ')}` : ''}
+${doc.items ? `- Checklist Items: ${doc.items.join(', ')}` : ''}
+
+CLAIM INFORMATION:
+- Policyholder: ${formData?.name || 'Not provided'}
+- Policy Number: ${formData?.policyNumber || 'Not provided'}
+- Claim Number: ${formData?.claimNumber || 'Not provided'}
+- Date of Loss: ${formData?.dateOfLoss || 'Not provided'}
+- Insurance Company: ${formData?.insuranceCompany || 'Not provided'}
+- Email: ${formData?.email || 'Not provided'}
+- Phone: ${formData?.phone || 'Not provided'}
+- Address: ${formData?.address || 'Not provided'}
+
+USER SITUATION:
+${userContent || 'General claim assistance needed'}
+
+FORMATTING REQUIREMENTS:
 `;
 
-  return watermarkHeader + content;
-}
+  // Add specific formatting instructions based on document format
+  switch (doc.format) {
+    case 'narrative':
+      prompt += `- Format as a formal letter with proper salutation and closing
+- Use paragraph structure with clear sections
+- Include professional tone appropriate for ${doc.tone || 'professional'} communication
+- Add proper letterhead structure with date (${today})
+- Include signature block`;
+      break;
+      
+    case 'fields':
+      prompt += `- Format as a structured form with "Field: Value" pairs
+- Use clear labels for each field
+- Organize information in logical groups
+- Include all required fields from the metadata
+- Use professional formatting with clear separation`;
+      break;
+      
+    case 'sectioned':
+      prompt += `- Format as a structured report with clear section headings
+- Use <h2> tags for section headers
+- Include all sections from metadata: ${doc.sections?.join(', ')}
+- Use bullet points or numbered lists where appropriate
+- Maintain professional report formatting`;
+      break;
+      
+    case 'table':
+      prompt += `- Format as a table with proper headers
+- Use <table>, <tr>, <th>, <td> HTML tags
+- Include column headers: ${doc.columns?.join(', ')}
+- Add sample data rows to demonstrate format
+- Use professional table styling`;
+      break;
+      
+    case 'checklist':
+      prompt += `- Format as a bulleted checklist
+- Use checkbox symbols (☐) for each item
+- Include all items from metadata: ${doc.items?.join(', ')}
+- Organize in logical groups
+- Use clear, actionable language`;
+      break;
+      
+    case 'contract':
+      prompt += `- Format as a formal agreement with numbered clauses
+- Use professional contract language
+- Include proper legal structure
+- Add signature blocks for all parties
+- Use formal legal formatting`;
+      break;
+      
+    default:
+      prompt += `- Use professional document formatting
+- Include appropriate headers and structure
+- Maintain consistent formatting throughout`;
+  }
 
-function buildAIPrompt(topic, formData, documentType) {
-  const today = new Date().toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
-  
-  const fieldSummary = Object.entries(formData)
-    .filter(([key, val]) => val && val.toString().trim() !== '')
-    .map(([key, val]) => `${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}: ${val}`)
-    .join("\n");
+  prompt += `
 
-  return `You are ClaimNavigatorAI, an insurance documentation assistant.
+CRITICAL REQUIREMENTS:
+1. Generate ONLY the document content - NO CSS styling, NO template instructions, NO placeholder text
+2. Include claim information in a professional header format at the top
+3. Use clean, professional formatting with proper document structure
+4. Make it ready-to-submit and professional
+5. Do NOT include any instructional text, CSS, or template placeholders
+6. Do NOT include "Instructions for Use" or any template guidance
+7. Do NOT include CSS styling or HTML head elements
+8. Focus ONLY on the actual document content that would be submitted
+9. Replace ALL placeholders with actual information from the claim data provided
+10. Generate a complete, professional document ready for immediate submission
 
-The user described this claim situation:
-"${topic}"
-
-Based on this situation, I need you to generate a professional ${documentType} document.
-
-Use this claim information:
-${fieldSummary ? `\nClaim Information:\n${fieldSummary}\n` : ''}
-
-Requirements:
-1. Format as a complete, ready-to-submit insurance claim document
-2. Include proper letterhead structure with date (${today})
-3. Use professional, assertive but polite tone
-4. Include all relevant claim details from the information provided
-5. Add appropriate legal language and compliance phrasing
-6. Include a proper signature block
-7. Use HTML formatting with <h2>, <p>, <strong>, and <br> tags for structure
-8. Make it specific to the user's situation described in the topic
-9. Ensure the document is comprehensive and professional
+Format as clean HTML with proper structure but NO styling, NO instructions, NO placeholders.
 
 Generate the complete document now:`;
+
+  return prompt;
 }
