@@ -12,11 +12,11 @@ class DocumentGenerator {
     }
 
     determineDocumentType() {
-        // Get document type from page title or URL
-        const path = window.location.pathname;
-        const filename = path.split('/').pop().replace('.html', '');
+        // Get document type from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const documentTypeParam = urlParams.get('type');
         
-        // Map filename to document type
+        // Map parameter to document type
         const typeMapping = {
             'appeal-letter': 'Appeal Letter',
             'sworn-statement-proof-of-loss': 'Sworn Statement in Proof of Loss',
@@ -39,10 +39,49 @@ class DocumentGenerator {
             'hurricane-windstorm-claim': 'Hurricane/Windstorm Claim Documentation',
             'roof-damage-claim': 'Roof Damage Claim Documentation',
             'mold-claim': 'Mold Claim Documentation',
-            'vandalism-theft-claim': 'Vandalism and Theft Claim'
+            'vandalism-theft-claim': 'Vandalism and Theft Claim',
+            'attorney-referral': 'Attorney Referral Engagement Letter',
+            'expert-engineer-engagement': 'Expert Engineer Engagement Letter',
+            'arbitration-demand': 'Arbitration Demand Letter',
+            'mediation-request': 'Request for Mediation Letter',
+            'doi-complaint': 'Department of Insurance Complaint Letter',
+            'notice-intent-litigate': 'Notice of Intent to Litigate Letter',
+            'unfair-claims-complaint': 'Complaint for Unfair Claims Practices',
+            'commercial-lease-interruption': 'Commercial Lease Interruption Notice',
+            'commercial-tenant-damage': 'Commercial Tenant Damage Claim',
+            'restaurant-loss-claim': 'Restaurant Loss Claim Documentation',
+            'industrial-loss-claim': 'Industrial Loss Claim Documentation',
+            'advance-payment-request': 'Request for Advance Payment Letter',
+            'withheld-depreciation-release': 'Withheld Depreciation Release Request',
+            'settlement-rejection-counteroffer': 'Settlement Rejection and Counteroffer',
+            'final-settlement-acceptance': 'Final Settlement Acceptance Letter',
+            'claim-evidence-checklist': 'Claim Evidence Checklist',
+            'photo-documentation-log': 'Evidence and Photo Documentation Log',
+            'communication-tracking': 'Communication Tracking System with Carrier',
+            'carrier-contact-log': 'Insurance Carrier Contact Log',
+            'line-item-estimate': 'Line Item Estimate Template',
+            'professional-estimate': 'Professional Estimate for Restoration',
+            'damage-valuation-report': 'Damage Valuation Report',
+            'scope-loss-summary': 'Scope of Loss Summary',
+            'property-inspection-request': 'Property Inspection Scheduling Request',
+            'property-damage-verification': 'Property Damage Verification Statement',
+            'residential-construction-contract': 'Residential Construction Contract',
+            'temporary-housing-lease': 'Temporary Housing Lease Agreement',
+            'authorization-endorse-proceeds': 'Authorization to Endorse Insurance Proceeds',
+            'authorization-release-info': 'Authorization for Release of Claim Information',
+            'check-endorsement-instructions': 'Check Endorsement Instructions Letter',
+            'mortgagee-notification': 'Mortgagee Notification Letter',
+            'rebuttal-partial-denial': 'Rebuttal to Carrier Partial Denial of Coverage',
+            'rebuttal-wrongful-denial': 'Rebuttal to Wrongful Claim Denial',
+            'response-reservation-rights': 'Response to Reservation of Rights Letter',
+            'reserve-information-request': 'Reserve Information Request Letter',
+            'supplemental-claim-documentation': 'Supplemental Claim Documentation Letter',
+            'claim-submission-checklist': 'Property Claim Submission Checklist',
+            'claim-summary-report': 'Claim Summary Report',
+            'rom-worksheet': 'Rough Order of Magnitude (ROM) Worksheet'
         };
         
-        this.documentType = typeMapping[filename] || 'Professional Document';
+        this.documentType = typeMapping[documentTypeParam] || 'Professional Document';
     }
 
     setupEventListeners() {
