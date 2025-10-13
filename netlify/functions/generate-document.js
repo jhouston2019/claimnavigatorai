@@ -243,11 +243,14 @@ async function processTemplateDocument(doc, formData, userContent) {
     // Replace placeholders in the template
     let processedContent = templateContent;
     
-    // Replace standard placeholders
+    // Replace standard placeholders (both {{PLACEHOLDER}} and {{Placeholder Name}} formats)
     Object.keys(placeholderMap).forEach(placeholder => {
       const regex = new RegExp(`{{${placeholder}}}`, 'g');
       processedContent = processedContent.replace(regex, placeholderMap[placeholder]);
     });
+    
+    // Handle any remaining empty placeholders
+    processedContent = processedContent.replace(/{{[^}]+}}/g, 'Not provided');
     
     // If there's a NARRATIVE_SECTION placeholder, use AI to fill it
     if (processedContent.includes('{{NARRATIVE_SECTION}}')) {
@@ -276,6 +279,18 @@ function createPlaceholderMap(formData, userContent) {
     'ADDRESS': formData.address || 'Not provided',
     'PHONE': formData.phone || 'Not provided',
     'EMAIL': formData.email || 'Not provided',
+    
+    // Proof of Loss specific fields
+    'Insured Name': formData.name || 'Not provided',
+    'Mailing Address': formData.address || 'Not provided',
+    'Policy Number': formData.policyNumber || 'Not provided',
+    'Claim Number': formData.claimNumber || 'Not provided',
+    'Date of Loss': formData.dateOfLoss || 'Not provided',
+    'Cause of Loss': formData.causeOfLoss || 'Not provided',
+    'Description of Damages': formData.damageDescription || userContent || 'Not provided',
+    'Total Claimed Amount': formData.totalClaimedAmount || formData.totalClaimAmount || 'Not provided',
+    'Adjuster Name': formData.adjusterName || 'Not provided',
+    'Insurer Name': formData.insuranceCompany || 'Not provided',
     
     // Current date/time
     'SIGNATURE_DATE': today.toLocaleDateString('en-US'),
