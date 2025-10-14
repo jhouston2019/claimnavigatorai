@@ -448,6 +448,15 @@
         const situationDetails = document.getElementById('situation-details');
         situationInfo.style.display = 'block';
         situationDetails.textContent = decodeURIComponent(situation);
+        
+        // Update the header title to show the specific situation
+        const headerTitle = document.querySelector('.letter-generator-header h1');
+        if (headerTitle) {
+          headerTitle.textContent = `Generate ${decodeURIComponent(situation)} Letter`;
+        }
+        
+        // Update the page title
+        document.title = `${decodeURIComponent(situation)} Letter Generator - ClaimNavigatorAI`;
       }
     }
 
