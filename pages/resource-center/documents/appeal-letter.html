@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appeal Letter - ClaimNavigatorAI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --primary: #1e40af;
+      --accent: #3b82f6;
+      --background: #f9fafb;
+      --border: #e5e7eb;
+      --text-dark: #0f172a;
+    }
+
+    body { font-family: 'Inter', sans-serif; background-color: var(--background); }
+  </style>
+</head>
+
+<body class="min-h-screen">
+  <!-- Header -->
+  <header class="bg-[#0f172a] text-white p-4">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <h1 class="text-lg font-semibold">ClaimNavigatorAI – Resource Center</h1>
+      <a href="/pages/resource-center/index.html" class="text-sm underline hover:text-blue-300">← All Tools</a>
+    </div>
+  </header>
+
+  <!-- Breadcrumb Navigation -->
+  <nav class="text-sm text-gray-600 mt-6 mb-4 px-4">
+    <a href="/pages/resource-center/index.html" class="hover:underline text-blue-600">Resource Center</a> ›
+    <a href="/pages/resource-center/quick-start.html" class="hover:underline text-blue-600">Quick Start</a> ›
+    <span class="text-gray-700 font-medium">Appeal Letter</span>
+  </nav>
+
+  <!-- Return Link -->
+  <div class="text-right px-4 mb-6">
+    <a href="/pages/resource-center/quick-start.html" class="text-sm text-blue-600 hover:underline">← Back to Quick Start Guide</a>
+  </div>
+
+  <!-- Context Banner -->
+  <section class="rounded-xl p-4 mb-6 text-center border max-w-6xl mx-auto" 
+           style="background: #eff6ff; border-color: #bfdbfe; color: #1e3a8a;">
+    <p class="text-sm">
+      This tool is part of the <strong>"My claim was just denied"</strong> Quick Start path.
+    </p>
+  </section>
+
+  <!-- Main Content -->
+  <main class="max-w-6xl mx-auto bg-white border border-gray-200 rounded-2xl p-8 shadow-sm mb-12">
+    <div class="card">
+      <h2>Appeal Letter Generator</h2>
+      <p>Generate a professional appeal letter to challenge your claim denial.</p>
+    </div>
+    
+    <div class="card">
+      <h3>Claim Information</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <input type="text" id="claimantName" placeholder="Your Name" />
+        <input type="text" id="policyNumber" placeholder="Policy Number" />
+        <input type="text" id="claimNumber" placeholder="Claim Number" />
+        <input type="date" id="dateOfLoss" placeholder="Date of Loss" />
+        <input type="text" id="insurerName" placeholder="Insurance Company" />
+        <input type="text" id="adjusterName" placeholder="Adjuster Name" />
+        <input type="email" id="email" placeholder="Your Email" />
+        <input type="text" id="claimantAddress" placeholder="Your Address" />
+      </div>
+    </div>
+    
+    <div class="card">
+      <h3>Denial Details</h3>
+      <textarea id="denialReason" placeholder="Paste the denial reason or letter here…" style="width:100%;min-height:120px;margin-bottom:12px"></textarea>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" id="generate">Generate Appeal Letter</button>
+        <button class="btn" id="export">Export PDF</button>
+      </div>
+      <div id="output" class="card" style="margin-top:12px"></div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#0f172a] text-white p-6 mt-16">
+    <div class="max-w-6xl mx-auto text-center">
+      <p class="text-sm text-gray-300">
+        © 2025 ClaimNavigatorAI. All rights reserved. |
+        <a href="/privacy.html" class="underline hover:text-blue-300">Privacy Policy</a> |
+        <a href="/terms.html" class="underline hover:text-blue-300">Terms of Service</a>
+      </p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import {qs,on} from '/app/assets/js/ui-helpers.js';
+    import { callAI, createDoc } from '/app/assets/js/api-client.js';
+    
+    on(qs('#generate'),'click', async ()=>{
+      const denialReason = qs('#denialReason').value.trim();
+      if(!denialReason) return alert('Please enter the denial reason.');
+      
+      // Collect claim information
+      const claimInfo = {
+        claimantName: qs('#claimantName').value.trim(),
+        policyNumber: qs('#policyNumber').value.trim(),
+        claimNumber: qs('#claimNumber').value.trim(),
+        dateOfLoss: qs('#dateOfLoss').value,
+        insurerName: qs('#insurerName').value.trim(),
+        adjusterName: qs('#adjusterName').value.trim(),
+        email: qs('#email').value.trim(),
+        claimantAddress: qs('#claimantAddress').value.trim()
+      };
+      
+      qs('#output').innerHTML='Generating appeal letter…';
+      try{ 
+        const r=await callAI({inputText:denialReason,type:'appeal-letter',claimInfo:claimInfo}); 
+        const response = r.response||r.analysis||JSON.stringify(r)||'(no content)';
+        qs('#output').innerHTML = response;
+      }
+      catch(e){ qs('#output').innerHTML='<div style="color:#ef4444">'+e.message+'</div>'; }
+    });
+    
+    on(qs('#export'),'click', async ()=>{
+      const html=qs('#output').innerHTML.trim(); if(!html) return alert('Generate letter first.');
+      const r=await createDoc({content:html,format:'pdf',type:'appeal-letter',filename:'appeal_'+Date.now()}); location.href=r.url||r.downloadUrl;
+    });
+  </script>
+</body>
+</html>

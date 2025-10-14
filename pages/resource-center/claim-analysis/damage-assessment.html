@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Damage Assessment - ClaimNavigatorAI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --primary: #1e40af;
+      --accent: #3b82f6;
+      --background: #f9fafb;
+      --border: #e5e7eb;
+      --text-dark: #0f172a;
+    }
+
+    body { font-family: 'Inter', sans-serif; background-color: var(--background); }
+  </style>
+</head>
+
+<body class="min-h-screen">
+  <!-- Header -->
+  <header class="bg-[#0f172a] text-white p-4">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <h1 class="text-lg font-semibold">ClaimNavigatorAI – Resource Center</h1>
+      <a href="/pages/resource-center/index.html" class="text-sm underline hover:text-blue-300">← All Tools</a>
+    </div>
+  </header>
+
+  <!-- Breadcrumb Navigation -->
+  <nav class="text-sm text-gray-600 mt-6 mb-4 px-4">
+    <a href="/pages/resource-center/index.html" class="hover:underline text-blue-600">Resource Center</a> ›
+    <a href="/pages/resource-center/quick-start.html" class="hover:underline text-blue-600">Quick Start</a> ›
+    <span class="text-gray-700 font-medium">Damage Assessment</span>
+  </nav>
+
+  <!-- Return Link -->
+  <div class="text-right px-4 mb-6">
+    <a href="/pages/resource-center/quick-start.html" class="text-sm text-blue-600 hover:underline">← Back to Quick Start Guide</a>
+  </div>
+
+  <!-- Context Banner -->
+  <section class="rounded-xl p-4 mb-6 text-center border max-w-6xl mx-auto" 
+           style="background: #fefce8; border-color: #fef08a; color: #78350f;">
+    <p class="text-sm">
+      This tool is part of the <strong>"I got a lowball offer"</strong> Quick Start path.
+    </p>
+  </section>
+
+  <!-- Main Content -->
+  <main class="max-w-6xl mx-auto bg-white border border-gray-200 rounded-2xl p-8 shadow-sm mb-12">
+    <div class="card">
+      <h2>Damage Assessment Tool</h2>
+      <p>Comprehensive damage assessment to counter lowball offers with detailed documentation.</p>
+    </div>
+    
+    <div class="card">
+      <h3>Property Information</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <input type="text" id="propertyAddress" placeholder="Property Address" />
+        <input type="text" id="propertyType" placeholder="Property Type (Residential/Commercial)" />
+        <input type="text" id="yearBuilt" placeholder="Year Built" />
+        <input type="text" id="squareFootage" placeholder="Square Footage" />
+        <input type="text" id="dateOfLoss" placeholder="Date of Loss" type="date" />
+        <input type="text" id="causeOfLoss" placeholder="Cause of Loss" />
+      </div>
+    </div>
+    
+    <div class="card">
+      <h3>Damage Details</h3>
+      <textarea id="damageDescription" placeholder="Describe the damage in detail…" style="width:100%;min-height:120px;margin-bottom:12px"></textarea>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" id="assess">Assess Damage</button>
+        <button class="btn" id="export">Export Report</button>
+      </div>
+      <div id="output" class="card" style="margin-top:12px"></div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#0f172a] text-white p-6 mt-16">
+    <div class="max-w-6xl mx-auto text-center">
+      <p class="text-sm text-gray-300">
+        © 2025 ClaimNavigatorAI. All rights reserved. |
+        <a href="/privacy.html" class="underline hover:text-blue-300">Privacy Policy</a> |
+        <a href="/terms.html" class="underline hover:text-blue-300">Terms of Service</a>
+      </p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import {qs,on} from '/app/assets/js/ui-helpers.js';
+    import { callAI, createDoc } from '/app/assets/js/api-client.js';
+    
+    on(qs('#assess'),'click', async ()=>{
+      const damageDescription = qs('#damageDescription').value.trim();
+      if(!damageDescription) return alert('Please describe the damage.');
+      
+      // Collect property information
+      const propertyInfo = {
+        propertyAddress: qs('#propertyAddress').value.trim(),
+        propertyType: qs('#propertyType').value.trim(),
+        yearBuilt: qs('#yearBuilt').value.trim(),
+        squareFootage: qs('#squareFootage').value.trim(),
+        dateOfLoss: qs('#dateOfLoss').value,
+        causeOfLoss: qs('#causeOfLoss').value.trim()
+      };
+      
+      qs('#output').innerHTML='Analyzing damage…';
+      try{ 
+        const r=await callAI({inputText:damageDescription,type:'damage-assessment',propertyInfo:propertyInfo}); 
+        const response = r.response||r.analysis||JSON.stringify(r)||'(no content)';
+        qs('#output').innerHTML = response;
+      }
+      catch(e){ qs('#output').innerHTML='<div style="color:#ef4444">'+e.message+'</div>'; }
+    });
+    
+    on(qs('#export'),'click', async ()=>{
+      const html=qs('#output').innerHTML.trim(); if(!html) return alert('Assess damage first.');
+      const r=await createDoc({content:html,format:'pdf',type:'damage-assessment',filename:'damage_assessment_'+Date.now()}); location.href=r.url||r.downloadUrl;
+    });
+  </script>
+</body>
+</html>
