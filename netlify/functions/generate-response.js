@@ -1,4 +1,4 @@
-import { json, readBody, openaiChat } from './_utils.js';
+import { json, readBody, openaiChat } from './utils-helper.js';
 export default async (req)=> {
   const body = await readBody(req);
   const text = body.inputText || '';
