@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Negotiation Scripts - ClaimNavigatorAI</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+    button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .result { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <h1>Negotiation Scripts Integration Test</h1>
+  
+  <div class="test-section">
+    <h3>Test 1: Function Endpoint Check</h3>
+    <button onclick="testEndpoint()">Test Function Endpoint</button>
+    <div id="endpoint-result" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>Test 2: Generate Sample Script</h3>
+    <button onclick="testGeneration()">Generate Test Script</button>
+    <div id="generation-result" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h3>Test 3: Frontend Form Integration</h3>
+    <button onclick="window.open('/public/negotiation/index.html', '_blank')">Open Negotiation Scripts Page</button>
+    <p>This will open the full negotiation scripts page in a new tab.</p>
+  </div>
+
+  <script>
+    async function testEndpoint() {
+      const resultDiv = document.getElementById('endpoint-result');
+      resultDiv.textContent = 'Testing endpoint...';
+      
+      try {
+        const response = await fetch('/.netlify/functions/generate-script', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'Test User',
+            policy: 'TEST123',
+            claim: 'CLM456',
+            negotiationGoal: 'Increase Low Offer',
+            tone: 'Polite & Professional',
+            insurerOffer: 10000,
+            contractorEstimate: 15000,
+            coverageBasis: 'RCV'
+          })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          resultDiv.textContent = `✅ Endpoint working! Response: ${data.script ? 'Script generated' : 'No script'}`;
+        } else {
+          resultDiv.textContent = `❌ Endpoint error: ${response.status} ${response.statusText}`;
+        }
+      } catch (error) {
+        resultDiv.textContent = `❌ Network error: ${error.message}`;
+      }
+    }
+
+    async function testGeneration() {
+      const resultDiv = document.getElementById('generation-result');
+      resultDiv.textContent = 'Generating test script...';
+      
+      try {
+        const response = await fetch('/.netlify/functions/generate-script', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'John Smith',
+            policy: 'POL-2024-001',
+            claim: 'CLM-2024-001',
+            dateOfLoss: '2024-01-15',
+            insurer: 'Test Insurance Co',
+            phone: '555-123-4567',
+            email: 'john@example.com',
+            address: '123 Main St, City, State',
+            insurerOffer: 8500,
+            contractorEstimate: 12500,
+            coverageBasis: 'RCV',
+            negotiationGoal: 'Increase Low Offer',
+            tone: 'Polite & Professional'
+          })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          resultDiv.innerHTML = `<strong>✅ Script Generated Successfully!</strong><br><br><pre>${data.script || 'No script content'}</pre>`;
+        } else {
+          resultDiv.textContent = `❌ Generation failed: ${response.status} ${response.statusText}`;
+        }
+      } catch (error) {
+        resultDiv.textContent = `❌ Generation error: ${error.message}`;
+      }
+    }
+  </script>
+</body>
+</html>
