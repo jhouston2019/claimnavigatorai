@@ -144,3 +144,4 @@ $$ language plpgsql security definer;
 
 -- Grant execute permission on the function
 grant execute on function get_evidence_by_category(uuid, text) to authenticated;
+
