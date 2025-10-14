@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Generator - ClaimNavigatorAI</title>
+    <meta name="description" content="Generate professional insurance claim documents with AI assistance">
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        .document-generator {
+            max-width: 100%; /* Full width */
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f9fafb; /* Light gray background */
+        }
+        
+        .document-type-selector {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .document-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .document-type-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            color: #1e40af;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .document-type-card:hover {
+            border-color: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15);
+        }
+        
+        .document-type-card.selected {
+            border-color: #1e40af;
+            background: #f0f4ff;
+            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.2);
+        }
+        
+        .document-type-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 8px 0 4px 0;
+            color: #1e3a8a;
+        }
+        
+        .document-type-card p {
+            color: #6b7280;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            margin: 0;
+        }
+        
+        .form-container {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: #000000;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #1e3a8a;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: #000000;
+            background: #ffffff;
+            transition: border-color 0.2s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .btn-primary {
+            background: #1e3a8a;
+            color: white;
+            border: 2px solid #1e3a8a;
+            border-radius: 0.5rem;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            background: #1e40af;
+            border-color: #1e40af;
+        }
+        
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #6b7280;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .generate-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+        
+        .generate-btn:hover {
+            background: #2563eb;
+        }
+        
+        .generate-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .result-container {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            display: none;
+        }
+        
+        .result-container.show {
+            display: block;
+        }
+        
+        .result-content {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        
+        .download-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .download-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .download-btn:hover {
+            background: #059669;
+        }
+        
+        .download-btn.secondary {
+            background: #6b7280;
+        }
+        
+        .download-btn.secondary:hover {
+            background: #4b5563;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .document-generator {
+                padding: 1rem;
+            }
+            
+            .document-type-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .download-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body class="main-grid">
+    <!-- Navigation Header -->
+    <header class="header">
+        <div class="bar container">
+            <div class="brand">
+                <div class="logo"></div>
+                <div>Document Generator</div>
+            </div>
+            <nav class="nav">
+                <a href="/app/response-center.html">← Resource Center</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="document-generator">
+        <div class="text-center mb-4">
+            <h1>📄 Document Generator</h1>
+            <p>Generate professional insurance claim documents with AI assistance</p>
+        </div>
+
+        <!-- Document Type Selection -->
+        <div class="document-type-selector">
+            <h2>Select Document Type</h2>
+            <p>Choose the type of document you need to generate for your claim.</p>
+            
+            <div class="document-type-grid">
+                <!-- Core Documents -->
+                <div class="document-type-card" data-type="proof-of-loss">
+                    <h3>📄 Proof of Loss</h3>
+                    <p>Sworn statement of damages</p>
+                </div>
+                
+                <div class="document-type-card" data-type="appeal-letter">
+                    <h3>📝 Appeal Letter</h3>
+                    <p>Denied/underpaid? Appeal</p>
+                </div>
+                
+                <div class="document-type-card" data-type="demand-letter">
+                    <h3>⚖️ Demand Letter</h3>
+                    <p>Formal payment request</p>
+                </div>
+                
+                <div class="document-type-card" data-type="damage-inventory">
+                    <h3>📋 Damage Inventory</h3>
+                    <p>Line-item list</p>
+                </div>
+                
+                <div class="document-type-card" data-type="claim-timeline">
+                    <h3>📅 Claim Timeline / Diary</h3>
+                    <p>Chronological log</p>
+                </div>
+                
+                <div class="document-type-card" data-type="repair-replace">
+                    <h3>🔧 Repair vs Replace</h3>
+                    <p>Cost worksheet</p>
+                </div>
+                
+                <div class="document-type-card" data-type="out-of-pocket">
+                    <h3>💰 Out-of-Pocket Log</h3>
+                    <p>ALE & expenses</p>
+                </div>
+                
+                <div class="document-type-card" data-type="appraisal-demand">
+                    <h3>⚖️ Appraisal Demand</h3>
+                    <p>Invoke appraisal clause</p>
+                </div>
+                
+                <div class="document-type-card" data-type="notice-of-delay">
+                    <h3>⏰ Notice of Delay</h3>
+                    <p>Timelines exceeded</p>
+                </div>
+                
+                <div class="document-type-card" data-type="coverage-clarification">
+                    <h3>❓ Coverage Clarification</h3>
+                    <p>Ask insurer to interpret</p>
+                </div>
+                
+                <!-- Support Documents -->
+                <div class="document-type-card" data-type="notice-of-claim">
+                    <h3>📢 Notice of Claim</h3>
+                    <p>Initial loss report</p>
+                </div>
+                
+                <div class="document-type-card" data-type="rom-estimate">
+                    <h3>📊 ROM Estimate Report</h3>
+                    <p>High-level cost range</p>
+                </div>
+                
+                <div class="document-type-card" data-type="photograph-log">
+                    <h3>📸 Photograph Log</h3>
+                    <p>Captions & descriptions</p>
+                </div>
+                
+                <div class="document-type-card" data-type="document-index">
+                    <h3>📑 Document Index</h3>
+                    <p>Auto-generated list</p>
+                </div>
+                
+                <div class="document-type-card" data-type="comparative-estimates">
+                    <h3>📊 Comparative Estimates</h3>
+                    <p>Side-by-side</p>
+                </div>
+                
+                <div class="document-type-card" data-type="settlement-sheet">
+                    <h3>📋 Settlement Sheet</h3>
+                    <p>Offer vs value</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Form -->
+        <div class="form-container" id="formContainer" style="display: none;">
+            <h2 id="formTitle">Document Information</h2>
+            <p id="formDescription">Please provide the details for your document.</p>
+            
+            <form id="documentForm">
+                <div class="form-group">
+                    <label for="claimantName">Your Name</label>
+                    <input type="text" id="claimantName" name="claimantName" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="claimantAddress">Your Address</label>
+                    <textarea id="claimantAddress" name="claimantAddress" class="form-control" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="insurerName">Insurance Company</label>
+                    <input type="text" id="insurerName" name="insurerName" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="policyNumber">Policy Number</label>
+                    <input type="text" id="policyNumber" name="policyNumber" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="claimNumber">Claim Number</label>
+                    <input type="text" id="claimNumber" name="claimNumber" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="dateOfLoss">Date of Loss</label>
+                    <input type="date" id="dateOfLoss" name="dateOfLoss" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="(555) 123-4567">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="your.email@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="situationDetails">Situation Details</label>
+                    <textarea id="situationDetails" name="situationDetails" class="form-control" rows="4" placeholder="Describe your specific situation and what you need help with..." required></textarea>
+                </div>
+                
+                <button type="submit" class="btn-primary" id="generateBtn">
+                    Generate Document
+                </button>
+            </form>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading" id="loadingState">
+            <div class="spinner"></div>
+            <p>Generating your document...</p>
+        </div>
+
+        <!-- Results -->
+        <div class="result-container" id="resultContainer">
+            <h3>Generated Document</h3>
+            <div class="result-content" id="resultContent"></div>
+            <div class="download-buttons">
+                <button class="download-btn" id="downloadPdfBtn">
+                    📄 Download PDF
+                </button>
+                <button class="download-btn secondary" id="copyTextBtn">
+                    📋 Copy Text
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        class DocumentGenerator {
+            constructor() {
+                this.selectedType = null;
+                this.generatedContent = null;
+                this.init();
+            }
+
+            init() {
+                this.setupDocumentTypeSelection();
+                this.setupFormSubmission();
+                this.setupDownloadButtons();
+                this.handleUrlParameters();
+            }
+
+            handleUrlParameters() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const type = urlParams.get('type');
+                
+                console.log('URL Parameters:', window.location.search);
+                console.log('Document Type from URL:', type);
+                
+                if (type) {
+                    // Map document types from advisory page
+                    const typeMapping = {
+                        'Proof of Loss': 'proof-of-loss',
+                        'Appeal Letter': 'appeal-letter',
+                        'Demand Letter': 'demand-letter',
+                        'Damage Inventory': 'damage-inventory',
+                        'Claim Timeline / Diary': 'claim-timeline',
+                        'Repair vs Replace': 'repair-replace',
+                        'Out-of-Pocket Log': 'out-of-pocket',
+                        'Appraisal Demand': 'appraisal-demand',
+                        'Notice of Delay': 'notice-of-delay',
+                        'Notice of Delay Complaint': 'notice-of-delay',
+                        'Coverage Clarification': 'coverage-clarification',
+                        'Coverage Clarification Request': 'coverage-clarification',
+                        'Notice of Claim': 'notice-of-claim',
+                        'ROM Estimate Report': 'rom-estimate',
+                        'Photograph Log': 'photograph-log',
+                        'Document Index': 'document-index',
+                        'Comparative Estimates': 'comparative-estimates',
+                        'Settlement Sheet': 'settlement-sheet'
+                    };
+                    
+                    const mappedType = typeMapping[type] || type.toLowerCase().replace(/\s+/g, '-');
+                    console.log('Mapped Type:', mappedType);
+                    
+                    const card = document.querySelector(`[data-type="${mappedType}"]`);
+                    console.log('Found Card:', card);
+                    
+                    if (card) {
+                        console.log('Selecting document type:', mappedType);
+                        this.selectDocumentType(card);
+                    } else {
+                        console.error('No card found for type:', mappedType);
+                        console.log('Available cards:', document.querySelectorAll('.document-type-card'));
+                    }
+                }
+            }
+
+            setupDocumentTypeSelection() {
+                const cards = document.querySelectorAll('.document-type-card');
+                
+                cards.forEach(card => {
+                    card.addEventListener('click', () => {
+                        this.selectDocumentType(card);
+                    });
+                });
+            }
+
+            selectDocumentType(card) {
+                console.log('Selecting document type card:', card);
+                console.log('Card dataset type:', card.dataset.type);
+                
+                // Remove previous selection
+                document.querySelectorAll('.document-type-card').forEach(c => c.classList.remove('selected'));
+                
+                // Select new card
+                card.classList.add('selected');
+                this.selectedType = card.dataset.type;
+                
+                console.log('Selected type:', this.selectedType);
+                
+                // Show form
+                this.showForm();
+            }
+
+            showForm() {
+                const formContainer = document.getElementById('formContainer');
+                const formTitle = document.getElementById('formTitle');
+                const formDescription = document.getElementById('formDescription');
+                
+                const typeInfo = {
+                    'proof-of-loss': {
+                        title: 'Proof of Loss',
+                        description: 'Generate a sworn statement of damages for your claim.'
+                    },
+                    'appeal-letter': {
+                        title: 'Appeal Letter',
+                        description: 'Generate a professional appeal letter for your denied or underpaid claim.'
+                    },
+                    'demand-letter': {
+                        title: 'Demand Letter',
+                        description: 'Create a strong demand letter requesting fair settlement from your insurer.'
+                    },
+                    'damage-inventory': {
+                        title: 'Damage Inventory',
+                        description: 'Create a comprehensive line-item list of all damages.'
+                    },
+                    'claim-timeline': {
+                        title: 'Claim Timeline / Diary',
+                        description: 'Generate a chronological log of your claim events.'
+                    },
+                    'repair-replace': {
+                        title: 'Repair vs Replace',
+                        description: 'Create a cost worksheet comparing repair vs replacement options.'
+                    },
+                    'out-of-pocket': {
+                        title: 'Out-of-Pocket Log',
+                        description: 'Document ALE and other out-of-pocket expenses.'
+                    },
+                    'appraisal-demand': {
+                        title: 'Appraisal Demand',
+                        description: 'Invoke the appraisal clause in your policy.'
+                    },
+                    'notice-of-delay': {
+                        title: 'Notice of Delay',
+                        description: 'Generate a formal complaint about delayed claim processing.'
+                    },
+                    'coverage-clarification': {
+                        title: 'Coverage Clarification',
+                        description: 'Request clarification on coverage decisions and exclusions.'
+                    },
+                    'notice-of-claim': {
+                        title: 'Notice of Claim',
+                        description: 'Generate an initial loss report document.'
+                    },
+                    'rom-estimate': {
+                        title: 'ROM Estimate Report',
+                        description: 'Create a high-level cost range estimate.'
+                    },
+                    'photograph-log': {
+                        title: 'Photograph Log',
+                        description: 'Organize photos with captions and descriptions.'
+                    },
+                    'document-index': {
+                        title: 'Document Index',
+                        description: 'Generate an auto-generated list of all claim documents.'
+                    },
+                    'comparative-estimates': {
+                        title: 'Comparative Estimates',
+                        description: 'Create side-by-side comparison of estimates.'
+                    },
+                    'settlement-sheet': {
+                        title: 'Settlement Sheet',
+                        description: 'Compare offer vs actual value.'
+                    }
+                };
+                
+                const info = typeInfo[this.selectedType];
+                formTitle.textContent = info.title;
+                formDescription.textContent = info.description;
+                formContainer.style.display = 'block';
+                
+                // Scroll to form
+                formContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            setupFormSubmission() {
+                const form = document.getElementById('documentForm');
+                const generateBtn = document.getElementById('generateBtn');
+                
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    generateBtn.disabled = true;
+                    generateBtn.textContent = 'Generating...';
+                    
+                    const formData = new FormData(form);
+                    const data = Object.fromEntries(formData);
+                    
+                    try {
+                        await this.generateDocument(data);
+                    } catch (error) {
+                        console.error('Error generating document:', error);
+                        this.showError('Failed to generate document. Please try again.');
+                    } finally {
+                        generateBtn.disabled = false;
+                        generateBtn.textContent = 'Generate Document';
+                    }
+                });
+            }
+
+            async generateDocument(data) {
+                const loadingState = document.getElementById('loadingState');
+                const resultContainer = document.getElementById('resultContainer');
+                
+                // Show loading
+                loadingState.classList.add('show');
+                resultContainer.classList.remove('show');
+                
+                try {
+                    // Call the Netlify function for AI generation
+                    const response = await fetch('/netlify/functions/generate-document', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            documentId: this.selectedType,
+                            title: document.getElementById('formTitle').textContent,
+                            fields: data
+                        })
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        this.generatedContent = result.html;
+                        this.displayResults(result.html);
+                    } else {
+                        throw new Error('AI generation failed');
+                    }
+                    
+                } catch (error) {
+                    console.error('AI Generation Error:', error);
+                    // Fallback to static templates if AI fails
+                    const fallback = this.generateFallbackDocument(data);
+                    this.generatedContent = fallback;
+                    this.displayResults(fallback);
+                } finally {
+                    // Hide loading
+                    loadingState.classList.remove('show');
+                }
+            }
+
+            generateFallbackDocument(data) {
+                const today = new Date().toLocaleDateString();
+                return `
+<div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
+    <div style="text-align: right; margin-bottom: 30px;">${today}</div>
+    
+    <div style="margin-bottom: 20px;">
+        <strong>${data.claimantName}</strong><br>
+        ${data.claimantAddress}
+    </div>
+    
+    <div style="margin-bottom: 30px;">
+        ${data.insurerName}<br>
+        Claims Department<br>
+        [Insurance Company Address]
+    </div>
+    
+    <h2 style="color: #1e3a8a; margin-bottom: 20px;">${document.getElementById('formTitle').textContent}</h2>
+    
+    <p><strong>Policy Number:</strong> ${data.policyNumber}</p>
+    <p><strong>Claim Number:</strong> ${data.claimNumber}</p>
+    <p><strong>Date of Loss:</strong> ${data.dateOfLoss}</p>
+    
+    <div style="margin-top: 30px;">
+        <p>${data.situationDetails}</p>
+    </div>
+    
+    <div style="margin-top: 40px;">
+        <p>Sincerely,<br><strong>${data.claimantName}</strong></p>
+    </div>
+</div>`;
+            }
+
+            displayResults(content) {
+                const resultContainer = document.getElementById('resultContainer');
+                const resultContent = document.getElementById('resultContent');
+                
+                resultContent.innerHTML = content;
+                resultContainer.classList.add('show');
+                
+                // Scroll to results
+                resultContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            setupDownloadButtons() {
+                const copyBtn = document.getElementById('copyTextBtn');
+                const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+                
+                copyBtn.addEventListener('click', () => {
+                    const textContent = document.getElementById('resultContent').textContent;
+                    navigator.clipboard.writeText(textContent).then(() => {
+                        copyBtn.textContent = '✓ Copied!';
+                        setTimeout(() => {
+                            copyBtn.textContent = '📋 Copy Text';
+                        }, 2000);
+                    });
+                });
+                
+                downloadPdfBtn.addEventListener('click', () => {
+                    this.generatePDF();
+                });
+            }
+
+            generatePDF() {
+                if (!this.generatedContent) {
+                    alert('No document content to download. Please generate a document first.');
+                    return;
+                }
+
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    
+                    // Set up the document
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica');
+                    
+                    // Split content into lines that fit the page width
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const margin = 20;
+                    const maxWidth = pageWidth - (margin * 2);
+                    
+                    // Get text content and split into lines
+                    const textContent = document.getElementById('resultContent').textContent;
+                    const lines = doc.splitTextToSize(textContent, maxWidth);
+                    
+                    let yPosition = 20;
+                    const lineHeight = 7;
+                    const pageHeight = doc.internal.pageSize.getHeight();
+                    
+                    // Add each line to the PDF
+                    for (let i = 0; i < lines.length; i++) {
+                        // Check if we need a new page
+                        if (yPosition + lineHeight > pageHeight - 20) {
+                            doc.addPage();
+                            yPosition = 20;
+                        }
+                        
+                        doc.text(lines[i], margin, yPosition);
+                        yPosition += lineHeight;
+                    }
+                    
+                    // Generate filename based on document type and date
+                    const now = new Date();
+                    const dateStr = now.toISOString().split('T')[0];
+                    const filename = `claim-document-${this.selectedType}-${dateStr}.pdf`;
+                    
+                    // Download the PDF
+                    doc.save(filename);
+                    
+                } catch (error) {
+                    console.error('PDF Generation Error:', error);
+                    alert('Failed to generate PDF. Please try again.');
+                }
+            }
+
+            showError(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = message;
+                
+                const container = document.querySelector('.document-generator');
+                container.insertBefore(errorDiv, container.firstChild);
+                
+                setTimeout(() => {
+                    errorDiv.remove();
+                }, 5000);
+            }
+        }
+
+        // Initialize the document generator when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new DocumentGenerator();
+        });
+    </script>
+</body>
+</html>

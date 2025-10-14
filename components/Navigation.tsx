@@ -31,31 +31,31 @@ export function Navigation({ currentPath = '', className = '' }: NavigationProps
     {
       id: 'document-generator',
       label: t('navigation.document_generator'),
-      path: '/response-center/document-generator',
+      path: '/app/resource-center/document-generator.html',
       icon: '📄'
     },
     {
       id: 'situational-advisory',
       label: t('navigation.situational_advisory'),
-      path: '/response-center/situational-advisory',
+      path: '/app/resource-center/situational-advisory.html',
       icon: '💡'
     },
     {
       id: 'maximize-claim',
       label: t('navigation.maximize_claim'),
-      path: '/response-center/maximize-claim',
+      path: '/app/resource-center/maximize-claim.html',
       icon: '📈'
     },
     {
       id: 'insurance-tactics',
       label: t('navigation.insurance_tactics'),
-      path: '/response-center/insurance-tactics',
+      path: '/app/resource-center/insurance-tactics.html',
       icon: '🎯'
     },
     {
       id: 'advanced-tools',
       label: t('navigation.advanced_tools'),
-      path: '/response-center/advanced-tools',
+      path: '/app/resource-center/advanced-tools.html',
       icon: '⚡'
     },
     {

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Tools - ClaimNavigatorAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <style>
+        :root {
+            --primary: #1e40af;
+            --accent: #3b82f6;
+            --background: #f9fafb;
+            --border: #e5e7eb;
+            --text-dark: #0f172a;
+        }
+        
+        .header {
+            background: var(--text-dark);
+            color: white;
+            padding: 1rem 0;
+        }
+        
+        .bar {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .logo {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 6px;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        
+        .nav a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .breadcrumb {
+            margin: 10px 0;
+            color: #555;
+            font-size: 0.9rem;
+            padding: 0 1rem;
+        }
+        
+        .breadcrumb a {
+            color: #1e40af;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .tool-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            transition: transform 0.2s;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .tool-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+        
+        .tool-description {
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-list {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .feature-icon {
+            background: var(--primary);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .feature-text {
+            color: #4b5563;
+            font-size: 0.875rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+        
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+        
+        .premium-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        .ai-powered {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .ai-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .ai-description {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="header">
+        <div class="bar">
+            <div class="brand">
+                <div class="logo"></div>
+                <div>Claim Navigator AI</div>
+            </div>
+            <nav class="nav">
+                <a href="/app/resource-center/index.html">🏠 Resource Center</a>
+                <a href="/app/resource-center/document-generator.html">📄 Document Generator</a>
+                <a href="/app/resource-center/evidence-organizer.html">📸 Evidence Organizer</a>
+                <a href="/app/resource-center/claim-timeline.html">🕒 Claim Timeline</a>
+                <a href="/app/resource-center/negotiation-tools.html">💬 Negotiation Tools</a>
+                <a href="/app/resource-center/professional-network.html">👥 Professional Network</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+        <a href="/app/resource-center/index.html">Resource Center</a> ›
+        <span>Advanced Tools</span>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-6">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">⚡ Advanced Tools</h1>
+            <p class="text-lg text-gray-600">
+                Professional-grade tools and AI-powered features for complex claim situations and maximum settlement optimization.
+            </p>
+        </div>
+
+        <!-- AI-Powered Features -->
+        <div class="ai-powered">
+            <div class="ai-title">🤖 AI-Powered Claim Analysis</div>
+            <div class="ai-description">
+                Our advanced AI system analyzes your claim data, identifies potential issues, and provides personalized recommendations to maximize your settlement. Get insights that would typically require expensive legal consultation.
+            </div>
+        </div>
+
+        <!-- Policy Analysis Tool -->
+        <div class="tool-card">
+            <div class="premium-badge">Premium Feature</div>
+            <div class="tool-title">📋 Policy Analysis Tool</div>
+            <div class="tool-description">
+                Deep analysis of your insurance policy to identify coverage gaps, exclusions, and opportunities for maximum compensation. This tool helps you understand exactly what you're entitled to under your policy.
+            </div>
+            
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Comprehensive coverage analysis</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Exclusion identification and mitigation</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Coverage limit optimization</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Legal precedent research</div>
+                </div>
+            </div>
+            
+            <div class="flex gap-4">
+                <a href="/app/response-center/claim-analysis-tools/policy-review.html" class="btn-primary">Analyze Policy</a>
+                <a href="/app/state-rights/index.html" class="btn-secondary">State Rights Guide</a>
+            </div>
+        </div>
+
+        <!-- Damage Assessment AI -->
+        <div class="tool-card">
+            <div class="premium-badge">AI-Powered</div>
+            <div class="tool-title">🔍 AI Damage Assessment</div>
+            <div class="tool-description">
+                Advanced AI analysis of damage photos and documentation to identify hidden damage, calculate accurate repair costs, and ensure nothing is overlooked in your claim.
+            </div>
+            
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Hidden damage detection</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Market rate analysis</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Repair cost estimation</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Expert opinion generation</div>
+                </div>
+            </div>
+            
+            <div class="flex gap-4">
+                <a href="/app/response-center/claim-analysis-tools/damage-assessment.html" class="btn-primary">Start Assessment</a>
+                <a href="/app/resource-center/evidence-organizer.html" class="btn-secondary">Upload Evidence</a>
+            </div>
+        </div>
+
+        <!-- Settlement Optimizer -->
+        <div class="tool-card">
+            <div class="premium-badge">Advanced</div>
+            <div class="tool-title">💰 Settlement Optimizer</div>
+            <div class="tool-description">
+                Sophisticated algorithm that analyzes your claim against thousands of similar cases to determine the optimal settlement range and negotiation strategy.
+            </div>
+            
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Comparative case analysis</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Settlement range prediction</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Negotiation strategy optimization</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Risk assessment and mitigation</div>
+                </div>
+            </div>
+            
+            <div class="flex gap-4">
+                <a href="/app/settlement/index.html" class="btn-primary">Optimize Settlement</a>
+                <a href="/app/resource-center/financial-calculator.html" class="btn-secondary">Financial Calculator</a>
+            </div>
+        </div>
+
+        <!-- Legal Research Tool -->
+        <div class="tool-card">
+            <div class="premium-badge">Legal</div>
+            <div class="tool-title">⚖️ Legal Research Tool</div>
+            <div class="tool-description">
+                Access to comprehensive legal research database with case law, statutes, and regulations relevant to your claim. Find precedents and legal arguments to strengthen your position.
+            </div>
+            
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Case law research</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Statute and regulation lookup</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Legal precedent identification</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Argument generation</div>
+                </div>
+            </div>
+            
+            <div class="flex gap-4">
+                <a href="/app/state-rights/index.html" class="btn-primary">Research Law</a>
+                <a href="/app/documents/appeal-letter.html" class="btn-secondary">Legal Documents</a>
+            </div>
+        </div>
+
+        <!-- Expert Network -->
+        <div class="tool-card">
+            <div class="premium-badge">Professional</div>
+            <div class="tool-title">👥 Expert Network Access</div>
+            <div class="tool-description">
+                Connect with verified insurance professionals, attorneys, and experts who specialize in your type of claim. Get professional consultations and expert opinions.
+            </div>
+            
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Verified professional directory</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Expert consultation scheduling</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Specialized expertise matching</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Professional referral system</div>
+                </div>
+            </div>
+            
+            <div class="flex gap-4">
+                <a href="/app/resource-center/professional-network.html" class="btn-primary">Find Experts</a>
+                <a href="/app/ai-response-agent.html" class="btn-secondary">AI Consultation</a>
+            </div>
+        </div>
+
+        <!-- Advanced Analytics -->
+        <div class="tool-card">
+            <div class="premium-badge">Analytics</div>
+            <div class="tool-title">📊 Advanced Analytics Dashboard</div>
+            <div class="tool-description">
+                Comprehensive analytics and reporting tools to track your claim progress, identify trends, and optimize your strategy based on data-driven insights.
+            </div>
+            
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Claim progress tracking</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Performance analytics</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Trend identification</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-text">Strategy optimization</div>
+                </div>
+            </div>
+            
+            <div class="flex gap-4">
+                <a href="/app/trackers/index.html" class="btn-primary">View Analytics</a>
+                <a href="/app/claim-playbook.html" class="btn-secondary">Strategy Guide</a>
+            </div>
+        </div>
+
+        <!-- Premium Features -->
+        <div class="bg-white rounded-2xl p-8 shadow-sm mt-8">
+            <h2 class="text-2xl font-semibold mb-6">💎 Premium Features</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold mb-3">🚀 Advanced AI Features</h3>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li>• Predictive settlement modeling</li>
+                        <li>• Automated document analysis</li>
+                        <li>• Real-time market rate updates</li>
+                        <li>• Personalized strategy recommendations</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-3">⚡ Professional Tools</h3>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li>• Expert consultation scheduling</li>
+                        <li>• Legal research database access</li>
+                        <li>• Advanced negotiation training</li>
+                        <li>• Priority customer support</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#0f172a] text-white p-6 mt-16">
+        <div class="max-w-6xl mx-auto text-center">
+            <p class="text-sm text-gray-300">
+                © 2024 ClaimNavigatorAI. All rights reserved. | 
+                <a href="/privacy.html" class="underline hover:text-blue-300">Privacy Policy</a> | 
+                <a href="/terms.html" class="underline hover:text-blue-300">Terms of Service</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

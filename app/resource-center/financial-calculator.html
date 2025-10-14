@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Calculator - ClaimNavigatorAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <style>
+        :root {
+            --primary: #1e40af;
+            --accent: #3b82f6;
+            --background: #f9fafb;
+            --border: #e5e7eb;
+            --text-dark: #0f172a;
+        }
+        
+        .header {
+            background: var(--text-dark);
+            color: white;
+            padding: 1rem 0;
+        }
+        
+        .bar {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .logo {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 6px;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        
+        .nav a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .breadcrumb {
+            margin: 10px 0;
+            color: #555;
+            font-size: 0.9rem;
+            padding: 0 1rem;
+        }
+        
+        .breadcrumb a {
+            color: #1e40af;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .calculator-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+        
+        .result-card {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="header">
+        <div class="bar">
+            <div class="brand">
+                <div class="logo"></div>
+                <div>Claim Navigator AI</div>
+            </div>
+            <nav class="nav">
+                <a href="/app/resource-center/index.html">🏠 Resource Center</a>
+                <a href="/app/resource-center/document-generator.html">📄 Document Generator</a>
+                <a href="/app/resource-center/evidence-organizer.html">📸 Evidence Organizer</a>
+                <a href="/app/resource-center/claim-timeline.html">🕒 Claim Timeline</a>
+                <a href="/app/resource-center/negotiation-tools.html">💬 Negotiation Tools</a>
+                <a href="/app/resource-center/professional-network.html">👥 Professional Network</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+        <a href="/app/resource-center/index.html">Resource Center</a> ›
+        <span>Financial Calculator</span>
+    </nav>
+
+    <main class="max-w-4xl mx-auto p-6">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">💰 Financial Calculator</h1>
+            <p class="text-lg text-gray-600">
+                Calculate your claim value, settlement amounts, and financial impact with AI-powered analysis.
+            </p>
+        </div>
+
+        <div class="calculator-card">
+            <h2 class="text-xl font-semibold mb-6">Claim Value Calculator</h2>
+            
+            <form id="financialCalculator">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label class="form-label">Property Value</label>
+                        <input type="number" class="form-input" id="propertyValue" placeholder="Enter property value">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Damage Percentage</label>
+                        <input type="number" class="form-input" id="damagePercentage" placeholder="Enter damage %" min="0" max="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Replacement Cost</label>
+                        <input type="number" class="form-input" id="replacementCost" placeholder="Enter replacement cost">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Depreciation Amount</label>
+                        <input type="number" class="form-input" id="depreciation" placeholder="Enter depreciation">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Additional Living Expenses</label>
+                        <input type="number" class="form-input" id="ale" placeholder="Enter ALE amount">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Personal Property Value</label>
+                        <input type="number" class="form-input" id="personalProperty" placeholder="Enter personal property value">
+                    </div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <button type="submit" class="btn-primary">Calculate Claim Value</button>
+                </div>
+            </form>
+            
+            <div id="calculationResults" class="result-card" style="display: none;">
+                <div class="result-title">📊 Calculation Results</div>
+                <div id="resultsContent"></div>
+            </div>
+        </div>
+
+        <div class="calculator-card">
+            <h2 class="text-xl font-semibold mb-6">Settlement Analysis</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="form-group">
+                    <label class="form-label">Insurance Offer</label>
+                    <input type="number" class="form-input" id="insuranceOffer" placeholder="Enter insurance offer">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Your Counter Offer</label>
+                    <input type="number" class="form-input" id="counterOffer" placeholder="Enter your counter offer">
+                </div>
+            </div>
+            
+            <div class="text-center mt-6">
+                <button type="button" class="btn-primary" onclick="analyzeSettlement()">Analyze Settlement</button>
+            </div>
+            
+            <div id="settlementResults" class="result-card" style="display: none;">
+                <div class="result-title">💡 Settlement Analysis</div>
+                <div id="settlementContent"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#0f172a] text-white p-6 mt-16">
+        <div class="max-w-6xl mx-auto text-center">
+            <p class="text-sm text-gray-300">
+                © 2024 ClaimNavigatorAI. All rights reserved. | 
+                <a href="/privacy.html" class="underline hover:text-blue-300">Privacy Policy</a> | 
+                <a href="/terms.html" class="underline hover:text-blue-300">Terms of Service</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('financialCalculator').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateClaimValue();
+        });
+
+        function calculateClaimValue() {
+            const propertyValue = parseFloat(document.getElementById('propertyValue').value) || 0;
+            const damagePercentage = parseFloat(document.getElementById('damagePercentage').value) || 0;
+            const replacementCost = parseFloat(document.getElementById('replacementCost').value) || 0;
+            const depreciation = parseFloat(document.getElementById('depreciation').value) || 0;
+            const ale = parseFloat(document.getElementById('ale').value) || 0;
+            const personalProperty = parseFloat(document.getElementById('personalProperty').value) || 0;
+
+            // Calculate damage amount
+            const damageAmount = (propertyValue * damagePercentage) / 100;
+            
+            // Calculate actual cash value
+            const actualCashValue = replacementCost - depreciation;
+            
+            // Calculate total claim value
+            const totalClaimValue = actualCashValue + ale + personalProperty;
+            
+            // Calculate recommended settlement
+            const recommendedSettlement = totalClaimValue * 0.95; // 95% of calculated value
+            
+            const results = `
+                <div class="result-item">
+                    <span>Property Damage Amount:</span>
+                    <span>$${damageAmount.toLocaleString()}</span>
+                </div>
+                <div class="result-item">
+                    <span>Actual Cash Value:</span>
+                    <span>$${actualCashValue.toLocaleString()}</span>
+                </div>
+                <div class="result-item">
+                    <span>Additional Living Expenses:</span>
+                    <span>$${ale.toLocaleString()}</span>
+                </div>
+                <div class="result-item">
+                    <span>Personal Property:</span>
+                    <span>$${personalProperty.toLocaleString()}</span>
+                </div>
+                <div class="result-item">
+                    <span>Total Claim Value:</span>
+                    <span>$${totalClaimValue.toLocaleString()}</span>
+                </div>
+                <div class="result-item">
+                    <span>Recommended Settlement:</span>
+                    <span>$${recommendedSettlement.toLocaleString()}</span>
+                </div>
+            `;
+            
+            document.getElementById('resultsContent').innerHTML = results;
+            document.getElementById('calculationResults').style.display = 'block';
+        }
+
+        function analyzeSettlement() {
+            const insuranceOffer = parseFloat(document.getElementById('insuranceOffer').value) || 0;
+            const counterOffer = parseFloat(document.getElementById('counterOffer').value) || 0;
+            
+            if (insuranceOffer === 0 || counterOffer === 0) {
+                alert('Please enter both insurance offer and your counter offer');
+                return;
+            }
+            
+            const difference = counterOffer - insuranceOffer;
+            const percentageDifference = (difference / insuranceOffer) * 100;
+            
+            let analysis = '';
+            if (percentageDifference > 20) {
+                analysis = '🔴 High difference - Consider negotiation strategy';
+            } else if (percentageDifference > 10) {
+                analysis = '🟡 Moderate difference - Negotiation recommended';
+            } else {
+                analysis = '🟢 Low difference - Settlement may be reasonable';
+            }
+            
+            const settlementResults = `
+                <div class="result-item">
+                    <span>Insurance Offer:</span>
+                    <span>$${insuranceOffer.toLocaleString()}</span>
+                </div>
+                <div class="result-item">
+                    <span>Your Counter Offer:</span>
+                    <span>$${counterOffer.toLocaleString()}</span>
+                </div>
+                <div class="result-item">
+                    <span>Difference:</span>
+                    <span>$${difference.toLocaleString()}</span>
+                </div>
+                <div class="result-item">
+                    <span>Percentage Difference:</span>
+                    <span>${percentageDifference.toFixed(1)}%</span>
+                </div>
+                <div class="result-item">
+                    <span>Analysis:</span>
+                    <span>${analysis}</span>
+                </div>
+            `;
+            
+            document.getElementById('settlementContent').innerHTML = settlementResults;
+            document.getElementById('settlementResults').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

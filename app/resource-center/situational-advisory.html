@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Situational Advisory - ClaimNavigatorAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <style>
+        :root {
+            --primary: #1e40af;
+            --accent: #3b82f6;
+            --background: #f9fafb;
+            --border: #e5e7eb;
+            --text-dark: #0f172a;
+        }
+        
+        .header {
+            background: var(--text-dark);
+            color: white;
+            padding: 1rem 0;
+        }
+        
+        .bar {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .logo {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 6px;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        
+        .nav a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .breadcrumb {
+            margin: 10px 0;
+            color: #555;
+            font-size: 0.9rem;
+            padding: 0 1rem;
+        }
+        
+        .breadcrumb a {
+            color: #1e40af;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .advisory-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            transition: transform 0.2s;
+        }
+        
+        .advisory-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .scenario-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+        
+        .scenario-description {
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .action-steps {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .action-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .action-step:last-child {
+            margin-bottom: 0;
+        }
+        
+        .step-number {
+            background: var(--primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+        
+        .step-description {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+        
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+        
+        .urgency-high {
+            border-left: 4px solid #ef4444;
+        }
+        
+        .urgency-medium {
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .urgency-low {
+            border-left: 4px solid #10b981;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="header">
+        <div class="bar">
+            <div class="brand">
+                <div class="logo"></div>
+                <div>Claim Navigator AI</div>
+            </div>
+            <nav class="nav">
+                <a href="/app/resource-center/index.html">🏠 Resource Center</a>
+                <a href="/app/resource-center/document-generator.html">📄 Document Generator</a>
+                <a href="/app/resource-center/evidence-organizer.html">📸 Evidence Organizer</a>
+                <a href="/app/resource-center/claim-timeline.html">🕒 Claim Timeline</a>
+                <a href="/app/resource-center/negotiation-tools.html">💬 Negotiation Tools</a>
+                <a href="/app/resource-center/professional-network.html">👥 Professional Network</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+        <a href="/app/resource-center/index.html">Resource Center</a> ›
+        <span>Situational Advisory</span>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-6">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">💡 Situational Advisory</h1>
+            <p class="text-lg text-gray-600">
+                Get personalized guidance based on your specific claim situation and circumstances.
+            </p>
+        </div>
+
+        <!-- Claim Denied -->
+        <div class="advisory-card urgency-high">
+            <div class="scenario-title">🚫 My Claim Was Denied</div>
+            <div class="scenario-description">
+                Your insurance claim has been denied, but this doesn't mean the fight is over. There are several steps you can take to appeal the decision and potentially get your claim approved.
+            </div>
+            
+            <div class="action-steps">
+                <div class="action-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Review the Denial Letter</div>
+                        <div class="step-description">Carefully read the denial letter to understand the specific reasons for denial. Look for policy exclusions, coverage limits, or documentation issues.</div>
+                    </div>
+                </div>
+                
+                <div class="action-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">Gather Additional Evidence</div>
+                        <div class="step-description">Collect any missing documentation, expert opinions, or additional evidence that supports your claim.</div>
+                    </div>
+                </div>
+                
+                <div class="action-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">File an Appeal</div>
+                        <div class="step-description">Submit a formal appeal letter with your additional evidence and arguments for why the claim should be approved.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex gap-4">
+                <a href="/app/documents/appeal-letter.html" class="btn-primary">Create Appeal Letter</a>
+                <a href="/app/state-rights/index.html" class="btn-secondary">Know Your Rights</a>
+            </div>
+        </div>
+
+        <!-- Lowball Offer -->
+        <div class="advisory-card urgency-medium">
+            <div class="scenario-title">💰 I Got a Lowball Offer</div>
+            <div class="scenario-description">
+                The insurance company has made an offer, but it's significantly lower than what you believe your claim is worth. Here's how to respond professionally and effectively.
+            </div>
+            
+            <div class="action-steps">
+                <div class="action-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Calculate Fair Value</div>
+                        <div class="step-description">Use our financial calculator to determine the actual value of your damages based on market rates and comparable cases.</div>
+                    </div>
+                </div>
+                
+                <div class="action-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">Prepare Counter-Offer</div>
+                        <div class="step-description">Draft a professional counter-offer with supporting documentation and evidence.</div>
+                    </div>
+                </div>
+                
+                <div class="action-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">Negotiate Strategically</div>
+                        <div class="step-description">Use proven negotiation tactics to reach a fair settlement without damaging relationships.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex gap-4">
+                <a href="/app/resource-center/financial-calculator.html" class="btn-primary">Calculate Fair Value</a>
+                <a href="/app/resource-center/negotiation-tools.html" class="btn-secondary">Negotiation Scripts</a>
+            </div>
+        </div>
+
+        <!-- First Time Filing -->
+        <div class="advisory-card urgency-low">
+            <div class="scenario-title">📝 Filing for the First Time</div>
+            <div class="scenario-description">
+                This is your first insurance claim and you're not sure where to start. Don't worry - we'll guide you through the entire process step by step.
+            </div>
+            
+            <div class="action-steps">
+                <div class="action-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Report the Claim Immediately</div>
+                        <div class="step-description">Contact your insurance company as soon as possible to report the incident and get a claim number.</div>
+                    </div>
+                </div>
+                
+                <div class="action-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">Document Everything</div>
+                        <div class="step-description">Take photos, gather receipts, and document all damages and expenses related to the incident.</div>
+                    </div>
+                </div>
+                
+                <div class="action-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">Follow the Process</div>
+                        <div class="step-description">Work with your adjuster, provide requested documentation, and stay organized throughout the process.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex gap-4">
+                <a href="/app/claim-playbook.html" class="btn-primary">Claim Playbook</a>
+                <a href="/app/resource-center/claim-timeline.html" class="btn-secondary">Timeline Guide</a>
+            </div>
+        </div>
+
+        <!-- Stuck - No Response -->
+        <div class="advisory-card urgency-high">
+            <div class="scenario-title">⏰ Stuck - No Response</div>
+            <div class="scenario-description">
+                You've submitted your claim but haven't heard back from the insurance company in weeks or months. Here's how to get things moving again.
+            </div>
+            
+            <div class="action-steps">
+                <div class="action-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Follow Up Regularly</div>
+                        <div class="step-description">Call your adjuster weekly to check on the status and document all communications.</div>
+                    </div>
+                </div>
+                
+                <div class="action-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">Escalate to Supervisor</div>
+                        <div class="step-description">If your adjuster isn't responsive, request to speak with their supervisor or manager.</div>
+                    </div>
+                </div>
+                
+                <div class="action-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">File a Complaint</div>
+                        <div class="step-description">If delays continue, file a formal complaint with your state insurance department.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex gap-4">
+                <a href="/app/documents/delay-complaint.html" class="btn-primary">File Delay Complaint</a>
+                <a href="/app/state-rights/index.html" class="btn-secondary">State Rights Guide</a>
+            </div>
+        </div>
+
+        <!-- Additional Resources -->
+        <div class="bg-white rounded-2xl p-8 shadow-sm mt-8">
+            <h2 class="text-2xl font-semibold mb-6">🆘 Need More Help?</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold mb-3">📞 Emergency Situations</h3>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li>• Fire damage: Secure property immediately</li>
+                        <li>• Water damage: Stop source, document damage</li>
+                        <li>• Theft: File police report within 24 hours</li>
+                        <li>• Storm damage: Document before cleanup</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-3">⚖️ Legal Considerations</h3>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li>• Know your state's insurance laws</li>
+                        <li>• Understand policy exclusions</li>
+                        <li>• Document all communications</li>
+                        <li>• Consider legal representation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#0f172a] text-white p-6 mt-16">
+        <div class="max-w-6xl mx-auto text-center">
+            <p class="text-sm text-gray-300">
+                © 2024 ClaimNavigatorAI. All rights reserved. | 
+                <a href="/privacy.html" class="underline hover:text-blue-300">Privacy Policy</a> | 
+                <a href="/terms.html" class="underline hover:text-blue-300">Terms of Service</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
