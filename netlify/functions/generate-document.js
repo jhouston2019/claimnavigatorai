@@ -5,10 +5,10 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 exports.handler = async (event, context) => {
   // CORS headers
   const headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
-    };
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+  };
 
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers, body: '' };
@@ -52,19 +52,19 @@ exports.handler = async (event, context) => {
     // Build the AI prompt based on document type and format
     const prompt = buildAIPrompt(topic, formData, documentInfo);
       
-      const completion = await openai.chat.completions.create({
+    const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
-        messages: [
-          {
+      messages: [
+        {
           role: "system",
           content: getSystemPrompt(documentInfo)
-          },
-          {
+        },
+        {
           role: "user",
           content: prompt
-          }
-        ],
-        max_tokens: 3000,
+        }
+      ],
+      max_tokens: 3000,
       temperature: 0.7
     });
 
