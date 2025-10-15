@@ -76,6 +76,41 @@
     let filteredScenarios = [];
     let currentCategory = 'all';
 
+    // Function to navigate to document generator page
+    function openLetterModal(situation, documentType) {
+      console.log('openLetterModal called with:', situation, documentType);
+      // Map document types to document IDs
+      const documentMapping = {
+        'Appeal Letter': 'appeal-letter',
+        'Demand Letter': 'demand-letter',
+        'Notice of Delay Complaint': 'delay-complaint',
+        'Coverage Clarification Request': 'coverage-clarification',
+        'Proof of Loss': 'proof-of-loss',
+        'Damage Assessment': 'damage-assessment',
+        'Expert Opinion Request': 'expert-opinion-request',
+        'Business Interruption Claim': 'business-interruption-claim',
+        'Proof of Repairs Submission': 'proof-of-repairs',
+        'Notice of Claim': 'notice-of-claim',
+        'Settlement Offer': 'settlement-offer',
+        'Regulatory Complaint': 'regulatory-complaint',
+        'Appraisal Request': 'appraisal-request',
+        'Evidence Log': 'evidence-log',
+        'Expense Reimbursement': 'expense-reimbursement',
+        'Photograph Log': 'photograph-log',
+        'Out-of-Pocket Expenses': 'out-of-pocket-log',
+        'ROM Estimate': 'rom-estimate',
+        'Comparative Estimates': 'comparative-estimates',
+        'Document Index': 'document-index'
+      };
+
+      // Get the document ID, fallback to appeal-letter if not found
+      const documentId = documentMapping[documentType] || 'appeal-letter';
+
+      // Navigate to document generator with the correct ID parameter
+      console.log('Navigating to:', `/app/document-generator-v2/forms/form-template.html?id=${documentId}`);
+      window.location.href = `/app/document-generator-v2/forms/form-template.html?id=${documentId}`;
+    }
+
     // Load scenarios from JSON
     async function loadScenarios() {
       try {
@@ -286,44 +321,6 @@
 
     // Initialize the page
     loadScenarios();
-  </script>
-
-            
-
-    // Function to navigate to document generator page
-    function openLetterModal(situation, documentType) {
-      console.log('openLetterModal called with:', situation, documentType);
-      // Map document types to document IDs
-      const documentMapping = {
-        'Appeal Letter': 'appeal-letter',
-        'Demand Letter': 'demand-letter',
-        'Notice of Delay Complaint': 'delay-complaint',
-        'Coverage Clarification Request': 'coverage-clarification',
-        'Proof of Loss': 'proof-of-loss',
-        'Damage Assessment': 'damage-assessment',
-        'Expert Opinion Request': 'expert-opinion-request',
-        'Business Interruption Claim': 'business-interruption-claim',
-        'Proof of Repairs Submission': 'proof-of-repairs',
-        'Notice of Claim': 'notice-of-claim',
-        'Settlement Offer': 'settlement-offer',
-        'Regulatory Complaint': 'regulatory-complaint',
-        'Appraisal Request': 'appraisal-request',
-        'Evidence Log': 'evidence-log',
-        'Expense Reimbursement': 'expense-reimbursement',
-        'Photograph Log': 'photograph-log',
-        'Out-of-Pocket Expenses': 'out-of-pocket-log',
-        'ROM Estimate': 'rom-estimate',
-        'Comparative Estimates': 'comparative-estimates',
-        'Document Index': 'document-index'
-      };
-
-      // Get the document ID, fallback to appeal-letter if not found
-      const documentId = documentMapping[documentType] || 'appeal-letter';
-
-      // Navigate to document generator with the correct ID parameter
-      console.log('Navigating to:', `/app/document-generator-v2/forms/form-template.html?id=${documentId}`);
-      window.location.href = `/app/document-generator-v2/forms/form-template.html?id=${documentId}`;
-    }
   </script>
 </body>
 </html>
