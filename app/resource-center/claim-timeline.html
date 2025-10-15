@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Claim Timeline & Sequence Guide - ClaimNavigatorAI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0f172a;--primary:#1e40af;--primary-600:#1e3a8a;--accent:#3b82f6;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--panel:#f8fafc;--success:#10b981;--warn:#f59e0b;--error:#ef4444;}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:#fff;line-height:1.6}
+.header{position:sticky;top:0;z-index:1000;background:var(--navy);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.header .container{max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800}
+.nav a{color:#c9d4ff;text-decoration:none;padding:.5rem .75rem;border-radius:.5rem}
+.nav a:hover{background:rgba(255,255,255,.1)}
+.main{max-width:1200px;margin:0 auto;padding:24px}
+.page-header{text-align:center;margin:6px 0 22px}
+.page-header h1{margin:0 0 8px;font-size:clamp(1.6rem,2.8vw,2.4rem);font-weight:800;color:var(--navy)}
+.subtitle{color:var(--muted);max-width:900px;margin:0 auto}
+.controls,.dash,.timeline{display:grid;gap:12px}
+.controls{grid-template-columns:repeat(auto-fit,minmax(250px,1fr));margin:24px 0}
+.control{background:#fff;border:2px solid var(--border);border-radius:14px;padding:14px}
+.control label{font-weight:700;color:var(--navy);display:block;margin-bottom:6px}
+.control input,.control select{width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:10px}
+.dash{grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-bottom:20px}
+.card{background:var(--panel);border:2px solid #e2e8f0;border-radius:16px;padding:16px}
+.card h4{margin:0 0 6px;color:var(--navy)}
+.stat{font-size:1.25rem;font-weight:800}
+.deadline.ok{color:var(--success)}.deadline.warn{color:var(--warn)}.deadline.missed{color:var(--error)}
+.sub{color:var(--muted);font-size:.9rem}
+.progress{margin:24px 0;border-radius:14px;color:#fff;background:linear-gradient(135deg,var(--primary),var(--accent));padding:20px;text-align:center}
+.bar-wrap{margin:12px auto;height:14px;max-width:920px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.2)}
+.bar{height:100%;width:0%;transition:width .45s ease;background:linear-gradient(90deg,#22c55e,#34d399)}
+.timeline{gap:14px}
+.step{background:#fff;border:2px solid var(--border);border-radius:16px;padding:18px;box-shadow:0 6px 16px rgba(0,0,0,.04);transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;position:relative}
+.step:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(0,0,0,.08)}
+.step.completed{border-color:var(--success);background:linear-gradient(135deg,#f0fdf4,#ecfdf5)}
+.checkmark{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;display:none;background:var(--success);color:#fff;align-items:center;justify-content:center;font-weight:800}
+.step.completed .checkmark{display:flex}
+.badge{width:46px;height:46px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem}
+.title{margin:0;font-size:1.25rem;font-weight:800;color:var(--navy)}
+.desc{margin:2px 0 8px;color:var(--muted)}
+.ai-tip{background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid var(--warn);border-radius:12px;padding:12px;margin:10px 0}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .2s,transform .1s}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-600)}
+.btn-secondary{background:#4b5563;color:#fff}.btn-success{background:var(--success);color:#fff}.btn-success:hover{background:#059669}
+.content{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.content.expanded{max-height:1200px}
+.box{background:var(--panel);border:1px solid #e2e8f0;border-radius:12px;padding:12px;margin-bottom:10px}
+ul{margin:6px 0 4px 20px} li{margin:4px 0}
+.complete{display:flex;gap:8px;align-items:center;margin-top:12px;padding:10px;border:1px solid #e2e8f0;border-radius:10px;background:var(--panel)}
+.complete input{width:18px;height:18px;accent-color:var(--success)}
+.download{margin:28px 0 8px;padding:22px;border:2px solid #e2e8f0;border-radius:16px;background:var(--panel);text-align:center}
+</style>
+</head>
+
+<body>
+<header class="header"><div class="container"><div class="brand"><span>🧭</span>ClaimNavigatorAI</div><nav class="nav"><a href="/app/resource-center.html">← Return to Resource Center</a></nav></div></header>
+<main class="main">
+  <div class="page-header">
+    <h1>🧭 Claim Timeline & Sequence Guide</h1>
+    <p class="subtitle">Follow each step to build a strong claim. Use AI tips, checklists, and deadlines to complete your file like a pro.</p>
+  </div>
+  <div class="controls">
+    <div class="control"><label>Claim Type</label><select id="claimType"><option value="property">Property</option><option value="bi">Business Interruption</option><option value="ale">Additional Living Expense</option><option value="commercial">Commercial</option></select></div>
+    <div class="control"><label>Date of Loss</label><input type="date" id="lossDate"></div>
+    <div class="control"><label>Date Notice Sent</label><input type="date" id="noticeDate"></div>
+    <div class="control"><label>State Ack Window (days)</label><input type="number" id="stateAckDays" value="14"></div>
+    <div class="control"><label>Proof of Loss Window (days)</label><input type="number" id="polDueDays" value="60"></div>
+  </div>
+  <div class="dash">
+    <div class="card"><h4>Overall Progress</h4><div class="stat" id="statProgress">0% complete</div><div class="sub" id="statSteps">0 of 7 steps done</div></div>
+    <div class="card"><h4>Next Deadline</h4><div class="stat deadline" id="statNext">—</div><div class="sub" id="statNextLabel">Set dates above</div></div>
+    <div class="card"><h4>Days Since Notice</h4><div class="stat" id="statDays">—</div><div class="sub">Tracks insurer response window</div></div>
+  </div>
+  <section class="progress"><h2>Your Claim Progress</h2><div class="bar-wrap"><div id="progressBar" class="bar"></div></div><div id="progressMeta">Progress: 0 of 7 steps completed (0%)</div></section>
+  <section class="timeline" id="timeline">
+    <!-- Step 1: Notice of Claim -->
+    <div class="step" id="step-1">
+      <div class="checkmark">✓</div>
+      <div style="display:flex;gap:14px;align-items:center;margin-bottom:8px">
+        <div class="badge">1</div>
+        <div>
+          <h3 class="title">Notice of Claim → Send</h3>
+          <div class="desc">Formally notify your insurer of the loss.</div>
+        </div>
+      </div>
+      <div class="ai-tip"><b>AI Tip:</b> <em>"Generate my Notice of Claim for a fire loss dated June 12, 2025."</em></div>
+      <div class="actions">
+        <button class="btn btn-primary" data-expand="1">Learn More ▾</button>
+        <a class="btn btn-secondary" href="/app/document-generator-v2/document-generator.html?type=notice-of-claim">Open Tool</a>
+      </div>
+      <div class="content" id="content-1">
+        <div class="box">
+          <h4>Why It Matters</h4>
+          <p>Starting the clock on insurer response deadlines. Most states require acknowledgment within 14 days.</p>
+        </div>
+        <div class="box">
+          <h4>Common Mistakes</h4>
+          <ul>
+            <li>Waiting too long to notify</li>
+            <li>Incomplete contact information</li>
+            <li>Not keeping proof of delivery</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>Regulation Tip</h4>
+          <p>Send via certified mail and keep the receipt. Some states require specific language.</p>
+        </div>
+        <div class="box">
+          <h4>Checklist</h4>
+          <ul>
+            <li>Upload policy PDF</li>
+            <li>Describe loss clearly</li>
+            <li>Attach initial photos if available</li>
+            <li>Send certified mail</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>AI Prompts</h4>
+          <p><em>"Generate a Notice of Claim for [loss type] on [date] with policy # [number]"</em></p>
+        </div>
+      </div>
+      <div class="complete">
+        <input type="checkbox" id="cb-1"><label for="cb-1">Mark Step Complete</label>
+      </div>
+    </div>
+
+    <!-- Step 2: Start Diary & Photo Log -->
+    <div class="step" id="step-2">
+      <div class="checkmark">✓</div>
+      <div style="display:flex;gap:14px;align-items:center;margin-bottom:8px">
+        <div class="badge">2</div>
+        <div>
+          <h3 class="title">Start Diary & Photo Log → Document Evidence</h3>
+          <div class="desc">Record communications, photos, and receipts from day one.</div>
+        </div>
+      </div>
+      <div class="ai-tip"><b>AI Tip:</b> <em>"Create a chronological claim diary entry for today's inspection."</em></div>
+      <div class="actions">
+        <button class="btn btn-primary" data-expand="2">Learn More ▾</button>
+        <a class="btn btn-secondary" href="/app/document-generator-v2/document-generator.html?type=claim-timeline-diary">Open Tool</a>
+      </div>
+      <div class="content" id="content-2">
+        <div class="box">
+          <h4>Why It Matters</h4>
+          <p>Creates a timeline that supports your claim and counters insurer delays or denials.</p>
+        </div>
+        <div class="box">
+          <h4>Common Mistakes</h4>
+          <ul>
+            <li>Not documenting daily communications</li>
+            <li>Missing timestamps on photos</li>
+            <li>Losing receipts and invoices</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>Regulation Tip</h4>
+          <p>Some states require detailed documentation. Keep originals and digital copies.</p>
+        </div>
+        <div class="box">
+          <h4>Checklist</h4>
+          <ul>
+            <li>Add today's diary entry</li>
+            <li>Upload photo set with timestamps</li>
+            <li>Save every receipt to a single folder</li>
+            <li>Record all phone calls with adjusters</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>AI Prompts</h4>
+          <p><em>"Create a claim diary entry for [date] documenting [event]"</em></p>
+        </div>
+      </div>
+      <div class="complete">
+        <input type="checkbox" id="cb-2"><label for="cb-2">Mark Step Complete</label>
+      </div>
+    </div>
+
+    <!-- Step 3: Policy Review -->
+    <div class="step" id="step-3">
+      <div class="checkmark">✓</div>
+      <div style="display:flex;gap:14px;align-items:center;margin-bottom:8px">
+        <div class="badge">3</div>
+        <div>
+          <h3 class="title">Policy Review → Analyze</h3>
+          <div class="desc">Understand what's covered, excluded, and limited.</div>
+        </div>
+      </div>
+      <div class="ai-tip"><b>AI Tip:</b> <em>"Summarize key coverage sections from my uploaded policy."</em></div>
+      <div class="actions">
+        <button class="btn btn-primary" data-expand="3">Learn More ▾</button>
+        <a class="btn btn-secondary" href="/app/advanced-tools.html">Open Tool</a>
+      </div>
+      <div class="content" id="content-3">
+        <div class="box">
+          <h4>Why It Matters</h4>
+          <p>Know your rights and coverage limits before negotiating with the insurer.</p>
+        </div>
+        <div class="box">
+          <h4>Common Mistakes</h4>
+          <ul>
+            <li>Not reading exclusions carefully</li>
+            <li>Missing coverage endorsements</li>
+            <li>Ignoring filing deadlines</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>Regulation Tip</h4>
+          <p>Some states have specific coverage requirements that override policy language.</p>
+        </div>
+        <div class="box">
+          <h4>Checklist</h4>
+          <ul>
+            <li>Upload the full policy</li>
+            <li>Note deductibles per coverage</li>
+            <li>Highlight key clauses to cite later</li>
+            <li>Check for additional living expense coverage</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>AI Prompts</h4>
+          <p><em>"Analyze my policy for coverage of [specific damage type]"</em></p>
+        </div>
+      </div>
+      <div class="complete">
+        <input type="checkbox" id="cb-3"><label for="cb-3">Mark Step Complete</label>
+      </div>
+    </div>
+
+    <!-- Step 4: Proof of Loss -->
+    <div class="step" id="step-4">
+      <div class="checkmark">✓</div>
+      <div style="display:flex;gap:14px;align-items:center;margin-bottom:8px">
+        <div class="badge">4</div>
+        <div>
+          <h3 class="title">Proof of Loss → Generate</h3>
+          <div class="desc">Create your sworn statement of damages.</div>
+        </div>
+      </div>
+      <div class="ai-tip"><b>AI Tip:</b> <em>"Generate Proof of Loss with total property damage of $84,750."</em></div>
+      <div class="actions">
+        <button class="btn btn-primary" data-expand="4">Learn More ▾</button>
+        <a class="btn btn-secondary" href="/app/document-generator-v2/document-generator.html?type=proof-of-loss">Open Tool</a>
+      </div>
+      <div class="content" id="content-4">
+        <div class="box">
+          <h4>Why It Matters</h4>
+          <p>Required document that triggers insurer's obligation to respond with payment or denial.</p>
+        </div>
+        <div class="box">
+          <h4>Common Mistakes</h4>
+          <ul>
+            <li>Underestimating damages</li>
+            <li>Missing supporting documentation</li>
+            <li>Filing after deadline</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>Regulation Tip</h4>
+          <p>Most states require filing within 60 days. Some allow extensions with good cause.</p>
+        </div>
+        <div class="box">
+          <h4>Checklist</h4>
+          <ul>
+            <li>Confirm totals & coverage buckets</li>
+            <li>Arrange notarization</li>
+            <li>Keep proof of submission</li>
+            <li>Include all supporting estimates</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>AI Prompts</h4>
+          <p><em>"Generate Proof of Loss for [damage type] totaling $[amount]"</em></p>
+        </div>
+      </div>
+      <div class="complete">
+        <input type="checkbox" id="cb-4"><label for="cb-4">Mark Step Complete</label>
+      </div>
+    </div>
+
+    <!-- Step 5: Compare Estimates -->
+    <div class="step" id="step-5">
+      <div class="checkmark">✓</div>
+      <div style="display:flex;gap:14px;align-items:center;margin-bottom:8px">
+        <div class="badge">5</div>
+        <div>
+          <h3 class="title">Compare Estimates → Evaluate</h3>
+          <div class="desc">Compare insurer vs. contractor estimates line by line.</div>
+        </div>
+      </div>
+      <div class="ai-tip"><b>AI Tip:</b> <em>"Highlight differences between insurer and contractor estimate."</em></div>
+      <div class="actions">
+        <button class="btn btn-primary" data-expand="5">Learn More ▾</button>
+        <a class="btn btn-secondary" href="/app/advanced-tools.html">Open Tool</a>
+      </div>
+      <div class="content" id="content-5">
+        <div class="box">
+          <h4>Why It Matters</h4>
+          <p>Identifies underpayment and provides evidence for appeals or negotiations.</p>
+        </div>
+        <div class="box">
+          <h4>Common Mistakes</h4>
+          <ul>
+            <li>Not getting multiple estimates</li>
+            <li>Accepting insurer's estimate without review</li>
+            <li>Missing scope differences</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>Regulation Tip</h4>
+          <p>Some states require insurers to explain estimate differences. Know your rights.</p>
+        </div>
+        <div class="box">
+          <h4>Checklist</h4>
+          <ul>
+            <li>Upload both estimates</li>
+            <li>Flag discrepancies with notes</li>
+            <li>Prepare bullet points for rebuttal</li>
+            <li>Get contractor to explain differences</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>AI Prompts</h4>
+          <p><em>"Compare these two estimates and highlight the key differences"</em></p>
+        </div>
+      </div>
+      <div class="complete">
+        <input type="checkbox" id="cb-5"><label for="cb-5">Mark Step Complete</label>
+      </div>
+    </div>
+
+    <!-- Step 6: Counter / Appeal -->
+    <div class="step" id="step-6">
+      <div class="checkmark">✓</div>
+      <div style="display:flex;gap:14px;align-items:center;margin-bottom:8px">
+        <div class="badge">6</div>
+        <div>
+          <h3 class="title">Counter / Appeal → Respond</h3>
+          <div class="desc">Challenge underpayment or denial professionally.</div>
+        </div>
+      </div>
+      <div class="ai-tip"><b>AI Tip:</b> <em>"Draft a rebuttal citing missing line items from estimate."</em></div>
+      <div class="actions">
+        <button class="btn btn-primary" data-expand="6">Learn More ▾</button>
+        <a class="btn btn-secondary" href="/app/document-generator-v2/document-generator.html?type=appeal-letter">Open Tool</a>
+      </div>
+      <div class="content" id="content-6">
+        <div class="box">
+          <h4>Why It Matters</h4>
+          <p>Professional appeals often result in increased settlements. Document everything.</p>
+        </div>
+        <div class="box">
+          <h4>Common Mistakes</h4>
+          <ul>
+            <li>Emotional language in appeals</li>
+            <li>Missing supporting evidence</li>
+            <li>Not setting response deadlines</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>Regulation Tip</h4>
+          <p>Some states have specific appeal procedures. Follow them exactly.</p>
+        </div>
+        <div class="box">
+          <h4>Checklist</h4>
+          <ul>
+            <li>Attach exhibits (photos, estimates, emails)</li>
+            <li>Set a clear response-by date</li>
+            <li>Cite specific policy provisions</li>
+            <li>Send certified mail</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>AI Prompts</h4>
+          <p><em>"Draft an appeal letter for underpayment citing [specific issues]"</em></p>
+        </div>
+      </div>
+      <div class="complete">
+        <input type="checkbox" id="cb-6"><label for="cb-6">Mark Step Complete</label>
+      </div>
+    </div>
+
+    <!-- Step 7: Escalate if Needed -->
+    <div class="step" id="step-7">
+      <div class="checkmark">✓</div>
+      <div style="display:flex;gap:14px;align-items:center;margin-bottom:8px">
+        <div class="badge">7</div>
+        <div>
+          <h3 class="title">Escalate if Needed → File Complaint</h3>
+          <div class="desc">Enforce deadlines or escalate with regulators/ADR.</div>
+        </div>
+      </div>
+      <div class="ai-tip"><b>AI Tip:</b> <em>"Create a Notice of Delay referencing state claim handling law."</em></div>
+      <div class="actions">
+        <button class="btn btn-primary" data-expand="7">Learn More ▾</button>
+        <a class="btn btn-secondary" href="/app/ai-response-agent.html">Open Tool</a>
+      </div>
+      <div class="content" id="content-7">
+        <div class="box">
+          <h4>Why It Matters</h4>
+          <p>Regulatory complaints can force insurer compliance and result in penalties.</p>
+        </div>
+        <div class="box">
+          <h4>Common Mistakes</h4>
+          <ul>
+            <li>Not documenting delays properly</li>
+            <li>Missing regulatory deadlines</li>
+            <li>Giving up too early</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>Regulation Tip</h4>
+          <p>Each state has different complaint procedures. Research your state's requirements.</p>
+        </div>
+        <div class="box">
+          <h4>Checklist</h4>
+          <ul>
+            <li>Compile missed deadlines & communications</li>
+            <li>Attach proof and certified mail receipts</li>
+            <li>File with state insurance department</li>
+            <li>Consider hiring a public adjuster</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>AI Prompts</h4>
+          <p><em>"Help me file a complaint with the state insurance department for [specific violations]"</em></p>
+        </div>
+      </div>
+      <div class="complete">
+        <input type="checkbox" id="cb-7"><label for="cb-7">Mark Step Complete</label>
+      </div>
+    </div>
+  </section>
+  <section class="download"><h3>📄 Download My Claim Progress Tracker (PDF)</h3><p>Generate a personalized checklist.</p><a class="btn btn-success" href="/app/document-generator-v2/document-generator.html?type=claim-timeline-diary">Download Tracker</a></section>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+// Firebase configuration - replace with your actual config
+const firebaseConfig = {
+  apiKey: "YOUR_FIREBASE_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let userUID = null;
+
+// Track authentication state
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    userUID = user.uid;
+    // Load user's claim timeline data
+    const docRef = doc(db, "user_claim_timeline", userUID);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      restore(docSnap.data());
+    }
+  }
+});
+
+// Save data to Firestore
+async function save(field, value) {
+  if (!userUID) return; // Fallback to localStorage if not authenticated
+  
+  try {
+    await setDoc(doc(db, "user_claim_timeline", userUID), {
+      [field]: value
+    }, { merge: true });
+  } catch (error) {
+    console.error("Error saving to Firestore:", error);
+    // Fallback to localStorage
+    localStorage.setItem(`cn_timeline_${field}`, JSON.stringify(value));
+  }
+}
+
+// Restore data from Firestore
+function restore(data) {
+  if (data.meta) {
+    const meta = data.meta;
+    for (const key in meta) {
+      const element = document.getElementById(key);
+      if (element) element.value = meta[key];
+    }
+  }
+  
+  if (data.completedSteps) {
+    data.completedSteps.forEach(stepId => {
+      const checkbox = document.getElementById(`cb-${stepId}`);
+      if (checkbox) {
+        checkbox.checked = true;
+        checkbox.closest('.step').classList.add('completed');
+      }
+    });
+  }
+  
+  updateProgress();
+  updateDashboard();
+}
+
+// Update progress bar and stats
+function updateProgress() {
+  const completed = [...document.querySelectorAll('[id^=cb-]:checked')].length;
+  const total = 7;
+  const percentage = Math.round(completed / total * 100);
+  
+  const progressBar = document.getElementById('progressBar');
+  const progressMeta = document.getElementById('progressMeta');
+  
+  progressBar.style.width = percentage + '%';
+  progressMeta.textContent = `Progress: ${completed} of ${total} steps completed (${percentage}%)`;
+  
+  // Update dashboard stats
+  document.getElementById('statProgress').textContent = `${percentage}% complete`;
+  document.getElementById('statSteps').textContent = `${completed} of 7 steps done`;
+}
+
+// Update dashboard with deadline information
+function updateDashboard() {
+  const lossDate = document.getElementById('lossDate').value;
+  const noticeDate = document.getElementById('noticeDate').value;
+  const ackDays = parseInt(document.getElementById('stateAckDays').value) || 14;
+  const polDays = parseInt(document.getElementById('polDueDays').value) || 60;
+  
+  if (noticeDate) {
+    const notice = new Date(noticeDate);
+    const today = new Date();
+    const daysSinceNotice = Math.floor((today - notice) / (1000 * 60 * 60 * 24));
+    
+    document.getElementById('statDays').textContent = daysSinceNotice;
+    
+    // Calculate next deadline
+    const ackDeadline = new Date(notice);
+    ackDeadline.setDate(ackDeadline.getDate() + ackDays);
+    
+    const polDeadline = new Date(lossDate || notice);
+    polDeadline.setDate(polDeadline.getDate() + polDays);
+    
+    const nextDeadline = ackDeadline < polDeadline ? ackDeadline : polDeadline;
+    const daysToDeadline = Math.floor((nextDeadline - today) / (1000 * 60 * 60 * 24));
+    
+    const statNext = document.getElementById('statNext');
+    const statNextLabel = document.getElementById('statNextLabel');
+    
+    if (daysToDeadline < 0) {
+      statNext.textContent = 'Overdue';
+      statNext.className = 'stat deadline missed';
+      statNextLabel.textContent = 'Deadline has passed';
+    } else if (daysToDeadline <= 3) {
+      statNext.textContent = `${daysToDeadline} days`;
+      statNext.className = 'stat deadline warn';
+      statNextLabel.textContent = 'Deadline approaching';
+    } else {
+      statNext.textContent = `${daysToDeadline} days`;
+      statNext.className = 'stat deadline ok';
+      statNextLabel.textContent = 'Days remaining';
+    }
+  }
+}
+
+// Event listeners
+document.addEventListener('change', (e) => {
+  // Handle form field changes
+  if (['claimType', 'lossDate', 'noticeDate', 'stateAckDays', 'polDueDays'].includes(e.target.id)) {
+    const meta = {
+      claimType: document.getElementById('claimType').value,
+      lossDate: document.getElementById('lossDate').value,
+      noticeDate: document.getElementById('noticeDate').value,
+      ackDays: document.getElementById('stateAckDays').value,
+      polDays: document.getElementById('polDueDays').value
+    };
+    save('meta', meta);
+    updateDashboard();
+  }
+  
+  // Handle checkbox changes
+  if (e.target.id.startsWith('cb-')) {
+    const completedSteps = [...document.querySelectorAll('[id^=cb-]:checked')].map(cb => cb.id.split('-')[1]);
+    save('completedSteps', completedSteps);
+    updateProgress();
+    updateDashboard();
+  }
+  
+  // Handle expand/collapse
+  if (e.target.dataset.expand) {
+    const stepId = e.target.dataset.expand;
+    const content = document.getElementById(`content-${stepId}`);
+    const isExpanded = content.classList.toggle('expanded');
+    e.target.textContent = isExpanded ? 'Hide Details ▴' : 'Learn More ▾';
+  }
+});
+
+// Initialize
+updateProgress();
+updateDashboard();
+</script>
+</body>
+</html>
