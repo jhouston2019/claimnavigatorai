@@ -59,7 +59,8 @@
 
     <!-- Category Tabs -->
     <div class="category-tabs">
-      <button class="category-tab active" data-category="Property">Property Claims</button>
+      <button class="category-tab active" data-category="all">All Claims</button>
+      <button class="category-tab" data-category="Property">Property Claims</button>
       <button class="category-tab" data-category="Commercial & Business Interruption">Commercial/Business</button>
       <button class="category-tab" data-category="Catastrophe / Disaster">Catastrophe/Disaster</button>
     </div>
@@ -73,7 +74,7 @@
   <script>
     let allScenarios = [];
     let filteredScenarios = [];
-    let currentCategory = 'Property';
+    let currentCategory = 'all';
 
     // Load scenarios from JSON
     async function loadScenarios() {
@@ -93,15 +94,27 @@
       const container = document.getElementById('scenariosGrid');
       container.innerHTML = '';
       
-      // Filter by current category
-      const categoryScenarios = filteredScenarios.filter(cat => cat.category === currentCategory);
+      let scenariosToShow = [];
       
-      if (categoryScenarios.length === 0) {
+      if (currentCategory === 'all') {
+        // Show all scenarios from all categories
+        filteredScenarios.forEach(category => {
+          scenariosToShow = scenariosToShow.concat(category.situations);
+        });
+      } else {
+        // Filter by current category
+        const categoryScenarios = filteredScenarios.filter(cat => cat.category === currentCategory);
+        if (categoryScenarios.length > 0) {
+          scenariosToShow = categoryScenarios[0].situations;
+        }
+      }
+      
+      if (scenariosToShow.length === 0) {
         container.innerHTML = '<p class="text-gray-600 text-center py-8">No scenarios found for this category.</p>';
         return;
       }
 
-      categoryScenarios[0].situations.forEach((situation, index) => {
+      scenariosToShow.forEach((situation, index) => {
         const card = document.createElement('div');
         card.className = 'scenario-card';
         card.innerHTML = `
