@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📄 Document Generator - ClaimNavigatorAI</title>
+  <link rel="stylesheet" href="/app/document-generator-v2/assets/css/document-generator.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 font-inter">
+  <header class="bg-[#1e40af] text-white p-4 flex justify-between items-center">
+    <h1 class="text-xl font-semibold">📄 Document Generator</h1>
+    <a href="/app/resource-center.html" class="text-sm underline">← Resource Center</a>
+  </header>
+
+  <main class="p-6 max-w-7xl mx-auto">
+    <h2 class="text-2xl font-semibold mb-4">Select Document Type</h2>
+    <p class="mb-6 text-gray-700">Choose from 61+ professional document types organized by category.</p>
+    
+    <!-- Search Box -->
+    <div class="mb-6">
+      <input type="text" id="searchBox" placeholder="Search document types..." 
+             class="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+    </div>
+
+    <!-- Category Filter -->
+    <div class="mb-6">
+      <div class="flex flex-wrap gap-2">
+        <button class="category-filter active" data-category="all">All Documents</button>
+        <button class="category-filter" data-category="core">Core Documents</button>
+        <button class="category-filter" data-category="legal">Legal Documents</button>
+        <button class="category-filter" data-category="financial">Financial Documents</button>
+        <button class="category-filter" data-category="evidence">Evidence Documents</button>
+        <button class="category-filter" data-category="communication">Communication</button>
+        <button class="category-filter" data-category="analysis">Analysis Tools</button>
+      </div>
+    </div>
+
+    <div id="document-list" class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"></div>
+  </main>
+
+  <script>
+    let allDocuments = [];
+    let filteredDocuments = [];
+
+    // Load documents from config
+    fetch('/app/document-generator-v2/config/documents.json')
+      .then(res => res.json())
+      .then(data => {
+        allDocuments = data;
+        filteredDocuments = data;
+        renderDocuments();
+      })
+      .catch(err => {
+        console.error('Error loading documents:', err);
+        document.getElementById('document-list').innerHTML = '<p class="text-red-600">Error loading documents. Please try again.</p>';
+      });
+
+    function renderDocuments() {
+      const container = document.getElementById('document-list');
+      container.innerHTML = '';
+      
+      filteredDocuments.forEach(doc => {
+        const card = document.createElement('div');
+        card.className = 'bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer p-4';
+        card.innerHTML = `
+          <div class="text-xs uppercase text-blue-600 font-semibold mb-2">${doc.category}</div>
+          <h3 class="font-semibold text-lg mb-2 text-gray-900">${doc.title}</h3>
+          <p class="text-gray-600 text-sm mb-3">${doc.description}</p>
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-gray-500">${doc.outputFormat}</span>
+            <span class="text-blue-600 text-sm font-medium">Generate →</span>
+          </div>`;
+        
+        card.onclick = () => {
+          window.location.href = `/app/document-generator-v2/forms/form-template.html?id=${doc.id}`;
+        };
+        
+        container.appendChild(card);
+      });
+    }
+
+    // Search functionality
+    document.getElementById('searchBox').addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      filteredDocuments = allDocuments.filter(doc => 
+        doc.title.toLowerCase().includes(searchTerm) ||
+        doc.description.toLowerCase().includes(searchTerm) ||
+        doc.category.toLowerCase().includes(searchTerm)
+      );
+      renderDocuments();
+    });
+
+    // Category filter functionality
+    document.querySelectorAll('.category-filter').forEach(button => {
+      button.addEventListener('click', (e) => {
+        // Remove active class from all buttons
+        document.querySelectorAll('.category-filter').forEach(btn => btn.classList.remove('active'));
+        // Add active class to clicked button
+        e.target.classList.add('active');
+        
+        const category = e.target.dataset.category;
+        if (category === 'all') {
+          filteredDocuments = allDocuments;
+        } else {
+          filteredDocuments = allDocuments.filter(doc => doc.category === category);
+        }
+        renderDocuments();
+      });
+    });
+  </script>
+</body>
+</html>

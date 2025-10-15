@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document Form - ClaimNavigatorAI</title>
+  <link rel="stylesheet" href="/app/document-generator-v2/assets/css/document-generator.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 font-inter">
+  <header class="bg-[#1e40af] text-white p-4 flex justify-between items-center">
+    <h1 id="docTitle" class="text-xl font-semibold">Document Generator</h1>
+    <a href="/app/document-generator-v2/document-generator.html" class="text-sm underline">← Documents</a>
+  </header>
+
+  <main class="max-w-5xl mx-auto mt-6 p-6 bg-white rounded-lg shadow">
+    <div class="mb-6">
+      <p id="docDescription" class="text-gray-600 mb-4"></p>
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h3 class="font-semibold text-blue-900 mb-2">📋 Document Information</h3>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div><span class="font-medium">Category:</span> <span id="docCategory"></span></div>
+          <div><span class="font-medium">Output Format:</span> <span id="docFormat"></span></div>
+          <div><span class="font-medium">AI Assistance:</span> <span id="docAI"></span></div>
+          <div><span class="font-medium">Template Type:</span> <span id="docTemplate"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <form id="docForm" class="grid gap-6 mb-8">
+      <!-- Dynamic form fields will be inserted here -->
+    </form>
+
+    <div class="flex flex-wrap gap-3 mb-6">
+      <button id="aiBtn" class="bg-[#1e40af] text-white px-6 py-3 rounded-lg hover:bg-[#3b82f6] transition-colors font-medium">
+        🤖 Draft with AI
+      </button>
+      <button id="pdfBtn" class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium">
+        📄 Export PDF
+      </button>
+      <button id="docxBtn" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium">
+        📝 Export DOCX
+      </button>
+      <button id="xlsxBtn" class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors font-medium">
+        📊 Export XLSX
+      </button>
+    </div>
+
+    <div class="border-t pt-6">
+      <h3 class="text-lg font-semibold mb-3">🤖 AI Generated Content</h3>
+      <textarea id="aiOutput" class="w-full h-80 border border-gray-300 p-4 rounded-lg font-mono text-sm" 
+                placeholder="AI Draft Output will appear here..."></textarea>
+      <div class="mt-3 flex gap-2">
+        <button id="copyBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
+          📋 Copy Text
+        </button>
+        <button id="clearBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
+          🗑️ Clear
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const docId = params.get('id');
+
+    let currentDocument = null;
+
+    // Load document configuration
+    fetch('/app/document-generator-v2/config/documents.json')
+      .then(res => res.json())
+      .then(docs => {
+        const doc = docs.find(d => d.id === docId);
+        if (!doc) {
+          document.body.innerHTML = '<div class="p-8 text-center"><h1 class="text-2xl font-bold text-red-600">Document not found</h1><p>Please return to the document list.</p></div>';
+          return;
+        }
+        
+        currentDocument = doc;
+        document.title = doc.title;
+        document.getElementById('docTitle').innerText = doc.title;
+        document.getElementById('docDescription').innerText = doc.description;
+        document.getElementById('docCategory').innerText = doc.category;
+        document.getElementById('docFormat').innerText = doc.outputFormat;
+        document.getElementById('docAI').innerText = doc.aiAssist ? 'Yes' : 'No';
+        document.getElementById('docTemplate').innerText = doc.templateType;
+
+        // Generate form fields
+        const form = document.getElementById('docForm');
+        doc.fields.forEach((field, index) => {
+          const fieldDiv = document.createElement('div');
+          fieldDiv.className = 'form-field';
+          
+          if (field.type === 'textarea') {
+            fieldDiv.innerHTML = `
+              <label class="block text-sm font-medium text-gray-700 mb-2">${field.label} ${field.required ? '<span class="text-red-500">*</span>' : ''}</label>
+              <textarea 
+                name="field_${index}" 
+                placeholder="${field.placeholder || ''}" 
+                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows="4"
+                ${field.required ? 'required' : ''}
+              ></textarea>
+            `;
+          } else if (field.type === 'table') {
+            fieldDiv.innerHTML = `
+              <label class="block text-sm font-medium text-gray-700 mb-2">${field.label} ${field.required ? '<span class="text-red-500">*</span>' : ''}</label>
+              <div class="overflow-x-auto">
+                <table class="min-w-full border-collapse border border-gray-300">
+                  <thead>
+                    <tr class="bg-gray-50">
+                      ${field.columns.map(col => `<th class="border border-gray-300 p-2 text-left font-medium">${col}</th>`).join('')}
+                    </tr>
+                  </thead>
+                  <tbody id="tableBody_${index}">
+                    <tr>
+                      ${field.columns.map(() => `<td class="border border-gray-300 p-1"><input type="text" class="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500"></td>`).join('')}
+                    </tr>
+                  </tbody>
+                </table>
+                <button type="button" onclick="addTableRow(${index})" class="mt-2 text-sm text-blue-600 hover:text-blue-800">+ Add Row</button>
+              </div>
+            `;
+          } else if (field.type === 'select') {
+            fieldDiv.innerHTML = `
+              <label class="block text-sm font-medium text-gray-700 mb-2">${field.label} ${field.required ? '<span class="text-red-500">*</span>' : ''}</label>
+              <select 
+                name="field_${index}" 
+                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                ${field.required ? 'required' : ''}
+              >
+                <option value="">Select ${field.label}</option>
+                ${field.options.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join('')}
+              </select>
+            `;
+          } else {
+            fieldDiv.innerHTML = `
+              <label class="block text-sm font-medium text-gray-700 mb-2">${field.label} ${field.required ? '<span class="text-red-500">*</span>' : ''}</label>
+              <input 
+                type="${field.type}" 
+                name="field_${index}" 
+                placeholder="${field.placeholder || ''}" 
+                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                ${field.required ? 'required' : ''}
+              />
+            `;
+          }
+          
+          form.appendChild(fieldDiv);
+        });
+
+        // Set up event handlers
+        setupEventHandlers();
+      })
+      .catch(err => {
+        console.error('Error loading document:', err);
+        document.body.innerHTML = '<div class="p-8 text-center"><h1 class="text-2xl font-bold text-red-600">Error loading document</h1><p>Please try again later.</p></div>';
+      });
+
+    function setupEventHandlers() {
+      // AI Generation
+      document.getElementById('aiBtn').onclick = async (e) => {
+        e.preventDefault();
+        const button = e.target;
+        const originalText = button.textContent;
+        button.textContent = '🤖 Generating...';
+        button.disabled = true;
+
+        try {
+          const formData = {};
+          document.querySelectorAll('#docForm input, #docForm textarea, #docForm select').forEach((el, i) => {
+            if (el.name) {
+              formData[el.name] = el.value;
+            }
+          });
+
+          const response = await fetch('/app/document-generator-v2/netlify/functions/generate-document', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ docId, formData })
+          });
+
+          const data = await response.json();
+          if (data.error) {
+            throw new Error(data.error);
+          }
+
+          document.getElementById('aiOutput').value = data.output;
+        } catch (err) {
+          console.error('AI generation error:', err);
+          alert('Error generating document: ' + err.message);
+        } finally {
+          button.textContent = originalText;
+          button.disabled = false;
+        }
+      };
+
+      // Export functions
+      document.getElementById('pdfBtn').onclick = () => {
+        window.open(`/app/document-generator-v2/netlify/functions/export-pdf?docId=${docId}`, '_blank');
+      };
+
+      document.getElementById('docxBtn').onclick = () => {
+        window.open(`/app/document-generator-v2/netlify/functions/export-docx?docId=${docId}`, '_blank');
+      };
+
+      document.getElementById('xlsxBtn').onclick = () => {
+        window.open(`/app/document-generator-v2/netlify/functions/export-xlsx?docId=${docId}`, '_blank');
+      };
+
+      // Utility buttons
+      document.getElementById('copyBtn').onclick = () => {
+        const output = document.getElementById('aiOutput');
+        output.select();
+        document.execCommand('copy');
+        alert('Content copied to clipboard!');
+      };
+
+      document.getElementById('clearBtn').onclick = () => {
+        document.getElementById('aiOutput').value = '';
+      };
+    }
+
+    // Table row addition function
+    function addTableRow(tableIndex) {
+      const tbody = document.getElementById(`tableBody_${tableIndex}`);
+      const firstRow = tbody.querySelector('tr');
+      const newRow = firstRow.cloneNode(true);
+      newRow.querySelectorAll('input').forEach(input => input.value = '');
+      tbody.appendChild(newRow);
+    }
+  </script>
+</body>
+</html>
