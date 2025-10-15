@@ -41,7 +41,7 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
 .badge{width:46px;height:46px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem}
 .title{margin:0;font-size:1.25rem;font-weight:800;color:var(--navy)}
 .desc{margin:2px 0 8px;color:var(--muted)}
-.ai-tip{background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid var(--warn);border-radius:12px;padding:12px;margin:10px 0}
+.ai-tip{background:linear-gradient(135deg,#f8fafc,#f1f5f9);border:1px solid #e2e8f0;border-radius:12px;padding:12px;margin:10px 0;color:#111827}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 .btn{border:none;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .2s,transform .1s}
 .btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-600)}
@@ -653,8 +653,17 @@ document.addEventListener('change', (e) => {
   if (e.target.dataset.expand) {
     const stepId = e.target.dataset.expand;
     const content = document.getElementById(`content-${stepId}`);
-    const isExpanded = content.classList.toggle('expanded');
-    e.target.textContent = isExpanded ? 'Hide Details ▴' : 'Learn More ▾';
+    const isExpanded = content.classList.contains('expanded');
+    
+    if (isExpanded) {
+      content.classList.remove('expanded');
+      content.style.maxHeight = '0';
+      e.target.textContent = 'Learn More ▾';
+    } else {
+      content.classList.add('expanded');
+      content.style.maxHeight = content.scrollHeight + 'px';
+      e.target.textContent = 'Hide Details ▴';
+    }
   }
 });
 
