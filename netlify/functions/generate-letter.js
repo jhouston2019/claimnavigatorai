@@ -42,9 +42,26 @@ export async function handler(event) {
       };
     }
 
+    // File mapping for document types
+    const fileMap = {
+      "Appeal Letter": "AppealLetter.txt",
+      "Demand Letter": "DemandLetter.txt",
+      "Notice of Delay Complaint": "NoticeOfDelayComplaint.txt",
+      "Coverage Clarification Request": "CoverageClarificationRequest.txt",
+      "Proof of Repairs Submission": "ProofOfRepairsSubmission.txt",
+      "Proof of Loss": "ProofOfLoss.txt",
+      "Supplemental Proof of Loss": "SupplementalProofOfLoss.txt",
+      "Appraisal Demand Letter": "AppraisalDemandLetter.txt",
+      "Claim Summary Letter": "ClaimSummaryLetter.txt",
+      "Clarification Request": "ClarificationRequest.txt",
+      "Regulatory Complaint": "RegulatoryComplaint.txt",
+      "Damage Inventory Sheet": "DamageInventorySheet.txt",
+      "ALE Expense Log": "ALEExpenseLog.txt"
+    };
+
     // Load template
-    const templateFileName = documentType.replace(/\s+/g, '') + '.txt';
-    const templatePath = path.resolve('assets/templates/letters', templateFileName);
+    const fname = fileMap[documentType] || `${documentType.replace(/\s+/g, '')}.txt`;
+    const templatePath = path.resolve('assets/templates/letters', fname);
     
     let template = '';
     try {

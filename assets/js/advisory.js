@@ -278,30 +278,17 @@ class AdvisorySystem {
     import('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')
       .then(() => {
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+        const doc = new jsPDF({ unit: "mm", format: "letter" });
         
-        // Add header
-        doc.setFontSize(16);
-        doc.text('CLAIM INFORMATION', 20, 20);
-        doc.setFontSize(12);
-        doc.text(`Policyholder: ${this.claimData.name || '[Your Name]'}`, 20, 30);
-        doc.text(`Address: ${this.claimData.address || '[Your Address]'}`, 20, 35);
-        doc.text(`Policy Number: ${this.claimData.policy || '[Policy Number]'}`, 20, 40);
-        doc.text(`Claim Number: ${this.claimData.claim || '[Claim Number]'}`, 20, 45);
-        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 50);
-        
-        // Add separator line
-        doc.line(20, 55, 190, 55);
+        // Render header and footer
+        this.renderHeaderFooter(doc, this.claimData);
         
         // Add letter content
         const letterText = document.getElementById('letterContent').textContent;
-        const lines = doc.splitTextToSize(letterText, 170);
-        doc.text(lines, 20, 65);
-        
-        // Add footer watermark
-        doc.setFontSize(10);
-        doc.setTextColor(128, 128, 128);
-        doc.text('Claim Navigator AI • Professional Claim Assistance', 60, 280);
+        const marginX = 10;
+        const startY = 28;
+        const lines = doc.splitTextToSize(letterText, 190);
+        doc.text(lines, marginX, startY);
         
         // Save PDF
         const fileName = `${this.currentDocumentType.replace(/\s+/g, '_')}_${this.claimData.claim || 'claim'}.pdf`;
@@ -311,6 +298,22 @@ class AdvisorySystem {
         console.error('Error loading jsPDF:', error);
         alert('Error loading PDF library. Please try again.');
       });
+  }
+
+  renderHeaderFooter(doc, claimData) {
+    // Header block
+    doc.setFontSize(10);
+    doc.text(`Claimant: ${claimData.name || '[Your Name]'}   Policy: ${claimData.policy || '[Policy Number]'}   Claim: ${claimData.claim || '[Claim Number]'}`, 10, 12);
+    doc.text(`Property: ${claimData.address || '[Your Address]'}   Date: ${new Date().toLocaleDateString()}`, 10, 18);
+    
+    // Add separator line
+    doc.line(10, 22, 200, 22);
+    
+    // Footer watermark
+    const footerY = 285;
+    doc.setFontSize(9);
+    doc.setTextColor(128, 128, 128);
+    doc.text("Claim Navigator AI • Professional Claim Assistance", 105, footerY, { align: "center" });
   }
 
   copyText() {
