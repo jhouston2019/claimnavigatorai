@@ -106,9 +106,9 @@
       // Get the document ID, fallback to appeal-letter if not found
       const documentId = documentMapping[documentType] || 'appeal-letter';
 
-      // Navigate to document generator with the correct ID parameter
-      console.log('Navigating to:', `/app/document-generator-v2/forms/form-template.html?id=${documentId}`);
-      window.location.href = `/app/document-generator-v2/forms/form-template.html?id=${documentId}`;
+      // Navigate to letter generator with document type and situation
+      console.log('Navigating to:', `/app/letter-generator.html?type=${encodeURIComponent(documentType)}&situation=${encodeURIComponent(situation)}`);
+      window.location.href = `/app/letter-generator.html?type=${encodeURIComponent(documentType)}&situation=${encodeURIComponent(situation)}`;
     }
 
     // Load scenarios from JSON
