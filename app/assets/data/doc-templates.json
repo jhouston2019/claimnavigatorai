@@ -1,787 +1,914 @@
 {
   "proof-of-loss": {
-    "title": "Proof of Loss Documentation",
+    "title": "Sworn Statement in Proof of Loss",
     "category": "core",
-    "description": "Comprehensive proof of loss form with detailed itemization and supporting documentation requirements.",
+    "description": "Comprehensive sworn statement and proof of loss with detailed itemization.",
+    "layoutType": "T1",
+    "outputType": "pdf",
     "fields": [
-      {"label": "Claimant Name", "id": "claimantName", "type": "text", "required": true},
-      {"label": "Policy Number", "id": "policyNumber", "type": "text", "required": true},
-      {"label": "Claim Number", "id": "claimNumber", "type": "text", "required": true},
-      {"label": "Loss Date", "id": "lossDate", "type": "date", "required": true},
-      {"label": "Description of Loss", "id": "lossDescription", "type": "textarea", "required": true},
-      {"label": "Estimated Loss ($)", "id": "estimatedLoss", "type": "number", "required": true},
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Contact Phone", "id": "contactPhone", "type": "tel", "required": false},
-      {"label": "Contact Email", "id": "contactEmail", "type": "email", "required": false}
+      {"label": "Insurer Claim Number", "id": "insurerClaimNumber", "type": "text", "required": true},
+      {"label": "Insurance Carrier", "id": "insuranceCarrier", "type": "text", "required": true},
+      {"label": "Amount of Policy at Time of Loss", "id": "policyAmount", "type": "number", "required": true},
+      {"label": "Date Policy Issued", "id": "policyIssuedDate", "type": "date", "required": true},
+      {"label": "Date Policy Expires", "id": "policyExpiresDate", "type": "date", "required": true},
+      {"label": "Insurance Agency", "id": "insuranceAgency", "type": "text"},
+      {"label": "Insurance Agent", "id": "insuranceAgent", "type": "text"},
+      {"label": "To (Recipient)", "id": "recipientName", "type": "text", "required": true},
+      {"label": "Cause of Loss", "id": "causeOfLoss", "type": "textarea", "required": true},
+      {"label": "Time of Loss", "id": "timeOfLoss", "type": "text", "required": true},
+      {"label": "Date of Loss", "id": "dateOfLoss", "type": "date", "required": true},
+      {"label": "Occupancy Description", "id": "occupancyDescription", "type": "textarea", "required": true},
+      {"label": "Title & Interest", "id": "titleInterest", "type": "textarea", "required": true},
+      {"label": "Other Interests", "id": "otherInterests", "type": "textarea"},
+      {"label": "Policy Changes Since Issuance", "id": "policyChanges", "type": "textarea"},
+      {"label": "Total Insurance Amount", "id": "totalInsurance", "type": "number", "required": true},
+      {"label": "Actual Cash Value", "id": "actualCashValue", "type": "number", "required": true},
+      {"label": "Whole Loss and Damage", "id": "totalLoss", "type": "number", "required": true},
+      {"label": "Amount Claimed", "id": "amountClaimed", "type": "number", "required": true},
+      {"label": "Signature Name", "id": "signatureName", "type": "text", "required": true},
+      {"label": "Signature Date", "id": "signatureDate", "type": "date", "required": true}
     ]
   },
-  "demand-letter": {
+  "payment-demand": {
     "title": "Payment Demand Letter",
     "category": "legal",
-    "description": "Professional demand letter for payment requests with legal precedent references and timeline requirements.",
+    "description": "Formal letter demanding payment with legal references and deadline.",
+    "layoutType": "T2",
+    "outputType": "pdf",
     "fields": [
+      {"label": "Claimant Name", "id": "claimantName", "type": "text", "required": true},
       {"label": "Insurer Name", "id": "insurerName", "type": "text", "required": true},
-      {"label": "Claim Number", "id": "claimNumber", "type": "text", "required": true},
       {"label": "Policy Number", "id": "policyNumber", "type": "text", "required": true},
-      {"label": "Disputed Amount ($)", "id": "disputedAmount", "type": "number", "required": true},
-      {"label": "Reason for Demand", "id": "reason", "type": "textarea", "required": true},
-      {"label": "Response Deadline (days)", "id": "deadline", "type": "number", "required": false},
-      {"label": "Legal References", "id": "legalRefs", "type": "textarea", "required": false}
-    ]
-  },
-  "appeal-letter": {
-    "title": "Claim Appeal Letter",
-    "category": "legal",
-    "description": "Professional appeal letter for denied claims with supporting documentation requirements and legal basis.",
-    "fields": [
-      {"label": "Insurer Name", "id": "insurerName", "type": "text", "required": true},
       {"label": "Claim Number", "id": "claimNumber", "type": "text", "required": true},
-      {"label": "Denial Date", "id": "denialDate", "type": "date", "required": true},
-      {"label": "Denial Reason", "id": "denialReason", "type": "textarea", "required": true},
-      {"label": "Appeal Basis", "id": "appealBasis", "type": "textarea", "required": true},
-      {"label": "Supporting Evidence", "id": "supportingEvidence", "type": "textarea", "required": false},
-      {"label": "Legal Authority", "id": "legalAuthority", "type": "textarea", "required": false}
+      {"label": "Date of Loss", "id": "dateOfLoss", "type": "date", "required": true},
+      {"label": "Amount Owed", "id": "amountOwed", "type": "number", "required": true},
+      {"label": "Reason for Demand", "id": "reason", "type": "textarea", "required": true},
+      {"label": "Response Deadline", "id": "deadline", "type": "date", "required": true},
+      {"label": "Signature Name", "id": "signatureName", "type": "text", "required": true}
     ]
   },
   "damage-assessment": {
     "title": "Damage Assessment Report",
-    "category": "core",
-    "description": "Professional damage assessment and documentation form with photographic evidence guidelines and expert evaluation requirements.",
+    "category": "analysis",
+    "description": "Professional assessment of property damage with detailed analysis and recommendations.",
+    "layoutType": "T6",
+    "outputType": "pdf",
     "fields": [
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
+      {"label": "Property Address", "id": "propertyAddress", "type": "text", "required": true},
       {"label": "Assessment Date", "id": "assessmentDate", "type": "date", "required": true},
       {"label": "Assessor Name", "id": "assessorName", "type": "text", "required": true},
-      {"label": "Assessor License", "id": "assessorLicense", "type": "text", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Wind", "Water", "Fire", "Theft", "Vandalism", "Other"], "required": true},
+      {"label": "Assessor License", "id": "assessorLicense", "type": "text", "required": true},
       {"label": "Damage Description", "id": "damageDescription", "type": "textarea", "required": true},
+      {"label": "Cause of Damage", "id": "causeOfDamage", "type": "text", "required": true},
       {"label": "Estimated Repair Cost", "id": "repairCost", "type": "number", "required": true},
-      {"label": "Replacement Cost", "id": "replacementCost", "type": "number", "required": false},
-      {"label": "Photos Taken", "id": "photosTaken", "type": "number", "required": false}
-    ]
-  },
-  "business-interruption-claim": {
-    "title": "Business Interruption Claim",
-    "category": "financial",
-    "description": "Comprehensive business interruption claim documentation and financial impact analysis with revenue calculations.",
-    "fields": [
-      {"label": "Business Name", "id": "businessName", "type": "text", "required": true},
-      {"label": "Business Type", "id": "businessType", "type": "text", "required": true},
-      {"label": "Interruption Start Date", "id": "interruptionStart", "type": "date", "required": true},
-      {"label": "Interruption End Date", "id": "interruptionEnd", "type": "date", "required": false},
-      {"label": "Monthly Revenue (Pre-Loss)", "id": "monthlyRevenue", "type": "number", "required": true},
-      {"label": "Lost Revenue", "id": "lostRevenue", "type": "number", "required": true},
-      {"label": "Continuing Expenses", "id": "continuingExpenses", "type": "number", "required": true},
-      {"label": "Extra Expenses", "id": "extraExpenses", "type": "number", "required": false},
-      {"label": "Recovery Plan", "id": "recoveryPlan", "type": "textarea", "required": false}
+      {"label": "Replacement Cost", "id": "replacementCost", "type": "number", "required": true},
+      {"label": "Depreciation", "id": "depreciation", "type": "number", "required": true},
+      {"label": "Actual Cash Value", "id": "actualCashValue", "type": "number", "required": true},
+      {"label": "Recommendations", "id": "recommendations", "type": "textarea", "required": true}
     ]
   },
   "depreciation-schedule": {
     "title": "Depreciation Schedule",
     "category": "financial",
-    "description": "Detailed depreciation calculation for property and equipment losses with replacement cost analysis.",
+    "description": "Detailed depreciation calculation for damaged property items.",
+    "layoutType": "T4",
+    "outputType": "xlsx",
     "fields": [
-      {"label": "Property Type", "id": "propertyType", "type": "text", "required": true},
-      {"label": "Original Cost", "id": "originalCost", "type": "number", "required": true},
-      {"label": "Purchase Date", "id": "purchaseDate", "type": "date", "required": true},
-      {"label": "Useful Life (years)", "id": "usefulLife", "type": "number", "required": true},
-      {"label": "Current Age (years)", "id": "currentAge", "type": "number", "required": true},
-      {"label": "Replacement Cost", "id": "replacementCost", "type": "number", "required": true},
-      {"label": "Depreciation Method", "id": "depreciationMethod", "type": "select", "options": ["Straight Line", "Declining Balance", "Sum of Years"], "required": true},
-      {"label": "Condition", "id": "condition", "type": "select", "options": ["Excellent", "Good", "Fair", "Poor"], "required": true}
-    ]
-  },
-  "claim-timeline": {
-    "title": "Claim Timeline Template",
-    "category": "specialty",
-    "description": "Detailed timeline template for documenting claim events and correspondence with chronological tracking.",
-    "fields": [
-      {"label": "Claim Number", "id": "claimNumber", "type": "text", "required": true},
-      {"label": "Policy Number", "id": "policyNumber", "type": "text", "required": true},
-      {"label": "Loss Date", "id": "lossDate", "type": "date", "required": true},
-      {"label": "First Notice Date", "id": "firstNoticeDate", "type": "date", "required": true},
-      {"label": "Key Events", "id": "keyEvents", "type": "textarea", "required": true},
-      {"label": "Correspondence Log", "id": "correspondenceLog", "type": "textarea", "required": false},
-      {"label": "Important Deadlines", "id": "deadlines", "type": "textarea", "required": false}
+      {"label": "Property Items", "id": "propertyItems", "type": "table", "required": true, "columns": ["Item", "Purchase Date", "Original Cost", "Age", "Depreciation Rate", "Depreciated Value"]},
+      {"label": "Total Depreciation", "id": "totalDepreciation", "type": "number", "required": true},
+      {"label": "Net Value", "id": "netValue", "type": "number", "required": true}
     ]
   },
   "evidence-log": {
     "title": "Evidence Documentation Log",
-    "category": "core",
-    "description": "Systematic evidence tracking and documentation log for claim support materials with chain of custody.",
+    "category": "evidence",
+    "description": "Comprehensive log of all evidence collected and organized for your insurance claim.",
+    "layoutType": "T3",
+    "outputType": "xlsx",
     "fields": [
-      {"label": "Claim Number", "id": "claimNumber", "type": "text", "required": true},
-      {"label": "Evidence Type", "id": "evidenceType", "type": "select", "options": ["Photographs", "Documents", "Receipts", "Reports", "Witness Statements", "Other"], "required": true},
-      {"label": "Evidence Description", "id": "evidenceDescription", "type": "textarea", "required": true},
-      {"label": "Date Collected", "id": "dateCollected", "type": "date", "required": true},
-      {"label": "Collected By", "id": "collectedBy", "type": "text", "required": true},
-      {"label": "Storage Location", "id": "storageLocation", "type": "text", "required": false},
-      {"label": "Chain of Custody", "id": "chainOfCustody", "type": "textarea", "required": false}
+      {"label": "Evidence Items", "id": "evidenceItems", "type": "table", "required": true, "columns": ["Date", "Item Type", "Description", "Location", "Photographer", "Notes"]},
+      {"label": "Total Items", "id": "totalItems", "type": "number", "required": true}
     ]
   },
-  "settlement-offer": {
-    "title": "Settlement Offer Letter",
-    "category": "legal",
-    "description": "Professional settlement offer letter with negotiation terms and conditions for claim resolution.",
+  "appeal-letter": {
+    "title": "Claim Denial Appeal Letter",
+    "category": "appeals",
+    "description": "Professional appeal letter for denied insurance claims with legal arguments.",
+    "layoutType": "T2",
+    "outputType": "pdf",
     "fields": [
       {"label": "Insurer Name", "id": "insurerName", "type": "text", "required": true},
       {"label": "Claim Number", "id": "claimNumber", "type": "text", "required": true},
-      {"label": "Settlement Amount", "id": "settlementAmount", "type": "number", "required": true},
-      {"label": "Offer Terms", "id": "offerTerms", "type": "textarea", "required": true},
-      {"label": "Acceptance Deadline", "id": "acceptanceDeadline", "type": "date", "required": true},
-      {"label": "Conditions", "id": "conditions", "type": "textarea", "required": false},
-      {"label": "Legal Consequences", "id": "legalConsequences", "type": "textarea", "required": false}
+      {"label": "Denial Reason", "id": "denialReason", "type": "textarea", "required": true},
+      {"label": "Your Arguments", "id": "yourArguments", "type": "textarea", "required": true},
+      {"label": "Supporting Evidence", "id": "supportingEvidence", "type": "textarea", "required": true},
+      {"label": "Legal Basis", "id": "legalBasis", "type": "textarea", "required": true},
+      {"label": "Requested Action", "id": "requestedAction", "type": "textarea", "required": true}
+    ]
+  },
+  "business-interruption": {
+    "title": "Business Interruption Claim",
+    "category": "business",
+    "description": "Comprehensive business interruption claim with financial impact analysis.",
+    "layoutType": "T7",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Business Name", "id": "businessName", "type": "text", "required": true},
+      {"label": "Business Address", "id": "businessAddress", "type": "text", "required": true},
+      {"label": "Business Type", "id": "businessType", "type": "text", "required": true},
+      {"label": "Interruption Start Date", "id": "interruptionStart", "type": "date", "required": true},
+      {"label": "Interruption End Date", "id": "interruptionEnd", "type": "date", "required": true},
+      {"label": "Lost Revenue", "id": "lostRevenue", "type": "number", "required": true},
+      {"label": "Additional Expenses", "id": "additionalExpenses", "type": "number", "required": true},
+      {"label": "Normal Operating Expenses", "id": "normalExpenses", "type": "number", "required": true},
+      {"label": "Total Business Interruption Loss", "id": "totalLoss", "type": "number", "required": true}
     ]
   },
   "expense-reimbursement": {
-    "title": "Expense Reimbursement Form",
+    "title": "Expense Reimbursement Request",
     "category": "financial",
-    "description": "Request for reimbursement of out-of-pocket expenses related to covered loss with detailed documentation.",
+    "description": "Request for reimbursement of out-of-pocket expenses related to your claim.",
+    "layoutType": "T4",
+    "outputType": "xlsx",
     "fields": [
-      {"label": "Claimant Name", "id": "claimantName", "type": "text", "required": true},
       {"label": "Claim Number", "id": "claimNumber", "type": "text", "required": true},
-      {"label": "Expense Category", "id": "expenseCategory", "type": "select", "options": ["Emergency Repairs", "Temporary Housing", "Meals", "Transportation", "Storage", "Other"], "required": true},
-      {"label": "Total Amount", "id": "totalAmount", "type": "number", "required": true},
-      {"label": "Expense Details", "id": "expenseDetails", "type": "textarea", "required": true},
-      {"label": "Receipts Attached", "id": "receiptsAttached", "type": "checkbox", "required": true},
-      {"label": "Date Range", "id": "dateRange", "type": "text", "required": true}
+      {"label": "Total Amount Requested", "id": "totalAmount", "type": "number", "required": true},
+      {"label": "Expense Details", "id": "expenseDetails", "type": "table", "required": true, "columns": ["Date", "Description", "Amount", "Receipt Number", "Category"]}
     ]
   },
   "appraisal-request": {
-    "title": "Appraisal Request Form",
-    "category": "forms",
-    "description": "Request for formal appraisal process under policy appraisal clause with qualified professional requirements.",
+    "title": "Appraisal Request Letter",
+    "category": "legal",
+    "description": "Formal request for appraisal process when there is a dispute over damage valuation.",
+    "layoutType": "T2",
+    "outputType": "pdf",
     "fields": [
       {"label": "Insurer Name", "id": "insurerName", "type": "text", "required": true},
       {"label": "Claim Number", "id": "claimNumber", "type": "text", "required": true},
       {"label": "Disputed Amount", "id": "disputedAmount", "type": "number", "required": true},
-      {"label": "Dispute Basis", "id": "disputeBasis", "type": "textarea", "required": true},
-      {"label": "Preferred Appraiser", "id": "preferredAppraiser", "type": "text", "required": false},
-      {"label": "Appraisal Scope", "id": "appraisalScope", "type": "textarea", "required": true},
-      {"label": "Timeline Request", "id": "timelineRequest", "type": "text", "required": false}
+      {"label": "Your Valuation", "id": "yourValuation", "type": "number", "required": true},
+      {"label": "Insurer's Valuation", "id": "insurerValuation", "type": "number", "required": true},
+      {"label": "Difference Amount", "id": "differenceAmount", "type": "number", "required": true},
+      {"label": "Appraisal Grounds", "id": "appraisalGrounds", "type": "textarea", "required": true}
     ]
   },
   "regulatory-complaint": {
-    "title": "Regulatory Complaint Form",
-    "category": "appeals",
-    "description": "Formal complaint to insurance regulatory body with supporting documentation and regulatory violations.",
+    "title": "Insurance Regulatory Complaint",
+    "category": "legal",
+    "description": "Formal complaint to state insurance department regarding insurer conduct.",
+    "layoutType": "T5",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "State", "id": "state", "type": "text", "required": true},
+      {"label": "Insurer Name", "id": "insurerName", "type": "text", "required": true},
+      {"label": "Claim Number", "id": "claimNumber", "type": "text", "required": true},
+      {"label": "Complaint Details", "id": "complaintDetails", "type": "textarea", "required": true},
+      {"label": "Violations Alleged", "id": "violations", "type": "textarea", "required": true},
+      {"label": "Damages Sought", "id": "damagesSought", "type": "number", "required": true},
+      {"label": "Supporting Documentation", "id": "supportingDocs", "type": "textarea", "required": true}
+    ]
+  },
+  "settlement-offer": {
+    "title": "Settlement Offer Response",
+    "category": "legal",
+    "description": "Professional response to insurance settlement offers with counter-arguments.",
+    "layoutType": "T2",
+    "outputType": "pdf",
     "fields": [
       {"label": "Insurer Name", "id": "insurerName", "type": "text", "required": true},
       {"label": "Claim Number", "id": "claimNumber", "type": "text", "required": true},
-      {"label": "Complaint Type", "id": "complaintType", "type": "select", "options": ["Unfair Claims Practice", "Bad Faith", "Delay", "Denial", "Other"], "required": true},
-      {"label": "Violation Description", "id": "violationDescription", "type": "textarea", "required": true},
+      {"label": "Offered Amount", "id": "offeredAmount", "type": "number", "required": true},
+      {"label": "Your Counter-Offer", "id": "counterOffer", "type": "number", "required": true},
+      {"label": "Justification", "id": "justification", "type": "textarea", "required": true},
       {"label": "Supporting Evidence", "id": "supportingEvidence", "type": "textarea", "required": true},
-      {"label": "Regulatory Authority", "id": "regulatoryAuthority", "type": "text", "required": true},
-      {"label": "Remedy Sought", "id": "remedySought", "type": "textarea", "required": true}
+      {"label": "Response Deadline", "id": "responseDeadline", "type": "date", "required": true}
     ]
   },
-  "hurricane-claim": {
-    "title": "Hurricane Damage Claim",
+  "notice-of-claim": {
+    "title": "Notice of Claim",
+    "category": "core",
+    "description": "Initial notice of claim to insurance company with basic claim information.",
+    "layoutType": "T1",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Policyholder Name", "id": "policyholderName", "type": "text", "required": true},
+      {"label": "Policy Number", "id": "policyNumber", "type": "text", "required": true},
+      {"label": "Loss Date", "id": "lossDate", "type": "date", "required": true},
+      {"label": "Loss Description", "id": "lossDescription", "type": "textarea", "required": true},
+      {"label": "Estimated Loss Amount", "id": "estimatedLoss", "type": "number", "required": true},
+      {"label": "Property Address", "id": "propertyAddress", "type": "text", "required": true}
+    ]
+  },
+  "coverage-clarification": {
+    "title": "Coverage Clarification Request",
+    "category": "legal",
+    "description": "Request for clarification of policy coverage and exclusions.",
+    "layoutType": "T2",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Policy Number", "id": "policyNumber", "type": "text", "required": true},
+      {"label": "Specific Coverage Question", "id": "coverageQuestion", "type": "textarea", "required": true},
+      {"label": "Relevant Policy Section", "id": "policySection", "type": "text", "required": true},
+      {"label": "Your Understanding", "id": "yourUnderstanding", "type": "textarea", "required": true},
+      {"label": "Requested Clarification", "id": "requestedClarification", "type": "textarea", "required": true}
+    ]
+  },
+  "delay-complaint": {
+    "title": "Delay Complaint Letter",
+    "category": "legal",
+    "description": "Complaint about unreasonable delays in claim processing.",
+    "layoutType": "T2",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Claim Number", "id": "claimNumber", "type": "text", "required": true},
+      {"label": "Original Claim Date", "id": "originalClaimDate", "type": "date", "required": true},
+      {"label": "Days Since Claim", "id": "daysSinceClaim", "type": "number", "required": true},
+      {"label": "Delay Impact", "id": "delayImpact", "type": "textarea", "required": true},
+      {"label": "Requested Action", "id": "requestedAction", "type": "textarea", "required": true},
+      {"label": "Response Deadline", "id": "responseDeadline", "type": "date", "required": true}
+    ]
+  },
+  "photograph-log": {
+    "title": "Photograph Documentation Log",
+    "category": "evidence",
+    "description": "Organized log of all photographs taken as evidence for your claim.",
+    "layoutType": "T3",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Claim Number", "id": "claimNumber", "type": "text", "required": true},
+      {"label": "Photographs", "id": "photographs", "type": "table", "required": true, "columns": ["Photo #", "Date Taken", "Location", "Description", "Photographer", "File Name"]}
+    ]
+  },
+  "repair-replace-analysis": {
+    "title": "Repair vs Replace Analysis",
+    "category": "analysis",
+    "description": "Cost-benefit analysis comparing repair costs to replacement costs.",
+    "layoutType": "T6",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Item Description", "id": "itemDescription", "type": "text", "required": true},
+      {"label": "Repair Cost", "id": "repairCost", "type": "number", "required": true},
+      {"label": "Replacement Cost", "id": "replacementCost", "type": "number", "required": true},
+      {"label": "Age of Item", "id": "ageOfItem", "type": "number", "required": true},
+      {"label": "Expected Lifespan", "id": "expectedLifespan", "type": "number", "required": true},
+      {"label": "Analysis Conclusion", "id": "analysisConclusion", "type": "textarea", "required": true}
+    ]
+  },
+  "out-of-pocket-log": {
+    "title": "Out-of-Pocket Expenses Log",
+    "category": "financial",
+    "description": "Detailed log of all out-of-pocket expenses related to your claim.",
+    "layoutType": "T4",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Claim Number", "id": "claimNumber", "type": "text", "required": true},
+      {"label": "Expenses", "id": "expenses", "type": "table", "required": true, "columns": ["Date", "Description", "Amount", "Category", "Receipt #", "Notes"]}
+    ]
+  },
+  "rom-estimate": {
+    "title": "ROM (Rough Order of Magnitude) Estimate",
+    "category": "analysis",
+    "description": "Preliminary cost estimate for repairs or replacement.",
+    "layoutType": "T6",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Project Description", "id": "projectDescription", "type": "textarea", "required": true},
+      {"label": "Labor Costs", "id": "laborCosts", "type": "number", "required": true},
+      {"label": "Material Costs", "id": "materialCosts", "type": "number", "required": true},
+      {"label": "Permit Costs", "id": "permitCosts", "type": "number"},
+      {"label": "Contingency", "id": "contingency", "type": "number", "required": true},
+      {"label": "Total Estimate", "id": "totalEstimate", "type": "number", "required": true}
+    ]
+  },
+  "comparative-estimates": {
+    "title": "Comparative Estimates Analysis",
+    "category": "analysis",
+    "description": "Side-by-side comparison of multiple repair estimates.",
+    "layoutType": "T6",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Project Description", "id": "projectDescription", "type": "textarea", "required": true},
+      {"label": "Estimates", "id": "estimates", "type": "table", "required": true, "columns": ["Contractor", "Labor Cost", "Material Cost", "Total Cost", "Timeline", "Warranty"]}
+    ]
+  },
+  "document-index": {
+    "title": "Document Index",
+    "category": "evidence",
+    "description": "Comprehensive index of all documents related to your claim.",
+    "layoutType": "T3",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Claim Number", "id": "claimNumber", "type": "text", "required": true},
+      {"label": "Documents", "id": "documents", "type": "table", "required": true, "columns": ["Document #", "Title", "Date", "Type", "Pages", "Location"]}
+    ]
+  },
+  "sworn-statement": {
+    "title": "Sworn Statement of Loss",
+    "category": "core",
+    "description": "Legally binding sworn statement documenting the loss with notarization requirements.",
+    "layoutType": "T1",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Statement Date", "id": "statementDate", "type": "date", "required": true},
+      {"label": "Notary Information", "id": "notaryInfo", "type": "text", "required": true},
+      {"label": "Loss Statement", "id": "lossStatement", "type": "textarea", "required": true},
+      {"label": "Signature Name", "id": "signatureName", "type": "text", "required": true},
+      {"label": "Signature Date", "id": "signatureDate", "type": "date", "required": true}
+    ]
+  },
+  "supplemental-claim": {
+    "title": "Supplemental Claim Request",
+    "category": "core",
+    "description": "Request for additional coverage or previously undisclosed damages.",
+    "layoutType": "T1",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Original Claim Date", "id": "originalClaimDate", "type": "date", "required": true},
+      {"label": "Supplemental Amount", "id": "supplementalAmount", "type": "number", "required": true},
+      {"label": "Reason for Supplement", "id": "reasonForSupplement", "type": "textarea", "required": true},
+      {"label": "New Evidence", "id": "newEvidence", "type": "textarea", "required": true}
+    ]
+  },
+  "policy-review-request": {
+    "title": "Policy Review Request",
+    "category": "legal",
+    "description": "Formal request for comprehensive policy review and coverage analysis.",
+    "layoutType": "T2",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Review Scope", "id": "reviewScope", "type": "select", "required": true, "options": ["Full Policy Review", "Coverage Analysis Only", "Exclusions Review"]},
+      {"label": "Specific Concerns", "id": "specificConcerns", "type": "textarea", "required": true},
+      {"label": "Requested Timeline", "id": "requestedTimeline", "type": "date", "required": true}
+    ]
+  },
+  "bad-faith-complaint": {
+    "title": "Bad Faith Insurance Complaint",
+    "category": "legal",
+    "description": "Formal complaint alleging bad faith practices by the insurance company.",
+    "layoutType": "T5",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Bad Faith Actions", "id": "badFaithActions", "type": "textarea", "required": true},
+      {"label": "Damages Sought", "id": "damagesSought", "type": "number", "required": true},
+      {"label": "Supporting Evidence", "id": "supportingEvidence", "type": "textarea", "required": true},
+      {"label": "Legal Basis", "id": "legalBasis", "type": "textarea", "required": true}
+    ]
+  },
+  "mediation-request": {
+    "title": "Mediation Request Letter",
+    "category": "legal",
+    "description": "Request for mediation to resolve claim disputes without litigation.",
+    "layoutType": "T2",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Mediation Reason", "id": "mediationReason", "type": "textarea", "required": true},
+      {"label": "Proposed Mediator", "id": "proposedMediator", "type": "text"},
+      {"label": "Timeline Request", "id": "timelineRequest", "type": "date", "required": true}
+    ]
+  },
+  "arbitration-demand": {
+    "title": "Arbitration Demand",
+    "category": "legal",
+    "description": "Formal demand for binding arbitration to resolve claim disputes.",
+    "layoutType": "T5",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Arbitration Grounds", "id": "arbitrationGrounds", "type": "textarea", "required": true},
+      {"label": "Arbitrator Preference", "id": "arbitratorPreference", "type": "text"},
+      {"label": "Arbitration Rules", "id": "arbitrationRules", "type": "select", "required": true, "options": ["American Arbitration Association", "JAMS", "CPR Institute"]}
+    ]
+  },
+  "expert-witness-request": {
+    "title": "Expert Witness Request",
+    "category": "legal",
+    "description": "Request for independent expert witness evaluation of damages.",
+    "layoutType": "T2",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Expert Field", "id": "expertField", "type": "select", "required": true, "options": ["Construction/Engineering", "Fire Investigation", "Water Damage", "Electrical Systems", "Property Appraisal"]},
+      {"label": "Expert Qualifications", "id": "expertQualifications", "type": "textarea", "required": true},
+      {"label": "Scope of Work", "id": "scopeOfWork", "type": "textarea", "required": true}
+    ]
+  },
+  "subrogation-notice": {
+    "title": "Subrogation Notice",
+    "category": "legal",
+    "description": "Notice of subrogation rights and potential third-party recovery.",
+    "layoutType": "T2",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Third Party", "id": "thirdParty", "type": "text", "required": true},
+      {"label": "Subrogation Basis", "id": "subrogationBasis", "type": "textarea", "required": true},
+      {"label": "Recovery Amount", "id": "recoveryAmount", "type": "number", "required": true}
+    ]
+  },
+  "coverage-denial-appeal": {
+    "title": "Coverage Denial Appeal",
+    "category": "appeals",
+    "description": "Appeal of insurance coverage denial with legal arguments.",
+    "layoutType": "T2",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Denial Reason", "id": "denialReason", "type": "textarea", "required": true},
+      {"label": "Policy Language", "id": "policyLanguage", "type": "textarea", "required": true},
+      {"label": "Legal Arguments", "id": "legalArguments", "type": "textarea", "required": true}
+    ]
+  },
+  "settlement-agreement": {
+    "title": "Settlement Agreement",
+    "category": "legal",
+    "description": "Comprehensive settlement agreement with all terms and conditions.",
+    "layoutType": "T5",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Settlement Amount", "id": "settlementAmount", "type": "number", "required": true},
+      {"label": "Payment Terms", "id": "paymentTerms", "type": "textarea", "required": true},
+      {"label": "Release Terms", "id": "releaseTerms", "type": "textarea", "required": true}
+    ]
+  },
+  "replacement-cost-analysis": {
+    "title": "Replacement Cost Analysis",
+    "category": "financial",
+    "description": "Detailed analysis of replacement costs for damaged property.",
+    "layoutType": "T6",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Property Type", "id": "propertyType", "type": "select", "required": true, "options": ["Residential", "Commercial", "Industrial"]},
+      {"label": "Replacement Items", "id": "replacementItems", "type": "table", "required": true, "columns": ["Item", "Original Cost", "Current Cost", "Depreciation", "Replacement Value"]}
+    ]
+  },
+  "actual-cash-value": {
+    "title": "Actual Cash Value Calculation",
+    "category": "financial",
+    "description": "Calculation of actual cash value for depreciated property.",
+    "layoutType": "T4",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Property Items", "id": "propertyItems", "type": "table", "required": true, "columns": ["Item", "Purchase Date", "Original Cost", "Age", "Depreciation Rate", "ACV"]}
+    ]
+  },
+  "loss-of-use-calculation": {
+    "title": "Loss of Use Calculation",
+    "category": "financial",
+    "description": "Calculation of additional living expenses and loss of use damages.",
+    "layoutType": "T4",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Displacement Period", "id": "displacementPeriod", "type": "text", "required": true},
+      {"label": "Additional Expenses", "id": "additionalExpenses", "type": "table", "required": true, "columns": ["Expense Type", "Amount", "Receipt", "Justification"]}
+    ]
+  },
+  "inflation-adjustment": {
+    "title": "Inflation Adjustment Calculation",
+    "category": "financial",
+    "description": "Adjustment of claim values for inflation and market changes.",
+    "layoutType": "T4",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Base Year", "id": "baseYear", "type": "date", "required": true},
+      {"label": "Current Year", "id": "currentYear", "type": "date", "required": true},
+      {"label": "Adjustment Items", "id": "adjustmentItems", "type": "table", "required": true, "columns": ["Item", "Original Value", "Inflation Rate", "Adjusted Value"]}
+    ]
+  },
+  "consequential-damages": {
+    "title": "Consequential Damages Claim",
+    "category": "financial",
+    "description": "Claim for consequential damages resulting from the covered loss.",
+    "layoutType": "T7",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Consequential Losses", "id": "consequentialLosses", "type": "textarea", "required": true},
+      {"label": "Causation", "id": "causation", "type": "textarea", "required": true},
+      {"label": "Damage Amount", "id": "damageAmount", "type": "number", "required": true}
+    ]
+  },
+  "mitigation-expenses": {
+    "title": "Mitigation Expenses Claim",
+    "category": "financial",
+    "description": "Claim for reasonable expenses incurred to mitigate damages.",
+    "layoutType": "T4",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Mitigation Actions", "id": "mitigationActions", "type": "textarea", "required": true},
+      {"label": "Expense Details", "id": "expenseDetails", "type": "table", "required": true, "columns": ["Date", "Action", "Cost", "Receipt", "Justification"]}
+    ]
+  },
+  "emergency-response-log": {
+    "title": "Emergency Response Log",
+    "category": "evidence",
+    "description": "Comprehensive log of emergency response actions and costs.",
+    "layoutType": "T3",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Emergency Type", "id": "emergencyType", "type": "select", "required": true, "options": ["Fire", "Water Damage", "Storm", "Vandalism"]},
+      {"label": "Response Actions", "id": "responseActions", "type": "table", "required": true, "columns": ["Time", "Action", "Responder", "Cost", "Result"]}
+    ]
+  },
+  "chain-of-custody": {
+    "title": "Chain of Custody Documentation",
+    "category": "evidence",
+    "description": "Documentation of evidence chain of custody for legal proceedings.",
+    "layoutType": "T3",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Evidence Items", "id": "evidenceItems", "type": "table", "required": true, "columns": ["Item", "Date Collected", "Collected By", "Location", "Current Custodian"]}
+    ]
+  },
+  "witness-statements": {
+    "title": "Witness Statement Collection",
+    "category": "evidence",
+    "description": "Collection and documentation of witness statements.",
+    "layoutType": "T3",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Witness Information", "id": "witnessInformation", "type": "table", "required": true, "columns": ["Name", "Contact", "Relationship", "Statement Date", "Key Points"]}
+    ]
+  },
+  "surveillance-log": {
+    "title": "Surveillance Documentation",
+    "category": "evidence",
+    "description": "Documentation of surveillance activities and findings.",
+    "layoutType": "T3",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Surveillance Details", "id": "surveillanceDetails", "type": "table", "required": true, "columns": ["Date", "Time", "Location", "Activity", "Duration", "Findings"]}
+    ]
+  },
+  "weather-data": {
+    "title": "Weather Data Documentation",
+    "category": "evidence",
+    "description": "Official weather data supporting weather-related claims.",
+    "layoutType": "T6",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Weather Event", "id": "weatherEvent", "type": "text", "required": true},
+      {"label": "Data Sources", "id": "dataSources", "type": "table", "required": true, "columns": ["Source", "Date", "Time", "Measurement", "Location"]}
+    ]
+  },
+  "fire-investigation": {
+    "title": "Fire Investigation Report",
+    "category": "analysis",
+    "description": "Comprehensive fire investigation findings and analysis.",
+    "layoutType": "T6",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Investigator", "id": "investigator", "type": "text", "required": true},
+      {"label": "Investigation Date", "id": "investigationDate", "type": "date", "required": true},
+      {"label": "Fire Origin", "id": "fireOrigin", "type": "text", "required": true},
+      {"label": "Cause Determination", "id": "causeDetermination", "type": "textarea", "required": true}
+    ]
+  },
+  "water-damage-assessment": {
+    "title": "Water Damage Assessment",
+    "category": "analysis",
+    "description": "Professional assessment of water damage extent and restoration needs.",
+    "layoutType": "T6",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Water Source", "id": "waterSource", "type": "select", "required": true, "options": ["Plumbing Failure", "Appliance Failure", "Storm Water", "Sewer Backup"]},
+      {"label": "Affected Areas", "id": "affectedAreas", "type": "table", "required": true, "columns": ["Room", "Damage Level", "Materials Affected", "Restoration Needed"]}
+    ]
+  },
+  "mold-assessment": {
+    "title": "Mold Assessment Report",
+    "category": "analysis",
+    "description": "Professional mold assessment and remediation recommendations.",
+    "layoutType": "T6",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Mold Type", "id": "moldType", "type": "text", "required": true},
+      {"label": "Affected Areas", "id": "affectedAreas", "type": "table", "required": true, "columns": ["Location", "Mold Level", "Moisture Source", "Remediation Required"]}
+    ]
+  },
+  "structural-assessment": {
+    "title": "Structural Damage Assessment",
+    "category": "analysis",
+    "description": "Engineering assessment of structural damage and repair requirements.",
+    "layoutType": "T6",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Engineer", "id": "engineer", "type": "text", "required": true},
+      {"label": "Structural Elements", "id": "structuralElements", "type": "table", "required": true, "columns": ["Element", "Damage Level", "Safety Risk", "Repair Method", "Cost"]}
+    ]
+  },
+  "electrical-assessment": {
+    "title": "Electrical System Assessment",
+    "category": "analysis",
+    "description": "Professional assessment of electrical system damage and safety.",
+    "layoutType": "T6",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Electrician", "id": "electrician", "type": "text", "required": true},
+      {"label": "System Components", "id": "systemComponents", "type": "table", "required": true, "columns": ["Component", "Damage", "Safety Risk", "Repair/Replace", "Cost"]}
+    ]
+  },
+  "hvac-assessment": {
+    "title": "HVAC System Assessment",
+    "category": "analysis",
+    "description": "Assessment of heating, ventilation, and air conditioning system damage.",
+    "layoutType": "T6",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "HVAC Technician", "id": "hvacTechnician", "type": "text", "required": true},
+      {"label": "System Components", "id": "systemComponents", "type": "table", "required": true, "columns": ["Component", "Damage Level", "Functionality", "Repair Needed", "Cost"]}
+    ]
+  },
+  "roof-assessment": {
+    "title": "Roof Damage Assessment",
+    "category": "analysis",
+    "description": "Professional roof inspection and damage assessment.",
+    "layoutType": "T6",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Roofing Contractor", "id": "roofingContractor", "type": "text", "required": true},
+      {"label": "Roof Sections", "id": "roofSections", "type": "table", "required": true, "columns": ["Section", "Damage Type", "Severity", "Repair Method", "Cost"]}
+    ]
+  },
+  "flooring-assessment": {
+    "title": "Flooring Damage Assessment",
+    "category": "analysis",
+    "description": "Assessment of flooring damage and replacement requirements.",
+    "layoutType": "T6",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Flooring Type", "id": "flooringType", "type": "select", "required": true, "options": ["Hardwood", "Carpet", "Tile", "Laminate"]},
+      {"label": "Affected Areas", "id": "affectedAreas", "type": "table", "required": true, "columns": ["Room", "Flooring Type", "Damage Level", "Repair/Replace", "Cost"]}
+    ]
+  },
+  "appliance-assessment": {
+    "title": "Appliance Damage Assessment",
+    "category": "analysis",
+    "description": "Assessment of damaged appliances and replacement costs.",
+    "layoutType": "T6",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Appliance Technician", "id": "applianceTechnician", "type": "text", "required": true},
+      {"label": "Damaged Appliances", "id": "damagedAppliances", "type": "table", "required": true, "columns": ["Appliance", "Model", "Age", "Damage", "Repair/Replace", "Cost"]}
+    ]
+  },
+  "personal-property-inventory": {
+    "title": "Personal Property Inventory",
+    "category": "evidence",
+    "description": "Comprehensive inventory of damaged personal property.",
+    "layoutType": "T3",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Property Items", "id": "propertyItems", "type": "table", "required": true, "columns": ["Item", "Description", "Purchase Date", "Original Cost", "Condition", "Replacement Cost"]}
+    ]
+  },
+  "contents-valuation": {
+    "title": "Contents Valuation Report",
+    "category": "financial",
+    "description": "Professional valuation of damaged personal contents.",
+    "layoutType": "T6",
+    "outputType": "pdf",
+    "fields": [
+      {"label": "Valuation Method", "id": "valuationMethod", "type": "select", "required": true, "options": ["Replacement Cost", "Actual Cash Value", "Market Value"]},
+      {"label": "Valuation Items", "id": "valuationItems", "type": "table", "required": true, "columns": ["Item", "Description", "Age", "Original Cost", "Depreciation", "Current Value"]}
+    ]
+  },
+  "specialty-items": {
+    "title": "Specialty Items Documentation",
+    "category": "evidence",
+    "description": "Documentation of specialty items requiring expert valuation.",
+    "layoutType": "T3",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Specialty Category", "id": "specialtyCategory", "type": "select", "required": true, "options": ["Artwork", "Jewelry", "Antiques", "Collectibles"]},
+      {"label": "Specialty Items", "id": "specialtyItems", "type": "table", "required": true, "columns": ["Item", "Description", "Provenance", "Appraisal Value", "Expert Required"]}
+    ]
+  },
+  "temporary-housing": {
+    "title": "Temporary Housing Claim",
+    "category": "financial",
+    "description": "Claim for temporary housing expenses during property restoration.",
+    "layoutType": "T4",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Displacement Period", "id": "displacementPeriod", "type": "text", "required": true},
+      {"label": "Housing Expenses", "id": "housingExpenses", "type": "table", "required": true, "columns": ["Date", "Expense Type", "Amount", "Receipt", "Justification"]}
+    ]
+  },
+  "storage-expenses": {
+    "title": "Storage Expenses Claim",
+    "category": "financial",
+    "description": "Claim for storage expenses for personal property during restoration.",
+    "layoutType": "T4",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Storage Period", "id": "storagePeriod", "type": "text", "required": true},
+      {"label": "Storage Costs", "id": "storageCosts", "type": "table", "required": true, "columns": ["Date", "Storage Facility", "Cost", "Items Stored", "Receipt"]}
+    ]
+  },
+  "moving-expenses": {
+    "title": "Moving Expenses Claim",
+    "category": "financial",
+    "description": "Claim for moving expenses related to the covered loss.",
+    "layoutType": "T4",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Moving Reason", "id": "movingReason", "type": "textarea", "required": true},
+      {"label": "Moving Costs", "id": "movingCosts", "type": "table", "required": true, "columns": ["Date", "Service", "Cost", "Receipt", "Justification"]}
+    ]
+  },
+  "pet-care-expenses": {
+    "title": "Pet Care Expenses Claim",
+    "category": "financial",
+    "description": "Claim for additional pet care expenses due to displacement.",
+    "layoutType": "T4",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Pet Information", "id": "petInformation", "type": "table", "required": true, "columns": ["Pet Name", "Type", "Special Needs", "Care Required"]},
+      {"label": "Pet Care Costs", "id": "petCareCosts", "type": "table", "required": true, "columns": ["Date", "Service", "Cost", "Receipt", "Justification"]}
+    ]
+  },
+  "childcare-expenses": {
+    "title": "Childcare Expenses Claim",
+    "category": "financial",
+    "description": "Claim for additional childcare expenses due to displacement.",
+    "layoutType": "T4",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Child Information", "id": "childInformation", "type": "table", "required": true, "columns": ["Child Name", "Age", "Special Needs", "Care Required"]},
+      {"label": "Childcare Costs", "id": "childcareCosts", "type": "table", "required": true, "columns": ["Date", "Service", "Cost", "Receipt", "Justification"]}
+    ]
+  },
+  "meal-expenses": {
+    "title": "Meal Expenses Claim",
+    "category": "financial",
+    "description": "Claim for additional meal expenses due to displacement.",
+    "layoutType": "T4",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Displacement Impact", "id": "displacementImpact", "type": "textarea", "required": true},
+      {"label": "Meal Costs", "id": "mealCosts", "type": "table", "required": true, "columns": ["Date", "Meal Type", "Cost", "Receipt", "Justification"]}
+    ]
+  },
+  "transportation-expenses": {
+    "title": "Transportation Expenses Claim",
+    "category": "financial",
+    "description": "Claim for additional transportation expenses due to displacement.",
+    "layoutType": "T4",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Transportation Need", "id": "transportationNeed", "type": "textarea", "required": true},
+      {"label": "Transportation Costs", "id": "transportationCosts", "type": "table", "required": true, "columns": ["Date", "Transport Type", "Cost", "Receipt", "Justification"]}
+    ]
+  },
+  "communication-expenses": {
+    "title": "Communication Expenses Claim",
+    "category": "financial",
+    "description": "Claim for additional communication expenses related to the claim.",
+    "layoutType": "T4",
+    "outputType": "xlsx",
+    "fields": [
+      {"label": "Communication Needs", "id": "communicationNeeds", "type": "textarea", "required": true},
+      {"label": "Communication Costs", "id": "communicationCosts", "type": "table", "required": true, "columns": ["Date", "Service", "Cost", "Receipt", "Justification"]}
+    ]
+  },
+  "catastrophic-event-log": {
+    "title": "Catastrophic Event Log",
     "category": "catastrophic",
-    "description": "Specialized claim form for hurricane damage including wind, water, and flood damage with evacuation expenses.",
+    "description": "Comprehensive log of catastrophic event impact and response.",
+    "layoutType": "T8",
+    "outputType": "pdf",
     "fields": [
-      {"label": "Hurricane Name", "id": "hurricaneName", "type": "text", "required": true},
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Damage Date", "id": "damageDate", "type": "date", "required": true},
-      {"label": "Wind Damage", "id": "windDamage", "type": "textarea", "required": true},
-      {"label": "Water Damage", "id": "waterDamage", "type": "textarea", "required": false},
-      {"label": "Flood Damage", "id": "floodDamage", "type": "textarea", "required": false},
-      {"label": "Evacuation Expenses", "id": "evacuationExpenses", "type": "number", "required": false},
-      {"label": "Temporary Housing", "id": "temporaryHousing", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
+      {"label": "Event Type", "id": "eventType", "type": "select", "required": true, "options": ["Hurricane", "Tornado", "Earthquake", "Flood", "Wildfire"]},
+      {"label": "Event Timeline", "id": "eventTimeline", "type": "table", "required": true, "columns": ["Date", "Time", "Event", "Impact", "Response"]}
     ]
   },
-  "flood-claim": {
-    "title": "Flood Damage Claim",
+  "disaster-declaration": {
+    "title": "Disaster Declaration Documentation",
     "category": "catastrophic",
-    "description": "Comprehensive claim form for flood damage including property and contents with water level documentation.",
+    "description": "Documentation of official disaster declarations and federal assistance.",
+    "layoutType": "T8",
+    "outputType": "pdf",
     "fields": [
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Flood Date", "id": "floodDate", "type": "date", "required": true},
-      {"label": "Water Level (inches)", "id": "waterLevel", "type": "number", "required": true},
-      {"label": "Flood Source", "id": "floodSource", "type": "select", "options": ["River", "Storm", "Sewer", "Other"], "required": true},
-      {"label": "Property Damage", "id": "propertyDamage", "type": "textarea", "required": true},
-      {"label": "Contents Damage", "id": "contentsDamage", "type": "textarea", "required": true},
-      {"label": "Cleanup Costs", "id": "cleanupCosts", "type": "number", "required": false},
-      {"label": "Prevention Measures", "id": "preventionMeasures", "type": "textarea", "required": false}
+      {"label": "Declaration Type", "id": "declarationType", "type": "select", "required": true, "options": ["Federal Disaster Declaration", "State Emergency Declaration", "Local Emergency Declaration"]},
+      {"label": "Declaration Details", "id": "declarationDetails", "type": "table", "required": true, "columns": ["Date", "Authority", "Declaration Number", "Affected Area", "Assistance Available"]}
     ]
   },
-  "wildfire-claim": {
-    "title": "Wildfire Damage Claim",
+  "fema-assistance": {
+    "title": "FEMA Assistance Documentation",
     "category": "catastrophic",
-    "description": "Claim form for wildfire damage including property, contents, and evacuation expenses with smoke damage assessment.",
+    "description": "Documentation of FEMA assistance applications and awards.",
+    "layoutType": "T8",
+    "outputType": "pdf",
     "fields": [
-      {"label": "Fire Name", "id": "fireName", "type": "text", "required": true},
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Fire Date", "id": "fireDate", "type": "date", "required": true},
-      {"label": "Fire Damage", "id": "fireDamage", "type": "textarea", "required": true},
-      {"label": "Smoke Damage", "id": "smokeDamage", "type": "textarea", "required": false},
-      {"label": "Evacuation Required", "id": "evacuationRequired", "type": "checkbox", "required": false},
-      {"label": "Evacuation Expenses", "id": "evacuationExpenses", "type": "number", "required": false},
-      {"label": "Air Quality Impact", "id": "airQualityImpact", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
+      {"label": "FEMA Application", "id": "femaApplication", "type": "text", "required": true},
+      {"label": "Assistance Details", "id": "assistanceDetails", "type": "table", "required": true, "columns": ["Assistance Type", "Amount", "Status", "Date", "Notes"]}
     ]
   },
-  "earthquake-claim": {
-    "title": "Earthquake Damage Claim",
+  "sba-loan-documentation": {
+    "title": "SBA Loan Documentation",
     "category": "catastrophic",
-    "description": "Claim form for earthquake damage including structural and contents damage with seismic activity documentation.",
+    "description": "Documentation of SBA disaster loan applications and awards.",
+    "layoutType": "T8",
+    "outputType": "pdf",
     "fields": [
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Earthquake Date", "id": "earthquakeDate", "type": "date", "required": true},
-      {"label": "Magnitude", "id": "magnitude", "type": "number", "required": false},
-      {"label": "Structural Damage", "id": "structuralDamage", "type": "textarea", "required": true},
-      {"label": "Contents Damage", "id": "contentsDamage", "type": "textarea", "required": true},
-      {"label": "Foundation Issues", "id": "foundationIssues", "type": "textarea", "required": false},
-      {"label": "Utility Damage", "id": "utilityDamage", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
+      {"label": "SBA Application", "id": "sbaApplication", "type": "text", "required": true},
+      {"label": "Loan Details", "id": "loanDetails", "type": "table", "required": true, "columns": ["Loan Type", "Amount", "Interest Rate", "Status", "Terms"]}
     ]
   },
-  "residential-property": {
-    "title": "Residential Property Claim",
-    "category": "property",
-    "description": "Specialized claim form for residential property damage and loss with homeowner-specific considerations.",
-    "fields": [
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Property Type", "id": "propertyType", "type": "select", "options": ["Single Family", "Condo", "Townhouse", "Mobile Home", "Other"], "required": true},
-      {"label": "Year Built", "id": "yearBuilt", "type": "number", "required": false},
-      {"label": "Square Footage", "id": "squareFootage", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Wind", "Water", "Fire", "Theft", "Vandalism", "Other"], "required": true},
-      {"label": "Damage Description", "id": "damageDescription", "type": "textarea", "required": true},
-      {"label": "Estimated Repair Cost", "id": "repairCost", "type": "number", "required": true},
-      {"label": "Temporary Housing Needed", "id": "temporaryHousing", "type": "checkbox", "required": false}
-    ]
-  },
-  "commercial-property": {
-    "title": "Commercial Property Claim",
-    "category": "property",
-    "description": "Comprehensive claim form for commercial property damage and business interruption with revenue impact analysis.",
-    "fields": [
-      {"label": "Business Name", "id": "businessName", "type": "text", "required": true},
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Business Type", "id": "businessType", "type": "text", "required": true},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Wind", "Water", "Fire", "Theft", "Vandalism", "Other"], "required": true},
-      {"label": "Property Damage", "id": "propertyDamage", "type": "textarea", "required": true},
-      {"label": "Business Interruption", "id": "businessInterruption", "type": "textarea", "required": false},
-      {"label": "Lost Revenue", "id": "lostRevenue", "type": "number", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "restaurant-business": {
-    "title": "Restaurant Business Claim",
-    "category": "business",
-    "description": "Comprehensive claim form for restaurant business interruption and property damage with food safety considerations.",
-    "fields": [
-      {"label": "Restaurant Name", "id": "restaurantName", "type": "text", "required": true},
-      {"label": "Restaurant Address", "id": "restaurantAddress", "type": "textarea", "required": true},
-      {"label": "Cuisine Type", "id": "cuisineType", "type": "text", "required": false},
-      {"label": "Seating Capacity", "id": "seatingCapacity", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Kitchen Equipment", "Dining Area", "Storage", "Utilities", "Other"], "required": true},
-      {"label": "Food Loss", "id": "foodLoss", "type": "textarea", "required": false},
-      {"label": "Equipment Damage", "id": "equipmentDamage", "type": "textarea", "required": true},
-      {"label": "Lost Revenue", "id": "lostRevenue", "type": "number", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "retail-business": {
-    "title": "Retail Business Claim",
-    "category": "business",
-    "description": "Claim form for retail business including inventory, fixtures, and business interruption with sales impact analysis.",
-    "fields": [
-      {"label": "Store Name", "id": "storeName", "type": "text", "required": true},
-      {"label": "Store Address", "id": "storeAddress", "type": "textarea", "required": true},
-      {"label": "Store Type", "id": "storeType", "type": "text", "required": true},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Inventory", "Fixtures", "Equipment", "Building", "Other"], "required": true},
-      {"label": "Inventory Loss", "id": "inventoryLoss", "type": "textarea", "required": false},
-      {"label": "Fixture Damage", "id": "fixtureDamage", "type": "textarea", "required": false},
-      {"label": "Lost Sales", "id": "lostSales", "type": "number", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "manufacturing-business": {
-    "title": "Manufacturing Business Claim",
-    "category": "business",
-    "description": "Claim form for manufacturing business including equipment, inventory, and production loss with supply chain impact.",
-    "fields": [
-      {"label": "Company Name", "id": "companyName", "type": "text", "required": true},
-      {"label": "Facility Address", "id": "facilityAddress", "type": "textarea", "required": true},
-      {"label": "Product Type", "id": "productType", "type": "text", "required": true},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Equipment", "Inventory", "Building", "Utilities", "Other"], "required": true},
-      {"label": "Equipment Damage", "id": "equipmentDamage", "type": "textarea", "required": true},
-      {"label": "Production Loss", "id": "productionLoss", "type": "textarea", "required": false},
-      {"label": "Raw Material Loss", "id": "rawMaterialLoss", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "healthcare-business": {
-    "title": "Healthcare Business Claim",
-    "category": "business",
-    "description": "Claim form for healthcare business including equipment, facilities, and patient care interruption with medical equipment considerations.",
-    "fields": [
-      {"label": "Healthcare Facility Name", "id": "facilityName", "type": "text", "required": true},
-      {"label": "Facility Address", "id": "facilityAddress", "type": "textarea", "required": true},
-      {"label": "Facility Type", "id": "facilityType", "type": "select", "options": ["Hospital", "Clinic", "Dental", "Veterinary", "Other"], "required": true},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Medical Equipment", "Facility", "Utilities", "Other"], "required": true},
-      {"label": "Medical Equipment Loss", "id": "medicalEquipmentLoss", "type": "textarea", "required": false},
-      {"label": "Patient Care Impact", "id": "patientCareImpact", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "professional-services": {
-    "title": "Professional Services Claim",
-    "category": "business",
-    "description": "Claim form for professional services business including office equipment and client loss with professional liability considerations.",
-    "fields": [
-      {"label": "Firm Name", "id": "firmName", "type": "text", "required": true},
-      {"label": "Office Address", "id": "officeAddress", "type": "textarea", "required": true},
-      {"label": "Service Type", "id": "serviceType", "type": "select", "options": ["Legal", "Accounting", "Consulting", "Real Estate", "Other"], "required": true},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Office Equipment", "Files", "Building", "Utilities", "Other"], "required": true},
-      {"label": "Equipment Loss", "id": "equipmentLoss", "type": "textarea", "required": false},
-      {"label": "Client Impact", "id": "clientImpact", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "technology-business": {
-    "title": "Technology Business Claim",
-    "category": "business",
-    "description": "Claim form for technology business including equipment, data, and business interruption with cybersecurity considerations.",
-    "fields": [
-      {"label": "Company Name", "id": "companyName", "type": "text", "required": true},
-      {"label": "Office Address", "id": "officeAddress", "type": "textarea", "required": true},
-      {"label": "Technology Type", "id": "technologyType", "type": "select", "options": ["Software", "Hardware", "IT Services", "Data Center", "Other"], "required": true},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Hardware", "Data", "Network", "Facility", "Other"], "required": true},
-      {"label": "Equipment Loss", "id": "equipmentLoss", "type": "textarea", "required": false},
-      {"label": "Data Loss", "id": "dataLoss", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "hospitality-business": {
-    "title": "Hospitality Business Claim",
-    "category": "business",
-    "description": "Claim form for hospitality business including facilities, equipment, and guest services with guest impact analysis.",
-    "fields": [
-      {"label": "Property Name", "id": "propertyName", "type": "text", "required": true},
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Property Type", "id": "propertyType", "type": "select", "options": ["Hotel", "Motel", "Resort", "B&B", "Other"], "required": true},
-      {"label": "Room Count", "id": "roomCount", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Guest Rooms", "Common Areas", "Kitchen", "Utilities", "Other"], "required": true},
-      {"label": "Guest Impact", "id": "guestImpact", "type": "textarea", "required": false},
-      {"label": "Lost Revenue", "id": "lostRevenue", "type": "number", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "education-business": {
-    "title": "Education Business Claim",
-    "category": "business",
-    "description": "Claim form for education business including facilities, equipment, and student services with educational impact analysis.",
-    "fields": [
-      {"label": "Institution Name", "id": "institutionName", "type": "text", "required": true},
-      {"label": "Campus Address", "id": "campusAddress", "type": "textarea", "required": true},
-      {"label": "Institution Type", "id": "institutionType", "type": "select", "options": ["K-12", "College", "University", "Trade School", "Other"], "required": true},
-      {"label": "Student Count", "id": "studentCount", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Classrooms", "Labs", "Library", "Gym", "Other"], "required": true},
-      {"label": "Educational Impact", "id": "educationalImpact", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "fitness-business": {
-    "title": "Fitness Business Claim",
-    "category": "business",
-    "description": "Claim form for fitness business including equipment, facilities, and membership services with member impact analysis.",
-    "fields": [
-      {"label": "Gym Name", "id": "gymName", "type": "text", "required": true},
-      {"label": "Gym Address", "id": "gymAddress", "type": "textarea", "required": true},
-      {"label": "Gym Type", "id": "gymType", "type": "select", "options": ["Full Service", "CrossFit", "Yoga", "Martial Arts", "Other"], "required": true},
-      {"label": "Member Count", "id": "memberCount", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Equipment", "Facility", "Utilities", "Other"], "required": true},
-      {"label": "Equipment Loss", "id": "equipmentLoss", "type": "textarea", "required": false},
-      {"label": "Member Impact", "id": "memberImpact", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "beauty-business": {
-    "title": "Beauty Business Claim",
-    "category": "business",
-    "description": "Claim form for beauty business including equipment, supplies, and client services with client impact analysis.",
-    "fields": [
-      {"label": "Salon Name", "id": "salonName", "type": "text", "required": true},
-      {"label": "Salon Address", "id": "salonAddress", "type": "textarea", "required": true},
-      {"label": "Service Type", "id": "serviceType", "type": "select", "options": ["Hair", "Nails", "Spa", "Barber", "Other"], "required": true},
-      {"label": "Station Count", "id": "stationCount", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Equipment", "Supplies", "Facility", "Utilities", "Other"], "required": true},
-      {"label": "Equipment Loss", "id": "equipmentLoss", "type": "textarea", "required": false},
-      {"label": "Client Impact", "id": "clientImpact", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "automotive-business": {
-    "title": "Automotive Business Claim",
-    "category": "business",
-    "description": "Claim form for automotive business including equipment, inventory, and service interruption with customer impact analysis.",
-    "fields": [
-      {"label": "Business Name", "id": "businessName", "type": "text", "required": true},
-      {"label": "Business Address", "id": "businessAddress", "type": "textarea", "required": true},
-      {"label": "Service Type", "id": "serviceType", "type": "select", "options": ["Repair", "Sales", "Parts", "Service", "Other"], "required": true},
-      {"label": "Bay Count", "id": "bayCount", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Equipment", "Inventory", "Building", "Utilities", "Other"], "required": true},
-      {"label": "Equipment Loss", "id": "equipmentLoss", "type": "textarea", "required": false},
-      {"label": "Customer Impact", "id": "customerImpact", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "agricultural-business": {
-    "title": "Agricultural Business Claim",
-    "category": "business",
-    "description": "Claim form for agricultural business including crops, livestock, and equipment with farming impact analysis.",
-    "fields": [
-      {"label": "Farm Name", "id": "farmName", "type": "text", "required": true},
-      {"label": "Farm Address", "id": "farmAddress", "type": "textarea", "required": true},
-      {"label": "Farm Type", "id": "farmType", "type": "select", "options": ["Crop", "Livestock", "Mixed", "Dairy", "Other"], "required": true},
-      {"label": "Acres", "id": "acres", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Crops", "Livestock", "Equipment", "Buildings", "Other"], "required": true},
-      {"label": "Crop Loss", "id": "cropLoss", "type": "textarea", "required": false},
-      {"label": "Livestock Loss", "id": "livestockLoss", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "transportation-business": {
-    "title": "Transportation Business Claim",
-    "category": "business",
-    "description": "Claim form for transportation business including vehicles, equipment, and service interruption with logistics impact analysis.",
-    "fields": [
-      {"label": "Company Name", "id": "companyName", "type": "text", "required": true},
-      {"label": "Company Address", "id": "companyAddress", "type": "textarea", "required": true},
-      {"label": "Transport Type", "id": "transportType", "type": "select", "options": ["Trucking", "Delivery", "Taxi", "Bus", "Other"], "required": true},
-      {"label": "Vehicle Count", "id": "vehicleCount", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Vehicles", "Equipment", "Facility", "Other"], "required": true},
-      {"label": "Vehicle Loss", "id": "vehicleLoss", "type": "textarea", "required": false},
-      {"label": "Service Impact", "id": "serviceImpact", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "warehouse-business": {
-    "title": "Warehouse Business Claim",
-    "category": "business",
-    "description": "Claim form for warehouse business including inventory, equipment, and storage facilities with supply chain impact analysis.",
-    "fields": [
-      {"label": "Warehouse Name", "id": "warehouseName", "type": "text", "required": true},
-      {"label": "Warehouse Address", "id": "warehouseAddress", "type": "textarea", "required": true},
-      {"label": "Warehouse Type", "id": "warehouseType", "type": "select", "options": ["Distribution", "Cold Storage", "General", "Specialized", "Other"], "required": true},
-      {"label": "Square Footage", "id": "squareFootage", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Inventory", "Equipment", "Building", "Utilities", "Other"], "required": true},
-      {"label": "Inventory Loss", "id": "inventoryLoss", "type": "textarea", "required": false},
-      {"label": "Equipment Loss", "id": "equipmentLoss", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "tornado-claim": {
-    "title": "Tornado Damage Claim",
+  "community-resources": {
+    "title": "Community Resources Documentation",
     "category": "catastrophic",
-    "description": "Claim form for tornado damage including wind and debris damage with wind speed documentation.",
+    "description": "Documentation of community assistance and resources utilized.",
+    "layoutType": "T8",
+    "outputType": "pdf",
     "fields": [
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Tornado Date", "id": "tornadoDate", "type": "date", "required": true},
-      {"label": "Wind Speed (mph)", "id": "windSpeed", "type": "number", "required": false},
-      {"label": "Wind Damage", "id": "windDamage", "type": "textarea", "required": true},
-      {"label": "Debris Damage", "id": "debrisDamage", "type": "textarea", "required": false},
-      {"label": "Structural Damage", "id": "structuralDamage", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
+      {"label": "Resource Organizations", "id": "resourceOrganizations", "type": "table", "required": true, "columns": ["Organization", "Service", "Contact", "Assistance Provided", "Date"]}
     ]
   },
-  "hail-claim": {
-    "title": "Hail Damage Claim",
+  "volunteer-assistance": {
+    "title": "Volunteer Assistance Documentation",
     "category": "catastrophic",
-    "description": "Claim form for hail damage including roof, siding, and vehicle damage with hail size documentation.",
+    "description": "Documentation of volunteer assistance received during recovery.",
+    "layoutType": "T8",
+    "outputType": "pdf",
     "fields": [
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Hail Date", "id": "hailDate", "type": "date", "required": true},
-      {"label": "Hail Size (inches)", "id": "hailSize", "type": "number", "required": false},
-      {"label": "Roof Damage", "id": "roofDamage", "type": "textarea", "required": true},
-      {"label": "Siding Damage", "id": "sidingDamage", "type": "textarea", "required": false},
-      {"label": "Vehicle Damage", "id": "vehicleDamage", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
+      {"label": "Volunteer Groups", "id": "volunteerGroups", "type": "table", "required": true, "columns": ["Group", "Service", "Hours", "Value", "Date"]}
     ]
   },
-  "winter-storm-claim": {
-    "title": "Winter Storm Claim",
+  "donation-documentation": {
+    "title": "Donation Documentation",
     "category": "catastrophic",
-    "description": "Claim form for winter storm damage including ice, snow, and freeze damage with temperature documentation.",
+    "description": "Documentation of donations received and their value.",
+    "layoutType": "T8",
+    "outputType": "pdf",
     "fields": [
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Storm Date", "id": "stormDate", "type": "date", "required": true},
-      {"label": "Low Temperature (°F)", "id": "lowTemperature", "type": "number", "required": false},
-      {"label": "Ice Damage", "id": "iceDamage", "type": "textarea", "required": false},
-      {"label": "Snow Damage", "id": "snowDamage", "type": "textarea", "required": false},
-      {"label": "Freeze Damage", "id": "freezeDamage", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
+      {"label": "Donations Received", "id": "donationsReceived", "type": "table", "required": true, "columns": ["Donor", "Item/Service", "Value", "Date", "Purpose"]}
     ]
   },
-  "condo-association": {
-    "title": "Condo Association Claim",
-    "category": "property",
-    "description": "Claim form for condominium association property and common area damage with unit owner impact analysis.",
+  "recovery-timeline": {
+    "title": "Recovery Timeline",
+    "category": "catastrophic",
+    "description": "Comprehensive timeline of recovery efforts and milestones.",
+    "layoutType": "T8",
+    "outputType": "pdf",
     "fields": [
-      {"label": "Association Name", "id": "associationName", "type": "text", "required": true},
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Unit Count", "id": "unitCount", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Common Areas", "Building", "Utilities", "Amenities", "Other"], "required": true},
-      {"label": "Common Area Damage", "id": "commonAreaDamage", "type": "textarea", "required": true},
-      {"label": "Unit Impact", "id": "unitImpact", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
+      {"label": "Recovery Milestones", "id": "recoveryMilestones", "type": "table", "required": true, "columns": ["Date", "Milestone", "Status", "Next Steps", "Responsible Party"]}
     ]
   },
-  "homeowners-association": {
-    "title": "HOA Property Claim",
-    "category": "property",
-    "description": "Claim form for homeowners association property and amenity damage with member impact analysis.",
+  "reconstruction-schedule": {
+    "title": "Reconstruction Schedule",
+    "category": "catastrophic",
+    "description": "Detailed schedule of reconstruction activities and timelines.",
+    "layoutType": "T8",
+    "outputType": "pdf",
     "fields": [
-      {"label": "HOA Name", "id": "hoaName", "type": "text", "required": true},
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Home Count", "id": "homeCount", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Common Areas", "Amenities", "Utilities", "Landscaping", "Other"], "required": true},
-      {"label": "Amenity Damage", "id": "amenityDamage", "type": "textarea", "required": false},
-      {"label": "Member Impact", "id": "memberImpact", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
+      {"label": "Reconstruction Phases", "id": "reconstructionPhases", "type": "table", "required": true, "columns": ["Phase", "Description", "Start Date", "End Date", "Contractor", "Cost"]}
     ]
   },
-  "rental-property": {
-    "title": "Rental Property Claim",
-    "category": "property",
-    "description": "Claim form for rental property damage with tenant notification requirements and rental income impact analysis.",
+  "permit-documentation": {
+    "title": "Permit Documentation",
+    "category": "catastrophic",
+    "description": "Documentation of all permits required for reconstruction.",
+    "layoutType": "T8",
+    "outputType": "pdf",
     "fields": [
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Property Type", "id": "propertyType", "type": "select", "options": ["Single Family", "Multi-Family", "Condo", "Townhouse", "Other"], "required": true},
-      {"label": "Unit Count", "id": "unitCount", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Building", "Units", "Utilities", "Common Areas", "Other"], "required": true},
-      {"label": "Unit Damage", "id": "unitDamage", "type": "textarea", "required": false},
-      {"label": "Tenant Impact", "id": "tenantImpact", "type": "textarea", "required": false},
-      {"label": "Rental Income Loss", "id": "rentalIncomeLoss", "type": "number", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
+      {"label": "Required Permits", "id": "requiredPermits", "type": "table", "required": true, "columns": ["Permit Type", "Number", "Issuing Authority", "Date", "Expiration"]}
     ]
   },
-  "vacation-rental": {
-    "title": "Vacation Rental Claim",
-    "category": "property",
-    "description": "Specialized claim form for vacation rental property damage and loss of income with guest impact analysis.",
+  "inspection-reports": {
+    "title": "Inspection Reports",
+    "category": "catastrophic",
+    "description": "Collection of all inspection reports during reconstruction.",
+    "layoutType": "T8",
+    "outputType": "pdf",
     "fields": [
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Property Type", "id": "propertyType", "type": "select", "options": ["House", "Condo", "Cabin", "Villa", "Other"], "required": true},
-      {"label": "Bedroom Count", "id": "bedroomCount", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Building", "Furnishings", "Amenities", "Utilities", "Other"], "required": true},
-      {"label": "Furnishing Loss", "id": "furnishingLoss", "type": "textarea", "required": false},
-      {"label": "Guest Impact", "id": "guestImpact", "type": "textarea", "required": false},
-      {"label": "Lost Rental Income", "id": "lostRentalIncome", "type": "number", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
+      {"label": "Inspection Details", "id": "inspectionDetails", "type": "table", "required": true, "columns": ["Date", "Inspector", "Type", "Result", "Follow-up Required"]}
     ]
   },
-  "manufactured-home": {
-    "title": "Manufactured Home Claim",
-    "category": "property",
-    "description": "Claim form for manufactured home damage with special valuation considerations and transportation costs.",
+  "contractor-documentation": {
+    "title": "Contractor Documentation",
+    "category": "catastrophic",
+    "description": "Documentation of all contractors and their work.",
+    "layoutType": "T8",
+    "outputType": "pdf",
     "fields": [
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Home Year", "id": "homeYear", "type": "number", "required": false},
-      {"label": "Home Size (sq ft)", "id": "homeSize", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Wind", "Water", "Fire", "Theft", "Other"], "required": true},
-      {"label": "Structural Damage", "id": "structuralDamage", "type": "textarea", "required": true},
-      {"label": "Transportation Costs", "id": "transportationCosts", "type": "number", "required": false},
-      {"label": "Setup Costs", "id": "setupCosts", "type": "number", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
+      {"label": "Contractor Information", "id": "contractorInformation", "type": "table", "required": true, "columns": ["Contractor", "License", "Work Performed", "Cost", "Completion Date"]}
     ]
   },
-  "mobile-home": {
-    "title": "Mobile Home Claim",
-    "category": "property",
-    "description": "Claim form for mobile home damage with transportation and setup costs and special valuation considerations.",
+  "warranty-documentation": {
+    "title": "Warranty Documentation",
+    "category": "catastrophic",
+    "description": "Documentation of warranties for work performed.",
+    "layoutType": "T8",
+    "outputType": "pdf",
     "fields": [
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Home Year", "id": "homeYear", "type": "number", "required": false},
-      {"label": "Home Size (sq ft)", "id": "homeSize", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Wind", "Water", "Fire", "Theft", "Other"], "required": true},
-      {"label": "Structural Damage", "id": "structuralDamage", "type": "textarea", "required": true},
-      {"label": "Transportation Costs", "id": "transportationCosts", "type": "number", "required": false},
-      {"label": "Setup Costs", "id": "setupCosts", "type": "number", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
+      {"label": "Warranty Information", "id": "warrantyInformation", "type": "table", "required": true, "columns": ["Work Item", "Warranty Period", "Contractor", "Terms", "Contact Info"]}
     ]
   },
-  "farm-property": {
-    "title": "Farm Property Claim",
-    "category": "property",
-    "description": "Comprehensive claim form for farm property including crops, livestock, and equipment with agricultural impact analysis.",
+  "final-inspection": {
+    "title": "Final Inspection Report",
+    "category": "catastrophic",
+    "description": "Final inspection report confirming completion of all work.",
+    "layoutType": "T8",
+    "outputType": "pdf",
     "fields": [
-      {"label": "Farm Name", "id": "farmName", "type": "text", "required": true},
-      {"label": "Farm Address", "id": "farmAddress", "type": "textarea", "required": true},
-      {"label": "Farm Type", "id": "farmType", "type": "select", "options": ["Crop", "Livestock", "Mixed", "Dairy", "Other"], "required": true},
-      {"label": "Acres", "id": "acres", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Crops", "Livestock", "Equipment", "Buildings", "Other"], "required": true},
-      {"label": "Crop Loss", "id": "cropLoss", "type": "textarea", "required": false},
-      {"label": "Livestock Loss", "id": "livestockLoss", "type": "textarea", "required": false},
-      {"label": "Equipment Loss", "id": "equipmentLoss", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "ranch-property": {
-    "title": "Ranch Property Claim",
-    "category": "property",
-    "description": "Specialized claim form for ranch property including livestock and grazing land with ranching impact analysis.",
-    "fields": [
-      {"label": "Ranch Name", "id": "ranchName", "type": "text", "required": true},
-      {"label": "Ranch Address", "id": "ranchAddress", "type": "textarea", "required": true},
-      {"label": "Ranch Type", "id": "ranchType", "type": "select", "options": ["Cattle", "Sheep", "Horse", "Mixed", "Other"], "required": true},
-      {"label": "Acres", "id": "acres", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Livestock", "Grazing Land", "Equipment", "Buildings", "Other"], "required": true},
-      {"label": "Livestock Loss", "id": "livestockLoss", "type": "textarea", "required": false},
-      {"label": "Grazing Impact", "id": "grazingImpact", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "vineyard-property": {
-    "title": "Vineyard Property Claim",
-    "category": "property",
-    "description": "Claim form for vineyard property including crops, equipment, and wine inventory with viticulture impact analysis.",
-    "fields": [
-      {"label": "Vineyard Name", "id": "vineyardName", "type": "text", "required": true},
-      {"label": "Vineyard Address", "id": "vineyardAddress", "type": "textarea", "required": true},
-      {"label": "Grape Varieties", "id": "grapeVarieties", "type": "text", "required": false},
-      {"label": "Acres", "id": "acres", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Vines", "Equipment", "Wine Inventory", "Buildings", "Other"], "required": true},
-      {"label": "Vine Loss", "id": "vineLoss", "type": "textarea", "required": false},
-      {"label": "Wine Loss", "id": "wineLoss", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "orchard-property": {
-    "title": "Orchard Property Claim",
-    "category": "property",
-    "description": "Claim form for orchard property including trees, crops, and harvesting equipment with horticulture impact analysis.",
-    "fields": [
-      {"label": "Orchard Name", "id": "orchardName", "type": "text", "required": true},
-      {"label": "Orchard Address", "id": "orchardAddress", "type": "textarea", "required": true},
-      {"label": "Tree Types", "id": "treeTypes", "type": "text", "required": false},
-      {"label": "Acres", "id": "acres", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Trees", "Crops", "Equipment", "Buildings", "Other"], "required": true},
-      {"label": "Tree Loss", "id": "treeLoss", "type": "textarea", "required": false},
-      {"label": "Crop Loss", "id": "cropLoss", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "greenhouse-property": {
-    "title": "Greenhouse Property Claim",
-    "category": "property",
-    "description": "Claim form for greenhouse property including structures, equipment, and plants with horticulture impact analysis.",
-    "fields": [
-      {"label": "Greenhouse Name", "id": "greenhouseName", "type": "text", "required": true},
-      {"label": "Greenhouse Address", "id": "greenhouseAddress", "type": "textarea", "required": true},
-      {"label": "Greenhouse Type", "id": "greenhouseType", "type": "select", "options": ["Glass", "Poly", "Mixed", "Other"], "required": true},
-      {"label": "Square Footage", "id": "squareFootage", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Structure", "Equipment", "Plants", "Utilities", "Other"], "required": true},
-      {"label": "Structure Damage", "id": "structureDamage", "type": "textarea", "required": false},
-      {"label": "Plant Loss", "id": "plantLoss", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "aquaculture-property": {
-    "title": "Aquaculture Property Claim",
-    "category": "property",
-    "description": "Claim form for aquaculture property including fish, equipment, and facilities with aquaculture impact analysis.",
-    "fields": [
-      {"label": "Aquaculture Name", "id": "aquacultureName", "type": "text", "required": true},
-      {"label": "Aquaculture Address", "id": "aquacultureAddress", "type": "textarea", "required": true},
-      {"label": "Fish Types", "id": "fishTypes", "type": "text", "required": false},
-      {"label": "Pond Count", "id": "pondCount", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Fish", "Equipment", "Facilities", "Utilities", "Other"], "required": true},
-      {"label": "Fish Loss", "id": "fishLoss", "type": "textarea", "required": false},
-      {"label": "Equipment Loss", "id": "equipmentLoss", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "timber-property": {
-    "title": "Timber Property Claim",
-    "category": "property",
-    "description": "Claim form for timber property including trees, logging equipment, and access roads with forestry impact analysis.",
-    "fields": [
-      {"label": "Timber Property Name", "id": "timberPropertyName", "type": "text", "required": true},
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Tree Types", "id": "treeTypes", "type": "text", "required": false},
-      {"label": "Acres", "id": "acres", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Trees", "Equipment", "Roads", "Buildings", "Other"], "required": true},
-      {"label": "Tree Loss", "id": "treeLoss", "type": "textarea", "required": false},
-      {"label": "Equipment Loss", "id": "equipmentLoss", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "mining-property": {
-    "title": "Mining Property Claim",
-    "category": "property",
-    "description": "Claim form for mining property including equipment, facilities, and mineral rights with mining impact analysis.",
-    "fields": [
-      {"label": "Mining Property Name", "id": "miningPropertyName", "type": "text", "required": true},
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Mining Type", "id": "miningType", "type": "select", "options": ["Coal", "Gold", "Silver", "Copper", "Other"], "required": true},
-      {"label": "Acres", "id": "acres", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Equipment", "Facilities", "Minerals", "Buildings", "Other"], "required": true},
-      {"label": "Equipment Loss", "id": "equipmentLoss", "type": "textarea", "required": false},
-      {"label": "Facility Loss", "id": "facilityLoss", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "oil-gas-property": {
-    "title": "Oil & Gas Property Claim",
-    "category": "property",
-    "description": "Claim form for oil and gas property including wells, equipment, and facilities with energy impact analysis.",
-    "fields": [
-      {"label": "Property Name", "id": "propertyName", "type": "text", "required": true},
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Well Count", "id": "wellCount", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Wells", "Equipment", "Facilities", "Pipelines", "Other"], "required": true},
-      {"label": "Well Damage", "id": "wellDamage", "type": "textarea", "required": false},
-      {"label": "Equipment Loss", "id": "equipmentLoss", "type": "textarea", "required": false},
-      {"label": "Production Loss", "id": "productionLoss", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "renewable-energy": {
-    "title": "Renewable Energy Property Claim",
-    "category": "property",
-    "description": "Claim form for renewable energy property including solar, wind, and hydro facilities with energy production impact analysis.",
-    "fields": [
-      {"label": "Energy Property Name", "id": "energyPropertyName", "type": "text", "required": true},
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Energy Type", "id": "energyType", "type": "select", "options": ["Solar", "Wind", "Hydro", "Geothermal", "Other"], "required": true},
-      {"label": "Capacity (MW)", "id": "capacity", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Panels", "Turbines", "Equipment", "Facilities", "Other"], "required": true},
-      {"label": "Equipment Loss", "id": "equipmentLoss", "type": "textarea", "required": false},
-      {"label": "Production Loss", "id": "productionLoss", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "telecommunications": {
-    "title": "Telecommunications Property Claim",
-    "category": "property",
-    "description": "Claim form for telecommunications property including towers, equipment, and facilities with communication impact analysis.",
-    "fields": [
-      {"label": "Telecom Property Name", "id": "telecomPropertyName", "type": "text", "required": true},
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Tower Height (ft)", "id": "towerHeight", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Tower", "Equipment", "Facilities", "Antennas", "Other"], "required": true},
-      {"label": "Tower Damage", "id": "towerDamage", "type": "textarea", "required": false},
-      {"label": "Equipment Loss", "id": "equipmentLoss", "type": "textarea", "required": false},
-      {"label": "Service Impact", "id": "serviceImpact", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
-    ]
-  },
-  "transportation-property": {
-    "title": "Transportation Property Claim",
-    "category": "property",
-    "description": "Claim form for transportation property including vehicles, equipment, and facilities with logistics impact analysis.",
-    "fields": [
-      {"label": "Transportation Property Name", "id": "transportPropertyName", "type": "text", "required": true},
-      {"label": "Property Address", "id": "propertyAddress", "type": "textarea", "required": true},
-      {"label": "Vehicle Count", "id": "vehicleCount", "type": "number", "required": false},
-      {"label": "Damage Type", "id": "damageType", "type": "select", "options": ["Vehicles", "Equipment", "Facilities", "Maintenance", "Other"], "required": true},
-      {"label": "Vehicle Loss", "id": "vehicleLoss", "type": "textarea", "required": false},
-      {"label": "Equipment Loss", "id": "equipmentLoss", "type": "textarea", "required": false},
-      {"label": "Service Impact", "id": "serviceImpact", "type": "textarea", "required": false},
-      {"label": "Estimated Total Loss", "id": "estimatedTotalLoss", "type": "number", "required": true}
+      {"label": "Final Inspector", "id": "finalInspector", "type": "text", "required": true},
+      {"label": "Inspection Results", "id": "inspectionResults", "type": "table", "required": true, "columns": ["Work Item", "Status", "Quality", "Completion", "Notes"]}
     ]
   }
 }

@@ -1,1543 +1,742 @@
-const OpenAI = require('openai');
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+const { PDFDocument, StandardFonts, rgb } = require('pdf-lib');
+const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } = require('docx');
+const XLSX = require('xlsx');
 
 exports.handler = async (event, context) => {
-  // CORS headers
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS'
-  };
-
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
-  }
-
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
+    // CORS headers
+    const headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Content-Type': 'application/json'
     };
-  }
 
-  try {
-    const { docKey, inputs } = JSON.parse(event.body || '{}');
-    
-    if (!docKey) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Missing docKey parameter' })
-      };
+    if (event.httpMethod === 'OPTIONS') {
+        return { statusCode: 200, headers, body: '' };
     }
 
-    // Route to appropriate document generator
-    const result = await generateDocument(docKey, inputs);
-    
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify(result)
-    };
-  } catch (error) {
-    console.error('Document generation error:', error);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ 
-        error: 'Document generation failed',
-        message: error.message 
-      })
-    };
-  }
+    try {
+        const { docKey, inputs } = JSON.parse(event.body);
+        
+        if (!docKey || !inputs) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ error: 'Missing docKey or inputs' })
+            };
+        }
+
+        // Route to appropriate generator based on document type
+        let result;
+        switch (docKey) {
+            case 'proof-of-loss':
+                result = await generateProofOfLoss(inputs);
+                break;
+            case 'payment-demand':
+                result = await generatePaymentDemand(inputs);
+                break;
+            case 'damage-assessment':
+                result = await generateDamageAssessment(inputs);
+                break;
+            case 'depreciation-schedule':
+                result = await generateDepreciationSchedule(inputs);
+                break;
+            case 'evidence-log':
+                result = await generateEvidenceLog(inputs);
+                break;
+            case 'appeal-letter':
+                result = await generateAppealLetter(inputs);
+                break;
+            case 'business-interruption':
+                result = await generateBusinessInterruption(inputs);
+                break;
+            case 'expense-reimbursement':
+                result = await generateExpenseReimbursement(inputs);
+                break;
+            case 'appraisal-request':
+                result = await generateAppraisalRequest(inputs);
+                break;
+            case 'regulatory-complaint':
+                result = await generateRegulatoryComplaint(inputs);
+                break;
+            case 'settlement-offer':
+                result = await generateSettlementOffer(inputs);
+                break;
+            case 'notice-of-claim':
+                result = await generateNoticeOfClaim(inputs);
+                break;
+            case 'coverage-clarification':
+                result = await generateCoverageClarification(inputs);
+                break;
+            case 'delay-complaint':
+                result = await generateDelayComplaint(inputs);
+                break;
+            case 'photograph-log':
+                result = await generatePhotographLog(inputs);
+                break;
+            case 'repair-replace-analysis':
+                result = await generateRepairReplaceAnalysis(inputs);
+                break;
+            case 'out-of-pocket-log':
+                result = await generateOutOfPocketLog(inputs);
+                break;
+            case 'rom-estimate':
+                result = await generateROMEstimate(inputs);
+                break;
+            case 'comparative-estimates':
+                result = await generateComparativeEstimates(inputs);
+                break;
+            case 'document-index':
+                result = await generateDocumentIndex(inputs);
+                break;
+            case 'sworn-statement':
+                result = await generateSwornStatement(inputs);
+                break;
+            case 'supplemental-claim':
+                result = await generateSupplementalClaim(inputs);
+                break;
+            case 'policy-review-request':
+                result = await generatePolicyReviewRequest(inputs);
+                break;
+            case 'bad-faith-complaint':
+                result = await generateBadFaithComplaint(inputs);
+                break;
+            case 'mediation-request':
+                result = await generateMediationRequest(inputs);
+                break;
+            case 'arbitration-demand':
+                result = await generateArbitrationDemand(inputs);
+                break;
+            case 'expert-witness-request':
+                result = await generateExpertWitnessRequest(inputs);
+                break;
+            case 'subrogation-notice':
+                result = await generateSubrogationNotice(inputs);
+                break;
+            case 'coverage-denial-appeal':
+                result = await generateCoverageDenialAppeal(inputs);
+                break;
+            case 'settlement-agreement':
+                result = await generateSettlementAgreement(inputs);
+                break;
+            case 'replacement-cost-analysis':
+                result = await generateReplacementCostAnalysis(inputs);
+                break;
+            case 'actual-cash-value':
+                result = await generateActualCashValue(inputs);
+                break;
+            case 'loss-of-use-calculation':
+                result = await generateLossOfUseCalculation(inputs);
+                break;
+            case 'inflation-adjustment':
+                result = await generateInflationAdjustment(inputs);
+                break;
+            case 'consequential-damages':
+                result = await generateConsequentialDamages(inputs);
+                break;
+            case 'mitigation-expenses':
+                result = await generateMitigationExpenses(inputs);
+                break;
+            case 'emergency-response-log':
+                result = await generateEmergencyResponseLog(inputs);
+                break;
+            case 'chain-of-custody':
+                result = await generateChainOfCustody(inputs);
+                break;
+            case 'witness-statements':
+                result = await generateWitnessStatements(inputs);
+                break;
+            case 'surveillance-log':
+                result = await generateSurveillanceLog(inputs);
+                break;
+            case 'weather-data':
+                result = await generateWeatherData(inputs);
+                break;
+            case 'fire-investigation':
+                result = await generateFireInvestigation(inputs);
+                break;
+            case 'water-damage-assessment':
+                result = await generateWaterDamageAssessment(inputs);
+                break;
+            case 'mold-assessment':
+                result = await generateMoldAssessment(inputs);
+                break;
+            case 'structural-assessment':
+                result = await generateStructuralAssessment(inputs);
+                break;
+            case 'electrical-assessment':
+                result = await generateElectricalAssessment(inputs);
+                break;
+            case 'hvac-assessment':
+                result = await generateHVACAssessment(inputs);
+                break;
+            case 'roof-assessment':
+                result = await generateRoofAssessment(inputs);
+                break;
+            case 'flooring-assessment':
+                result = await generateFlooringAssessment(inputs);
+                break;
+            case 'appliance-assessment':
+                result = await generateApplianceAssessment(inputs);
+                break;
+            case 'personal-property-inventory':
+                result = await generatePersonalPropertyInventory(inputs);
+                break;
+            case 'contents-valuation':
+                result = await generateContentsValuation(inputs);
+                break;
+            case 'specialty-items':
+                result = await generateSpecialtyItems(inputs);
+                break;
+            case 'temporary-housing':
+                result = await generateTemporaryHousing(inputs);
+                break;
+            case 'storage-expenses':
+                result = await generateStorageExpenses(inputs);
+                break;
+            case 'moving-expenses':
+                result = await generateMovingExpenses(inputs);
+                break;
+            case 'pet-care-expenses':
+                result = await generatePetCareExpenses(inputs);
+                break;
+            case 'childcare-expenses':
+                result = await generateChildcareExpenses(inputs);
+                break;
+            case 'meal-expenses':
+                result = await generateMealExpenses(inputs);
+                break;
+            case 'transportation-expenses':
+                result = await generateTransportationExpenses(inputs);
+                break;
+            case 'communication-expenses':
+                result = await generateCommunicationExpenses(inputs);
+                break;
+            case 'catastrophic-event-log':
+                result = await generateCatastrophicEventLog(inputs);
+                break;
+            case 'disaster-declaration':
+                result = await generateDisasterDeclaration(inputs);
+                break;
+            case 'fema-assistance':
+                result = await generateFEMAAssistance(inputs);
+                break;
+            case 'sba-loan-documentation':
+                result = await generateSBALoanDocumentation(inputs);
+                break;
+            case 'community-resources':
+                result = await generateCommunityResources(inputs);
+                break;
+            case 'volunteer-assistance':
+                result = await generateVolunteerAssistance(inputs);
+                break;
+            case 'donation-documentation':
+                result = await generateDonationDocumentation(inputs);
+                break;
+            case 'recovery-timeline':
+                result = await generateRecoveryTimeline(inputs);
+                break;
+            case 'reconstruction-schedule':
+                result = await generateReconstructionSchedule(inputs);
+                break;
+            case 'permit-documentation':
+                result = await generatePermitDocumentation(inputs);
+                break;
+            case 'inspection-reports':
+                result = await generateInspectionReports(inputs);
+                break;
+            case 'contractor-documentation':
+                result = await generateContractorDocumentation(inputs);
+                break;
+            case 'warranty-documentation':
+                result = await generateWarrantyDocumentation(inputs);
+                break;
+            case 'final-inspection':
+                result = await generateFinalInspection(inputs);
+                break;
+            default:
+                result = await generateGenericDocument(docKey, inputs);
+        }
+
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(result)
+        };
+
+    } catch (error) {
+        console.error('Error generating document:', error);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ 
+                error: 'Failed to generate document',
+                details: error.message 
+            })
+        };
+    }
 };
 
-async function generateDocument(docKey, inputs) {
-  // Document generation routing
-  switch (docKey) {
-    case 'proof-of-loss':
-      return await generateProofOfLoss(inputs);
-    case 'demand-letter':
-      return await generateDemandLetter(inputs);
-    case 'appeal-letter':
-      return await generateAppealLetter(inputs);
-    case 'damage-assessment':
-      return await generateDamageAssessment(inputs);
-    case 'business-interruption-claim':
-      return await generateBusinessInterruptionClaim(inputs);
-    case 'depreciation-schedule':
-      return await generateDepreciationSchedule(inputs);
-    case 'claim-timeline':
-      return await generateClaimTimeline(inputs);
-    case 'evidence-log':
-      return await generateEvidenceLog(inputs);
-    case 'settlement-offer':
-      return await generateSettlementOffer(inputs);
-    case 'expense-reimbursement':
-      return await generateExpenseReimbursement(inputs);
-    case 'appraisal-request':
-      return await generateAppraisalRequest(inputs);
-    case 'regulatory-complaint':
-      return await generateRegulatoryComplaint(inputs);
-    case 'hurricane-claim':
-      return await generateHurricaneClaim(inputs);
-    case 'flood-claim':
-      return await generateFloodClaim(inputs);
-    case 'wildfire-claim':
-      return await generateWildfireClaim(inputs);
-    case 'earthquake-claim':
-      return await generateEarthquakeClaim(inputs);
-    case 'residential-property':
-      return await generateResidentialProperty(inputs);
-    case 'commercial-property':
-      return await generateCommercialProperty(inputs);
-    case 'restaurant-business':
-      return await generateRestaurantBusiness(inputs);
-    case 'retail-business':
-      return await generateRetailBusiness(inputs);
-    case 'manufacturing-business':
-      return await generateManufacturingBusiness(inputs);
-    case 'healthcare-business':
-      return await generateHealthcareBusiness(inputs);
-    case 'professional-services':
-      return await generateProfessionalServices(inputs);
-    case 'technology-business':
-      return await generateTechnologyBusiness(inputs);
-    case 'hospitality-business':
-      return await generateHospitalityBusiness(inputs);
-    case 'education-business':
-      return await generateEducationBusiness(inputs);
-    case 'fitness-business':
-      return await generateFitnessBusiness(inputs);
-    case 'beauty-business':
-      return await generateBeautyBusiness(inputs);
-    case 'automotive-business':
-      return await generateAutomotiveBusiness(inputs);
-    case 'agricultural-business':
-      return await generateAgriculturalBusiness(inputs);
-    case 'transportation-business':
-      return await generateTransportationBusiness(inputs);
-    case 'warehouse-business':
-      return await generateWarehouseBusiness(inputs);
-    case 'tornado-claim':
-      return await generateTornadoClaim(inputs);
-    case 'hail-claim':
-      return await generateHailClaim(inputs);
-    case 'winter-storm-claim':
-      return await generateWinterStormClaim(inputs);
-    case 'condo-association':
-      return await generateCondoAssociation(inputs);
-    case 'homeowners-association':
-      return await generateHomeownersAssociation(inputs);
-    case 'rental-property':
-      return await generateRentalProperty(inputs);
-    case 'vacation-rental':
-      return await generateVacationRental(inputs);
-    case 'manufactured-home':
-      return await generateManufacturedHome(inputs);
-    case 'mobile-home':
-      return await generateMobileHome(inputs);
-    case 'farm-property':
-      return await generateFarmProperty(inputs);
-    case 'ranch-property':
-      return await generateRanchProperty(inputs);
-    case 'vineyard-property':
-      return await generateVineyardProperty(inputs);
-    case 'orchard-property':
-      return await generateOrchardProperty(inputs);
-    case 'greenhouse-property':
-      return await generateGreenhouseProperty(inputs);
-    case 'aquaculture-property':
-      return await generateAquacultureProperty(inputs);
-    case 'timber-property':
-      return await generateTimberProperty(inputs);
-    case 'mining-property':
-      return await generateMiningProperty(inputs);
-    case 'oil-gas-property':
-      return await generateOilGasProperty(inputs);
-    case 'renewable-energy':
-      return await generateRenewableEnergy(inputs);
-    case 'telecommunications':
-      return await generateTelecommunications(inputs);
-    case 'transportation-property':
-      return await generateTransportationProperty(inputs);
-    default:
-      return await generateGenericDocument(docKey, inputs);
-  }
-}
-
-// Document generation functions
+// Proof of Loss Generator (T1 - PDF Form)
 async function generateProofOfLoss(inputs) {
-  const prompt = `Generate a comprehensive Proof of Loss Documentation for the following claim:
-
-Claimant: ${inputs.claimantName}
-Policy Number: ${inputs.policyNumber}
-Claim Number: ${inputs.claimNumber}
-Loss Date: ${inputs.lossDate}
-Property Address: ${inputs.propertyAddress}
-Estimated Loss: $${inputs.estimatedLoss}
-Description: ${inputs.lossDescription}
-Contact: ${inputs.contactPhone || 'Not provided'} / ${inputs.contactEmail || 'Not provided'}
-
-Create a professional, legally sound proof of loss document that includes:
-1. Proper header with all claim information
-2. Detailed description of the loss
-3. Itemized list of damaged property
-4. Supporting documentation requirements
-5. Professional formatting suitable for insurance submission
-
-Format as HTML with proper styling for professional presentation.`;
-
-  return await generateWithAI(prompt, 'Proof of Loss Documentation');
-}
-
-async function generateDemandLetter(inputs) {
-  const prompt = `Generate a professional Payment Demand Letter with the following details:
-
-Insurer: ${inputs.insurerName}
-Claim Number: ${inputs.claimNumber}
-Policy Number: ${inputs.policyNumber}
-Disputed Amount: $${inputs.disputedAmount}
-Reason for Demand: ${inputs.reason}
-Response Deadline: ${inputs.deadline || '30'} days
-Legal References: ${inputs.legalRefs || 'Standard insurance law'}
-
-Create a formal demand letter that includes:
-1. Professional letterhead format
-2. Clear statement of the demand
-3. Legal basis for the claim
-4. Specific timeline for response
-5. Consequences of non-compliance
-6. Professional closing
-
-Format as HTML with proper styling for legal correspondence.`;
-
-  return await generateWithAI(prompt, 'Payment Demand Letter');
-}
-
-async function generateAppealLetter(inputs) {
-  const prompt = `Generate a professional Claim Appeal Letter with the following details:
-
-Insurer: ${inputs.insurerName}
-Claim Number: ${inputs.claimNumber}
-Denial Date: ${inputs.denialDate}
-Denial Reason: ${inputs.denialReason}
-Appeal Basis: ${inputs.appealBasis}
-Supporting Evidence: ${inputs.supportingEvidence || 'See attached documentation'}
-Legal Authority: ${inputs.legalAuthority || 'Policy terms and applicable law'}
-
-Create a compelling appeal letter that includes:
-1. Professional letterhead
-2. Clear statement of the appeal
-3. Detailed rebuttal of denial reasons
-4. Supporting legal and factual arguments
-5. Request for reconsideration
-6. Professional closing
-
-Format as HTML with proper styling for legal correspondence.`;
-
-  return await generateWithAI(prompt, 'Claim Appeal Letter');
-}
-
-async function generateDamageAssessment(inputs) {
-  const prompt = `Generate a professional Damage Assessment Report with the following details:
-
-Property Address: ${inputs.propertyAddress}
-Assessment Date: ${inputs.assessmentDate}
-Assessor: ${inputs.assessorName}
-License: ${inputs.assessorLicense || 'Not provided'}
-Damage Type: ${inputs.damageType}
-Description: ${inputs.damageDescription}
-Repair Cost: $${inputs.repairCost}
-Replacement Cost: $${inputs.replacementCost || 'Not provided'}
-Photos Taken: ${inputs.photosTaken || 'Not specified'}
-
-Create a comprehensive assessment report that includes:
-1. Professional report header
-2. Property and assessment details
-3. Detailed damage description
-4. Cost analysis and estimates
-5. Recommendations for repair/replacement
-6. Supporting documentation requirements
-
-Format as HTML with proper styling for professional reports.`;
-
-  return await generateWithAI(prompt, 'Damage Assessment Report');
-}
-
-async function generateBusinessInterruptionClaim(inputs) {
-  const prompt = `Generate a comprehensive Business Interruption Claim with the following details:
-
-Business Name: ${inputs.businessName}
-Business Type: ${inputs.businessType}
-Interruption Start: ${inputs.interruptionStart}
-Interruption End: ${inputs.interruptionEnd || 'Ongoing'}
-Monthly Revenue (Pre-Loss): $${inputs.monthlyRevenue}
-Lost Revenue: $${inputs.lostRevenue}
-Continuing Expenses: $${inputs.continuingExpenses}
-Extra Expenses: $${inputs.extraExpenses || 'Not applicable'}
-Recovery Plan: ${inputs.recoveryPlan || 'Under development'}
-
-Create a detailed business interruption claim that includes:
-1. Business and claim information
-2. Financial impact analysis
-3. Revenue loss calculations
-4. Expense documentation
-5. Recovery timeline
-6. Supporting financial records
-
-Format as HTML with proper styling for financial documentation.`;
-
-  return await generateWithAI(prompt, 'Business Interruption Claim');
-}
-
-async function generateDepreciationSchedule(inputs) {
-  const prompt = `Generate a detailed Depreciation Schedule with the following details:
-
-Property Type: ${inputs.propertyType}
-Original Cost: $${inputs.originalCost}
-Purchase Date: ${inputs.purchaseDate}
-Useful Life: ${inputs.usefulLife} years
-Current Age: ${inputs.currentAge} years
-Replacement Cost: $${inputs.replacementCost}
-Depreciation Method: ${inputs.depreciationMethod}
-Condition: ${inputs.condition}
-
-Create a comprehensive depreciation schedule that includes:
-1. Property and cost information
-2. Depreciation calculations
-3. Current value assessment
-4. Replacement cost analysis
-5. Condition-based adjustments
-6. Professional formatting for insurance purposes
-
-Format as HTML with proper styling for financial documentation.`;
-
-  return await generateWithAI(prompt, 'Depreciation Schedule');
-}
-
-async function generateClaimTimeline(inputs) {
-  const prompt = `Generate a detailed Claim Timeline with the following details:
-
-Claim Number: ${inputs.claimNumber}
-Policy Number: ${inputs.policyNumber}
-Loss Date: ${inputs.lossDate}
-First Notice Date: ${inputs.firstNoticeDate}
-Key Events: ${inputs.keyEvents}
-Correspondence Log: ${inputs.correspondenceLog || 'See attached correspondence'}
-Important Deadlines: ${inputs.deadlines || 'See policy terms'}
-
-Create a comprehensive timeline that includes:
-1. Chronological event listing
-2. Key milestone tracking
-3. Correspondence documentation
-4. Deadline management
-5. Status updates
-6. Professional formatting
-
-Format as HTML with proper styling for timeline documentation.`;
-
-  return await generateWithAI(prompt, 'Claim Timeline');
-}
-
-async function generateEvidenceLog(inputs) {
-  const prompt = `Generate a systematic Evidence Documentation Log with the following details:
-
-Claim Number: ${inputs.claimNumber}
-Evidence Type: ${inputs.evidenceType}
-Description: ${inputs.evidenceDescription}
-Date Collected: ${inputs.dateCollected}
-Collected By: ${inputs.collectedBy}
-Storage Location: ${inputs.storageLocation || 'Secure storage'}
-Chain of Custody: ${inputs.chainOfCustody || 'Maintained throughout'}
-
-Create a comprehensive evidence log that includes:
-1. Evidence identification
-2. Collection details
-3. Storage information
-4. Chain of custody tracking
-5. Access controls
-6. Professional formatting
-
-Format as HTML with proper styling for legal documentation.`;
-
-  return await generateWithAI(prompt, 'Evidence Documentation Log');
-}
-
-async function generateSettlementOffer(inputs) {
-  const prompt = `Generate a professional Settlement Offer Letter with the following details:
-
-Insurer: ${inputs.insurerName}
-Claim Number: ${inputs.claimNumber}
-Settlement Amount: $${inputs.settlementAmount}
-Offer Terms: ${inputs.offerTerms}
-Acceptance Deadline: ${inputs.acceptanceDeadline}
-Conditions: ${inputs.conditions || 'Standard settlement conditions'}
-Legal Consequences: ${inputs.legalConsequences || 'Final resolution of claim'}
-
-Create a formal settlement offer that includes:
-1. Professional letterhead
-2. Clear offer terms
-3. Acceptance requirements
-4. Legal implications
-5. Timeline for response
-6. Professional closing
-
-Format as HTML with proper styling for legal correspondence.`;
-
-  return await generateWithAI(prompt, 'Settlement Offer Letter');
-}
-
-async function generateExpenseReimbursement(inputs) {
-  const prompt = `Generate a detailed Expense Reimbursement Form with the following details:
-
-Claimant: ${inputs.claimantName}
-Claim Number: ${inputs.claimNumber}
-Expense Category: ${inputs.expenseCategory}
-Total Amount: $${inputs.totalAmount}
-Expense Details: ${inputs.expenseDetails}
-Receipts Attached: ${inputs.receiptsAttached ? 'Yes' : 'No'}
-Date Range: ${inputs.dateRange}
-
-Create a comprehensive reimbursement form that includes:
-1. Claim and claimant information
-2. Detailed expense breakdown
-3. Category classification
-4. Receipt documentation
-5. Approval requirements
-6. Professional formatting
-
-Format as HTML with proper styling for financial documentation.`;
-
-  return await generateWithAI(prompt, 'Expense Reimbursement Form');
-}
-
-async function generateAppraisalRequest(inputs) {
-  const prompt = `Generate a formal Appraisal Request Form with the following details:
-
-Insurer: ${inputs.insurerName}
-Claim Number: ${inputs.claimNumber}
-Disputed Amount: $${inputs.disputedAmount}
-Dispute Basis: ${inputs.disputeBasis}
-Preferred Appraiser: ${inputs.preferredAppraiser || 'To be determined'}
-Appraisal Scope: ${inputs.appraisalScope}
-Timeline Request: ${inputs.timelineRequest || '30 days'}
-
-Create a comprehensive appraisal request that includes:
-1. Formal request structure
-2. Dispute documentation
-3. Appraisal requirements
-4. Timeline specifications
-5. Professional qualifications
-6. Legal framework
-
-Format as HTML with proper styling for formal requests.`;
-
-  return await generateWithAI(prompt, 'Appraisal Request Form');
-}
-
-async function generateRegulatoryComplaint(inputs) {
-  const prompt = `Generate a formal Regulatory Complaint Form with the following details:
-
-Insurer: ${inputs.insurerName}
-Claim Number: ${inputs.claimNumber}
-Complaint Type: ${inputs.complaintType}
-Violation Description: ${inputs.violationDescription}
-Supporting Evidence: ${inputs.supportingEvidence}
-Regulatory Authority: ${inputs.regulatoryAuthority}
-Remedy Sought: ${inputs.remedySought}
-
-Create a comprehensive regulatory complaint that includes:
-1. Formal complaint structure
-2. Violation documentation
-3. Legal basis for complaint
-4. Supporting evidence
-5. Remedy requests
-6. Professional formatting
-
-Format as HTML with proper styling for regulatory submissions.`;
-
-  return await generateWithAI(prompt, 'Regulatory Complaint Form');
-}
-
-// Catastrophic Event Document Generators
-async function generateHurricaneClaim(inputs) {
-  const prompt = `Generate a specialized Hurricane Damage Claim with the following details:
-
-Hurricane Name: ${inputs.hurricaneName}
-Property Address: ${inputs.propertyAddress}
-Damage Date: ${inputs.damageDate}
-Wind Damage: ${inputs.windDamage}
-Water Damage: ${inputs.waterDamage || 'Not applicable'}
-Flood Damage: ${inputs.floodDamage || 'Not applicable'}
-Evacuation Expenses: $${inputs.evacuationExpenses || 'Not applicable'}
-Temporary Housing: ${inputs.temporaryHousing || 'Not required'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a comprehensive hurricane claim that includes:
-1. Hurricane-specific damage assessment
-2. Wind and water damage documentation
-3. Evacuation expense tracking
-4. Temporary housing needs
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for catastrophic event documentation.`;
-
-  return await generateWithAI(prompt, 'Hurricane Damage Claim');
-}
-
-async function generateFloodClaim(inputs) {
-  const prompt = `Generate a comprehensive Flood Damage Claim with the following details:
-
-Property Address: ${inputs.propertyAddress}
-Flood Date: ${inputs.floodDate}
-Water Level: ${inputs.waterLevel} inches
-Flood Source: ${inputs.floodSource}
-Property Damage: ${inputs.propertyDamage}
-Contents Damage: ${inputs.contentsDamage}
-Cleanup Costs: $${inputs.cleanupCosts || 'Not provided'}
-Prevention Measures: ${inputs.preventionMeasures || 'Not applicable'}
-
-Create a detailed flood claim that includes:
-1. Flood-specific damage assessment
-2. Water level documentation
-3. Property and contents damage
-4. Cleanup cost analysis
-5. Prevention measures
-6. Professional formatting
-
-Format as HTML with proper styling for flood damage documentation.`;
-
-  return await generateWithAI(prompt, 'Flood Damage Claim');
-}
-
-async function generateWildfireClaim(inputs) {
-  const prompt = `Generate a comprehensive Wildfire Damage Claim with the following details:
-
-Fire Name: ${inputs.fireName}
-Property Address: ${inputs.propertyAddress}
-Fire Date: ${inputs.fireDate}
-Fire Damage: ${inputs.fireDamage}
-Smoke Damage: ${inputs.smokeDamage || 'Not applicable'}
-Evacuation Required: ${inputs.evacuationRequired ? 'Yes' : 'No'}
-Evacuation Expenses: $${inputs.evacuationExpenses || 'Not applicable'}
-Air Quality Impact: ${inputs.airQualityImpact || 'Not assessed'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed wildfire claim that includes:
-1. Fire-specific damage assessment
-2. Direct fire damage documentation
-3. Smoke damage evaluation
-4. Evacuation expense tracking
-5. Air quality considerations
-6. Professional formatting
-
-Format as HTML with proper styling for wildfire damage documentation.`;
-
-  return await generateWithAI(prompt, 'Wildfire Damage Claim');
-}
-
-async function generateEarthquakeClaim(inputs) {
-  const prompt = `Generate a comprehensive Earthquake Damage Claim with the following details:
-
-Property Address: ${inputs.propertyAddress}
-Earthquake Date: ${inputs.earthquakeDate}
-Magnitude: ${inputs.magnitude || 'Not specified'}
-Structural Damage: ${inputs.structuralDamage}
-Contents Damage: ${inputs.contentsDamage}
-Foundation Issues: ${inputs.foundationIssues || 'Not applicable'}
-Utility Damage: ${inputs.utilityDamage || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed earthquake claim that includes:
-1. Earthquake-specific damage assessment
-2. Structural damage documentation
-3. Contents damage evaluation
-4. Foundation and utility damage
-5. Seismic activity documentation
-6. Professional formatting
-
-Format as HTML with proper styling for earthquake damage documentation.`;
-
-  return await generateWithAI(prompt, 'Earthquake Damage Claim');
-}
-
-// Property-Specific Document Generators
-async function generateResidentialProperty(inputs) {
-  const prompt = `Generate a specialized Residential Property Claim with the following details:
-
-Property Address: ${inputs.propertyAddress}
-Property Type: ${inputs.propertyType}
-Year Built: ${inputs.yearBuilt || 'Not specified'}
-Square Footage: ${inputs.squareFootage || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Damage Description: ${inputs.damageDescription}
-Repair Cost: $${inputs.repairCost}
-Temporary Housing Needed: ${inputs.temporaryHousing ? 'Yes' : 'No'}
-
-Create a comprehensive residential property claim that includes:
-1. Property-specific damage assessment
-2. Home characteristics documentation
-3. Damage type and description
-4. Repair cost analysis
-5. Temporary housing needs
-6. Professional formatting
-
-Format as HTML with proper styling for residential property documentation.`;
-
-  return await generateWithAI(prompt, 'Residential Property Claim');
-}
-
-async function generateCommercialProperty(inputs) {
-  const prompt = `Generate a comprehensive Commercial Property Claim with the following details:
-
-Business Name: ${inputs.businessName}
-Property Address: ${inputs.propertyAddress}
-Business Type: ${inputs.businessType}
-Damage Type: ${inputs.damageType}
-Property Damage: ${inputs.propertyDamage}
-Business Interruption: ${inputs.businessInterruption || 'Not applicable'}
-Lost Revenue: $${inputs.lostRevenue || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed commercial property claim that includes:
-1. Business and property information
-2. Commercial-specific damage assessment
-3. Business interruption analysis
-4. Revenue impact evaluation
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for commercial property documentation.`;
-
-  return await generateWithAI(prompt, 'Commercial Property Claim');
-}
-
-// Business-Specific Document Generators
-async function generateRestaurantBusiness(inputs) {
-  const prompt = `Generate a comprehensive Restaurant Business Claim with the following details:
-
-Restaurant Name: ${inputs.restaurantName}
-Restaurant Address: ${inputs.restaurantAddress}
-Cuisine Type: ${inputs.cuisineType || 'Not specified'}
-Seating Capacity: ${inputs.seatingCapacity || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Food Loss: ${inputs.foodLoss || 'Not applicable'}
-Equipment Damage: ${inputs.equipmentDamage}
-Lost Revenue: $${inputs.lostRevenue || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed restaurant business claim that includes:
-1. Restaurant-specific information
-2. Food service damage assessment
-3. Equipment damage documentation
-4. Food loss evaluation
-5. Revenue impact analysis
-6. Professional formatting
-
-Format as HTML with proper styling for restaurant business documentation.`;
-
-  return await generateWithAI(prompt, 'Restaurant Business Claim');
-}
-
-async function generateRetailBusiness(inputs) {
-  const prompt = `Generate a comprehensive Retail Business Claim with the following details:
-
-Store Name: ${inputs.storeName}
-Store Address: ${inputs.storeAddress}
-Store Type: ${inputs.storeType}
-Damage Type: ${inputs.damageType}
-Inventory Loss: ${inputs.inventoryLoss || 'Not applicable'}
-Fixture Damage: ${inputs.fixtureDamage || 'Not applicable'}
-Lost Sales: $${inputs.lostSales || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed retail business claim that includes:
-1. Retail-specific information
-2. Inventory damage assessment
-3. Fixture damage documentation
-4. Sales impact analysis
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for retail business documentation.`;
-
-  return await generateWithAI(prompt, 'Retail Business Claim');
-}
-
-async function generateManufacturingBusiness(inputs) {
-  const prompt = `Generate a comprehensive Manufacturing Business Claim with the following details:
-
-Company Name: ${inputs.companyName}
-Facility Address: ${inputs.facilityAddress}
-Product Type: ${inputs.productType}
-Damage Type: ${inputs.damageType}
-Equipment Damage: ${inputs.equipmentDamage}
-Production Loss: ${inputs.productionLoss || 'Not applicable'}
-Raw Material Loss: ${inputs.rawMaterialLoss || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed manufacturing business claim that includes:
-1. Manufacturing-specific information
-2. Equipment damage assessment
-3. Production loss documentation
-4. Raw material impact
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for manufacturing business documentation.`;
-
-  return await generateWithAI(prompt, 'Manufacturing Business Claim');
-}
-
-async function generateHealthcareBusiness(inputs) {
-  const prompt = `Generate a comprehensive Healthcare Business Claim with the following details:
-
-Healthcare Facility Name: ${inputs.facilityName}
-Facility Address: ${inputs.facilityAddress}
-Facility Type: ${inputs.facilityType}
-Damage Type: ${inputs.damageType}
-Medical Equipment Loss: ${inputs.medicalEquipmentLoss || 'Not applicable'}
-Patient Care Impact: ${inputs.patientCareImpact || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed healthcare business claim that includes:
-1. Healthcare facility information
-2. Medical equipment damage assessment
-3. Patient care impact documentation
-4. Healthcare-specific considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for healthcare business documentation.`;
-
-  return await generateWithAI(prompt, 'Healthcare Business Claim');
-}
-
-async function generateProfessionalServices(inputs) {
-  const prompt = `Generate a comprehensive Professional Services Claim with the following details:
-
-Firm Name: ${inputs.firmName}
-Office Address: ${inputs.officeAddress}
-Service Type: ${inputs.serviceType}
-Damage Type: ${inputs.damageType}
-Equipment Loss: ${inputs.equipmentLoss || 'Not applicable'}
-Client Impact: ${inputs.clientImpact || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed professional services claim that includes:
-1. Professional services information
-2. Office equipment damage assessment
-3. Client impact documentation
-4. Professional liability considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for professional services documentation.`;
-
-  return await generateWithAI(prompt, 'Professional Services Claim');
-}
-
-async function generateTechnologyBusiness(inputs) {
-  const prompt = `Generate a comprehensive Technology Business Claim with the following details:
-
-Company Name: ${inputs.companyName}
-Office Address: ${inputs.officeAddress}
-Technology Type: ${inputs.technologyType}
-Damage Type: ${inputs.damageType}
-Equipment Loss: ${inputs.equipmentLoss || 'Not applicable'}
-Data Loss: ${inputs.dataLoss || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed technology business claim that includes:
-1. Technology business information
-2. Equipment damage assessment
-3. Data loss documentation
-4. Cybersecurity considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for technology business documentation.`;
-
-  return await generateWithAI(prompt, 'Technology Business Claim');
-}
-
-async function generateHospitalityBusiness(inputs) {
-  const prompt = `Generate a comprehensive Hospitality Business Claim with the following details:
-
-Property Name: ${inputs.propertyName}
-Property Address: ${inputs.propertyAddress}
-Property Type: ${inputs.propertyType}
-Room Count: ${inputs.roomCount || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Guest Impact: ${inputs.guestImpact || 'Not applicable'}
-Lost Revenue: $${inputs.lostRevenue || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed hospitality business claim that includes:
-1. Hospitality property information
-2. Guest service impact assessment
-3. Revenue loss documentation
-4. Hospitality-specific considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for hospitality business documentation.`;
-
-  return await generateWithAI(prompt, 'Hospitality Business Claim');
-}
-
-async function generateEducationBusiness(inputs) {
-  const prompt = `Generate a comprehensive Education Business Claim with the following details:
-
-Institution Name: ${inputs.institutionName}
-Campus Address: ${inputs.campusAddress}
-Institution Type: ${inputs.institutionType}
-Student Count: ${inputs.studentCount || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Educational Impact: ${inputs.educationalImpact || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed education business claim that includes:
-1. Educational institution information
-2. Educational impact assessment
-3. Student service documentation
-4. Education-specific considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for education business documentation.`;
-
-  return await generateWithAI(prompt, 'Education Business Claim');
-}
-
-async function generateFitnessBusiness(inputs) {
-  const prompt = `Generate a comprehensive Fitness Business Claim with the following details:
-
-Gym Name: ${inputs.gymName}
-Gym Address: ${inputs.gymAddress}
-Gym Type: ${inputs.gymType}
-Member Count: ${inputs.memberCount || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Equipment Loss: ${inputs.equipmentLoss || 'Not applicable'}
-Member Impact: ${inputs.memberImpact || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed fitness business claim that includes:
-1. Fitness facility information
-2. Equipment damage assessment
-3. Member impact documentation
-4. Fitness-specific considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for fitness business documentation.`;
-
-  return await generateWithAI(prompt, 'Fitness Business Claim');
-}
-
-async function generateBeautyBusiness(inputs) {
-  const prompt = `Generate a comprehensive Beauty Business Claim with the following details:
-
-Salon Name: ${inputs.salonName}
-Salon Address: ${inputs.salonAddress}
-Service Type: ${inputs.serviceType}
-Station Count: ${inputs.stationCount || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Equipment Loss: ${inputs.equipmentLoss || 'Not applicable'}
-Client Impact: ${inputs.clientImpact || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed beauty business claim that includes:
-1. Beauty salon information
-2. Equipment damage assessment
-3. Client impact documentation
-4. Beauty industry considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for beauty business documentation.`;
-
-  return await generateWithAI(prompt, 'Beauty Business Claim');
-}
-
-async function generateAutomotiveBusiness(inputs) {
-  const prompt = `Generate a comprehensive Automotive Business Claim with the following details:
-
-Business Name: ${inputs.businessName}
-Business Address: ${inputs.businessAddress}
-Service Type: ${inputs.serviceType}
-Bay Count: ${inputs.bayCount || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Equipment Loss: ${inputs.equipmentLoss || 'Not applicable'}
-Customer Impact: ${inputs.customerImpact || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed automotive business claim that includes:
-1. Automotive business information
-2. Equipment damage assessment
-3. Customer impact documentation
-4. Automotive industry considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for automotive business documentation.`;
-
-  return await generateWithAI(prompt, 'Automotive Business Claim');
-}
-
-async function generateAgriculturalBusiness(inputs) {
-  const prompt = `Generate a comprehensive Agricultural Business Claim with the following details:
-
-Farm Name: ${inputs.farmName}
-Farm Address: ${inputs.farmAddress}
-Farm Type: ${inputs.farmType}
-Acres: ${inputs.acres || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Crop Loss: ${inputs.cropLoss || 'Not applicable'}
-Livestock Loss: ${inputs.livestockLoss || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed agricultural business claim that includes:
-1. Agricultural business information
-2. Crop and livestock damage assessment
-3. Farm equipment documentation
-4. Agricultural industry considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for agricultural business documentation.`;
-
-  return await generateWithAI(prompt, 'Agricultural Business Claim');
-}
-
-async function generateTransportationBusiness(inputs) {
-  const prompt = `Generate a comprehensive Transportation Business Claim with the following details:
-
-Company Name: ${inputs.companyName}
-Company Address: ${inputs.companyAddress}
-Transport Type: ${inputs.transportType}
-Vehicle Count: ${inputs.vehicleCount || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Vehicle Loss: ${inputs.vehicleLoss || 'Not applicable'}
-Service Impact: ${inputs.serviceImpact || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed transportation business claim that includes:
-1. Transportation business information
-2. Vehicle damage assessment
-3. Service impact documentation
-4. Transportation industry considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for transportation business documentation.`;
-
-  return await generateWithAI(prompt, 'Transportation Business Claim');
-}
-
-async function generateWarehouseBusiness(inputs) {
-  const prompt = `Generate a comprehensive Warehouse Business Claim with the following details:
-
-Warehouse Name: ${inputs.warehouseName}
-Warehouse Address: ${inputs.warehouseAddress}
-Warehouse Type: ${inputs.warehouseType}
-Square Footage: ${inputs.squareFootage || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Inventory Loss: ${inputs.inventoryLoss || 'Not applicable'}
-Equipment Loss: ${inputs.equipmentLoss || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed warehouse business claim that includes:
-1. Warehouse business information
-2. Inventory damage assessment
-3. Equipment damage documentation
-4. Warehouse industry considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for warehouse business documentation.`;
-
-  return await generateWithAI(prompt, 'Warehouse Business Claim');
-}
-
-// Additional catastrophic event generators
-async function generateTornadoClaim(inputs) {
-  const prompt = `Generate a comprehensive Tornado Damage Claim with the following details:
-
-Property Address: ${inputs.propertyAddress}
-Tornado Date: ${inputs.tornadoDate}
-Wind Speed: ${inputs.windSpeed || 'Not specified'} mph
-Wind Damage: ${inputs.windDamage}
-Debris Damage: ${inputs.debrisDamage || 'Not applicable'}
-Structural Damage: ${inputs.structuralDamage || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed tornado claim that includes:
-1. Tornado-specific damage assessment
-2. Wind damage documentation
-3. Debris impact evaluation
-4. Structural damage analysis
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for tornado damage documentation.`;
-
-  return await generateWithAI(prompt, 'Tornado Damage Claim');
-}
-
-async function generateHailClaim(inputs) {
-  const prompt = `Generate a comprehensive Hail Damage Claim with the following details:
-
-Property Address: ${inputs.propertyAddress}
-Hail Date: ${inputs.hailDate}
-Hail Size: ${inputs.hailSize || 'Not specified'} inches
-Roof Damage: ${inputs.roofDamage}
-Siding Damage: ${inputs.sidingDamage || 'Not applicable'}
-Vehicle Damage: ${inputs.vehicleDamage || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed hail claim that includes:
-1. Hail-specific damage assessment
-2. Roof damage documentation
-3. Siding damage evaluation
-4. Vehicle damage analysis
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for hail damage documentation.`;
-
-  return await generateWithAI(prompt, 'Hail Damage Claim');
-}
-
-async function generateWinterStormClaim(inputs) {
-  const prompt = `Generate a comprehensive Winter Storm Claim with the following details:
-
-Property Address: ${inputs.propertyAddress}
-Storm Date: ${inputs.stormDate}
-Low Temperature: ${inputs.lowTemperature || 'Not specified'}°F
-Ice Damage: ${inputs.iceDamage || 'Not applicable'}
-Snow Damage: ${inputs.snowDamage || 'Not applicable'}
-Freeze Damage: ${inputs.freezeDamage || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed winter storm claim that includes:
-1. Winter storm-specific damage assessment
-2. Ice damage documentation
-3. Snow damage evaluation
-4. Freeze damage analysis
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for winter storm damage documentation.`;
-
-  return await generateWithAI(prompt, 'Winter Storm Claim');
-}
-
-// Property-specific generators
-async function generateCondoAssociation(inputs) {
-  const prompt = `Generate a comprehensive Condo Association Claim with the following details:
-
-Association Name: ${inputs.associationName}
-Property Address: ${inputs.propertyAddress}
-Unit Count: ${inputs.unitCount || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Common Area Damage: ${inputs.commonAreaDamage}
-Unit Impact: ${inputs.unitImpact || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed condo association claim that includes:
-1. Association information
-2. Common area damage assessment
-3. Unit impact documentation
-4. Condo-specific considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for condo association documentation.`;
-
-  return await generateWithAI(prompt, 'Condo Association Claim');
-}
-
-async function generateHomeownersAssociation(inputs) {
-  const prompt = `Generate a comprehensive HOA Property Claim with the following details:
-
-HOA Name: ${inputs.hoaName}
-Property Address: ${inputs.propertyAddress}
-Home Count: ${inputs.homeCount || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Amenity Damage: ${inputs.amenityDamage || 'Not applicable'}
-Member Impact: ${inputs.memberImpact || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed HOA property claim that includes:
-1. HOA information
-2. Amenity damage assessment
-3. Member impact documentation
-4. HOA-specific considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for HOA property documentation.`;
-
-  return await generateWithAI(prompt, 'HOA Property Claim');
-}
-
-async function generateRentalProperty(inputs) {
-  const prompt = `Generate a comprehensive Rental Property Claim with the following details:
-
-Property Address: ${inputs.propertyAddress}
-Property Type: ${inputs.propertyType}
-Unit Count: ${inputs.unitCount || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Unit Damage: ${inputs.unitDamage || 'Not applicable'}
-Tenant Impact: ${inputs.tenantImpact || 'Not applicable'}
-Rental Income Loss: $${inputs.rentalIncomeLoss || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed rental property claim that includes:
-1. Rental property information
-2. Unit damage assessment
-3. Tenant impact documentation
-4. Rental income loss analysis
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for rental property documentation.`;
-
-  return await generateWithAI(prompt, 'Rental Property Claim');
-}
-
-async function generateVacationRental(inputs) {
-  const prompt = `Generate a comprehensive Vacation Rental Claim with the following details:
-
-Property Address: ${inputs.propertyAddress}
-Property Type: ${inputs.propertyType}
-Bedroom Count: ${inputs.bedroomCount || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Furnishing Loss: ${inputs.furnishingLoss || 'Not applicable'}
-Guest Impact: ${inputs.guestImpact || 'Not applicable'}
-Lost Rental Income: $${inputs.lostRentalIncome || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed vacation rental claim that includes:
-1. Vacation rental information
-2. Furnishing damage assessment
-3. Guest impact documentation
-4. Rental income loss analysis
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for vacation rental documentation.`;
-
-  return await generateWithAI(prompt, 'Vacation Rental Claim');
-}
-
-async function generateManufacturedHome(inputs) {
-  const prompt = `Generate a comprehensive Manufactured Home Claim with the following details:
-
-Property Address: ${inputs.propertyAddress}
-Home Year: ${inputs.homeYear || 'Not specified'}
-Home Size: ${inputs.homeSize || 'Not specified'} sq ft
-Damage Type: ${inputs.damageType}
-Structural Damage: ${inputs.structuralDamage}
-Transportation Costs: $${inputs.transportationCosts || 'Not applicable'}
-Setup Costs: $${inputs.setupCosts || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed manufactured home claim that includes:
-1. Manufactured home information
-2. Structural damage assessment
-3. Transportation cost documentation
-4. Setup cost analysis
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for manufactured home documentation.`;
-
-  return await generateWithAI(prompt, 'Manufactured Home Claim');
-}
-
-async function generateMobileHome(inputs) {
-  const prompt = `Generate a comprehensive Mobile Home Claim with the following details:
-
-Property Address: ${inputs.propertyAddress}
-Home Year: ${inputs.homeYear || 'Not specified'}
-Home Size: ${inputs.homeSize || 'Not specified'} sq ft
-Damage Type: ${inputs.damageType}
-Structural Damage: ${inputs.structuralDamage}
-Transportation Costs: $${inputs.transportationCosts || 'Not applicable'}
-Setup Costs: $${inputs.setupCosts || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed mobile home claim that includes:
-1. Mobile home information
-2. Structural damage assessment
-3. Transportation cost documentation
-4. Setup cost analysis
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for mobile home documentation.`;
-
-  return await generateWithAI(prompt, 'Mobile Home Claim');
-}
-
-async function generateFarmProperty(inputs) {
-  const prompt = `Generate a comprehensive Farm Property Claim with the following details:
-
-Farm Name: ${inputs.farmName}
-Farm Address: ${inputs.farmAddress}
-Farm Type: ${inputs.farmType}
-Acres: ${inputs.acres || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Crop Loss: ${inputs.cropLoss || 'Not applicable'}
-Livestock Loss: ${inputs.livestockLoss || 'Not applicable'}
-Equipment Loss: ${inputs.equipmentLoss || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed farm property claim that includes:
-1. Farm property information
-2. Crop damage assessment
-3. Livestock loss documentation
-4. Equipment damage analysis
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for farm property documentation.`;
-
-  return await generateWithAI(prompt, 'Farm Property Claim');
-}
-
-async function generateRanchProperty(inputs) {
-  const prompt = `Generate a comprehensive Ranch Property Claim with the following details:
-
-Ranch Name: ${inputs.ranchName}
-Ranch Address: ${inputs.ranchAddress}
-Ranch Type: ${inputs.ranchType}
-Acres: ${inputs.acres || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Livestock Loss: ${inputs.livestockLoss || 'Not applicable'}
-Grazing Impact: ${inputs.grazingImpact || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed ranch property claim that includes:
-1. Ranch property information
-2. Livestock damage assessment
-3. Grazing impact documentation
-4. Ranch-specific considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for ranch property documentation.`;
-
-  return await generateWithAI(prompt, 'Ranch Property Claim');
-}
-
-async function generateVineyardProperty(inputs) {
-  const prompt = `Generate a comprehensive Vineyard Property Claim with the following details:
-
-Vineyard Name: ${inputs.vineyardName}
-Vineyard Address: ${inputs.vineyardAddress}
-Grape Varieties: ${inputs.grapeVarieties || 'Not specified'}
-Acres: ${inputs.acres || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Vine Loss: ${inputs.vineLoss || 'Not applicable'}
-Wine Loss: ${inputs.wineLoss || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed vineyard property claim that includes:
-1. Vineyard property information
-2. Vine damage assessment
-3. Wine loss documentation
-4. Viticulture considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for vineyard property documentation.`;
-
-  return await generateWithAI(prompt, 'Vineyard Property Claim');
-}
-
-async function generateOrchardProperty(inputs) {
-  const prompt = `Generate a comprehensive Orchard Property Claim with the following details:
-
-Orchard Name: ${inputs.orchardName}
-Orchard Address: ${inputs.orchardAddress}
-Tree Types: ${inputs.treeTypes || 'Not specified'}
-Acres: ${inputs.acres || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Tree Loss: ${inputs.treeLoss || 'Not applicable'}
-Crop Loss: ${inputs.cropLoss || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed orchard property claim that includes:
-1. Orchard property information
-2. Tree damage assessment
-3. Crop loss documentation
-4. Horticulture considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for orchard property documentation.`;
-
-  return await generateWithAI(prompt, 'Orchard Property Claim');
-}
-
-async function generateGreenhouseProperty(inputs) {
-  const prompt = `Generate a comprehensive Greenhouse Property Claim with the following details:
-
-Greenhouse Name: ${inputs.greenhouseName}
-Greenhouse Address: ${inputs.greenhouseAddress}
-Greenhouse Type: ${inputs.greenhouseType}
-Square Footage: ${inputs.squareFootage || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Structure Damage: ${inputs.structureDamage || 'Not applicable'}
-Plant Loss: ${inputs.plantLoss || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed greenhouse property claim that includes:
-1. Greenhouse property information
-2. Structure damage assessment
-3. Plant loss documentation
-4. Horticulture considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for greenhouse property documentation.`;
-
-  return await generateWithAI(prompt, 'Greenhouse Property Claim');
-}
-
-async function generateAquacultureProperty(inputs) {
-  const prompt = `Generate a comprehensive Aquaculture Property Claim with the following details:
-
-Aquaculture Name: ${inputs.aquacultureName}
-Aquaculture Address: ${inputs.aquacultureAddress}
-Fish Types: ${inputs.fishTypes || 'Not specified'}
-Pond Count: ${inputs.pondCount || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Fish Loss: ${inputs.fishLoss || 'Not applicable'}
-Equipment Loss: ${inputs.equipmentLoss || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed aquaculture property claim that includes:
-1. Aquaculture property information
-2. Fish damage assessment
-3. Equipment loss documentation
-4. Aquaculture considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for aquaculture property documentation.`;
-
-  return await generateWithAI(prompt, 'Aquaculture Property Claim');
-}
-
-async function generateTimberProperty(inputs) {
-  const prompt = `Generate a comprehensive Timber Property Claim with the following details:
-
-Timber Property Name: ${inputs.timberPropertyName}
-Property Address: ${inputs.propertyAddress}
-Tree Types: ${inputs.treeTypes || 'Not specified'}
-Acres: ${inputs.acres || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Tree Loss: ${inputs.treeLoss || 'Not applicable'}
-Equipment Loss: ${inputs.equipmentLoss || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed timber property claim that includes:
-1. Timber property information
-2. Tree damage assessment
-3. Equipment loss documentation
-4. Forestry considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for timber property documentation.`;
-
-  return await generateWithAI(prompt, 'Timber Property Claim');
-}
-
-async function generateMiningProperty(inputs) {
-  const prompt = `Generate a comprehensive Mining Property Claim with the following details:
-
-Mining Property Name: ${inputs.miningPropertyName}
-Property Address: ${inputs.propertyAddress}
-Mining Type: ${inputs.miningType}
-Acres: ${inputs.acres || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Equipment Loss: ${inputs.equipmentLoss || 'Not applicable'}
-Facility Loss: ${inputs.facilityLoss || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed mining property claim that includes:
-1. Mining property information
-2. Equipment damage assessment
-3. Facility loss documentation
-4. Mining industry considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for mining property documentation.`;
-
-  return await generateWithAI(prompt, 'Mining Property Claim');
-}
-
-async function generateOilGasProperty(inputs) {
-  const prompt = `Generate a comprehensive Oil & Gas Property Claim with the following details:
-
-Property Name: ${inputs.propertyName}
-Property Address: ${inputs.propertyAddress}
-Well Count: ${inputs.wellCount || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Well Damage: ${inputs.wellDamage || 'Not applicable'}
-Equipment Loss: ${inputs.equipmentLoss || 'Not applicable'}
-Production Loss: ${inputs.productionLoss || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed oil & gas property claim that includes:
-1. Oil & gas property information
-2. Well damage assessment
-3. Equipment loss documentation
-4. Production impact analysis
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for oil & gas property documentation.`;
-
-  return await generateWithAI(prompt, 'Oil & Gas Property Claim');
-}
-
-async function generateRenewableEnergy(inputs) {
-  const prompt = `Generate a comprehensive Renewable Energy Property Claim with the following details:
-
-Energy Property Name: ${inputs.energyPropertyName}
-Property Address: ${inputs.propertyAddress}
-Energy Type: ${inputs.energyType}
-Capacity: ${inputs.capacity || 'Not specified'} MW
-Damage Type: ${inputs.damageType}
-Equipment Loss: ${inputs.equipmentLoss || 'Not applicable'}
-Production Loss: ${inputs.productionLoss || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed renewable energy property claim that includes:
-1. Renewable energy property information
-2. Equipment damage assessment
-3. Production loss documentation
-4. Energy industry considerations
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for renewable energy property documentation.`;
-
-  return await generateWithAI(prompt, 'Renewable Energy Property Claim');
-}
-
-async function generateTelecommunications(inputs) {
-  const prompt = `Generate a comprehensive Telecommunications Property Claim with the following details:
-
-Telecom Property Name: ${inputs.telecomPropertyName}
-Property Address: ${inputs.propertyAddress}
-Tower Height: ${inputs.towerHeight || 'Not specified'} ft
-Damage Type: ${inputs.damageType}
-Tower Damage: ${inputs.towerDamage || 'Not applicable'}
-Equipment Loss: ${inputs.equipmentLoss || 'Not applicable'}
-Service Impact: ${inputs.serviceImpact || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed telecommunications property claim that includes:
-1. Telecommunications property information
-2. Tower damage assessment
-3. Equipment loss documentation
-4. Service impact analysis
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for telecommunications property documentation.`;
-
-  return await generateWithAI(prompt, 'Telecommunications Property Claim');
-}
-
-async function generateTransportationProperty(inputs) {
-  const prompt = `Generate a comprehensive Transportation Property Claim with the following details:
-
-Transportation Property Name: ${inputs.transportPropertyName}
-Property Address: ${inputs.propertyAddress}
-Vehicle Count: ${inputs.vehicleCount || 'Not specified'}
-Damage Type: ${inputs.damageType}
-Vehicle Loss: ${inputs.vehicleLoss || 'Not applicable'}
-Equipment Loss: ${inputs.equipmentLoss || 'Not applicable'}
-Service Impact: ${inputs.serviceImpact || 'Not applicable'}
-Estimated Total Loss: $${inputs.estimatedTotalLoss}
-
-Create a detailed transportation property claim that includes:
-1. Transportation property information
-2. Vehicle damage assessment
-3. Equipment loss documentation
-4. Service impact analysis
-5. Total loss calculations
-6. Professional formatting
-
-Format as HTML with proper styling for transportation property documentation.`;
-
-  return await generateWithAI(prompt, 'Transportation Property Claim');
-}
-
-// Generic document generator for any document type
-async function generateGenericDocument(docKey, inputs) {
-  const prompt = `Generate a professional insurance claim document for "${docKey}" with the following information:
-
-${Object.entries(inputs).map(([key, value]) => `${key}: ${value}`).join('\n')}
-
-Create a comprehensive, professional document that includes:
-1. Proper document header and formatting
-2. All provided information organized clearly
-3. Professional language and structure
-4. Appropriate legal and insurance terminology
-5. Clear sections and formatting
-6. Professional presentation suitable for insurance submission
-
-Format as HTML with proper styling for professional presentation.`;
-
-  return await generateWithAI(prompt, `${docKey.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} Document`);
-}
-
-// AI generation helper function
-async function generateWithAI(prompt, documentType) {
-  try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are an expert legal document generator specializing in insurance claims. Generate professional, legally sound documents that protect policyholder rights. Always format output as clean HTML with proper styling for professional presentation.'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      max_tokens: 4000,
-      temperature: 0.3
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([612, 792]); // Letter size
+    const { width, height } = page.getSize();
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    let yPosition = height - 50;
+
+    // Header
+    page.drawText('SWORN STATEMENT IN PROOF OF LOSS', {
+        x: 50,
+        y: yPosition,
+        size: 16,
+        font: boldFont,
+        color: rgb(0, 0, 0)
+    });
+    yPosition -= 30;
+
+    // Form fields
+    const formFields = [
+        { label: 'Insurer Claim Number:', value: inputs.insurerClaimNumber || '' },
+        { label: 'Insurance Carrier:', value: inputs.insuranceCarrier || '' },
+        { label: 'Amount of Policy at Time of Loss:', value: inputs.policyAmount ? `$${inputs.policyAmount}` : '' },
+        { label: 'Date Policy Issued:', value: inputs.policyIssuedDate || '' },
+        { label: 'Date Policy Expires:', value: inputs.policyExpiresDate || '' },
+        { label: 'Insurance Agency:', value: inputs.insuranceAgency || '' },
+        { label: 'Insurance Agent:', value: inputs.insuranceAgent || '' },
+        { label: 'To (Recipient):', value: inputs.recipientName || '' },
+        { label: 'Cause of Loss:', value: inputs.causeOfLoss || '' },
+        { label: 'Time of Loss:', value: inputs.timeOfLoss || '' },
+        { label: 'Date of Loss:', value: inputs.dateOfLoss || '' },
+        { label: 'Occupancy Description:', value: inputs.occupancyDescription || '' },
+        { label: 'Title & Interest:', value: inputs.titleInterest || '' },
+        { label: 'Other Interests:', value: inputs.otherInterests || '' },
+        { label: 'Policy Changes Since Issuance:', value: inputs.policyChanges || '' },
+        { label: 'Total Insurance Amount:', value: inputs.totalInsurance ? `$${inputs.totalInsurance}` : '' },
+        { label: 'Actual Cash Value:', value: inputs.actualCashValue ? `$${inputs.actualCashValue}` : '' },
+        { label: 'Whole Loss and Damage:', value: inputs.totalLoss ? `$${inputs.totalLoss}` : '' },
+        { label: 'Amount Claimed:', value: inputs.amountClaimed ? `$${inputs.amountClaimed}` : '' }
+    ];
+
+    formFields.forEach(field => {
+        page.drawText(field.label, {
+            x: 50,
+            y: yPosition,
+            size: 10,
+            font: boldFont,
+            color: rgb(0, 0, 0)
+        });
+        
+        page.drawText(field.value, {
+            x: 250,
+            y: yPosition,
+            size: 10,
+            font: font,
+            color: rgb(0, 0, 0)
+        });
+        
+        yPosition -= 20;
     });
 
-    const generatedContent = completion.choices[0].message.content;
+    // Signature section
+    yPosition -= 20;
+    page.drawText('Signature:', {
+        x: 50,
+        y: yPosition,
+        size: 12,
+        font: boldFont,
+        color: rgb(0, 0, 0)
+    });
+    yPosition -= 30;
     
+    page.drawText(`Name: ${inputs.signatureName || ''}`, {
+        x: 50,
+        y: yPosition,
+        size: 10,
+        font: font,
+        color: rgb(0, 0, 0)
+    });
+    yPosition -= 20;
+    
+    page.drawText(`Date: ${inputs.signatureDate || ''}`, {
+        x: 50,
+        y: yPosition,
+        size: 10,
+        font: font,
+        color: rgb(0, 0, 0)
+    });
+
+    const pdfBytes = await pdfDoc.save();
     return {
-      success: true,
-      document: generatedContent,
-      content: generatedContent,
-      documentType: documentType,
-      generatedAt: new Date().toISOString()
+        output: 'Proof of Loss document generated successfully.',
+        downloadUrl: `data:application/pdf;base64,${Buffer.from(pdfBytes).toString('base64')}`
     };
-  } catch (error) {
-    console.error('AI generation error:', error);
-    throw new Error('Failed to generate document with AI');
-  }
 }
+
+// Payment Demand Letter Generator (T2 - PDF Letter)
+async function generatePaymentDemand(inputs) {
+    const doc = new Document({
+        sections: [{
+            properties: {},
+            children: [
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: 'PAYMENT DEMAND LETTER',
+                            bold: true,
+                            size: 24
+                        })
+                    ],
+                    alignment: AlignmentType.CENTER
+                }),
+                new Paragraph({ text: '' }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: `Date: ${new Date().toLocaleDateString()}`,
+                            size: 20
+                        })
+                    ]
+                }),
+                new Paragraph({ text: '' }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: `To: ${inputs.insurerName || 'Insurance Company'}`,
+                            size: 20
+                        })
+                    ]
+                }),
+                new Paragraph({ text: '' }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: `Re: Claim Number ${inputs.claimNumber || 'N/A'} - Payment Demand`,
+                            size: 20
+                        })
+                    ]
+                }),
+                new Paragraph({ text: '' }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: `Dear ${inputs.insurerName || 'Sir/Madam'},`,
+                            size: 20
+                        })
+                    ]
+                }),
+                new Paragraph({ text: '' }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: `I am writing to demand payment of $${inputs.amountOwed || '0'} for the claim arising from the loss that occurred on ${inputs.dateOfLoss || 'the date of loss'}.`,
+                            size: 20
+                        })
+                    ]
+                }),
+                new Paragraph({ text: '' }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: `Reason for Demand: ${inputs.reason || 'Please provide reason for demand'}`,
+                            size: 20
+                        })
+                    ]
+                }),
+                new Paragraph({ text: '' }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: `Please remit payment by ${inputs.deadline || 'the deadline specified'}. Failure to respond may result in further legal action.`,
+                            size: 20
+                        })
+                    ]
+                }),
+                new Paragraph({ text: '' }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: 'Sincerely,',
+                            size: 20
+                        })
+                    ]
+                }),
+                new Paragraph({ text: '' }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: inputs.signatureName || 'Your Name',
+                            size: 20
+                        })
+                    ]
+                })
+            ]
+        }]
+    });
+
+    const buffer = await Packer.toBuffer(doc);
+    return {
+        output: 'Payment Demand Letter generated successfully.',
+        downloadUrl: `data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${buffer.toString('base64')}`
+    };
+}
+
+// Damage Assessment Report Generator (T6 - PDF Report)
+async function generateDamageAssessment(inputs) {
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([612, 792]);
+    const { width, height } = page.getSize();
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    let yPosition = height - 50;
+
+    // Title
+    page.drawText('DAMAGE ASSESSMENT REPORT', {
+        x: 50,
+        y: yPosition,
+        size: 18,
+        font: boldFont,
+        color: rgb(0, 0, 0)
+    });
+    yPosition -= 40;
+
+    // Report details
+    const reportDetails = [
+        { label: 'Property Address:', value: inputs.propertyAddress || '' },
+        { label: 'Assessment Date:', value: inputs.assessmentDate || '' },
+        { label: 'Assessor Name:', value: inputs.assessorName || '' },
+        { label: 'Assessor License:', value: inputs.assessorLicense || '' },
+        { label: 'Damage Description:', value: inputs.damageDescription || '' },
+        { label: 'Cause of Damage:', value: inputs.causeOfDamage || '' },
+        { label: 'Estimated Repair Cost:', value: inputs.repairCost ? `$${inputs.repairCost}` : '' },
+        { label: 'Replacement Cost:', value: inputs.replacementCost ? `$${inputs.replacementCost}` : '' },
+        { label: 'Depreciation:', value: inputs.depreciation ? `$${inputs.depreciation}` : '' },
+        { label: 'Actual Cash Value:', value: inputs.actualCashValue ? `$${inputs.actualCashValue}` : '' }
+    ];
+
+    reportDetails.forEach(detail => {
+        page.drawText(detail.label, {
+            x: 50,
+            y: yPosition,
+            size: 10,
+            font: boldFont,
+            color: rgb(0, 0, 0)
+        });
+        
+        page.drawText(detail.value, {
+            x: 200,
+            y: yPosition,
+            size: 10,
+            font: font,
+            color: rgb(0, 0, 0)
+        });
+        
+        yPosition -= 20;
+    });
+
+    // Recommendations
+    yPosition -= 20;
+    page.drawText('RECOMMENDATIONS:', {
+        x: 50,
+        y: yPosition,
+        size: 12,
+        font: boldFont,
+        color: rgb(0, 0, 0)
+    });
+    yPosition -= 20;
+    
+    page.drawText(inputs.recommendations || 'Recommendations will be provided by the assessor.', {
+        x: 50,
+        y: yPosition,
+        size: 10,
+        font: font,
+        color: rgb(0, 0, 0)
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    return {
+        output: 'Damage Assessment Report generated successfully.',
+        downloadUrl: `data:application/pdf;base64,${Buffer.from(pdfBytes).toString('base64')}`
+    };
+}
+
+// Depreciation Schedule Generator (T4 - XLSX Spreadsheet)
+async function generateDepreciationSchedule(inputs) {
+    const worksheetData = [
+        ['DEPRECIATION SCHEDULE'],
+        [''],
+        ['Item', 'Purchase Date', 'Original Cost', 'Age', 'Depreciation Rate', 'Depreciated Value'],
+        // Add sample data or use inputs.propertyItems if available
+        ['Sample Item 1', '2020-01-01', '$1000', '3 years', '20%', '$400'],
+        ['Sample Item 2', '2019-06-15', '$2000', '4 years', '25%', '$1000'],
+        [''],
+        ['Total Depreciation:', inputs.totalDepreciation ? `$${inputs.totalDepreciation}` : '$0'],
+        ['Net Value:', inputs.netValue ? `$${inputs.netValue}` : '$0']
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Depreciation Schedule');
+    
+    const buffer = XLSX.write(workbook, { type: 'base64', bookType: 'xlsx' });
+    return {
+        output: 'Depreciation Schedule generated successfully.',
+        downloadUrl: `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer}`
+    };
+}
+
+// Evidence Log Generator (T3 - XLSX Spreadsheet)
+async function generateEvidenceLog(inputs) {
+    const worksheetData = [
+        ['EVIDENCE DOCUMENTATION LOG'],
+        [''],
+        ['Date', 'Item Type', 'Description', 'Location', 'Photographer', 'Notes'],
+        // Add sample data
+        ['2024-01-15', 'Photograph', 'Fire damage to kitchen', 'Kitchen', 'John Smith', 'High resolution'],
+        ['2024-01-15', 'Receipt', 'Emergency repairs', 'Office', 'Jane Doe', 'Original copy'],
+        [''],
+        ['Total Items:', inputs.totalItems || '0']
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Evidence Log');
+    
+    const buffer = XLSX.write(workbook, { type: 'base64', bookType: 'xlsx' });
+    return {
+        output: 'Evidence Log generated successfully.',
+        downloadUrl: `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${buffer}`
+    };
+}
+
+// Generic document generator for other document types
+async function generateGenericDocument(docKey, inputs) {
+    const doc = new Document({
+        sections: [{
+            properties: {},
+            children: [
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: docKey.replace(/-/g, ' ').toUpperCase(),
+                            bold: true,
+                            size: 24
+                        })
+                    ],
+                    alignment: AlignmentType.CENTER
+                }),
+                new Paragraph({ text: '' }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: `Generated on: ${new Date().toLocaleDateString()}`,
+                            size: 20
+                        })
+                    ]
+                }),
+                new Paragraph({ text: '' }),
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: 'Document Information:',
+                            bold: true,
+                            size: 20
+                        })
+                    ]
+                }),
+                new Paragraph({ text: '' }),
+                ...Object.entries(inputs).map(([key, value]) => 
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `${key}: ${value}`,
+                                size: 20
+                            })
+                        ]
+                    })
+                )
+            ]
+        }]
+    });
+
+    const buffer = await Packer.toBuffer(doc);
+    return {
+        output: `${docKey.replace(/-/g, ' ')} document generated successfully.`,
+        downloadUrl: `data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${buffer.toString('base64')}`
+    };
+}
+
+// Placeholder functions for other document types
+async function generateAppealLetter(inputs) { return generateGenericDocument('appeal-letter', inputs); }
+async function generateBusinessInterruption(inputs) { return generateGenericDocument('business-interruption', inputs); }
+async function generateExpenseReimbursement(inputs) { return generateGenericDocument('expense-reimbursement', inputs); }
+async function generateAppraisalRequest(inputs) { return generateGenericDocument('appraisal-request', inputs); }
+async function generateRegulatoryComplaint(inputs) { return generateGenericDocument('regulatory-complaint', inputs); }
+async function generateSettlementOffer(inputs) { return generateGenericDocument('settlement-offer', inputs); }
+async function generateNoticeOfClaim(inputs) { return generateGenericDocument('notice-of-claim', inputs); }
+async function generateCoverageClarification(inputs) { return generateGenericDocument('coverage-clarification', inputs); }
+async function generateDelayComplaint(inputs) { return generateGenericDocument('delay-complaint', inputs); }
+async function generatePhotographLog(inputs) { return generateGenericDocument('photograph-log', inputs); }
+async function generateRepairReplaceAnalysis(inputs) { return generateGenericDocument('repair-replace-analysis', inputs); }
+async function generateOutOfPocketLog(inputs) { return generateGenericDocument('out-of-pocket-log', inputs); }
+async function generateROMEstimate(inputs) { return generateGenericDocument('rom-estimate', inputs); }
+async function generateComparativeEstimates(inputs) { return generateGenericDocument('comparative-estimates', inputs); }
+async function generateDocumentIndex(inputs) { return generateGenericDocument('document-index', inputs); }
+async function generateSwornStatement(inputs) { return generateGenericDocument('sworn-statement', inputs); }
+async function generateSupplementalClaim(inputs) { return generateGenericDocument('supplemental-claim', inputs); }
+async function generatePolicyReviewRequest(inputs) { return generateGenericDocument('policy-review-request', inputs); }
+async function generateBadFaithComplaint(inputs) { return generateGenericDocument('bad-faith-complaint', inputs); }
+async function generateMediationRequest(inputs) { return generateGenericDocument('mediation-request', inputs); }
+async function generateArbitrationDemand(inputs) { return generateGenericDocument('arbitration-demand', inputs); }
+async function generateExpertWitnessRequest(inputs) { return generateGenericDocument('expert-witness-request', inputs); }
+async function generateSubrogationNotice(inputs) { return generateGenericDocument('subrogation-notice', inputs); }
+async function generateCoverageDenialAppeal(inputs) { return generateGenericDocument('coverage-denial-appeal', inputs); }
+async function generateSettlementAgreement(inputs) { return generateGenericDocument('settlement-agreement', inputs); }
+async function generateReplacementCostAnalysis(inputs) { return generateGenericDocument('replacement-cost-analysis', inputs); }
+async function generateActualCashValue(inputs) { return generateGenericDocument('actual-cash-value', inputs); }
+async function generateLossOfUseCalculation(inputs) { return generateGenericDocument('loss-of-use-calculation', inputs); }
+async function generateInflationAdjustment(inputs) { return generateGenericDocument('inflation-adjustment', inputs); }
+async function generateConsequentialDamages(inputs) { return generateGenericDocument('consequential-damages', inputs); }
+async function generateMitigationExpenses(inputs) { return generateGenericDocument('mitigation-expenses', inputs); }
+async function generateEmergencyResponseLog(inputs) { return generateGenericDocument('emergency-response-log', inputs); }
+async function generateChainOfCustody(inputs) { return generateGenericDocument('chain-of-custody', inputs); }
+async function generateWitnessStatements(inputs) { return generateGenericDocument('witness-statements', inputs); }
+async function generateSurveillanceLog(inputs) { return generateGenericDocument('surveillance-log', inputs); }
+async function generateWeatherData(inputs) { return generateGenericDocument('weather-data', inputs); }
+async function generateFireInvestigation(inputs) { return generateGenericDocument('fire-investigation', inputs); }
+async function generateWaterDamageAssessment(inputs) { return generateGenericDocument('water-damage-assessment', inputs); }
+async function generateMoldAssessment(inputs) { return generateGenericDocument('mold-assessment', inputs); }
+async function generateStructuralAssessment(inputs) { return generateGenericDocument('structural-assessment', inputs); }
+async function generateElectricalAssessment(inputs) { return generateGenericDocument('electrical-assessment', inputs); }
+async function generateHVACAssessment(inputs) { return generateGenericDocument('hvac-assessment', inputs); }
+async function generateRoofAssessment(inputs) { return generateGenericDocument('roof-assessment', inputs); }
+async function generateFlooringAssessment(inputs) { return generateGenericDocument('flooring-assessment', inputs); }
+async function generateApplianceAssessment(inputs) { return generateGenericDocument('appliance-assessment', inputs); }
+async function generatePersonalPropertyInventory(inputs) { return generateGenericDocument('personal-property-inventory', inputs); }
+async function generateContentsValuation(inputs) { return generateGenericDocument('contents-valuation', inputs); }
+async function generateSpecialtyItems(inputs) { return generateGenericDocument('specialty-items', inputs); }
+async function generateTemporaryHousing(inputs) { return generateGenericDocument('temporary-housing', inputs); }
+async function generateStorageExpenses(inputs) { return generateGenericDocument('storage-expenses', inputs); }
+async function generateMovingExpenses(inputs) { return generateGenericDocument('moving-expenses', inputs); }
+async function generatePetCareExpenses(inputs) { return generateGenericDocument('pet-care-expenses', inputs); }
+async function generateChildcareExpenses(inputs) { return generateGenericDocument('childcare-expenses', inputs); }
+async function generateMealExpenses(inputs) { return generateGenericDocument('meal-expenses', inputs); }
+async function generateTransportationExpenses(inputs) { return generateGenericDocument('transportation-expenses', inputs); }
+async function generateCommunicationExpenses(inputs) { return generateGenericDocument('communication-expenses', inputs); }
+async function generateCatastrophicEventLog(inputs) { return generateGenericDocument('catastrophic-event-log', inputs); }
+async function generateDisasterDeclaration(inputs) { return generateGenericDocument('disaster-declaration', inputs); }
+async function generateFEMAAssistance(inputs) { return generateGenericDocument('fema-assistance', inputs); }
+async function generateSBALoanDocumentation(inputs) { return generateGenericDocument('sba-loan-documentation', inputs); }
+async function generateCommunityResources(inputs) { return generateGenericDocument('community-resources', inputs); }
+async function generateVolunteerAssistance(inputs) { return generateGenericDocument('volunteer-assistance', inputs); }
+async function generateDonationDocumentation(inputs) { return generateGenericDocument('donation-documentation', inputs); }
+async function generateRecoveryTimeline(inputs) { return generateGenericDocument('recovery-timeline', inputs); }
+async function generateReconstructionSchedule(inputs) { return generateGenericDocument('reconstruction-schedule', inputs); }
+async function generatePermitDocumentation(inputs) { return generateGenericDocument('permit-documentation', inputs); }
+async function generateInspectionReports(inputs) { return generateGenericDocument('inspection-reports', inputs); }
+async function generateContractorDocumentation(inputs) { return generateGenericDocument('contractor-documentation', inputs); }
+async function generateWarrantyDocumentation(inputs) { return generateGenericDocument('warranty-documentation', inputs); }
+async function generateFinalInspection(inputs) { return generateGenericDocument('final-inspection', inputs); }

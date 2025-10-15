@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Damage Assessment Report - ClaimNavigatorAI</title>
+    <title>Payment Demand Letter - ClaimNavigatorAI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/app/assets/css/style.css">
 </head>
@@ -16,7 +16,7 @@
                     <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                         <span class="text-[#1e40af] font-bold text-lg">📄</span>
                     </div>
-                    <h1 class="text-2xl font-bold">Damage Assessment Report</h1>
+                    <h1 class="text-2xl font-bold">Payment Demand Letter</h1>
                 </div>
                 <a href="/app/resource-center/document-generator.html" class="text-blue-200 hover:text-white transition-colors">
                     ← Back to Documents
@@ -31,18 +31,18 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Damage Assessment Report</h2>
-                    <p class="text-gray-600">Professional assessment of property damage with detailed analysis and recommendations.</p>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Payment Demand Letter</h2>
+                    <p class="text-gray-600">Formal letter demanding payment with legal references and deadline.</p>
                 </div>
                 <div class="flex items-center gap-4 mt-4 md:mt-0">
-                    <span class="px-3 py-1 text-sm font-semibold rounded-full bg-orange-100 text-orange-800">
-                        ANALYSIS
+                    <span class="px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">
+                        LEGAL
                     </span>
                     <span class="px-3 py-1 text-sm font-semibold rounded-full bg-gray-100 text-gray-800">
                         PDF
                     </span>
                     <span class="px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">
-                        Report/Assessment
+                        Letter/Notice
                     </span>
                 </div>
             </div>
@@ -50,121 +50,96 @@
 
         <!-- Form Section -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-            <h3 class="text-xl font-semibold text-gray-900 mb-6">Assessment Information</h3>
-            <form id="damageAssessmentForm" class="space-y-6">
-                <!-- Property Information -->
+            <h3 class="text-xl font-semibold text-gray-900 mb-6">Demand Letter Information</h3>
+            <form id="paymentDemandForm" class="space-y-6">
+                <!-- Claimant Information -->
                 <div class="border-b pb-6">
-                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Property Information</h4>
-                    <div class="space-y-6">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Claimant Information</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Property Address <span class="text-red-500">*</span>
+                                Claimant Name <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" id="propertyAddress" name="propertyAddress" required
+                            <input type="text" id="claimantName" name="claimantName" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Insurer Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="insurerName" name="insurerName" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                     </div>
                 </div>
 
-                <!-- Assessment Details -->
+                <!-- Claim Information -->
                 <div class="border-b pb-6">
-                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Assessment Details</h4>
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Claim Information</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Assessment Date <span class="text-red-500">*</span>
+                                Policy Number <span class="text-red-500">*</span>
                             </label>
-                            <input type="date" id="assessmentDate" name="assessmentDate" required
+                            <input type="text" id="policyNumber" name="policyNumber" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Assessor Name <span class="text-red-500">*</span>
+                                Claim Number <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" id="assessorName" name="assessorName" required
+                            <input type="text" id="claimNumber" name="claimNumber" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                     </div>
 
                     <div class="mt-6">
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Assessor License <span class="text-red-500">*</span>
+                            Date of Loss <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" id="assessorLicense" name="assessorLicense" required
+                        <input type="date" id="dateOfLoss" name="dateOfLoss" required
                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     </div>
                 </div>
 
-                <!-- Damage Information -->
+                <!-- Demand Details -->
                 <div class="border-b pb-6">
-                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Damage Information</h4>
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Demand Details</h4>
                     <div class="space-y-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Damage Description <span class="text-red-500">*</span>
+                                Amount Owed <span class="text-red-500">*</span>
                             </label>
-                            <textarea id="damageDescription" name="damageDescription" required rows="4"
+                            <input type="number" id="amountOwed" name="amountOwed" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Reason for Demand <span class="text-red-500">*</span>
+                            </label>
+                            <textarea id="reason" name="reason" required rows="4"
                                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
-                                      placeholder="Provide a detailed description of the damage observed..."></textarea>
+                                      placeholder="Explain why you are demanding payment and provide supporting details..."></textarea>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Cause of Damage <span class="text-red-500">*</span>
+                                Response Deadline <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" id="causeOfDamage" name="causeOfDamage" required
+                            <input type="date" id="deadline" name="deadline" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                     </div>
                 </div>
 
-                <!-- Financial Information -->
-                <div class="border-b pb-6">
-                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Financial Information</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Estimated Repair Cost <span class="text-red-500">*</span>
-                            </label>
-                            <input type="number" id="repairCost" name="repairCost" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Replacement Cost <span class="text-red-500">*</span>
-                            </label>
-                            <input type="number" id="replacementCost" name="replacementCost" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Depreciation <span class="text-red-500">*</span>
-                            </label>
-                            <input type="number" id="depreciation" name="depreciation" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Actual Cash Value <span class="text-red-500">*</span>
-                            </label>
-                            <input type="number" id="actualCashValue" name="actualCashValue" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recommendations -->
+                <!-- Signature -->
                 <div>
-                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Recommendations</h4>
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Signature</h4>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Recommendations <span class="text-red-500">*</span>
+                            Signature Name <span class="text-red-500">*</span>
                         </label>
-                        <textarea id="recommendations" name="recommendations" required rows="4"
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
-                                  placeholder="Provide detailed recommendations for repair, replacement, or other actions..."></textarea>
+                        <input type="text" id="signatureName" name="signatureName" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     </div>
                 </div>
             </form>
@@ -177,7 +152,7 @@
                     id="generateBtn" 
                     class="flex-1 bg-[#1e40af] hover:bg-[#1e40af]/90 text-white px-6 py-3 rounded-xl font-medium transition-colors duration-200 flex items-center justify-center"
                 >
-                    <span id="generateBtnText">🤖 Generate Assessment Report</span>
+                    <span id="generateBtnText">🤖 Generate Demand Letter</span>
                     <div id="generateSpinner" class="hidden ml-2">
                         <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                     </div>
@@ -194,7 +169,7 @@
 
         <!-- Output Section -->
         <div id="outputSection" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hidden">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">Generated Assessment Report</h3>
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Generated Demand Letter</h3>
             <div id="outputContent" class="bg-gray-50 rounded-lg p-4 min-h-[200px]">
                 <!-- Generated content will appear here -->
             </div>
@@ -253,7 +228,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        docKey: 'damage-assessment',
+                        docKey: 'payment-demand',
                         inputs: formData
                     })
                 });
@@ -277,13 +252,13 @@
                 // Reset button state
                 generateBtn.disabled = false;
                 generateSpinner.classList.add('hidden');
-                generateBtnText.textContent = '🤖 Generate Assessment Report';
+                generateBtnText.textContent = '🤖 Generate Demand Letter';
             }
         }
 
         function collectFormData() {
             const formData = {};
-            const form = document.getElementById('damageAssessmentForm');
+            const form = document.getElementById('paymentDemandForm');
             const inputs = form.querySelectorAll('input, textarea, select');
             
             inputs.forEach(input => {
@@ -295,9 +270,8 @@
 
         function validateForm(formData) {
             const requiredFields = [
-                'propertyAddress', 'assessmentDate', 'assessorName', 'assessorLicense',
-                'damageDescription', 'causeOfDamage', 'repairCost', 'replacementCost',
-                'depreciation', 'actualCashValue', 'recommendations'
+                'claimantName', 'insurerName', 'policyNumber', 'claimNumber',
+                'dateOfLoss', 'amountOwed', 'reason', 'deadline', 'signatureName'
             ];
             
             for (const field of requiredFields) {
@@ -320,8 +294,8 @@
                 outputContent.innerHTML = `
                     <div class="text-center py-8">
                         <div class="text-green-600 text-6xl mb-4">✅</div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Damage Assessment Report Generated Successfully!</h3>
-                        <p class="text-gray-600 mb-4">Your professional damage assessment report has been generated and is ready for download.</p>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Payment Demand Letter Generated Successfully!</h3>
+                        <p class="text-gray-600 mb-4">Your formal demand letter has been generated and is ready for download.</p>
                         <a href="${result.downloadUrl}" class="inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-medium transition-colors">
                             📥 Download PDF
                         </a>

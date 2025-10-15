@@ -3,329 +3,427 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proof of Loss Documentation - ClaimNavigatorAI</title>
-    <meta name="description" content="Generate comprehensive proof of loss documentation with detailed itemization">
+    <title>Proof of Loss - ClaimNavigatorAI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/app/assets/css/style.css">
-    <style>
-        .form-input {
-            transition: all 0.2s ease;
-        }
-        .form-input:focus {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-        }
-        .loading-spinner {
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .success-message {
-            animation: slideIn 0.3s ease-out;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Navigation Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <a href="/app/index.html" class="text-2xl font-bold text-blue-900">ClaimNavigatorAI</a>
+    <!-- Header -->
+    <header class="bg-[#1e40af] text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                        <span class="text-[#1e40af] font-bold text-lg">📄</span>
                     </div>
+                    <h1 class="text-2xl font-bold">Sworn Statement in Proof of Loss</h1>
                 </div>
-                <nav class="hidden md:flex space-x-8">
-                    <a href="/app/resource-center/document-generator.html" class="text-gray-600 hover:text-blue-900 transition-colors">← Document Generator</a>
-                </nav>
+                <a href="/app/resource-center/document-generator.html" class="text-blue-200 hover:text-white transition-colors">
+                    ← Back to Documents
+                </a>
             </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">📄 Proof of Loss Documentation</h1>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                Comprehensive proof of loss form with detailed itemization and supporting documentation requirements.
-            </p>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Document Info -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Sworn Statement in Proof of Loss</h2>
+                    <p class="text-gray-600">Comprehensive sworn statement and proof of loss with detailed itemization.</p>
+                </div>
+                <div class="flex items-center gap-4 mt-4 md:mt-0">
+                    <span class="px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">
+                        CORE
+                    </span>
+                    <span class="px-3 py-1 text-sm font-semibold rounded-full bg-gray-100 text-gray-800">
+                        PDF
+                    </span>
+                    <span class="px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">
+                        Claim Form
+                    </span>
+                </div>
+            </div>
         </div>
 
-        <!-- Form -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-            <form id="documentFormElement" class="space-y-6">
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">
-                        Claimant Name <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" id="claimantName" name="claimantName" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter claimant name...">
+        <!-- Form Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <h3 class="text-xl font-semibold text-gray-900 mb-6">Proof of Loss Information</h3>
+            <form id="proofOfLossForm" class="space-y-6">
+                <!-- Basic Information -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Insurer Claim Number <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="insurerClaimNumber" name="insurerClaimNumber" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Insurance Carrier <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="insuranceCarrier" name="insuranceCarrier" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">
-                        Policy Number <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" id="policyNumber" name="policyNumber" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter policy number...">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Amount of Policy at Time of Loss <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" id="policyAmount" name="policyAmount" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Date Policy Issued <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" id="policyIssuedDate" name="policyIssuedDate" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">
-                        Claim Number <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" id="claimNumber" name="claimNumber" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter claim number...">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Date Policy Expires <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" id="policyExpiresDate" name="policyExpiresDate" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Insurance Agency
+                        </label>
+                        <input type="text" id="insuranceAgency" name="insuranceAgency"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">
-                        Loss Date <span class="text-red-500">*</span>
-                    </label>
-                    <input type="date" id="lossDate" name="lossDate" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Insurance Agent
+                        </label>
+                        <input type="text" id="insuranceAgent" name="insuranceAgent"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            To (Recipient) <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="recipientName" name="recipientName" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">
-                        Description of Loss <span class="text-red-500">*</span>
-                    </label>
-                    <textarea id="lossDescription" name="lossDescription" required rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Describe the loss in detail..."></textarea>
+                <!-- Loss Information -->
+                <div class="border-t pt-6">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Loss Details</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Cause of Loss <span class="text-red-500">*</span>
+                            </label>
+                            <textarea id="causeOfLoss" name="causeOfLoss" required rows="3"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Time of Loss <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="timeOfLoss" name="timeOfLoss" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Date of Loss <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" id="dateOfLoss" name="dateOfLoss" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">
-                        Estimated Loss ($) <span class="text-red-500">*</span>
-                    </label>
-                    <input type="number" id="estimatedLoss" name="estimatedLoss" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter estimated loss amount...">
+                <!-- Property Information -->
+                <div class="border-t pt-6">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Property Information</h4>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Occupancy Description <span class="text-red-500">*</span>
+                            </label>
+                            <textarea id="occupancyDescription" name="occupancyDescription" required rows="3"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Title & Interest <span class="text-red-500">*</span>
+                            </label>
+                            <textarea id="titleInterest" name="titleInterest" required rows="3"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Other Interests
+                            </label>
+                            <textarea id="otherInterests" name="otherInterests" rows="3"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Policy Changes Since Issuance
+                            </label>
+                            <textarea id="policyChanges" name="policyChanges" rows="3"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"></textarea>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">
-                        Property Address <span class="text-red-500">*</span>
-                    </label>
-                    <textarea id="propertyAddress" name="propertyAddress" required rows="3" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter property address..."></textarea>
+                <!-- Financial Information -->
+                <div class="border-t pt-6">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Financial Information</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Total Insurance Amount <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" id="totalInsurance" name="totalInsurance" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Actual Cash Value <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" id="actualCashValue" name="actualCashValue" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Whole Loss and Damage <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" id="totalLoss" name="totalLoss" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Amount Claimed <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" id="amountClaimed" name="amountClaimed" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">
-                        Contact Phone
-                    </label>
-                    <input type="tel" id="contactPhone" name="contactPhone" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter contact phone...">
-                </div>
-
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">
-                        Contact Email
-                    </label>
-                    <input type="email" id="contactEmail" name="contactEmail" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter contact email...">
+                <!-- Signature Section -->
+                <div class="border-t pt-6">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Signature</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Signature Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="signatureName" name="signatureName" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Signature Date <span class="text-red-500">*</span>
+                            </label>
+                            <input type="date" id="signatureDate" name="signatureDate" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
                 </div>
             </form>
+        </div>
 
-            <!-- Submit Button -->
-            <div class="mt-8 pt-6 border-t border-gray-200">
+        <!-- Action Buttons -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="flex flex-col sm:flex-row gap-4">
                 <button 
-                    type="submit" 
-                    id="generateButton"
-                    class="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    id="generateBtn" 
+                    class="flex-1 bg-[#1e40af] hover:bg-[#1e40af]/90 text-white px-6 py-3 rounded-xl font-medium transition-colors duration-200 flex items-center justify-center"
                 >
-                    <span id="generateButtonText">Generate Document</span>
-                    <div id="generateButtonSpinner" class="hidden loading-spinner inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full ml-2"></div>
+                    <span id="generateBtnText">🤖 Generate Proof of Loss</span>
+                    <div id="generateSpinner" class="hidden ml-2">
+                        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    </div>
+                </button>
+                <button 
+                    id="downloadBtn" 
+                    class="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-medium transition-colors duration-200"
+                    disabled
+                >
+                    📥 Download PDF
                 </button>
             </div>
         </div>
 
-        <!-- Success State -->
-        <div id="successState" class="hidden">
-            <div class="bg-green-50 border border-green-200 rounded-xl p-6 mb-6 success-message">
-                <div class="flex items-center">
-                    <div class="text-green-500 text-2xl mr-3">✅</div>
-                    <div>
-                        <h3 class="text-lg font-semibold text-green-900">Document Generated Successfully!</h3>
-                        <p class="text-green-700">Your proof of loss documentation has been generated and is ready for download.</p>
-                    </div>
-                </div>
+        <!-- Output Section -->
+        <div id="outputSection" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hidden">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Generated Proof of Loss</h3>
+            <div id="outputContent" class="bg-gray-50 rounded-lg p-4 min-h-[200px]">
+                <!-- Generated content will appear here -->
             </div>
+        </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Generated Document</h3>
-                <div id="documentPreview" class="bg-gray-50 rounded-lg p-4 mb-4 max-h-96 overflow-y-auto">
-                    <!-- Document preview will be inserted here -->
+        <!-- Error Section -->
+        <div id="errorSection" class="bg-red-50 border border-red-200 rounded-xl p-6 hidden">
+            <div class="flex items-center">
+                <div class="text-red-400 mr-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                 </div>
-                
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button 
-                        id="downloadButton"
-                        class="flex-1 bg-green-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                    >
-                        📄 Download Document
-                    </button>
-                    <button 
-                        id="copyButton"
-                        class="flex-1 bg-gray-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                    >
-                        📋 Copy Text
-                    </button>
-                    <button 
-                        id="newDocumentButton"
-                        class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    >
-                        📝 New Document
-                    </button>
+                <div>
+                    <h3 class="text-lg font-semibold text-red-800">Error</h3>
+                    <p id="errorMessage" class="text-red-600 mt-1">An error occurred while generating the document.</p>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        class ProofOfLossPage {
-            constructor() {
-                this.generatedDocument = null;
-                this.init();
-            }
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+        });
 
-            init() {
-                this.setupEventListeners();
-            }
+        function setupEventListeners() {
+            document.getElementById('generateBtn').addEventListener('click', generateDocument);
+            document.getElementById('downloadBtn').addEventListener('click', downloadDocument);
+        }
 
-            setupEventListeners() {
-                // Form submission
-                document.getElementById('documentFormElement').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.handleFormSubmit();
-                });
+        async function generateDocument() {
+            const generateBtn = document.getElementById('generateBtn');
+            const generateSpinner = document.getElementById('generateSpinner');
+            const generateBtnText = document.getElementById('generateBtnText');
+            
+            // Show loading state
+            generateBtn.disabled = true;
+            generateSpinner.classList.remove('hidden');
+            generateBtnText.textContent = 'Generating...';
 
-                // Success state buttons
-                document.getElementById('downloadButton').addEventListener('click', () => {
-                    this.downloadDocument();
-                });
-
-                document.getElementById('copyButton').addEventListener('click', () => {
-                    this.copyDocument();
-                });
-
-                document.getElementById('newDocumentButton').addEventListener('click', () => {
-                    this.resetForm();
-                });
-            }
-
-            async handleFormSubmit() {
-                const formData = new FormData(document.getElementById('documentFormElement'));
-                const data = Object.fromEntries(formData);
-
-                // Show loading state
-                this.setLoadingState(true);
-
-                try {
-                    const response = await fetch('/.netlify/functions/generate-doc', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            docKey: 'proof-of-loss',
-                            inputs: data
-                        })
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-
-                    const result = await response.json();
-                    this.generatedDocument = result;
-                    this.showSuccess(result);
-                } catch (error) {
-                    console.error('Document generation error:', error);
-                    this.showError('Failed to generate document. Please try again.');
-                } finally {
-                    this.setLoadingState(false);
+            try {
+                // Collect form data
+                const formData = collectFormData();
+                
+                // Validate required fields
+                if (!validateForm(formData)) {
+                    throw new Error('Please fill in all required fields');
                 }
-            }
 
-            setLoadingState(loading) {
-                const button = document.getElementById('generateButton');
-                const buttonText = document.getElementById('generateButtonText');
-                const buttonSpinner = document.getElementById('generateButtonSpinner');
-
-                if (loading) {
-                    button.disabled = true;
-                    buttonText.textContent = 'Generating...';
-                    buttonSpinner.classList.remove('hidden');
-                } else {
-                    button.disabled = false;
-                    buttonText.textContent = 'Generate Document';
-                    buttonSpinner.classList.add('hidden');
-                }
-            }
-
-            showSuccess(result) {
-                // Hide form, show success
-                document.getElementById('documentFormElement').parentElement.classList.add('hidden');
-                document.getElementById('successState').classList.remove('hidden');
-
-                // Display document preview
-                const preview = document.getElementById('documentPreview');
-                if (result.content) {
-                    preview.innerHTML = result.content;
-                } else if (result.document) {
-                    preview.textContent = result.document;
-                } else {
-                    preview.textContent = 'Document generated successfully!';
-                }
-            }
-
-            showError(message) {
-                alert(message);
-            }
-
-            downloadDocument() {
-                if (!this.generatedDocument) return;
-
-                if (this.generatedDocument.fileUrl) {
-                    window.open(this.generatedDocument.fileUrl, '_blank');
-                } else if (this.generatedDocument.contentBase64) {
-                    const link = document.createElement('a');
-                    link.href = `data:${this.generatedDocument.mimeType || 'application/pdf'};base64,${this.generatedDocument.contentBase64}`;
-                    link.download = this.generatedDocument.filename || 'proof-of-loss-document.pdf';
-                    link.click();
-                } else {
-                    const blob = new Blob([this.generatedDocument.document || this.generatedDocument.content], { type: 'text/plain' });
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'proof-of-loss-document.txt';
-                    link.click();
-                    URL.revokeObjectURL(url);
-                }
-            }
-
-            copyDocument() {
-                const content = this.generatedDocument?.document || this.generatedDocument?.content || '';
-                navigator.clipboard.writeText(content).then(() => {
-                    const button = document.getElementById('copyButton');
-                    const originalText = button.textContent;
-                    button.textContent = '✓ Copied!';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                    }, 2000);
+                // Call the generation API
+                const response = await fetch('/.netlify/functions/generate-doc', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        docKey: 'proof-of-loss',
+                        inputs: formData
+                    })
                 });
-            }
 
-            resetForm() {
-                document.getElementById('documentFormElement').reset();
-                document.getElementById('successState').classList.add('hidden');
-                document.getElementById('documentFormElement').parentElement.classList.remove('hidden');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                // Display the generated content
+                displayGeneratedContent(result);
+                
+                // Enable download button
+                document.getElementById('downloadBtn').disabled = false;
+                
+            } catch (error) {
+                console.error('Error generating document:', error);
+                showError(error.message || 'Failed to generate document');
+            } finally {
+                // Reset button state
+                generateBtn.disabled = false;
+                generateSpinner.classList.add('hidden');
+                generateBtnText.textContent = '🤖 Generate Proof of Loss';
             }
         }
 
-        // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            new ProofOfLossPage();
-        });
+        function collectFormData() {
+            const formData = {};
+            const form = document.getElementById('proofOfLossForm');
+            const inputs = form.querySelectorAll('input, textarea, select');
+            
+            inputs.forEach(input => {
+                formData[input.name] = input.value;
+            });
+
+            return formData;
+        }
+
+        function validateForm(formData) {
+            const requiredFields = [
+                'insurerClaimNumber', 'insuranceCarrier', 'policyAmount', 'policyIssuedDate',
+                'policyExpiresDate', 'recipientName', 'causeOfLoss', 'timeOfLoss', 'dateOfLoss',
+                'occupancyDescription', 'titleInterest', 'totalInsurance', 'actualCashValue',
+                'totalLoss', 'amountClaimed', 'signatureName', 'signatureDate'
+            ];
+            
+            for (const field of requiredFields) {
+                if (!formData[field] || formData[field].trim() === '') {
+                    alert(`Please fill in the required field: ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        function displayGeneratedContent(result) {
+            const outputSection = document.getElementById('outputSection');
+            const outputContent = document.getElementById('outputContent');
+            
+            if (result.output) {
+                outputContent.innerHTML = `<pre class="whitespace-pre-wrap text-sm">${result.output}</pre>`;
+            } else if (result.downloadUrl) {
+                outputContent.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-green-600 text-6xl mb-4">✅</div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Proof of Loss Generated Successfully!</h3>
+                        <p class="text-gray-600 mb-4">Your sworn statement in proof of loss has been generated and is ready for download.</p>
+                        <a href="${result.downloadUrl}" class="inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-medium transition-colors">
+                            📥 Download PDF
+                        </a>
+                    </div>
+                `;
+            }
+            
+            outputSection.classList.remove('hidden');
+        }
+
+        function downloadDocument() {
+            // This would typically trigger the download of the generated document
+            alert('Download functionality will be implemented with the backend generation logic');
+        }
+
+        function showError(message) {
+            const errorSection = document.getElementById('errorSection');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            errorMessage.textContent = message;
+            errorSection.classList.remove('hidden');
+            
+            // Hide other sections
+            document.getElementById('outputSection').classList.add('hidden');
+        }
     </script>
 </body>
 </html>

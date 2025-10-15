@@ -3,413 +3,420 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">Document Generator - ClaimNavigatorAI</title>
-    <meta name="description" content="Generate professional insurance claim documents with AI assistance">
+    <title>Document Generator - ClaimNavigatorAI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/app/assets/css/style.css">
-    <style>
-        .form-input {
-            transition: all 0.2s ease;
-        }
-        .form-input:focus {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-        }
-        .loading-spinner {
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .success-message {
-            animation: slideIn 0.3s ease-out;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Navigation Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <a href="/app/index.html" class="text-2xl font-bold text-blue-900">ClaimNavigatorAI</a>
+    <!-- Header -->
+    <header class="bg-[#1e40af] text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                        <span class="text-[#1e40af] font-bold text-lg">📄</span>
                     </div>
+                    <h1 id="documentTitle" class="text-2xl font-bold">Document Generator</h1>
                 </div>
-                <nav class="hidden md:flex space-x-8">
-                    <a href="/app/resource-center/document-generator.html" class="text-gray-600 hover:text-blue-900 transition-colors">← Document Generator</a>
-                </nav>
+                <a href="/app/resource-center/document-generator.html" class="text-blue-200 hover:text-white transition-colors">
+                    ← Back to Documents
+                </a>
             </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Loading State -->
-        <div id="loadingState" class="text-center py-12">
-            <div class="loading-spinner inline-block w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full mb-4"></div>
-            <p class="text-gray-600">Loading document template...</p>
-        </div>
-
-        <!-- Error State -->
-        <div id="errorState" class="hidden text-center py-12">
-            <div class="text-red-500 text-6xl mb-4">⚠️</div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">Document Not Found</h3>
-            <p class="text-gray-600 mb-4">The requested document type could not be found.</p>
-            <a href="/app/resource-center/document-generator.html" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                ← Back to Document Generator
-            </a>
-        </div>
-
-        <!-- Document Form -->
-        <div id="documentForm" class="hidden">
-            <!-- Header -->
-            <div class="text-center mb-8">
-                <h1 id="documentTitle" class="text-3xl font-bold text-gray-900 mb-4"></h1>
-                <p id="documentDescription" class="text-lg text-gray-600 max-w-2xl mx-auto"></p>
-            </div>
-
-            <!-- Form -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-                <form id="documentFormElement" class="space-y-6">
-                    <!-- Dynamic form fields will be inserted here -->
-                </form>
-
-                <!-- Submit Button -->
-                <div class="mt-8 pt-6 border-t border-gray-200">
-                    <button 
-                        type="submit" 
-                        id="generateButton"
-                        class="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <span id="generateButtonText">Generate Document</span>
-                        <div id="generateButtonSpinner" class="hidden loading-spinner inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full ml-2"></div>
-                    </button>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Document Info -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                <div>
+                    <h2 id="documentName" class="text-2xl font-bold text-gray-900 mb-2">Document Name</h2>
+                    <p id="documentDescription" class="text-gray-600">Document description will appear here.</p>
+                </div>
+                <div class="flex items-center gap-4 mt-4 md:mt-0">
+                    <span id="documentCategory" class="px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">
+                        Category
+                    </span>
+                    <span id="documentOutputType" class="px-3 py-1 text-sm font-semibold rounded-full bg-gray-100 text-gray-800">
+                        PDF
+                    </span>
+                    <span id="documentLayoutType" class="px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">
+                        Layout
+                    </span>
                 </div>
             </div>
         </div>
 
-        <!-- Success State -->
-        <div id="successState" class="hidden">
-            <div class="bg-green-50 border border-green-200 rounded-xl p-6 mb-6 success-message">
-                <div class="flex items-center">
-                    <div class="text-green-500 text-2xl mr-3">✅</div>
-                    <div>
-                        <h3 class="text-lg font-semibold text-green-900">Document Generated Successfully!</h3>
-                        <p class="text-green-700">Your document has been generated and is ready for download.</p>
+        <!-- Form Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <h3 class="text-xl font-semibold text-gray-900 mb-6">Document Information</h3>
+            <form id="documentForm" class="space-y-6">
+                <!-- Dynamic form fields will be inserted here -->
+            </form>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button 
+                    id="generateBtn" 
+                    class="flex-1 bg-[#1e40af] hover:bg-[#1e40af]/90 text-white px-6 py-3 rounded-xl font-medium transition-colors duration-200 flex items-center justify-center"
+                >
+                    <span id="generateBtnText">🤖 Generate with AI</span>
+                    <div id="generateSpinner" class="hidden ml-2">
+                        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                     </div>
-                </div>
+                </button>
+                <button 
+                    id="downloadBtn" 
+                    class="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-medium transition-colors duration-200"
+                    disabled
+                >
+                    📥 Download Document
+                </button>
             </div>
+        </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Generated Document</h3>
-                <div id="documentPreview" class="bg-gray-50 rounded-lg p-4 mb-4 max-h-96 overflow-y-auto">
-                    <!-- Document preview will be inserted here -->
+        <!-- Output Section -->
+        <div id="outputSection" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hidden">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Generated Document</h3>
+            <div id="outputContent" class="bg-gray-50 rounded-lg p-4 min-h-[200px]">
+                <!-- Generated content will appear here -->
+            </div>
+        </div>
+
+        <!-- Error Section -->
+        <div id="errorSection" class="bg-red-50 border border-red-200 rounded-xl p-6 hidden">
+            <div class="flex items-center">
+                <div class="text-red-400 mr-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
                 </div>
-                
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button 
-                        id="downloadButton"
-                        class="flex-1 bg-green-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                    >
-                        📄 Download Document
-                    </button>
-                    <button 
-                        id="copyButton"
-                        class="flex-1 bg-gray-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                    >
-                        📋 Copy Text
-                    </button>
-                    <button 
-                        id="newDocumentButton"
-                        class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    >
-                        📝 New Document
-                    </button>
+                <div>
+                    <h3 class="text-lg font-semibold text-red-800">Error</h3>
+                    <p id="errorMessage" class="text-red-600 mt-1">An error occurred while generating the document.</p>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        class DocumentPage {
-            constructor() {
-                this.docKey = this.getDocKeyFromUrl();
-                this.docTemplate = null;
-                this.generatedDocument = null;
-                this.init();
+        let documentData = null;
+        let documentId = null;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Get document ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            documentId = urlParams.get('id') || window.location.pathname.split('/').pop().replace('.html', '');
+            
+            if (!documentId) {
+                showError('No document ID provided');
+                return;
             }
 
-            getDocKeyFromUrl() {
-                const path = window.location.pathname;
-                const match = path.match(/\/documents\/([^\/]+)\.html$/);
-                return match ? match[1] : null;
-            }
+            await loadDocumentData();
+            setupEventListeners();
+        });
 
-            async init() {
-                if (!this.docKey) {
-                    this.showError();
+        async function loadDocumentData() {
+            try {
+                const response = await fetch('/app/assets/data/doc-templates.json');
+                const data = await response.json();
+                
+                if (!data[documentId]) {
+                    showError('Document not found');
                     return;
                 }
 
-                try {
-                    await this.loadDocumentTemplate();
-                    this.renderDocumentForm();
-                    this.setupEventListeners();
-                } catch (error) {
-                    console.error('Failed to load document template:', error);
-                    this.showError();
-                }
-            }
-
-            async loadDocumentTemplate() {
-                const response = await fetch('/app/assets/data/doc-templates.json');
-                const templates = await response.json();
-                
-                if (!templates[this.docKey]) {
-                    throw new Error('Document template not found');
-                }
-                
-                this.docTemplate = templates[this.docKey];
-            }
-
-            renderDocumentForm() {
-                // Update page title and meta
-                document.getElementById('pageTitle').textContent = `${this.docTemplate.title} - ClaimNavigatorAI`;
-                document.getElementById('documentTitle').textContent = this.docTemplate.title;
-                document.getElementById('documentDescription').textContent = this.docTemplate.description;
-
-                // Generate form fields
-                const formElement = document.getElementById('documentFormElement');
-                formElement.innerHTML = '';
-
-                this.docTemplate.fields.forEach(field => {
-                    const fieldElement = this.createFormField(field);
-                    formElement.appendChild(fieldElement);
-                });
-
-                // Show the form
-                document.getElementById('loadingState').classList.add('hidden');
-                document.getElementById('documentForm').classList.remove('hidden');
-            }
-
-            createFormField(field) {
-                const fieldContainer = document.createElement('div');
-                fieldContainer.className = 'space-y-2';
-
-                // Label
-                const label = document.createElement('label');
-                label.className = 'block text-sm font-medium text-gray-700';
-                label.textContent = field.label;
-                if (field.required) {
-                    label.innerHTML += ' <span class="text-red-500">*</span>';
-                }
-                fieldContainer.appendChild(label);
-
-                // Input field
-                let input;
-                if (field.type === 'textarea') {
-                    input = document.createElement('textarea');
-                    input.rows = 4;
-                    input.className = 'form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
-                } else if (field.type === 'select') {
-                    input = document.createElement('select');
-                    input.className = 'form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
-                    
-                    // Add default option
-                    const defaultOption = document.createElement('option');
-                    defaultOption.value = '';
-                    defaultOption.textContent = 'Select an option...';
-                    input.appendChild(defaultOption);
-                    
-                    // Add field options
-                    if (field.options) {
-                        field.options.forEach(option => {
-                            const optionElement = document.createElement('option');
-                            optionElement.value = option;
-                            optionElement.textContent = option;
-                            input.appendChild(optionElement);
-                        });
-                    }
-                } else if (field.type === 'checkbox') {
-                    input = document.createElement('input');
-                    input.type = 'checkbox';
-                    input.className = 'form-input h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded';
-                } else {
-                    input = document.createElement('input');
-                    input.type = field.type || 'text';
-                    input.className = 'form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
-                }
-
-                input.id = field.id;
-                input.name = field.id;
-                input.required = field.required || false;
-
-                // Add placeholder for text inputs
-                if (field.type === 'text' || field.type === 'email' || field.type === 'tel') {
-                    input.placeholder = `Enter ${field.label.toLowerCase()}...`;
-                }
-
-                fieldContainer.appendChild(input);
-
-                return fieldContainer;
-            }
-
-            setupEventListeners() {
-                // Form submission
-                document.getElementById('documentFormElement').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.handleFormSubmit();
-                });
-
-                // Success state buttons
-                document.getElementById('downloadButton').addEventListener('click', () => {
-                    this.downloadDocument();
-                });
-
-                document.getElementById('copyButton').addEventListener('click', () => {
-                    this.copyDocument();
-                });
-
-                document.getElementById('newDocumentButton').addEventListener('click', () => {
-                    this.resetForm();
-                });
-            }
-
-            async handleFormSubmit() {
-                const formData = new FormData(document.getElementById('documentFormElement'));
-                const data = Object.fromEntries(formData);
-
-                // Show loading state
-                this.setLoadingState(true);
-
-                try {
-                    const response = await fetch('/.netlify/functions/generate-doc', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            docKey: this.docKey,
-                            inputs: data
-                        })
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-
-                    const result = await response.json();
-                    this.generatedDocument = result;
-                    this.showSuccess(result);
-                } catch (error) {
-                    console.error('Document generation error:', error);
-                    this.showError('Failed to generate document. Please try again.');
-                } finally {
-                    this.setLoadingState(false);
-                }
-            }
-
-            setLoadingState(loading) {
-                const button = document.getElementById('generateButton');
-                const buttonText = document.getElementById('generateButtonText');
-                const buttonSpinner = document.getElementById('generateButtonSpinner');
-
-                if (loading) {
-                    button.disabled = true;
-                    buttonText.textContent = 'Generating...';
-                    buttonSpinner.classList.remove('hidden');
-                } else {
-                    button.disabled = false;
-                    buttonText.textContent = 'Generate Document';
-                    buttonSpinner.classList.add('hidden');
-                }
-            }
-
-            showSuccess(result) {
-                // Hide form, show success
-                document.getElementById('documentForm').classList.add('hidden');
-                document.getElementById('successState').classList.remove('hidden');
-
-                // Display document preview
-                const preview = document.getElementById('documentPreview');
-                if (result.content) {
-                    preview.innerHTML = result.content;
-                } else if (result.document) {
-                    preview.textContent = result.document;
-                } else {
-                    preview.textContent = 'Document generated successfully!';
-                }
-            }
-
-            showError(message = 'An error occurred') {
-                document.getElementById('loadingState').classList.add('hidden');
-                document.getElementById('documentForm').classList.add('hidden');
-                document.getElementById('errorState').classList.remove('hidden');
-                
-                if (message !== 'An error occurred') {
-                    // Show error message in a toast or alert
-                    alert(message);
-                }
-            }
-
-            downloadDocument() {
-                if (!this.generatedDocument) return;
-
-                if (this.generatedDocument.fileUrl) {
-                    // Download from URL
-                    window.open(this.generatedDocument.fileUrl, '_blank');
-                } else if (this.generatedDocument.contentBase64) {
-                    // Download base64 content
-                    const link = document.createElement('a');
-                    link.href = `data:${this.generatedDocument.mimeType || 'application/pdf'};base64,${this.generatedDocument.contentBase64}`;
-                    link.download = this.generatedDocument.filename || `${this.docKey}-document.pdf`;
-                    link.click();
-                } else {
-                    // Fallback: download as text file
-                    const blob = new Blob([this.generatedDocument.document || this.generatedDocument.content], { type: 'text/plain' });
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = `${this.docKey}-document.txt`;
-                    link.click();
-                    URL.revokeObjectURL(url);
-                }
-            }
-
-            copyDocument() {
-                const content = this.generatedDocument?.document || this.generatedDocument?.content || '';
-                navigator.clipboard.writeText(content).then(() => {
-                    const button = document.getElementById('copyButton');
-                    const originalText = button.textContent;
-                    button.textContent = '✓ Copied!';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                    }, 2000);
-                });
-            }
-
-            resetForm() {
-                // Reset form
-                document.getElementById('documentFormElement').reset();
-                
-                // Hide success, show form
-                document.getElementById('successState').classList.add('hidden');
-                document.getElementById('documentForm').classList.remove('hidden');
-                
-                // Scroll to top
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                documentData = data[documentId];
+                populateDocumentInfo();
+                generateForm();
+            } catch (error) {
+                console.error('Error loading document data:', error);
+                showError('Failed to load document data');
             }
         }
 
-        // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            new DocumentPage();
-        });
+        function populateDocumentInfo() {
+            document.getElementById('documentTitle').textContent = documentData.title;
+            document.getElementById('documentName').textContent = documentData.title;
+            document.getElementById('documentDescription').textContent = documentData.description;
+            
+            // Update category badge
+            const categoryElement = document.getElementById('documentCategory');
+            categoryElement.textContent = documentData.category.toUpperCase();
+            categoryElement.className = `px-3 py-1 text-sm font-semibold rounded-full ${getCategoryColor(documentData.category)}`;
+            
+            // Update output type badge
+            document.getElementById('documentOutputType').textContent = documentData.outputType.toUpperCase();
+            
+            // Update layout type badge
+            document.getElementById('documentLayoutType').textContent = getLayoutTypeName(documentData.layoutType);
+        }
+
+        function generateForm() {
+            const form = document.getElementById('documentForm');
+            form.innerHTML = '';
+
+            documentData.fields.forEach((field, index) => {
+                const fieldElement = createFormField(field, index);
+                form.appendChild(fieldElement);
+            });
+        }
+
+        function createFormField(field, index) {
+            const fieldContainer = document.createElement('div');
+            fieldContainer.className = 'space-y-2';
+
+            // Create label
+            const label = document.createElement('label');
+            label.className = 'block text-sm font-medium text-gray-700';
+            label.textContent = field.label;
+            if (field.required) {
+                label.innerHTML += ' <span class="text-red-500">*</span>';
+            }
+            fieldContainer.appendChild(label);
+
+            // Create input based on field type
+            let input;
+            if (field.type === 'textarea') {
+                input = document.createElement('textarea');
+                input.className = 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical';
+                input.rows = 4;
+            } else if (field.type === 'select') {
+                input = document.createElement('select');
+                input.className = 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent';
+                
+                // Add options
+                if (field.options) {
+                    field.options.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option;
+                        optionElement.textContent = option;
+                        input.appendChild(optionElement);
+                    });
+                }
+            } else if (field.type === 'table') {
+                input = createTableInput(field);
+            } else {
+                input = document.createElement('input');
+                input.type = field.type;
+                input.className = 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent';
+            }
+
+            // Set common attributes
+            input.id = field.id;
+            input.name = field.id;
+            if (field.required) {
+                input.required = true;
+            }
+            if (field.placeholder) {
+                input.placeholder = field.placeholder;
+            }
+
+            fieldContainer.appendChild(input);
+            return fieldContainer;
+        }
+
+        function createTableInput(field) {
+            const tableContainer = document.createElement('div');
+            tableContainer.className = 'border border-gray-300 rounded-xl p-4';
+            
+            const table = document.createElement('table');
+            table.className = 'w-full border-collapse';
+            
+            // Create header row
+            const headerRow = document.createElement('tr');
+            headerRow.className = 'bg-gray-50';
+            field.columns.forEach(column => {
+                const th = document.createElement('th');
+                th.className = 'border border-gray-300 px-3 py-2 text-left text-sm font-medium text-gray-700';
+                th.textContent = column;
+                headerRow.appendChild(th);
+            });
+            table.appendChild(headerRow);
+
+            // Create data rows (start with 3 empty rows)
+            for (let i = 0; i < 3; i++) {
+                const row = document.createElement('tr');
+                field.columns.forEach(column => {
+                    const td = document.createElement('td');
+                    td.className = 'border border-gray-300 px-3 py-2';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'w-full border-0 focus:ring-0 text-sm';
+                    input.placeholder = `Enter ${column.toLowerCase()}`;
+                    td.appendChild(input);
+                    row.appendChild(td);
+                });
+                table.appendChild(row);
+            }
+
+            tableContainer.appendChild(table);
+            return tableContainer;
+        }
+
+        function setupEventListeners() {
+            document.getElementById('generateBtn').addEventListener('click', generateDocument);
+            document.getElementById('downloadBtn').addEventListener('click', downloadDocument);
+        }
+
+        async function generateDocument() {
+            const generateBtn = document.getElementById('generateBtn');
+            const generateSpinner = document.getElementById('generateSpinner');
+            const generateBtnText = document.getElementById('generateBtnText');
+            
+            // Show loading state
+            generateBtn.disabled = true;
+            generateSpinner.classList.remove('hidden');
+            generateBtnText.textContent = 'Generating...';
+
+            try {
+                // Collect form data
+                const formData = collectFormData();
+                
+                // Validate required fields
+                if (!validateForm(formData)) {
+                    throw new Error('Please fill in all required fields');
+                }
+
+                // Call the generation API
+                const response = await fetch('/.netlify/functions/generate-doc', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        docKey: documentId,
+                        inputs: formData
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                // Display the generated content
+                displayGeneratedContent(result);
+                
+                // Enable download button
+                document.getElementById('downloadBtn').disabled = false;
+                
+            } catch (error) {
+                console.error('Error generating document:', error);
+                showError(error.message || 'Failed to generate document');
+            } finally {
+                // Reset button state
+                generateBtn.disabled = false;
+                generateSpinner.classList.add('hidden');
+                generateBtnText.textContent = '🤖 Generate with AI';
+            }
+        }
+
+        function collectFormData() {
+            const formData = {};
+            const form = document.getElementById('documentForm');
+            const inputs = form.querySelectorAll('input, textarea, select');
+            
+            inputs.forEach(input => {
+                if (input.type === 'text' || input.type === 'email' || input.type === 'tel' || input.type === 'date' || input.type === 'number') {
+                    formData[input.name] = input.value;
+                } else if (input.type === 'textarea') {
+                    formData[input.name] = input.value;
+                } else if (input.type === 'select-one') {
+                    formData[input.name] = input.value;
+                }
+            });
+
+            return formData;
+        }
+
+        function validateForm(formData) {
+            const requiredFields = documentData.fields.filter(field => field.required);
+            
+            for (const field of requiredFields) {
+                if (!formData[field.id] || formData[field.id].trim() === '') {
+                    alert(`Please fill in the required field: ${field.label}`);
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        function displayGeneratedContent(result) {
+            const outputSection = document.getElementById('outputSection');
+            const outputContent = document.getElementById('outputContent');
+            
+            if (result.output) {
+                outputContent.innerHTML = `<pre class="whitespace-pre-wrap text-sm">${result.output}</pre>`;
+            } else if (result.downloadUrl) {
+                outputContent.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-green-600 text-6xl mb-4">✅</div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Document Generated Successfully!</h3>
+                        <p class="text-gray-600 mb-4">Your document has been generated and is ready for download.</p>
+                        <a href="${result.downloadUrl}" class="inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-medium transition-colors">
+                            📥 Download Document
+                        </a>
+                    </div>
+                `;
+            }
+            
+            outputSection.classList.remove('hidden');
+        }
+
+        function downloadDocument() {
+            // This would typically trigger the download of the generated document
+            alert('Download functionality will be implemented with the backend generation logic');
+        }
+
+        function showError(message) {
+            const errorSection = document.getElementById('errorSection');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            errorMessage.textContent = message;
+            errorSection.classList.remove('hidden');
+            
+            // Hide other sections
+            document.getElementById('outputSection').classList.add('hidden');
+        }
+
+        function getCategoryColor(category) {
+            const colors = {
+                'core': 'bg-blue-100 text-blue-800',
+                'legal': 'bg-red-100 text-red-800',
+                'financial': 'bg-green-100 text-green-800',
+                'evidence': 'bg-purple-100 text-purple-800',
+                'analysis': 'bg-orange-100 text-orange-800',
+                'forms': 'bg-indigo-100 text-indigo-800',
+                'appeals': 'bg-pink-100 text-pink-800',
+                'specialty': 'bg-yellow-100 text-yellow-800',
+                'property': 'bg-teal-100 text-teal-800',
+                'business': 'bg-cyan-100 text-cyan-800',
+                'catastrophic': 'bg-gray-100 text-gray-800'
+            };
+            return colors[category] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getLayoutTypeName(layoutType) {
+            const types = {
+                'T1': 'Claim Form',
+                'T2': 'Letter/Notice',
+                'T3': 'Log/Register',
+                'T4': 'Financial Worksheet',
+                'T5': 'Legal Filing',
+                'T6': 'Report/Assessment',
+                'T7': 'Business Claim',
+                'T8': 'Catastrophic Event'
+            };
+            return types[layoutType] || 'Document';
+        }
     </script>
 </body>
 </html>
