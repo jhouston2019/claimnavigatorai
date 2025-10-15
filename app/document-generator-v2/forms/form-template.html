@@ -1,287 +1,422 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document Form - ClaimNavigatorAI</title>
-  <link rel="stylesheet" href="/app/document-generator-v2/assets/css/document-generator.css" />
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Generator - ClaimNavigatorAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
 </head>
-<body class="bg-gray-50 text-gray-900 font-inter">
-  <header class="bg-[#1e40af] text-white p-4 flex justify-between items-center">
-    <h1 id="docTitle" class="text-xl font-semibold">Document Generator</h1>
-    <a href="/app/document-generator-v2/document-generator.html" class="text-sm underline">← Documents</a>
-  </header>
-
-  <main class="max-w-5xl mx-auto mt-6 p-6 bg-white rounded-lg shadow">
-
-    <div class="mb-6">
-      <p id="docDescription" class="text-gray-600 mb-4"></p>
-      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 class="font-semibold text-blue-900 mb-2">📋 Document Information</h3>
-        <div class="grid grid-cols-2 gap-4 text-sm">
-          <div><span class="font-medium">Category:</span> <span id="docCategory"></span></div>
-          <div><span class="font-medium">Output Format:</span> <span id="docFormat"></span></div>
-          <div><span class="font-medium">AI Assistance:</span> <span id="docAI"></span></div>
-          <div><span class="font-medium">Template Type:</span> <span id="docTemplate"></span></div>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-[#1e40af] text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                        <span class="text-[#1e40af] font-bold text-lg">📄</span>
+                    </div>
+                    <h1 id="documentTitle" class="text-2xl font-bold">Document Generator</h1>
+                </div>
+                <a href="/app/document-generator-v2/document-generator.html" class="text-blue-200 hover:text-white transition-colors">
+                    ← Back to Documents
+                </a>
+            </div>
         </div>
-      </div>
-    </div>
+    </header>
 
-    <form id="docForm" class="grid gap-6 mb-8">
-      <!-- Dynamic form fields will be inserted here -->
-    </form>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Document Info -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                <div>
+                    <h2 id="documentName" class="text-2xl font-bold text-gray-900 mb-2">Document Name</h2>
+                    <p id="documentDescription" class="text-gray-600">Document description will appear here.</p>
+                </div>
+                <div class="flex items-center gap-4 mt-4 md:mt-0">
+                    <span id="documentCategory" class="px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">
+                        Category
+                    </span>
+                    <span id="documentOutputType" class="px-3 py-1 text-sm font-semibold rounded-full bg-gray-100 text-gray-800">
+                        PDF
+                    </span>
+                    <span id="documentLayoutType" class="px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">
+                        Layout
+                    </span>
+                </div>
+            </div>
+        </div>
 
-    <div class="flex flex-wrap gap-3 mb-6">
-      <button id="aiBtn" class="bg-[#1e40af] text-white px-6 py-3 rounded-lg hover:bg-[#3b82f6] transition-colors font-medium">
-        🤖 Draft with AI
-      </button>
-      <button id="pdfBtn" class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium">
-        📄 Export PDF
-      </button>
-      <button id="docxBtn" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium">
-        📝 Export DOCX
-      </button>
-      <button id="xlsxBtn" class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors font-medium">
-        📊 Export XLSX
-      </button>
-    </div>
+        <!-- Form Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <h3 class="text-xl font-semibold text-gray-900 mb-6">Document Information</h3>
+            <form id="documentForm" class="space-y-6">
+                <!-- Dynamic form fields will be inserted here -->
+            </form>
+        </div>
 
-    <div class="border-t pt-6">
-      <h3 class="text-lg font-semibold mb-3">🤖 AI Generated Content</h3>
-      
-      <!-- Header Preview -->
-      <div id="headerPreview" class="mb-4 p-3 bg-gray-100 border border-gray-300 rounded-lg text-sm font-mono" style="display: none;">
-        <div class="font-semibold text-gray-800">📄 Document Header (Auto-Generated):</div>
-        <div id="headerContent" class="mt-1 text-gray-700"></div>
-      </div>
-      
-      <textarea id="aiOutput" class="w-full h-80 border border-gray-300 p-4 rounded-lg font-mono text-sm" 
-                placeholder="AI Draft Output will appear here..."></textarea>
-      
-      <!-- Footer Preview -->
-      <div id="footerPreview" class="mt-4 p-3 bg-gray-100 border border-gray-300 rounded-lg text-sm font-mono" style="display: none;">
-        <div class="font-semibold text-gray-800">📄 Document Footer (Auto-Generated):</div>
-        <div id="footerContent" class="mt-1 text-gray-700"></div>
-      </div>
-      
-      <div class="mt-3 flex gap-2">
-        <button id="copyBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
-          📋 Copy Text
-        </button>
-        <button id="clearBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
-          🗑️ Clear
-        </button>
-        <button id="previewBtn" class="bg-blue-200 text-blue-700 px-4 py-2 rounded hover:bg-blue-300 transition-colors">
-          👁️ Preview Header/Footer
-        </button>
-      </div>
-    </div>
-  </main>
+        <!-- Action Buttons -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button 
+                    id="generateBtn" 
+                    class="flex-1 bg-[#1e40af] hover:bg-[#1e40af]/90 text-white px-6 py-3 rounded-xl font-medium transition-colors duration-200 flex items-center justify-center"
+                >
+                    <span id="generateBtnText">🤖 Generate with AI</span>
+                    <div id="generateSpinner" class="hidden ml-2">
+                        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    </div>
+                </button>
+                <button 
+                    id="downloadBtn" 
+                    class="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-medium transition-colors duration-200"
+                    disabled
+                >
+                    📥 Download Document
+                </button>
+            </div>
+        </div>
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const docId = params.get('id');
+        <!-- Output Section -->
+        <div id="outputSection" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hidden">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Generated Document</h3>
+            <div id="outputContent" class="bg-gray-50 rounded-lg p-4 min-h-[200px]">
+                <!-- Generated content will appear here -->
+            </div>
+        </div>
 
-    let currentDocument = null;
-    let userData = {};
+        <!-- Error Section -->
+        <div id="errorSection" class="bg-red-50 border border-red-200 rounded-xl p-6 hidden">
+            <div class="flex items-center">
+                <div class="text-red-400 mr-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-red-800">Error</h3>
+                    <p id="errorMessage" class="text-red-600 mt-1">An error occurred while generating the document.</p>
+                </div>
+            </div>
+        </div>
+    </main>
 
+    <script>
+        let documentData = null;
+        let documentId = null;
 
-    // Generate header content
-    function generateHeader() {
-      if (!userData.userName) return '';
-      return `Claim Navigator AI — Confidential Claim File
-Policyholder: ${userData.userName} | Policy #: ${userData.policyNumber || 'N/A'} | Claim #: ${userData.claimNumber || 'N/A'}
-Date of Loss: ${userData.dateOfLoss || 'N/A'} | Property: ${userData.propertyAddress || 'N/A'}`;
-    }
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Get document ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            documentId = urlParams.get('id') || window.location.pathname.split('/').pop().replace('.html', '');
+            
+            if (!documentId) {
+                showError('No document ID provided');
+                return;
+            }
 
-    // Generate footer content
-    function generateFooter() {
-      return '© ClaimNavigatorAI — Confidential · Generated by Claim Navigator AI';
-    }
-
-    // Load document configuration
-    fetch('/app/document-generator-v2/config/documents.json')
-      .then(res => res.json())
-      .then(docs => {
-        const doc = docs.find(d => d.id === docId);
-        if (!doc) {
-          document.body.innerHTML = '<div class="p-8 text-center"><h1 class="text-2xl font-bold text-red-600">Document not found</h1><p>Please return to the document list.</p></div>';
-          return;
-        }
-        
-        currentDocument = doc;
-        document.title = doc.title;
-        document.getElementById('docTitle').innerText = doc.title;
-        document.getElementById('docDescription').innerText = doc.description;
-        document.getElementById('docCategory').innerText = doc.category;
-        document.getElementById('docFormat').innerText = doc.outputFormat;
-        document.getElementById('docAI').innerText = doc.aiAssist ? 'Yes' : 'No';
-        document.getElementById('docTemplate').innerText = doc.templateType;
-
-        // Generate form fields
-        const form = document.getElementById('docForm');
-        doc.fields.forEach((field, index) => {
-          const fieldDiv = document.createElement('div');
-          fieldDiv.className = 'form-field';
-          
-          if (field.type === 'textarea') {
-            fieldDiv.innerHTML = `
-              <label class="block text-sm font-medium text-gray-700 mb-2">${field.label} ${field.required ? '<span class="text-red-500">*</span>' : ''}</label>
-              <textarea 
-                name="field_${index}" 
-                placeholder="${field.placeholder || ''}" 
-                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows="4"
-                ${field.required ? 'required' : ''}
-              ></textarea>
-            `;
-          } else if (field.type === 'table') {
-            fieldDiv.innerHTML = `
-              <label class="block text-sm font-medium text-gray-700 mb-2">${field.label} ${field.required ? '<span class="text-red-500">*</span>' : ''}</label>
-              <div class="overflow-x-auto">
-                <table class="min-w-full border-collapse border border-gray-300">
-                  <thead>
-                    <tr class="bg-gray-50">
-                      ${field.columns.map(col => `<th class="border border-gray-300 p-2 text-left font-medium">${col}</th>`).join('')}
-                    </tr>
-                  </thead>
-                  <tbody id="tableBody_${index}">
-                    <tr>
-                      ${field.columns.map(() => `<td class="border border-gray-300 p-1"><input type="text" class="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500"></td>`).join('')}
-                    </tr>
-                  </tbody>
-                </table>
-                <button type="button" onclick="addTableRow(${index})" class="mt-2 text-sm text-blue-600 hover:text-blue-800">+ Add Row</button>
-              </div>
-            `;
-          } else if (field.type === 'select') {
-            fieldDiv.innerHTML = `
-              <label class="block text-sm font-medium text-gray-700 mb-2">${field.label} ${field.required ? '<span class="text-red-500">*</span>' : ''}</label>
-              <select 
-                name="field_${index}" 
-                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                ${field.required ? 'required' : ''}
-              >
-                <option value="">Select ${field.label}</option>
-                ${field.options.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join('')}
-              </select>
-            `;
-          } else {
-            fieldDiv.innerHTML = `
-              <label class="block text-sm font-medium text-gray-700 mb-2">${field.label} ${field.required ? '<span class="text-red-500">*</span>' : ''}</label>
-              <input 
-                type="${field.type}" 
-                name="field_${index}" 
-                placeholder="${field.placeholder || ''}" 
-                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                ${field.required ? 'required' : ''}
-              />
-            `;
-          }
-          
-          form.appendChild(fieldDiv);
+            await loadDocumentData();
+            setupEventListeners();
         });
 
-        // Load user data and set up event handlers
-        setupEventHandlers();
-      })
-      .catch(err => {
-        console.error('Error loading document:', err);
-        document.body.innerHTML = '<div class="p-8 text-center"><h1 class="text-2xl font-bold text-red-600">Error loading document</h1><p>Please try again later.</p></div>';
-      });
+        async function loadDocumentData() {
+            try {
+                const response = await fetch('/app/assets/data/doc-templates.json');
+                const data = await response.json();
+                
+                if (!data[documentId]) {
+                    showError('Document not found');
+                    return;
+                }
 
-    function setupEventHandlers() {
-      // AI Generation
-      document.getElementById('aiBtn').onclick = async (e) => {
-        e.preventDefault();
-        const button = e.target;
-        const originalText = button.textContent;
-        button.textContent = '🤖 Generating...';
-        button.disabled = true;
-
-        try {
-          const formData = {};
-          document.querySelectorAll('#docForm input, #docForm textarea, #docForm select').forEach((el, i) => {
-            if (el.name) {
-              formData[el.name] = el.value;
+                documentData = data[documentId];
+                populateDocumentInfo();
+                generateForm();
+            } catch (error) {
+                console.error('Error loading document data:', error);
+                showError('Failed to load document data');
             }
-          });
-
-          const response = await fetch('/app/document-generator-v2/netlify/functions/generate-document', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ docId, formData, userData })
-          });
-
-          const data = await response.json();
-          if (data.error) {
-            throw new Error(data.error);
-          }
-
-          document.getElementById('aiOutput').value = data.output;
-        } catch (err) {
-          console.error('AI generation error:', err);
-          alert('Error generating document: ' + err.message);
-        } finally {
-          button.textContent = originalText;
-          button.disabled = false;
         }
-      };
 
-      // Export functions with user data
-      document.getElementById('pdfBtn').onclick = () => {
-        const userDataParam = encodeURIComponent(JSON.stringify(userData));
-        window.open(`/app/document-generator-v2/netlify/functions/export-pdf?docId=${docId}&userData=${userDataParam}`, '_blank');
-      };
-
-      document.getElementById('docxBtn').onclick = () => {
-        const userDataParam = encodeURIComponent(JSON.stringify(userData));
-        window.open(`/app/document-generator-v2/netlify/functions/export-docx?docId=${docId}&userData=${userDataParam}`, '_blank');
-      };
-
-      document.getElementById('xlsxBtn').onclick = () => {
-        const userDataParam = encodeURIComponent(JSON.stringify(userData));
-        window.open(`/app/document-generator-v2/netlify/functions/export-xlsx?docId=${docId}&userData=${userDataParam}`, '_blank');
-      };
-
-      // Utility buttons
-      document.getElementById('copyBtn').onclick = () => {
-        const output = document.getElementById('aiOutput');
-        output.select();
-        document.execCommand('copy');
-        alert('Content copied to clipboard!');
-      };
-
-      document.getElementById('clearBtn').onclick = () => {
-        document.getElementById('aiOutput').value = '';
-      };
-
-      // User data management
-
-      // Header/Footer preview
-      document.getElementById('previewBtn').onclick = () => {
-        const headerContent = generateHeader();
-        const footerContent = generateFooter();
-        
-        if (headerContent) {
-          document.getElementById('headerContent').textContent = headerContent;
-          document.getElementById('headerPreview').style.display = 'block';
+        function populateDocumentInfo() {
+            document.getElementById('documentTitle').textContent = documentData.title;
+            document.getElementById('documentName').textContent = documentData.title;
+            document.getElementById('documentDescription').textContent = documentData.description;
+            
+            // Update category badge
+            const categoryElement = document.getElementById('documentCategory');
+            categoryElement.textContent = documentData.category.toUpperCase();
+            categoryElement.className = `px-3 py-1 text-sm font-semibold rounded-full ${getCategoryColor(documentData.category)}`;
+            
+            // Update output type badge
+            document.getElementById('documentOutputType').textContent = documentData.outputType.toUpperCase();
+            
+            // Update layout type badge
+            document.getElementById('documentLayoutType').textContent = getLayoutTypeName(documentData.layoutType);
         }
-        
-        document.getElementById('footerContent').textContent = footerContent;
-        document.getElementById('footerPreview').style.display = 'block';
-      };
-    }
 
-    // Table row addition function
-    function addTableRow(tableIndex) {
-      const tbody = document.getElementById(`tableBody_${tableIndex}`);
-      const firstRow = tbody.querySelector('tr');
-      const newRow = firstRow.cloneNode(true);
-      newRow.querySelectorAll('input').forEach(input => input.value = '');
-      tbody.appendChild(newRow);
-    }
-  </script>
+        function generateForm() {
+            const form = document.getElementById('documentForm');
+            form.innerHTML = '';
+
+            documentData.fields.forEach((field, index) => {
+                const fieldElement = createFormField(field, index);
+                form.appendChild(fieldElement);
+            });
+        }
+
+        function createFormField(field, index) {
+            const fieldContainer = document.createElement('div');
+            fieldContainer.className = 'space-y-2';
+
+            // Create label
+            const label = document.createElement('label');
+            label.className = 'block text-sm font-medium text-gray-700';
+            label.textContent = field.label;
+            if (field.required) {
+                label.innerHTML += ' <span class="text-red-500">*</span>';
+            }
+            fieldContainer.appendChild(label);
+
+            // Create input based on field type
+            let input;
+            if (field.type === 'textarea') {
+                input = document.createElement('textarea');
+                input.className = 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical';
+                input.rows = 4;
+            } else if (field.type === 'select') {
+                input = document.createElement('select');
+                input.className = 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent';
+                
+                // Add options
+                if (field.options) {
+                    field.options.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option;
+                        optionElement.textContent = option;
+                        input.appendChild(optionElement);
+                    });
+                }
+            } else if (field.type === 'table') {
+                input = createTableInput(field);
+            } else {
+                input = document.createElement('input');
+                input.type = field.type;
+                input.className = 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent';
+            }
+
+            // Set common attributes
+            input.id = field.id;
+            input.name = field.id;
+            if (field.required) {
+                input.required = true;
+            }
+            if (field.placeholder) {
+                input.placeholder = field.placeholder;
+            }
+
+            fieldContainer.appendChild(input);
+            return fieldContainer;
+        }
+
+        function createTableInput(field) {
+            const tableContainer = document.createElement('div');
+            tableContainer.className = 'border border-gray-300 rounded-xl p-4';
+            
+            const table = document.createElement('table');
+            table.className = 'w-full border-collapse';
+            
+            // Create header row
+            const headerRow = document.createElement('tr');
+            headerRow.className = 'bg-gray-50';
+            field.columns.forEach(column => {
+                const th = document.createElement('th');
+                th.className = 'border border-gray-300 px-3 py-2 text-left text-sm font-medium text-gray-700';
+                th.textContent = column;
+                headerRow.appendChild(th);
+            });
+            table.appendChild(headerRow);
+
+            // Create data rows (start with 3 empty rows)
+            for (let i = 0; i < 3; i++) {
+                const row = document.createElement('tr');
+                field.columns.forEach(column => {
+                    const td = document.createElement('td');
+                    td.className = 'border border-gray-300 px-3 py-2';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'w-full border-0 focus:ring-0 text-sm';
+                    input.placeholder = `Enter ${column.toLowerCase()}`;
+                    td.appendChild(input);
+                    row.appendChild(td);
+                });
+                table.appendChild(row);
+            }
+
+            tableContainer.appendChild(table);
+            return tableContainer;
+        }
+
+        function setupEventListeners() {
+            document.getElementById('generateBtn').addEventListener('click', generateDocument);
+            document.getElementById('downloadBtn').addEventListener('click', downloadDocument);
+        }
+
+        async function generateDocument() {
+            const generateBtn = document.getElementById('generateBtn');
+            const generateSpinner = document.getElementById('generateSpinner');
+            const generateBtnText = document.getElementById('generateBtnText');
+            
+            // Show loading state
+            generateBtn.disabled = true;
+            generateSpinner.classList.remove('hidden');
+            generateBtnText.textContent = 'Generating...';
+
+            try {
+                // Collect form data
+                const formData = collectFormData();
+                
+                // Validate required fields
+                if (!validateForm(formData)) {
+                    throw new Error('Please fill in all required fields');
+                }
+
+                // Call the generation API
+                const response = await fetch('/.netlify/functions/generate-doc', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        docKey: documentId,
+                        inputs: formData
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                // Display the generated content
+                displayGeneratedContent(result);
+                
+                // Enable download button
+                document.getElementById('downloadBtn').disabled = false;
+                
+            } catch (error) {
+                console.error('Error generating document:', error);
+                showError(error.message || 'Failed to generate document');
+            } finally {
+                // Reset button state
+                generateBtn.disabled = false;
+                generateSpinner.classList.add('hidden');
+                generateBtnText.textContent = '🤖 Generate with AI';
+            }
+        }
+
+        function collectFormData() {
+            const formData = {};
+            const form = document.getElementById('documentForm');
+            const inputs = form.querySelectorAll('input, textarea, select');
+            
+            inputs.forEach(input => {
+                if (input.type === 'text' || input.type === 'email' || input.type === 'tel' || input.type === 'date' || input.type === 'number') {
+                    formData[input.name] = input.value;
+                } else if (input.type === 'textarea') {
+                    formData[input.name] = input.value;
+                } else if (input.type === 'select-one') {
+                    formData[input.name] = input.value;
+                }
+            });
+
+            return formData;
+        }
+
+        function validateForm(formData) {
+            const requiredFields = documentData.fields.filter(field => field.required);
+            
+            for (const field of requiredFields) {
+                if (!formData[field.id] || formData[field.id].trim() === '') {
+                    alert(`Please fill in the required field: ${field.label}`);
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        function displayGeneratedContent(result) {
+            const outputSection = document.getElementById('outputSection');
+            const outputContent = document.getElementById('outputContent');
+            
+            if (result.output) {
+                outputContent.innerHTML = `<pre class="whitespace-pre-wrap text-sm">${result.output}</pre>`;
+            } else if (result.downloadUrl) {
+                outputContent.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-green-600 text-6xl mb-4">✅</div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Document Generated Successfully!</h3>
+                        <p class="text-gray-600 mb-4">Your document has been generated and is ready for download.</p>
+                        <a href="${result.downloadUrl}" class="inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-medium transition-colors">
+                            📥 Download Document
+                        </a>
+                    </div>
+                `;
+            }
+            
+            outputSection.classList.remove('hidden');
+        }
+
+        function downloadDocument() {
+            // This would typically trigger the download of the generated document
+            alert('Download functionality will be implemented with the backend generation logic');
+        }
+
+        function showError(message) {
+            const errorSection = document.getElementById('errorSection');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            errorMessage.textContent = message;
+            errorSection.classList.remove('hidden');
+            
+            // Hide other sections
+            document.getElementById('outputSection').classList.add('hidden');
+        }
+
+        function getCategoryColor(category) {
+            const colors = {
+                'core': 'bg-blue-100 text-blue-800',
+                'legal': 'bg-red-100 text-red-800',
+                'financial': 'bg-green-100 text-green-800',
+                'evidence': 'bg-purple-100 text-purple-800',
+                'analysis': 'bg-orange-100 text-orange-800',
+                'forms': 'bg-indigo-100 text-indigo-800',
+                'appeals': 'bg-pink-100 text-pink-800',
+                'specialty': 'bg-yellow-100 text-yellow-800',
+                'property': 'bg-teal-100 text-teal-800',
+                'business': 'bg-cyan-100 text-cyan-800',
+                'catastrophic': 'bg-gray-100 text-gray-800'
+            };
+            return colors[category] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getLayoutTypeName(layoutType) {
+            const types = {
+                'T1': 'Claim Form',
+                'T2': 'Letter/Notice',
+                'T3': 'Log/Register',
+                'T4': 'Financial Worksheet',
+                'T5': 'Legal Filing',
+                'T6': 'Report/Assessment',
+                'T7': 'Business Claim',
+                'T8': 'Catastrophic Event'
+            };
+            return types[layoutType] || 'Document';
+        }
+    </script>
 </body>
 </html>

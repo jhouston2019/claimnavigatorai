@@ -1,113 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>📄 Document Generator - ClaimNavigatorAI</title>
-  <link rel="stylesheet" href="/app/document-generator-v2/assets/css/document-generator.css" />
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Generator - ClaimNavigatorAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
 </head>
-<body class="bg-gray-50 text-gray-900 font-inter">
-  <header class="bg-[#1e40af] text-white p-4 flex justify-between items-center">
-    <h1 class="text-xl font-semibold">📄 Document Generator</h1>
-    <a href="/app/resource-center.html" class="text-sm underline">← Resource Center</a>
-  </header>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-[#1e40af] text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                        <span class="text-[#1e40af] font-bold text-lg">📄</span>
+                    </div>
+                    <h1 class="text-2xl font-bold">Document Generator</h1>
+                </div>
+                <a href="/app/resource-center.html" class="text-blue-200 hover:text-white transition-colors">
+                    ← Back to Resource Center
+                </a>
+            </div>
+        </div>
+    </header>
 
-  <main class="p-6 max-w-7xl mx-auto">
-    <h2 class="text-2xl font-semibold mb-4">Select Document Type</h2>
-    <p class="mb-6 text-gray-700">Choose from 61+ professional document types organized by category.</p>
-    
-    <!-- Search Box -->
-    <div class="mb-6">
-      <input type="text" id="searchBox" placeholder="Search document types..." 
-             class="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-    </div>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Professional Document Generator</h2>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                Generate 61+ professional insurance claim documents with AI assistance. 
+                Choose from core forms, legal letters, financial worksheets, and specialized reports.
+            </p>
+        </div>
 
-    <!-- Category Filter -->
-    <div class="mb-6">
-      <div class="flex flex-wrap gap-2">
-        <button class="category-filter active" data-category="all">All Documents</button>
-        <button class="category-filter" data-category="core">Core Documents</button>
-        <button class="category-filter" data-category="legal">Legal Documents</button>
-        <button class="category-filter" data-category="financial">Financial Documents</button>
-        <button class="category-filter" data-category="evidence">Evidence Documents</button>
-        <button class="category-filter" data-category="communication">Communication</button>
-        <button class="category-filter" data-category="analysis">Analysis Tools</button>
-      </div>
-    </div>
+        <!-- Search and Filter Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-4">
+                <!-- Search Bar -->
+                <div class="flex-1">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Search documents by name, category, or description..." 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                </div>
+                
+                <!-- Category Filter -->
+                <div class="md:w-64">
+                    <select id="categoryFilter" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">All Categories</option>
+                        <option value="core">Core Documents</option>
+                        <option value="legal">Legal Documents</option>
+                        <option value="financial">Financial Documents</option>
+                        <option value="evidence">Evidence Documents</option>
+                        <option value="analysis">Analysis Tools</option>
+                        <option value="forms">Forms & Requests</option>
+                        <option value="appeals">Appeals & Disputes</option>
+                        <option value="specialty">Specialty Documents</option>
+                        <option value="property">Property-Specific</option>
+                        <option value="business">Business-Specific</option>
+                        <option value="catastrophic">Catastrophic Events</option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
-    <div id="document-list" class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"></div>
-  </main>
+        <!-- Document Grid -->
+        <div id="documentGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Documents will be loaded dynamically -->
+        </div>
 
-  <script>
-    let allDocuments = [];
-    let filteredDocuments = [];
+        <!-- Loading State -->
+        <div id="loadingState" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1e40af]"></div>
+            <p class="mt-4 text-gray-600">Loading documents...</p>
+        </div>
 
-    // Load documents from config
-    fetch('/app/document-generator-v2/config/documents.json')
-      .then(res => res.json())
-      .then(data => {
-        allDocuments = data;
-        filteredDocuments = data;
-        renderDocuments();
-      })
-      .catch(err => {
-        console.error('Error loading documents:', err);
-        document.getElementById('document-list').innerHTML = '<p class="text-red-600">Error loading documents. Please try again.</p>';
-      });
+        <!-- No Results State -->
+        <div id="noResultsState" class="text-center py-12 hidden">
+            <div class="text-gray-400 text-6xl mb-4">🔍</div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No documents found</h3>
+            <p class="text-gray-600">Try adjusting your search terms or category filter.</p>
+        </div>
+    </main>
 
-    function renderDocuments() {
-      const container = document.getElementById('document-list');
-      container.innerHTML = '';
-      
-      filteredDocuments.forEach(doc => {
-        const card = document.createElement('div');
-        card.className = 'bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer p-4';
-        card.innerHTML = `
-          <div class="text-xs uppercase text-blue-600 font-semibold mb-2">${doc.category}</div>
-          <h3 class="font-semibold text-lg mb-2 text-gray-900">${doc.title}</h3>
-          <p class="text-gray-600 text-sm mb-3">${doc.description}</p>
-          <div class="flex items-center justify-between">
-            <span class="text-xs text-gray-500">${doc.outputFormat}</span>
-            <span class="text-blue-600 text-sm font-medium">Generate →</span>
-          </div>`;
-        
-        card.onclick = () => {
-          window.location.href = `/app/document-generator-v2/forms/form-template.html?id=${doc.id}`;
-        };
-        
-        container.appendChild(card);
-      });
-    }
+    <script>
+        let allDocuments = [];
+        let filteredDocuments = [];
 
-    // Search functionality
-    document.getElementById('searchBox').addEventListener('input', (e) => {
-      const searchTerm = e.target.value.toLowerCase();
-      filteredDocuments = allDocuments.filter(doc => 
-        doc.title.toLowerCase().includes(searchTerm) ||
-        doc.description.toLowerCase().includes(searchTerm) ||
-        doc.category.toLowerCase().includes(searchTerm)
-      );
-      renderDocuments();
-    });
+        // Load documents on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/app/assets/data/doc-templates.json');
+                const data = await response.json();
+                allDocuments = Object.entries(data).map(([key, doc]) => ({
+                    id: key,
+                    ...doc
+                }));
+                filteredDocuments = [...allDocuments];
+                renderDocuments();
+                setupEventListeners();
+            } catch (error) {
+                console.error('Error loading documents:', error);
+                document.getElementById('loadingState').innerHTML = 
+                    '<div class="text-red-600">Error loading documents. Please try again later.</div>';
+            }
+        });
 
-    // Category filter functionality
-    document.querySelectorAll('.category-filter').forEach(button => {
-      button.addEventListener('click', (e) => {
-        // Remove active class from all buttons
-        document.querySelectorAll('.category-filter').forEach(btn => btn.classList.remove('active'));
-        // Add active class to clicked button
-        e.target.classList.add('active');
-        
-        const category = e.target.dataset.category;
-        if (category === 'all') {
-          filteredDocuments = allDocuments;
-        } else {
-          filteredDocuments = allDocuments.filter(doc => doc.category === category);
+        function renderDocuments() {
+            const grid = document.getElementById('documentGrid');
+            const loading = document.getElementById('loadingState');
+            const noResults = document.getElementById('noResultsState');
+
+            loading.style.display = 'none';
+
+            if (filteredDocuments.length === 0) {
+                grid.style.display = 'none';
+                noResults.style.display = 'block';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            grid.style.display = 'grid';
+
+            grid.innerHTML = filteredDocuments.map(doc => `
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
+                    <div class="p-6">
+                        <!-- Header -->
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full ${getCategoryColor(doc.category)}">
+                                        ${doc.category.toUpperCase()}
+                                    </span>
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-700">
+                                        ${doc.outputType.toUpperCase()}
+                                    </span>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">${doc.title}</h3>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">${doc.description}</p>
+
+                        <!-- Layout Type -->
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="text-xs text-gray-500">Layout:</span>
+                            <span class="text-xs font-medium text-gray-700">${getLayoutTypeName(doc.layoutType)}</span>
+                        </div>
+
+                        <!-- Generate Button -->
+                        <button 
+                            onclick="generateDocument('${doc.id}')" 
+                            class="w-full bg-[#1e40af] hover:bg-[#1e40af]/90 text-white px-4 py-2 rounded-xl font-medium transition-colors duration-200"
+                        >
+                            Generate Document →
+                        </button>
+                    </div>
+                </div>
+            `).join('');
         }
-        renderDocuments();
-      });
-    });
-  </script>
+
+        function getCategoryColor(category) {
+            const colors = {
+                'core': 'bg-blue-100 text-blue-800',
+                'legal': 'bg-red-100 text-red-800',
+                'financial': 'bg-green-100 text-green-800',
+                'evidence': 'bg-purple-100 text-purple-800',
+                'analysis': 'bg-orange-100 text-orange-800',
+                'forms': 'bg-indigo-100 text-indigo-800',
+                'appeals': 'bg-pink-100 text-pink-800',
+                'specialty': 'bg-yellow-100 text-yellow-800',
+                'property': 'bg-teal-100 text-teal-800',
+                'business': 'bg-cyan-100 text-cyan-800',
+                'catastrophic': 'bg-gray-100 text-gray-800'
+            };
+            return colors[category] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getLayoutTypeName(layoutType) {
+            const types = {
+                'T1': 'Claim Form',
+                'T2': 'Letter/Notice',
+                'T3': 'Log/Register',
+                'T4': 'Financial Worksheet',
+                'T5': 'Legal Filing',
+                'T6': 'Report/Assessment',
+                'T7': 'Business Claim',
+                'T8': 'Catastrophic Event'
+            };
+            return types[layoutType] || 'Document';
+        }
+
+        function setupEventListeners() {
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', filterDocuments);
+            document.getElementById('categoryFilter').addEventListener('change', filterDocuments);
+        }
+
+        function filterDocuments() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+
+            filteredDocuments = allDocuments.filter(doc => {
+                const matchesSearch = !searchTerm || 
+                    doc.title.toLowerCase().includes(searchTerm) ||
+                    doc.description.toLowerCase().includes(searchTerm) ||
+                    doc.category.toLowerCase().includes(searchTerm);
+                
+                const matchesCategory = !categoryFilter || doc.category === categoryFilter;
+                
+                return matchesSearch && matchesCategory;
+            });
+
+            renderDocuments();
+        }
+
+        function generateDocument(docId) {
+            // Route to the specific document page
+            window.location.href = `/app/document-generator-v2/forms/form-template.html?id=${docId}`;
+        }
+    </script>
 </body>
 </html>
