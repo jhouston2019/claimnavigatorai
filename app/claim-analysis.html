@@ -4,579 +4,450 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advanced Claim Analysis Tools - ClaimNavigatorAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/app/assets/css/style.css">
     <style>
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f8fafc;
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
         }
         .tool-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
         .tool-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        .status-badge {
-            background: #f3f4f6;
-            color: #6b7280;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .status-badge.analyzing {
-            background: #fef3c7;
-            color: #d97706;
-        }
-        .status-badge.complete {
-            background: #d1fae5;
-            color: #059669;
-        }
-        .status-badge.error {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-        .btn-primary {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 24px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        .btn-primary:hover {
-            background: #2563eb;
-        }
-        .btn-primary:disabled {
-            background: #9ca3af;
-            cursor: not-allowed;
-        }
-        .form-input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.2s ease;
-        }
-        .form-input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 6px;
-        }
-        .progress-container {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 16px 0;
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
         .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e5e7eb;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: #3b82f6;
-            transition: width 0.3s ease;
-        }
-        .header {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 20px 0;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 24px;
-            margin-top: 32px;
-        }
-        .tool-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .tool-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .tool-icon {
-            width: 40px;
-            height: 40px;
-            background: #3b82f6;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-        }
-        .tool-info h3 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #111827;
-            margin: 0;
-        }
-        .tool-info p {
-            font-size: 14px;
-            color: #6b7280;
-            margin: 4px 0 0 0;
-        }
-        .form-group {
-            margin-bottom: 16px;
-        }
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .checkbox-item input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-        }
-        .checkbox-item label {
-            font-size: 14px;
-            color: #374151;
-            cursor: pointer;
-        }
-        .file-input {
-            display: none;
-        }
-        .file-label {
-            display: inline-block;
-            padding: 8px 16px;
-            background: #f3f4f6;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            color: #374151;
-            transition: background-color 0.2s ease;
-        }
-        .file-label:hover {
-            background: #e5e7eb;
-        }
-        .results {
-            margin-top: 20px;
-            padding: 16px;
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            border-radius: 8px;
-            display: none;
-        }
-        .results.show {
-            display: block;
+            background: linear-gradient(90deg, #3b82f6 0%, #1e40af 100%);
         }
         .spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #f3f4f6;
-            border-top: 2px solid #3b82f6;
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
             border-radius: 50%;
+            width: 20px;
+            height: 20px;
             animation: spin 1s linear infinite;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .hidden {
-            display: none;
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
         }
-        .footer {
-            text-align: center;
-            padding: 32px 0;
-            color: #6b7280;
-            font-size: 14px;
-            border-top: 1px solid #e5e7eb;
-            margin-top: 48px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .output-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #bae6fd;
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-50">
     <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 32px; height: 32px; background: #3b82f6; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">🧭</div>
-                    <div style="font-size: 20px; font-weight: 600; color: #111827;">ClaimNavigatorAI</div>
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">🧭</span>
+                    </div>
+                    <div class="font-semibold text-xl">ClaimNavigatorAI</div>
                 </div>
-                <nav style="display: flex; gap: 24px; font-size: 14px;">
-                    <a href="/app/index.html" style="color: #6b7280; text-decoration: none;">Home</a>
-                    <a href="/app/resource-center.html" style="color: #6b7280; text-decoration: none;">Resource Center</a>
-                    <span style="color: #3b82f6; font-weight: 500;">Advanced Tools</span>
+                <nav class="flex items-center gap-2 text-sm">
+                    <a href="/app/index.html" class="text-blue-200 hover:text-white transition">Home</a>
+                    <span class="text-gray-300">></span>
+                    <a href="/app/resource-center.html" class="text-blue-200 hover:text-white transition">Resource Center</a>
+                    <span class="text-gray-300">></span>
+                    <span class="text-white font-semibold">Advanced Tools</span>
                 </nav>
             </div>
         </div>
     </header>
 
     <!-- Progress Tracker -->
-    <div class="progress-container">
-        <div class="container">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 16px;">
-                    <span style="font-size: 14px; font-weight: 500; color: #374151;">Progress:</span>
-                    <div style="flex: 1; max-width: 200px;">
-                        <div class="progress-bar">
-                            <div id="progressFill" class="progress-fill" style="width: 0%;"></div>
+    <div class="bg-white border-b border-gray-200">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm font-medium text-gray-700">Progress:</span>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-32 bg-gray-200 rounded-full h-2">
+                            <div id="progressBar" class="progress-bar h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
                         </div>
+                        <span id="progressText" class="text-sm text-gray-600">0/5 tools completed</span>
                     </div>
-                    <span id="progressText" style="font-size: 14px; color: #6b7280;">0/5 tools completed</span>
                 </div>
-                <div style="display: flex; gap: 12px;">
-                    <button id="loadSampleBtn" style="padding: 8px 16px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; cursor: pointer;">Load Sample Claim</button>
-                    <button id="exportBtn" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; font-size: 14px; cursor: pointer;" disabled>Export Full Report (PDF)</button>
+                <div class="flex items-center space-x-2">
+                    <button id="loadSampleBtn" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition">
+                        Load Sample Claim
+                    </button>
+                    <button id="exportBtn" class="px-4 py-2 bg-[#1e40af] hover:bg-[#1e40af]/90 text-white text-sm rounded-lg transition disabled:opacity-50" disabled>
+                        Export Full Report (PDF)
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Main Content -->
-    <main class="container" style="padding: 32px 20px;">
+    <main class="container mx-auto px-4 py-8">
         <!-- Hero Section -->
-        <div style="text-align: center; margin-bottom: 48px;">
-            <h1 style="font-size: 32px; font-weight: 700; color: #111827; margin-bottom: 16px;">🧭 Advanced Claim Analysis Tools</h1>
-            <p style="font-size: 18px; color: #6b7280; max-width: 800px; margin: 0 auto; line-height: 1.6;">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">🧭 Advanced Claim Analysis Tools</h1>
+            <p class="text-lg text-gray-600 max-w-4xl mx-auto">
                 AI-powered tools to analyze policies, assess damage, compare estimates, calculate business interruption, and negotiate settlements. 
                 Each tool provides professional analysis and actionable recommendations.
             </p>
         </div>
 
         <!-- Tools Grid -->
-        <div class="grid">
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             
-            <!-- Policy Review & Coverage Analysis -->
-            <div class="tool-card" style="padding: 24px;">
-                <div class="tool-header">
-                    <div class="tool-title">
-                        <div class="tool-icon">⚖️</div>
-                        <div class="tool-info">
-                            <h3>Policy Review & Coverage Analysis</h3>
-                            <p>Analyze policy coverage and exclusions</p>
+            <!-- 1. Policy Review & Coverage Analysis -->
+            <div class="tool-card bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:border-[#3b82f6]">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-[#1e40af] rounded-lg flex items-center justify-center">
+                            <span class="text-white text-lg">⚖️</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Policy Review & Coverage Analysis</h3>
+                            <p class="text-sm text-gray-600">Analyze policy coverage and exclusions</p>
                         </div>
                     </div>
-                    <div id="policyStatus" class="status-badge">Waiting</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Policy Text or Upload</label>
-                    <textarea id="policyText" rows="4" class="form-input" placeholder="Paste policy text or upload file..."></textarea>
-                    <input type="file" id="policyFile" accept=".txt,.pdf" class="file-input">
-                    <label for="policyFile" class="file-label">Choose File</label>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Policy Type</label>
-                        <select id="policyType" class="form-input">
-                            <option value="">Select Type</option>
-                            <option value="homeowners">Homeowners</option>
-                            <option value="commercial">Commercial</option>
-                            <option value="auto">Auto</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Jurisdiction</label>
-                        <input type="text" id="policyJurisdiction" class="form-input" placeholder="State">
+                    <div id="policyStatus" class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">
+                        Waiting
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Deductible Amount (Optional)</label>
-                    <input type="number" id="policyDeductible" class="form-input" placeholder="$0">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Policy Text or Upload</label>
+                        <textarea id="policyText" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="Paste policy text or upload file..."></textarea>
+                        <input type="file" id="policyFile" accept=".txt,.pdf" class="mt-2 text-sm text-gray-600">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Policy Type</label>
+                            <select id="policyType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent">
+                                <option value="">Select Type</option>
+                                <option value="homeowners">Homeowners</option>
+                                <option value="commercial">Commercial</option>
+                                <option value="auto">Auto</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Jurisdiction</label>
+                            <input type="text" id="policyJurisdiction" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="State">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Deductible Amount (Optional)</label>
+                        <input type="number" id="policyDeductible" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="$0">
+                    </div>
+
+                    <button onclick="runAnalysis('policy')" class="w-full bg-gradient-to-r from-[#1e40af] to-[#3b82f6] hover:from-[#1e40af]/90 hover:to-[#3b82f6]/90 text-white px-4 py-3 rounded-lg font-medium transition-all duration-200">
+                        <span id="policyBtnText">Analyze Coverage</span>
+                        <div id="policySpinner" class="spinner hidden ml-2"></div>
+                    </button>
                 </div>
 
-                <button onclick="runAnalysis('policy')" class="btn-primary" style="width: 100%;">
-                    <span id="policyBtnText">Analyze Coverage</span>
-                    <span id="policySpinner" class="spinner hidden"></span>
-                </button>
-
-                <div id="policyResults" class="results">
-                    <h4 style="font-weight: 600; color: #111827; margin-bottom: 12px;">Analysis Results</h4>
-                    <div id="policyOutput"></div>
+                <!-- Results Section -->
+                <div id="policyResults" class="mt-6 hidden">
+                    <div class="output-card rounded-lg p-4 fade-in">
+                        <h4 class="font-semibold text-gray-900 mb-3">Analysis Results</h4>
+                        <div id="policyOutput"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Damage Assessment Calculator -->
-            <div class="tool-card" style="padding: 24px;">
-                <div class="tool-header">
-                    <div class="tool-title">
-                        <div class="tool-icon">🏚️</div>
-                        <div class="tool-info">
-                            <h3>Damage Assessment Calculator</h3>
-                            <p>Calculate damage costs and coverage</p>
+            <!-- 2. Damage Assessment Calculator -->
+            <div class="tool-card bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:border-[#3b82f6]">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-[#1e40af] rounded-lg flex items-center justify-center">
+                            <span class="text-white text-lg">🏚️</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Damage Assessment Calculator</h3>
+                            <p class="text-sm text-gray-600">Calculate damage costs and coverage</p>
                         </div>
                     </div>
-                    <div id="damageStatus" class="status-badge">Waiting</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Damage Description</label>
-                    <textarea id="damageDescription" rows="3" class="form-input" placeholder="Describe the damage in detail..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Damage Types</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="damageFire">
-                            <label for="damageFire">Fire</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="damageWater">
-                            <label for="damageWater">Water</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="damageWind">
-                            <label for="damageWind">Wind</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="damageTheft">
-                            <label for="damageTheft">Theft</label>
-                        </div>
+                    <div id="damageStatus" class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">
+                        Waiting
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Items & Costs</label>
-                    <div id="damageItems">
-                        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                            <input type="text" placeholder="Item" class="form-input" style="flex: 1;">
-                            <input type="number" placeholder="Qty" class="form-input" style="width: 80px;">
-                            <input type="number" placeholder="Cost" class="form-input" style="width: 100px;">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Damage Description</label>
+                        <textarea id="damageDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="Describe the damage in detail..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Damage Types</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" id="damageFire" class="mr-2">
+                                <span class="text-sm">Fire</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="damageWater" class="mr-2">
+                                <span class="text-sm">Water</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="damageWind" class="mr-2">
+                                <span class="text-sm">Wind</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="damageTheft" class="mr-2">
+                                <span class="text-sm">Theft</span>
+                            </label>
                         </div>
                     </div>
-                    <button onclick="addDamageItem()" style="color: #3b82f6; font-size: 14px; background: none; border: none; cursor: pointer; padding: 0;">+ Add Item</button>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Items & Costs</label>
+                        <div id="damageItems" class="space-y-2">
+                            <div class="flex space-x-2">
+                                <input type="text" placeholder="Item" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                <input type="number" placeholder="Qty" class="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                <input type="number" placeholder="Cost" class="w-24 px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            </div>
+                        </div>
+                        <button onclick="addDamageItem()" class="mt-2 text-sm text-[#3b82f6] hover:text-[#1e40af]">+ Add Item</button>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Photos (Optional)</label>
+                        <input type="file" id="damagePhotos" multiple accept="image/*" class="w-full text-sm text-gray-600">
+                    </div>
+
+                    <button onclick="runAnalysis('damage')" class="w-full bg-gradient-to-r from-[#1e40af] to-[#3b82f6] hover:from-[#1e40af]/90 hover:to-[#3b82f6]/90 text-white px-4 py-3 rounded-lg font-medium transition-all duration-200">
+                        <span id="damageBtnText">Run Damage Analysis</span>
+                        <div id="damageSpinner" class="spinner hidden ml-2"></div>
+                    </button>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Photos (Optional)</label>
-                    <input type="file" id="damagePhotos" multiple accept="image/*" class="file-input">
-                    <label for="damagePhotos" class="file-label">Choose Files</label>
-                </div>
-
-                <button onclick="runAnalysis('damage')" class="btn-primary" style="width: 100%;">
-                    <span id="damageBtnText">Run Damage Analysis</span>
-                    <span id="damageSpinner" class="spinner hidden"></span>
-                </button>
-
-                <div id="damageResults" class="results">
-                    <h4 style="font-weight: 600; color: #111827; margin-bottom: 12px;">Analysis Results</h4>
-                    <div id="damageOutput"></div>
+                <!-- Results Section -->
+                <div id="damageResults" class="mt-6 hidden">
+                    <div class="output-card rounded-lg p-4 fade-in">
+                        <h4 class="font-semibold text-gray-900 mb-3">Analysis Results</h4>
+                        <div id="damageOutput"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Estimate Review & Comparison -->
-            <div class="tool-card" style="padding: 24px;">
-                <div class="tool-header">
-                    <div class="tool-title">
-                        <div class="tool-icon">📊</div>
-                        <div class="tool-info">
-                            <h3>Estimate Review & Comparison</h3>
-                            <p>Compare contractor and insurer estimates</p>
+            <!-- 3. Estimate Review & Comparison -->
+            <div class="tool-card bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:border-[#3b82f6]">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-[#1e40af] rounded-lg flex items-center justify-center">
+                            <span class="text-white text-lg">📊</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Estimate Review & Comparison</h3>
+                            <p class="text-sm text-gray-600">Compare contractor and insurer estimates</p>
                         </div>
                     </div>
-                    <div id="estimateStatus" class="status-badge">Waiting</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Upload Estimates (2-3 files)</label>
-                    <input type="file" id="estimateFiles" multiple accept=".csv,.pdf" class="file-input">
-                    <label for="estimateFiles" class="file-label">Choose Files</label>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Labor Rate (Optional)</label>
-                        <input type="number" id="laborRate" class="form-input" placeholder="$/hour">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Tax % (Optional)</label>
-                        <input type="number" id="taxPercent" class="form-input" placeholder="%">
+                    <div id="estimateStatus" class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">
+                        Waiting
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="includeOverhead">
-                        <label for="includeOverhead">Include Overhead & Profit (O&P)</label>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Upload Estimates (2-3 files)</label>
+                        <input type="file" id="estimateFiles" multiple accept=".csv,.pdf" class="w-full text-sm text-gray-600">
                     </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Labor Rate (Optional)</label>
+                            <input type="number" id="laborRate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="$/hour">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tax % (Optional)</label>
+                            <input type="number" id="taxPercent" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="%">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="includeOverhead" class="mr-2">
+                            <span class="text-sm">Include Overhead & Profit (O&P)</span>
+                        </label>
+                    </div>
+
+                    <button onclick="runAnalysis('estimates')" class="w-full bg-gradient-to-r from-[#1e40af] to-[#3b82f6] hover:from-[#1e40af]/90 hover:to-[#3b82f6]/90 text-white px-4 py-3 rounded-lg font-medium transition-all duration-200">
+                        <span id="estimateBtnText">Compare Estimates</span>
+                        <div id="estimateSpinner" class="spinner hidden ml-2"></div>
+                    </button>
                 </div>
 
-                <button onclick="runAnalysis('estimates')" class="btn-primary" style="width: 100%;">
-                    <span id="estimateBtnText">Compare Estimates</span>
-                    <span id="estimateSpinner" class="spinner hidden"></span>
-                </button>
-
-                <div id="estimateResults" class="results">
-                    <h4 style="font-weight: 600; color: #111827; margin-bottom: 12px;">Analysis Results</h4>
-                    <div id="estimateOutput"></div>
+                <!-- Results Section -->
+                <div id="estimateResults" class="mt-6 hidden">
+                    <div class="output-card rounded-lg p-4 fade-in">
+                        <h4 class="font-semibold text-gray-900 mb-3">Analysis Results</h4>
+                        <div id="estimateOutput"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Business Interruption Calculator -->
-            <div class="tool-card" style="padding: 24px;">
-                <div class="tool-header">
-                    <div class="tool-title">
-                        <div class="tool-icon">💼</div>
-                        <div class="tool-info">
-                            <h3>Business Interruption Calculator</h3>
-                            <p>Calculate lost income during restoration</p>
+            <!-- 4. Business Interruption Calculator -->
+            <div class="tool-card bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:border-[#3b82f6]">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-[#1e40af] rounded-lg flex items-center justify-center">
+                            <span class="text-white text-lg">💼</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Business Interruption Calculator</h3>
+                            <p class="text-sm text-gray-600">Calculate lost income during restoration</p>
                         </div>
                     </div>
-                    <div id="biStatus" class="status-badge">Waiting</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Business Name</label>
-                    <input type="text" id="businessName" class="form-input" placeholder="Your business name">
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Start Date</label>
-                        <input type="date" id="biStartDate" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">End Date</label>
-                        <input type="date" id="biEndDate" class="form-input">
+                    <div id="biStatus" class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">
+                        Waiting
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Monthly Revenue (Last 12 Months)</label>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                        <input type="number" placeholder="Jan" class="form-input">
-                        <input type="number" placeholder="Feb" class="form-input">
-                        <input type="number" placeholder="Mar" class="form-input">
-                        <input type="number" placeholder="Apr" class="form-input">
-                        <input type="number" placeholder="May" class="form-input">
-                        <input type="number" placeholder="Jun" class="form-input">
-                        <input type="number" placeholder="Jul" class="form-input">
-                        <input type="number" placeholder="Aug" class="form-input">
-                        <input type="number" placeholder="Sep" class="form-input">
-                        <input type="number" placeholder="Oct" class="form-input">
-                        <input type="number" placeholder="Nov" class="form-input">
-                        <input type="number" placeholder="Dec" class="form-input">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Business Name</label>
+                        <input type="text" id="businessName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="Your business name">
                     </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                            <input type="date" id="biStartDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                            <input type="date" id="biEndDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Monthly Revenue (Last 12 Months)</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <input type="number" placeholder="Jan" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <input type="number" placeholder="Feb" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <input type="number" placeholder="Mar" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <input type="number" placeholder="Apr" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <input type="number" placeholder="May" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <input type="number" placeholder="Jun" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <input type="number" placeholder="Jul" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <input type="number" placeholder="Aug" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <input type="number" placeholder="Sep" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <input type="number" placeholder="Oct" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <input type="number" placeholder="Nov" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <input type="number" placeholder="Dec" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">COGS %</label>
+                            <input type="number" id="cogsPercent" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="%">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Fixed Costs</label>
+                            <input type="number" id="fixedCosts" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="$">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Extra Expenses / Notes</label>
+                        <textarea id="biExtraExpenses" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="Additional expenses or notes..."></textarea>
+                    </div>
+
+                    <button onclick="runAnalysis('bi')" class="w-full bg-gradient-to-r from-[#1e40af] to-[#3b82f6] hover:from-[#1e40af]/90 hover:to-[#3b82f6]/90 text-white px-4 py-3 rounded-lg font-medium transition-all duration-200">
+                        <span id="biBtnText">Calculate BI Loss</span>
+                        <div id="biSpinner" class="spinner hidden ml-2"></div>
+                    </button>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">COGS %</label>
-                        <input type="number" id="cogsPercent" class="form-input" placeholder="%">
+                <!-- Results Section -->
+                <div id="biResults" class="mt-6 hidden">
+                    <div class="output-card rounded-lg p-4 fade-in">
+                        <h4 class="font-semibold text-gray-900 mb-3">Analysis Results</h4>
+                        <div id="biOutput"></div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Fixed Costs</label>
-                        <input type="number" id="fixedCosts" class="form-input" placeholder="$">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Extra Expenses / Notes</label>
-                    <textarea id="biExtraExpenses" rows="2" class="form-input" placeholder="Additional expenses or notes..."></textarea>
-                </div>
-
-                <button onclick="runAnalysis('bi')" class="btn-primary" style="width: 100%;">
-                    <span id="biBtnText">Calculate BI Loss</span>
-                    <span id="biSpinner" class="spinner hidden"></span>
-                </button>
-
-                <div id="biResults" class="results">
-                    <h4 style="font-weight: 600; color: #111827; margin-bottom: 12px;">Analysis Results</h4>
-                    <div id="biOutput"></div>
                 </div>
             </div>
 
-            <!-- Settlement Analysis & Negotiation -->
-            <div class="tool-card" style="padding: 24px;">
-                <div class="tool-header">
-                    <div class="tool-title">
-                        <div class="tool-icon">🤝</div>
-                        <div class="tool-info">
-                            <h3>Settlement Analysis & Negotiation</h3>
-                            <p>Assess settlement fairness and strategy</p>
+            <!-- 5. Settlement Analysis & Negotiation -->
+            <div class="tool-card bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:border-[#3b82f6]">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-[#1e40af] rounded-lg flex items-center justify-center">
+                            <span class="text-white text-lg">🤝</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Settlement Analysis & Negotiation</h3>
+                            <p class="text-sm text-gray-600">Assess settlement fairness and strategy</p>
                         </div>
                     </div>
-                    <div id="settlementStatus" class="status-badge">Waiting</div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Offer Amount</label>
-                        <input type="number" id="offerAmount" class="form-input" placeholder="$">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Your Valuation</label>
-                        <input type="number" id="yourValuation" class="form-input" placeholder="$">
+                    <div id="settlementStatus" class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">
+                        Waiting
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Disputed Categories</label>
-                    <textarea id="disputedCategories" rows="3" class="form-input" placeholder="Describe what's being disputed..."></textarea>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Offer Amount</label>
+                            <input type="number" id="offerAmount" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="$">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Your Valuation</label>
+                            <input type="number" id="yourValuation" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="$">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Disputed Categories</label>
+                        <textarea id="disputedCategories" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="Describe what's being disputed..."></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Jurisdiction</label>
+                            <input type="text" id="settlementJurisdiction" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="State">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Days Since Claim Filed</label>
+                            <input type="number" id="daysSinceClaim" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="Days">
+                        </div>
+                    </div>
+
+                    <button onclick="runAnalysis('settlement')" class="w-full bg-gradient-to-r from-[#1e40af] to-[#3b82f6] hover:from-[#1e40af]/90 hover:to-[#3b82f6]/90 text-white px-4 py-3 rounded-lg font-medium transition-all duration-200">
+                        <span id="settlementBtnText">Run Settlement Analysis</span>
+                        <div id="settlementSpinner" class="spinner hidden ml-2"></div>
+                    </button>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Jurisdiction</label>
-                        <input type="text" id="settlementJurisdiction" class="form-input" placeholder="State">
+                <!-- Results Section -->
+                <div id="settlementResults" class="mt-6 hidden">
+                    <div class="output-card rounded-lg p-4 fade-in">
+                        <h4 class="font-semibold text-gray-900 mb-3">Analysis Results</h4>
+                        <div id="settlementOutput"></div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Days Since Claim Filed</label>
-                        <input type="number" id="daysSinceClaim" class="form-input" placeholder="Days">
-                    </div>
-                </div>
-
-                <button onclick="runAnalysis('settlement')" class="btn-primary" style="width: 100%;">
-                    <span id="settlementBtnText">Run Settlement Analysis</span>
-                    <span id="settlementSpinner" class="spinner hidden"></span>
-                </button>
-
-                <div id="settlementResults" class="results">
-                    <h4 style="font-weight: 600; color: #111827; margin-bottom: 12px;">Analysis Results</h4>
-                    <div id="settlementOutput"></div>
                 </div>
             </div>
 
         </div>
 
         <!-- Footer -->
-        <div class="footer">
-            <p>ClaimNavigatorAI – Advanced Claim Tools</p>
+        <div class="text-center mt-16 py-8 border-t border-gray-200">
+            <p class="text-gray-500 text-sm">ClaimNavigatorAI – Advanced Claim Tools</p>
         </div>
     </main>
 
@@ -666,11 +537,11 @@
         function addDamageItem() {
             const container = document.getElementById('damageItems');
             const newItem = document.createElement('div');
-            newItem.style.cssText = 'display: flex; gap: 8px; margin-bottom: 8px;';
+            newItem.className = 'flex space-x-2';
             newItem.innerHTML = `
-                <input type="text" placeholder="Item" class="form-input" style="flex: 1;">
-                <input type="number" placeholder="Qty" class="form-input" style="width: 80px;">
-                <input type="number" placeholder="Cost" class="form-input" style="width: 100px;">
+                <input type="text" placeholder="Item" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                <input type="number" placeholder="Qty" class="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                <input type="number" placeholder="Cost" class="w-24 px-3 py-2 border border-gray-300 rounded-lg text-sm">
             `;
             container.appendChild(newItem);
         }
@@ -684,10 +555,10 @@
 
             // Show loading state
             statusElement.textContent = 'Analyzing';
-            statusElement.className = 'status-badge analyzing';
+            statusElement.className = 'px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800';
             buttonText.textContent = 'Analyzing...';
             spinner.classList.remove('hidden');
-            resultsDiv.classList.remove('show');
+            resultsDiv.classList.add('hidden');
 
             try {
                 // Gather inputs
@@ -710,13 +581,13 @@
                 if (result.ok) {
                     // Show success state
                     statusElement.textContent = 'Complete';
-                    statusElement.className = 'status-badge complete';
+                    statusElement.className = 'px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800';
                     buttonText.textContent = getButtonText(moduleId);
                     spinner.classList.add('hidden');
                     
                     // Display results
                     outputDiv.innerHTML = result.html;
-                    resultsDiv.classList.add('show');
+                    resultsDiv.classList.remove('hidden');
                     
                     // Update progress
                     if (!analysisResults[moduleId]) {
@@ -730,13 +601,13 @@
             } catch (error) {
                 // Show error state
                 statusElement.textContent = 'Error';
-                statusElement.className = 'status-badge error';
+                statusElement.className = 'px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800';
                 buttonText.textContent = getButtonText(moduleId);
                 spinner.classList.add('hidden');
                 
                 // Show error message
-                outputDiv.innerHTML = `<div style="color: #dc2626; padding: 12px; background: #fee2e2; border-radius: 6px;">Error: ${error.message}</div>`;
-                resultsDiv.classList.add('show');
+                outputDiv.innerHTML = `<div class="text-red-600 p-4 bg-red-50 rounded-lg">Error: ${error.message}</div>`;
+                resultsDiv.classList.remove('hidden');
             }
         }
 
@@ -801,7 +672,7 @@
 
         function updateProgress() {
             const progress = (completedTools / totalTools) * 100;
-            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressBar').style.width = progress + '%';
             document.getElementById('progressText').textContent = `${completedTools}/${totalTools} tools completed`;
             
             if (completedTools > 0) {
