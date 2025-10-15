@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Advisory System</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Advisory System Test</h1>
+  
+  <div class="test-section">
+    <h2>1. Test Advisory Page Load</h2>
+    <p>Testing if the advisory page loads correctly...</p>
+    <iframe src="/pages/advisory.html" width="100%" height="600" style="border: 1px solid #ccc;"></iframe>
+  </div>
+  
+  <div class="test-section">
+    <h2>2. Test Data Loading</h2>
+    <p>Testing if advisory data loads correctly...</p>
+    <div id="dataTest">Loading...</div>
+  </div>
+  
+  <div class="test-section">
+    <h2>3. Test AI Function</h2>
+    <p>Testing if AI advisory function responds...</p>
+    <button onclick="testAI()">Test AI Advisory</button>
+    <div id="aiTest">Click button to test</div>
+  </div>
+
+  <script>
+    // Test data loading
+    fetch('/assets/data/advisory.json')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('dataTest').innerHTML = 
+          `<span class="success">✓ Data loaded successfully: ${data.length} categories found</span>`;
+      })
+      .catch(error => {
+        document.getElementById('dataTest').innerHTML = 
+          `<span class="error">✗ Error loading data: ${error.message}</span>`;
+      });
+
+    // Test AI function
+    async function testAI() {
+      const testSituation = "My roof was damaged in a storm but the insurance company says it's wear and tear.";
+      
+      try {
+        const response = await fetch('/netlify/functions/ai-advisory.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ situation: testSituation })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          document.getElementById('aiTest').innerHTML = 
+            `<span class="success">✓ AI function working: ${data.explanation ? 'Response received' : 'No explanation'}</span>`;
+        } else {
+          document.getElementById('aiTest').innerHTML = 
+            `<span class="error">✗ AI function error: ${response.status}</span>`;
+        }
+      } catch (error) {
+        document.getElementById('aiTest').innerHTML = 
+          `<span class="error">✗ AI function failed: ${error.message}</span>`;
+      }
+    }
+  </script>
+</body>
+</html>
