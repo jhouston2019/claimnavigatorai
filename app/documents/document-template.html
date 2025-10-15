@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claim Appeal Letter - ClaimNavigatorAI</title>
-    <meta name="description" content="Professional appeal letter for denied claims with supporting documentation requirements and legal basis.">
+    <title id="pageTitle">Document Generator - ClaimNavigatorAI</title>
+    <meta name="description" content="Generate professional insurance claim documents with AI assistance">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/app/assets/css/style.css">
     <style>
@@ -49,71 +49,47 @@
     </header>
 
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">⚖️ Claim Appeal Letter</h1>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                Professional appeal letter for denied claims with supporting documentation requirements and legal basis.
-            </p>
+        <!-- Loading State -->
+        <div id="loadingState" class="text-center py-12">
+            <div class="loading-spinner inline-block w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full mb-4"></div>
+            <p class="text-gray-600">Loading document template...</p>
         </div>
 
-        <!-- Form -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-            <form id="documentFormElement" class="space-y-6">
-                <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">
-                Insurer Name <span class="text-red-500">*</span>
-            </label>
-            <input type="text" id="insurerName" name="insurerName" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter insurer name...">
+        <!-- Error State -->
+        <div id="errorState" class="hidden text-center py-12">
+            <div class="text-red-500 text-6xl mb-4">⚠️</div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Document Not Found</h3>
+            <p class="text-gray-600 mb-4">The requested document type could not be found.</p>
+            <a href="/app/resource-center/document-generator.html" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                ← Back to Document Generator
+            </a>
         </div>
-                <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">
-                Claim Number <span class="text-red-500">*</span>
-            </label>
-            <input type="text" id="claimNumber" name="claimNumber" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter claim number...">
-        </div>
-                <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">
-                Denial Date <span class="text-red-500">*</span>
-            </label>
-            <input type="date" id="denialDate" name="denialDate" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter denial date...">
-        </div>
-                <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">
-                Denial Reason <span class="text-red-500">*</span>
-            </label>
-            <textarea id="denialReason" name="denialReason" required rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter denial reason..."></textarea>
-        </div>
-                <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">
-                Appeal Basis <span class="text-red-500">*</span>
-            </label>
-            <textarea id="appealBasis" name="appealBasis" required rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter appeal basis..."></textarea>
-        </div>
-                <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">
-                Supporting Evidence 
-            </label>
-            <textarea id="supportingEvidence" name="supportingEvidence"  rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter supporting evidence..."></textarea>
-        </div>
-                <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">
-                Legal Authority 
-            </label>
-            <textarea id="legalAuthority" name="legalAuthority"  rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter legal authority..."></textarea>
-        </div>
-            </form>
 
-            <!-- Submit Button -->
-            <div class="mt-8 pt-6 border-t border-gray-200">
-                <button 
-                    type="submit" 
-                    id="generateButton"
-                    class="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <span id="generateButtonText">Generate Document</span>
-                    <div id="generateButtonSpinner" class="hidden loading-spinner inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full ml-2"></div>
-                </button>
+        <!-- Document Form -->
+        <div id="documentForm" class="hidden">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 id="documentTitle" class="text-3xl font-bold text-gray-900 mb-4"></h1>
+                <p id="documentDescription" class="text-lg text-gray-600 max-w-2xl mx-auto"></p>
+            </div>
+
+            <!-- Form -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+                <form id="documentFormElement" class="space-y-6">
+                    <!-- Dynamic form fields will be inserted here -->
+                </form>
+
+                <!-- Submit Button -->
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <button 
+                        type="submit" 
+                        id="generateButton"
+                        class="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span id="generateButtonText">Generate Document</span>
+                        <div id="generateButtonSpinner" class="hidden loading-spinner inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full ml-2"></div>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -124,7 +100,7 @@
                     <div class="text-green-500 text-2xl mr-3">✅</div>
                     <div>
                         <h3 class="text-lg font-semibold text-green-900">Document Generated Successfully!</h3>
-                        <p class="text-green-700">Your claim appeal letter has been generated and is ready for download.</p>
+                        <p class="text-green-700">Your document has been generated and is ready for download.</p>
                     </div>
                 </div>
             </div>
@@ -162,13 +138,125 @@
     <script>
         class DocumentPage {
             constructor() {
-                this.docKey = 'appeal-letter';
+                this.docKey = this.getDocKeyFromUrl();
+                this.docTemplate = null;
                 this.generatedDocument = null;
                 this.init();
             }
 
-            init() {
-                this.setupEventListeners();
+            getDocKeyFromUrl() {
+                const path = window.location.pathname;
+                const match = path.match(/\/documents\/([^\/]+)\.html$/);
+                return match ? match[1] : null;
+            }
+
+            async init() {
+                if (!this.docKey) {
+                    this.showError();
+                    return;
+                }
+
+                try {
+                    await this.loadDocumentTemplate();
+                    this.renderDocumentForm();
+                    this.setupEventListeners();
+                } catch (error) {
+                    console.error('Failed to load document template:', error);
+                    this.showError();
+                }
+            }
+
+            async loadDocumentTemplate() {
+                const response = await fetch('/app/assets/data/doc-templates.json');
+                const templates = await response.json();
+                
+                if (!templates[this.docKey]) {
+                    throw new Error('Document template not found');
+                }
+                
+                this.docTemplate = templates[this.docKey];
+            }
+
+            renderDocumentForm() {
+                // Update page title and meta
+                document.getElementById('pageTitle').textContent = `${this.docTemplate.title} - ClaimNavigatorAI`;
+                document.getElementById('documentTitle').textContent = this.docTemplate.title;
+                document.getElementById('documentDescription').textContent = this.docTemplate.description;
+
+                // Generate form fields
+                const formElement = document.getElementById('documentFormElement');
+                formElement.innerHTML = '';
+
+                this.docTemplate.fields.forEach(field => {
+                    const fieldElement = this.createFormField(field);
+                    formElement.appendChild(fieldElement);
+                });
+
+                // Show the form
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('documentForm').classList.remove('hidden');
+            }
+
+            createFormField(field) {
+                const fieldContainer = document.createElement('div');
+                fieldContainer.className = 'space-y-2';
+
+                // Label
+                const label = document.createElement('label');
+                label.className = 'block text-sm font-medium text-gray-700';
+                label.textContent = field.label;
+                if (field.required) {
+                    label.innerHTML += ' <span class="text-red-500">*</span>';
+                }
+                fieldContainer.appendChild(label);
+
+                // Input field
+                let input;
+                if (field.type === 'textarea') {
+                    input = document.createElement('textarea');
+                    input.rows = 4;
+                    input.className = 'form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
+                } else if (field.type === 'select') {
+                    input = document.createElement('select');
+                    input.className = 'form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
+                    
+                    // Add default option
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Select an option...';
+                    input.appendChild(defaultOption);
+                    
+                    // Add field options
+                    if (field.options) {
+                        field.options.forEach(option => {
+                            const optionElement = document.createElement('option');
+                            optionElement.value = option;
+                            optionElement.textContent = option;
+                            input.appendChild(optionElement);
+                        });
+                    }
+                } else if (field.type === 'checkbox') {
+                    input = document.createElement('input');
+                    input.type = 'checkbox';
+                    input.className = 'form-input h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded';
+                } else {
+                    input = document.createElement('input');
+                    input.type = field.type || 'text';
+                    input.className = 'form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
+                }
+
+                input.id = field.id;
+                input.name = field.id;
+                input.required = field.required || false;
+
+                // Add placeholder for text inputs
+                if (field.type === 'text' || field.type === 'email' || field.type === 'tel') {
+                    input.placeholder = `Enter ${field.label.toLowerCase()}...`;
+                }
+
+                fieldContainer.appendChild(input);
+
+                return fieldContainer;
             }
 
             setupEventListeners() {
@@ -244,7 +332,7 @@
 
             showSuccess(result) {
                 // Hide form, show success
-                document.getElementById('documentFormElement').parentElement.classList.add('hidden');
+                document.getElementById('documentForm').classList.add('hidden');
                 document.getElementById('successState').classList.remove('hidden');
 
                 // Display document preview
@@ -258,26 +346,36 @@
                 }
             }
 
-            showError(message) {
-                alert(message);
+            showError(message = 'An error occurred') {
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('documentForm').classList.add('hidden');
+                document.getElementById('errorState').classList.remove('hidden');
+                
+                if (message !== 'An error occurred') {
+                    // Show error message in a toast or alert
+                    alert(message);
+                }
             }
 
             downloadDocument() {
                 if (!this.generatedDocument) return;
 
                 if (this.generatedDocument.fileUrl) {
+                    // Download from URL
                     window.open(this.generatedDocument.fileUrl, '_blank');
                 } else if (this.generatedDocument.contentBase64) {
+                    // Download base64 content
                     const link = document.createElement('a');
                     link.href = `data:${this.generatedDocument.mimeType || 'application/pdf'};base64,${this.generatedDocument.contentBase64}`;
-                    link.download = this.generatedDocument.filename || 'appeal-letter-document.pdf';
+                    link.download = this.generatedDocument.filename || `${this.docKey}-document.pdf`;
                     link.click();
                 } else {
+                    // Fallback: download as text file
                     const blob = new Blob([this.generatedDocument.document || this.generatedDocument.content], { type: 'text/plain' });
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = 'appeal-letter-document.txt';
+                    link.download = `${this.docKey}-document.txt`;
                     link.click();
                     URL.revokeObjectURL(url);
                 }
@@ -296,9 +394,14 @@
             }
 
             resetForm() {
+                // Reset form
                 document.getElementById('documentFormElement').reset();
+                
+                // Hide success, show form
                 document.getElementById('successState').classList.add('hidden');
-                document.getElementById('documentFormElement').parentElement.classList.remove('hidden');
+                document.getElementById('documentForm').classList.remove('hidden');
+                
+                // Scroll to top
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }

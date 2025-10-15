@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Generator Test - ClaimNavigatorAI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9fafb;
+        }
+        .test-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .test-button:hover {
+            background: #1e40af;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #1e3a8a;
+        }
+        .error {
+            border-left-color: #dc2626;
+            background: #fef2f2;
+        }
+        .success {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Document Generator Test</h1>
+        <p>This page tests the document generator functionality without requiring the Netlify server.</p>
+        
+        <h2>Test Options:</h2>
+        <button class="test-button" onclick="testFallbackGeneration()">Test Fallback Document Generation</button>
+        <button class="test-button" onclick="testAIIntegration()">Test AI Integration (Requires Server)</button>
+        <button class="test-button" onclick="testPDFGeneration()">Test PDF Generation</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Test data
+        const testData = {
+            claimantName: 'John Smith',
+            claimantAddress: '123 Main St, Anytown, ST 12345',
+            insurerName: 'Test Insurance Company',
+            policyNumber: 'POL-123456789',
+            claimNumber: 'CLM-987654321',
+            dateOfLoss: '2024-01-15',
+            phoneNumber: '(555) 123-4567',
+            email: 'john.smith@email.com',
+            situationDetails: 'My property was damaged by a severe storm on January 15, 2024. I have submitted all required documentation but have not received any response from your claims department. I am requesting immediate processing of my claim and payment of the covered damages.'
+        };
+
+        function showResult(message, type = 'info') {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+
+        function testFallbackGeneration() {
+            showResult('🔄 Testing fallback document generation...', 'info');
+            
+            try {
+                // Simulate the fallback document generation
+                const today = new Date().toLocaleDateString();
+                const documentTitle = 'Payment Demand Letter';
+                const documentType = 'demand-letter';
+                
+                let documentContent = '';
+                
+                if (documentType.includes('letter') || documentType.includes('demand') || documentType.includes('appeal')) {
+                    documentContent = generateLetterFormat(testData, documentTitle, today);
+                } else if (documentType.includes('form') || documentType.includes('claim')) {
+                    documentContent = generateFormFormat(testData, documentTitle, today);
+                } else if (documentType.includes('report') || documentType.includes('assessment')) {
+                    documentContent = generateReportFormat(testData, documentTitle, today);
+                } else {
+                    documentContent = generateGenericFormat(testData, documentTitle, today);
+                }
+                
+                showResult(`✅ Fallback document generation successful!<br><br><strong>Generated Document Preview:</strong><br></strong><div style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; margin-top: 10px;">${documentContent.substring(0, 1000)}...</div>`, 'success');
+                
+            } catch (error) {
+                showResult(`❌ Fallback generation failed: ${error.message}`, 'error');
+            }
+        }
+
+        function testAIIntegration() {
+            showResult('🔄 Testing AI integration...', 'info');
+            
+            fetch('/.netlify/functions/generate-document', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    documentId: 'demand-letter',
+                    title: 'Payment Demand Letter',
+                    fields: testData
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            })
+            .then(result => {
+                showResult(`✅ AI integration successful!<br><br><strong>Generated Document:</strong><br><div style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; margin-top: 10px;">${result.html.substring(0, 1000)}...</div>`, 'success');
+            })
+            .catch(error => {
+                showResult(`❌ AI integration failed: ${error.message}<br><br><strong>Note:</strong> This requires the Netlify development server to be running.`, 'error');
+            });
+        }
+
+        function testPDFGeneration() {
+            showResult('🔄 Testing PDF generation...', 'info');
+            
+            try {
+                // Check if jsPDF is available
+                if (typeof window.jspdf === 'undefined') {
+                    showResult('❌ jsPDF library not loaded. PDF generation requires the full document generator page.', 'error');
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Add some test content
+                doc.setFontSize(16);
+                doc.text('Test Document', 20, 20);
+                doc.setFontSize(12);
+                doc.text('This is a test PDF generated by ClaimNavigatorAI', 20, 40);
+                doc.text(`Claimant: ${testData.claimantName}`, 20, 60);
+                doc.text(`Policy: ${testData.policyNumber}`, 20, 80);
+                
+                // Generate filename
+                const now = new Date();
+                const dateStr = now.toISOString().split('T')[0];
+                const filename = `test-document-${dateStr}.pdf`;
+                
+                // Download the PDF
+                doc.save(filename);
+                
+                showResult(`✅ PDF generation successful! File saved as: ${filename}`, 'success');
+                
+            } catch (error) {
+                showResult(`❌ PDF generation failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Document generation functions (copied from the main document generator)
+        function generateLetterFormat(data, title, date) {
+            return `
+<div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
+    <div style="text-align: right; margin-bottom: 30px; font-size: 14px;">${date}</div>
+    
+    <div style="margin-bottom: 20px;">
+        <strong>${data.claimantName}</strong><br>
+        ${data.claimantAddress}
+    </div>
+    
+    <div style="margin-bottom: 30px;">
+        <strong>${data.insurerName}</strong><br>
+        Claims Department<br>
+        [Insurance Company Address]
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+        <strong>Re: ${title}</strong><br>
+        <strong>Policy Number:</strong> ${data.policyNumber}<br>
+        <strong>Claim Number:</strong> ${data.claimNumber}<br>
+        <strong>Date of Loss:</strong> ${data.dateOfLoss}
+    </div>
+    
+    <div style="margin-top: 30px;">
+        <p><strong>Dear Claims Department,</strong></p>
+        
+        <p>I am writing to you regarding the above-referenced claim. ${data.situationDetails}</p>
+        
+        <p>I respectfully request your immediate attention to this matter and look forward to your prompt response.</p>
+    </div>
+    
+    <div style="margin-top: 40px;">
+        <p>Sincerely,<br><br><strong>${data.claimantName}</strong></p>
+    </div>
+    
+    <div style="text-align: center; color: #666; font-size: 10px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 10px;">
+        Generated by ClaimNavigatorAI - Professional Insurance Claim Documentation
+    </div>
+</div>`;
+        }
+
+        function generateFormFormat(data, title, date) {
+            return `
+<div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
+    <h1 style="color: #1e3a8a; text-align: center; margin-bottom: 30px;">${title}</h1>
+    
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <h3 style="color: #1e3a8a; margin-bottom: 15px;">Claim Information</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Claimant Name:</strong></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${data.claimantName}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Policy Number:</strong></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${data.policyNumber}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Claim Number:</strong></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${data.claimNumber}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Date of Loss:</strong></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${data.dateOfLoss}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Insurance Company:</strong></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${data.insurerName}</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div style="margin-bottom: 30px;">
+        <h3 style="color: #1e3a8a; margin-bottom: 15px;">Situation Details</h3>
+        <div style="background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 4px;">
+            <p>${data.situationDetails}</p>
+        </div>
+    </div>
+    
+    <div style="margin-top: 40px; text-align: right;">
+        <p><strong>Date:</strong> ${date}</p>
+        <p><strong>Signature:</strong> _________________________</p>
+        <p><strong>${data.claimantName}</strong></p>
+    </div>
+    
+    <div style="text-align: center; color: #666; font-size: 10px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 10px;">
+        Generated by ClaimNavigatorAI - Professional Insurance Claim Documentation
+    </div>
+</div>`;
+        }
+
+        function generateReportFormat(data, title, date) {
+            return `
+<div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
+    <h1 style="color: #1e3a8a; text-align: center; margin-bottom: 30px;">${title}</h1>
+    
+    <div style="margin-bottom: 30px;">
+        <h2 style="color: #1e3a8a; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px;">Executive Summary</h2>
+        <p>This report documents the claim details and situation for policy number ${data.policyNumber} regarding the loss that occurred on ${data.dateOfLoss}.</p>
+    </div>
+    
+    <div style="margin-bottom: 30px;">
+        <h2 style="color: #1e3a8a; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px;">Claim Details</h2>
+        <ul>
+            <li><strong>Claimant:</strong> ${data.claimantName}</li>
+            <li><strong>Policy Number:</strong> ${data.policyNumber}</li>
+            <li><strong>Claim Number:</strong> ${data.claimNumber}</li>
+            <li><strong>Date of Loss:</strong> ${data.dateOfLoss}</li>
+            <li><strong>Insurance Company:</strong> ${data.insurerName}</li>
+        </ul>
+    </div>
+    
+    <div style="margin-bottom: 30px;">
+        <h2 style="color: #1e3a8a; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px;">Situation Analysis</h2>
+        <p>${data.situationDetails}</p>
+    </div>
+    
+    <div style="margin-bottom: 30px;">
+        <h2 style="color: #1e3a8a; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px;">Recommendations</h2>
+        <p>Based on the information provided, immediate action is required to address this claim matter. All relevant documentation should be submitted to the insurance company for proper processing.</p>
+    </div>
+    
+    <div style="margin-top: 40px; text-align: right;">
+        <p><strong>Report Date:</strong> ${date}</p>
+        <p><strong>Prepared by:</strong> ${data.claimantName}</p>
+    </div>
+    
+    <div style="text-align: center; color: #666; font-size: 10px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 10px;">
+        Generated by ClaimNavigatorAI - Professional Insurance Claim Documentation
+    </div>
+</div>`;
+        }
+
+        function generateGenericFormat(data, title, date) {
+            return `
+<div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
+    <h1 style="color: #1e3a8a; text-align: center; margin-bottom: 30px;">${title}</h1>
+    
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <h3 style="color: #1e3a8a; margin-bottom: 15px;">Document Information</h3>
+        <p><strong>Date:</strong> ${date}</p>
+        <p><strong>Claimant:</strong> ${data.claimantName}</p>
+        <p><strong>Policy Number:</strong> ${data.policyNumber}</p>
+        <p><strong>Claim Number:</strong> ${data.claimNumber}</p>
+        <p><strong>Date of Loss:</strong> ${data.dateOfLoss}</p>
+        <p><strong>Insurance Company:</strong> ${data.insurerName}</p>
+    </div>
+    
+    <div style="margin-bottom: 30px;">
+        <h3 style="color: #1e3a8a; margin-bottom: 15px;">Details</h3>
+        <div style="background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 4px;">
+            <p>${data.situationDetails}</p>
+        </div>
+    </div>
+    
+    <div style="margin-top: 40px; text-align: right;">
+        <p><strong>Signature:</strong> _________________________</p>
+        <p><strong>${data.claimantName}</strong></p>
+    </div>
+    
+    <div style="text-align: center; color: #666; font-size: 10px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 10px;">
+        Generated by ClaimNavigatorAI - Professional Insurance Claim Documentation
+    </div>
+</div>`;
+        }
+
+        // Initialize the test page
+        document.addEventListener('DOMContentLoaded', () => {
+            showResult('🧪 Document Generator Test Page Ready<br><br>Click the buttons above to test different functionality.', 'info');
+        });
+    </script>
+</body>
+</html>

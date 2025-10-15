@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claim Appeal Letter - ClaimNavigatorAI</title>
-    <meta name="description" content="Professional appeal letter for denied claims with supporting documentation requirements and legal basis.">
+    <title>Settlement Offer Letter - ClaimNavigatorAI</title>
+    <meta name="description" content="Professional settlement offer letter with negotiation terms and conditions for claim resolution.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/app/assets/css/style.css">
     <style>
@@ -51,9 +51,9 @@
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">⚖️ Claim Appeal Letter</h1>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">⚖️ Settlement Offer Letter</h1>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                Professional appeal letter for denied claims with supporting documentation requirements and legal basis.
+                Professional settlement offer letter with negotiation terms and conditions for claim resolution.
             </p>
         </div>
 
@@ -74,33 +74,33 @@
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Denial Date <span class="text-red-500">*</span>
+                Settlement Amount <span class="text-red-500">*</span>
             </label>
-            <input type="date" id="denialDate" name="denialDate" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter denial date...">
+            <input type="number" id="settlementAmount" name="settlementAmount" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter settlement amount...">
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Denial Reason <span class="text-red-500">*</span>
+                Offer Terms <span class="text-red-500">*</span>
             </label>
-            <textarea id="denialReason" name="denialReason" required rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter denial reason..."></textarea>
+            <textarea id="offerTerms" name="offerTerms" required rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter offer terms..."></textarea>
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Appeal Basis <span class="text-red-500">*</span>
+                Acceptance Deadline <span class="text-red-500">*</span>
             </label>
-            <textarea id="appealBasis" name="appealBasis" required rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter appeal basis..."></textarea>
+            <input type="date" id="acceptanceDeadline" name="acceptanceDeadline" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter acceptance deadline...">
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Supporting Evidence 
+                Conditions 
             </label>
-            <textarea id="supportingEvidence" name="supportingEvidence"  rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter supporting evidence..."></textarea>
+            <textarea id="conditions" name="conditions"  rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter conditions..."></textarea>
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Legal Authority 
+                Legal Consequences 
             </label>
-            <textarea id="legalAuthority" name="legalAuthority"  rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter legal authority..."></textarea>
+            <textarea id="legalConsequences" name="legalConsequences"  rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter legal consequences..."></textarea>
         </div>
             </form>
 
@@ -124,7 +124,7 @@
                     <div class="text-green-500 text-2xl mr-3">✅</div>
                     <div>
                         <h3 class="text-lg font-semibold text-green-900">Document Generated Successfully!</h3>
-                        <p class="text-green-700">Your claim appeal letter has been generated and is ready for download.</p>
+                        <p class="text-green-700">Your settlement offer letter has been generated and is ready for download.</p>
                     </div>
                 </div>
             </div>
@@ -162,7 +162,7 @@
     <script>
         class DocumentPage {
             constructor() {
-                this.docKey = 'appeal-letter';
+                this.docKey = 'settlement-offer';
                 this.generatedDocument = null;
                 this.init();
             }
@@ -270,14 +270,14 @@
                 } else if (this.generatedDocument.contentBase64) {
                     const link = document.createElement('a');
                     link.href = `data:${this.generatedDocument.mimeType || 'application/pdf'};base64,${this.generatedDocument.contentBase64}`;
-                    link.download = this.generatedDocument.filename || 'appeal-letter-document.pdf';
+                    link.download = this.generatedDocument.filename || 'settlement-offer-document.pdf';
                     link.click();
                 } else {
                     const blob = new Blob([this.generatedDocument.document || this.generatedDocument.content], { type: 'text/plain' });
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = 'appeal-letter-document.txt';
+                    link.download = 'settlement-offer-document.txt';
                     link.click();
                     URL.revokeObjectURL(url);
                 }

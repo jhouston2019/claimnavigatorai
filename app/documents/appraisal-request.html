@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claim Appeal Letter - ClaimNavigatorAI</title>
-    <meta name="description" content="Professional appeal letter for denied claims with supporting documentation requirements and legal basis.">
+    <title>Appraisal Request Form - ClaimNavigatorAI</title>
+    <meta name="description" content="Request for formal appraisal process under policy appraisal clause with qualified professional requirements.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/app/assets/css/style.css">
     <style>
@@ -51,9 +51,9 @@
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">⚖️ Claim Appeal Letter</h1>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">📋 Appraisal Request Form</h1>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                Professional appeal letter for denied claims with supporting documentation requirements and legal basis.
+                Request for formal appraisal process under policy appraisal clause with qualified professional requirements.
             </p>
         </div>
 
@@ -74,33 +74,33 @@
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Denial Date <span class="text-red-500">*</span>
+                Disputed Amount <span class="text-red-500">*</span>
             </label>
-            <input type="date" id="denialDate" name="denialDate" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter denial date...">
+            <input type="number" id="disputedAmount" name="disputedAmount" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter disputed amount...">
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Denial Reason <span class="text-red-500">*</span>
+                Dispute Basis <span class="text-red-500">*</span>
             </label>
-            <textarea id="denialReason" name="denialReason" required rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter denial reason..."></textarea>
+            <textarea id="disputeBasis" name="disputeBasis" required rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter dispute basis..."></textarea>
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Appeal Basis <span class="text-red-500">*</span>
+                Preferred Appraiser 
             </label>
-            <textarea id="appealBasis" name="appealBasis" required rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter appeal basis..."></textarea>
+            <input type="text" id="preferredAppraiser" name="preferredAppraiser"  class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter preferred appraiser...">
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Supporting Evidence 
+                Appraisal Scope <span class="text-red-500">*</span>
             </label>
-            <textarea id="supportingEvidence" name="supportingEvidence"  rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter supporting evidence..."></textarea>
+            <textarea id="appraisalScope" name="appraisalScope" required rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter appraisal scope..."></textarea>
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Legal Authority 
+                Timeline Request 
             </label>
-            <textarea id="legalAuthority" name="legalAuthority"  rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter legal authority..."></textarea>
+            <input type="text" id="timelineRequest" name="timelineRequest"  class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter timeline request...">
         </div>
             </form>
 
@@ -124,7 +124,7 @@
                     <div class="text-green-500 text-2xl mr-3">✅</div>
                     <div>
                         <h3 class="text-lg font-semibold text-green-900">Document Generated Successfully!</h3>
-                        <p class="text-green-700">Your claim appeal letter has been generated and is ready for download.</p>
+                        <p class="text-green-700">Your appraisal request form has been generated and is ready for download.</p>
                     </div>
                 </div>
             </div>
@@ -162,7 +162,7 @@
     <script>
         class DocumentPage {
             constructor() {
-                this.docKey = 'appeal-letter';
+                this.docKey = 'appraisal-request';
                 this.generatedDocument = null;
                 this.init();
             }
@@ -270,14 +270,14 @@
                 } else if (this.generatedDocument.contentBase64) {
                     const link = document.createElement('a');
                     link.href = `data:${this.generatedDocument.mimeType || 'application/pdf'};base64,${this.generatedDocument.contentBase64}`;
-                    link.download = this.generatedDocument.filename || 'appeal-letter-document.pdf';
+                    link.download = this.generatedDocument.filename || 'appraisal-request-document.pdf';
                     link.click();
                 } else {
                     const blob = new Blob([this.generatedDocument.document || this.generatedDocument.content], { type: 'text/plain' });
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = 'appeal-letter-document.txt';
+                    link.download = 'appraisal-request-document.txt';
                     link.click();
                     URL.revokeObjectURL(url);
                 }

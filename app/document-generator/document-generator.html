@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Generator - ClaimNavigatorAI</title>
+    <meta name="description" content="Generate professional insurance claim documents with AI assistance">
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        .document-generator {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f9fafb;
+        }
+        
+        .document-type-selector {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .category-section {
+            margin-bottom: 2rem;
+        }
+        
+        .category-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .document-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .document-type-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            color: #1e40af;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .document-type-card:hover {
+            border-color: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15);
+        }
+        
+        .document-type-card.selected {
+            border-color: #1e40af;
+            background: #f0f4ff;
+            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.2);
+        }
+        
+        .document-type-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 8px 0 4px 0;
+            color: #1e3a8a;
+        }
+        
+        .document-type-card p {
+            color: #6b7280;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            margin: 0;
+        }
+        
+        .form-container {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: #000000;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #1e3a8a;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: #000000;
+            background: #ffffff;
+            transition: border-color 0.2s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .btn-primary {
+            background: #1e3a8a;
+            color: white;
+            border: 2px solid #1e3a8a;
+            border-radius: 0.5rem;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            background: #1e40af;
+            border-color: #1e40af;
+        }
+        
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #6b7280;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .generate-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+        
+        .generate-btn:hover {
+            background: #2563eb;
+        }
+        
+        .generate-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .result-container {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            display: none;
+        }
+        
+        .result-container.show {
+            display: block;
+        }
+        
+        .result-content {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        
+        .download-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .download-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .download-btn:hover {
+            background: #059669;
+        }
+        
+        .download-btn.secondary {
+            background: #6b7280;
+        }
+        
+        .download-btn.secondary:hover {
+            background: #4b5563;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .document-generator {
+                padding: 1rem;
+            }
+            
+            .document-type-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .download-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body class="main-grid">
+    <!-- Navigation Header -->
+    <header class="header">
+        <div class="bar container">
+            <div class="brand">
+                <div class="logo"></div>
+                <div>Document Generator</div>
+            </div>
+            <nav class="nav">
+                <a href="/app/resource-center/index.html">← Resource Center</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="document-generator">
+        <div class="text-center mb-4">
+            <h1>📄 Document Generator</h1>
+            <p>Generate professional insurance claim documents with AI assistance</p>
+        </div>
+
+        <!-- Search Box -->
+        <div class="document-type-selector">
+            <input type="text" id="searchBox" class="search-box" placeholder="Search for document types...">
+        </div>
+
+        <!-- Document Type Selection -->
+        <div class="document-type-selector">
+            <h2>Select Document Type</h2>
+            <p>Choose from 61+ professional document types organized by category.</p>
+            
+            <!-- Core Claim Documents -->
+            <div class="category-section">
+                <h3 class="category-title">📋 Core Claim Documents</h3>
+            <div class="document-type-grid">
+                    <div class="document-type-card" data-type="claim-form">
+                        <h3>📄 Standard Claim Form</h3>
+                        <p>Standard claim form for property damage and business interruption claims</p>
+                    </div>
+                <div class="document-type-card" data-type="proof-of-loss">
+                        <h3>📄 Proof of Loss Documentation</h3>
+                        <p>Comprehensive proof of loss documentation template with detailed itemization</p>
+                </div>
+                    <div class="document-type-card" data-type="damage-assessment">
+                        <h3>📊 Damage Assessment Report</h3>
+                        <p>Professional damage assessment and documentation form with photographic evidence guidelines</p>
+                    </div>
+                    <div class="document-type-card" data-type="evidence-log">
+                        <h3>📋 Evidence Documentation Log</h3>
+                        <p>Systematic evidence tracking and documentation log for claim support materials</p>
+                    </div>
+                    <div class="document-type-card" data-type="first-notice-of-loss">
+                        <h3>📢 First Notice of Loss</h3>
+                        <p>Initial loss notification form with immediate action items and timeline requirements</p>
+                    </div>
+                    <div class="document-type-card" data-type="claim-sequence-guide">
+                        <h3>📋 Claim Sequence Guide</h3>
+                        <p>Step-by-step guide for proper claim filing sequence and documentation requirements</p>
+                    </div>
+                    <div class="document-type-card" data-type="loss-notice">
+                        <h3>📢 Loss Notice Form</h3>
+                        <p>Formal loss notice with immediate reporting requirements and emergency contact information</p>
+                    </div>
+                    <div class="document-type-card" data-type="claim-summary">
+                        <h3>📊 Claim Summary Report</h3>
+                        <p>Executive summary of claim details, timeline, and current status for management review</p>
+                    </div>
+                </div>
+                </div>
+                
+            <!-- Legal Documents -->
+            <div class="category-section">
+                <h3 class="category-title">⚖️ Legal Documents</h3>
+                <div class="document-type-grid">
+                <div class="document-type-card" data-type="demand-letter">
+                        <h3>⚖️ Payment Demand Letter</h3>
+                        <p>Professional demand letter template for payment requests with legal precedent references</p>
+                </div>
+                    <div class="document-type-card" data-type="complaint-letter">
+                        <h3>📝 Formal Complaint Letter</h3>
+                        <p>Formal complaint letter for claim disputes with regulatory body notification guidelines</p>
+                </div>
+                    <div class="document-type-card" data-type="appeal-letter">
+                        <h3>📝 Claim Appeal Letter</h3>
+                        <p>Professional appeal letter for denied claims with supporting documentation requirements</p>
+                </div>
+                    <div class="document-type-card" data-type="mediation-request">
+                        <h3>🤝 Mediation Request Form</h3>
+                        <p>Formal request for mediation services to resolve claim disputes amicably</p>
+                </div>
+                    <div class="document-type-card" data-type="settlement-offer">
+                        <h3>📋 Settlement Offer Letter</h3>
+                        <p>Professional settlement offer letter with negotiation terms and conditions</p>
+                </div>
+                    <div class="document-type-card" data-type="arbitration-request">
+                        <h3>⚖️ Arbitration Request</h3>
+                        <p>Request for binding arbitration to resolve claim disputes outside of court</p>
+                </div>
+                    <div class="document-type-card" data-type="cease-desist">
+                        <h3>🛑 Cease and Desist Letter</h3>
+                        <p>Legal notice to stop specific actions or behaviors related to claim handling</p>
+                    </div>
+                    <div class="document-type-card" data-type="breach-notice">
+                        <h3>⚠️ Breach of Contract Notice</h3>
+                        <p>Formal notice of contract breach with specific violations and remedies</p>
+                    </div>
+                    <div class="document-type-card" data-type="bad-faith-letter">
+                        <h3>🚫 Bad Faith Insurance Letter</h3>
+                        <p>Legal notice alleging bad faith practices with supporting documentation</p>
+                    </div>
+                    <div class="document-type-card" data-type="coverage-opinion">
+                        <h3>📋 Coverage Opinion Request</h3>
+                        <p>Request for legal opinion on policy coverage interpretation and application</p>
+                    </div>
+                    <div class="document-type-card" data-type="subrogation-notice">
+                        <h3>🔄 Subrogation Notice</h3>
+                        <p>Notice of subrogation rights and recovery actions against third parties</p>
+                    </div>
+                    <div class="document-type-card" data-type="liability-demand">
+                        <h3>⚖️ Liability Demand Letter</h3>
+                        <p>Demand for liability coverage and defense under insurance policy terms</p>
+                    </div>
+                    <div class="document-type-card" data-type="declaratory-judgment">
+                        <h3>⚖️ Declaratory Judgment Request</h3>
+                        <p>Request for court declaration on policy coverage and obligations</p>
+                    </div>
+                    <div class="document-type-card" data-type="class-action-notice">
+                        <h3>👥 Class Action Notice</h3>
+                        <p>Notice of class action participation and opt-out procedures</p>
+                    </div>
+                    <div class="document-type-card" data-type="regulatory-filing">
+                        <h3>📋 Regulatory Filing Form</h3>
+                        <p>Formal filing with insurance regulatory authorities for claim disputes</p>
+                    </div>
+                </div>
+                </div>
+                
+            <!-- Financial Documents -->
+            <div class="category-section">
+                <h3 class="category-title">💰 Financial Documents</h3>
+                <div class="document-type-grid">
+                    <div class="document-type-card" data-type="payment-demand">
+                        <h3>💰 Payment Demand Letter</h3>
+                        <p>Formal payment demand with timeline requirements and legal consequences outlined</p>
+                    </div>
+                    <div class="document-type-card" data-type="coverage-demand">
+                        <h3>📋 Coverage Demand Letter</h3>
+                        <p>Coverage demand letter for policy interpretation disputes with legal precedent citations</p>
+                    </div>
+                    <div class="document-type-card" data-type="timeline-demand">
+                        <h3>⏰ Timeline Demand Letter</h3>
+                        <p>Formal demand for specific timeline compliance with regulatory requirements</p>
+                    </div>
+                    <div class="document-type-card" data-type="ale-reimbursement-request">
+                        <h3>🏠 Additional Living Expenses Request</h3>
+                        <p>Request reimbursement for temporary housing, meals, or related living expenses</p>
+                    </div>
+                    <div class="document-type-card" data-type="business-interruption-claim">
+                        <h3>🏢 Business Interruption Claim</h3>
+                        <p>Comprehensive business interruption claim documentation and financial impact analysis</p>
+                    </div>
+                    <div class="document-type-card" data-type="lost-income-calculation">
+                        <h3>📊 Lost Income Calculation</h3>
+                        <p>Detailed calculation of lost income and business interruption damages</p>
+                    </div>
+                    <div class="document-type-card" data-type="expense-reimbursement">
+                        <h3>💳 Expense Reimbursement Form</h3>
+                        <p>Request for reimbursement of out-of-pocket expenses related to covered loss</p>
+                    </div>
+                    <div class="document-type-card" data-type="depreciation-schedule">
+                        <h3>📉 Depreciation Schedule</h3>
+                        <p>Detailed depreciation calculation for property and equipment losses</p>
+                    </div>
+                    <div class="document-type-card" data-type="replacement-cost-analysis">
+                        <h3>🔄 Replacement Cost Analysis</h3>
+                        <p>Analysis of replacement costs versus actual cash value for property losses</p>
+                    </div>
+                    <div class="document-type-card" data-type="contingent-business-interruption">
+                        <h3>🔗 Contingent Business Interruption</h3>
+                        <p>Claim for business interruption due to supplier or customer property damage</p>
+                    </div>
+                    <div class="document-type-card" data-type="extra-expense-claim">
+                        <h3>💸 Extra Expense Claim</h3>
+                        <p>Claim for additional expenses incurred to minimize business interruption</p>
+                    </div>
+                    <div class="document-type-card" data-type="rental-income-loss">
+                        <h3>🏠 Rental Income Loss Claim</h3>
+                        <p>Claim for lost rental income due to property damage or business interruption</p>
+                    </div>
+                </div>
+                </div>
+                
+            <!-- Forms and Requests -->
+            <div class="category-section">
+                <h3 class="category-title">📋 Forms and Requests</h3>
+                <div class="document-type-grid">
+                    <div class="document-type-card" data-type="document-request">
+                        <h3>📄 Document Request Form</h3>
+                        <p>Formal request for additional documentation from insurer with legal basis</p>
+                    </div>
+                    <div class="document-type-card" data-type="estimate-request">
+                        <h3>📊 Independent Estimate Request</h3>
+                        <p>Request for independent estimate or appraisal with qualified professional requirements</p>
+                    </div>
+                    <div class="document-type-card" data-type="expert-opinion-request">
+                        <h3>👨‍💼 Expert Opinion Request</h3>
+                        <p>Request for expert opinion on damage assessment or policy interpretation</p>
+                    </div>
+                    <div class="document-type-card" data-type="inspection-request">
+                        <h3>🔍 Property Inspection Request</h3>
+                        <p>Request for property inspection or re-inspection with specific focus areas</p>
+                    </div>
+                    <div class="document-type-card" data-type="medical-records-request">
+                        <h3>🏥 Medical Records Request</h3>
+                        <p>HIPAA-compliant request for medical records related to injury claims</p>
+                    </div>
+                    <div class="document-type-card" data-type="repair-authorization">
+                        <h3>🔧 Repair Authorization Form</h3>
+                        <p>Authorization form for emergency repairs with cost documentation requirements</p>
+                    </div>
+                    <div class="document-type-card" data-type="witness-statement">
+                        <h3>👥 Witness Statement Form</h3>
+                        <p>Comprehensive witness statement form with notarization requirements</p>
+                    </div>
+                    <div class="document-type-card" data-type="police-report-request">
+                        <h3>🚔 Police Report Request</h3>
+                        <p>Request for official police reports related to covered incidents</p>
+                    </div>
+                    <div class="document-type-card" data-type="fire-department-report">
+                        <h3>🚒 Fire Department Report Request</h3>
+                        <p>Request for fire department incident reports and investigation findings</p>
+                    </div>
+                    <div class="document-type-card" data-type="weather-service-report">
+                        <h3>🌤️ Weather Service Report Request</h3>
+                        <p>Request for official weather service reports for weather-related claims</p>
+                    </div>
+                    <div class="document-type-card" data-type="contractor-estimate">
+                        <h3>👷 Contractor Estimate Request</h3>
+                        <p>Request for detailed contractor estimates for repair and replacement costs</p>
+                    </div>
+                    <div class="document-type-card" data-type="appraisal-request">
+                        <h3>📊 Appraisal Request Form</h3>
+                        <p>Request for formal appraisal process under policy appraisal clause</p>
+                    </div>
+                    <div class="document-type-card" data-type="umpire-selection">
+                        <h3>⚖️ Umpire Selection Form</h3>
+                        <p>Form for selecting neutral umpire in appraisal process disputes</p>
+                    </div>
+                    <div class="document-type-card" data-type="examination-under-oath">
+                        <h3>📋 Examination Under Oath Request</h3>
+                        <p>Request for examination under oath with legal representation guidelines</p>
+                    </div>
+                    <div class="document-type-card" data-type="recorded-statement">
+                        <h3>🎙️ Recorded Statement Request</h3>
+                        <p>Request for recorded statement with legal rights and representation notice</p>
+                    </div>
+                    <div class="document-type-card" data-type="surveillance-notice">
+                        <h3>👁️ Surveillance Notice Response</h3>
+                        <p>Response to surveillance activities with privacy rights and legal protections</p>
+                    </div>
+                    <div class="document-type-card" data-type="independent-medical-exam">
+                        <h3>🏥 Independent Medical Exam Request</h3>
+                        <p>Request for independent medical examination with physician selection criteria</p>
+                    </div>
+                    <div class="document-type-card" data-type="functional-capacity-eval">
+                        <h3>📊 Functional Capacity Evaluation</h3>
+                        <p>Request for functional capacity evaluation for disability and injury claims</p>
+                    </div>
+                    <div class="document-type-card" data-type="vocational-assessment">
+                        <h3>💼 Vocational Assessment Request</h3>
+                        <p>Request for vocational assessment and earning capacity evaluation</p>
+                    </div>
+                    <div class="document-type-card" data-type="life-care-plan">
+                        <h3>🏥 Life Care Plan Request</h3>
+                        <p>Request for comprehensive life care plan for catastrophic injury claims</p>
+                    </div>
+                </div>
+                </div>
+                
+            <!-- Appeals and Disputes -->
+            <div class="category-section">
+                <h3 class="category-title">⚖️ Appeals and Disputes</h3>
+                <div class="document-type-grid">
+                    <div class="document-type-card" data-type="internal-appeal">
+                        <h3>📋 Internal Appeal Process</h3>
+                        <p>Internal appeal process documentation and templates for claim reconsideration</p>
+                    </div>
+                    <div class="document-type-card" data-type="external-appeal">
+                        <h3>📋 External Appeal Documentation</h3>
+                        <p>External appeal and regulatory complaint templates with filing requirements</p>
+                    </div>
+                    <div class="document-type-card" data-type="regulatory-complaint">
+                        <h3>📋 Regulatory Complaint Form</h3>
+                        <p>Formal complaint to insurance regulatory body with supporting documentation</p>
+                    </div>
+                    <div class="document-type-card" data-type="ombudsman-complaint">
+                        <h3>🤝 Ombudsman Complaint</h3>
+                        <p>Complaint to insurance ombudsman for dispute resolution assistance</p>
+                    </div>
+                    <div class="document-type-card" data-type="department-of-insurance">
+                        <h3>🏛️ Department of Insurance Complaint</h3>
+                        <p>Formal complaint to state department of insurance with regulatory violations</p>
+                    </div>
+                    <div class="document-type-card" data-type="naic-complaint">
+                        <h3>📋 NAIC Complaint Form</h3>
+                        <p>Complaint to National Association of Insurance Commissioners for regulatory oversight</p>
+                    </div>
+                    <div class="document-type-card" data-type="better-business-bureau">
+                        <h3>⭐ Better Business Bureau Complaint</h3>
+                        <p>Complaint to Better Business Bureau for business practice violations</p>
+                    </div>
+                    <div class="document-type-card" data-type="consumer-protection">
+                        <h3>🛡️ Consumer Protection Complaint</h3>
+                        <p>Complaint to consumer protection agency for unfair business practices</p>
+                    </div>
+                    <div class="document-type-card" data-type="attorney-general">
+                        <h3>⚖️ Attorney General Complaint</h3>
+                        <p>Complaint to state attorney general for insurance law violations</p>
+                    </div>
+                    <div class="document-type-card" data-type="federal-trade-commission">
+                        <h3>🏛️ FTC Complaint Form</h3>
+                        <p>Complaint to Federal Trade Commission for deceptive business practices</p>
+                    </div>
+                </div>
+                </div>
+                
+            <!-- Specialty Documents -->
+            <div class="category-section">
+                <h3 class="category-title">📊 Specialty Documents</h3>
+                <div class="document-type-grid">
+                    <div class="document-type-card" data-type="evidence-log-excel">
+                        <h3>📊 Evidence Log Spreadsheet</h3>
+                        <p>Comprehensive evidence tracking spreadsheet with formulas and categorization</p>
+                    </div>
+                    <div class="document-type-card" data-type="claim-timeline">
+                        <h3>📅 Claim Timeline Template</h3>
+                        <p>Detailed timeline template for documenting claim events and correspondence</p>
+                    </div>
+                    <div class="document-type-card" data-type="correspondence-log">
+                        <h3>📧 Correspondence Log</h3>
+                        <p>Systematic log of all claim-related correspondence and communications</p>
+                    </div>
+                    <div class="document-type-card" data-type="phone-call-log">
+                        <h3>📞 Phone Call Log</h3>
+                        <p>Detailed log of all phone conversations with claim representatives and adjusters</p>
+                    </div>
+                    <div class="document-type-card" data-type="email-correspondence">
+                        <h3>📧 Email Correspondence Template</h3>
+                        <p>Professional email templates for various claim-related communications</p>
+                    </div>
+                    <div class="document-type-card" data-type="fax-cover-sheet">
+                        <h3>📠 Fax Cover Sheet</h3>
+                        <p>Professional fax cover sheet for document transmission with delivery confirmation</p>
+                    </div>
+                    <div class="document-type-card" data-type="certified-mail">
+                        <h3>📮 Certified Mail Receipt</h3>
+                        <p>Template for certified mail documentation with return receipt requests</p>
+                    </div>
+                    <div class="document-type-card" data-type="affidavit-template">
+                        <h3>📋 Affidavit Template</h3>
+                        <p>Legal affidavit template for sworn statements and declarations</p>
+                    </div>
+                    <div class="document-type-card" data-type="notarization-request">
+                        <h3>📋 Notarization Request Form</h3>
+                        <p>Request form for notarization services with identification requirements</p>
+                    </div>
+                <div class="document-type-card" data-type="photograph-log">
+                        <h3>📸 Photograph Documentation Log</h3>
+                        <p>Systematic log for photographing and documenting property damage</p>
+                    </div>
+                    <div class="document-type-card" data-type="video-evidence">
+                        <h3>🎥 Video Evidence Log</h3>
+                        <p>Log for video evidence documentation with chain of custody requirements</p>
+                    </div>
+                    <div class="document-type-card" data-type="receipt-organization">
+                        <h3>🧾 Receipt Organization System</h3>
+                        <p>System for organizing and categorizing expense receipts and invoices</p>
+                    </div>
+                    <div class="document-type-card" data-type="inventory-list">
+                        <h3>📋 Property Inventory List</h3>
+                        <p>Comprehensive inventory list for personal property and business equipment</p>
+                    </div>
+                    <div class="document-type-card" data-type="valuation-worksheet">
+                        <h3>📊 Property Valuation Worksheet</h3>
+                        <p>Worksheet for calculating property values and replacement costs</p>
+                    </div>
+                    <div class="document-type-card" data-type="depreciation-calculator">
+                        <h3>📉 Depreciation Calculator</h3>
+                        <p>Calculator for determining depreciation on various types of property</p>
+                    </div>
+                </div>
+                </div>
+                
+            <!-- Property-Specific Documents -->
+            <div class="category-section">
+                <h3 class="category-title">🏠 Property-Specific Documents</h3>
+                <div class="document-type-grid">
+                    <div class="document-type-card" data-type="residential-property">
+                        <h3>🏠 Residential Property Claim</h3>
+                        <p>Specialized claim form for residential property damage and loss</p>
+                    </div>
+                    <div class="document-type-card" data-type="commercial-property">
+                        <h3>🏢 Commercial Property Claim</h3>
+                        <p>Comprehensive claim form for commercial property damage and business interruption</p>
+                    </div>
+                    <div class="document-type-card" data-type="condo-association">
+                        <h3>🏢 Condo Association Claim</h3>
+                        <p>Claim form for condominium association property and common area damage</p>
+                    </div>
+                    <div class="document-type-card" data-type="homeowners-association">
+                        <h3>🏘️ HOA Property Claim</h3>
+                        <p>Claim form for homeowners association property and amenity damage</p>
+                    </div>
+                    <div class="document-type-card" data-type="rental-property">
+                        <h3>🏠 Rental Property Claim</h3>
+                        <p>Claim form for rental property damage with tenant notification requirements</p>
+                    </div>
+                    <div class="document-type-card" data-type="vacation-rental">
+                        <h3>🏖️ Vacation Rental Claim</h3>
+                        <p>Specialized claim form for vacation rental property damage and loss of income</p>
+                    </div>
+                    <div class="document-type-card" data-type="manufactured-home">
+                        <h3>🏠 Manufactured Home Claim</h3>
+                        <p>Claim form for manufactured home damage with special valuation considerations</p>
+                    </div>
+                    <div class="document-type-card" data-type="mobile-home">
+                        <h3>🚐 Mobile Home Claim</h3>
+                        <p>Claim form for mobile home damage with transportation and setup costs</p>
+                    </div>
+                    <div class="document-type-card" data-type="farm-property">
+                        <h3>🚜 Farm Property Claim</h3>
+                        <p>Comprehensive claim form for farm property including crops, livestock, and equipment</p>
+                    </div>
+                    <div class="document-type-card" data-type="ranch-property">
+                        <h3>🐄 Ranch Property Claim</h3>
+                        <p>Specialized claim form for ranch property including livestock and grazing land</p>
+                    </div>
+                    <div class="document-type-card" data-type="vineyard-property">
+                        <h3>🍇 Vineyard Property Claim</h3>
+                        <p>Claim form for vineyard property including crops, equipment, and wine inventory</p>
+                    </div>
+                    <div class="document-type-card" data-type="orchard-property">
+                        <h3>🍎 Orchard Property Claim</h3>
+                        <p>Claim form for orchard property including trees, crops, and harvesting equipment</p>
+                    </div>
+                    <div class="document-type-card" data-type="greenhouse-property">
+                        <h3>🌱 Greenhouse Property Claim</h3>
+                        <p>Claim form for greenhouse property including structures, equipment, and plants</p>
+                    </div>
+                    <div class="document-type-card" data-type="aquaculture-property">
+                        <h3>🐟 Aquaculture Property Claim</h3>
+                        <p>Claim form for aquaculture property including fish, equipment, and facilities</p>
+                    </div>
+                    <div class="document-type-card" data-type="timber-property">
+                        <h3>🌲 Timber Property Claim</h3>
+                        <p>Claim form for timber property including trees, logging equipment, and access roads</p>
+                    </div>
+                    <div class="document-type-card" data-type="mining-property">
+                        <h3>⛏️ Mining Property Claim</h3>
+                        <p>Claim form for mining property including equipment, facilities, and mineral rights</p>
+                    </div>
+                    <div class="document-type-card" data-type="oil-gas-property">
+                        <h3>🛢️ Oil & Gas Property Claim</h3>
+                        <p>Claim form for oil and gas property including wells, equipment, and facilities</p>
+                    </div>
+                    <div class="document-type-card" data-type="renewable-energy">
+                        <h3>🌱 Renewable Energy Property Claim</h3>
+                        <p>Claim form for renewable energy property including solar, wind, and hydro facilities</p>
+                    </div>
+                    <div class="document-type-card" data-type="telecommunications">
+                        <h3>📡 Telecommunications Property Claim</h3>
+                        <p>Claim form for telecommunications property including towers, equipment, and facilities</p>
+                    </div>
+                    <div class="document-type-card" data-type="transportation-property">
+                        <h3>🚛 Transportation Property Claim</h3>
+                        <p>Claim form for transportation property including vehicles, equipment, and facilities</p>
+                    </div>
+                </div>
+                </div>
+                
+            <!-- Business-Specific Documents -->
+            <div class="category-section">
+                <h3 class="category-title">🏢 Business-Specific Documents</h3>
+                <div class="document-type-grid">
+                    <div class="document-type-card" data-type="restaurant-business">
+                        <h3>🍽️ Restaurant Business Claim</h3>
+                        <p>Comprehensive claim form for restaurant business interruption and property damage</p>
+                    </div>
+                    <div class="document-type-card" data-type="retail-business">
+                        <h3>🛍️ Retail Business Claim</h3>
+                        <p>Claim form for retail business including inventory, fixtures, and business interruption</p>
+                    </div>
+                    <div class="document-type-card" data-type="manufacturing-business">
+                        <h3>🏭 Manufacturing Business Claim</h3>
+                        <p>Claim form for manufacturing business including equipment, inventory, and production loss</p>
+                    </div>
+                    <div class="document-type-card" data-type="construction-business">
+                        <h3>🏗️ Construction Business Claim</h3>
+                        <p>Claim form for construction business including equipment, materials, and project delays</p>
+                    </div>
+                    <div class="document-type-card" data-type="healthcare-business">
+                        <h3>🏥 Healthcare Business Claim</h3>
+                        <p>Claim form for healthcare business including equipment, facilities, and patient care interruption</p>
+                    </div>
+                    <div class="document-type-card" data-type="professional-services">
+                        <h3>💼 Professional Services Claim</h3>
+                        <p>Claim form for professional services business including office equipment and client loss</p>
+                    </div>
+                    <div class="document-type-card" data-type="technology-business">
+                        <h3>💻 Technology Business Claim</h3>
+                        <p>Claim form for technology business including equipment, data, and business interruption</p>
+                    </div>
+                    <div class="document-type-card" data-type="hospitality-business">
+                        <h3>🏨 Hospitality Business Claim</h3>
+                        <p>Claim form for hospitality business including facilities, equipment, and guest services</p>
+                    </div>
+                    <div class="document-type-card" data-type="education-business">
+                        <h3>🎓 Education Business Claim</h3>
+                        <p>Claim form for education business including facilities, equipment, and student services</p>
+                    </div>
+                    <div class="document-type-card" data-type="fitness-business">
+                        <h3>💪 Fitness Business Claim</h3>
+                        <p>Claim form for fitness business including equipment, facilities, and membership services</p>
+                    </div>
+                    <div class="document-type-card" data-type="beauty-business">
+                        <h3>💄 Beauty Business Claim</h3>
+                        <p>Claim form for beauty business including equipment, supplies, and client services</p>
+                    </div>
+                    <div class="document-type-card" data-type="automotive-business">
+                        <h3>🚗 Automotive Business Claim</h3>
+                        <p>Claim form for automotive business including equipment, inventory, and service interruption</p>
+                    </div>
+                    <div class="document-type-card" data-type="agricultural-business">
+                        <h3>🚜 Agricultural Business Claim</h3>
+                        <p>Claim form for agricultural business including crops, livestock, and equipment</p>
+                    </div>
+                    <div class="document-type-card" data-type="transportation-business">
+                        <h3>🚛 Transportation Business Claim</h3>
+                        <p>Claim form for transportation business including vehicles, equipment, and service interruption</p>
+                    </div>
+                    <div class="document-type-card" data-type="warehouse-business">
+                        <h3>📦 Warehouse Business Claim</h3>
+                        <p>Claim form for warehouse business including inventory, equipment, and storage facilities</p>
+                    </div>
+                </div>
+                </div>
+                
+            <!-- Catastrophic Event Documents -->
+            <div class="category-section">
+                <h3 class="category-title">🌪️ Catastrophic Event Documents</h3>
+                <div class="document-type-grid">
+                    <div class="document-type-card" data-type="hurricane-claim">
+                        <h3>🌀 Hurricane Damage Claim</h3>
+                        <p>Specialized claim form for hurricane damage including wind, water, and flood damage</p>
+                </div>
+                    <div class="document-type-card" data-type="flood-claim">
+                        <h3>🌊 Flood Damage Claim</h3>
+                        <p>Comprehensive claim form for flood damage including property and contents</p>
+                    </div>
+                    <div class="document-type-card" data-type="wildfire-claim">
+                        <h3>🔥 Wildfire Damage Claim</h3>
+                        <p>Claim form for wildfire damage including property, contents, and evacuation expenses</p>
+                    </div>
+                    <div class="document-type-card" data-type="earthquake-claim">
+                        <h3>🌍 Earthquake Damage Claim</h3>
+                        <p>Claim form for earthquake damage including structural and contents damage</p>
+                    </div>
+                    <div class="document-type-card" data-type="tornado-claim">
+                        <h3>🌪️ Tornado Damage Claim</h3>
+                        <p>Claim form for tornado damage including wind and debris damage</p>
+                    </div>
+                    <div class="document-type-card" data-type="hail-claim">
+                        <h3>🧊 Hail Damage Claim</h3>
+                        <p>Claim form for hail damage including roof, siding, and vehicle damage</p>
+                    </div>
+                    <div class="document-type-card" data-type="winter-storm-claim">
+                        <h3>❄️ Winter Storm Claim</h3>
+                        <p>Claim form for winter storm damage including ice, snow, and freeze damage</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Form -->
+        <div class="form-container" id="formContainer" style="display: none;">
+            <h2 id="formTitle">Document Information</h2>
+            <p id="formDescription">Please provide the details for your document.</p>
+            
+            <form id="documentForm">
+                <div class="form-group">
+                    <label for="claimantName">Your Name</label>
+                    <input type="text" id="claimantName" name="claimantName" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="claimantAddress">Your Address</label>
+                    <textarea id="claimantAddress" name="claimantAddress" class="form-control" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="insurerName">Insurance Company</label>
+                    <input type="text" id="insurerName" name="insurerName" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="policyNumber">Policy Number</label>
+                    <input type="text" id="policyNumber" name="policyNumber" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="claimNumber">Claim Number</label>
+                    <input type="text" id="claimNumber" name="claimNumber" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="dateOfLoss">Date of Loss</label>
+                    <input type="date" id="dateOfLoss" name="dateOfLoss" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="(555) 123-4567">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="your.email@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="situationDetails">Situation Details</label>
+                    <textarea id="situationDetails" name="situationDetails" class="form-control" rows="4" placeholder="Describe your specific situation and what you need help with..." required></textarea>
+                </div>
+                
+                <button type="submit" class="btn-primary" id="generateBtn">
+                    Generate Document
+                </button>
+            </form>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading" id="loadingState">
+            <div class="spinner"></div>
+            <p>Generating your document...</p>
+        </div>
+
+        <!-- Results -->
+        <div class="result-container" id="resultContainer">
+            <h3>Generated Document</h3>
+            <div class="result-content" id="resultContent"></div>
+            <div class="download-buttons">
+                <button class="download-btn" id="downloadPdfBtn">
+                    📄 Download PDF
+                </button>
+                <button class="download-btn secondary" id="copyTextBtn">
+                    📋 Copy Text
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        class DocumentGenerator {
+            constructor() {
+                this.selectedType = null;
+                this.generatedContent = null;
+                this.allDocuments = this.getAllDocumentTypes();
+                this.init();
+            }
+
+            getAllDocumentTypes() {
+                return {
+                    // Core Claims
+                    'claim-form': { title: 'Standard Claim Form', description: 'Generate a standard claim form for property damage and business interruption claims.' },
+                    'proof-of-loss': { title: 'Proof of Loss Documentation', description: 'Generate a comprehensive proof of loss documentation template with detailed itemization.' },
+                    'damage-assessment': { title: 'Damage Assessment Report', description: 'Generate a professional damage assessment and documentation form with photographic evidence guidelines.' },
+                    'evidence-log': { title: 'Evidence Documentation Log', description: 'Generate a systematic evidence tracking and documentation log for claim support materials.' },
+                    'first-notice-of-loss': { title: 'First Notice of Loss', description: 'Generate an initial loss notification form with immediate action items and timeline requirements.' },
+                    'claim-sequence-guide': { title: 'Claim Sequence Guide', description: 'Generate a step-by-step guide for proper claim filing sequence and documentation requirements.' },
+                    'loss-notice': { title: 'Loss Notice Form', description: 'Generate a formal loss notice with immediate reporting requirements and emergency contact information.' },
+                    'claim-summary': { title: 'Claim Summary Report', description: 'Generate an executive summary of claim details, timeline, and current status for management review.' },
+                    
+                    // Legal Documents
+                    'demand-letter': { title: 'Payment Demand Letter', description: 'Generate a professional demand letter template for payment requests with legal precedent references.' },
+                    'complaint-letter': { title: 'Formal Complaint Letter', description: 'Generate a formal complaint letter for claim disputes with regulatory body notification guidelines.' },
+                    'appeal-letter': { title: 'Claim Appeal Letter', description: 'Generate a professional appeal letter for denied claims with supporting documentation requirements.' },
+                    'mediation-request': { title: 'Mediation Request Form', description: 'Generate a formal request for mediation services to resolve claim disputes amicably.' },
+                    'settlement-offer': { title: 'Settlement Offer Letter', description: 'Generate a professional settlement offer letter with negotiation terms and conditions.' },
+                    'arbitration-request': { title: 'Arbitration Request', description: 'Generate a request for binding arbitration to resolve claim disputes outside of court.' },
+                    'cease-desist': { title: 'Cease and Desist Letter', description: 'Generate a legal notice to stop specific actions or behaviors related to claim handling.' },
+                    'breach-notice': { title: 'Breach of Contract Notice', description: 'Generate a formal notice of contract breach with specific violations and remedies.' },
+                    'bad-faith-letter': { title: 'Bad Faith Insurance Letter', description: 'Generate a legal notice alleging bad faith practices with supporting documentation.' },
+                    'coverage-opinion': { title: 'Coverage Opinion Request', description: 'Generate a request for legal opinion on policy coverage interpretation and application.' },
+                    'subrogation-notice': { title: 'Subrogation Notice', description: 'Generate a notice of subrogation rights and recovery actions against third parties.' },
+                    'liability-demand': { title: 'Liability Demand Letter', description: 'Generate a demand for liability coverage and defense under insurance policy terms.' },
+                    'declaratory-judgment': { title: 'Declaratory Judgment Request', description: 'Generate a request for court declaration on policy coverage and obligations.' },
+                    'class-action-notice': { title: 'Class Action Notice', description: 'Generate a notice of class action participation and opt-out procedures.' },
+                    'regulatory-filing': { title: 'Regulatory Filing Form', description: 'Generate a formal filing with insurance regulatory authorities for claim disputes.' },
+                    
+                    // Financial Documents
+                    'payment-demand': { title: 'Payment Demand Letter', description: 'Generate a formal payment demand with timeline requirements and legal consequences outlined.' },
+                    'coverage-demand': { title: 'Coverage Demand Letter', description: 'Generate a coverage demand letter for policy interpretation disputes with legal precedent citations.' },
+                    'timeline-demand': { title: 'Timeline Demand Letter', description: 'Generate a formal demand for specific timeline compliance with regulatory requirements.' },
+                    'ale-reimbursement-request': { title: 'Additional Living Expenses Request', description: 'Generate a request for reimbursement for temporary housing, meals, or related living expenses.' },
+                    'business-interruption-claim': { title: 'Business Interruption Claim', description: 'Generate a comprehensive business interruption claim documentation and financial impact analysis.' },
+                    'lost-income-calculation': { title: 'Lost Income Calculation', description: 'Generate a detailed calculation of lost income and business interruption damages.' },
+                    'expense-reimbursement': { title: 'Expense Reimbursement Form', description: 'Generate a request for reimbursement of out-of-pocket expenses related to covered loss.' },
+                    'depreciation-schedule': { title: 'Depreciation Schedule', description: 'Generate a detailed depreciation calculation for property and equipment losses.' },
+                    'replacement-cost-analysis': { title: 'Replacement Cost Analysis', description: 'Generate an analysis of replacement costs versus actual cash value for property losses.' },
+                    'contingent-business-interruption': { title: 'Contingent Business Interruption', description: 'Generate a claim for business interruption due to supplier or customer property damage.' },
+                    'extra-expense-claim': { title: 'Extra Expense Claim', description: 'Generate a claim for additional expenses incurred to minimize business interruption.' },
+                    'rental-income-loss': { title: 'Rental Income Loss Claim', description: 'Generate a claim for lost rental income due to property damage or business interruption.' },
+                    
+                    // Forms and Requests
+                    'document-request': { title: 'Document Request Form', description: 'Generate a formal request for additional documentation from insurer with legal basis.' },
+                    'estimate-request': { title: 'Independent Estimate Request', description: 'Generate a request for independent estimate or appraisal with qualified professional requirements.' },
+                    'expert-opinion-request': { title: 'Expert Opinion Request', description: 'Generate a request for expert opinion on damage assessment or policy interpretation.' },
+                    'inspection-request': { title: 'Property Inspection Request', description: 'Generate a request for property inspection or re-inspection with specific focus areas.' },
+                    'medical-records-request': { title: 'Medical Records Request', description: 'Generate a HIPAA-compliant request for medical records related to injury claims.' },
+                    'repair-authorization': { title: 'Repair Authorization Form', description: 'Generate an authorization form for emergency repairs with cost documentation requirements.' },
+                    'witness-statement': { title: 'Witness Statement Form', description: 'Generate a comprehensive witness statement form with notarization requirements.' },
+                    'police-report-request': { title: 'Police Report Request', description: 'Generate a request for official police reports related to covered incidents.' },
+                    'fire-department-report': { title: 'Fire Department Report Request', description: 'Generate a request for fire department incident reports and investigation findings.' },
+                    'weather-service-report': { title: 'Weather Service Report Request', description: 'Generate a request for official weather service reports for weather-related claims.' },
+                    'contractor-estimate': { title: 'Contractor Estimate Request', description: 'Generate a request for detailed contractor estimates for repair and replacement costs.' },
+                    'appraisal-request': { title: 'Appraisal Request Form', description: 'Generate a request for formal appraisal process under policy appraisal clause.' },
+                    'umpire-selection': { title: 'Umpire Selection Form', description: 'Generate a form for selecting neutral umpire in appraisal process disputes.' },
+                    'examination-under-oath': { title: 'Examination Under Oath Request', description: 'Generate a request for examination under oath with legal representation guidelines.' },
+                    'recorded-statement': { title: 'Recorded Statement Request', description: 'Generate a request for recorded statement with legal rights and representation notice.' },
+                    'surveillance-notice': { title: 'Surveillance Notice Response', description: 'Generate a response to surveillance activities with privacy rights and legal protections.' },
+                    'independent-medical-exam': { title: 'Independent Medical Exam Request', description: 'Generate a request for independent medical examination with physician selection criteria.' },
+                    'functional-capacity-eval': { title: 'Functional Capacity Evaluation', description: 'Generate a request for functional capacity evaluation for disability and injury claims.' },
+                    'vocational-assessment': { title: 'Vocational Assessment Request', description: 'Generate a request for vocational assessment and earning capacity evaluation.' },
+                    'life-care-plan': { title: 'Life Care Plan Request', description: 'Generate a request for comprehensive life care plan for catastrophic injury claims.' },
+                    
+                    // Appeals and Disputes
+                    'internal-appeal': { title: 'Internal Appeal Process', description: 'Generate internal appeal process documentation and templates for claim reconsideration.' },
+                    'external-appeal': { title: 'External Appeal Documentation', description: 'Generate external appeal and regulatory complaint templates with filing requirements.' },
+                    'regulatory-complaint': { title: 'Regulatory Complaint Form', description: 'Generate a formal complaint to insurance regulatory body with supporting documentation.' },
+                    'ombudsman-complaint': { title: 'Ombudsman Complaint', description: 'Generate a complaint to insurance ombudsman for dispute resolution assistance.' },
+                    'department-of-insurance': { title: 'Department of Insurance Complaint', description: 'Generate a formal complaint to state department of insurance with regulatory violations.' },
+                    'naic-complaint': { title: 'NAIC Complaint Form', description: 'Generate a complaint to National Association of Insurance Commissioners for regulatory oversight.' },
+                    'better-business-bureau': { title: 'Better Business Bureau Complaint', description: 'Generate a complaint to Better Business Bureau for business practice violations.' },
+                    'consumer-protection': { title: 'Consumer Protection Complaint', description: 'Generate a complaint to consumer protection agency for unfair business practices.' },
+                    'attorney-general': { title: 'Attorney General Complaint', description: 'Generate a complaint to state attorney general for insurance law violations.' },
+                    'federal-trade-commission': { title: 'FTC Complaint Form', description: 'Generate a complaint to Federal Trade Commission for deceptive business practices.' },
+                    
+                    // Specialty Documents
+                    'evidence-log-excel': { title: 'Evidence Log Spreadsheet', description: 'Generate a comprehensive evidence tracking spreadsheet with formulas and categorization.' },
+                    'claim-timeline': { title: 'Claim Timeline Template', description: 'Generate a detailed timeline template for documenting claim events and correspondence.' },
+                    'correspondence-log': { title: 'Correspondence Log', description: 'Generate a systematic log of all claim-related correspondence and communications.' },
+                    'phone-call-log': { title: 'Phone Call Log', description: 'Generate a detailed log of all phone conversations with claim representatives and adjusters.' },
+                    'email-correspondence': { title: 'Email Correspondence Template', description: 'Generate professional email templates for various claim-related communications.' },
+                    'fax-cover-sheet': { title: 'Fax Cover Sheet', description: 'Generate a professional fax cover sheet for document transmission with delivery confirmation.' },
+                    'certified-mail': { title: 'Certified Mail Receipt', description: 'Generate a template for certified mail documentation with return receipt requests.' },
+                    'affidavit-template': { title: 'Affidavit Template', description: 'Generate a legal affidavit template for sworn statements and declarations.' },
+                    'notarization-request': { title: 'Notarization Request Form', description: 'Generate a request form for notarization services with identification requirements.' },
+                    'photograph-log': { title: 'Photograph Documentation Log', description: 'Generate a systematic log for photographing and documenting property damage.' },
+                    'video-evidence': { title: 'Video Evidence Log', description: 'Generate a log for video evidence documentation with chain of custody requirements.' },
+                    'receipt-organization': { title: 'Receipt Organization System', description: 'Generate a system for organizing and categorizing expense receipts and invoices.' },
+                    'inventory-list': { title: 'Property Inventory List', description: 'Generate a comprehensive inventory list for personal property and business equipment.' },
+                    'valuation-worksheet': { title: 'Property Valuation Worksheet', description: 'Generate a worksheet for calculating property values and replacement costs.' },
+                    'depreciation-calculator': { title: 'Depreciation Calculator', description: 'Generate a calculator for determining depreciation on various types of property.' },
+                    
+                    // Property-Specific Documents
+                    'residential-property': { title: 'Residential Property Claim', description: 'Generate a specialized claim form for residential property damage and loss.' },
+                    'commercial-property': { title: 'Commercial Property Claim', description: 'Generate a comprehensive claim form for commercial property damage and business interruption.' },
+                    'condo-association': { title: 'Condo Association Claim', description: 'Generate a claim form for condominium association property and common area damage.' },
+                    'homeowners-association': { title: 'HOA Property Claim', description: 'Generate a claim form for homeowners association property and amenity damage.' },
+                    'rental-property': { title: 'Rental Property Claim', description: 'Generate a claim form for rental property damage with tenant notification requirements.' },
+                    'vacation-rental': { title: 'Vacation Rental Claim', description: 'Generate a specialized claim form for vacation rental property damage and loss of income.' },
+                    'manufactured-home': { title: 'Manufactured Home Claim', description: 'Generate a claim form for manufactured home damage with special valuation considerations.' },
+                    'mobile-home': { title: 'Mobile Home Claim', description: 'Generate a claim form for mobile home damage with transportation and setup costs.' },
+                    'farm-property': { title: 'Farm Property Claim', description: 'Generate a comprehensive claim form for farm property including crops, livestock, and equipment.' },
+                    'ranch-property': { title: 'Ranch Property Claim', description: 'Generate a specialized claim form for ranch property including livestock and grazing land.' },
+                    'vineyard-property': { title: 'Vineyard Property Claim', description: 'Generate a claim form for vineyard property including crops, equipment, and wine inventory.' },
+                    'orchard-property': { title: 'Orchard Property Claim', description: 'Generate a claim form for orchard property including trees, crops, and harvesting equipment.' },
+                    'greenhouse-property': { title: 'Greenhouse Property Claim', description: 'Generate a claim form for greenhouse property including structures, equipment, and plants.' },
+                    'aquaculture-property': { title: 'Aquaculture Property Claim', description: 'Generate a claim form for aquaculture property including fish, equipment, and facilities.' },
+                    'timber-property': { title: 'Timber Property Claim', description: 'Generate a claim form for timber property including trees, logging equipment, and access roads.' },
+                    'mining-property': { title: 'Mining Property Claim', description: 'Generate a claim form for mining property including equipment, facilities, and mineral rights.' },
+                    'oil-gas-property': { title: 'Oil & Gas Property Claim', description: 'Generate a claim form for oil and gas property including wells, equipment, and facilities.' },
+                    'renewable-energy': { title: 'Renewable Energy Property Claim', description: 'Generate a claim form for renewable energy property including solar, wind, and hydro facilities.' },
+                    'telecommunications': { title: 'Telecommunications Property Claim', description: 'Generate a claim form for telecommunications property including towers, equipment, and facilities.' },
+                    'transportation-property': { title: 'Transportation Property Claim', description: 'Generate a claim form for transportation property including vehicles, equipment, and facilities.' },
+                    
+                    // Business-Specific Documents
+                    'restaurant-business': { title: 'Restaurant Business Claim', description: 'Generate a comprehensive claim form for restaurant business interruption and property damage.' },
+                    'retail-business': { title: 'Retail Business Claim', description: 'Generate a claim form for retail business including inventory, fixtures, and business interruption.' },
+                    'manufacturing-business': { title: 'Manufacturing Business Claim', description: 'Generate a claim form for manufacturing business including equipment, inventory, and production loss.' },
+                    'construction-business': { title: 'Construction Business Claim', description: 'Generate a claim form for construction business including equipment, materials, and project delays.' },
+                    'healthcare-business': { title: 'Healthcare Business Claim', description: 'Generate a claim form for healthcare business including equipment, facilities, and patient care interruption.' },
+                    'professional-services': { title: 'Professional Services Claim', description: 'Generate a claim form for professional services business including office equipment and client loss.' },
+                    'technology-business': { title: 'Technology Business Claim', description: 'Generate a claim form for technology business including equipment, data, and business interruption.' },
+                    'hospitality-business': { title: 'Hospitality Business Claim', description: 'Generate a claim form for hospitality business including facilities, equipment, and guest services.' },
+                    'education-business': { title: 'Education Business Claim', description: 'Generate a claim form for education business including facilities, equipment, and student services.' },
+                    'fitness-business': { title: 'Fitness Business Claim', description: 'Generate a claim form for fitness business including equipment, facilities, and membership services.' },
+                    'beauty-business': { title: 'Beauty Business Claim', description: 'Generate a claim form for beauty business including equipment, supplies, and client services.' },
+                    'automotive-business': { title: 'Automotive Business Claim', description: 'Generate a claim form for automotive business including equipment, inventory, and service interruption.' },
+                    'agricultural-business': { title: 'Agricultural Business Claim', description: 'Generate a claim form for agricultural business including crops, livestock, and equipment.' },
+                    'transportation-business': { title: 'Transportation Business Claim', description: 'Generate a claim form for transportation business including vehicles, equipment, and service interruption.' },
+                    'warehouse-business': { title: 'Warehouse Business Claim', description: 'Generate a claim form for warehouse business including inventory, equipment, and storage facilities.' },
+                    
+                    // Catastrophic Event Documents
+                    'hurricane-claim': { title: 'Hurricane Damage Claim', description: 'Generate a specialized claim form for hurricane damage including wind, water, and flood damage.' },
+                    'flood-claim': { title: 'Flood Damage Claim', description: 'Generate a comprehensive claim form for flood damage including property and contents.' },
+                    'wildfire-claim': { title: 'Wildfire Damage Claim', description: 'Generate a claim form for wildfire damage including property, contents, and evacuation expenses.' },
+                    'earthquake-claim': { title: 'Earthquake Damage Claim', description: 'Generate a claim form for earthquake damage including structural and contents damage.' },
+                    'tornado-claim': { title: 'Tornado Damage Claim', description: 'Generate a claim form for tornado damage including wind and debris damage.' },
+                    'hail-claim': { title: 'Hail Damage Claim', description: 'Generate a claim form for hail damage including roof, siding, and vehicle damage.' },
+                    'winter-storm-claim': { title: 'Winter Storm Claim', description: 'Generate a claim form for winter storm damage including ice, snow, and freeze damage.' }
+                };
+            }
+
+            init() {
+                this.setupDocumentTypeSelection();
+                this.setupFormSubmission();
+                this.setupDownloadButtons();
+                this.setupSearch();
+                this.handleUrlParameters();
+            }
+
+            setupSearch() {
+                const searchBox = document.getElementById('searchBox');
+                searchBox.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const cards = document.querySelectorAll('.document-type-card');
+                    
+                    cards.forEach(card => {
+                        const title = card.querySelector('h3').textContent.toLowerCase();
+                        const description = card.querySelector('p').textContent.toLowerCase();
+                        const matches = title.includes(searchTerm) || description.includes(searchTerm);
+                        
+                        card.style.display = matches ? 'block' : 'none';
+                    });
+                });
+            }
+
+            handleUrlParameters() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const type = urlParams.get('type');
+                
+                if (type) {
+                    const card = document.querySelector(`[data-type="${type}"]`);
+                    if (card) {
+                        this.selectDocumentType(card);
+                    }
+                }
+            }
+
+            setupDocumentTypeSelection() {
+                const cards = document.querySelectorAll('.document-type-card');
+                
+                cards.forEach(card => {
+                    card.addEventListener('click', () => {
+                        this.selectDocumentType(card);
+                    });
+                });
+            }
+
+            selectDocumentType(card) {
+                // Remove previous selection
+                document.querySelectorAll('.document-type-card').forEach(c => c.classList.remove('selected'));
+                
+                // Select new card
+                card.classList.add('selected');
+                this.selectedType = card.dataset.type;
+                
+                // Show form
+                this.showForm();
+            }
+
+            showForm() {
+                const formContainer = document.getElementById('formContainer');
+                const formTitle = document.getElementById('formTitle');
+                const formDescription = document.getElementById('formDescription');
+                
+                const docInfo = this.allDocuments[this.selectedType];
+                if (docInfo) {
+                    formTitle.textContent = docInfo.title;
+                    formDescription.textContent = docInfo.description;
+                } else {
+                    formTitle.textContent = 'Document Information';
+                    formDescription.textContent = 'Please provide the details for your document.';
+                }
+                
+                formContainer.style.display = 'block';
+                
+                // Scroll to form
+                formContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            setupFormSubmission() {
+                const form = document.getElementById('documentForm');
+                const generateBtn = document.getElementById('generateBtn');
+                
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    generateBtn.disabled = true;
+                    generateBtn.textContent = 'Generating...';
+                    
+                    const formData = new FormData(form);
+                    const data = Object.fromEntries(formData);
+                    
+                    try {
+                        await this.generateDocument(data);
+                    } catch (error) {
+                        console.error('Error generating document:', error);
+                        this.showError('Failed to generate document. Please try again.');
+                    } finally {
+                        generateBtn.disabled = false;
+                        generateBtn.textContent = 'Generate Document';
+                    }
+                });
+            }
+
+            async generateDocument(data) {
+                const loadingState = document.getElementById('loadingState');
+                const resultContainer = document.getElementById('resultContainer');
+                
+                // Show loading
+                loadingState.classList.add('show');
+                resultContainer.classList.remove('show');
+                
+                try {
+                    // Call the Netlify function for AI generation
+                    const response = await fetch('/.netlify/functions/generate-document', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            documentId: this.selectedType,
+                            title: document.getElementById('formTitle').textContent,
+                            fields: data
+                        })
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        this.generatedContent = result.html;
+                        this.displayResults(result.html);
+                    } else {
+                        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                        console.error('AI Generation Error:', errorData);
+                        throw new Error(errorData.error || 'AI generation failed');
+                    }
+                    
+                } catch (error) {
+                    console.error('AI Generation Error:', error);
+                    // Show user-friendly error message
+                    this.showError(`Document generation failed: ${error.message}. Using fallback template.`);
+                    
+                    // Fallback to static templates if AI fails
+                    const fallback = this.generateFallbackDocument(data);
+                    this.generatedContent = fallback;
+                    this.displayResults(fallback);
+                } finally {
+                    // Hide loading
+                    loadingState.classList.remove('show');
+                }
+            }
+
+            generateFallbackDocument(data) {
+                const today = new Date().toLocaleDateString();
+                const documentTitle = document.getElementById('formTitle').textContent;
+                const documentType = this.selectedType;
+                
+                // Generate a more comprehensive fallback document based on type
+                let documentContent = '';
+                
+                if (documentType.includes('letter') || documentType.includes('demand') || documentType.includes('appeal')) {
+                    documentContent = this.generateLetterFormat(data, documentTitle, today);
+                } else if (documentType.includes('form') || documentType.includes('claim')) {
+                    documentContent = this.generateFormFormat(data, documentTitle, today);
+                } else if (documentType.includes('report') || documentType.includes('assessment')) {
+                    documentContent = this.generateReportFormat(data, documentTitle, today);
+                } else {
+                    documentContent = this.generateGenericFormat(data, documentTitle, today);
+                }
+                
+                return documentContent;
+            }
+            
+            generateLetterFormat(data, title, date) {
+                return `
+<div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
+    <div style="text-align: right; margin-bottom: 30px; font-size: 14px;">${date}</div>
+    
+    <div style="margin-bottom: 20px;">
+        <strong>${data.claimantName}</strong><br>
+        ${data.claimantAddress}
+    </div>
+    
+    <div style="margin-bottom: 30px;">
+        <strong>${data.insurerName}</strong><br>
+        Claims Department<br>
+        [Insurance Company Address]
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+        <strong>Re: ${title}</strong><br>
+        <strong>Policy Number:</strong> ${data.policyNumber}<br>
+        <strong>Claim Number:</strong> ${data.claimNumber}<br>
+        <strong>Date of Loss:</strong> ${data.dateOfLoss}
+    </div>
+    
+    <div style="margin-top: 30px;">
+        <p><strong>Dear Claims Department,</strong></p>
+        
+        <p>I am writing to you regarding the above-referenced claim. ${data.situationDetails}</p>
+        
+        <p>I respectfully request your immediate attention to this matter and look forward to your prompt response.</p>
+    </div>
+    
+    <div style="margin-top: 40px;">
+        <p>Sincerely,<br><br><strong>${data.claimantName}</strong></p>
+    </div>
+    
+    <div style="text-align: center; color: #666; font-size: 10px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 10px;">
+        Generated by ClaimNavigatorAI - Professional Insurance Claim Documentation
+    </div>
+</div>`;
+            }
+            
+            generateFormFormat(data, title, date) {
+                return `
+<div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
+    <h1 style="color: #1e3a8a; text-align: center; margin-bottom: 30px;">${title}</h1>
+    
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <h3 style="color: #1e3a8a; margin-bottom: 15px;">Claim Information</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Claimant Name:</strong></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${data.claimantName}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Policy Number:</strong></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${data.policyNumber}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Claim Number:</strong></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${data.claimNumber}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Date of Loss:</strong></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${data.dateOfLoss}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Insurance Company:</strong></td>
+                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${data.insurerName}</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div style="margin-bottom: 30px;">
+        <h3 style="color: #1e3a8a; margin-bottom: 15px;">Situation Details</h3>
+        <div style="background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 4px;">
+            <p>${data.situationDetails}</p>
+        </div>
+    </div>
+    
+    <div style="margin-top: 40px; text-align: right;">
+        <p><strong>Date:</strong> ${date}</p>
+        <p><strong>Signature:</strong> _________________________</p>
+        <p><strong>${data.claimantName}</strong></p>
+    </div>
+    
+    <div style="text-align: center; color: #666; font-size: 10px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 10px;">
+        Generated by ClaimNavigatorAI - Professional Insurance Claim Documentation
+    </div>
+</div>`;
+            }
+            
+            generateReportFormat(data, title, date) {
+                return `
+<div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
+    <h1 style="color: #1e3a8a; text-align: center; margin-bottom: 30px;">${title}</h1>
+    
+    <div style="margin-bottom: 30px;">
+        <h2 style="color: #1e3a8a; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px;">Executive Summary</h2>
+        <p>This report documents the claim details and situation for policy number ${data.policyNumber} regarding the loss that occurred on ${data.dateOfLoss}.</p>
+    </div>
+    
+    <div style="margin-bottom: 30px;">
+        <h2 style="color: #1e3a8a; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px;">Claim Details</h2>
+        <ul>
+            <li><strong>Claimant:</strong> ${data.claimantName}</li>
+            <li><strong>Policy Number:</strong> ${data.policyNumber}</li>
+            <li><strong>Claim Number:</strong> ${data.claimNumber}</li>
+            <li><strong>Date of Loss:</strong> ${data.dateOfLoss}</li>
+            <li><strong>Insurance Company:</strong> ${data.insurerName}</li>
+        </ul>
+    </div>
+    
+    <div style="margin-bottom: 30px;">
+        <h2 style="color: #1e3a8a; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px;">Situation Analysis</h2>
+        <p>${data.situationDetails}</p>
+    </div>
+    
+    <div style="margin-bottom: 30px;">
+        <h2 style="color: #1e3a8a; border-bottom: 2px solid #1e3a8a; padding-bottom: 10px;">Recommendations</h2>
+        <p>Based on the information provided, immediate action is required to address this claim matter. All relevant documentation should be submitted to the insurance company for proper processing.</p>
+    </div>
+    
+    <div style="margin-top: 40px; text-align: right;">
+        <p><strong>Report Date:</strong> ${date}</p>
+        <p><strong>Prepared by:</strong> ${data.claimantName}</p>
+    </div>
+    
+    <div style="text-align: center; color: #666; font-size: 10px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 10px;">
+        Generated by ClaimNavigatorAI - Professional Insurance Claim Documentation
+    </div>
+</div>`;
+            }
+            
+            generateGenericFormat(data, title, date) {
+                return `
+<div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
+    <h1 style="color: #1e3a8a; text-align: center; margin-bottom: 30px;">${title}</h1>
+    
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <h3 style="color: #1e3a8a; margin-bottom: 15px;">Document Information</h3>
+        <p><strong>Date:</strong> ${date}</p>
+        <p><strong>Claimant:</strong> ${data.claimantName}</p>
+        <p><strong>Policy Number:</strong> ${data.policyNumber}</p>
+        <p><strong>Claim Number:</strong> ${data.claimNumber}</p>
+        <p><strong>Date of Loss:</strong> ${data.dateOfLoss}</p>
+        <p><strong>Insurance Company:</strong> ${data.insurerName}</p>
+    </div>
+    
+    <div style="margin-bottom: 30px;">
+        <h3 style="color: #1e3a8a; margin-bottom: 15px;">Details</h3>
+        <div style="background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 4px;">
+            <p>${data.situationDetails}</p>
+        </div>
+    </div>
+    
+    <div style="margin-top: 40px; text-align: right;">
+        <p><strong>Signature:</strong> _________________________</p>
+        <p><strong>${data.claimantName}</strong></p>
+    </div>
+    
+    <div style="text-align: center; color: #666; font-size: 10px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 10px;">
+        Generated by ClaimNavigatorAI - Professional Insurance Claim Documentation
+    </div>
+</div>`;
+            }
+
+            displayResults(content) {
+                const resultContainer = document.getElementById('resultContainer');
+                const resultContent = document.getElementById('resultContent');
+                
+                resultContent.innerHTML = content;
+                resultContainer.classList.add('show');
+                
+                // Scroll to results
+                resultContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            setupDownloadButtons() {
+                const copyBtn = document.getElementById('copyTextBtn');
+                const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+                
+                copyBtn.addEventListener('click', () => {
+                    const textContent = document.getElementById('resultContent').textContent;
+                    navigator.clipboard.writeText(textContent).then(() => {
+                        copyBtn.textContent = '✓ Copied!';
+                        setTimeout(() => {
+                            copyBtn.textContent = '📋 Copy Text';
+                        }, 2000);
+                    });
+                });
+                
+                downloadPdfBtn.addEventListener('click', () => {
+                    this.generatePDF();
+                });
+            }
+
+            generatePDF() {
+                if (!this.generatedContent) {
+                    alert('No document content to download. Please generate a document first.');
+                    return;
+                }
+
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    
+                    // Set up the document
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica');
+                    
+                    // Split content into lines that fit the page width
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const margin = 20;
+                    const maxWidth = pageWidth - (margin * 2);
+                    
+                    // Get text content and split into lines
+                    const textContent = document.getElementById('resultContent').textContent;
+                    const lines = doc.splitTextToSize(textContent, maxWidth);
+                    
+                    let yPosition = 20;
+                    const lineHeight = 7;
+                    const pageHeight = doc.internal.pageSize.getHeight();
+                    
+                    // Add each line to the PDF
+                    for (let i = 0; i < lines.length; i++) {
+                        // Check if we need a new page
+                        if (yPosition + lineHeight > pageHeight - 20) {
+                            doc.addPage();
+                            yPosition = 20;
+                        }
+                        
+                        doc.text(lines[i], margin, yPosition);
+                        yPosition += lineHeight;
+                    }
+                    
+                    // Generate filename based on document type and date
+                    const now = new Date();
+                    const dateStr = now.toISOString().split('T')[0];
+                    const filename = `claim-document-${this.selectedType}-${dateStr}.pdf`;
+                    
+                    // Download the PDF
+                    doc.save(filename);
+                    
+                } catch (error) {
+                    console.error('PDF Generation Error:', error);
+                    alert('Failed to generate PDF. Please try again.');
+                }
+            }
+
+            showError(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = message;
+                
+                const container = document.querySelector('.document-generator');
+                container.insertBefore(errorDiv, container.firstChild);
+                
+                setTimeout(() => {
+                    errorDiv.remove();
+                }, 5000);
+            }
+        }
+
+        // Initialize the document generator when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new DocumentGenerator();
+        });
+    </script>
+</body>
+</html>

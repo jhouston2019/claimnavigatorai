@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claim Appeal Letter - ClaimNavigatorAI</title>
-    <meta name="description" content="Professional appeal letter for denied claims with supporting documentation requirements and legal basis.">
+    <title>Depreciation Schedule - ClaimNavigatorAI</title>
+    <meta name="description" content="Detailed depreciation calculation for property and equipment losses with replacement cost analysis.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/app/assets/css/style.css">
     <style>
@@ -51,9 +51,9 @@
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">⚖️ Claim Appeal Letter</h1>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">💰 Depreciation Schedule</h1>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                Professional appeal letter for denied claims with supporting documentation requirements and legal basis.
+                Detailed depreciation calculation for property and equipment losses with replacement cost analysis.
             </p>
         </div>
 
@@ -62,45 +62,57 @@
             <form id="documentFormElement" class="space-y-6">
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Insurer Name <span class="text-red-500">*</span>
+                Property Type <span class="text-red-500">*</span>
             </label>
-            <input type="text" id="insurerName" name="insurerName" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter insurer name...">
+            <input type="text" id="propertyType" name="propertyType" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter property type...">
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Claim Number <span class="text-red-500">*</span>
+                Original Cost <span class="text-red-500">*</span>
             </label>
-            <input type="text" id="claimNumber" name="claimNumber" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter claim number...">
+            <input type="number" id="originalCost" name="originalCost" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter original cost...">
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Denial Date <span class="text-red-500">*</span>
+                Purchase Date <span class="text-red-500">*</span>
             </label>
-            <input type="date" id="denialDate" name="denialDate" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter denial date...">
+            <input type="date" id="purchaseDate" name="purchaseDate" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter purchase date...">
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Denial Reason <span class="text-red-500">*</span>
+                Useful Life (years) <span class="text-red-500">*</span>
             </label>
-            <textarea id="denialReason" name="denialReason" required rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter denial reason..."></textarea>
+            <input type="number" id="usefulLife" name="usefulLife" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter useful life (years)...">
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Appeal Basis <span class="text-red-500">*</span>
+                Current Age (years) <span class="text-red-500">*</span>
             </label>
-            <textarea id="appealBasis" name="appealBasis" required rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter appeal basis..."></textarea>
+            <input type="number" id="currentAge" name="currentAge" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter current age (years)...">
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Supporting Evidence 
+                Replacement Cost <span class="text-red-500">*</span>
             </label>
-            <textarea id="supportingEvidence" name="supportingEvidence"  rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter supporting evidence..."></textarea>
+            <input type="number" id="replacementCost" name="replacementCost" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter replacement cost...">
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Legal Authority 
+                Depreciation Method <span class="text-red-500">*</span>
             </label>
-            <textarea id="legalAuthority" name="legalAuthority"  rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter legal authority..."></textarea>
+            <select id="depreciationMethod" name="depreciationMethod" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Select an option...</option>
+                <option value="Straight Line">Straight Line</option><option value="Declining Balance">Declining Balance</option><option value="Sum of Years">Sum of Years</option>
+            </select>
+        </div>
+                <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">
+                Condition <span class="text-red-500">*</span>
+            </label>
+            <select id="condition" name="condition" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Select an option...</option>
+                <option value="Excellent">Excellent</option><option value="Good">Good</option><option value="Fair">Fair</option><option value="Poor">Poor</option>
+            </select>
         </div>
             </form>
 
@@ -124,7 +136,7 @@
                     <div class="text-green-500 text-2xl mr-3">✅</div>
                     <div>
                         <h3 class="text-lg font-semibold text-green-900">Document Generated Successfully!</h3>
-                        <p class="text-green-700">Your claim appeal letter has been generated and is ready for download.</p>
+                        <p class="text-green-700">Your depreciation schedule has been generated and is ready for download.</p>
                     </div>
                 </div>
             </div>
@@ -162,7 +174,7 @@
     <script>
         class DocumentPage {
             constructor() {
-                this.docKey = 'appeal-letter';
+                this.docKey = 'depreciation-schedule';
                 this.generatedDocument = null;
                 this.init();
             }
@@ -270,14 +282,14 @@
                 } else if (this.generatedDocument.contentBase64) {
                     const link = document.createElement('a');
                     link.href = `data:${this.generatedDocument.mimeType || 'application/pdf'};base64,${this.generatedDocument.contentBase64}`;
-                    link.download = this.generatedDocument.filename || 'appeal-letter-document.pdf';
+                    link.download = this.generatedDocument.filename || 'depreciation-schedule-document.pdf';
                     link.click();
                 } else {
                     const blob = new Blob([this.generatedDocument.document || this.generatedDocument.content], { type: 'text/plain' });
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = 'appeal-letter-document.txt';
+                    link.download = 'depreciation-schedule-document.txt';
                     link.click();
                     URL.revokeObjectURL(url);
                 }

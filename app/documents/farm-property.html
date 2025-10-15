@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claim Appeal Letter - ClaimNavigatorAI</title>
-    <meta name="description" content="Professional appeal letter for denied claims with supporting documentation requirements and legal basis.">
+    <title>Farm Property Claim - ClaimNavigatorAI</title>
+    <meta name="description" content="Comprehensive claim form for farm property including crops, livestock, and equipment with agricultural impact analysis.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/app/assets/css/style.css">
     <style>
@@ -51,9 +51,9 @@
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">⚖️ Claim Appeal Letter</h1>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">🏠 Farm Property Claim</h1>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                Professional appeal letter for denied claims with supporting documentation requirements and legal basis.
+                Comprehensive claim form for farm property including crops, livestock, and equipment with agricultural impact analysis.
             </p>
         </div>
 
@@ -62,45 +62,63 @@
             <form id="documentFormElement" class="space-y-6">
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Insurer Name <span class="text-red-500">*</span>
+                Farm Name <span class="text-red-500">*</span>
             </label>
-            <input type="text" id="insurerName" name="insurerName" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter insurer name...">
+            <input type="text" id="farmName" name="farmName" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter farm name...">
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Claim Number <span class="text-red-500">*</span>
+                Farm Address <span class="text-red-500">*</span>
             </label>
-            <input type="text" id="claimNumber" name="claimNumber" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter claim number...">
+            <textarea id="farmAddress" name="farmAddress" required rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter farm address..."></textarea>
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Denial Date <span class="text-red-500">*</span>
+                Farm Type <span class="text-red-500">*</span>
             </label>
-            <input type="date" id="denialDate" name="denialDate" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter denial date...">
+            <select id="farmType" name="farmType" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Select an option...</option>
+                <option value="Crop">Crop</option><option value="Livestock">Livestock</option><option value="Mixed">Mixed</option><option value="Dairy">Dairy</option><option value="Other">Other</option>
+            </select>
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Denial Reason <span class="text-red-500">*</span>
+                Acres 
             </label>
-            <textarea id="denialReason" name="denialReason" required rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter denial reason..."></textarea>
+            <input type="number" id="acres" name="acres"  class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter acres...">
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Appeal Basis <span class="text-red-500">*</span>
+                Damage Type <span class="text-red-500">*</span>
             </label>
-            <textarea id="appealBasis" name="appealBasis" required rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter appeal basis..."></textarea>
+            <select id="damageType" name="damageType" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Select an option...</option>
+                <option value="Crops">Crops</option><option value="Livestock">Livestock</option><option value="Equipment">Equipment</option><option value="Buildings">Buildings</option><option value="Other">Other</option>
+            </select>
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Supporting Evidence 
+                Crop Loss 
             </label>
-            <textarea id="supportingEvidence" name="supportingEvidence"  rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter supporting evidence..."></textarea>
+            <textarea id="cropLoss" name="cropLoss"  rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter crop loss..."></textarea>
         </div>
                 <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">
-                Legal Authority 
+                Livestock Loss 
             </label>
-            <textarea id="legalAuthority" name="legalAuthority"  rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter legal authority..."></textarea>
+            <textarea id="livestockLoss" name="livestockLoss"  rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter livestock loss..."></textarea>
+        </div>
+                <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">
+                Equipment Loss 
+            </label>
+            <textarea id="equipmentLoss" name="equipmentLoss"  rows="4" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter equipment loss..."></textarea>
+        </div>
+                <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">
+                Estimated Total Loss <span class="text-red-500">*</span>
+            </label>
+            <input type="number" id="estimatedTotalLoss" name="estimatedTotalLoss" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter estimated total loss...">
         </div>
             </form>
 
@@ -124,7 +142,7 @@
                     <div class="text-green-500 text-2xl mr-3">✅</div>
                     <div>
                         <h3 class="text-lg font-semibold text-green-900">Document Generated Successfully!</h3>
-                        <p class="text-green-700">Your claim appeal letter has been generated and is ready for download.</p>
+                        <p class="text-green-700">Your farm property claim has been generated and is ready for download.</p>
                     </div>
                 </div>
             </div>
@@ -162,7 +180,7 @@
     <script>
         class DocumentPage {
             constructor() {
-                this.docKey = 'appeal-letter';
+                this.docKey = 'farm-property';
                 this.generatedDocument = null;
                 this.init();
             }
@@ -270,14 +288,14 @@
                 } else if (this.generatedDocument.contentBase64) {
                     const link = document.createElement('a');
                     link.href = `data:${this.generatedDocument.mimeType || 'application/pdf'};base64,${this.generatedDocument.contentBase64}`;
-                    link.download = this.generatedDocument.filename || 'appeal-letter-document.pdf';
+                    link.download = this.generatedDocument.filename || 'farm-property-document.pdf';
                     link.click();
                 } else {
                     const blob = new Blob([this.generatedDocument.document || this.generatedDocument.content], { type: 'text/plain' });
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = 'appeal-letter-document.txt';
+                    link.download = 'farm-property-document.txt';
                     link.click();
                     URL.revokeObjectURL(url);
                 }
