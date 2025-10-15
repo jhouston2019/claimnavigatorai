@@ -22,7 +22,7 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const { docId, formData } = JSON.parse(event.body);
+    const { docId, formData, userData } = JSON.parse(event.body);
     
     if (!docId || !formData) {
       return {
@@ -33,7 +33,7 @@ exports.handler = async (event, context) => {
     }
 
     // Create a comprehensive prompt for the specific document type
-    const prompt = createDocumentPrompt(docId, formData);
+    const prompt = createDocumentPrompt(docId, formData, userData);
     
     const response = await client.chat.completions.create({
       model: "gpt-4o-mini",
@@ -76,44 +76,60 @@ exports.handler = async (event, context) => {
   }
 };
 
-function createDocumentPrompt(docId, formData) {
+function createDocumentPrompt(docId, formData, userData = {}) {
   const documentTemplates = {
     'proof-of-loss': `
-      Generate a comprehensive Proof of Loss document based on the following information:
+      Generate a comprehensive, legally sound Proof of Loss document for insurance claim submission.
       
-      Claimant Information: ${formData.field_0 || 'Not provided'}
-      Policy Number: ${formData.field_1 || 'Not provided'}
-      Claim Number: ${formData.field_2 || 'Not provided'}
-      Loss Date: ${formData.field_3 || 'Not provided'}
-      Loss Location: ${formData.field_4 || 'Not provided'}
-      Description of Loss: ${formData.field_5 || 'Not provided'}
+      USER INFORMATION:
+      Policyholder: ${userData.userName || 'Not provided'}
+      Policy Number: ${userData.policyNumber || formData.field_1 || 'Not provided'}
+      Claim Number: ${userData.claimNumber || formData.field_2 || 'Not provided'}
+      Date of Loss: ${userData.dateOfLoss || formData.field_3 || 'Not provided'}
+      Property Address: ${userData.propertyAddress || formData.field_4 || 'Not provided'}
+      
+      LOSS DETAILS:
+      Claimant Information: ${formData.field_0 || userData.userName || 'Not provided'}
+      Loss Description: ${formData.field_5 || 'Not provided'}
       Estimated Loss Amount: $${formData.field_6 || '0'}
       
       Create a professional Proof of Loss document that includes:
-      1. Proper legal header with claimant and policy information
-      2. Detailed description of the loss event
-      3. Itemized list of damaged property with values
-      4. Supporting documentation requirements
+      1. Formal legal header with all policy and claim information
+      2. Sworn statement of loss with detailed description
+      3. Itemized list of all damaged property with replacement costs
+      4. Supporting documentation requirements and deadlines
       5. Legal language appropriate for insurance claims
       6. Professional formatting suitable for legal submission
+      7. Signature lines and notarization requirements
+      
+      Format as a formal legal document with proper structure and professional language.
     `,
     
     'demand-letter': `
-      Generate a professional Payment Demand Letter based on the following information:
+      Generate a professional, legally sound Payment Demand Letter for insurance claim disputes.
       
+      USER INFORMATION:
+      Policyholder: ${userData.userName || 'Not provided'}
+      Policy Number: ${userData.policyNumber || 'Not provided'}
+      Claim Number: ${userData.claimNumber || formData.field_1 || 'Not provided'}
+      Property Address: ${userData.propertyAddress || 'Not provided'}
+      
+      DEMAND DETAILS:
       Insurer: ${formData.field_0 || 'Not provided'}
-      Claim Number: ${formData.field_1 || 'Not provided'}
       Disputed Amount: $${formData.field_2 || '0'}
       Reason for Demand: ${formData.field_3 || 'Not provided'}
       Response Deadline: ${formData.field_4 || 'Not provided'}
       
       Create a formal demand letter that includes:
-      1. Professional letterhead and formatting
-      2. Clear statement of the demand
-      3. Legal basis for the demand
+      1. Professional letterhead with policyholder information
+      2. Clear statement of the payment demand
+      3. Legal basis and supporting arguments
       4. Specific deadline for response
       5. Consequences of non-compliance
       6. Professional but firm tone
+      7. Proper legal formatting and structure
+      
+      Format as a formal business letter with professional language and legal precision.
     `,
     
     'appeal-letter': `

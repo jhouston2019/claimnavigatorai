@@ -14,6 +14,40 @@
   </header>
 
   <main class="max-w-5xl mx-auto mt-6 p-6 bg-white rounded-lg shadow">
+    <!-- User Information Section -->
+    <div class="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
+      <h3 class="font-semibold text-gray-900 mb-3">👤 Your Claim Information</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <input type="text" id="userName" class="w-full border border-gray-300 rounded-lg p-2 text-sm" placeholder="Your full legal name">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Policy Number</label>
+          <input type="text" id="policyNumber" class="w-full border border-gray-300 rounded-lg p-2 text-sm" placeholder="Your insurance policy number">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Claim Number</label>
+          <input type="text" id="claimNumber" class="w-full border border-gray-300 rounded-lg p-2 text-sm" placeholder="Your claim number">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" id="userEmail" class="w-full border border-gray-300 rounded-lg p-2 text-sm" placeholder="your.email@example.com">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Date of Loss</label>
+          <input type="date" id="dateOfLoss" class="w-full border border-gray-300 rounded-lg p-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Property Address</label>
+          <input type="text" id="propertyAddress" class="w-full border border-gray-300 rounded-lg p-2 text-sm" placeholder="Full property address">
+        </div>
+      </div>
+      <button id="saveUserData" class="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+        💾 Save Information
+      </button>
+    </div>
+
     <div class="mb-6">
       <p id="docDescription" class="text-gray-600 mb-4"></p>
       <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -48,14 +82,31 @@
 
     <div class="border-t pt-6">
       <h3 class="text-lg font-semibold mb-3">🤖 AI Generated Content</h3>
+      
+      <!-- Header Preview -->
+      <div id="headerPreview" class="mb-4 p-3 bg-gray-100 border border-gray-300 rounded-lg text-sm font-mono" style="display: none;">
+        <div class="font-semibold text-gray-800">📄 Document Header (Auto-Generated):</div>
+        <div id="headerContent" class="mt-1 text-gray-700"></div>
+      </div>
+      
       <textarea id="aiOutput" class="w-full h-80 border border-gray-300 p-4 rounded-lg font-mono text-sm" 
                 placeholder="AI Draft Output will appear here..."></textarea>
+      
+      <!-- Footer Preview -->
+      <div id="footerPreview" class="mt-4 p-3 bg-gray-100 border border-gray-300 rounded-lg text-sm font-mono" style="display: none;">
+        <div class="font-semibold text-gray-800">📄 Document Footer (Auto-Generated):</div>
+        <div id="footerContent" class="mt-1 text-gray-700"></div>
+      </div>
+      
       <div class="mt-3 flex gap-2">
         <button id="copyBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
           📋 Copy Text
         </button>
         <button id="clearBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
           🗑️ Clear
+        </button>
+        <button id="previewBtn" class="bg-blue-200 text-blue-700 px-4 py-2 rounded hover:bg-blue-300 transition-colors">
+          👁️ Preview Header/Footer
         </button>
       </div>
     </div>
@@ -66,6 +117,48 @@
     const docId = params.get('id');
 
     let currentDocument = null;
+    let userData = {};
+
+    // Load saved user data
+    function loadUserData() {
+      const saved = localStorage.getItem('claimNavigatorUserData');
+      if (saved) {
+        userData = JSON.parse(saved);
+        document.getElementById('userName').value = userData.userName || '';
+        document.getElementById('policyNumber').value = userData.policyNumber || '';
+        document.getElementById('claimNumber').value = userData.claimNumber || '';
+        document.getElementById('userEmail').value = userData.email || '';
+        document.getElementById('dateOfLoss').value = userData.dateOfLoss || '';
+        document.getElementById('propertyAddress').value = userData.propertyAddress || '';
+      }
+    }
+
+    // Save user data
+    function saveUserData() {
+      userData = {
+        userName: document.getElementById('userName').value,
+        policyNumber: document.getElementById('policyNumber').value,
+        claimNumber: document.getElementById('claimNumber').value,
+        email: document.getElementById('userEmail').value,
+        dateOfLoss: document.getElementById('dateOfLoss').value,
+        propertyAddress: document.getElementById('propertyAddress').value
+      };
+      localStorage.setItem('claimNavigatorUserData', JSON.stringify(userData));
+      alert('✅ Your information has been saved!');
+    }
+
+    // Generate header content
+    function generateHeader() {
+      if (!userData.userName) return '';
+      return `Claim Navigator AI — Confidential Claim File
+Policyholder: ${userData.userName} | Policy #: ${userData.policyNumber || 'N/A'} | Claim #: ${userData.claimNumber || 'N/A'}
+Date of Loss: ${userData.dateOfLoss || 'N/A'} | Property: ${userData.propertyAddress || 'N/A'}`;
+    }
+
+    // Generate footer content
+    function generateFooter() {
+      return '© ClaimNavigatorAI — Confidential · Generated by Claim Navigator AI';
+    }
 
     // Load document configuration
     fetch('/app/document-generator-v2/config/documents.json')
@@ -150,7 +243,8 @@
           form.appendChild(fieldDiv);
         });
 
-        // Set up event handlers
+        // Load user data and set up event handlers
+        loadUserData();
         setupEventHandlers();
       })
       .catch(err => {
@@ -178,7 +272,7 @@
           const response = await fetch('/app/document-generator-v2/netlify/functions/generate-document', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ docId, formData })
+            body: JSON.stringify({ docId, formData, userData })
           });
 
           const data = await response.json();
@@ -196,17 +290,20 @@
         }
       };
 
-      // Export functions
+      // Export functions with user data
       document.getElementById('pdfBtn').onclick = () => {
-        window.open(`/app/document-generator-v2/netlify/functions/export-pdf?docId=${docId}`, '_blank');
+        const userDataParam = encodeURIComponent(JSON.stringify(userData));
+        window.open(`/app/document-generator-v2/netlify/functions/export-pdf?docId=${docId}&userData=${userDataParam}`, '_blank');
       };
 
       document.getElementById('docxBtn').onclick = () => {
-        window.open(`/app/document-generator-v2/netlify/functions/export-docx?docId=${docId}`, '_blank');
+        const userDataParam = encodeURIComponent(JSON.stringify(userData));
+        window.open(`/app/document-generator-v2/netlify/functions/export-docx?docId=${docId}&userData=${userDataParam}`, '_blank');
       };
 
       document.getElementById('xlsxBtn').onclick = () => {
-        window.open(`/app/document-generator-v2/netlify/functions/export-xlsx?docId=${docId}`, '_blank');
+        const userDataParam = encodeURIComponent(JSON.stringify(userData));
+        window.open(`/app/document-generator-v2/netlify/functions/export-xlsx?docId=${docId}&userData=${userDataParam}`, '_blank');
       };
 
       // Utility buttons
@@ -219,6 +316,23 @@
 
       document.getElementById('clearBtn').onclick = () => {
         document.getElementById('aiOutput').value = '';
+      };
+
+      // User data management
+      document.getElementById('saveUserData').onclick = saveUserData;
+
+      // Header/Footer preview
+      document.getElementById('previewBtn').onclick = () => {
+        const headerContent = generateHeader();
+        const footerContent = generateFooter();
+        
+        if (headerContent) {
+          document.getElementById('headerContent').textContent = headerContent;
+          document.getElementById('headerPreview').style.display = 'block';
+        }
+        
+        document.getElementById('footerContent').textContent = footerContent;
+        document.getElementById('footerPreview').style.display = 'block';
       };
     }
 
