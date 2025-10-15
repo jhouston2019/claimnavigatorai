@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🎯 Situational Advisory - ClaimNavigatorAI</title>
   <link rel="stylesheet" href="/assets/css/advisory.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-900 font-inter">
   <header class="bg-[#0f172a] text-white p-4 flex justify-between items-center">
@@ -303,6 +304,303 @@
 
     // Initialize the page
     loadScenarios();
+  </script>
+
+  <!-- Letter Generation Modal -->
+  <div id="letterModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Generate Document for This Situation</h2>
+          <button id="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        </div>
+        
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2">Situation:</h3>
+          <p id="modalSituation" class="text-gray-600 bg-gray-50 p-3 rounded-lg"></p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <!-- Standard Letter Option -->
+          <div class="border-2 border-gray-200 rounded-lg p-6 hover:border-blue-300 transition-colors">
+            <div class="text-center">
+              <div class="text-4xl mb-4">📄</div>
+              <h3 class="text-xl font-semibold mb-2">Generate Standard Letter</h3>
+              <p class="text-gray-600 mb-4">Use our professional template with your claim information</p>
+              <button id="generateStandard" class="w-full bg-[#1e40af] text-white px-6 py-3 rounded-lg hover:bg-[#3b82f6] transition-colors font-medium">
+                Generate Standard Letter
+              </button>
+            </div>
+          </div>
+
+          <!-- AI Custom Letter Option -->
+          <div class="border-2 border-gray-200 rounded-lg p-6 hover:border-blue-300 transition-colors">
+            <div class="text-center">
+              <div class="text-4xl mb-4">🤖</div>
+              <h3 class="text-xl font-semibold mb-2">Generate Custom AI Letter</h3>
+              <p class="text-gray-600 mb-4">AI-powered customization based on your specific situation</p>
+              <button id="generateAI" class="w-full bg-[#1e40af] text-white px-6 py-3 rounded-lg hover:bg-[#3b82f6] transition-colors font-medium">
+                Generate AI Letter
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Custom Input Section (Hidden by default) -->
+        <div id="aiInputSection" class="hidden mb-6">
+          <h3 class="text-lg font-semibold text-gray-800 mb-3">Customize Your Letter</h3>
+          <div id="customInputFields"></div>
+          <div class="mt-4">
+            <button id="generateCustom" class="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium">
+              Generate Custom Letter
+            </button>
+          </div>
+        </div>
+
+        <!-- Letter Preview Section -->
+        <div id="letterPreview" class="hidden">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Generated Letter</h3>
+            <div class="flex gap-2">
+              <button id="downloadPDF" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                📄 Download PDF
+              </button>
+              <button id="copyText" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                📋 Copy Text
+              </button>
+            </div>
+          </div>
+          <div id="letterContent" class="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto border">
+            <!-- Generated letter content will appear here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Letter Generation Modal System
+    let currentSituation = null;
+    let currentDocumentType = null;
+    let claimData = {
+      name: localStorage.getItem('claimantName') || '',
+      policy: localStorage.getItem('policyNumber') || '',
+      claim: localStorage.getItem('claimNumber') || '',
+      address: localStorage.getItem('propertyAddress') || '',
+      email: localStorage.getItem('claimantEmail') || ''
+    };
+
+    // Modal functionality
+    function showModal(situation, documentType) {
+      currentSituation = situation;
+      currentDocumentType = documentType;
+      
+      document.getElementById('modalSituation').textContent = situation;
+      document.getElementById('letterModal').classList.remove('hidden');
+      document.getElementById('letterPreview').classList.add('hidden');
+      document.getElementById('aiInputSection').classList.add('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('letterModal').classList.add('hidden');
+      document.getElementById('letterPreview').classList.add('hidden');
+      document.getElementById('aiInputSection').classList.add('hidden');
+    }
+
+    function showAIInputSection() {
+      document.getElementById('aiInputSection').classList.remove('hidden');
+      createCustomInputFields();
+    }
+
+    function createCustomInputFields() {
+      const fieldsContainer = document.getElementById('customInputFields');
+      const documentType = currentDocumentType;
+      
+      let inputHTML = '';
+      
+      switch (documentType) {
+        case 'Appeal Letter':
+          inputHTML = `
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Reason for Disagreement</label>
+              <textarea id="customInput" class="w-full border border-gray-300 rounded-lg p-3" rows="3" 
+                placeholder="Explain why you disagree with the denial and provide supporting evidence..."></textarea>
+            </div>
+          `;
+          break;
+        case 'Demand Letter':
+          inputHTML = `
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Amount Owed and Insurer's Offer</label>
+              <textarea id="customInput" class="w-full border border-gray-300 rounded-lg p-3" rows="3" 
+                placeholder="Describe the amount you believe you're owed, the insurer's offer, and why it's inadequate..."></textarea>
+            </div>
+          `;
+          break;
+        case 'Proof of Loss':
+          inputHTML = `
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Damage Items Description</label>
+              <textarea id="customInput" class="w-full border border-gray-300 rounded-lg p-3" rows="3" 
+                placeholder="List specific damaged items, their condition, and estimated values..."></textarea>
+            </div>
+          `;
+          break;
+        case 'Notice of Delay Complaint':
+          inputHTML = `
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Delay Duration and Impact</label>
+              <textarea id="customInput" class="w-full border border-gray-300 rounded-lg p-3" rows="3" 
+                placeholder="Describe how long the insurer has delayed, what you've done to follow up, and the impact of the delay..."></textarea>
+            </div>
+          `;
+          break;
+        case 'Coverage Clarification Request':
+          inputHTML = `
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Coverage Question</label>
+              <textarea id="customInput" class="w-full border border-gray-300 rounded-lg p-3" rows="3" 
+                placeholder="Describe the specific coverage question or policy term in dispute..."></textarea>
+            </div>
+          `;
+          break;
+        default:
+          inputHTML = `
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Additional Details</label>
+              <textarea id="customInput" class="w-full border border-gray-300 rounded-lg p-3" rows="3" 
+                placeholder="Provide any additional details to customize your letter..."></textarea>
+            </div>
+          `;
+      }
+      
+      fieldsContainer.innerHTML = inputHTML;
+    }
+
+    async function generateLetter(mode) {
+      const userInput = mode === 'ai' ? document.getElementById('customInput').value : '';
+      
+      try {
+        const response = await fetch('/netlify/functions/generate-letter.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            mode: mode,
+            situation: currentSituation,
+            documentType: currentDocumentType,
+            claimData: claimData,
+            userInput: userInput
+          })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          displayLetter(data.text);
+        } else {
+          throw new Error(data.error || 'Failed to generate letter');
+        }
+      } catch (error) {
+        console.error('Error generating letter:', error);
+        alert('Failed to generate letter. Please try again.');
+      }
+    }
+
+    function displayLetter(letterText) {
+      document.getElementById('letterContent').textContent = letterText;
+      document.getElementById('letterPreview').classList.remove('hidden');
+      document.getElementById('aiInputSection').classList.add('hidden');
+    }
+
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: "mm", format: "letter" });
+      
+      // Header block
+      doc.setFontSize(10);
+      doc.text(`Claimant: ${claimData.name || '[Your Name]'}   Policy: ${claimData.policy || '[Policy Number]'}   Claim: ${claimData.claim || '[Claim Number]'}`, 10, 12);
+      doc.text(`Property: ${claimData.address || '[Your Address]'}   Date: ${new Date().toLocaleDateString()}`, 10, 18);
+      
+      // Add separator line
+      doc.line(10, 22, 200, 22);
+      
+      // Add letter content
+      const letterText = document.getElementById('letterContent').textContent;
+      const marginX = 10;
+      const startY = 28;
+      const lines = doc.splitTextToSize(letterText, 190);
+      doc.text(lines, marginX, startY);
+      
+      // Footer watermark
+      const footerY = 285;
+      doc.setFontSize(9);
+      doc.setTextColor(128, 128, 128);
+      doc.text("Claim Navigator AI • Professional Claim Assistance", 105, footerY, { align: "center" });
+      
+      // Save PDF
+      const fileName = `${currentDocumentType.replace(/\s+/g, '_')}_${claimData.claim || 'claim'}.pdf`;
+      doc.save(fileName);
+    }
+
+    function copyText() {
+      const letterText = document.getElementById('letterContent').textContent;
+      navigator.clipboard.writeText(letterText).then(() => {
+        alert('Letter text copied to clipboard!');
+      }).catch(error => {
+        console.error('Error copying text:', error);
+        alert('Failed to copy text. Please try again.');
+      });
+    }
+
+    // Modal event listeners
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('generateStandard').addEventListener('click', () => generateLetter('standard'));
+    document.getElementById('generateAI').addEventListener('click', showAIInputSection);
+    document.getElementById('generateCustom').addEventListener('click', () => generateLetter('ai'));
+    document.getElementById('downloadPDF').addEventListener('click', downloadPDF);
+    document.getElementById('copyText').addEventListener('click', copyText);
+
+    // Close modal on outside click
+    document.getElementById('letterModal').addEventListener('click', (e) => {
+      if (e.target.id === 'letterModal') {
+        closeModal();
+      }
+    });
+
+    // Update the generateLetter function to use the modal
+    function generateLetter(documentType) {
+      // Map document types to document IDs
+      const documentMapping = {
+        'Appeal Letter': 'appeal-letter',
+        'Demand Letter': 'demand-letter',
+        'Notice of Delay Complaint': 'delay-complaint',
+        'Coverage Clarification Request': 'coverage-clarification',
+        'Proof of Loss': 'proof-of-loss',
+        'Damage Assessment': 'damage-assessment',
+        'Expert Opinion Request': 'expert-opinion-request',
+        'Business Interruption Claim': 'business-interruption-claim',
+        'Proof of Repairs Submission': 'proof-of-repairs',
+        'Notice of Claim': 'notice-of-claim',
+        'Settlement Offer': 'settlement-offer',
+        'Regulatory Complaint': 'regulatory-complaint',
+        'Appraisal Request': 'appraisal-request',
+        'Evidence Log': 'evidence-log',
+        'Expense Reimbursement': 'expense-reimbursement',
+        'Photograph Log': 'photograph-log',
+        'Out-of-Pocket Expenses': 'out-of-pocket-log',
+        'ROM Estimate': 'rom-estimate',
+        'Comparative Estimates': 'comparative-estimates',
+        'Document Index': 'document-index'
+      };
+
+      // Get the document ID, fallback to appeal-letter if not found
+      const documentId = documentMapping[documentType] || 'appeal-letter';
+
+      // Show modal instead of navigating
+      showModal(documentType, documentType);
+    }
   </script>
 </body>
 </html>
