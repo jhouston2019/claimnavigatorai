@@ -77,46 +77,6 @@
             text-decoration: underline;
         }
         
-        .claim-info-card {
-            background: white;
-            border: 2px solid var(--primary);
-            border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        
-        .claim-info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .claim-info-field {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .claim-info-field label {
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-        
-        .claim-info-field input {
-            padding: 0.75rem;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            transition: border-color 0.2s;
-        }
-        
-        .claim-info-field input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
         
         .accordion-section {
             background: white;
@@ -441,10 +401,6 @@
         }
         
         @media (max-width: 768px) {
-            .claim-info-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .strategy-grid {
                 grid-template-columns: 1fr;
             }
@@ -492,51 +448,6 @@
             </p>
         </div>
 
-        <!-- Claim Information Section -->
-        <div class="claim-info-card">
-            <h2 class="text-xl font-semibold mb-4 text-center">📋 Claim Information</h2>
-            <p class="text-gray-600 mb-4 text-center">Fill in your claim details to auto-populate scripts and letters</p>
-            
-            <div class="claim-info-grid">
-                <div class="claim-info-field">
-                    <label for="claimant-name">Your Name</label>
-                    <input type="text" id="claimant-name" placeholder="Enter your full name">
-                </div>
-                <div class="claim-info-field">
-                    <label for="policy-number">Policy #</label>
-                    <input type="text" id="policy-number" placeholder="Policy number">
-                </div>
-                <div class="claim-info-field">
-                    <label for="claim-number">Claim #</label>
-                    <input type="text" id="claim-number" placeholder="Claim number">
-                </div>
-                <div class="claim-info-field">
-                    <label for="insurer">Insurer</label>
-                    <input type="text" id="insurer" placeholder="Insurance company">
-                </div>
-                <div class="claim-info-field">
-                    <label for="adjuster">Adjuster</label>
-                    <input type="text" id="adjuster" placeholder="Adjuster name">
-                </div>
-                <div class="claim-info-field">
-                    <label for="date-of-loss">Date of Loss</label>
-                    <input type="date" id="date-of-loss">
-                </div>
-                <div class="claim-info-field">
-                    <label for="claim-type">Claim Type</label>
-                    <select id="claim-type">
-                        <option value="">Select claim type</option>
-                        <option value="property-damage">Property Damage</option>
-                        <option value="water-damage">Water Damage</option>
-                        <option value="fire-damage">Fire Damage</option>
-                        <option value="storm-damage">Storm Damage</option>
-                        <option value="theft">Theft</option>
-                        <option value="business-interruption">Business Interruption</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-            </div>
-        </div>
 
         <!-- Initial Response Scripts -->
         <div class="accordion-section">
@@ -936,21 +847,21 @@
             generateAIScript();
         }
         
-        // Helper functions to get claim data
+        // Helper functions to get claim data (from user intake)
         function getClaimantName() {
-            return document.getElementById('claimant-name').value || '[Your Name]';
+            return '[Your Name]'; // Will be populated from user intake
         }
         
         function getClaimType() {
-            return document.getElementById('claim-type').value || '[Claim Type]';
+            return '[Claim Type]'; // Will be populated from user intake
         }
         
         function getDateOfLoss() {
-            return document.getElementById('date-of-loss').value || '[Date of Loss]';
+            return '[Date of Loss]'; // Will be populated from user intake
         }
         
         function getClaimNumber() {
-            return document.getElementById('claim-number').value || '[Claim #]';
+            return '[Claim #]'; // Will be populated from user intake
         }
         
         // Journal functionality
