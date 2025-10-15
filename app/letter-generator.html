@@ -27,7 +27,7 @@
           </button>
         </div>
       </div>
-      <div id="letterContent" class="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto border">
+      <div id="letterContent" class="bg-gray-50 p-6 rounded-lg max-h-[600px] overflow-y-auto border text-sm leading-relaxed whitespace-pre-wrap font-mono">
         <!-- Generated letter content will appear here -->
       </div>
     </div>
@@ -212,7 +212,14 @@
 
     // Display generated letter
     function displayLetter(letterText) {
-      document.getElementById('letterContent').textContent = letterText;
+      // Format the letter text with proper line breaks and spacing
+      const formattedText = letterText
+        .replace(/\n\n/g, '\n\n') // Preserve double line breaks
+        .replace(/\n/g, '<br>') // Convert single line breaks to HTML
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold formatting
+        .replace(/\*(.*?)\*/g, '<em>$1</em>'); // Italic formatting
+      
+      document.getElementById('letterContent').innerHTML = formattedText;
       document.getElementById('aiInputSection').classList.add('hidden');
     }
 
@@ -249,7 +256,8 @@
 
     // Copy text function
     function copyText() {
-      const letterText = document.getElementById('letterContent').textContent;
+      const letterElement = document.getElementById('letterContent');
+      const letterText = letterElement.textContent || letterElement.innerText;
       navigator.clipboard.writeText(letterText).then(() => {
         alert('Letter text copied to clipboard!');
       }).catch(error => {
