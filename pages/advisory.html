@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🎯 Situational Advisory - ClaimNavigatorAI</title>
   <link rel="stylesheet" href="/assets/css/advisory.css" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-900 font-inter">
-  <header class="bg-[#1e40af] text-white p-4 flex justify-between items-center">
+  <header class="bg-[#0f172a] text-white p-4 flex justify-between items-center">
     <h1 class="text-xl font-semibold">🎯 Situational Advisory</h1>
     <a href="/app/resource-center.html" class="text-sm underline">← Resource Center</a>
   </header>
@@ -25,7 +26,7 @@
             id="situationInput" 
             placeholder="Describe your situation (e.g., 'My insurer said my roof leak isn't covered due to wear and tear')"
             class="ai-input"
-            rows="3"
+            rows="2"
           ></textarea>
           <button id="analyzeBtn" class="ai-analyze-btn">
             <span id="analyzeText">Analyze & Advise</span>
@@ -35,32 +36,30 @@
       </div>
     </div>
 
-    <!-- AI Response Display -->
-    <div id="aiResponse" class="ai-response-container hidden">
-      <div class="ai-response-content">
-        <h3 class="ai-response-title">AI Analysis & Recommendations</h3>
-        <div id="aiResponseContent" class="ai-response-details"></div>
-      </div>
+    <!-- AI Result Display -->
+    <div id="aiResult" class="ai-result hidden">
+      <h3 class="text-lg font-semibold mb-4">AI Analysis & Recommendations</h3>
+      <div id="aiResultContent"></div>
     </div>
 
     <!-- Search and Filter Section -->
-    <div class="search-filter-section">
-      <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Search scenarios..." class="search-input" />
-        <select id="categoryFilter" class="category-select">
-          <option value="all">All Categories</option>
-          <option value="Property">Property Claims</option>
-          <option value="Commercial & Business Interruption">Commercial/Business</option>
-          <option value="Catastrophe / Disaster">Catastrophe/Disaster</option>
-        </select>
+    <div class="search-container">
+      <div class="search-bar">
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Search scenarios..." 
+          class="search-input"
+        />
+        <button id="searchBtn" class="search-btn">🔍</button>
       </div>
-    </div>
-
-    <!-- Category Tabs -->
-    <div class="category-tabs">
-      <button class="category-tab active" data-category="Property">Property Claims</button>
-      <button class="category-tab" data-category="Commercial & Business Interruption">Commercial/Business</button>
-      <button class="category-tab" data-category="Catastrophe / Disaster">Catastrophe/Disaster</button>
+      
+      <div class="category-tabs">
+        <button class="category-tab active" data-category="all">All Scenarios</button>
+        <button class="category-tab" data-category="Property">Property Claims</button>
+        <button class="category-tab" data-category="Commercial & Business Interruption">Commercial/Business</button>
+        <button class="category-tab" data-category="Catastrophe / Disaster">Catastrophe/Disaster</button>
+      </div>
     </div>
 
     <!-- Scenarios Grid -->
@@ -69,89 +68,96 @@
     </div>
   </main>
 
+  <!-- Letter Generation Modal (will be created by JavaScript) -->
+  
+  <!-- Scripts -->
+  <script src="/assets/js/advisory.js"></script>
   <script>
-    let allScenarios = [];
+    // Load scenarios data and initialize page
+    let scenariosData = [];
     let filteredScenarios = [];
-    let currentCategory = 'Property';
 
     // Load scenarios from JSON
     async function loadScenarios() {
       try {
         const response = await fetch('/assets/data/advisory.json');
-        const data = await response.json();
-        allScenarios = data;
-        filteredScenarios = data;
+        scenariosData = await response.json();
+        filteredScenarios = scenariosData;
         renderScenarios();
       } catch (error) {
         console.error('Error loading scenarios:', error);
-        document.getElementById('scenariosGrid').innerHTML = '<p class="text-red-600">Error loading scenarios. Please try again.</p>';
+        document.getElementById('scenariosGrid').innerHTML = '<p class="text-center text-gray-500">Error loading scenarios. Please refresh the page.</p>';
       }
     }
 
+    // Render scenarios in grid
     function renderScenarios() {
-      const container = document.getElementById('scenariosGrid');
-      container.innerHTML = '';
+      const grid = document.getElementById('scenariosGrid');
+      const currentCategory = document.querySelector('.category-tab.active').dataset.category;
       
-      // Filter by current category
-      const categoryScenarios = filteredScenarios.filter(cat => cat.category === currentCategory);
-      
-      if (categoryScenarios.length === 0) {
-        container.innerHTML = '<p class="text-gray-600 text-center py-8">No scenarios found for this category.</p>';
+      let scenariosToShow = filteredScenarios;
+      if (currentCategory !== 'all') {
+        scenariosToShow = filteredScenarios.filter(cat => cat.category === currentCategory);
+      }
+
+      if (scenariosToShow.length === 0) {
+        grid.innerHTML = '<p class="text-center text-gray-500 col-span-full">No scenarios found matching your criteria.</p>';
         return;
       }
 
-      categoryScenarios[0].situations.forEach((situation, index) => {
-        const card = document.createElement('div');
-        card.className = 'scenario-card';
-        card.innerHTML = `
-          <div class="scenario-header">
-            <h3 class="scenario-title">${situation.title}</h3>
-            <p class="scenario-summary">${situation.summary}</p>
-          </div>
-          <div class="scenario-actions">
-            <button class="view-advice-btn" onclick="toggleAdvice(${index})">
-              <span class="advice-text">View Advice</span>
-              <span class="advice-icon">▼</span>
-            </button>
-            <button class="generate-letter-btn" onclick="generateLetter('${situation.document}')">
-              Generate Letter
-            </button>
-          </div>
-          <div class="scenario-details hidden" id="details-${index}">
-            <div class="details-content">
-              <h4>Recommended Action:</h4>
-              <p>${situation.summary}</p>
-              <h4>Document Type:</h4>
-              <p>${situation.document}</p>
-            </div>
-          </div>
-        `;
-        
-        container.appendChild(card);
+      let html = '';
+      scenariosToShow.forEach(category => {
+        if (category.category === currentCategory || currentCategory === 'all') {
+          category.situations.forEach(situation => {
+            html += `
+              <div class="scenario-card">
+                <div class="scenario-header">
+                  <h3 class="scenario-title">${situation.title}</h3>
+                  <p class="scenario-summary">${situation.summary}</p>
+                </div>
+                <div class="scenario-actions">
+                  <button class="view-advice-btn" onclick="viewAdvice('${situation.title}', '${situation.summary}')">
+                    View Advice
+                  </button>
+                  <button class="generate-letter-btn" onclick="openLetterModal('${situation.title}', '${situation.document}')">
+                    Generate Letter
+                  </button>
+                </div>
+              </div>
+            `;
+          });
+        }
       });
+
+      grid.innerHTML = html;
     }
 
-    function toggleAdvice(index) {
-      const details = document.getElementById(`details-${index}`);
-      const button = details.previousElementSibling.querySelector('.view-advice-btn');
-      const icon = button.querySelector('.advice-icon');
-      
-      if (details.classList.contains('hidden')) {
-        details.classList.remove('hidden');
-        icon.textContent = '▲';
-        button.querySelector('.advice-text').textContent = 'Hide Advice';
-      } else {
-        details.classList.add('hidden');
-        icon.textContent = '▼';
-        button.querySelector('.advice-text').textContent = 'View Advice';
-      }
+    // View advice functionality
+    function viewAdvice(title, summary) {
+      alert(`Advice for "${title}":\n\n${summary}\n\nFor detailed guidance, use the AI input above or generate a customized letter.`);
     }
 
-    function generateLetter(documentType) {
-      // Navigate to document generator with prefilled document type
-      const encodedType = encodeURIComponent(documentType);
-      window.location.href = `/app/document-generator-v2/forms/form-template.html?type=${encodedType}`;
-    }
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      filteredScenarios = scenariosData.map(category => ({
+        ...category,
+        situations: category.situations.filter(situation => 
+          situation.title.toLowerCase().includes(searchTerm) ||
+          situation.summary.toLowerCase().includes(searchTerm)
+        )
+      }));
+      renderScenarios();
+    });
+
+    // Category filter functionality
+    document.querySelectorAll('.category-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        renderScenarios();
+      });
+    });
 
     // AI Analysis functionality
     document.getElementById('analyzeBtn').addEventListener('click', async () => {
@@ -164,11 +170,10 @@
       const analyzeBtn = document.getElementById('analyzeBtn');
       const analyzeText = document.getElementById('analyzeText');
       const analyzeSpinner = document.getElementById('analyzeSpinner');
-      
-      // Show loading state
+
+      analyzeBtn.disabled = true;
       analyzeText.classList.add('hidden');
       analyzeSpinner.classList.remove('hidden');
-      analyzeBtn.disabled = true;
 
       try {
         const response = await fetch('/netlify/functions/ai-advisory.js', {
@@ -176,107 +181,54 @@
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ situation })
+          body: JSON.stringify({ situation: situation })
         });
 
         const data = await response.json();
         
         if (response.ok) {
-          displayAIResponse(data);
+          displayAIResult(data);
         } else {
-          throw new Error(data.error || 'Failed to get AI advice');
+          throw new Error(data.error || 'Failed to analyze situation');
         }
       } catch (error) {
-        console.error('Error getting AI advice:', error);
-        alert('Failed to get AI advice. Please try again.');
+        console.error('Error analyzing situation:', error);
+        alert('Failed to analyze your situation. Please try again.');
       } finally {
-        // Reset button state
+        analyzeBtn.disabled = false;
         analyzeText.classList.remove('hidden');
         analyzeSpinner.classList.add('hidden');
-        analyzeBtn.disabled = false;
       }
     });
 
-    function displayAIResponse(data) {
-      const responseContainer = document.getElementById('aiResponse');
-      const responseContent = document.getElementById('aiResponseContent');
+    // Display AI analysis result
+    function displayAIResult(data) {
+      const resultDiv = document.getElementById('aiResult');
+      const contentDiv = document.getElementById('aiResultContent');
       
-      // Parse the AI response
-      let responseData;
-      try {
-        responseData = JSON.parse(data);
-      } catch (e) {
-        // If not JSON, treat as plain text
-        responseData = {
-          explanation: data,
-          nextSteps: 'Please review the advice above.',
-          recommendedDocument: 'Appeal Letter',
-          exampleText: 'Contact your insurance company for specific guidance.'
-        };
+      let resultHTML = '';
+      
+      if (data.explanation) {
+        resultHTML += `<div class="mb-4"><strong>Explanation:</strong><br>${data.explanation}</div>`;
       }
-
-      responseContent.innerHTML = `
-        <div class="response-section">
-          <h4>📋 Next Steps</h4>
-          <p>${responseData.nextSteps || 'Review the situation and take appropriate action.'}</p>
-        </div>
-        <div class="response-section">
-          <h4>💡 Explanation</h4>
-          <p>${responseData.explanation || 'No explanation provided.'}</p>
-        </div>
-        <div class="response-section">
-          <h4>📄 Recommended Document</h4>
-          <p>${responseData.recommendedDocument || 'Appeal Letter'}</p>
-        </div>
-        <div class="response-section">
-          <h4>📝 Example Response</h4>
-          <p>${responseData.exampleText || 'Contact your insurance company for specific guidance.'}</p>
-        </div>
-      `;
+      if (data.nextSteps) {
+        resultHTML += `<div class="mb-4"><strong>Next Steps:</strong><br>${data.nextSteps}</div>`;
+      }
+      if (data.recommendedDocument) {
+        resultHTML += `<div class="mb-4"><strong>Recommended Document:</strong><br>${data.recommendedDocument}</div>`;
+      }
+      if (data.exampleText) {
+        resultHTML += `<div class="mb-4"><strong>Example Response:</strong><br>${data.exampleText}</div>`;
+      }
       
-      responseContainer.classList.remove('hidden');
-      responseContainer.scrollIntoView({ behavior: 'smooth' });
+      contentDiv.innerHTML = resultHTML;
+      resultDiv.classList.remove('hidden');
     }
 
-    // Category tab functionality
-    document.querySelectorAll('.category-tab').forEach(tab => {
-      tab.addEventListener('click', (e) => {
-        // Remove active class from all tabs
-        document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-        // Add active class to clicked tab
-        e.target.classList.add('active');
-        
-        currentCategory = e.target.dataset.category;
-        renderScenarios();
-      });
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', () => {
+      loadScenarios();
     });
-
-    // Search functionality
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-      const searchTerm = e.target.value.toLowerCase();
-      filteredScenarios = allScenarios.map(category => ({
-        ...category,
-        situations: category.situations.filter(situation =>
-          situation.title.toLowerCase().includes(searchTerm) ||
-          situation.summary.toLowerCase().includes(searchTerm)
-        )
-      }));
-      renderScenarios();
-    });
-
-    // Category filter functionality
-    document.getElementById('categoryFilter').addEventListener('change', (e) => {
-      const selectedCategory = e.target.value;
-      if (selectedCategory === 'all') {
-        filteredScenarios = allScenarios;
-      } else {
-        filteredScenarios = allScenarios.filter(cat => cat.category === selectedCategory);
-      }
-      renderScenarios();
-    });
-
-    // Initialize the page
-    loadScenarios();
   </script>
 </body>
 </html>
