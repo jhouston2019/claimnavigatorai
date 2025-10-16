@@ -1,240 +1,142 @@
-# ClaimNavigatorAI
+# ClaimNavigatorAI - AI Response & Analysis Agent
 
-AI-powered claim documentation tools with Netlify Functions, Supabase, and Stripe integration.
+A professional-grade AI-powered tool for analyzing insurer correspondence and generating expert responses for insurance claims.
 
-## 🚀 Quick Start
+## Features
 
-### Prerequisites
-- Node.js 18+ 
-- Netlify CLI (`npm install -g netlify-cli`)
-- Supabase account
-- Stripe account
-- OpenAI API key
+- **Multiple Analysis Modes**: Standard Reply, Professional Appeal, Policy Clarification, Negotiation Strategy, Summary & Guidance
+- **Smart AI Analysis**: Powered by OpenAI GPT-4o-mini for accurate, professional responses
+- **PDF Export**: Generate professional PDF reports with claim information and AI analysis
+- **Responsive Design**: Modern, mobile-friendly interface using TailwindCSS
+- **Auto-save**: Form data is automatically saved to localStorage
 
-### Local Development Setup
-
-1. **Clone and install dependencies:**
-   ```bash
-   git clone <repository-url>
-   cd claimnavigatorai
-   npm install
-   ```
-
-2. **Create environment file:**
-   ```bash
-   cp .env.example .env
-   ```
-   
-   Fill in your environment variables:
-   ```env
-   # Supabase Configuration
-   SUPABASE_URL=your_supabase_project_url
-   SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-   
-   # Stripe Configuration
-   STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
-   STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
-   
-   # OpenAI Configuration
-   OPENAI_API_KEY=sk-your_openai_api_key
-   
-   # Development Configuration
-   NODE_ENV=development
-   ```
-
-3. **Start development server:**
-   ```bash
-   npm run dev
-   ```
-   
-   The site will be available at `http://localhost:8888`
-
-4. **Kill port if needed:**
-   ```bash
-   npx kill-port 8888
-   ```
-
-## 🏗️ Deployment
-
-### Netlify Deployment
-
-1. **Connect to Netlify:**
-   - Push your code to GitHub
-   - Connect the repository to Netlify
-   - Netlify will auto-deploy on push to main
-
-2. **Configure Environment Variables in Netlify Dashboard:**
-   - Go to Site Settings → Environment Variables
-   - Add all variables from `.env.example`
-   - **Important:** Use production keys for Supabase and Stripe
-
-3. **Deploy:**
-   ```bash
-   netlify deploy --prod
-   ```
-
-### Environment Variables Required
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `SUPABASE_URL` | Your Supabase project URL | ✅ |
-| `SUPABASE_ANON_KEY` | Supabase anonymous key | ✅ |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key | ✅ |
-| `STRIPE_SECRET_KEY` | Stripe secret key (sk_live_... for production) | ✅ |
-| `STRIPE_PUBLISHABLE_KEY` | Stripe publishable key | ✅ |
-| `OPENAI_API_KEY` | OpenAI API key | ✅ |
-| `URL` | Site URL (auto-set by Netlify) | ✅ |
-
-## 🧪 Testing Functions
-
-### Test AI Response Generation
-```bash
-curl -X POST http://localhost:8888/.netlify/functions/generate-response \
-  -H "Content-Type: application/json" \
-  -d '{
-    "inputText": "I need help with an insurance claim denial",
-    "language": "en"
-  }'
-```
-
-### Test Document Generation
-```bash
-curl -X POST http://localhost:8888/.netlify/functions/generate-document \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_AUTH_TOKEN" \
-  -d '{
-    "fileName": "test-document",
-    "content": "This is a test document content"
-  }'
-```
-
-### Test Checkout Session Creation
-```bash
-curl -X POST http://localhost:8888/.netlify/functions/create-checkout-session \
-  -H "Content-Type: application/json" \
-  -d '{
-    "userEmail": "test@example.com",
-    "affiliateID": "optional-affiliate-id"
-  }'
-```
-
-### Test Document Retrieval
-```bash
-curl -X POST http://localhost:8888/.netlify/functions/get-doc \
-  -H "Content-Type: application/json" \
-  -d '{
-    "filePath": "documents/example.pdf"
-  }'
-```
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 claimnavigatorai/
+├── app/
+│   └── ai-response-agent.html    # Frontend interface
 ├── netlify/
-│   └── functions/           # Netlify serverless functions
-│       ├── generate-response.js    # AI response generation
-│       ├── generate-document.js    # PDF document generation
-│       ├── create-checkout-session.js # Stripe checkout
-│       ├── get-doc.js              # Document retrieval
-│       ├── checkout.js             # Alternative checkout
-│       └── utils/
-│           └── auth.js             # Authentication utilities
-├── app/                     # Frontend pages
-├── assets/                  # Static assets and data
-├── supabase/               # Database schema
-├── netlify.toml            # Netlify configuration
-├── package.json            # Dependencies and scripts
-└── README.md              # This file
+│   └── functions/
+│       ├── aiResponseAgent.js    # Backend AI processing
+│       └── package.json          # Function dependencies
+└── README.md
 ```
 
-## 🔧 Available Scripts
+## Deployment Instructions
 
-```bash
-npm run dev      # Start development server on port 8888
-npm run start    # Alias for dev
-npm run build    # Build check (no build required for this project)
-npm run lint     # Linting (placeholder)
-npm run format   # Formatting (placeholder)
-npm run test     # Testing (placeholder)
+### 1. Netlify Deployment
+
+1. **Connect Repository**: Link your GitHub repository to Netlify
+2. **Build Settings**:
+   - Build command: `echo "No build required"`
+   - Publish directory: `app`
+3. **Environment Variables**:
+   - Add `OPENAI_API_KEY` in Netlify dashboard under Site Settings > Environment Variables
+
+### 2. Local Development
+
+1. **Install Dependencies**:
+   ```bash
+   cd netlify/functions
+   npm install
+   ```
+
+2. **Set Environment Variables**:
+   ```bash
+   export OPENAI_API_KEY="your-openai-api-key"
+   ```
+
+3. **Run Netlify Dev** (if using Netlify CLI):
+   ```bash
+   netlify dev
+   ```
+
+### 3. Manual Testing
+
+1. Open `app/ai-response-agent.html` in a web browser
+2. Fill in claim information
+3. Paste an insurer letter
+4. Select analysis mode
+5. Click "Analyze & Draft Reply"
+6. Review AI-generated response
+7. Export PDF if needed
+
+## API Endpoints
+
+### POST /.netlify/functions/aiResponseAgent
+
+**Request Body**:
+```json
+{
+  "mode": "reply|appeal|clarify|negotiate|summary",
+  "claim": {
+    "name": "Policyholder Name",
+    "policyNumber": "POL-123456",
+    "claimNumber": "CLM-789012",
+    "dateOfLoss": "2024-01-15",
+    "company": "Insurance Company",
+    "phone": "+1-555-0123",
+    "email": "policyholder@email.com",
+    "address": "123 Main St, City, State"
+  },
+  "letter": "Full insurer correspondence text..."
+}
 ```
 
-## 🛡️ Security Features
+**Response**:
+```json
+{
+  "analysis": "Detailed analysis and reasoning",
+  "issues": ["Issue 1", "Issue 2", "Issue 3"],
+  "suggestions": ["Action 1", "Action 2", "Action 3"],
+  "draftLetter": "Complete draft response letter",
+  "metadata": {
+    "mode": "reply",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "model": "gpt-4o-mini"
+  }
+}
+```
 
-- **Input Validation:** All functions validate and sanitize inputs
-- **Authentication:** JWT token validation for protected endpoints
-- **Error Handling:** Comprehensive error handling with proper logging
-- **Rate Limiting:** Built into Netlify Functions
-- **CORS:** Properly configured for cross-origin requests
-- **Security Headers:** XSS protection, content type validation, etc.
+## Configuration
 
-## 🐛 Debugging
+### Required Environment Variables
+
+- `OPENAI_API_KEY`: Your OpenAI API key for AI processing
+
+### Optional Configuration
+
+- Modify the OpenAI model in `aiResponseAgent.js` (default: `gpt-4o-mini`)
+- Adjust temperature and max_tokens for different response styles
+- Customize the system prompt for different analysis approaches
+
+## Security Notes
+
+- API keys are stored securely in Netlify environment variables
+- CORS is properly configured for cross-origin requests
+- Input validation prevents malicious requests
+- Error handling prevents sensitive information leakage
+
+## Browser Support
+
+- Modern browsers with ES6+ support
+- PDF export requires jsPDF library (included via CDN)
+- Local storage for auto-save functionality
+
+## Troubleshooting
 
 ### Common Issues
 
-1. **Port 8888 already in use:**
-   ```bash
-   npx kill-port 8888
-   npm run dev
-   ```
+1. **"AI processing failed"**: Check OpenAI API key configuration
+2. **CORS errors**: Ensure Netlify function is properly deployed
+3. **PDF export not working**: Check browser console for jsPDF errors
+4. **Form not saving**: Check browser localStorage permissions
 
-2. **Environment variables not loading:**
-   - Check `.env` file exists and has correct format
-   - Restart development server
-   - Verify variable names match exactly
+### Debug Mode
 
-3. **Supabase connection errors:**
-   - Verify `SUPABASE_URL` and keys are correct
-   - Check Supabase project is active
-   - Ensure RLS policies are configured
+Enable debug logging by adding `console.log` statements in the Netlify function and checking the function logs in Netlify dashboard.
 
-4. **Stripe errors:**
-   - Use test keys for development
-   - Verify webhook endpoints are configured
-   - Check Stripe dashboard for error logs
+## License
 
-5. **OpenAI API errors:**
-   - Verify API key is valid and has credits
-   - Check rate limits in OpenAI dashboard
-   - Ensure model access permissions
-
-### Logging
-
-All functions include comprehensive logging:
-- Request processing times
-- Error details (with stack traces in development)
-- User actions and authentication
-- API call results
-
-Check Netlify function logs in the dashboard for production debugging.
-
-## 💰 Pricing
-
-- **Base Toolkit:** $997 (includes 20 AI responses)
-- **Additional Responses:** $29 each
-- **Features:** AI-powered claim letters, document generation, PDF export
-
-## 📞 Support
-
-For technical support or questions:
-1. Check the debugging section above
-2. Review Netlify function logs
-3. Verify environment variables are correctly set
-4. Test with the provided curl commands
-
-## 🔄 Updates
-
-To update dependencies:
-```bash
-npm update
-npm audit
-```
-
-To deploy updates:
-```bash
-git add .
-git commit -m "Update dependencies"
-git push origin main
-# Netlify will auto-deploy
-```
+This project is proprietary software for ClaimNavigatorAI.

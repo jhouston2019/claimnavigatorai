@@ -1,101 +1,406 @@
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>AI Response & Analysis Agent</title>
-<link rel="stylesheet" href="/app/assets/css/style.css"/></head><body>
-<header class="header">
-  <div class="bar container">
-    <div class="brand">
-      <div class="logo"></div>
-      <div>ClaimNavigatorAI</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Response & Analysis Agent - ClaimNavigatorAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        .typing-animation {
+            overflow: hidden;
+            border-right: 2px solid #3b82f6;
+            white-space: nowrap;
+            animation: typing 2s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #3b82f6; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-blue-900">ClaimNavigatorAI</h1>
     </div>
-    <nav class="nav">
-      <a href="/app/index.html">Home</a>
-      <span class="nav-separator">></span>
-      <span class="nav-current">AI Response Agent</span>
-      <span class="nav-separator">></span>
-      <a href="/app/resource-center.html">Resource Center</a>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-600 hover:text-blue-600">Home</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600">Resources</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600">Support</a>
     </nav>
+            </div>
   </div>
 </header>
-<main class="container" id="main">
-  <div class="card"><h2>AI Response & Analysis Agent</h2></div>
-  
-  <!-- Claim Information Form -->
-  <div class="card">
-    <h3>Claim Information</h3>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-      <input type="text" id="claimantName" placeholder="Your Name" />
-      <input type="text" id="policyNumber" placeholder="Policy Number" />
-      <input type="text" id="claimNumber" placeholder="Claim Number" />
-      <input type="date" id="dateOfLoss" placeholder="Date of Loss" />
-      <input type="text" id="insurerName" placeholder="Insurance Company" />
-      <input type="tel" id="phoneNumber" placeholder="Phone Number" />
-      <input type="email" id="email" placeholder="Email Address" />
-      <input type="text" id="claimantAddress" placeholder="Your Address" />
+
+    <!-- Breadcrumbs -->
+    <div class="bg-gray-100 py-3">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="flex items-center space-x-2">
+                    <li><a href="#" class="text-blue-600 hover:text-blue-800">Home</a></li>
+                    <li class="text-gray-500">></li>
+                    <li><a href="#" class="text-blue-600 hover:text-blue-800">AI Response Agent</a></li>
+                    <li class="text-gray-500">></li>
+                    <li class="text-gray-700">Resource Center</li>
+                </ol>
+            </nav>
+        </div>
     </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Title Section -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">AI Response & Analysis Agent</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Analyze insurer correspondence, generate professional replies, and receive expert recommendations instantly.
+            </p>
+        </div>
+
+        <!-- Main Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Left Column - Input Panel -->
+            <div class="card bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-6">Claim Information & Analysis</h2>
+                
+                <!-- Claim Information Form -->
+                <form id="claimForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                            <input type="text" id="name" name="name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label for="policyNumber" class="block text-sm font-medium text-gray-700 mb-1">Policy Number</label>
+                            <input type="text" id="policyNumber" name="policyNumber" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label for="claimNumber" class="block text-sm font-medium text-gray-700 mb-1">Claim Number</label>
+                            <input type="text" id="claimNumber" name="claimNumber" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label for="dateOfLoss" class="block text-sm font-medium text-gray-700 mb-1">Date of Loss</label>
+                            <input type="date" id="dateOfLoss" name="dateOfLoss" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label for="company" class="block text-sm font-medium text-gray-700 mb-1">Insurance Company</label>
+                            <input type="text" id="company" name="company" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Your Address</label>
+                        <textarea id="address" name="address" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                    </div>
+                </form>
+
+                <!-- Response Mode Selection -->
+                <div class="mt-6">
+                    <label for="responseMode" class="block text-sm font-medium text-gray-700 mb-2">Response Mode</label>
+                    <select id="responseMode" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="reply">Standard Reply</option>
+                        <option value="appeal">Professional Appeal</option>
+                        <option value="clarify">Policy Clarification</option>
+                        <option value="negotiate">Negotiation Strategy</option>
+                        <option value="summary">Summary & Guidance</option>
+                    </select>
+                </div>
+
+                <!-- Insurer Letter Input -->
+                <div class="mt-6">
+                    <label for="insurerLetter" class="block text-sm font-medium text-gray-700 mb-2">Paste Insurer Letter</label>
+                    <textarea id="insurerLetter" rows="8" placeholder="Paste the insurer's correspondence here..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                    <button id="analyzeBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-md transition duration-200 flex items-center justify-center">
+                        <span id="analyzeText">⚡ Analyze & Draft Reply</span>
+                        <span id="analyzingText" class="hidden">Analyzing...</span>
+                    </button>
+                    <button id="exportBtn" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-md transition duration-200 flex items-center justify-center">
+                        📄 Export PDF
+                    </button>
+                    <button id="clearBtn" class="bg-gray-400 hover:bg-gray-500 text-white font-medium py-3 px-6 rounded-md transition duration-200 flex items-center justify-center">
+                        🔄 Clear Fields
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column - AI Output Panel -->
+            <div class="card bg-gray-50 rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-6">AI Analysis Output</h2>
+                
+                <!-- AI Output Display -->
+                <div id="aiOutput" class="bg-white rounded-lg p-4 min-h-64 border border-gray-200">
+                    <div id="placeholder" class="text-gray-500 text-center py-8">
+                        <div class="text-4xl mb-4">🤖</div>
+                        <p>Click "Analyze & Draft Reply" to get AI-powered analysis and draft response.</p>
+                    </div>
+                    <div id="loadingIndicator" class="hidden text-center py-8">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+                        <p class="text-gray-600">AI is analyzing your correspondence...</p>
+                    </div>
+                    <div id="aiResponse" class="hidden"></div>
+                </div>
+
+                <!-- AI Detected Issues -->
+                <div id="aiInsights" class="mt-6 hidden">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">🔍 AI Detected Issues / Key Points</h3>
+                    <ul id="issuesList" class="space-y-2"></ul>
+                </div>
+
+                <!-- Suggested Actions -->
+                <div id="aiSuggestions" class="mt-6 hidden">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">💡 Suggested Actions</h3>
+                    <ul id="suggestionsList" class="space-y-2"></ul>
   </div>
   
-  <div class="card">
-    <h3>Paste Insurer Letter / Email</h3>
-    <textarea id="input" placeholder="Paste the insurer message here…"></textarea>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button class="btn btn-primary" id="analyze">Analyze & Draft Reply</button>
-      <button class="btn" id="export">Export PDF</button>
+                <!-- Footer Note -->
+                <div class="mt-6 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                    <p class="text-sm text-yellow-800">
+                        <strong>Note:</strong> AI-generated guidance — review before submission.
+                    </p>
+                </div>
     </div>
-    <div id="out" class="card" style="margin-top:12px"></div>
   </div>
 </main>
-<script type="module">
-  import {qs,on} from '/app/assets/js/ui-helpers.js';
-  import { callAI, createDoc } from '/app/assets/js/api-client.js';
-  const seed=sessionStorage.getItem('ai_seed'); if(seed){ qs('#input').value=seed; sessionStorage.removeItem('ai_seed'); }
-  on(qs('#analyze'),'click', async ()=>{
-    const v=qs('#input').value.trim(); if(!v) return;
-    
-    // Collect claim information
-    const claimInfo = {
-      claimantName: qs('#claimantName').value.trim(),
-      policyNumber: qs('#policyNumber').value.trim(),
-      claimNumber: qs('#claimNumber').value.trim(),
-      dateOfLoss: qs('#dateOfLoss').value,
-      insurerName: qs('#insurerName').value.trim(),
-      phoneNumber: qs('#phoneNumber').value.trim(),
-      email: qs('#email').value.trim(),
-      claimantAddress: qs('#claimantAddress').value.trim()
-    };
-    
-    // Generate claim header
-    const claimHeader = `CLAIM INFORMATION
-================
-Policyholder: ${claimInfo.claimantName || 'Not provided'}
-Address: ${claimInfo.claimantAddress || 'Not provided'}
-Phone: ${claimInfo.phoneNumber || 'Not provided'}
-Email: ${claimInfo.email || 'Not provided'}
 
-Policy Number: ${claimInfo.policyNumber || 'Not provided'}
-Claim Number: ${claimInfo.claimNumber || 'Not provided'}
-Date of Loss: ${claimInfo.dateOfLoss || 'Not provided'}
-Insurance Company: ${claimInfo.insurerName || 'Not provided'}
+    <script>
+        // DOM Elements
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const claimForm = document.getElementById('claimForm');
+        const responseMode = document.getElementById('responseMode');
+        const insurerLetter = document.getElementById('insurerLetter');
+        const aiOutput = document.getElementById('aiOutput');
+        const placeholder = document.getElementById('placeholder');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const aiResponse = document.getElementById('aiResponse');
+        const aiInsights = document.getElementById('aiInsights');
+        const aiSuggestions = document.getElementById('aiSuggestions');
+        const issuesList = document.getElementById('issuesList');
+        const suggestionsList = document.getElementById('suggestionsList');
+        const analyzeText = document.getElementById('analyzeText');
+        const analyzingText = document.getElementById('analyzingText');
 
-Generated: ${new Date().toLocaleDateString()}
-Document Type: AI RESPONSE AGENT
+        // Form data collection
+        function collectFormData() {
+            const formData = new FormData(claimForm);
+            return {
+                name: formData.get('name'),
+                policyNumber: formData.get('policyNumber'),
+                claimNumber: formData.get('claimNumber'),
+                dateOfLoss: formData.get('dateOfLoss'),
+                company: formData.get('company'),
+                phone: formData.get('phone'),
+                email: formData.get('email'),
+                address: formData.get('address')
+            };
+        }
 
-========================================
+        // Analyze button click handler
+        analyzeBtn.addEventListener('click', async () => {
+            const claimData = collectFormData();
+            const letter = insurerLetter.value.trim();
+            const mode = responseMode.value;
 
-`;
-    
-    qs('#out').innerHTML='Working…';
-    try{ 
-      const r=await callAI({inputText:v,type:'ai-agent'}); 
-      const response = r.response||r.analysis||JSON.stringify(r)||'(no content)';
-      qs('#out').innerHTML = claimHeader + response;
-    }
-    catch(e){ qs('#out').innerHTML='<div style="color:#ef4444">'+e.message+'</div>'; }
-  });
-  on(qs('#export'),'click', async ()=>{
-    const html=qs('#out').innerHTML.trim(); if(!html) return alert('Analyze first.');
-    const r=await createDoc({content:html,format:'pdf',type:'ai-agent',filename:'ai_'+Date.now()}); location.href=r.url||r.downloadUrl;
-  });
+            // Validation
+            if (!letter) {
+                alert('Please paste the insurer letter for analysis.');
+                return;
+            }
+
+            // Show loading state
+            analyzeBtn.disabled = true;
+            analyzeText.classList.add('hidden');
+            analyzingText.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden');
+            aiResponse.classList.add('hidden');
+            aiInsights.classList.add('hidden');
+            aiSuggestions.classList.add('hidden');
+
+            try {
+                const response = await fetch('/.netlify/functions/aiResponseAgent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        mode: mode,
+                        claim: claimData,
+                        letter: letter
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Hide loading, show results
+                loadingIndicator.classList.add('hidden');
+                aiResponse.classList.remove('hidden');
+                aiResponse.innerHTML = `<div class="fade-in"><h4 class="font-semibold text-gray-900 mb-3">📝 Draft Response Letter</h4><div class="bg-gray-50 p-4 rounded-md border-l-4 border-blue-500 whitespace-pre-wrap">${data.draftLetter || data.analysis}</div></div>`;
+
+                // Show detected issues
+                if (data.issues && data.issues.length > 0) {
+                    aiInsights.classList.remove('hidden');
+                    issuesList.innerHTML = data.issues.map(issue => `<li class="flex items-start"><span class="text-red-500 mr-2">•</span><span>${issue}</span></li>`).join('');
+                }
+
+                // Show suggestions
+                if (data.suggestions && data.suggestions.length > 0) {
+                    aiSuggestions.classList.remove('hidden');
+                    suggestionsList.innerHTML = data.suggestions.map(suggestion => `<li class="flex items-start"><span class="text-green-500 mr-2">•</span><span>${suggestion}</span></li>`).join('');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                loadingIndicator.classList.add('hidden');
+                aiResponse.classList.remove('hidden');
+                aiResponse.innerHTML = `<div class="text-red-600 p-4 bg-red-50 border border-red-200 rounded-md"><strong>Error:</strong> ${error.message}. Please try again.</div>`;
+            } finally {
+                // Reset button state
+                analyzeBtn.disabled = false;
+                analyzeText.classList.remove('hidden');
+                analyzingText.classList.add('hidden');
+            }
+        });
+
+        // Export PDF functionality
+        exportBtn.addEventListener('click', async () => {
+            if (!aiResponse.textContent.trim()) {
+                alert('Please generate an analysis first before exporting.');
+                return;
+            }
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFontSize(20);
+                doc.text('ClaimNavigatorAI - AI Response Analysis', 20, 20);
+                
+                // Claim Information
+                const claimData = collectFormData();
+                doc.setFontSize(12);
+                let yPos = 40;
+                doc.text('Claim Information:', 20, yPos);
+                yPos += 10;
+                
+                Object.entries(claimData).forEach(([key, value]) => {
+                    if (value) {
+                        doc.text(`${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`, 20, yPos);
+                        yPos += 7;
+                    }
+                });
+                
+                yPos += 10;
+                doc.text('AI Analysis:', 20, yPos);
+                yPos += 10;
+                
+                // AI Response
+                const responseText = aiResponse.textContent;
+                const splitText = doc.splitTextToSize(responseText, 170);
+                doc.text(splitText, 20, yPos);
+                
+                // Footer
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.text('ClaimNavigatorAI - AI Response & Analysis Agent', 20, doc.internal.pageSize.height - 10);
+                }
+                
+                doc.save('claim-analysis.pdf');
+            } catch (error) {
+                console.error('PDF export error:', error);
+                alert('Error generating PDF. Please try again.');
+            }
+        });
+
+        // Clear fields functionality
+        clearBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear all fields?')) {
+                claimForm.reset();
+                insurerLetter.value = '';
+                placeholder.classList.remove('hidden');
+                aiResponse.classList.add('hidden');
+                aiInsights.classList.add('hidden');
+                aiSuggestions.classList.add('hidden');
+                loadingIndicator.classList.add('hidden');
+            }
+        });
+
+        // Auto-save functionality (optional)
+        function autoSave() {
+            const formData = {
+                claim: collectFormData(),
+                mode: responseMode.value,
+                letter: insurerLetter.value
+            };
+            localStorage.setItem('claimNavigatorData', JSON.stringify(formData));
+        }
+
+        // Load saved data
+        function loadSavedData() {
+            const saved = localStorage.getItem('claimNavigatorData');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    Object.entries(data.claim).forEach(([key, value]) => {
+                        const input = document.getElementById(key);
+                        if (input) input.value = value;
+                    });
+                    responseMode.value = data.mode;
+                    insurerLetter.value = data.letter;
+                } catch (e) {
+                    console.log('No saved data found');
+                }
+            }
+        }
+
+        // Event listeners for auto-save
+        claimForm.addEventListener('input', autoSave);
+        responseMode.addEventListener('change', autoSave);
+        insurerLetter.addEventListener('input', autoSave);
+
+        // Load saved data on page load
+        document.addEventListener('DOMContentLoaded', loadSavedData);
 </script>
-<script type="module" src="/app/assets/js/diagnostics.js"></script>
-</body></html>
+</body>
+</html>
