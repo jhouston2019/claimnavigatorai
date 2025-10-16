@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advanced Claim Analysis Tools - ClaimNavigatorAI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/app/assets/css/style.css">
     <style>
         .gradient-bg {
@@ -550,6 +549,13 @@
             const resultsDiv = document.getElementById(moduleId + 'Results');
             const outputDiv = document.getElementById(moduleId + 'Output');
 
+            // Check if all required elements exist
+            if (!statusElement || !buttonText || !spinner || !resultsDiv || !outputDiv) {
+                console.error('Required elements not found for module:', moduleId);
+                alert('Error: Required form elements not found. Please refresh the page and try again.');
+                return;
+            }
+
             // Show loading state
             statusElement.textContent = 'Analyzing';
             statusElement.className = 'px-2 py-1 text-xs font-medium rounded-full bg-gray-300 text-gray-800';
@@ -573,12 +579,16 @@
                     })
                 });
 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const result = await response.json();
 
                 if (result.ok) {
                     // Show success state
                     statusElement.textContent = 'Complete';
-                    statusElement.className = 'px-2 py-1 text-xs font-medium rounded-full bg-gray-200 text-gray-700';
+                    statusElement.className = 'px-2 py-1 text-xs font-medium rounded-full bg-green-200 text-green-800';
                     buttonText.textContent = getButtonText(moduleId);
                     spinner.classList.add('hidden');
                     
@@ -596,14 +606,22 @@
                     throw new Error(result.error || 'Analysis failed');
                 }
             } catch (error) {
+                console.error('Analysis error:', error);
+                
                 // Show error state
                 statusElement.textContent = 'Error';
-                statusElement.className = 'px-2 py-1 text-xs font-medium rounded-full bg-gray-300 text-gray-800';
+                statusElement.className = 'px-2 py-1 text-xs font-medium rounded-full bg-red-200 text-red-800';
                 buttonText.textContent = getButtonText(moduleId);
                 spinner.classList.add('hidden');
                 
                 // Show error message
-                outputDiv.innerHTML = `<div class="text-red-600 p-4 bg-red-50 rounded-lg">Error: ${error.message}</div>`;
+                outputDiv.innerHTML = `
+                    <div class="text-red-600 p-4 bg-red-50 rounded-lg border border-red-200">
+                        <h4 class="font-semibold mb-2">Analysis Failed</h4>
+                        <p class="mb-2">Error: ${error.message}</p>
+                        <p class="text-sm text-gray-600">Please check your inputs and try again. If the problem persists, please refresh the page.</p>
+                    </div>
+                `;
                 resultsDiv.classList.remove('hidden');
             }
         }
