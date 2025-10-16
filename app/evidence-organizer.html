@@ -75,53 +75,42 @@
     </header>
 
     <main class="p-6 space-y-8">
-        <!-- Claim Information Section -->
-        <section class="bg-gray-100 p-6 rounded-2xl shadow">
-            <h2 class="text-xl font-semibold mb-4 text-[#0f172a]">Claim Information</h2>
-            <div class="grid md:grid-cols-4 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                    <input type="text" id="claimName" placeholder="Enter your name"
-                        class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#1e40af] focus:border-transparent" />
+        <!-- Hero Section -->
+        <section class="bg-gradient-to-r from-[#0f172a] to-[#1e40af] text-white p-8 rounded-2xl shadow-lg">
+            <h1 class="text-3xl font-bold mb-6">Evidence Organizer</h1>
+            <div class="grid md:grid-cols-4 gap-6">
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                    <div class="text-sm text-blue-200 mb-1">Claim Holder</div>
+                    <div class="font-semibold" id="displayName">Loading...</div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Policy #</label>
-                    <input type="text" id="policyNumber" placeholder="Policy number"
-                        class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#1e40af] focus:border-transparent" />
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                    <div class="text-sm text-blue-200 mb-1">Policy Number</div>
+                    <div class="font-semibold" id="displayPolicy">Loading...</div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Claim #</label>
-                    <input type="text" id="claimNumber" placeholder="Claim number"
-                        class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#1e40af] focus:border-transparent" />
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                    <div class="text-sm text-blue-200 mb-1">Claim Number</div>
+                    <div class="font-semibold" id="displayClaim">Loading...</div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Date of Loss</label>
-                    <input type="date" id="dateOfLoss"
-                        class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#1e40af] focus:border-transparent" />
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                    <div class="text-sm text-blue-200 mb-1">Date of Loss</div>
+                    <div class="font-semibold" id="displayDate">Loading...</div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Insurance Company</label>
-                    <input type="text" id="insuranceCompany" placeholder="Insurance company"
-                        class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#1e40af] focus:border-transparent" />
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                    <div class="text-sm text-blue-200 mb-1">Insurance Company</div>
+                    <div class="font-semibold" id="displayInsurance">Loading...</div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                    <input type="tel" id="phoneNumber" placeholder="Phone number"
-                        class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#1e40af] focus:border-transparent" />
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                    <div class="text-sm text-blue-200 mb-1">Contact</div>
+                    <div class="font-semibold" id="displayContact">Loading...</div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                    <input type="email" id="emailAddress" placeholder="Email address"
-                        class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#1e40af] focus:border-transparent" />
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                    <div class="text-sm text-blue-200 mb-1">Email</div>
+                    <div class="font-semibold" id="displayEmail">Loading...</div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Your Address</label>
-                    <input type="text" id="address" placeholder="Your address"
-                        class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#1e40af] focus:border-transparent" />
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                    <div class="text-sm text-blue-200 mb-1">Address</div>
+                    <div class="font-semibold" id="displayAddress">Loading...</div>
                 </div>
-            </div>
-            <div class="mt-4 flex items-center">
-                <span id="saveStatus" class="saved-indicator text-green-600 text-sm font-medium">✓ Saved</span>
             </div>
         </section>
 
@@ -276,11 +265,6 @@
 
         // Setup event listeners
         function setupEventListeners() {
-            // Claim info auto-save
-            const claimInputs = ['claimName', 'policyNumber', 'claimNumber', 'dateOfLoss', 'insuranceCompany', 'phoneNumber', 'emailAddress', 'address'];
-            claimInputs.forEach(id => {
-                document.getElementById(id).addEventListener('input', debounce(saveClaimData, 1000));
-            });
 
             // Upload zone
             const uploadZone = document.getElementById('upload-zone');
@@ -312,76 +296,36 @@
             });
         }
 
-        // Claim data management
-        async function saveClaimData() {
-            const claimData = {
-                name: document.getElementById('claimName').value,
-                policy_number: document.getElementById('policyNumber').value,
-                claim_number: document.getElementById('claimNumber').value,
-                date_of_loss: document.getElementById('dateOfLoss').value,
-                insurance_company: document.getElementById('insuranceCompany').value,
-                phone: document.getElementById('phoneNumber').value,
-                email: document.getElementById('emailAddress').value,
-                address: document.getElementById('address').value
-            };
-
-            // Save to localStorage
-            localStorage.setItem('claimData', JSON.stringify(claimData));
-
-            // Save to Supabase if available
-            if (supabase) {
-                try {
-                    if (currentClaimId) {
-                        const { error } = await supabase
-                            .from('claim_metadata')
-                            .update(claimData)
-                            .eq('id', currentClaimId);
-                        
-                        if (error) throw error;
-                        console.log('Claim data updated successfully');
-                    } else {
-                        const { data, error } = await supabase
-                            .from('claim_metadata')
-                            .insert(claimData)
-                            .select();
-                        
-                        if (error) throw error;
-                        if (data && data.length > 0) {
-                            currentClaimId = data[0].id;
-                            console.log('New claim created with ID:', currentClaimId);
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error saving claim data to Supabase:', error);
-                    // Still show save indicator for localStorage
-                }
-            }
-
-            // Show save indicator
-            showSaveIndicator();
-        }
+        // Claim data management - now handled by initial user intake
 
         function loadClaimData() {
             const savedData = localStorage.getItem('claimData');
             if (savedData) {
                 const claimData = JSON.parse(savedData);
-                Object.keys(claimData).forEach(key => {
-                    const element = document.getElementById(key === 'policy_number' ? 'policyNumber' : 
-                                                          key === 'claim_number' ? 'claimNumber' :
-                                                          key === 'date_of_loss' ? 'dateOfLoss' :
-                                                          key === 'insurance_company' ? 'insuranceCompany' :
-                                                          key === 'phone' ? 'phoneNumber' :
-                                                          key === 'email' ? 'emailAddress' : key);
-                    if (element) element.value = claimData[key];
-                });
+                
+                // Populate hero section display elements
+                document.getElementById('displayName').textContent = claimData.name || 'Not provided';
+                document.getElementById('displayPolicy').textContent = claimData.policy_number || 'Not provided';
+                document.getElementById('displayClaim').textContent = claimData.claim_number || 'Not provided';
+                document.getElementById('displayDate').textContent = claimData.date_of_loss || 'Not provided';
+                document.getElementById('displayInsurance').textContent = claimData.insurance_company || 'Not provided';
+                document.getElementById('displayContact').textContent = claimData.phone || 'Not provided';
+                document.getElementById('displayEmail').textContent = claimData.email || 'Not provided';
+                document.getElementById('displayAddress').textContent = claimData.address || 'Not provided';
+            } else {
+                // If no saved data, try to load from user session or show default message
+                document.getElementById('displayName').textContent = 'Please complete your profile';
+                document.getElementById('displayPolicy').textContent = 'Not available';
+                document.getElementById('displayClaim').textContent = 'Not available';
+                document.getElementById('displayDate').textContent = 'Not available';
+                document.getElementById('displayInsurance').textContent = 'Not available';
+                document.getElementById('displayContact').textContent = 'Not available';
+                document.getElementById('displayEmail').textContent = 'Not available';
+                document.getElementById('displayAddress').textContent = 'Not available';
             }
         }
 
-        function showSaveIndicator() {
-            const indicator = document.getElementById('saveStatus');
-            indicator.classList.add('show');
-            setTimeout(() => indicator.classList.remove('show'), 2000);
-        }
+        // Save indicator removed - no longer needed with auto-populated data
 
         // File upload handling
         function handleDragOver(e) {
@@ -657,9 +601,9 @@
             
             try {
                 const claimInfo = {
-                    claimNumber: document.getElementById('claimNumber').value,
-                    dateOfLoss: document.getElementById('dateOfLoss').value,
-                    insuranceCompany: document.getElementById('insuranceCompany').value
+                    claimNumber: document.getElementById('displayClaim').textContent,
+                    dateOfLoss: document.getElementById('displayDate').textContent,
+                    insuranceCompany: document.getElementById('displayInsurance').textContent
                 };
                 
                 const response = await fetch('/netlify/functions/generate-evidence-report', {
