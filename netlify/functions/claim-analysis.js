@@ -1,6 +1,6 @@
-import { readBody, json, openaiChat } from './utils-helper.js';
+const { readBody, json, openaiChat } = require('./utils-helper.js');
 
-export async function handler(event) {
+exports.handler = async (event) => {
   try {
     const body = await readBody(event);
     const { claimText } = body;
@@ -20,4 +20,4 @@ export async function handler(event) {
     console.error('Claim analysis error:', err);
     return json({ error: err.message || 'Server error' }, 500);
   }
-}
+};
