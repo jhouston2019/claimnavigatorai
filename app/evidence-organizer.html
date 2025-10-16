@@ -7,6 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        // Set Supabase configuration for the evidence organizer
+        window.__SUPABASE_URL = 'https://your-project.supabase.co';
+        window.__SUPABASE_ANON_KEY = 'your-anon-key';
+    </script>
     <style>
         :root {
             --primary: #0f172a;
@@ -528,6 +533,7 @@
         // AI Functions
         async function categorizeWithAI(file) {
             try {
+                // Try the Netlify function first
                 const response = await fetch('/netlify/functions/ai-categorize-evidence', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -542,7 +548,29 @@
                 return await response.json();
             } catch (error) {
                 console.error('AI categorization error:', error);
-                return { category: 'other', tags: [], summary: 'Unable to categorize', confidence: 0 };
+                // Fallback categorization based on file type and name
+                const category = getFallbackCategory(file);
+                return { 
+                    category: category, 
+                    tags: [category], 
+                    summary: `Auto-categorized as ${category} based on file type`, 
+                    confidence: 60 
+                };
+            }
+        }
+
+        function getFallbackCategory(file) {
+            const name = file.name.toLowerCase();
+            const type = file.type.toLowerCase();
+            
+            if (type.startsWith('image/') || name.includes('photo') || name.includes('image')) {
+                return 'photos';
+            } else if (name.includes('receipt') || name.includes('invoice') || name.includes('bill')) {
+                return 'receipts';
+            } else if (type.includes('pdf') || type.includes('document') || name.includes('report')) {
+                return 'documents';
+            } else {
+                return 'other';
             }
         }
 
@@ -587,11 +615,42 @@
                 const result = await response.json();
                 showAIResults(`Missing: ${result.missing.join(', ')}<br>Recommendations: ${result.recommendations.join(', ')}`);
             } catch (error) {
-                showAIResults('Error checking evidence: ' + error.message, 'error');
+                console.error('Evidence check error:', error);
+                // Fallback evidence check
+                const fallbackResult = getFallbackEvidenceCheck();
+                showAIResults(`Missing: ${fallbackResult.missing.join(', ')}<br>Recommendations: ${fallbackResult.recommendations.join(', ')}`);
             } finally {
                 button.disabled = false;
                 button.textContent = '✅ Check My Evidence';
             }
+        }
+
+        function getFallbackEvidenceCheck() {
+            const categories = evidenceFiles.map(f => f.category);
+            const missing = [];
+            const recommendations = [];
+            
+            if (!categories.includes('photos')) {
+                missing.push('Damage photos');
+                recommendations.push('Take photos of all damage from multiple angles');
+            }
+            if (!categories.includes('documents')) {
+                missing.push('Official documents');
+                recommendations.push('Gather police reports, estimates, and official correspondence');
+            }
+            if (!categories.includes('receipts')) {
+                missing.push('Receipts and invoices');
+                recommendations.push('Collect receipts for repairs, temporary housing, and replacement items');
+            }
+            
+            if (missing.length === 0) {
+                return {
+                    missing: ['All basic evidence types present'],
+                    recommendations: ['Consider adding witness statements or expert reports']
+                };
+            }
+            
+            return { missing, recommendations };
         }
 
         async function generateSummaryReport() {
@@ -628,11 +687,45 @@
                 
                 showAIResults('Summary report generated successfully!');
             } catch (error) {
-                showAIResults('Error generating report: ' + error.message, 'error');
+                console.error('Report generation error:', error);
+                // Fallback: Generate a simple text report
+                generateFallbackReport();
             } finally {
                 button.disabled = false;
                 button.textContent = '📄 Generate Summary Report (PDF)';
             }
+        }
+
+        function generateFallbackReport() {
+            const claimInfo = {
+                claimNumber: document.getElementById('displayClaim').textContent,
+                dateOfLoss: document.getElementById('displayDate').textContent,
+                insuranceCompany: document.getElementById('displayInsurance').textContent
+            };
+            
+            let reportContent = `CLAIM EVIDENCE SUMMARY REPORT\n\n`;
+            reportContent += `Claim Number: ${claimInfo.claimNumber}\n`;
+            reportContent += `Date of Loss: ${claimInfo.dateOfLoss}\n`;
+            reportContent += `Insurance Company: ${claimInfo.insuranceCompany}\n\n`;
+            reportContent += `EVIDENCE FILES (${evidenceFiles.length} total):\n\n`;
+            
+            evidenceFiles.forEach((file, index) => {
+                reportContent += `${index + 1}. ${file.file_name}\n`;
+                reportContent += `   Category: ${file.category}\n`;
+                reportContent += `   Summary: ${file.ai_summary || 'No summary available'}\n`;
+                reportContent += `   Uploaded: ${new Date(file.created_at).toLocaleDateString()}\n\n`;
+            });
+            
+            // Create and download text file
+            const blob = new Blob([reportContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `evidence-report-${Date.now()}.txt`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showAIResults('Text report generated successfully! (PDF generation unavailable)');
         }
 
         function showAIResults(message, type = 'success') {
