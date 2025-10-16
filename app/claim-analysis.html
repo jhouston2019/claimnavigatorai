@@ -544,11 +544,14 @@
         }
 
         async function runAnalysis(moduleId) {
-            const statusElement = document.getElementById(moduleId + 'Status');
-            const buttonText = document.getElementById(moduleId + 'BtnText');
-            const spinner = document.getElementById(moduleId + 'Spinner');
-            const resultsDiv = document.getElementById(moduleId + 'Results');
-            const outputDiv = document.getElementById(moduleId + 'Output');
+            // Handle the estimates module ID mismatch
+            const actualModuleId = moduleId === 'estimates' ? 'estimate' : moduleId;
+            
+            const statusElement = document.getElementById(actualModuleId + 'Status');
+            const buttonText = document.getElementById(actualModuleId + 'BtnText');
+            const spinner = document.getElementById(actualModuleId + 'Spinner');
+            const resultsDiv = document.getElementById(actualModuleId + 'Results');
+            const outputDiv = document.getElementById(actualModuleId + 'Output');
 
             // Check if all required elements exist
             if (!statusElement || !buttonText || !spinner || !resultsDiv || !outputDiv) {
