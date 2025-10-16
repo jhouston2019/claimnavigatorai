@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advanced Claim Analysis Tools - ClaimNavigatorAI</title>
-    <!-- Tailwind CDN used for testing: replace with build step later -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/dist/style.css">
     <style>
         :root{--navy:#0f172a;--primary:#1e40af;--primary-600:#1e3a8a;--accent:#3b82f6;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--panel:#f8fafc;--success:#10b981;--warn:#f59e0b;--error:#ef4444;}
         *{box-sizing:border-box}
@@ -594,7 +592,7 @@
 
                 const result = await response.json();
 
-                if (result.analysis) {
+                if (result.success && result.analysis) {
                     // Show success state
                     statusElement.textContent = 'Complete';
                     statusElement.className = 'px-2 py-1 text-xs font-medium rounded-full bg-green-200 text-green-800';
@@ -602,13 +600,13 @@
                     spinner.classList.add('hidden');
                     
                     // Display results
-                    outputDiv.innerHTML = result.analysis.content || result.analysis;
+                    outputDiv.innerHTML = result.analysis;
                     resultsDiv.classList.remove('hidden');
                     
                     // Update progress
                     if (!analysisResults[moduleId]) {
                         completedTools++;
-                        analysisResults[moduleId] = result.analysis.content || result.analysis;
+                        analysisResults[moduleId] = result.analysis;
                         updateProgress();
                     }
                 } else {

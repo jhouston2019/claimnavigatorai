@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Claim Analysis</title>
+    <link rel="stylesheet" href="/dist/style.css">
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-2xl font-bold mb-4">Test Claim Analysis Function</h1>
+        
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Test Input:</label>
+            <textarea id="testInput" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Enter test text...">Test policy text for analysis</textarea>
+        </div>
+        
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Module Type:</label>
+            <select id="moduleType" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                <option value="policy">Policy Review</option>
+                <option value="damage">Damage Assessment</option>
+                <option value="estimates">Estimate Comparison</option>
+                <option value="bi">Business Interruption</option>
+                <option value="settlement">Settlement Analysis</option>
+            </select>
+        </div>
+        
+        <button onclick="testAnalysis()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium">
+            Test Analysis
+        </button>
+        
+        <div id="result" class="mt-4 p-4 bg-gray-50 rounded-lg hidden">
+            <h3 class="font-semibold mb-2">Result:</h3>
+            <div id="resultContent"></div>
+        </div>
+        
+        <div id="error" class="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg hidden">
+            <h3 class="font-semibold text-red-800 mb-2">Error:</h3>
+            <div id="errorContent"></div>
+        </div>
+    </div>
+
+    <script>
+        async function testAnalysis() {
+            const testInput = document.getElementById('testInput').value;
+            const moduleType = document.getElementById('moduleType').value;
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            const resultContent = document.getElementById('resultContent');
+            const errorContent = document.getElementById('errorContent');
+            
+            // Hide previous results
+            resultDiv.classList.add('hidden');
+            errorDiv.classList.add('hidden');
+            
+            try {
+                console.log('Testing claim analysis...');
+                
+                const response = await fetch('/.netlify/functions/claim-analysis', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        claimText: JSON.stringify({ 
+                            module: moduleType, 
+                            inputs: { 
+                                text: testInput,
+                                type: moduleType === 'policy' ? 'homeowners' : undefined
+                            } 
+                        })
+                    })
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Result:', result);
+
+                resultContent.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+                resultDiv.classList.remove('hidden');
+                
+            } catch (error) {
+                console.error('Test error:', error);
+                errorContent.textContent = error.message;
+                errorDiv.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
