@@ -1,5 +1,44 @@
 import OpenAI from "openai";
 
+// Simple multipart form parser for Netlify functions
+async function parseMultipartForm(req) {
+  const chunks = [];
+  for await (const chunk of req) {
+    chunks.push(chunk);
+  }
+  const buffer = Buffer.concat(chunks);
+  const boundary = req.headers['content-type'].split('boundary=')[1];
+  const parts = buffer.toString().split(`--${boundary}`);
+  
+  const formData = {};
+  
+  for (const part of parts) {
+    if (part.includes('Content-Disposition')) {
+      const nameMatch = part.match(/name="([^"]+)"/);
+      const filenameMatch = part.match(/filename="([^"]+)"/);
+      
+      if (nameMatch) {
+        const name = nameMatch[1];
+        const contentStart = part.indexOf('\r\n\r\n') + 4;
+        const content = part.substring(contentStart).replace(/\r\n$/, '');
+        
+        if (filenameMatch) {
+          // This is a file
+          formData[name] = {
+            filename: filenameMatch[1],
+            content: content
+          };
+        } else {
+          // This is regular form data
+          formData[name] = content;
+        }
+      }
+    }
+  }
+  
+  return formData;
+}
+
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,13 +55,30 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { mode, claim, letter } = req.body;
+    // Handle multipart form data for file uploads
+    let mode, claim, letter, document;
+    
+    if (req.headers['content-type'] && req.headers['content-type'].includes('multipart/form-data')) {
+      // Parse multipart form data
+      const formData = await parseMultipartForm(req);
+      mode = formData.mode;
+      claim = JSON.parse(formData.claim || '{}');
+      letter = formData.letter;
+      document = formData.document;
+    } else {
+      // Handle JSON data
+      const body = JSON.parse(req.body);
+      mode = body.mode;
+      claim = body.claim;
+      letter = body.letter;
+      document = body.document;
+    }
 
     // Validate required fields
-    if (!letter || !letter.trim()) {
+    if ((!letter || !letter.trim()) && !document) {
       return res.status(400).json({ 
-        error: "Insurer letter is required",
-        details: "Please provide the insurer correspondence text for analysis"
+        error: "Insurer correspondence is required",
+        details: "Please provide the insurer correspondence text or upload a document for analysis"
       });
     }
 
@@ -70,11 +126,25 @@ Guidelines:
 - Ensure responses are legally appropriate and fact-based
 - Structure output as valid JSON with the required fields`;
 
+    // Process uploaded document if present
+    let documentText = '';
+    if (document && document.content) {
+      // For now, we'll use the document content directly
+      // In a production environment, you'd want to use proper document parsing libraries
+      documentText = document.content;
+      console.log(`Processing document: ${document.filename}`);
+    }
+
     // Prepare the user prompt with claim information
     const claimInfo = claim ? Object.entries(claim)
       .filter(([key, value]) => value && value.trim())
       .map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`)
       .join('\n') : 'No claim information provided';
+
+    // Combine letter text and document text
+    const combinedText = documentText ? 
+      `DOCUMENT CONTENT:\n${documentText}\n\nADDITIONAL TEXT:\n${letter || ''}` : 
+      letter;
 
     const userPrompt = `
 ANALYSIS MODE: ${mode.toUpperCase()}
@@ -83,7 +153,7 @@ CLAIM INFORMATION:
 ${claimInfo}
 
 INSURER CORRESPONDENCE:
-${letter}
+${combinedText}
 
 TASK: ${modePrompts[mode]}
 

@@ -42,15 +42,15 @@
             <div class="flex justify-between items-center py-4">
                 <div class="flex items-center">
                     <h1 class="text-2xl font-bold text-white">ClaimNavigatorAI</h1>
-                </div>
+    </div>
                 <nav class="hidden md:flex space-x-8">
                     <a href="#" class="text-white hover:text-blue-200 transition-colors duration-200">Home</a>
                     <a href="#" class="text-white hover:text-blue-200 transition-colors duration-200">Resources</a>
                     <a href="#" class="text-white hover:text-blue-200 transition-colors duration-200">Support</a>
-                </nav>
+    </nav>
             </div>
-        </div>
-    </header>
+  </div>
+</header>
 
     <!-- Breadcrumbs -->
     <div class="bg-gray-100 py-3">
@@ -81,47 +81,15 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Left Column - Input Panel -->
             <div class="card bg-white rounded-lg shadow-lg p-6">
-                <h2 class="text-2xl font-semibold text-gray-900 mb-6">Claim Information & Analysis</h2>
+                <h2 class="text-2xl font-semibold text-gray-900 mb-6">AI Response & Analysis</h2>
                 
-                <!-- Claim Information Form -->
-                <form id="claimForm" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                            <input type="text" id="name" name="name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        </div>
-                        <div>
-                            <label for="policyNumber" class="block text-sm font-medium text-gray-700 mb-1">Policy Number</label>
-                            <input type="text" id="policyNumber" name="policyNumber" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        </div>
-                        <div>
-                            <label for="claimNumber" class="block text-sm font-medium text-gray-700 mb-1">Claim Number</label>
-                            <input type="text" id="claimNumber" name="claimNumber" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        </div>
-                        <div>
-                            <label for="dateOfLoss" class="block text-sm font-medium text-gray-700 mb-1">Date of Loss</label>
-                            <input type="date" id="dateOfLoss" name="dateOfLoss" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        </div>
-                        <div>
-                            <label for="company" class="block text-sm font-medium text-gray-700 mb-1">Insurance Company</label>
-                            <input type="text" id="company" name="company" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        </div>
-                        <div>
-                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                            <input type="tel" id="phone" name="phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        </div>
+                <!-- Auto-populated User Information Display -->
+                <div id="userInfoDisplay" class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <h3 class="text-lg font-semibold text-blue-900 mb-3">📋 Your Information</h3>
+                    <div id="userInfoContent" class="text-sm text-gray-700">
+                        <p class="text-gray-500 italic">Loading your information from intake forms...</p>
                     </div>
-                    
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                        <input type="email" id="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-                    
-                    <div>
-                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Your Address</label>
-                        <textarea id="address" name="address" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-                    </div>
-                </form>
+                </div>
 
                 <!-- Response Mode Selection -->
                 <div class="mt-6">
@@ -135,10 +103,32 @@
                     </select>
                 </div>
 
-                <!-- Insurer Letter Input -->
+                <!-- Document Upload Section -->
                 <div class="mt-6">
-                    <label for="insurerLetter" class="block text-sm font-medium text-gray-700 mb-2">Paste Insurer Letter</label>
-                    <textarea id="insurerLetter" rows="8" placeholder="Paste the insurer's correspondence here..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload Insurer Document</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                        <input type="file" id="documentUpload" accept=".pdf,.doc,.docx,.txt" class="hidden">
+                        <div id="uploadArea" class="cursor-pointer">
+                            <div class="text-4xl mb-2">📄</div>
+                            <p class="text-gray-600 mb-2">Click to upload or drag and drop</p>
+                            <p class="text-sm text-gray-500">PDF, DOC, DOCX, or TXT files</p>
+                        </div>
+                        <div id="fileInfo" class="hidden mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <span class="text-green-600 mr-2">✅</span>
+                                    <span id="fileName" class="text-sm font-medium text-green-800"></span>
+                                </div>
+                                <button id="removeFile" class="text-red-600 hover:text-red-800 text-sm">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Input Alternative -->
+                <div class="mt-6">
+                    <label for="insurerLetter" class="block text-sm font-medium text-gray-700 mb-2">Or Paste Insurer Letter Text</label>
+                    <textarea id="insurerLetter" rows="6" placeholder="Paste the insurer's correspondence here as an alternative to file upload..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
                 </div>
 
                 <!-- Action Buttons -->
@@ -200,7 +190,6 @@
         const analyzeBtn = document.getElementById('analyzeBtn');
         const exportBtn = document.getElementById('exportBtn');
         const clearBtn = document.getElementById('clearBtn');
-        const claimForm = document.getElementById('claimForm');
         const responseMode = document.getElementById('responseMode');
         const insurerLetter = document.getElementById('insurerLetter');
         const aiOutput = document.getElementById('aiOutput');
@@ -213,31 +202,160 @@
         const suggestionsList = document.getElementById('suggestionsList');
         const analyzeText = document.getElementById('analyzeText');
         const analyzingText = document.getElementById('analyzingText');
+        
+        // Document upload elements
+        const documentUpload = document.getElementById('documentUpload');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const removeFile = document.getElementById('removeFile');
+        const userInfoContent = document.getElementById('userInfoContent');
+        
+        // Global variables
+        let uploadedFile = null;
+        let userData = null;
 
-        // Form data collection
-        function collectFormData() {
-            const formData = new FormData(claimForm);
-            return {
-                name: formData.get('name'),
-                policyNumber: formData.get('policyNumber'),
-                claimNumber: formData.get('claimNumber'),
-                dateOfLoss: formData.get('dateOfLoss'),
-                company: formData.get('company'),
-                phone: formData.get('phone'),
-                email: formData.get('email'),
-                address: formData.get('address')
+        // Auto-populate user data from intake forms
+        function loadUserData() {
+            // Try to get user data from localStorage or sessionStorage
+            const savedUserData = localStorage.getItem('claimNavigatorUserData') || sessionStorage.getItem('claimNavigatorUserData');
+            
+            if (savedUserData) {
+                try {
+                    userData = JSON.parse(savedUserData);
+                    displayUserInfo(userData);
+                } catch (e) {
+                    console.log('Error parsing user data:', e);
+                    displayDefaultUserInfo();
+                }
+            } else {
+                // Try to get from URL parameters or other sources
+                const urlParams = new URLSearchParams(window.location.search);
+                const name = urlParams.get('name');
+                const email = urlParams.get('email');
+                
+                if (name || email) {
+                    userData = {
+                        name: name || 'Not provided',
+                        email: email || 'Not provided',
+                        policyNumber: 'Auto-populated',
+                        claimNumber: 'Auto-populated',
+                        dateOfLoss: 'Auto-populated',
+                        company: 'Auto-populated',
+                        phone: 'Auto-populated',
+                        address: 'Auto-populated'
+                    };
+                    displayUserInfo(userData);
+                } else {
+                    displayDefaultUserInfo();
+                }
+            }
+        }
+
+        function displayUserInfo(data) {
+            const infoHtml = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                    <div><strong>Name:</strong> ${data.name || 'Not provided'}</div>
+                    <div><strong>Email:</strong> ${data.email || 'Not provided'}</div>
+                    <div><strong>Policy:</strong> ${data.policyNumber || 'Not provided'}</div>
+                    <div><strong>Claim:</strong> ${data.claimNumber || 'Not provided'}</div>
+                    <div><strong>Company:</strong> ${data.company || 'Not provided'}</div>
+                    <div><strong>Phone:</strong> ${data.phone || 'Not provided'}</div>
+                </div>
+            `;
+            userInfoContent.innerHTML = infoHtml;
+        }
+
+        function displayDefaultUserInfo() {
+            userInfoContent.innerHTML = `
+                <p class="text-gray-500 italic">No user information found. Please complete the intake forms first.</p>
+                <a href="#" class="text-blue-600 hover:text-blue-800 text-sm underline">Complete Intake Forms</a>
+            `;
+        }
+
+        // Document upload functionality
+        function setupDocumentUpload() {
+            // Click to upload
+            uploadArea.addEventListener('click', () => {
+                documentUpload.click();
+            });
+
+            // File selection
+            documentUpload.addEventListener('change', handleFileSelect);
+
+            // Drag and drop
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('border-blue-400', 'bg-blue-50');
+            });
+
+            uploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('border-blue-400', 'bg-blue-50');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('border-blue-400', 'bg-blue-50');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileSelect({ target: { files: files } });
+                }
+            });
+
+            // Remove file
+            removeFile.addEventListener('click', () => {
+                uploadedFile = null;
+                documentUpload.value = '';
+                fileInfo.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+            });
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                uploadedFile = file;
+                fileName.textContent = file.name;
+                fileInfo.classList.remove('hidden');
+                uploadArea.classList.add('hidden');
+                
+                // Extract text from file if possible
+                extractTextFromFile(file);
+            }
+        }
+
+        function extractTextFromFile(file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const content = e.target.result;
+                
+                // For text files, populate the textarea
+                if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+                    insurerLetter.value = content;
+                } else {
+                    // For other files, show a message
+                    insurerLetter.value = `[Document uploaded: ${file.name}]\n\nPlease paste the text content below or the AI will analyze the file directly.`;
+                }
             };
+            
+            if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+                reader.readAsText(file);
+            } else {
+                // For PDF/DOC files, we'll need to handle them on the backend
+                console.log('File uploaded, will be processed by backend:', file.name);
+            }
         }
 
         // Analyze button click handler
         analyzeBtn.addEventListener('click', async () => {
-            const claimData = collectFormData();
             const letter = insurerLetter.value.trim();
             const mode = responseMode.value;
 
             // Validation
-            if (!letter) {
-                alert('Please paste the insurer letter for analysis.');
+            if (!letter && !uploadedFile) {
+                alert('Please upload a document or paste the insurer letter for analysis.');
                 return;
             }
 
@@ -252,16 +370,19 @@
             aiSuggestions.classList.add('hidden');
 
             try {
+                // Prepare form data for file upload
+                const formData = new FormData();
+                formData.append('mode', mode);
+                formData.append('claim', JSON.stringify(userData || {}));
+                formData.append('letter', letter);
+                
+                if (uploadedFile) {
+                    formData.append('document', uploadedFile);
+                }
+
                 const response = await fetch('/.netlify/functions/aiResponseAgent', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        mode: mode,
-                        claim: claimData,
-                        letter: letter
-                    })
+                    body: formData
                 });
 
                 if (!response.ok) {
@@ -356,8 +477,11 @@
         // Clear fields functionality
         clearBtn.addEventListener('click', () => {
             if (confirm('Are you sure you want to clear all fields?')) {
-                claimForm.reset();
                 insurerLetter.value = '';
+                uploadedFile = null;
+                documentUpload.value = '';
+                fileInfo.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
                 placeholder.classList.remove('hidden');
                 aiResponse.classList.add('hidden');
                 aiInsights.classList.add('hidden');
@@ -369,7 +493,6 @@
         // Auto-save functionality (optional)
         function autoSave() {
             const formData = {
-                claim: collectFormData(),
                 mode: responseMode.value,
                 letter: insurerLetter.value
             };
@@ -382,25 +505,27 @@
             if (saved) {
                 try {
                     const data = JSON.parse(saved);
-                    Object.entries(data.claim).forEach(([key, value]) => {
-                        const input = document.getElementById(key);
-                        if (input) input.value = value;
-                    });
-                    responseMode.value = data.mode;
-                    insurerLetter.value = data.letter;
+                    responseMode.value = data.mode || 'reply';
+                    insurerLetter.value = data.letter || '';
                 } catch (e) {
                     console.log('No saved data found');
                 }
             }
         }
 
+        // Initialize the application
+        function initializeApp() {
+            loadUserData();
+            setupDocumentUpload();
+            loadSavedData();
+        }
+
         // Event listeners for auto-save
-        claimForm.addEventListener('input', autoSave);
         responseMode.addEventListener('change', autoSave);
         insurerLetter.addEventListener('input', autoSave);
 
-        // Load saved data on page load
-        document.addEventListener('DOMContentLoaded', loadSavedData);
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initializeApp);
 </script>
 </body>
 </html>
