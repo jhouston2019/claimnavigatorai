@@ -148,7 +148,6 @@
         }
 
         function populateDocumentInfo() {
-            document.getElementById('documentTitle').textContent = documentData.title;
             document.getElementById('documentName').textContent = documentData.title;
             document.getElementById('documentDescription').textContent = documentData.description;
             
@@ -332,11 +331,46 @@
             
             inputs.forEach(input => {
                 if (input.type === 'text' || input.type === 'email' || input.type === 'tel' || input.type === 'date' || input.type === 'number') {
-                    formData[input.name] = input.value;
+                    if (input.name) {
+                        formData[input.name] = input.value;
+                    }
                 } else if (input.type === 'textarea') {
-                    formData[input.name] = input.value;
+                    if (input.name) {
+                        formData[input.name] = input.value;
+                    }
                 } else if (input.type === 'select-one') {
-                    formData[input.name] = input.value;
+                    if (input.name) {
+                        formData[input.name] = input.value;
+                    }
+                }
+            });
+
+            // Handle table data collection
+            const tables = form.querySelectorAll('table');
+            tables.forEach((table, tableIndex) => {
+                const tableData = [];
+                const rows = table.querySelectorAll('tr:not(:first-child)'); // Skip header row
+                
+                rows.forEach(row => {
+                    const rowData = {};
+                    const cells = row.querySelectorAll('td');
+                    const headers = table.querySelectorAll('th');
+                    
+                    cells.forEach((cell, cellIndex) => {
+                        const input = cell.querySelector('input');
+                        if (input && input.value.trim() !== '') {
+                            const headerText = headers[cellIndex] ? headers[cellIndex].textContent : `column_${cellIndex}`;
+                            rowData[headerText] = input.value;
+                        }
+                    });
+                    
+                    if (Object.keys(rowData).length > 0) {
+                        tableData.push(rowData);
+                    }
+                });
+                
+                if (tableData.length > 0) {
+                    formData[`table_${tableIndex}`] = tableData;
                 }
             });
 
