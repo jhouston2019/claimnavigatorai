@@ -61,7 +61,6 @@
                     <select id="categoryFilter" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">All Categories</option>
                         <option value="core">Core Documents</option>
-                        <option value="legal">Legal Documents</option>
                         <option value="financial">Financial Documents</option>
                         <option value="evidence">Evidence Documents</option>
                         <option value="analysis">Analysis Tools</option>
@@ -107,7 +106,7 @@
                 allDocuments = Object.entries(data).map(([key, doc]) => ({
                     id: key,
                     ...doc
-                }));
+                })).sort((a, b) => a.title.localeCompare(b.title));
                 filteredDocuments = [...allDocuments];
                 renderDocuments();
                 setupEventListeners();
@@ -179,7 +178,6 @@
         function getCategoryColor(category) {
             const colors = {
                 'core': 'bg-blue-100 text-blue-800',
-                'legal': 'bg-red-100 text-red-800',
                 'financial': 'bg-green-100 text-green-800',
                 'evidence': 'bg-purple-100 text-purple-800',
                 'analysis': 'bg-orange-100 text-orange-800',
@@ -226,7 +224,7 @@
                 const matchesCategory = !categoryFilter || doc.category === categoryFilter;
                 
                 return matchesSearch && matchesCategory;
-            });
+            }).sort((a, b) => a.title.localeCompare(b.title));
 
             renderDocuments();
         }
