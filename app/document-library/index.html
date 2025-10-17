@@ -43,9 +43,6 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
     </div>
   </div>
   <div id="warning" class="card" style="display:none;color:#f59e0b"></div>
-  <div id="document-count" class="info-box" style="display:none;margin-top:1rem;">
-    <strong>📄 <span id="document-count-text">0</span> documents available in <span id="current-language">English</span></strong>
-  </div>
   <div id="list" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-top:12px"></div>
 </main>
 <script type="module">
@@ -70,9 +67,6 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
   async function loadDocuments(language = 'en') {
     const warn = qs('#warning');
     const list = qs('#list');
-    const countBox = qs('#document-count');
-    const countText = qs('#document-count-text');
-    const langText = qs('#current-language');
     
     warn.style.display = 'none';
     list.innerHTML = '<div class="loading">Loading documents...</div>';
@@ -91,7 +85,6 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
       allDocuments = Object.values(docsData).sort((a, b) => a.label.localeCompare(b.label));
       
       renderDocuments(allDocuments);
-      updateDocumentCount(allDocuments.length, language);
       
     } catch (error) {
       console.error('Error loading documents:', error);
@@ -117,15 +110,6 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
     list.innerHTML = filtered.map(doc => createDocumentCard(doc)).join('');
   }
 
-  function updateDocumentCount(count, language) {
-    const countText = qs('#document-count-text');
-    const langText = qs('#current-language');
-    const countBox = qs('#document-count');
-    
-    if (countText) countText.textContent = count;
-    if (langText) langText.textContent = language === 'es' ? 'Spanish' : 'English';
-    if (countBox) countBox.style.display = 'block';
-  }
 
   function switchLanguage(language) {
     currentLanguage = language;
@@ -200,6 +184,12 @@ body:has(main.container) .section-header,
   color: black !important;
   padding: 1rem;
   border-radius: 8px;
+}
+
+/* Remove border from the card containing the section header */
+.card:has(.section-header) {
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* Force black title with maximum specificity */
