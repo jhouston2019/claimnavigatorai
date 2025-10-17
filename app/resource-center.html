@@ -321,109 +321,78 @@
 </script>
 
 <style>
-/* Main Content Styles */
-.main-content {
-  padding: 1rem 0;
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: url('/app/assets/images/backgrounds/ai5.jpg') no-repeat center center fixed;
+  background-size: cover;
 }
 
-.hero-section {
-  text-align: center;
-  margin-bottom: 1.5rem;
+/* Overlay to make text readable */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 10, 35, 0.65);
+  z-index: -1;
 }
 
-.main-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #1f2937;
-  margin-bottom: 0.5rem;
-}
-
-.search-container {
-  display: flex;
-  max-width: 300px;
-  margin: 0 auto;
-  gap: 0.5rem;
-}
-
-.main-search {
-  flex: 1;
-  padding: 0.375rem 0.5rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-}
-
-.search-btn {
-  padding: 0.75rem 1.5rem;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-weight: 600;
-}
-
+/* Remove box backgrounds for a transparent layout */
 .content-columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
   margin-top: 2rem;
 }
 
 .content-column {
-  background: #f9fafb;
-  border-radius: 1rem;
-  padding: 2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
+/* Section titles */
 .column-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #1f2937;
-  margin-bottom: 1.5rem;
-  text-align: center;
+  color: #ffffff !important;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  font-weight: 700;
 }
 
-.tool-grid {
-  display: grid;
-  gap: 1rem;
-}
-
+/* Tool cards with glassy effect */
 .tool-card {
-  display: block;
-  background: #f8f9fa;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
   padding: 1.5rem;
   text-decoration: none;
-  color: inherit;
+  color: #fff;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 8px rgba(30, 58, 138, 0.3);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
 }
 
 .tool-card:hover {
-  background: #f1f5f9;
-  border-color: #3b82f6;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
 }
 
+/* Card text styling */
 .tool-card h4 {
-  font-size: 1.125rem;
+  color: #ffffff;
   font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 0.5rem;
 }
 
 .tool-card p {
-  color: #6b7280;
-  line-height: 1.5;
-  margin-bottom: 0;
+  color: #dbeafe;
 }
 
+/* Badge styles */
 .badge {
-  display: inline-block;
   background: #3b82f6;
   color: white;
   padding: 0.25rem 0.75rem;
@@ -433,269 +402,47 @@
   margin-bottom: 0.75rem;
 }
 
-/* Navigation Dropdown Styles */
-.nav-dropdown {
-  position: relative;
-  display: inline-block;
+/* Hero title */
+.main-title {
+  font-size: 2.5rem;
+  color: #ffffff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
 }
 
-.nav-dropdown-toggle {
-  background: none;
+/* Search section */
+.search-container {
+  display: flex;
+  max-width: 350px;
+  margin: 0 auto;
+  gap: 0.5rem;
+}
+
+.main-search {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+.main-search::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+
+.search-btn {
+  background: #3b82f6;
+  color: white;
   border: none;
-  color: #c9d4ff;
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  transition: background-color 0.3s ease;
-}
-
-.nav-dropdown-toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.nav-dropdown-content {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: #f8f9fa;
-  border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  min-width: 300px;
-  padding: 1rem;
-}
-
-.nav-dropdown-content a {
-  display: block;
-  padding: 0.5rem 1rem;
-  color: #374151;
-  text-decoration: none;
-  border-radius: 0.375rem;
-  transition: background-color 0.3s ease;
-}
-
-.nav-dropdown-content a:hover {
-  background: #f3f4f6;
-}
-
-.how-to-steps {
-  margin-bottom: 1rem;
-}
-
-.step {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-}
-
-.step-number {
-  background: #3b82f6;
-  color: white;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  margin-right: 1rem;
-  flex-shrink: 0;
-}
-
-.step-content h4 {
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 0.25rem;
-}
-
-.step-content p {
-  color: #6b7280;
-  font-size: 0.875rem;
-  margin: 0;
-}
-
-.quick-start-scenarios {
-  margin-bottom: 1rem;
-}
-
-.scenario {
-  margin-bottom: 1rem;
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 0.5rem;
-}
-
-.scenario h4 {
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 0.5rem;
-}
-
-.scenario-links {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.scenario-link {
-  background: #3b82f6;
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 0.375rem;
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-}
-
-.scenario-link:hover {
-  background: #2563eb;
-}
-
-.nav-link {
-  display: inline-block;
-  background: #3b82f6;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-}
-
-.nav-link:hover {
-  background: #2563eb;
-}
-
-/* Document Library Styles */
-.documents-section {
-  max-width: 100%;
-}
-
-.section-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.section-header h2 {
-  color: var(--primary, #2563eb);
-  margin-bottom: 0.5rem;
-}
-
-.language-toggle {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  margin-top: 1rem;
-}
-
-.lang-btn {
-  padding: 0.5rem 1rem;
-  border: 2px solid var(--border, #e5e7eb);
-  background: #f8f9fa;
-  border-radius: 6px;
+  padding: 0.75rem 1rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  font-weight: 600;
 }
 
-.lang-btn.active {
-  background: var(--primary, #2563eb);
-  color: white;
-  border-color: var(--primary, #2563eb);
-}
-
-.lang-btn:hover {
-  border-color: var(--primary, #2563eb);
-}
-
-.document-item {
-  background: #f8f9fa;
-  border: 1px solid var(--border, #e5e7eb);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  transition: all 0.3s ease;
-}
-
-.document-item:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: var(--primary, #2563eb);
-}
-
-.document-header h4 {
-  color: var(--primary, #2563eb);
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
-}
-
-.document-header p {
-  color: #666;
-  margin-bottom: 1rem;
-  line-height: 1.5;
-}
-
-.document-actions {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.document-actions .btn-secondary {
-  padding: 0.5rem 1rem;
-  background: #f8f9fa;
-  border: 1px solid var(--border, #e5e7eb);
-  border-radius: 4px;
-  color: var(--text, #374151);
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.document-actions .btn-secondary:hover {
-  background: var(--primary, #2563eb);
-  color: white;
-  border-color: var(--primary, #2563eb);
-}
-
-.info-box {
-  background: #e0f2fe;
-  border: 1px solid #b3e5fc;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-top: 1rem;
-  text-align: center;
-  color: #0277bd;
-}
-
-.loading {
-  text-align: center;
-  padding: 2rem;
-  color: #666;
-}
-
-.error-message {
-  background: #ffebee;
-  border: 1px solid #ffcdd2;
-  border-radius: 8px;
-  padding: 1rem;
-  color: #c62828;
-}
-
-@media (max-width: 768px) {
-  .content-columns {
-    grid-template-columns: 1fr;
-  }
-  
-  .document-actions {
-    flex-direction: column;
-  }
-  
-  .language-toggle {
-    flex-direction: column;
-    align-items: center;
-  }
+.search-btn:hover {
+  background: #2563eb;
 }
 </style>
 
