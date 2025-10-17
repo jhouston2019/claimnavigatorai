@@ -76,7 +76,7 @@
         </div>
 
         <!-- Document Grid -->
-        <div id="documentGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div id="documentGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             <!-- Documents will be loaded dynamically -->
         </div>
 
@@ -134,40 +134,40 @@
             grid.style.display = 'grid';
 
             grid.innerHTML = filteredDocuments.map(doc => `
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200 flex flex-col">
-                    <div class="p-6 flex-1 flex flex-col">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200 flex flex-col">
+                    <div class="p-4 flex-1 flex flex-col">
                         <!-- Header -->
-                        <div class="flex justify-between items-start mb-4">
+                        <div class="flex justify-between items-start mb-3">
                             <div class="flex-1">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="px-2 py-1 text-xs font-semibold rounded-full ${getCategoryColor(doc.category)}">
+                                <div class="flex items-center gap-1 mb-2">
+                                    <span class="px-1.5 py-0.5 text-xs font-semibold rounded-full ${getCategoryColor(doc.category)}">
                                         ${doc.category.toUpperCase()}
                                     </span>
-                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-700">
+                                    <span class="px-1.5 py-0.5 text-xs font-semibold rounded-full bg-gray-100 text-gray-700">
                                         ${doc.outputType.toUpperCase()}
                                     </span>
                                 </div>
-                                <h3 class="text-xl font-bold text-blue-800 mb-2">${doc.title}</h3>
+                                <h3 class="text-lg font-bold text-blue-800 mb-2">${doc.title}</h3>
                             </div>
                         </div>
 
                         <!-- Description -->
-                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">${doc.description}</p>
+                        <p class="text-gray-600 text-xs mb-3 line-clamp-2">${doc.description}</p>
 
                         <!-- Layout Type -->
-                        <div class="flex items-center gap-2 mb-4">
+                        <div class="flex items-center gap-1 mb-3">
                             <span class="text-xs text-gray-500">Layout:</span>
                             <span class="text-xs font-medium text-gray-700">${getLayoutTypeName(doc.layoutType)}</span>
                         </div>
                     </div>
                     
                     <!-- Generate Button -->
-                    <div class="p-6 pt-0">
+                    <div class="p-4 pt-0">
                         <button 
                             onclick="generateDocument('${doc.id}')" 
-                            class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded-xl font-medium transition-colors duration-200"
+                            class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200"
                         >
-                            Generate Document →
+                            Generate →
                         </button>
                     </div>
                     </div>
