@@ -3,7 +3,26 @@
 <title>Claim Navigator • Resource Center</title>
 <link rel="stylesheet" href="/app/assets/css/style.css"/>
 <style>
-/* JAVASCRIPT WILL HANDLE TEXT COLORS */
+/* USE CSS CUSTOM PROPERTIES TO OVERRIDE COLORS */
+:root {
+  --text-color: #ffffff !important;
+  --link-color: #dbeafe !important;
+  --shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
+}
+
+/* FORCE ALL ELEMENTS TO USE CUSTOM PROPERTIES */
+* {
+  color: var(--text-color) !important;
+  text-shadow: var(--shadow) !important;
+}
+
+a {
+  color: var(--link-color) !important;
+}
+
+a:hover {
+  color: #93c5fd !important;
+}
 </style>
 </head>
 <body class="resource-center" >
@@ -489,23 +508,4 @@ a.tool-card h4 {
 
 </style>
 
-<script>
-// FORCE ALL TEXT WHITE USING JAVASCRIPT
-document.addEventListener('DOMContentLoaded', function() {
-  // Force all text elements to white
-  const allElements = document.querySelectorAll('*');
-  allElements.forEach(element => {
-    if (element.tagName !== 'A') { // Keep links blue
-      element.style.color = '#ffffff';
-      element.style.textShadow = '0 2px 4px rgba(0,0,0,0.8)';
-    }
-  });
-  
-  // Set links to light blue
-  const links = document.querySelectorAll('a');
-  links.forEach(link => {
-    link.style.color = '#dbeafe';
-  });
-});
-</script>
 </body></html>
