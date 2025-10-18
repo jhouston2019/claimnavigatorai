@@ -3,520 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Response & Analysis Agent - ClaimNavigatorAI</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        :root{--navy:#0f172a;--primary:#1e40af;--primary-600:#1e3a8a;--accent:#3b82f6;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--panel:#f8fafc;--success:#10b981;--warn:#f59e0b;--error:#ef4444;}
-        *{box-sizing:border-box}
-        body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:#fff;line-height:1.6}
-        .header{position:sticky;top:0;z-index:1000;background:var(--navy);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08)}
-        .header .container{max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
-        .brand{display:flex;align-items:center;gap:10px;font-weight:800}
-        .nav a{color:#c9d4ff;text-decoration:none;padding:.5rem .75rem;border-radius:.5rem}
-        .nav a:hover{background:rgba(255,255,255,.1)}
-        
-        .typing-animation {
-            overflow: hidden;
-            border-right: 2px solid #3b82f6;
-            white-space: nowrap;
-            animation: typing 2s steps(40, end), blink-caret 0.75s step-end infinite;
-        }
-        
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-        
-        @keyframes blink-caret {
-            from, to { border-color: transparent; }
-            50% { border-color: #3b82f6; }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+    <title>AI Response Agent - ClaimNavigatorAI</title>
+    <meta name="description" content="Generate intelligent responses to insurance correspondence with AI assistance">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
-<body class=" min-h-screen">
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="brand">ClaimNavigatorAI</div>
-            <nav class="nav">
-                <a href="/app/index.html">Home</a>
-                <span >></span>
-                <span >AI Response & Analysis Agent</span>
-                <span >></span>
-                <a href="/app/resource-center.html">Resource Center</a>
+<body>
+    <header>
+        <nav>
+            <a href="/app/resource-center.html" class="logo">← Back to Resource Center</a>
+            <div class="nav-links">
+                <a href="#help">Help</a>
+            </div>
             </nav>
-        </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Title Section -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold  mb-4">AI Response & Analysis Agent</h1>
-            <p class="text-xl  max-w-3xl mx-auto">
-                Analyze insurer correspondence, generate professional replies, and receive expert recommendations instantly.
-            </p>
+    <main class="main-container">
+        <div class="section">
+            <h1>🤖 AI Response Agent</h1>
+            <p>Get intelligent responses to insurance correspondence and build compelling arguments for your claim.</p>
+            
+            <form id="ai-form">
+                <div class="form-group">
+                    <label for="ai-input">Enter your insurance correspondence or question:</label>
+                    <textarea 
+                        id="ai-input" 
+                        name="ai-input" 
+                        placeholder="Paste the insurance company's letter, email, or your question here..."
+                        required
+                    ></textarea>
         </div>
 
-        <!-- Main Grid Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Left Column - Input Panel -->
-            <div class="card  rounded-lg shadow-lg p-6">
-                <h2 class="text-2xl font-semibold  mb-6">AI Response & Analysis</h2>
-                
-                <!-- Auto-populated User Information Display -->
-                <div id="userInfoDisplay" class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <h3 class="text-lg font-semibold text-blue-900 mb-3">📋 Your Information</h3>
-                    <div id="userInfoContent" class="text-sm ">
-                        <p class=" italic">Loading your information from intake forms...</p>
-                    </div>
+                <div class="form-group">
+                    <label for="ai-file">Upload supporting documents (optional):</label>
+                    <input type="file" id="ai-file" name="ai-file" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png">
                 </div>
 
-                <!-- Response Mode Selection -->
-                <div class="mt-6">
-                    <label for="responseMode" class="block text-sm font-medium  mb-2">Response Mode</label>
-                    <select id="responseMode" class="w-full px-3 py-2 border  rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="reply">Standard Reply</option>
-                        <option value="appeal">Professional Appeal</option>
-                        <option value="clarify">Policy Clarification</option>
-                        <option value="negotiate">Negotiation Strategy</option>
-                        <option value="summary">Summary & Guidance</option>
+                <div class="form-group">
+                    <label for="response-type">Response Type:</label>
+                    <select id="response-type" name="response-type">
+                        <option value="general">General Response</option>
+                        <option value="appeal">Appeal Letter</option>
+                        <option value="negotiation">Negotiation Letter</option>
+                        <option value="documentation">Documentation Request</option>
+                        <option value="timeline">Timeline Inquiry</option>
                     </select>
                 </div>
 
-                <!-- Document Upload Section -->
-                <div class="mt-6">
-                    <label class="block text-sm font-medium  mb-2">Upload Insurer Document</label>
-                    <div class="border-2 border-dashed  rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
-                        <input type="file" id="documentUpload" accept=".pdf,.doc,.docx,.txt" class="hidden">
-                        <div id="uploadArea" class="cursor-pointer">
-                            <div class="text-4xl mb-2">📄</div>
-                            <p class=" mb-2">Click to upload or drag and drop</p>
-                            <p class="text-sm ">PDF, DOC, DOCX, or TXT files</p>
-                        </div>
-                        <div id="fileInfo" class="hidden mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <span class="text-green-600 mr-2">✅</span>
-                                    <span id="fileName" class="text-sm font-medium text-green-800"></span>
-                                </div>
-                                <button id="removeFile" class="text-red-600 hover:text-red-800 text-sm">Remove</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Text Input Alternative -->
-                <div class="mt-6">
-                    <label for="insurerLetter" class="block text-sm font-medium  mb-2">Or Paste Insurer Letter Text</label>
-                    <textarea id="insurerLetter" rows="6" placeholder="Paste the insurer's correspondence here as an alternative to file upload..." class="w-full px-3 py-2 border  rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="mt-6 flex flex-col sm:flex-row gap-3">
-                    <button id="analyzeBtn" class="flex-1 bg-blue-600 hover:bg-blue-700  font-medium py-3 px-6 rounded-md transition duration-200 flex items-center justify-center">
-                        <span id="analyzeText">⚡ Analyze & Draft Reply</span>
-                        <span id="analyzingText" class="hidden">Analyzing...</span>
+                <button type="submit" class="btn" id="ai-generate">
+                    Generate AI Response
                     </button>
-                    <button id="exportBtn" class=" hover:  font-medium py-3 px-6 rounded-md transition duration-200 flex items-center justify-center">
-                        📄 Export PDF
-                    </button>
-                    <button id="clearBtn" class=" hover:  font-medium py-3 px-6 rounded-md transition duration-200 flex items-center justify-center">
-                        🔄 Clear Fields
-                    </button>
-                </div>
+            </form>
             </div>
 
-            <!-- Right Column - AI Output Panel -->
-            <div class="card  rounded-lg shadow-lg p-6">
-                <h2 class="text-2xl font-semibold  mb-6">AI Analysis Output</h2>
-                
-                <!-- AI Output Display -->
-                <div id="aiOutput" class=" rounded-lg p-4 min-h-64 border ">
-                    <div id="placeholder" class=" text-center py-8">
-                        <div class="text-4xl mb-4">🤖</div>
-                        <p>Click "Analyze & Draft Reply" to get AI-powered analysis and draft response.</p>
-                    </div>
-                    <div id="loadingIndicator" class="hidden text-center py-8">
-                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-                        <p class="">AI is analyzing your correspondence...</p>
-                    </div>
-                    <div id="aiResponse" class="hidden"></div>
+        <div id="ai-output" class="section hidden">
+            <h2>AI Generated Response:</h2>
+            <div id="output-content" class="form-group" style="background: rgba(0, 0, 0, 0.3); padding: 1.5rem; border-radius: 8px; white-space: pre-wrap; font-family: 'Courier New', monospace;"></div>
                 </div>
 
-                <!-- AI Detected Issues -->
-                <div id="aiInsights" class="mt-6 hidden">
-                    <h3 class="text-lg font-semibold  mb-3">🔍 AI Detected Issues / Key Points</h3>
-                    <ul id="issuesList" class="space-y-2"></ul>
-    </div>
-
-                <!-- Suggested Actions -->
-                <div id="aiSuggestions" class="mt-6 hidden">
-                    <h3 class="text-lg font-semibold  mb-3">💡 Suggested Actions</h3>
-                    <ul id="suggestionsList" class="space-y-2"></ul>
-  </div>
-  
-                <!-- Footer Note -->
-                <div class="mt-6 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-                    <p class="text-sm text-yellow-800">
-                        <strong>Note:</strong> AI-generated guidance — review before submission.
-                    </p>
-                </div>
-    </div>
-  </div>
+        <div id="error-message" class="error-message hidden"></div>
+        <div id="success-message" class="success-message hidden"></div>
 </main>
 
-    <script>
-        // DOM Elements
-        const analyzeBtn = document.getElementById('analyzeBtn');
-        const exportBtn = document.getElementById('exportBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const responseMode = document.getElementById('responseMode');
-        const insurerLetter = document.getElementById('insurerLetter');
-        const aiOutput = document.getElementById('aiOutput');
-        const placeholder = document.getElementById('placeholder');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const aiResponse = document.getElementById('aiResponse');
-        const aiInsights = document.getElementById('aiInsights');
-        const aiSuggestions = document.getElementById('aiSuggestions');
-        const issuesList = document.getElementById('issuesList');
-        const suggestionsList = document.getElementById('suggestionsList');
-        const analyzeText = document.getElementById('analyzeText');
-        const analyzingText = document.getElementById('analyzingText');
-        
-        // Document upload elements
-        const documentUpload = document.getElementById('documentUpload');
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileName = document.getElementById('fileName');
-        const removeFile = document.getElementById('removeFile');
-        const userInfoContent = document.getElementById('userInfoContent');
-        
-        // Global variables
-        let uploadedFile = null;
-        let userData = null;
+    <!-- Scripts -->
+    <script type="module" src="/assets/js/api-client.js"></script>
+    <script type="module" src="/assets/js/validation-utils.js"></script>
+    <script type="module" src="/assets/js/error-handler.js"></script>
+    <script type="module" src="/assets/js/ui-helpers.js"></script>
+    <script type="module" src="/assets/js/diagnostics.js"></script>
+    
+    <script type="module">
+        import { callAI } from '/assets/js/api-client.js';
+        import { validateForm, showValidationError, clearValidationError } from '/assets/js/validation-utils.js';
+        import { handleApiError } from '/assets/js/error-handler.js';
+        import { setLoadingState, storeOriginalText } from '/assets/js/ui-helpers.js';
+        import { initializeDiagnostics } from '/assets/js/diagnostics.js';
 
-        // Auto-populate user data from intake forms
-        function loadUserData() {
-            // Try to get user data from localStorage or sessionStorage
-            const savedUserData = localStorage.getItem('claimNavigatorUserData') || sessionStorage.getItem('claimNavigatorUserData');
-            
-            if (savedUserData) {
-                try {
-                    userData = JSON.parse(savedUserData);
-                    displayUserInfo(userData);
-                } catch (e) {
-                    console.log('Error parsing user data:', e);
-                    displayDefaultUserInfo();
-                }
-            } else {
-                // Try to get from URL parameters or other sources
-                const urlParams = new URLSearchParams(window.location.search);
-                const name = urlParams.get('name');
-                const email = urlParams.get('email');
-                
-                if (name || email) {
-                    userData = {
-                        name: name || 'Not provided',
-                        email: email || 'Not provided',
-                        policyNumber: 'Auto-populated',
-                        claimNumber: 'Auto-populated',
-                        dateOfLoss: 'Auto-populated',
-                        company: 'Auto-populated',
-                        phone: 'Auto-populated',
-                        address: 'Auto-populated'
-                    };
-                    displayUserInfo(userData);
-                } else {
-                    displayDefaultUserInfo();
-                }
-            }
-        }
-
-        function displayUserInfo(data) {
-            const infoHtml = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                    <div><strong>Name:</strong> ${data.name || 'Not provided'}</div>
-                    <div><strong>Email:</strong> ${data.email || 'Not provided'}</div>
-                    <div><strong>Policy:</strong> ${data.policyNumber || 'Not provided'}</div>
-                    <div><strong>Claim:</strong> ${data.claimNumber || 'Not provided'}</div>
-                    <div><strong>Company:</strong> ${data.company || 'Not provided'}</div>
-                    <div><strong>Phone:</strong> ${data.phone || 'Not provided'}</div>
-                </div>
-            `;
-            userInfoContent.innerHTML = infoHtml;
-        }
-
-        function displayDefaultUserInfo() {
-            userInfoContent.innerHTML = `
-                <p class=" italic">No user information found. Please complete the intake forms first.</p>
-                <a href="#" class="text-blue-600 hover:text-blue-800 text-sm underline">Complete Intake Forms</a>
-            `;
-        }
-
-        // Document upload functionality
-        function setupDocumentUpload() {
-            // Click to upload
-            uploadArea.addEventListener('click', () => {
-                documentUpload.click();
-            });
-
-            // File selection
-            documentUpload.addEventListener('change', handleFileSelect);
-
-            // Drag and drop
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.classList.add('border-blue-400', 'bg-blue-50');
-            });
-
-            uploadArea.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('border-blue-400', 'bg-blue-50');
-            });
-
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('border-blue-400', 'bg-blue-50');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    handleFileSelect({ target: { files: files } });
-                }
-            });
-
-            // Remove file
-            removeFile.addEventListener('click', () => {
-                uploadedFile = null;
-                documentUpload.value = '';
-                fileInfo.classList.add('hidden');
-                uploadArea.classList.remove('hidden');
-            });
-        }
-
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                uploadedFile = file;
-                fileName.textContent = file.name;
-                fileInfo.classList.remove('hidden');
-                uploadArea.classList.add('hidden');
-                
-                // Extract text from file if possible
-                extractTextFromFile(file);
-            }
-        }
-
-        function extractTextFromFile(file) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                const content = e.target.result;
-                
-                // For text files, populate the textarea
-                if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
-                    insurerLetter.value = content;
-                } else {
-                    // For other files, show a message
-                    insurerLetter.value = `[Document uploaded: ${file.name}]\n\nPlease paste the text content below or the AI will analyze the file directly.`;
-                }
-            };
-            
-            if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
-                reader.readAsText(file);
-            } else {
-                // For PDF/DOC files, we'll need to handle them on the backend
-                console.log('File uploaded, will be processed by backend:', file.name);
-            }
-        }
-
-        // Analyze button click handler
-        analyzeBtn.addEventListener('click', async () => {
-            const letter = insurerLetter.value.trim();
-            const mode = responseMode.value;
-
-            // Validation
-            if (!letter && !uploadedFile) {
-                alert('Please upload a document or paste the insurer letter for analysis.');
-                return;
-            }
-
-            // Show loading state
-            analyzeBtn.disabled = true;
-            analyzeText.classList.add('hidden');
-            analyzingText.classList.remove('hidden');
-            placeholder.classList.add('hidden');
-            loadingIndicator.classList.remove('hidden');
-            aiResponse.classList.add('hidden');
-            aiInsights.classList.add('hidden');
-            aiSuggestions.classList.add('hidden');
-
-            try {
-                // Prepare form data for file upload
-                const formData = new FormData();
-                formData.append('mode', mode);
-                formData.append('claim', JSON.stringify(userData || {}));
-                formData.append('letter', letter);
-                
-                if (uploadedFile) {
-                    formData.append('document', uploadedFile);
-                }
-
-                const response = await fetch('/.netlify/functions/aiResponseAgent', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                // Hide loading, show results
-                loadingIndicator.classList.add('hidden');
-                aiResponse.classList.remove('hidden');
-                aiResponse.innerHTML = `<div class="fade-in"><h4 class="font-semibold  mb-3">📝 Draft Response Letter</h4><div class=" p-4 rounded-md border-l-4 border-blue-500 whitespace-pre-wrap">${data.draftLetter || data.analysis}</div></div>`;
-
-                // Show detected issues
-                if (data.issues && data.issues.length > 0) {
-                    aiInsights.classList.remove('hidden');
-                    issuesList.innerHTML = data.issues.map(issue => `<li class="flex items-start"><span class="text-red-500 mr-2">•</span><span>${issue}</span></li>`).join('');
-                }
-
-                // Show suggestions
-                if (data.suggestions && data.suggestions.length > 0) {
-                    aiSuggestions.classList.remove('hidden');
-                    suggestionsList.innerHTML = data.suggestions.map(suggestion => `<li class="flex items-start"><span class="text-green-500 mr-2">•</span><span>${suggestion}</span></li>`).join('');
-                }
-
-            } catch (error) {
-                console.error('Error:', error);
-                loadingIndicator.classList.add('hidden');
-                aiResponse.classList.remove('hidden');
-                aiResponse.innerHTML = `<div class="text-red-600 p-4 bg-red-50 border border-red-200 rounded-md"><strong>Error:</strong> ${error.message}. Please try again.</div>`;
-            } finally {
-                // Reset button state
-                analyzeBtn.disabled = false;
-                analyzeText.classList.remove('hidden');
-                analyzingText.classList.add('hidden');
-            }
+        // Initialize page
+        initializeDiagnostics('ai-response-agent', {
+            requiredNodes: [
+                'body',
+                'main',
+                '#ai-form',
+                '#ai-output'
+            ],
+            testEndpoints: ['generate-response']
         });
 
-        // Export PDF functionality
-        exportBtn.addEventListener('click', async () => {
-            if (!aiResponse.textContent.trim()) {
-                alert('Please generate an analysis first before exporting.');
-                return;
-            }
+        // Get DOM elements
+        const form = document.getElementById('ai-form');
+        const generateBtn = document.getElementById('ai-generate');
+        const outputSection = document.getElementById('ai-output');
+        const outputContent = document.getElementById('output-content');
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
 
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                
-                // Header
-                doc.setFontSize(20);
-                doc.text('ClaimNavigatorAI - AI Response Analysis', 20, 20);
-                
-                // Claim Information
-                const claimData = collectFormData();
-                doc.setFontSize(12);
-                let yPos = 40;
-                doc.text('Claim Information:', 20, yPos);
-                yPos += 10;
-                
-                Object.entries(claimData).forEach(([key, value]) => {
-                    if (value) {
-                        doc.text(`${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`, 20, yPos);
-                        yPos += 7;
-                    }
-                });
-                
-                yPos += 10;
-                doc.text('AI Analysis:', 20, yPos);
-                yPos += 10;
-                
-                // AI Response
-                const responseText = aiResponse.textContent;
-                const splitText = doc.splitTextToSize(responseText, 170);
-                doc.text(splitText, 20, yPos);
-                
-                // Footer
-                const pageCount = doc.internal.getNumberOfPages();
-                for (let i = 1; i <= pageCount; i++) {
-                    doc.setPage(i);
-                    doc.setFontSize(8);
-                    doc.text('ClaimNavigatorAI - AI Response & Analysis Agent', 20, doc.internal.pageSize.height - 10);
-                }
-                
-                doc.save('claim-analysis.pdf');
-            } catch (error) {
-                console.error('PDF export error:', error);
-                alert('Error generating PDF. Please try again.');
-            }
-        });
+        // Store original button text
+        storeOriginalText('ai-generate');
 
-        // Clear fields functionality
-        clearBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to clear all fields?')) {
-                insurerLetter.value = '';
-                uploadedFile = null;
-                documentUpload.value = '';
-                fileInfo.classList.add('hidden');
-                uploadArea.classList.remove('hidden');
-                placeholder.classList.remove('hidden');
-                aiResponse.classList.add('hidden');
-                aiInsights.classList.add('hidden');
-                aiSuggestions.classList.add('hidden');
-                loadingIndicator.classList.add('hidden');
-            }
-        });
+        // Form handling
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Clear previous messages
+            errorMessage.classList.add('hidden');
+            successMessage.classList.add('hidden');
+            outputSection.classList.add('hidden');
 
-        // Auto-save functionality (optional)
-        function autoSave() {
+            // Validate form
             const formData = {
-                mode: responseMode.value,
-                letter: insurerLetter.value
+                'ai-input': document.getElementById('ai-input').value,
+                'response-type': document.getElementById('response-type').value
             };
-            localStorage.setItem('claimNavigatorData', JSON.stringify(formData));
-        }
 
-        // Load saved data
-        function loadSavedData() {
-            const saved = localStorage.getItem('claimNavigatorData');
-            if (saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    responseMode.value = data.mode || 'reply';
-                    insurerLetter.value = data.letter || '';
-                } catch (e) {
-                    console.log('No saved data found');
-                }
+            const validationRules = {
+                'ai-input': { required: true, label: 'Input text' }
+            };
+
+            const validation = validateForm(formData, validationRules);
+            
+            if (!validation.isValid) {
+                Object.keys(validation.errors).forEach(field => {
+                    showValidationError(field, validation.errors[field]);
+                });
+                return;
             }
-        }
 
-        // Initialize the application
-        function initializeApp() {
-            loadUserData();
-            setupDocumentUpload();
-            loadSavedData();
-        }
+            // Clear validation errors
+            clearValidationError('ai-input');
 
-        // Event listeners for auto-save
-        responseMode.addEventListener('change', autoSave);
-        insurerLetter.addEventListener('input', autoSave);
+            try {
+                // Set loading state
+                setLoadingState('ai-generate', true);
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', initializeApp);
-</script>
+                // Prepare request data
+                const requestData = {
+                    letter: formData['ai-input'],
+                    type: formData['response-type'],
+                    timestamp: new Date().toISOString()
+                };
+
+                // Call AI API
+                const response = await callAI(requestData.letter, { type: requestData.type });
+                
+                // Display response
+                outputContent.textContent = response.response || response.message || 'No response generated';
+                outputSection.classList.remove('hidden');
+                
+                // Show success message
+                successMessage.textContent = 'AI response generated successfully!';
+                successMessage.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('AI generation error:', error);
+                handleApiError(error, 'AI Response Generation');
+                
+                errorMessage.textContent = 'Failed to generate AI response. Please try again.';
+                errorMessage.classList.remove('hidden');
+            } finally {
+                // Reset loading state
+                setLoadingState('ai-generate', false);
+            }
+        });
+    </script>
 </body>
 </html>
