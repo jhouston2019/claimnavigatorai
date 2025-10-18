@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document Generator - ClaimNavigatorAI</title>
+    <title>Document Form - ClaimNavigatorAI</title>
     <link rel="stylesheet" href="/app/assets/css/style.css">
     <style>
         :root{--navy:#0f172a;--primary:#1e40af;--primary-600:#1e3a8a;--accent:#3b82f6;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--panel:#f8fafc;--success:#10b981;--warn:#f59e0b;--error:#ef4444;}
@@ -14,558 +14,53 @@
         .brand{display:flex;align-items:center;gap:10px;font-weight:800}
         .nav a{color:#c9d4ff;text-decoration:none;padding:.5rem .75rem;border-radius:.5rem}
         .nav a:hover{background:rgba(255,255,255,.1)}
+        
+        .form-container{max-width:800px;margin:0 auto;padding:32px}
+        .form-panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:32px;margin-bottom:24px}
+        .form-title{font-size:24px;font-weight:600;color:var(--text);margin-bottom:8px}
+        .form-description{font-size:16px;color:var(--muted);margin-bottom:32px}
+        .form-group{margin-bottom:24px}
+        .form-label{display:block;font-weight:500;color:var(--text);margin-bottom:8px}
+        .form-input{width:100%;padding:12px 16px;border:1px solid var(--border);border-radius:8px;font-size:16px;transition:border-color 0.2s}
+        .form-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,0.1)}
+        .form-textarea{min-height:100px;resize:vertical}
+        .form-select{background:#fff}
+        .form-checkbox{width:auto;margin-right:8px}
+        .form-required{color:var(--error)}
+        .submit-btn{background:var(--primary);color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;font-weight:500;cursor:pointer;transition:all 0.2s;width:100%}
+        .submit-btn:hover{background:var(--primary-600);transform:translateY(-1px)}
+        .submit-btn:disabled{background:var(--muted);cursor:not-allowed;transform:none}
+        .loading{text-align:center;padding:20px;color:var(--muted)}
+        .success{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;padding:16px;border-radius:8px;margin:16px 0}
+        .error{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:16px;border-radius:8px;margin:16px 0}
+        .download-link{display:inline-block;background:var(--success);color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:500;margin-top:16px}
+        .download-link:hover{background:#059669}
     </style>
 </head>
-<body class="">
+<body>
     <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="brand">ClaimNavigatorAI</div>
             <nav class="nav">
                 <a href="/app/index.html">Home</a>
-                <span >></span>
-                <span >Document Generator</span>
-                <span >></span>
-                <a href="/app/resource-center.html">Resource Center</a>
+                <span>></span>
+                <span>Document Generator</span>
+                <span>></span>
+                <a href="/app/document-generator-v2/document-generator.html">← Back to Documents</a>
             </nav>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-        <!-- Document Info -->
-        <div class=" rounded-xl shadow-sm border  p-6 mb-8">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-                <div>
-                    <h2 id="documentName" class="text-2xl font-bold  mb-2">Document Name</h2>
-                    <p id="documentDescription" class="">Document description will appear here.</p>
-                </div>
-                <div class="flex items-center gap-4 mt-4 md:mt-0">
-                    <span id="documentCategory" class="px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">
-                        Category
-                    </span>
-                    <span id="documentOutputType" class="px-3 py-1 text-sm font-semibold rounded-full  ">
-                        PDF
-                    </span>
-                    <span id="documentLayoutType" class="px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">
-                        Layout
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Claim Information Header -->
-        <div id="claimInfoHeader" class="bg-blue-50 rounded-xl border border-blue-200 p-6 mb-8 hidden">
-            <h3 class="text-lg font-semibold text-blue-900 mb-4">Your Claim Information</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div>
-                    <span class="text-sm font-medium text-blue-700">Insured Name:</span>
-                    <p id="claimInsuredName" class="text-blue-900 font-medium">-</p>
-                </div>
-                <div>
-                    <span class="text-sm font-medium text-blue-700">Policy Number:</span>
-                    <p id="claimPolicyNumber" class="text-blue-900 font-medium">-</p>
-                </div>
-                <div>
-                    <span class="text-sm font-medium text-blue-700">Insurance Company:</span>
-                    <p id="claimInsurer" class="text-blue-900 font-medium">-</p>
-                </div>
-                <div>
-                    <span class="text-sm font-medium text-blue-700">Date of Loss:</span>
-                    <p id="claimDateOfLoss" class="text-blue-900 font-medium">-</p>
-                </div>
-                <div>
-                    <span class="text-sm font-medium text-blue-700">Claim Status:</span>
-                    <p id="claimStatus" class="text-blue-900 font-medium">-</p>
-                </div>
-                <div>
-                    <span class="text-sm font-medium text-blue-700">Property Type:</span>
-                    <p id="claimPropertyType" class="text-blue-900 font-medium">-</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Form Section -->
-        <div class=" rounded-xl shadow-sm border  p-6 mb-8">
-            <h3 class="text-xl font-semibold  mb-6">Document Information</h3>
-            <form id="documentForm" class="space-y-6">
-                <!-- Dynamic form fields will be inserted here -->
-            </form>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class=" rounded-xl shadow-sm border  p-6 mb-8">
-            <div class="flex flex-col sm:flex-row gap-4">
-                <button 
-                    id="generateBtn" 
-                    class="flex-1 bg-[#1e40af] hover:bg-[#1e40af]/90  px-6 py-3 rounded-xl font-medium transition-colors duration-200 flex items-center justify-center"
-                >
-                    <span id="generateBtnText">🤖 Generate with AI</span>
-                    <div id="generateSpinner" class="hidden ml-2">
-                        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    </div>
-                </button>
-                <button 
-                    id="downloadBtn" 
-                    class="flex-1 bg-green-600 hover:bg-green-700  px-6 py-3 rounded-xl font-medium transition-colors duration-200"
-                    disabled
-                >
-                    📥 Download Document
-                </button>
-            </div>
-        </div>
-
-        <!-- Output Section -->
-        <div id="outputSection" class=" rounded-xl shadow-sm border  p-6 hidden">
-            <h3 class="text-xl font-semibold  mb-4">Generated Document</h3>
-            <div id="outputContent" class=" rounded-lg p-4 min-h-[200px] relative">
-                <!-- Generated content will appear here -->
-                <div class="absolute bottom-2 right-2 text-xs  opacity-50">
-                    Generated by ClaimNavigatorAI
-                </div>
-            </div>
-        </div>
-
-        <!-- Error Section -->
-        <div id="errorSection" class="bg-red-50 border border-red-200 rounded-xl p-6 hidden">
-            <div class="flex items-center">
-                <div class="text-red-400 mr-3">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold text-red-800">Error</h3>
-                    <p id="errorMessage" class="text-red-600 mt-1">An error occurred while generating the document.</p>
-                </div>
+    <main class="form-container">
+        <div class="form-panel">
+            <div id="formContent">
+                <div class="loading">Loading form...</div>
             </div>
         </div>
     </main>
 
-    <script>
-        let documentData = null;
-        let documentId = null;
-
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Get document ID from URL
-            const urlParams = new URLSearchParams(window.location.search);
-            documentId = urlParams.get('id') || window.location.pathname.split('/').pop().replace('.html', '');
-            
-            if (!documentId) {
-                showError('No document ID provided');
-                return;
-            }
-
-            await loadDocumentData();
-            await loadClaimInformation();
-            setupEventListeners();
-        });
-
-        async function loadDocumentData() {
-            try {
-                const response = await fetch('/app/assets/data/doc-templates.json');
-                const data = await response.json();
-                
-                if (!data[documentId]) {
-                    showError('Document not found');
-                    return;
-                }
-
-                documentData = data[documentId];
-                populateDocumentInfo();
-                generateForm();
-            } catch (error) {
-                console.error('Error loading document data:', error);
-                showError('Failed to load document data');
-            }
-        }
-
-        async function loadClaimInformation() {
-            try {
-                // Try to get claim information from localStorage first
-                const storedClaimInfo = localStorage.getItem('claimnavigator_global_claim_info');
-                if (storedClaimInfo) {
-                    const claimInfo = JSON.parse(storedClaimInfo);
-                    populateClaimInfo(claimInfo);
-                    return;
-                }
-
-                // Try to get from Supabase if user is authenticated
-                const response = await fetch('/.netlify/functions/get-claim', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.claim) {
-                        populateClaimInfo(data.claim);
-                    }
-                }
-            } catch (error) {
-                console.log('Could not load claim information:', error);
-                // Hide the claim info header if no data is available
-                document.getElementById('claimInfoHeader').classList.add('hidden');
-            }
-        }
-
-        function populateClaimInfo(claimInfo) {
-            // Show the claim info header
-            document.getElementById('claimInfoHeader').classList.remove('hidden');
-            
-            // Populate the claim information
-            document.getElementById('claimInsuredName').textContent = claimInfo.insured_name || '-';
-            document.getElementById('claimPolicyNumber').textContent = claimInfo.policy_number || '-';
-            document.getElementById('claimInsurer').textContent = claimInfo.insurer || '-';
-            document.getElementById('claimDateOfLoss').textContent = claimInfo.date_of_loss || '-';
-            document.getElementById('claimStatus').textContent = claimInfo.status || '-';
-            document.getElementById('claimPropertyType').textContent = claimInfo.property_type || '-';
-        }
-
-        function populateDocumentInfo() {
-            document.getElementById('documentName').textContent = documentData.title;
-            document.getElementById('documentDescription').textContent = documentData.description;
-            
-            // Update category badge
-            const categoryElement = document.getElementById('documentCategory');
-            categoryElement.textContent = documentData.category.toUpperCase();
-            categoryElement.className = `px-3 py-1 text-sm font-semibold rounded-full ${getCategoryColor(documentData.category)}`;
-            
-            // Update output type badge
-            document.getElementById('documentOutputType').textContent = documentData.outputType.toUpperCase();
-            
-            // Update layout type badge
-            document.getElementById('documentLayoutType').textContent = getLayoutTypeName(documentData.layoutType);
-        }
-
-        function generateForm() {
-            const form = document.getElementById('documentForm');
-            form.innerHTML = '';
-
-            // Define fields that should be excluded since they're in claim info
-            const excludedFields = [
-                'insured_name', 'policy_number', 'insurer', 'date_of_loss', 
-                'phone_number', 'status', 'property_type', 'loss_location',
-                'address', 'city', 'state', 'zip'
-            ];
-
-            documentData.fields.forEach((field, index) => {
-                // Skip fields that are already in the claim information
-                if (excludedFields.includes(field.id)) {
-                    return;
-                }
-                
-                const fieldElement = createFormField(field, index);
-                form.appendChild(fieldElement);
-            });
-        }
-
-        function createFormField(field, index) {
-            const fieldContainer = document.createElement('div');
-            fieldContainer.className = 'space-y-2';
-
-            // Create label
-            const label = document.createElement('label');
-            label.className = 'block text-sm font-medium ';
-            label.textContent = field.label;
-            if (field.required) {
-                label.innerHTML += ' <span class="text-red-500">*</span>';
-            }
-            fieldContainer.appendChild(label);
-
-            // Create input based on field type
-            let input;
-            if (field.type === 'textarea') {
-                input = document.createElement('textarea');
-                input.className = 'w-full px-4 py-3 border  rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical  ';
-                input.rows = 4;
-            } else if (field.type === 'select') {
-                input = document.createElement('select');
-                input.className = 'w-full px-4 py-3 border  rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent  ';
-                
-                // Add options
-                if (field.options) {
-                    field.options.forEach(option => {
-                        const optionElement = document.createElement('option');
-                        optionElement.value = option;
-                        optionElement.textContent = option;
-                        input.appendChild(optionElement);
-                    });
-                }
-            } else if (field.type === 'table') {
-                input = createTableInput(field);
-            } else {
-                input = document.createElement('input');
-                input.type = field.type;
-                input.className = 'w-full px-4 py-3 border  rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent  ';
-            }
-
-            // Set common attributes
-            input.id = field.id;
-            input.name = field.id;
-            if (field.required) {
-                input.required = true;
-            }
-            if (field.placeholder) {
-                input.placeholder = field.placeholder;
-            }
-
-            fieldContainer.appendChild(input);
-            return fieldContainer;
-        }
-
-        function createTableInput(field) {
-            const tableContainer = document.createElement('div');
-            tableContainer.className = 'border  rounded-xl p-4 ';
-            
-            const table = document.createElement('table');
-            table.className = 'w-full border-collapse';
-            
-            // Create header row
-            const headerRow = document.createElement('tr');
-            headerRow.className = '';
-            field.columns.forEach(column => {
-                const th = document.createElement('th');
-                th.className = 'border  px-3 py-2 text-left text-sm font-medium ';
-                th.textContent = column;
-                headerRow.appendChild(th);
-            });
-            table.appendChild(headerRow);
-
-            // Create data rows (start with 3 empty rows)
-            for (let i = 0; i < 3; i++) {
-                const row = document.createElement('tr');
-                field.columns.forEach(column => {
-                    const td = document.createElement('td');
-                    td.className = 'border  px-3 py-2';
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.className = 'w-full border-0 focus:ring-0 text-sm';
-                    input.placeholder = `Enter ${column.toLowerCase()}`;
-                    td.appendChild(input);
-                    row.appendChild(td);
-                });
-                table.appendChild(row);
-            }
-
-            tableContainer.appendChild(table);
-            return tableContainer;
-        }
-
-        function setupEventListeners() {
-            document.getElementById('generateBtn').addEventListener('click', generateDocument);
-            document.getElementById('downloadBtn').addEventListener('click', downloadDocument);
-        }
-
-        async function generateDocument() {
-            const generateBtn = document.getElementById('generateBtn');
-            const generateSpinner = document.getElementById('generateSpinner');
-            const generateBtnText = document.getElementById('generateBtnText');
-            
-            // Show loading state
-            generateBtn.disabled = true;
-            generateSpinner.classList.remove('hidden');
-            generateBtnText.textContent = 'Generating...';
-
-            try {
-                // Collect form data
-                const formData = collectFormData();
-                
-                // Validate required fields
-                if (!validateForm(formData)) {
-                    throw new Error('Please fill in all required fields');
-                }
-
-                // Call the generation API
-                const response = await fetch('/.netlify/functions/generate-doc', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        docKey: documentId,
-                        inputs: formData
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-                
-                // Display the generated content
-                displayGeneratedContent(result);
-                
-                // Enable download button
-                document.getElementById('downloadBtn').disabled = false;
-                
-            } catch (error) {
-                console.error('Error generating document:', error);
-                showError(error.message || 'Failed to generate document');
-            } finally {
-                // Reset button state
-                generateBtn.disabled = false;
-                generateSpinner.classList.add('hidden');
-                generateBtnText.textContent = '🤖 Generate with AI';
-            }
-        }
-
-        function collectFormData() {
-            const formData = {};
-            const form = document.getElementById('documentForm');
-            const inputs = form.querySelectorAll('input, textarea, select');
-            
-            inputs.forEach(input => {
-                if (input.type === 'text' || input.type === 'email' || input.type === 'tel' || input.type === 'date' || input.type === 'number') {
-                    if (input.name) {
-                        formData[input.name] = input.value;
-                    }
-                } else if (input.type === 'textarea') {
-                    if (input.name) {
-                        formData[input.name] = input.value;
-                    }
-                } else if (input.type === 'select-one') {
-                    if (input.name) {
-                        formData[input.name] = input.value;
-                    }
-                }
-            });
-
-            // Handle table data collection
-            const tables = form.querySelectorAll('table');
-            tables.forEach((table, tableIndex) => {
-                const tableData = [];
-                const rows = table.querySelectorAll('tr:not(:first-child)'); // Skip header row
-                
-                rows.forEach(row => {
-                    const rowData = {};
-                    const cells = row.querySelectorAll('td');
-                    const headers = table.querySelectorAll('th');
-                    
-                    cells.forEach((cell, cellIndex) => {
-                        const input = cell.querySelector('input');
-                        if (input && input.value.trim() !== '') {
-                            const headerText = headers[cellIndex] ? headers[cellIndex].textContent : `column_${cellIndex}`;
-                            rowData[headerText] = input.value;
-                        }
-                    });
-                    
-                    if (Object.keys(rowData).length > 0) {
-                        tableData.push(rowData);
-                    }
-                });
-                
-                if (tableData.length > 0) {
-                    formData[`table_${tableIndex}`] = tableData;
-                }
-            });
-
-            // Add claim information to the form data
-            const claimInfo = getClaimInformation();
-            if (claimInfo) {
-                formData.claimInfo = claimInfo;
-            }
-
-            return formData;
-        }
-
-        function getClaimInformation() {
-            try {
-                const storedClaimInfo = localStorage.getItem('claimnavigator_global_claim_info');
-                if (storedClaimInfo) {
-                    return JSON.parse(storedClaimInfo);
-                }
-            } catch (error) {
-                console.log('Could not retrieve claim information:', error);
-            }
-            return null;
-        }
-
-        function validateForm(formData) {
-            const requiredFields = documentData.fields.filter(field => field.required);
-            
-            for (const field of requiredFields) {
-                if (!formData[field.id] || formData[field.id].trim() === '') {
-                    alert(`Please fill in the required field: ${field.label}`);
-                    return false;
-                }
-            }
-            
-            return true;
-        }
-
-        function displayGeneratedContent(result) {
-            const outputSection = document.getElementById('outputSection');
-            const outputContent = document.getElementById('outputContent');
-            
-            if (result.output) {
-                outputContent.innerHTML = `<pre class="whitespace-pre-wrap text-sm">${result.output}</pre>`;
-            } else if (result.downloadUrl) {
-                outputContent.innerHTML = `
-                    <div class="text-center py-8">
-                        <div class="text-green-600 text-6xl mb-4">✅</div>
-                        <h3 class="text-xl font-semibold  mb-2">Document Generated Successfully!</h3>
-                        <p class=" mb-4">Your document has been generated and is ready for download.</p>
-                        <a href="${result.downloadUrl}" class="inline-block bg-green-600 hover:bg-green-700  px-6 py-3 rounded-xl font-medium transition-colors">
-                            📥 Download Document
-                        </a>
-                    </div>
-                `;
-            }
-            
-            outputSection.classList.remove('hidden');
-        }
-
-        function downloadDocument() {
-            // This would typically trigger the download of the generated document
-            alert('Download functionality will be implemented with the backend generation logic');
-        }
-
-        function showError(message) {
-            const errorSection = document.getElementById('errorSection');
-            const errorMessage = document.getElementById('errorMessage');
-            
-            errorMessage.textContent = message;
-            errorSection.classList.remove('hidden');
-            
-            // Hide other sections
-            document.getElementById('outputSection').classList.add('hidden');
-        }
-
-        function getCategoryColor(category) {
-            const colors = {
-                'core': 'bg-blue-100 text-blue-800',
-                'legal': 'bg-red-100 text-red-800',
-                'financial': 'bg-green-100 text-green-800',
-                'evidence': 'bg-purple-100 text-purple-800',
-                'analysis': 'bg-orange-100 text-orange-800',
-                'forms': 'bg-indigo-100 text-indigo-800',
-                'appeals': 'bg-pink-100 text-pink-800',
-                'specialty': 'bg-yellow-100 text-yellow-800',
-                'property': 'bg-teal-100 text-teal-800',
-                'business': 'bg-cyan-100 text-cyan-800',
-                'catastrophic': ' '
-            };
-            return colors[category] || ' ';
-        }
-
-        function getLayoutTypeName(layoutType) {
-            const types = {
-                'T1': 'Claim Form',
-                'T2': 'Letter/Notice',
-                'T3': 'Log/Register',
-                'T4': 'Financial Worksheet',
-                'T5': 'Legal Filing',
-                'T6': 'Report/Assessment',
-                'T7': 'Business Claim',
-                'T8': 'Catastrophic Event'
-            };
-            return types[layoutType] || 'Document';
-        }
-    </script>
+    <script src="form-template.js"></script>
 </body>
 </html>

@@ -14,18 +14,42 @@
         .brand{display:flex;align-items:center;gap:10px;font-weight:800}
         .nav a{color:#c9d4ff;text-decoration:none;padding:.5rem .75rem;border-radius:.5rem}
         .nav a:hover{background:rgba(255,255,255,.1)}
+        
+        .search-container{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:32px}
+        .search-bar{width:100%;padding:12px 16px;border:1px solid var(--border);border-radius:8px;font-size:16px;margin-bottom:16px}
+        .filter-dropdown{width:100%;padding:12px 16px;border:1px solid var(--border);border-radius:8px;font-size:16px;background:#fff}
+        .doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:24px;margin-top:24px}
+        .doc-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:24px;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+        .doc-card:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,0,0,0.1);border-color:var(--accent)}
+        .category-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:12px}
+        .category-core{background:#e0f2fe;color:#0277bd}
+        .category-legal{background:#f3e5f5;color:#7b1fa2}
+        .category-financial{background:#e8f5e8;color:#2e7d32}
+        .category-forms{background:#fff3e0;color:#f57c00}
+        .category-appeals{background:#fce4ec;color:#c2185b}
+        .category-specialty{background:#f1f8e9;color:#558b2f}
+        .category-property{background:#e3f2fd;color:#1976d2}
+        .category-business{background:#f9fbe7;color:#827717}
+        .category-catastrophic{background:#ffebee;color:#d32f2f}
+        .output-type{font-size:12px;color:var(--muted);margin-bottom:8px}
+        .doc-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:8px}
+        .doc-description{font-size:14px;color:var(--muted);line-height:1.5;margin-bottom:16px}
+        .generate-btn{background:var(--primary);color:#fff;border:none;padding:10px 20px;border-radius:8px;font-weight:500;cursor:pointer;transition:all 0.2s ease}
+        .generate-btn:hover{background:var(--primary-600);transform:translateY(-1px)}
+        .loading{text-align:center;padding:40px;color:var(--muted)}
+        .error{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px;border-radius:8px;margin:16px 0}
     </style>
 </head>
-<body class="">
+<body>
     <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="brand">ClaimNavigatorAI</div>
             <nav class="nav">
                 <a href="/app/index.html">Home</a>
-                <span >></span>
-                <span >Document Generator</span>
-                <span >></span>
+                <span>></span>
+                <span>Document Generator</span>
+                <span>></span>
                 <a href="/app/resource-center.html">Resource Center</a>
             </nav>
         </div>
@@ -35,34 +59,33 @@
     <main class="container mx-auto px-4 py-8">
         <!-- Hero Section -->
         <div class="text-center mb-8">
-            <h2 class="text-3xl font-bold  mb-4">Professional Document Generator</h2>
-            <p class="text-lg  max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold mb-4">Professional Document Generator</h2>
+            <p class="text-lg max-w-3xl mx-auto">
                 Generate 61+ professional insurance claim documents with AI assistance. 
                 Choose from core forms, legal letters, financial worksheets, and specialized reports.
             </p>
         </div>
 
         <!-- Search and Filter Section -->
-        <div class=" rounded-xl shadow-sm border  p-6 mb-8">
+        <div class="search-container">
             <div class="flex flex-col md:flex-row gap-4">
                 <!-- Search Bar -->
                 <div class="flex-1">
                     <input 
                         type="text" 
                         id="searchInput" 
-                        placeholder="Search documents by name, category, or description..." 
-                        class="w-full px-4 py-3 border  rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Search documents..." 
+                        class="search-bar"
                     >
                 </div>
                 
                 <!-- Category Filter -->
                 <div class="md:w-64">
-                    <select id="categoryFilter" class="w-full px-4 py-3 border  rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <select id="categoryFilter" class="filter-dropdown">
                         <option value="">All Categories</option>
-                        <option value="core">Core Documents</option>
+                        <option value="core">Core Claims</option>
+                        <option value="legal">Legal Documents</option>
                         <option value="financial">Financial Documents</option>
-                        <option value="evidence">Evidence Documents</option>
-                        <option value="analysis">Analysis Tools</option>
                         <option value="forms">Forms & Requests</option>
                         <option value="appeals">Appeals & Disputes</option>
                         <option value="specialty">Specialty Documents</option>
@@ -74,22 +97,9 @@
             </div>
         </div>
 
-        <!-- Document Grid -->
-        <div id="documentGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            <!-- Documents will be loaded dynamically -->
-        </div>
-
-        <!-- Loading State -->
-        <div id="loadingState" class="text-center py-12">
-            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1e40af]"></div>
-            <p class="mt-4 ">Loading documents...</p>
-        </div>
-
-        <!-- No Results State -->
-        <div id="noResultsState" class="text-center py-12 hidden">
-            <div class=" text-6xl mb-4">🔍</div>
-            <h3 class="text-xl font-semibold  mb-2">No documents found</h3>
-            <p class="">Try adjusting your search terms or category filter.</p>
+        <!-- Documents Grid -->
+        <div id="documentsContainer">
+            <div class="loading">Loading documents...</div>
         </div>
     </main>
 
@@ -97,117 +107,46 @@
         let allDocuments = [];
         let filteredDocuments = [];
 
-        // Load documents on page load
-        document.addEventListener('DOMContentLoaded', async () => {
+        // Load documents from JSON
+        async function loadDocuments() {
             try {
-                const response = await fetch('/app/assets/data/doc-templates.json');
-                const data = await response.json();
-                allDocuments = Object.entries(data).map(([key, doc]) => ({
-                    id: key,
-                    ...doc
-                })).sort((a, b) => a.title.localeCompare(b.title));
+                const response = await fetch('/app/document-generator-v2/doc-templates.json');
+                if (!response.ok) throw new Error('Failed to load documents');
+                allDocuments = await response.json();
                 filteredDocuments = [...allDocuments];
                 renderDocuments();
-                setupEventListeners();
             } catch (error) {
                 console.error('Error loading documents:', error);
-                document.getElementById('loadingState').innerHTML = 
-                    '<div class="text-red-600">Error loading documents. Please try again later.</div>';
+                document.getElementById('documentsContainer').innerHTML = 
+                    '<div class="error">Failed to load documents. Please try again later.</div>';
             }
-        });
+        }
 
+        // Render documents in grid
         function renderDocuments() {
-            const grid = document.getElementById('documentGrid');
-            const loading = document.getElementById('loadingState');
-            const noResults = document.getElementById('noResultsState');
-
-            loading.style.display = 'none';
-
+            const container = document.getElementById('documentsContainer');
+            
             if (filteredDocuments.length === 0) {
-                grid.style.display = 'none';
-                noResults.style.display = 'block';
+                container.innerHTML = '<div class="text-center py-8 text-gray-500">No documents found matching your criteria.</div>';
                 return;
             }
 
-            noResults.style.display = 'none';
-            grid.style.display = 'grid';
-
-            grid.innerHTML = filteredDocuments.map(doc => `
-                <div class=" rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col" style="box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06), 0 4px 6px -1px rgba(30, 64, 175, 0.25);">
-                    <div class="p-4 flex-1 flex flex-col text-center">
-                        <!-- Header -->
-                        <div class="mb-3">
-                            <div class="flex justify-center items-center gap-1 mb-2">
-                                <span class="px-1.5 py-0.5 text-xs font-semibold rounded-full ${getCategoryColor(doc.category)}">
-                                    ${doc.category.toUpperCase()}
-                                </span>
-                                <span class="px-1.5 py-0.5 text-xs font-semibold rounded-full  ">
-                                    ${doc.outputType.toUpperCase()}
-                                </span>
-                            </div>
-                            <h3 class="text-lg font-bold text-blue-800 mb-2">${doc.title}</h3>
-                        </div>
-
-                        <!-- Description -->
-                        <p class=" text-xs mb-3 line-clamp-2">${doc.description}</p>
-
-                        <!-- Layout Type -->
-                        <div class="flex justify-center items-center gap-1 mb-3">
-                            <span class="text-xs ">Layout:</span>
-                            <span class="text-xs font-medium ">${getLayoutTypeName(doc.layoutType)}</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Generate Button -->
-                    <div class="p-4 pt-0">
-                        <button 
-                            onclick="generateDocument('${doc.id}')" 
-                            class="w-full  hover:  px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200"
-                        >
-                            Generate →
-                        </button>
-                    </div>
-                    </div>
+            const html = filteredDocuments.map(doc => `
+                <div class="doc-card">
+                    <div class="category-badge category-${doc.category}">${doc.categoryLabel}</div>
+                    <div class="output-type">Output: ${doc.outputType}</div>
+                    <div class="doc-title">${doc.title}</div>
+                    <div class="doc-description">${doc.description}</div>
+                    <button class="generate-btn" onclick="generateDocument('${doc.id}')">
+                        Generate →
+                    </button>
                 </div>
             `).join('');
+
+            container.innerHTML = `<div class="doc-grid">${html}</div>`;
         }
 
-        function getCategoryColor(category) {
-            const colors = {
-                'core': 'bg-blue-100 text-blue-800',
-                'financial': 'bg-green-100 text-green-800',
-                'evidence': 'bg-purple-100 text-purple-800',
-                'analysis': 'bg-orange-100 text-orange-800',
-                'forms': 'bg-indigo-100 text-indigo-800',
-                'appeals': 'bg-pink-100 text-pink-800',
-                'specialty': 'bg-yellow-100 text-yellow-800',
-                'property': 'bg-teal-100 text-teal-800',
-                'business': 'bg-cyan-100 text-cyan-800',
-                'catastrophic': ' '
-            };
-            return colors[category] || ' ';
-        }
-
-        function getLayoutTypeName(layoutType) {
-            const types = {
-                'T1': 'Claim Form',
-                'T2': 'Letter/Notice',
-                'T3': 'Log/Register',
-                'T4': 'Financial Worksheet',
-                'T5': 'Legal Filing',
-                'T6': 'Report/Assessment',
-                'T7': 'Business Claim',
-                'T8': 'Catastrophic Event'
-            };
-            return types[layoutType] || 'Document';
-        }
-
-        function setupEventListeners() {
-            // Search functionality
-            document.getElementById('searchInput').addEventListener('input', filterDocuments);
-            document.getElementById('categoryFilter').addEventListener('change', filterDocuments);
-        }
-
+        // Filter documents
         function filterDocuments() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const categoryFilter = document.getElementById('categoryFilter').value;
@@ -215,21 +154,27 @@
             filteredDocuments = allDocuments.filter(doc => {
                 const matchesSearch = !searchTerm || 
                     doc.title.toLowerCase().includes(searchTerm) ||
-                    doc.description.toLowerCase().includes(searchTerm) ||
-                    doc.category.toLowerCase().includes(searchTerm);
+                    doc.description.toLowerCase().includes(searchTerm);
                 
                 const matchesCategory = !categoryFilter || doc.category === categoryFilter;
                 
                 return matchesSearch && matchesCategory;
-            }).sort((a, b) => a.title.localeCompare(b.title));
+            });
 
             renderDocuments();
         }
 
+        // Generate document
         function generateDocument(docId) {
-            // Route to the specific document page
             window.location.href = `/app/document-generator-v2/forms/form-template.html?id=${docId}`;
         }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterDocuments);
+        document.getElementById('categoryFilter').addEventListener('change', filterDocuments);
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadDocuments);
     </script>
 </body>
 </html>
