@@ -3,23 +3,7 @@
 <title>Claim Navigator • Resource Center</title>
 <link rel="stylesheet" href="/app/assets/css/style.css"/>
 <style>
-/* OVERRIDE ONLY TEXT COLORS - KEEP ORIGINAL LAYOUT */
-body:has(.main-grid) {
-  color: #ffffff !important;
-}
-
-body:has(.main-grid) * {
-  color: #ffffff !important;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
-}
-
-body:has(.main-grid) a {
-  color: #dbeafe !important;
-}
-
-body:has(.main-grid) a:hover {
-  color: #93c5fd !important;
-}
+/* JAVASCRIPT WILL HANDLE TEXT COLORS */
 </style>
 </head>
 <body class="resource-center" >
@@ -503,13 +487,25 @@ a.tool-card h4 {
     color: #dbeafe !important;
   }
 
-  /* --- FORCE WHITE HEADERS AND CARD TITLES --- */
-  body.resource-center .column-title,
-  body.resource-center h3.column-title,
-  body.resource-center .tool-card h4,
-  body.resource-center a.tool-card h4 {
-    color: #ffffff !important;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.6); /* optional subtle lift */
-  }
 </style>
+
+<script>
+// FORCE ALL TEXT WHITE USING JAVASCRIPT
+document.addEventListener('DOMContentLoaded', function() {
+  // Force all text elements to white
+  const allElements = document.querySelectorAll('*');
+  allElements.forEach(element => {
+    if (element.tagName !== 'A') { // Keep links blue
+      element.style.color = '#ffffff';
+      element.style.textShadow = '0 2px 4px rgba(0,0,0,0.8)';
+    }
+  });
+  
+  // Set links to light blue
+  const links = document.querySelectorAll('a');
+  links.forEach(link => {
+    link.style.color = '#dbeafe';
+  });
+});
+</script>
 </body></html>
