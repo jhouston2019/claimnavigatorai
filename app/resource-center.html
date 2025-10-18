@@ -508,4 +508,69 @@ a.tool-card h4 {
 
 </style>
 
+<style id="final-white-text-enforcement">
+/* 🔥 FINAL WHITE TEXT ENFORCEMENT — NO OVERRIDES POSSIBLE */
+
+/* Reset and enforce white for all elements and pseudo elements */
+html, body.resource-center, 
+body.resource-center :is(*, *::before, *::after) {
+  all: revert;
+  color: #ffffff !important;
+  background-color: transparent !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Keep links readable but consistent */
+body.resource-center a,
+body.resource-center a * {
+  color: #dbeafe !important;
+}
+
+body.resource-center a:hover,
+body.resource-center a:focus {
+  color: #93c5fd !important;
+}
+
+/* Handle Tailwind and inline class-based color utilities */
+body.resource-center [class*="text-"],
+body.resource-center [class*="text-gray"],
+body.resource-center [class*="text-black"],
+body.resource-center [class*="text-slate"],
+body.resource-center [class*="text-neutral"],
+body.resource-center [class*="text-zinc"],
+body.resource-center [class*="text-stone"],
+body.resource-center [class*="text-amber"],
+body.resource-center [class*="text-rose"] {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Form inputs, placeholders, and buttons */
+body.resource-center input,
+body.resource-center textarea,
+body.resource-center select,
+body.resource-center button {
+  color: #ffffff !important;
+  background-color: rgba(255,255,255,0.1) !important;
+  border-color: rgba(255,255,255,0.3) !important;
+}
+
+body.resource-center input::placeholder,
+body.resource-center textarea::placeholder {
+  color: rgba(255,255,255,0.7) !important;
+}
+
+/* Fix shadow DOMs or injected Tailwind scopes */
+body.resource-center *:not(svg):not(path) {
+  filter: brightness(1.1) contrast(1.05);
+}
+
+/* Absolute last layer to override inline or JS-injected styles */
+body.resource-center *[style] {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+</style>
+
 </body></html>
