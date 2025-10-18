@@ -16,16 +16,16 @@
         .nav a:hover{background:rgba(255,255,255,.1)}
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="">
     <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="brand">ClaimNavigatorAI</div>
             <nav class="nav">
                 <a href="/app/index.html">Home</a>
-                <span style="color: #64748b; margin: 0 0.25rem;">></span>
-                <span style="color: white; font-weight: 600;">Document Generator</span>
-                <span style="color: #64748b; margin: 0 0.25rem;">></span>
+                <span >></span>
+                <span >Document Generator</span>
+                <span >></span>
                 <a href="/app/resource-center.html">Resource Center</a>
             </nav>
         </div>
@@ -35,15 +35,15 @@
     <main class="container mx-auto px-4 py-8">
         <!-- Hero Section -->
         <div class="text-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">Professional Document Generator</h2>
-            <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold  mb-4">Professional Document Generator</h2>
+            <p class="text-lg  max-w-3xl mx-auto">
                 Generate 61+ professional insurance claim documents with AI assistance. 
                 Choose from core forms, legal letters, financial worksheets, and specialized reports.
             </p>
         </div>
 
         <!-- Search and Filter Section -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+        <div class=" rounded-xl shadow-sm border  p-6 mb-8">
             <div class="flex flex-col md:flex-row gap-4">
                 <!-- Search Bar -->
                 <div class="flex-1">
@@ -51,13 +51,13 @@
                         type="text" 
                         id="searchInput" 
                         placeholder="Search documents by name, category, or description..." 
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        class="w-full px-4 py-3 border  rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
                 </div>
                 
                 <!-- Category Filter -->
                 <div class="md:w-64">
-                    <select id="categoryFilter" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <select id="categoryFilter" class="w-full px-4 py-3 border  rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">All Categories</option>
                         <option value="core">Core Documents</option>
                         <option value="financial">Financial Documents</option>
@@ -82,14 +82,14 @@
         <!-- Loading State -->
         <div id="loadingState" class="text-center py-12">
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#1e40af]"></div>
-            <p class="mt-4 text-gray-600">Loading documents...</p>
+            <p class="mt-4 ">Loading documents...</p>
         </div>
 
         <!-- No Results State -->
         <div id="noResultsState" class="text-center py-12 hidden">
-            <div class="text-gray-400 text-6xl mb-4">🔍</div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">No documents found</h3>
-            <p class="text-gray-600">Try adjusting your search terms or category filter.</p>
+            <div class=" text-6xl mb-4">🔍</div>
+            <h3 class="text-xl font-semibold  mb-2">No documents found</h3>
+            <p class="">Try adjusting your search terms or category filter.</p>
         </div>
     </main>
 
@@ -133,7 +133,7 @@
             grid.style.display = 'grid';
 
             grid.innerHTML = filteredDocuments.map(doc => `
-                <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col" style="box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06), 0 4px 6px -1px rgba(30, 64, 175, 0.25);">
+                <div class=" rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col" style="box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06), 0 4px 6px -1px rgba(30, 64, 175, 0.25);">
                     <div class="p-4 flex-1 flex flex-col text-center">
                         <!-- Header -->
                         <div class="mb-3">
@@ -141,7 +141,7 @@
                                 <span class="px-1.5 py-0.5 text-xs font-semibold rounded-full ${getCategoryColor(doc.category)}">
                                     ${doc.category.toUpperCase()}
                                 </span>
-                                <span class="px-1.5 py-0.5 text-xs font-semibold rounded-full bg-gray-100 text-gray-700">
+                                <span class="px-1.5 py-0.5 text-xs font-semibold rounded-full  ">
                                     ${doc.outputType.toUpperCase()}
                                 </span>
                             </div>
@@ -149,12 +149,12 @@
                         </div>
 
                         <!-- Description -->
-                        <p class="text-gray-600 text-xs mb-3 line-clamp-2">${doc.description}</p>
+                        <p class=" text-xs mb-3 line-clamp-2">${doc.description}</p>
 
                         <!-- Layout Type -->
                         <div class="flex justify-center items-center gap-1 mb-3">
-                            <span class="text-xs text-gray-500">Layout:</span>
-                            <span class="text-xs font-medium text-gray-700">${getLayoutTypeName(doc.layoutType)}</span>
+                            <span class="text-xs ">Layout:</span>
+                            <span class="text-xs font-medium ">${getLayoutTypeName(doc.layoutType)}</span>
                         </div>
                     </div>
                     
@@ -162,7 +162,7 @@
                     <div class="p-4 pt-0">
                         <button 
                             onclick="generateDocument('${doc.id}')" 
-                            class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200"
+                            class="w-full  hover:  px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200"
                         >
                             Generate →
                         </button>
@@ -183,9 +183,9 @@
                 'specialty': 'bg-yellow-100 text-yellow-800',
                 'property': 'bg-teal-100 text-teal-800',
                 'business': 'bg-cyan-100 text-cyan-800',
-                'catastrophic': 'bg-gray-100 text-gray-800'
+                'catastrophic': ' '
             };
-            return colors[category] || 'bg-gray-100 text-gray-800';
+            return colors[category] || ' ';
         }
 
         function getLayoutTypeName(layoutType) {
