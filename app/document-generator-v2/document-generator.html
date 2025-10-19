@@ -81,17 +81,18 @@
             >
             
             <!-- Category Filter -->
-            <select id="categoryFilter" class="filter-dropdown">
-                <option value="">All Categories</option>
-                <option value="core">Core Claims</option>
-                <option value="financial">Financial Documents</option>
-                <option value="forms">Forms & Requests</option>
-                <option value="appeals">Appeals & Disputes</option>
-                <option value="specialty">Specialty Documents</option>
-                <option value="property">Property-Specific</option>
-                <option value="business">Business-Specific</option>
-                <option value="catastrophic">Catastrophic Events</option>
-            </select>
+                    <select id="categoryFilter" class="filter-dropdown">
+                        <option value="">All Categories</option>
+                        <option value="core-claim-documents">Core Claim Documents</option>
+                        <option value="legal-documents">Legal Documents</option>
+                        <option value="financial-documents">Financial Documents</option>
+                        <option value="forms-&-requests">Forms & Requests</option>
+                        <option value="appeals-&-disputes">Appeals & Disputes</option>
+                        <option value="specialty-documents">Specialty Documents</option>
+                        <option value="property-specific-documents">Property-Specific Documents</option>
+                        <option value="business-specific-documents">Business-Specific Documents</option>
+                        <option value="catastrophic-event-documents">Catastrophic Event Documents</option>
+                    </select>
         </div>
 
         <!-- Documents Grid -->
@@ -107,7 +108,7 @@
         // Load documents from JSON
         async function loadDocuments() {
             try {
-                const response = await fetch('/app/document-generator-v2/doc-templates-complete.json');
+                const response = await fetch('/app/document-generator-v2/config/documents.json');
                 if (!response.ok) throw new Error('Failed to load documents');
                 allDocuments = await response.json();
                 filteredDocuments = [...allDocuments];
@@ -131,8 +132,8 @@
             const html = filteredDocuments.map(doc => `
                 <div class="doc-card">
                     <div class="doc-card-content">
-                        <div class="category-badge category-${doc.category}">${doc.categoryLabel}</div>
-                        <div class="output-type">Output: ${doc.outputType}</div>
+                        <div class="category-badge category-${doc.category.toLowerCase().replace(/\s+/g, '-')}">${doc.category}</div>
+                        <div class="output-type">Output: ${doc.outputFormat.toUpperCase()}</div>
                         <div class="doc-title">${doc.title}</div>
                         <div class="doc-description">${doc.description}</div>
                     </div>
@@ -157,7 +158,7 @@
                     doc.title.toLowerCase().includes(searchTerm) ||
                     doc.description.toLowerCase().includes(searchTerm);
                 
-                const matchesCategory = !categoryFilter || doc.category === categoryFilter;
+                const matchesCategory = !categoryFilter || doc.category.toLowerCase().replace(/\s+/g, '-') === categoryFilter;
                 
                 return matchesSearch && matchesCategory;
             });
@@ -177,18 +178,13 @@
             // Show loading state
             const button = event.target;
             const originalText = button.innerHTML;
-            button.innerHTML = 'Generating...';
+            button.innerHTML = 'Opening...';
             button.disabled = true;
             
-            // Simulate document generation (replace with actual implementation)
+            // Redirect to form template with document ID
             setTimeout(() => {
-                // For now, show an alert with document details
-                alert(`Document: ${doc.title}\nCategory: ${doc.categoryLabel}\nDescription: ${doc.description}\n\nThis would normally open a form to generate the document.`);
-                
-                // Reset button
-                button.innerHTML = originalText;
-                button.disabled = false;
-            }, 1000);
+                window.location.href = `/app/document-generator-v2/forms/form-template.html?id=${docId}`;
+            }, 500);
         }
 
         // Event listeners

@@ -3,38 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document Form - ClaimNavigatorAI</title>
-    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <title>Document Generator - ClaimNavigatorAI</title>
+    <link rel="stylesheet" href="/app/document-generator-v2/assets/css/document-generator.css">
     <style>
-        :root{--navy:#0f172a;--primary:#1e40af;--primary-600:#1e3a8a;--accent:#3b82f6;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--panel:#f8fafc;--success:#10b981;--warn:#f59e0b;--error:#ef4444;}
-        *{box-sizing:border-box}
-        body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:#fff;line-height:1.6}
-        .header{position:sticky;top:0;z-index:1000;background:var(--navy);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08)}
-        .header .container{max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
-        .brand{display:flex;align-items:center;gap:10px;font-weight:800}
-        .nav a{color:#c9d4ff;text-decoration:none;padding:.5rem .75rem;border-radius:.5rem}
-        .nav a:hover{background:rgba(255,255,255,.1)}
-        
-        .form-container{max-width:800px;margin:0 auto;padding:32px}
-        .form-panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:32px;margin-bottom:24px}
-        .form-title{font-size:24px;font-weight:600;color:var(--text);margin-bottom:8px}
-        .form-description{font-size:16px;color:var(--muted);margin-bottom:32px}
-        .form-group{margin-bottom:24px}
-        .form-label{display:block;font-weight:500;color:var(--text);margin-bottom:8px}
-        .form-input{width:100%;padding:12px 16px;border:1px solid var(--border);border-radius:8px;font-size:16px;transition:border-color 0.2s}
-        .form-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,0.1)}
-        .form-textarea{min-height:100px;resize:vertical}
-        .form-select{background:#fff}
-        .form-checkbox{width:auto;margin-right:8px}
-        .form-required{color:var(--error)}
-        .submit-btn{background:var(--primary);color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:16px;font-weight:500;cursor:pointer;transition:all 0.2s;width:100%}
-        .submit-btn:hover{background:var(--primary-600);transform:translateY(-1px)}
-        .submit-btn:disabled{background:var(--muted);cursor:not-allowed;transform:none}
-        .loading{text-align:center;padding:20px;color:var(--muted)}
-        .success{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;padding:16px;border-radius:8px;margin:16px 0}
-        .error{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:16px;border-radius:8px;margin:16px 0}
-        .download-link{display:inline-block;background:var(--success);color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:500;margin-top:16px}
-        .download-link:hover{background:#059669}
+        body {
+            background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('/assets/images/backgrounds/12.jpg') center/cover no-repeat;
+            position: relative;
+            min-height: 100vh;
+        }
     </style>
 </head>
 <body>
@@ -45,22 +21,462 @@
             <nav class="nav">
                 <a href="/app/index.html">Home</a>
                 <span>></span>
-                <span>Document Generator</span>
+                <a href="/app/document-generator-v2/document-generator.html">Document Generator</a>
                 <span>></span>
-                <a href="/app/document-generator-v2/document-generator.html">← Back to Documents</a>
+                <span id="currentDocument">Document Form</span>
             </nav>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="form-container">
-        <div class="form-panel">
-            <div id="formContent">
-                <div class="loading">Loading form...</div>
+    <main>
+        <div class="form-container">
+            <div class="form-header">
+                <h1 class="form-title" id="documentTitle">Document Generator</h1>
+                <p class="form-description" id="documentDescription">Please fill out the form below to generate your document.</p>
+            </div>
+
+            <form id="documentForm">
+                <!-- User Information Section -->
+                <div class="form-section">
+                    <h2 class="section-title">Your Information</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="userName">Full Name *</label>
+                            <input type="text" id="userName" name="userName" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="userEmail">Email Address *</label>
+                            <input type="email" id="userEmail" name="userEmail" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="userPhone">Phone Number</label>
+                            <input type="tel" id="userPhone" name="userPhone" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="userAddress">Address</label>
+                            <input type="text" id="userAddress" name="userAddress" class="form-input">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Claim Information Section -->
+                <div class="form-section">
+                    <h2 class="section-title">Claim Information</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="policyNumber">Policy Number *</label>
+                            <input type="text" id="policyNumber" name="policyNumber" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="claimNumber">Claim Number</label>
+                            <input type="text" id="claimNumber" name="claimNumber" class="form-input">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="dateOfLoss">Date of Loss *</label>
+                            <input type="date" id="dateOfLoss" name="dateOfLoss" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="propertyAddress">Property Address *</label>
+                            <input type="text" id="propertyAddress" name="propertyAddress" class="form-input" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Document Fields -->
+                <div class="form-section" id="documentFields">
+                    <h2 class="section-title">Document Details</h2>
+                    <div id="dynamicFields">
+                        <!-- Fields will be populated dynamically based on document type -->
+                    </div>
+                </div>
+
+                <!-- Generation Options -->
+                <div class="form-section">
+                    <h2 class="section-title">Generation Options</h2>
+                    <div class="form-group">
+                        <div class="form-checkbox">
+                            <input type="checkbox" id="useAI" name="useAI">
+                            <label for="useAI">Use AI customization for personalized content</label>
+                        </div>
+                        <p style="font-size:14px;color:var(--muted);margin-top:8px;">
+                            AI customization will analyze your specific situation and create a personalized document tailored to your circumstances.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="previewDocument()">Preview Document</button>
+                    <button type="submit" class="btn">Generate Document</button>
+                </div>
+            </form>
+
+            <!-- Document Preview -->
+            <div id="documentPreview" class="document-preview" style="display:none;">
+                <div class="preview-header">
+                    <h3>Document Preview</h3>
+                </div>
+                <div class="preview-content" id="previewContent">
+                    <!-- Preview content will be generated here -->
+                </div>
+                <div class="watermark">ClaimNavigatorAI</div>
+                
+                <!-- Export Buttons -->
+                <div class="btn-group" style="margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="exportDocument('pdf')">Export PDF</button>
+                    <button type="button" class="btn btn-secondary" onclick="exportDocument('docx')">Export DOCX</button>
+                    <button type="button" class="btn btn-secondary" onclick="exportDocument('xlsx')">Export XLSX</button>
+                </div>
             </div>
         </div>
     </main>
 
-    <script src="form-template.js"></script>
+    <script>
+        let documentData = null;
+        let currentDocumentId = null;
+        let generatedContent = null;
+
+        // Load document data from URL parameter
+        async function loadDocumentData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const docId = urlParams.get('id');
+            
+            if (!docId) {
+                alert('No document ID provided');
+                window.location.href = '/app/document-generator-v2/document-generator.html';
+                return;
+            }
+
+            try {
+                const response = await fetch('/app/document-generator-v2/config/documents.json');
+                if (!response.ok) throw new Error('Failed to load document data');
+                const documents = await response.json();
+                
+                documentData = documents.find(doc => doc.id === docId);
+                if (!documentData) {
+                    alert('Document not found');
+                    window.location.href = '/app/document-generator-v2/document-generator.html';
+                    return;
+                }
+
+                currentDocumentId = docId;
+                setupDocumentForm();
+            } catch (error) {
+                console.error('Error loading document:', error);
+                document.getElementById('documentTitle').textContent = 'Error';
+                document.getElementById('documentDescription').textContent = 'Failed to load document data.';
+            }
+        }
+
+        // Setup the form based on document type
+        function setupDocumentForm() {
+            document.getElementById('documentTitle').textContent = documentData.title;
+            document.getElementById('documentDescription').textContent = documentData.description;
+            document.getElementById('currentDocument').textContent = documentData.title;
+
+            // Generate dynamic fields based on document template
+            const dynamicFieldsContainer = document.getElementById('dynamicFields');
+            dynamicFieldsContainer.innerHTML = '';
+
+            documentData.fields.forEach(field => {
+                const fieldHtml = createFieldHTML(field);
+                dynamicFieldsContainer.innerHTML += fieldHtml;
+            });
+        }
+
+        // Create HTML for a form field
+        function createFieldHTML(field) {
+            const required = field.required ? ' *' : '';
+            let fieldHtml = '';
+
+            switch (field.type) {
+                case 'text':
+                case 'email':
+                case 'tel':
+                case 'date':
+                case 'time':
+                case 'number':
+                    fieldHtml = `
+                        <div class="form-group">
+                            <label class="form-label" for="${field.label.toLowerCase().replace(/\s+/g, '_')}">${field.label}${required}</label>
+                            <input type="${field.type}" id="${field.label.toLowerCase().replace(/\s+/g, '_')}" name="${field.label.toLowerCase().replace(/\s+/g, '_')}" class="form-input" ${field.required ? 'required' : ''}>
+                        </div>
+                    `;
+                    break;
+                case 'textarea':
+                    fieldHtml = `
+                        <div class="form-group">
+                            <label class="form-label" for="${field.label.toLowerCase().replace(/\s+/g, '_')}">${field.label}${required}</label>
+                            <textarea id="${field.label.toLowerCase().replace(/\s+/g, '_')}" name="${field.label.toLowerCase().replace(/\s+/g, '_')}" class="form-textarea" ${field.required ? 'required' : ''}></textarea>
+                        </div>
+                    `;
+                    break;
+                case 'select':
+                    const options = field.options ? field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('') : '';
+                    fieldHtml = `
+                        <div class="form-group">
+                            <label class="form-label" for="${field.label.toLowerCase().replace(/\s+/g, '_')}">${field.label}${required}</label>
+                            <select id="${field.label.toLowerCase().replace(/\s+/g, '_')}" name="${field.label.toLowerCase().replace(/\s+/g, '_')}" class="form-select" ${field.required ? 'required' : ''}>
+                                <option value="">Select an option</option>
+                                ${options}
+                            </select>
+                        </div>
+                    `;
+                    break;
+                case 'checkbox':
+                    fieldHtml = `
+                        <div class="form-group">
+                            <div class="form-checkbox">
+                                <input type="checkbox" id="${field.label.toLowerCase().replace(/\s+/g, '_')}" name="${field.label.toLowerCase().replace(/\s+/g, '_')}">
+                                <label for="${field.label.toLowerCase().replace(/\s+/g, '_')}">${field.label}</label>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'table':
+                    fieldHtml = `
+                        <div class="form-group">
+                            <label class="form-label">${field.label}${required}</label>
+                            <div class="table-container">
+                                <table class="form-table">
+                                    <thead>
+                                        <tr>
+                                            ${field.columns.map(col => `<th>${col}</th>`).join('')}
+                                        </tr>
+                                    </thead>
+                                    <tbody id="${field.label.toLowerCase().replace(/\s+/g, '_')}_table">
+                                        <tr>
+                                            ${field.columns.map(() => '<td><input type="text" class="form-input" style="border:none;padding:4px;"></td>').join('')}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <button type="button" onclick="addTableRow('${field.label.toLowerCase().replace(/\s+/g, '_')}_table', ${field.columns.length})" class="btn btn-secondary" style="margin-top:8px;padding:4px 8px;font-size:12px;">Add Row</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            return fieldHtml;
+        }
+
+        // Add table row
+        function addTableRow(tableId, columnCount) {
+            const tbody = document.getElementById(tableId);
+            const row = document.createElement('tr');
+            for (let i = 0; i < columnCount; i++) {
+                const cell = document.createElement('td');
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'form-input';
+                input.style.border = 'none';
+                input.style.padding = '4px';
+                cell.appendChild(input);
+                row.appendChild(cell);
+            }
+            tbody.appendChild(row);
+        }
+
+        // Preview document
+        function previewDocument() {
+            const formData = new FormData(document.getElementById('documentForm'));
+            const data = Object.fromEntries(formData.entries());
+            
+            // Generate preview content
+            const previewContent = generateDocumentContent(data, false);
+            document.getElementById('previewContent').innerHTML = previewContent;
+            document.getElementById('documentPreview').style.display = 'block';
+        }
+
+        // Generate document content
+        function generateDocumentContent(data, useAI = false) {
+            const header = `
+                <div style="text-align:center;margin-bottom:30px;border-bottom:2px solid #333;padding-bottom:20px;">
+                    <h2 style="margin:0;font-size:18px;font-weight:bold;">${data.userName || '[Your Name]'}</h2>
+                    <p style="margin:5px 0;font-size:14px;">${data.userAddress || '[Your Address]'}</p>
+                    <p style="margin:5px 0;font-size:14px;">${data.userPhone || '[Your Phone]'} | ${data.userEmail || '[Your Email]'}</p>
+                    <p style="margin:5px 0;font-size:14px;">Policy: ${data.policyNumber || '[Policy Number]'} | Claim: ${data.claimNumber || '[Claim Number]'}</p>
+                </div>
+            `;
+
+            const date = new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+
+            const content = `
+                <div style="margin-bottom:20px;">
+                    <p><strong>Date:</strong> ${date}</p>
+                    <p><strong>To:</strong> Insurance Company</p>
+                    <p><strong>Re:</strong> ${documentData.title}</p>
+                </div>
+                
+                <div style="line-height:1.8;margin-bottom:30px;">
+                    <p>Dear Sir/Madam,</p>
+                    
+                    <p>I am writing to submit my ${documentData.title.toLowerCase()} regarding the claim for the loss that occurred on ${data.dateOfLoss || '[Date of Loss]'} at ${data.propertyAddress || '[Property Address]'}.</p>
+                    
+                    ${generateDocumentSpecificContent(data)}
+                    
+                    <p>Please find the attached documentation supporting this ${documentData.title.toLowerCase()}.</p>
+                    
+                    <p>I look forward to your prompt attention to this matter.</p>
+                    
+                    <p>Sincerely,<br>
+                    ${data.userName || '[Your Name]'}</p>
+                </div>
+            `;
+
+            const footer = `
+                <div style="text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid #ccc;font-size:12px;color:#666;">
+                    Generated by ClaimNavigatorAI - Professional Insurance Claim Assistance
+                </div>
+            `;
+
+            return header + content + footer;
+        }
+
+        // Generate document-specific content based on document type
+        function generateDocumentSpecificContent(data) {
+            let specificContent = '';
+            
+            // Add content based on document fields
+            documentData.fields.forEach(field => {
+                const fieldName = field.label.toLowerCase().replace(/\s+/g, '_');
+                if (data[fieldName] && fieldName !== 'user_name' && fieldName !== 'user_email' && fieldName !== 'user_phone' && fieldName !== 'user_address' && fieldName !== 'policy_number' && fieldName !== 'claim_number' && fieldName !== 'date_of_loss' && fieldName !== 'property_address') {
+                    specificContent += `<p><strong>${field.label}:</strong> ${data[fieldName]}</p>`;
+                }
+            });
+            
+            return specificContent;
+        }
+
+        // Export document
+        async function exportDocument(format) {
+            if (!generatedContent) {
+                alert('Please generate the document first');
+                return;
+            }
+
+            const formData = new FormData(document.getElementById('documentForm'));
+            const data = Object.fromEntries(formData.entries());
+            
+            const userData = {
+                userName: data.userName,
+                policyNumber: data.policyNumber,
+                claimNumber: data.claimNumber,
+                dateOfLoss: data.dateOfLoss,
+                propertyAddress: data.propertyAddress
+            };
+
+            try {
+                const response = await fetch(`/.netlify/functions/export-${format}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        content: generatedContent,
+                        userData: userData,
+                        docTitle: documentData.title,
+                        fields: documentData.fields
+                    })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${documentData.title}.${format}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                } else {
+                    throw new Error('Export failed');
+                }
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Export failed. Please try again.');
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('documentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            const useAI = data.useAI === 'on';
+            
+            try {
+                // Show loading state
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Generating...';
+                submitBtn.disabled = true;
+                
+                // Call AI generation function
+                const response = await fetch('/.netlify/functions/generate-document', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        docId: currentDocumentId,
+                        formData: data,
+                        userData: {
+                            userName: data.userName,
+                            policyNumber: data.policyNumber,
+                            claimNumber: data.claimNumber,
+                            dateOfLoss: data.dateOfLoss,
+                            propertyAddress: data.propertyAddress
+                        },
+                        useAI: useAI
+                    })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    generatedContent = result.output;
+                    
+                    // Show success message
+                    const successDiv = document.createElement('div');
+                    successDiv.className = 'success';
+                    successDiv.innerHTML = `
+                        <strong>Document Generated Successfully!</strong><br>
+                        ${useAI ? 'AI-customized document created.' : 'Standardized document created.'}
+                    `;
+                    this.appendChild(successDiv);
+                    
+                    // Show preview
+                    document.getElementById('previewContent').innerHTML = generatedContent;
+                    document.getElementById('documentPreview').style.display = 'block';
+                } else {
+                    throw new Error('Generation failed');
+                }
+                
+                // Reset button
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                
+            } catch (error) {
+                console.error('Error generating document:', error);
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error';
+                errorDiv.textContent = 'Error generating document. Please try again.';
+                this.appendChild(errorDiv);
+            }
+        });
+
+        // Initialize the form
+        document.addEventListener('DOMContentLoaded', loadDocumentData);
+    </script>
 </body>
 </html>
