@@ -6,80 +6,110 @@
     <title>Claim Analysis Tools - ClaimNavigatorAI</title>
     <link rel="stylesheet" href="/app/assets/css/style.css">
     <style>
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 24px;
-            margin-top: 32px;
+        .hero-header {
+            padding: 80px 20px;
+            color: #fff;
+            text-align: center;
+            position: relative;
+            background-size: cover;
+            background-position: center;
         }
-        .tool-card {
+
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #e2e8f0;
+            margin-top: 10px;
+        }
+
+        .tools-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .card {
+            width: 300px;
             background: #fff;
-            border: 1px solid #e1e5e9;
             border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            margin: 15px;
+            padding: 20px;
             transition: all 0.3s ease;
         }
-        .tool-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            border-color: #3b82f6;
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
         }
-        .tool-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #111827;
+
+        .card h3 {
+            color: #0f172a;
+            font-size: 1.1rem;
             margin-bottom: 8px;
         }
-        .tool-description {
-            color: #6b7280;
-            margin-bottom: 16px;
-            line-height: 1.5;
+
+        .card p {
+            color: #374151;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
         }
-        .tool-preview {
+
+        .card textarea {
             width: 100%;
             min-height: 80px;
-            padding: 12px;
+            padding: 8px;
             border: 1px solid #d1d5db;
             border-radius: 6px;
             font-size: 14px;
-            margin-bottom: 16px;
+            margin-bottom: 15px;
             resize: vertical;
         }
-        .tool-actions {
+
+        .card-actions {
             display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
         }
+
         .button.primary {
             background: #1e40af;
-            color: white;
-            padding: 10px 20px;
+            color: #fff;
+            padding: 8px 12px;
             border-radius: 6px;
             text-decoration: none;
-            font-weight: 500;
-            transition: background 0.2s;
+            transition: background 0.2s ease;
+            font-size: 14px;
         }
+
         .button.primary:hover {
             background: #1e3a8a;
         }
+
         .button.secondary {
             background: #f3f4f6;
-            color: #374151;
-            padding: 10px 20px;
+            color: #111827;
+            padding: 8px 12px;
             border-radius: 6px;
             text-decoration: none;
-            font-weight: 500;
-            border: 1px solid #d1d5db;
-            transition: all 0.2s;
+            font-size: 14px;
         }
+
         .button.secondary:hover {
             background: #e5e7eb;
-        }
-        .hero-section {
-            text-align: center;
-            padding: 40px 0;
-            background: transparent;
         }
     </style>
 </head>
@@ -97,90 +127,81 @@
         </div>
     </header>
 
+    <!-- Hero Header -->
+    <header class="hero-header" style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('/app/assets/img/12.jpg') center/cover no-repeat;">
+        <div class="hero-content container">
+            <h1 class="hero-title">🧭 Claim Analysis Tools</h1>
+            <p class="hero-subtitle">Professional tools to analyze your claim, review coverage, and assess damages with AI precision.</p>
+        </div>
+    </header>
+
     <!-- Main Content -->
     <main class="container">
-        <div class="hero-section">
-            <h1>Claim Analysis Tools</h1>
-            <p>Professional tools to analyze your claim, review coverage, and assess damages.</p>
-        </div>
-
         <!-- Tools Grid -->
         <div class="tools-grid">
-            <!-- 1️⃣ Policy Review & Coverage Analysis -->
-            <div class="tool-card">
-                <div class="tool-title">Policy Review & Coverage Analysis</div>
-                <div class="tool-description">
-                    Upload or paste policy text to generate a detailed coverage summary, exclusion list, and recommendations.
-                </div>
-                <textarea class="tool-preview" placeholder="Paste policy text for preview (optional)..."></textarea>
-                <div class="tool-actions">
+            <!-- Policy Review & Coverage Analysis -->
+            <div class="card">
+                <h3>⚖️ Policy Review & Coverage Analysis</h3>
+                <p>Upload your policy documents for AI-powered coverage analysis.</p>
+                <textarea placeholder="Paste policy info or upload document..."></textarea>
+                <div class="card-actions">
                     <a href="/app/claim-analysis/policy.html" class="button primary">Open Tool</a>
-                    <a href="#" class="button secondary" onclick="downloadForm('policy')">Download Form</a>
-                        </div>
-                    </div>
-
-            <!-- 2️⃣ Damage Assessment Calculator -->
-            <div class="tool-card">
-                <div class="tool-title">Damage Assessment Calculator</div>
-                <div class="tool-description">
-                    Calculate repair costs, replacement values, and document damage with professional assessment tools.
+                    <a href="#" class="button secondary" onclick="downloadForm('policy')">Download Checklist</a>
                 </div>
-                <textarea class="tool-preview" placeholder="Describe damage for preview (optional)..."></textarea>
-                <div class="tool-actions">
+            </div>
+
+            <!-- Damage Assessment Calculator -->
+            <div class="card">
+                <h3>🏚️ Damage Assessment Calculator</h3>
+                <p>Calculate repair costs, replacement values, and document damage with professional assessment tools.</p>
+                <textarea placeholder="Describe damage for preview (optional)..."></textarea>
+                <div class="card-actions">
                     <a href="/app/claim-analysis/damage.html" class="button primary">Open Tool</a>
                     <a href="#" class="button secondary" onclick="downloadForm('damage')">Download Form</a>
                 </div>
             </div>
 
-            <!-- 3️⃣ Estimate Review & Comparison -->
-            <div class="tool-card">
-                <div class="tool-title">Estimate Review & Comparison</div>
-                <div class="tool-description">
-                    Compare contractor estimates, validate pricing, and identify discrepancies in repair bids.
-                </div>
-                <textarea class="tool-preview" placeholder="Paste estimate details for preview (optional)..."></textarea>
-                <div class="tool-actions">
+            <!-- Estimate Review & Comparison -->
+            <div class="card">
+                <h3>📊 Estimate Review & Comparison</h3>
+                <p>Compare contractor estimates, validate pricing, and identify discrepancies in repair bids.</p>
+                <textarea placeholder="Paste estimate details for preview (optional)..."></textarea>
+                <div class="card-actions">
                     <a href="/app/claim-analysis/estimates.html" class="button primary">Open Tool</a>
                     <a href="#" class="button secondary" onclick="downloadForm('estimates')">Download Form</a>
                 </div>
             </div>
 
-            <!-- 4️⃣ Business Interruption Calculator -->
-            <div class="tool-card">
-                <div class="tool-title">Business Interruption Calculator</div>
-                <div class="tool-description">
-                    Calculate lost revenue, extra expenses, and business interruption losses with forensic accounting.
-                </div>
-                <textarea class="tool-preview" placeholder="Enter business details for preview (optional)..."></textarea>
-                <div class="tool-actions">
+            <!-- Business Interruption Calculator -->
+            <div class="card">
+                <h3>💼 Business Interruption Calculator</h3>
+                <p>Calculate lost revenue, extra expenses, and business interruption losses with forensic accounting.</p>
+                <textarea placeholder="Enter business details for preview (optional)..."></textarea>
+                <div class="card-actions">
                     <a href="/app/claim-analysis/business.html" class="button primary">Open Tool</a>
-                    <a href="#" class="button secondary" onclick="downloadForm('business')">Download Form</a>
+                    <a href="#" class="button secondary" onclick="downloadForm('business')">Download Worksheet</a>
                 </div>
             </div>
 
-            <!-- 5️⃣ Settlement Analysis & Negotiation -->
-            <div class="tool-card">
-                <div class="tool-title">Settlement Analysis & Negotiation</div>
-                <div class="tool-description">
-                    Analyze settlement offers, calculate fair value, and develop negotiation strategies.
-                </div>
-                <textarea class="tool-preview" placeholder="Enter settlement details for preview (optional)..."></textarea>
-                <div class="tool-actions">
+            <!-- Settlement Analysis & Negotiation -->
+            <div class="card">
+                <h3>🤝 Settlement Analysis & Negotiation</h3>
+                <p>Analyze settlement offers, calculate fair value, and develop negotiation strategies.</p>
+                <textarea placeholder="Enter settlement details for preview (optional)..."></textarea>
+                <div class="card-actions">
                     <a href="/app/claim-analysis/settlement.html" class="button primary">Open Tool</a>
-                    <a href="#" class="button secondary" onclick="downloadForm('settlement')">Download Form</a>
+                    <a href="#" class="button secondary" onclick="downloadForm('settlement')">Download Guide</a>
                 </div>
             </div>
 
-            <!-- 6️⃣ Expert Opinion Request Generator -->
-            <div class="tool-card">
-                <div class="tool-title">Expert Opinion Request Generator</div>
-                <div class="tool-description">
-                    Generate professional requests for expert opinions, witness coordination, and specialized analysis.
-                </div>
-                <textarea class="tool-preview" placeholder="Describe expert needs for preview (optional)..."></textarea>
-                <div class="tool-actions">
+            <!-- Expert Opinion Request Generator -->
+            <div class="card">
+                <h3>🧠 Expert Opinion Request Generator</h3>
+                <p>Generate professional requests for expert opinions, witness coordination, and specialized analysis.</p>
+                <textarea placeholder="Describe expert needs for preview (optional)..."></textarea>
+                <div class="card-actions">
                     <a href="/app/claim-analysis/expert.html" class="button primary">Open Tool</a>
-                    <a href="#" class="button secondary" onclick="downloadForm('expert')">Download Form</a>
+                    <a href="#" class="button secondary" onclick="downloadForm('expert')">Download Template</a>
                 </div>
             </div>
         </div>
@@ -189,7 +210,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>© 2025 ClaimNavigatorAI • Professional Claim Analysis Tools</p>
+            <p>© 2025 ClaimNavigatorAI • Advanced Claim Analysis Tools</p>
         </div>
     </footer>
 
