@@ -3,86 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claim Analysis Tool - ClaimNavigatorAI</title>
+    <title>Claim Analysis Tools - ClaimNavigatorAI</title>
     <link rel="stylesheet" href="/app/assets/css/style.css">
     <style>
-        .results {
-            display: none;
-            background: #f5f7fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 15px;
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+        .tool-card {
+            background: #fff;
             border: 1px solid #e1e5e9;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
         }
-        .error {
-            color: #dc2626;
-            background: #fef2f2;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #fecaca;
-        }
-        .input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-        .input:focus {
-            outline: none;
+        .tool-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
             border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .damage-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
-        }
-        .damage-table th,
-        .damage-table td {
-            border: 1px solid #d1d5db;
-            padding: 8px;
-            text-align: left;
-        }
-        .damage-table th {
-            background: #f9fafb;
+        .tool-title {
+            font-size: 20px;
             font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
         }
-        .add-row-btn {
-            background: #6b7280;
+        .tool-description {
+            color: #6b7280;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        .tool-preview {
+            width: 100%;
+            min-height: 80px;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            resize: vertical;
+        }
+        .tool-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .button.primary {
+            background: #1e40af;
             color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s;
         }
-        .add-row-btn:hover {
-            background: #4b5563;
+        .button.primary:hover {
+            background: #1e3a8a;
         }
-        .remove-row-btn {
-            background: #dc2626;
-            color: white;
-            border: none;
-            padding: 2px 6px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 10px;
+        .button.secondary {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            border: 1px solid #d1d5db;
+            transition: all 0.2s;
         }
-        .remove-row-btn:hover {
-            background: #b91c1c;
+        .button.secondary:hover {
+            background: #e5e7eb;
         }
     </style>
 </head>
@@ -103,291 +95,111 @@
     <!-- Main Content -->
     <main class="container">
         <div class="card">
-            <h1>🧭 Claim Analysis Tool</h1>
-            <p>Use these advanced tools to review your policy, estimate damages, compare offers, and calculate your potential settlement value.</p>
+            <h1>Claim Analysis Tools</h1>
+            <p>Professional tools to analyze your claim, review coverage, and assess damages.</p>
         </div>
 
-        <!-- 1️⃣ Policy Review & Coverage Analysis -->
-        <div class="card">
-            <h3>⚖️ Policy Review & Coverage Analysis</h3>
-            <div class="inputs">
-                <label for="policyText">Policy Text/Excerpt:</label>
-                <textarea id="policyText" class="input" rows="4" placeholder="Paste your policy text or relevant coverage language here..."></textarea>
-                
-                <label for="policyType">Policy Type:</label>
-                <select id="policyType" class="input">
-                    <option value="">Select Policy Type</option>
-                                <option value="homeowners">Homeowners</option>
-                                <option value="auto">Auto</option>
-                    <option value="business">Business</option>
-                    <option value="renters">Renters</option>
-                    <option value="flood">Flood</option>
-                    <option value="umbrella">Umbrella</option>
-                            </select>
-                
-                <label for="jurisdiction">Jurisdiction:</label>
-                <input type="text" id="jurisdiction" class="input" placeholder="State/Province">
-                
-                <label for="deductible">Deductible Amount:</label>
-                <input type="number" id="deductible" class="input" placeholder="Enter deductible amount">
-                
-                <button class="button primary" onclick="runAnalysis('policy')">Analyze Coverage</button>
-            </div>
-            <div id="result-policy" class="results"></div>
+        <!-- Tools Grid -->
+        <div class="tools-grid">
+            <!-- 1️⃣ Policy Review & Coverage Analysis -->
+            <div class="tool-card">
+                <div class="tool-title">⚖️ Policy Review & Coverage Analysis</div>
+                <div class="tool-description">
+                    Upload or paste policy text to generate a detailed coverage summary, exclusion list, and recommendations.
                 </div>
-
-        <!-- 2️⃣ Damage Assessment Calculator -->
-        <div class="card">
-            <h3>🏚️ Damage Assessment Calculator</h3>
-            <div class="inputs">
-                <label for="damageDesc">Damage Description:</label>
-                <textarea id="damageDesc" class="input" rows="3" placeholder="Describe the damage in detail..."></textarea>
-                
-                <label>Damage Types:</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="damage-fire" value="fire">
-                        <label for="damage-fire">Fire</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="damage-water" value="water">
-                        <label for="damage-water">Water</label>
+                <textarea class="tool-preview" placeholder="Paste policy text for preview (optional)..."></textarea>
+                <div class="tool-actions">
+                    <a href="/app/claim-analysis/policy.html" class="button primary">Open Tool</a>
+                    <a href="#" class="button secondary" onclick="downloadForm('policy')">Download Form</a>
                         </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="damage-wind" value="wind">
-                        <label for="damage-wind">Wind</label>
                     </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="damage-theft" value="theft">
-                        <label for="damage-theft">Theft</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="damage-other" value="other">
-                        <label for="damage-other">Other</label>
-                    </div>
-                </div>
 
-                <label>Damage Items:</label>
-                <table class="damage-table">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Quantity</th>
-                            <th>Unit Cost</th>
-                            <th>Total</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="damage-items">
-                        <tr>
-                            <td><input type="text" class="input" placeholder="Item description"></td>
-                            <td><input type="number" class="input" placeholder="Qty" step="0.01"></td>
-                            <td><input type="number" class="input" placeholder="Cost" step="0.01"></td>
-                            <td><span class="total">$0.00</span></td>
-                            <td><button type="button" class="remove-row-btn" onclick="removeDamageRow(this)">×</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <button type="button" class="add-row-btn" onclick="addDamageRow()">+ Add Item</button>
-                
-                <button class="button primary" onclick="runAnalysis('damage')">Run Damage Analysis</button>
+            <!-- 2️⃣ Damage Assessment Calculator -->
+            <div class="tool-card">
+                <div class="tool-title">🏚️ Damage Assessment Calculator</div>
+                <div class="tool-description">
+                    Calculate repair costs, replacement values, and document damage with professional assessment tools.
+                </div>
+                <textarea class="tool-preview" placeholder="Describe damage for preview (optional)..."></textarea>
+                <div class="tool-actions">
+                    <a href="/app/claim-analysis/damage.html" class="button primary">Open Tool</a>
+                    <a href="#" class="button secondary" onclick="downloadForm('damage')">Download Form</a>
+                </div>
             </div>
-            <div id="result-damage" class="results"></div>
-                </div>
 
-        <!-- 3️⃣ Estimate Review & Comparison -->
-        <div class="card">
-            <h3>📊 Estimate Review & Comparison</h3>
-            <div class="inputs">
-                <label for="estimates">Upload Estimates:</label>
-                <input type="file" id="estimates" class="input" multiple accept=".pdf,.doc,.docx,.txt">
-                
-                <label for="laborRate">Labor Rate ($/hour):</label>
-                <input type="number" id="laborRate" class="input" placeholder="Enter hourly labor rate" step="0.01">
-                
-                <label for="taxRate">Tax Rate (%):</label>
-                <input type="number" id="taxRate" class="input" placeholder="Enter tax rate" step="0.01">
-                
-                <div class="checkbox-item">
-                    <input type="checkbox" id="includeOverhead">
-                    <label for="includeOverhead">Include Overhead & Profit</label>
+            <!-- 3️⃣ Estimate Review & Comparison -->
+            <div class="tool-card">
+                <div class="tool-title">📊 Estimate Review & Comparison</div>
+                <div class="tool-description">
+                    Compare contractor estimates, validate pricing, and identify discrepancies in repair bids.
                 </div>
-
-                <button class="button primary" onclick="runAnalysis('estimates')">Compare Estimates</button>
+                <textarea class="tool-preview" placeholder="Paste estimate details for preview (optional)..."></textarea>
+                <div class="tool-actions">
+                    <a href="/app/claim-analysis/estimates.html" class="button primary">Open Tool</a>
+                    <a href="#" class="button secondary" onclick="downloadForm('estimates')">Download Form</a>
+                </div>
             </div>
-            <div id="result-estimates" class="results"></div>
-                </div>
 
-        <!-- 4️⃣ Business Interruption Calculator -->
-        <div class="card">
-            <h3>💼 Business Interruption Calculator</h3>
-            <div class="inputs">
-                <label for="businessName">Business Name:</label>
-                <input type="text" id="businessName" class="input" placeholder="Enter business name">
-                
-                <label for="startDate">Interruption Start Date:</label>
-                <input type="date" id="startDate" class="input">
-                
-                <label for="endDate">Interruption End Date:</label>
-                <input type="date" id="endDate" class="input">
-                
-                <label for="revenues">Monthly Revenues (comma separated):</label>
-                <input type="text" id="revenues" class="input" placeholder="e.g., 50000, 45000, 55000">
-                
-                <label for="cogs">COGS %:</label>
-                <input type="number" id="cogs" class="input" placeholder="Cost of goods sold percentage" step="0.01">
-                
-                <label for="fixed">Fixed Costs %:</label>
-                <input type="number" id="fixed" class="input" placeholder="Fixed costs percentage" step="0.01">
-                
-                <label for="variable">Variable Costs %:</label>
-                <input type="number" id="variable" class="input" placeholder="Variable costs percentage" step="0.01">
-                
-                <label for="extra">Extra Expenses:</label>
-                <textarea id="extra" class="input" rows="3" placeholder="Describe any extra expenses incurred..."></textarea>
-                
-                <button class="button primary" onclick="runAnalysis('bi')">Calculate BI Loss</button>
-            </div>
-            <div id="result-bi" class="results"></div>
+            <!-- 4️⃣ Business Interruption Calculator -->
+            <div class="tool-card">
+                <div class="tool-title">💼 Business Interruption Calculator</div>
+                <div class="tool-description">
+                    Calculate lost revenue, extra expenses, and business interruption losses with forensic accounting.
                 </div>
-
-        <!-- 5️⃣ Settlement Analysis & Negotiation -->
-        <div class="card">
-            <h3>🤝 Settlement Analysis & Negotiation</h3>
-            <div class="inputs">
-                <label for="offer">Insurance Offer Amount:</label>
-                <input type="number" id="offer" class="input" placeholder="Enter offer amount" step="0.01">
-                
-                <label for="valuation">Your Valuation:</label>
-                <input type="number" id="valuation" class="input" placeholder="Enter your valuation" step="0.01">
-                
-                <label for="disputed">Disputed Categories:</label>
-                <textarea id="disputed" class="input" rows="3" placeholder="List the categories being disputed..."></textarea>
-                
-                <label for="jurisdiction2">Jurisdiction:</label>
-                <input type="text" id="jurisdiction2" class="input" placeholder="State/Province">
-                
-                <label for="days">Days Since Claim Filed:</label>
-                <input type="number" id="days" class="input" placeholder="Number of days">
-                
-                <button class="button primary" onclick="runAnalysis('settlement')">Run Settlement Analysis</button>
+                <textarea class="tool-preview" placeholder="Enter business details for preview (optional)..."></textarea>
+                <div class="tool-actions">
+                    <a href="/app/claim-analysis/business.html" class="button primary">Open Tool</a>
+                    <a href="#" class="button secondary" onclick="downloadForm('business')">Download Form</a>
+                </div>
             </div>
-            <div id="result-settlement" class="results"></div>
+
+            <!-- 5️⃣ Settlement Analysis & Negotiation -->
+            <div class="tool-card">
+                <div class="tool-title">🤝 Settlement Analysis & Negotiation</div>
+                <div class="tool-description">
+                    Analyze settlement offers, calculate fair value, and develop negotiation strategies.
+                </div>
+                <textarea class="tool-preview" placeholder="Enter settlement details for preview (optional)..."></textarea>
+                <div class="tool-actions">
+                    <a href="/app/claim-analysis/settlement.html" class="button primary">Open Tool</a>
+                    <a href="#" class="button secondary" onclick="downloadForm('settlement')">Download Form</a>
+                </div>
+            </div>
+
+            <!-- 6️⃣ Expert Opinion Request Generator -->
+            <div class="tool-card">
+                <div class="tool-title">🧠 Expert Opinion Request Generator</div>
+                <div class="tool-description">
+                    Generate professional requests for expert opinions, witness coordination, and specialized analysis.
+                </div>
+                <textarea class="tool-preview" placeholder="Describe expert needs for preview (optional)..."></textarea>
+                <div class="tool-actions">
+                    <a href="/app/claim-analysis/expert.html" class="button primary">Open Tool</a>
+                    <a href="#" class="button secondary" onclick="downloadForm('expert')">Download Form</a>
+                </div>
+            </div>
         </div>
     </main>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>© 2025 ClaimNavigatorAI • Advanced Claim Analysis Tools</p>
+            <p>© 2025 ClaimNavigatorAI • Professional Claim Analysis Tools</p>
         </div>
     </footer>
 
     <script>
-        // Damage table management
-        function addDamageRow() {
-            const tbody = document.getElementById('damage-items');
-            const newRow = tbody.insertRow();
-            newRow.innerHTML = `
-                <td><input type="text" class="input" placeholder="Item description"></td>
-                <td><input type="number" class="input" placeholder="Qty" step="0.01" onchange="calculateRowTotal(this)"></td>
-                <td><input type="number" class="input" placeholder="Cost" step="0.01" onchange="calculateRowTotal(this)"></td>
-                <td><span class="total">$0.00</span></td>
-                <td><button type="button" class="remove-row-btn" onclick="removeDamageRow(this)">×</button></td>
-            `;
-        }
-
-        function removeDamageRow(button) {
-            button.closest('tr').remove();
-        }
-
-        function calculateRowTotal(input) {
-            const row = input.closest('tr');
-            const qty = parseFloat(row.querySelector('input[type="number"]:nth-of-type(1)').value) || 0;
-            const cost = parseFloat(row.querySelector('input[type="number"]:nth-of-type(2)').value) || 0;
-            const total = qty * cost;
-            row.querySelector('.total').textContent = `$${total.toFixed(2)}`;
-        }
-
-        // Main analysis function
-        async function runAnalysis(module) {
-            const button = document.querySelector(`button[onclick="runAnalysis('${module}')"]`);
-            const resultDiv = document.getElementById(`result-${module}`);
+        function downloadForm(type) {
+            const forms = {
+                policy: 'Policy Review Checklist.pdf',
+                damage: 'Damage Assessment Form.pdf',
+                estimates: 'Estimate Comparison Template.pdf',
+                business: 'Business Interruption Worksheet.pdf',
+                settlement: 'Settlement Negotiation Guide.pdf',
+                expert: 'Expert Opinion Request Template.pdf'
+            };
             
-            resultDiv.style.display = "block";
-            resultDiv.innerHTML = "<p><em>Analyzing... please wait.</em></p>";
-
-            let inputs = {};
-            
-            // Collect inputs per module
-            switch (module) {
-                case "policy":
-                    inputs.policyText = document.getElementById("policyText").value;
-                    inputs.policyType = document.getElementById("policyType").value;
-                    inputs.jurisdiction = document.getElementById("jurisdiction").value;
-                    inputs.deductible = document.getElementById("deductible").value;
-                    break;
-                    
-                case "damage":
-                    inputs.damageDesc = document.getElementById("damageDesc").value;
-                    inputs.damageTypes = [];
-                    document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
-                        inputs.damageTypes.push(cb.value);
-                    });
-                    inputs.damageItems = [];
-                    document.querySelectorAll('#damage-items tr').forEach(row => {
-                        const item = row.querySelector('input[type="text"]').value;
-                        const qty = row.querySelector('input[type="number"]:nth-of-type(1)').value;
-                        const cost = row.querySelector('input[type="number"]:nth-of-type(2)').value;
-                        if (item && qty && cost) {
-                            inputs.damageItems.push({ item, qty: parseFloat(qty), cost: parseFloat(cost) });
-                        }
-                    });
-                    break;
-                    
-                case "estimates":
-                    inputs.laborRate = document.getElementById("laborRate").value;
-                    inputs.taxRate = document.getElementById("taxRate").value;
-                    inputs.includeOverhead = document.getElementById("includeOverhead").checked;
-                    break;
-                    
-                case "bi":
-                    inputs.businessName = document.getElementById("businessName").value;
-                    inputs.startDate = document.getElementById("startDate").value;
-                    inputs.endDate = document.getElementById("endDate").value;
-                    inputs.revenues = document.getElementById("revenues").value;
-                    inputs.cogs = document.getElementById("cogs").value;
-                    inputs.fixed = document.getElementById("fixed").value;
-                    inputs.variable = document.getElementById("variable").value;
-                    inputs.extra = document.getElementById("extra").value;
-                    break;
-                    
-                case "settlement":
-                    inputs.offer = document.getElementById("offer").value;
-                    inputs.valuation = document.getElementById("valuation").value;
-                    inputs.disputed = document.getElementById("disputed").value;
-                    inputs.jurisdiction = document.getElementById("jurisdiction2").value;
-                    inputs.days = document.getElementById("days").value;
-                    break;
-            }
-            
-            try {
-                const res = await fetch("/.netlify/functions/claim-analysis", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ module, inputs })
-                });
-                
-                const data = await res.json();
-                
-                if (data.ok && data.html) {
-                    resultDiv.innerHTML = data.html;
-                } else {
-                    resultDiv.innerHTML = `<p class="error">Error: ${data.error || 'No response'}</p>`;
-                }
-            } catch (err) {
-                resultDiv.innerHTML = `<p class="error">Network error. Please try again.</p>`;
-            }
+            alert(`Downloading ${forms[type]}... (This would download the actual file in production)`);
         }
     </script>
 </body>

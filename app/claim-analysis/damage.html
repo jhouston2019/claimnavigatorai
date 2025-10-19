@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Damage Assessment Calculator - ClaimNavigatorAI</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <style>
+        .results {
+            display: none;
+            background: #f5f7fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #e1e5e9;
+        }
+        .error {
+            color: #dc2626;
+            background: #fef2f2;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #fecaca;
+        }
+        .input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        textarea.input {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .damage-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        .damage-table th,
+        .damage-table td {
+            border: 1px solid #d1d5db;
+            padding: 8px;
+            text-align: left;
+        }
+        .damage-table th {
+            background: #f9fafb;
+            font-weight: 600;
+        }
+        .add-row-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .add-row-btn:hover {
+            background: #4b5563;
+        }
+        .remove-row-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .remove-row-btn:hover {
+            background: #b91c1c;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="bar container">
+            <div class="brand">
+                <div class="logo"></div>
+                <div>ClaimNavigatorAI</div>
+            </div>
+            <nav class="nav">
+                <a href="/app/claim-analysis.html">← Back to Analysis Tools</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="card">
+            <h2>🏚️ Damage Assessment Calculator</h2>
+            <p>Calculate repair costs, replacement values, and document damage with professional assessment tools.</p>
+            
+            <label>Damage Description:
+                <textarea id="damageDesc" class="input" placeholder="Describe the damage in detail..."></textarea>
+            </label>
+
+            <label>Damage Types:</label>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="damage-fire" value="fire">
+                    <label for="damage-fire">Fire</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="damage-water" value="water">
+                    <label for="damage-water">Water</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="damage-wind" value="wind">
+                    <label for="damage-wind">Wind</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="damage-theft" value="theft">
+                    <label for="damage-theft">Theft</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="damage-vandalism" value="vandalism">
+                    <label for="damage-vandalism">Vandalism</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="damage-other" value="other">
+                    <label for="damage-other">Other</label>
+                </div>
+            </div>
+
+            <label>Damage Items:</label>
+            <table class="damage-table">
+                <thead>
+                    <tr>
+                        <th>Item Description</th>
+                        <th>Quantity</th>
+                        <th>Unit Cost</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="damage-items">
+                    <tr>
+                        <td><input type="text" class="input" placeholder="Item description"></td>
+                        <td><input type="number" class="input" placeholder="Qty" step="0.01" onchange="calculateRowTotal(this)"></td>
+                        <td><input type="number" class="input" placeholder="Cost" step="0.01" onchange="calculateRowTotal(this)"></td>
+                        <td><span class="total">$0.00</span></td>
+                        <td><button type="button" class="remove-row-btn" onclick="removeDamageRow(this)">×</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="add-row-btn" onclick="addDamageRow()">+ Add Item</button>
+
+            <button class="button primary" onclick="runAnalysis('damage')">Run Analysis</button>
+            <div id="result-damage" class="results"></div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 ClaimNavigatorAI • Damage Assessment Tool</p>
+        </div>
+    </footer>
+
+    <script>
+        // Damage table management
+        function addDamageRow() {
+            const tbody = document.getElementById('damage-items');
+            const newRow = tbody.insertRow();
+            newRow.innerHTML = `
+                <td><input type="text" class="input" placeholder="Item description"></td>
+                <td><input type="number" class="input" placeholder="Qty" step="0.01" onchange="calculateRowTotal(this)"></td>
+                <td><input type="number" class="input" placeholder="Cost" step="0.01" onchange="calculateRowTotal(this)"></td>
+                <td><span class="total">$0.00</span></td>
+                <td><button type="button" class="remove-row-btn" onclick="removeDamageRow(this)">×</button></td>
+            `;
+        }
+
+        function removeDamageRow(button) {
+            button.closest('tr').remove();
+        }
+
+        function calculateRowTotal(input) {
+            const row = input.closest('tr');
+            const qty = parseFloat(row.querySelector('input[type="number"]:nth-of-type(1)').value) || 0;
+            const cost = parseFloat(row.querySelector('input[type="number"]:nth-of-type(2)').value) || 0;
+            const total = qty * cost;
+            row.querySelector('.total').textContent = `$${total.toFixed(2)}`;
+        }
+
+        async function runAnalysis(module) {
+            const result = document.getElementById('result-' + module);
+            result.style.display = 'block';
+            result.innerHTML = '<em>Analyzing …</em>';
+            
+            const inputs = {};
+            document.querySelectorAll('input,textarea,select').forEach(el => {
+                inputs[el.id] = el.value;
+            });
+            
+            try {
+                const r = await fetch('/.netlify/functions/claim-analysis', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ module, inputs })
+                });
+                const data = await r.json();
+                result.innerHTML = data.ok ? data.html : `<p class="error">${data.error || 'Error'}</p>`;
+            } catch (e) {
+                result.innerHTML = '<p class="error">Network error.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
