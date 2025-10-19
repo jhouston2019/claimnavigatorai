@@ -142,15 +142,15 @@
   },
   {
     "id": "first-notice-loss",
-    "title": "First Notice of Loss (FNOL)",
+    "title": "First Notice of Loss (FNOL) - Standard Industry Form",
     "category": "Core Claim Documents",
-    "description": "Initial claim notification form to report new insurance claims.",
+    "description": "Industry-standard first notice of loss form with all required elements for immediate claim reporting and processing.",
     "outputFormat": "pdf",
     "templateType": "form",
     "aiAssist": true,
     "fields": [
       {
-        "label": "Policyholder Name",
+        "label": "Policyholder Full Legal Name",
         "type": "text",
         "required": true
       },
@@ -170,38 +170,116 @@
         "required": true
       },
       {
-        "label": "Property Address",
+        "label": "Property Address (Full Legal Description)",
         "type": "textarea",
         "required": true
       },
       {
-        "label": "Loss Description",
+        "label": "Cause of Loss",
+        "type": "select",
+        "options": ["Fire", "Lightning", "Windstorm", "Hail", "Explosion", "Riot", "Aircraft", "Vehicles", "Smoke", "Vandalism", "Theft", "Falling Objects", "Weight of Ice/Snow", "Accidental Discharge", "Water Damage", "Flood", "Earthquake", "Other"],
+        "required": true
+      },
+      {
+        "label": "Detailed Loss Description",
         "type": "textarea",
         "required": true
       },
       {
-        "label": "Contact Phone",
+        "label": "Estimated Loss Amount",
+        "type": "number",
+        "required": true
+      },
+      {
+        "label": "Were Emergency Services Called?",
+        "type": "select",
+        "options": ["Yes", "No"],
+        "required": true
+      },
+      {
+        "label": "Police/Fire Report Number",
+        "type": "text"
+      },
+      {
+        "label": "Emergency Services Contacted",
+        "type": "select",
+        "options": ["Police", "Fire Department", "Ambulance", "Other", "None"],
+        "required": true
+      },
+      {
+        "label": "Witnesses Present",
+        "type": "select",
+        "options": ["Yes", "No"],
+        "required": true
+      },
+      {
+        "label": "Witness Names and Contact Information",
+        "type": "textarea"
+      },
+      {
+        "label": "Property Secured",
+        "type": "select",
+        "options": ["Yes", "No", "Partially"],
+        "required": true
+      },
+      {
+        "label": "Immediate Actions Taken",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "Contact Phone Number",
         "type": "tel",
         "required": true
       },
       {
-        "label": "Contact Email",
+        "label": "Contact Email Address",
         "type": "email",
+        "required": true
+      },
+      {
+        "label": "Alternate Contact Phone",
+        "type": "tel"
+      },
+      {
+        "label": "Best Time to Contact",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Preferred Contact Method",
+        "type": "select",
+        "options": ["Phone", "Email", "Text Message", "Mail"],
+        "required": true
+      },
+      {
+        "label": "Report Date",
+        "type": "date",
+        "required": true
+      },
+      {
+        "label": "Report Time",
+        "type": "time",
+        "required": true
+      },
+      {
+        "label": "Policyholder Signature",
+        "type": "text",
         "required": true
       }
     ]
   },
   {
     "id": "damage-assessment",
-    "title": "Property Damage Assessment",
+    "title": "Property Damage Assessment - Industry Standard",
     "category": "Core Claim Documents",
-    "description": "Detailed damage evaluation form for documenting property losses.",
+    "description": "Comprehensive property damage assessment form meeting industry standards for insurance claim evaluation and documentation.",
     "outputFormat": "pdf",
     "templateType": "form",
     "aiAssist": true,
     "fields": [
       {
-        "label": "Property Address",
+        "label": "Property Address (Full Legal Description)",
         "type": "textarea",
         "required": true
       },
@@ -211,21 +289,34 @@
         "required": true
       },
       {
-        "label": "Assessor Name",
+        "label": "Assessment Time",
+        "type": "time",
+        "required": true
+      },
+      {
+        "label": "Assessor Name and Title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Assessor License/Certification Number",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Assessor Company/Agency",
         "type": "text",
         "required": true
       },
       {
         "label": "Type of Damage",
         "type": "select",
-        "options": [
-          "Fire",
-          "Water",
-          "Wind",
-          "Theft",
-          "Vandalism",
-          "Other"
-        ],
+        "options": ["Fire", "Lightning", "Windstorm", "Hail", "Explosion", "Riot", "Aircraft", "Vehicles", "Smoke", "Vandalism", "Theft", "Falling Objects", "Weight of Ice/Snow", "Accidental Discharge", "Water Damage", "Flood", "Earthquake", "Other"],
+        "required": true
+      },
+      {
+        "label": "Cause of Damage",
+        "type": "textarea",
         "required": true
       },
       {
@@ -234,7 +325,19 @@
         "required": true
       },
       {
-        "label": "Repair Estimate",
+        "label": "Structural Damage Assessment",
+        "type": "select",
+        "options": ["None", "Minor", "Moderate", "Major", "Total Loss"],
+        "required": true
+      },
+      {
+        "label": "Contents Damage Assessment",
+        "type": "select",
+        "options": ["None", "Minor", "Moderate", "Major", "Total Loss"],
+        "required": true
+      },
+      {
+        "label": "Repair Estimate (Labor and Materials)",
         "type": "number",
         "required": true
       },
@@ -244,20 +347,105 @@
         "required": true
       },
       {
-        "label": "Photos Attached",
-        "type": "checkbox"
+        "label": "Actual Cash Value (ACV)",
+        "type": "number",
+        "required": true
+      },
+      {
+        "label": "Depreciation Amount",
+        "type": "number",
+        "required": true
+      },
+      {
+        "label": "Salvage Value",
+        "type": "number"
+      },
+      {
+        "label": "Photos Taken",
+        "type": "select",
+        "options": ["Yes", "No"],
+        "required": true
+      },
+      {
+        "label": "Number of Photos",
+        "type": "number"
+      },
+      {
+        "label": "Video Documentation",
+        "type": "select",
+        "options": ["Yes", "No"],
+        "required": true
+      },
+      {
+        "label": "Additional Documentation",
+        "type": "textarea"
+      },
+      {
+        "label": "Safety Hazards Identified",
+        "type": "select",
+        "options": ["Yes", "No"],
+        "required": true
+      },
+      {
+        "label": "Safety Hazards Description",
+        "type": "textarea"
+      },
+      {
+        "label": "Immediate Repairs Needed",
+        "type": "select",
+        "options": ["Yes", "No"],
+        "required": true
+      },
+      {
+        "label": "Immediate Repairs Description",
+        "type": "textarea"
+      },
+      {
+        "label": "Property Secured",
+        "type": "select",
+        "options": ["Yes", "No", "Partially"],
+        "required": true
+      },
+      {
+        "label": "Additional Recommendations",
+        "type": "textarea"
+      },
+      {
+        "label": "Assessor Signature",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Assessment Completion Date",
+        "type": "date",
+        "required": true
       }
     ]
   },
   {
     "id": "claim-timeline",
-    "title": "Claim Timeline Documentation",
+    "title": "Claim Timeline Documentation - Industry Standard",
     "category": "Core Claim Documents",
-    "description": "Chronological documentation of all claim-related events and communications.",
+    "description": "Comprehensive chronological documentation of all claim-related events, communications, and deadlines meeting industry standards.",
     "outputFormat": "pdf",
     "templateType": "form",
     "aiAssist": true,
     "fields": [
+      {
+        "label": "Policyholder Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Policy Number",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Claim Number",
+        "type": "text",
+        "required": true
+      },
       {
         "label": "Timeline Start Date",
         "type": "date",
@@ -269,54 +457,188 @@
         "required": true
       },
       {
-        "label": "Key Events",
-        "type": "textarea",
+        "label": "Date of Loss",
+        "type": "date",
         "required": true
+      },
+      {
+        "label": "First Notice of Loss Date",
+        "type": "date",
+        "required": true
+      },
+      {
+        "label": "Key Events Timeline",
+        "type": "table",
+        "columns": ["Date", "Time", "Event Description", "Person/Entity", "Contact Information", "Follow-up Required"]
       },
       {
         "label": "Communications Log",
+        "type": "table",
+        "columns": ["Date", "Time", "Communication Type", "With Whom", "Subject", "Outcome", "Follow-up Required"]
+      },
+      {
+        "label": "Important Deadlines",
+        "type": "table",
+        "columns": ["Deadline Date", "Description", "Responsible Party", "Status", "Completion Date", "Notes"]
+      },
+      {
+        "label": "Documentation Submitted",
+        "type": "table",
+        "columns": ["Date Submitted", "Document Type", "Recipient", "Method", "Confirmation", "Status"]
+      },
+      {
+        "label": "Payments Received",
+        "type": "table",
+        "columns": ["Date", "Amount", "Payment Type", "Check Number", "Deposit Date", "Notes"]
+      },
+      {
+        "label": "Current Claim Status",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Next Steps Required",
         "type": "textarea",
         "required": true
       },
       {
-        "label": "Important Deadlines",
-        "type": "textarea",
+        "label": "Timeline Prepared By",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Timeline Preparation Date",
+        "type": "date",
         "required": true
       }
     ]
   },
   {
     "id": "witness-statement",
-    "title": "Witness Statement Form",
+    "title": "Witness Statement Form - Industry Standard",
     "category": "Core Claim Documents",
-    "description": "Formal witness statement documentation for insurance claims.",
+    "description": "Formal witness statement documentation meeting industry standards for insurance claim evidence and legal validity.",
     "outputFormat": "pdf",
     "templateType": "form",
     "aiAssist": true,
     "fields": [
       {
-        "label": "Witness Name",
+        "label": "Witness Full Legal Name",
         "type": "text",
         "required": true
       },
       {
-        "label": "Witness Contact",
-        "type": "tel",
+        "label": "Witness Date of Birth",
+        "type": "date",
         "required": true
       },
       {
-        "label": "Relationship to Claim",
-        "type": "text",
-        "required": true
-      },
-      {
-        "label": "Statement Details",
+        "label": "Witness Address",
         "type": "textarea",
         "required": true
       },
       {
-        "label": "Date of Statement",
+        "label": "Witness Phone Number",
+        "type": "tel",
+        "required": true
+      },
+      {
+        "label": "Witness Email Address",
+        "type": "email"
+      },
+      {
+        "label": "Witness Occupation",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Witness Employer",
+        "type": "text"
+      },
+      {
+        "label": "Relationship to Policyholder",
+        "type": "select",
+        "options": ["Family Member", "Friend", "Neighbor", "Employee", "Contractor", "Passerby", "Other"],
+        "required": true
+      },
+      {
+        "label": "Relationship to Property",
+        "type": "select",
+        "options": ["Owner", "Resident", "Visitor", "Neighbor", "Service Provider", "Other"],
+        "required": true
+      },
+      {
+        "label": "Date of Loss",
         "type": "date",
+        "required": true
+      },
+      {
+        "label": "Time of Loss",
+        "type": "time",
+        "required": true
+      },
+      {
+        "label": "Witness Location During Loss",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "What Did You Observe?",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "Detailed Statement",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "Were You Present During the Entire Event?",
+        "type": "select",
+        "options": ["Yes", "No"],
+        "required": true
+      },
+      {
+        "label": "If No, What Portion Did You Witness?",
+        "type": "textarea"
+      },
+      {
+        "label": "Any Additional Information",
+        "type": "textarea"
+      },
+      {
+        "label": "Statement Date",
+        "type": "date",
+        "required": true
+      },
+      {
+        "label": "Statement Time",
+        "type": "time",
+        "required": true
+      },
+      {
+        "label": "Statement Location",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Witness Signature",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Notary Public Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Notary Commission Expires",
+        "type": "date",
+        "required": true
+      },
+      {
+        "label": "Notary Seal/Stamp",
+        "type": "checkbox",
         "required": true
       }
     ]
