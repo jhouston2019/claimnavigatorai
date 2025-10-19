@@ -122,19 +122,21 @@
     <script>
         function downloadForm(type) {
             const forms = {
-                policy: '/public/documents/claim-analysis/policy-review-coverage-analysis.pdf',
-                damage: '/public/documents/claim-analysis/damage-assessment-calculator.pdf',
-                estimates: '/public/documents/claim-analysis/estimate-review-comparison.pdf',
-                business: '/public/documents/claim-analysis/business-interruption-calculator.pdf',
-                settlement: '/public/documents/claim-analysis/settlement-analysis-negotiation.pdf',
-                expert: '/public/documents/claim-analysis/expert-opinion-request-generator.pdf'
+                policy: 'public/documents/claim-analysis/policy-review-coverage-analysis.pdf',
+                damage: 'public/documents/claim-analysis/damage-assessment-calculator.pdf',
+                estimates: 'public/documents/claim-analysis/estimate-review-comparison.pdf',
+                business: 'public/documents/claim-analysis/business-interruption-calculator.pdf',
+                settlement: 'public/documents/claim-analysis/settlement-analysis-negotiation.pdf',
+                expert: 'public/documents/claim-analysis/expert-opinion-request-generator.pdf'
             };
             
             if (forms[type]) {
+                console.log('Downloading:', forms[type]); // Debug log
                 // Create a temporary link element to trigger download
                 const link = document.createElement('a');
                 link.href = forms[type];
                 link.download = forms[type].split('/').pop(); // Get filename from path
+                link.target = '_blank'; // Open in new tab as fallback
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
