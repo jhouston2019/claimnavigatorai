@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Analysis Tools - ClaimNavigatorAI</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <style>
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+        .tool-card {
+            background: #fff;
+            border: 1px solid #e1e5e9;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .tool-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-color: #3b82f6;
+        }
+        .tool-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        .tool-description {
+            color: #6b7280;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        .tool-preview {
+            width: 100%;
+            min-height: 80px;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            resize: vertical;
+        }
+        .tool-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .button.primary {
+            background: #1e40af;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .button.primary:hover {
+            background: #1e3a8a;
+        }
+        .button.secondary {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            border: 1px solid #d1d5db;
+            transition: all 0.2s;
+        }
+        .button.secondary:hover {
+            background: #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="bar container">
+            <div class="brand">
+                <div class="logo"></div>
+                <div>ClaimNavigatorAI</div>
+            </div>
+            <nav class="nav">
+                <a href="/app/response-center.html">← Response Center</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="card">
+            <h1>Claim Analysis Tools</h1>
+            <p>Professional tools to analyze your claim, review coverage, and assess damages.</p>
+        </div>
+
+        <!-- Tools Grid -->
+        <div class="tools-grid">
+            <!-- 1️⃣ Policy Review & Coverage Analysis -->
+            <div class="tool-card">
+                <div class="tool-title">⚖️ Policy Review & Coverage Analysis</div>
+                <div class="tool-description">
+                    Upload or paste policy text to generate a detailed coverage summary, exclusion list, and recommendations.
+                </div>
+                <textarea class="tool-preview" placeholder="Paste policy text for preview (optional)..."></textarea>
+                <div class="tool-actions">
+                    <a href="/app/claim-analysis-tools/policy.html" class="button primary">Open & Analyze</a>
+                    <a href="#" class="button secondary" onclick="downloadChecklist('policy')">Download Checklist</a>
+                </div>
+            </div>
+
+            <!-- 2️⃣ Damage Assessment Calculator -->
+            <div class="tool-card">
+                <div class="tool-title">🏚️ Damage Assessment Calculator</div>
+                <div class="tool-description">
+                    Calculate repair costs, replacement values, and document damage with professional assessment tools.
+                </div>
+                <textarea class="tool-preview" placeholder="Describe damage for preview (optional)..."></textarea>
+                <div class="tool-actions">
+                    <a href="/app/claim-analysis-tools/damage.html" class="button primary">Open & Analyze</a>
+                    <a href="#" class="button secondary" onclick="downloadChecklist('damage')">Download Form</a>
+                </div>
+            </div>
+
+            <!-- 3️⃣ Estimate Review & Comparison -->
+            <div class="tool-card">
+                <div class="tool-title">📊 Estimate Review & Comparison</div>
+                <div class="tool-description">
+                    Compare contractor estimates, validate pricing, and identify discrepancies in repair bids.
+                </div>
+                <textarea class="tool-preview" placeholder="Paste estimate details for preview (optional)..."></textarea>
+                <div class="tool-actions">
+                    <a href="/app/claim-analysis-tools/estimates.html" class="button primary">Open & Analyze</a>
+                    <a href="#" class="button secondary" onclick="downloadChecklist('estimates')">Download Template</a>
+                </div>
+            </div>
+
+            <!-- 4️⃣ Business Interruption Calculator -->
+            <div class="tool-card">
+                <div class="tool-title">💼 Business Interruption Calculator</div>
+                <div class="tool-description">
+                    Calculate lost revenue, extra expenses, and business interruption losses with forensic accounting.
+                </div>
+                <textarea class="tool-preview" placeholder="Enter business details for preview (optional)..."></textarea>
+                <div class="tool-actions">
+                    <a href="/app/claim-analysis-tools/business.html" class="button primary">Open & Analyze</a>
+                    <a href="#" class="button secondary" onclick="downloadChecklist('business')">Download Worksheet</a>
+                </div>
+            </div>
+
+            <!-- 5️⃣ Settlement Analysis & Negotiation -->
+            <div class="tool-card">
+                <div class="tool-title">🤝 Settlement Analysis & Negotiation</div>
+                <div class="tool-description">
+                    Analyze settlement offers, calculate fair value, and develop negotiation strategies.
+                </div>
+                <textarea class="tool-preview" placeholder="Enter settlement details for preview (optional)..."></textarea>
+                <div class="tool-actions">
+                    <a href="/app/claim-analysis-tools/settlement.html" class="button primary">Open & Analyze</a>
+                    <a href="#" class="button secondary" onclick="downloadChecklist('settlement')">Download Guide</a>
+                </div>
+            </div>
+
+            <!-- 6️⃣ Expert Opinion Request Generator -->
+            <div class="tool-card">
+                <div class="tool-title">🧠 Expert Opinion Request Generator</div>
+                <div class="tool-description">
+                    Generate professional requests for expert opinions, witness coordination, and specialized analysis.
+                </div>
+                <textarea class="tool-preview" placeholder="Describe expert needs for preview (optional)..."></textarea>
+                <div class="tool-actions">
+                    <a href="/app/claim-analysis-tools/expert.html" class="button primary">Open & Analyze</a>
+                    <a href="#" class="button secondary" onclick="downloadChecklist('expert')">Download Template</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 ClaimNavigatorAI • Professional Claim Analysis Tools</p>
+        </div>
+    </footer>
+
+    <script>
+        function downloadChecklist(type) {
+            const checklists = {
+                policy: 'Policy Review Checklist.pdf',
+                damage: 'Damage Assessment Form.pdf',
+                estimates: 'Estimate Comparison Template.pdf',
+                business: 'Business Interruption Worksheet.pdf',
+                settlement: 'Settlement Negotiation Guide.pdf',
+                expert: 'Expert Opinion Request Template.pdf'
+            };
+            
+            // Create a simple download link
+            const link = document.createElement('a');
+            link.href = '#'; // In a real implementation, this would link to actual PDF files
+            link.download = checklists[type];
+            link.textContent = `Downloading ${checklists[type]}...`;
+            
+            // Show a temporary message
+            alert(`Downloading ${checklists[type]}... (This would download the actual file in production)`);
+        }
+    </script>
+</body>
+</html>

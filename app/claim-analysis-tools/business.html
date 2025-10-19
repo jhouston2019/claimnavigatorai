@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Interruption Calculator - ClaimNavigatorAI</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <style>
+        .results {
+            display: none;
+            background: #f5f7fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #e1e5e9;
+        }
+        .error {
+            color: #dc2626;
+            background: #fef2f2;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #fecaca;
+        }
+        .input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        textarea.input {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="bar container">
+            <div class="brand">
+                <div class="logo"></div>
+                <div>ClaimNavigatorAI</div>
+            </div>
+            <nav class="nav">
+                <a href="/app/claim-analysis-tools/index.html">← Back to Analysis Tools</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="card">
+            <h2>💼 Business Interruption Calculator</h2>
+            <p>Calculate lost revenue, extra expenses, and business interruption losses with forensic accounting.</p>
+            
+            <label>Business Name:
+                <input id="businessName" class="input" placeholder="Enter business name">
+            </label>
+
+            <div class="form-row">
+                <label>Interruption Start Date:
+                    <input id="startDate" class="input" type="date">
+                </label>
+                <label>Interruption End Date:
+                    <input id="endDate" class="input" type="date">
+                </label>
+            </div>
+
+            <label>Monthly Revenues (comma separated):
+                <input id="revenues" class="input" placeholder="e.g., 50000, 45000, 55000, 60000">
+            </label>
+
+            <div class="form-row">
+                <label>COGS % (Cost of Goods Sold):
+                    <input id="cogs" class="input" placeholder="e.g., 30" type="number" step="0.01">
+                </label>
+                <label>Fixed Costs %:
+                    <input id="fixed" class="input" placeholder="e.g., 25" type="number" step="0.01">
+                </label>
+            </div>
+
+            <div class="form-row">
+                <label>Variable Costs %:
+                    <input id="variable" class="input" placeholder="e.g., 15" type="number" step="0.01">
+                </label>
+                <label>Days of Interruption:
+                    <input id="days" class="input" placeholder="Auto-calculated" readonly>
+                </label>
+            </div>
+
+            <label>Extra Expenses:
+                <textarea id="extra" class="input" placeholder="Describe any extra expenses incurred during the interruption..."></textarea>
+            </label>
+
+            <label>Business Type:
+                <select id="businessType" class="input">
+                    <option value="">Select Business Type</option>
+                    <option value="retail">Retail</option>
+                    <option value="restaurant">Restaurant</option>
+                    <option value="manufacturing">Manufacturing</option>
+                    <option value="service">Service</option>
+                    <option value="professional">Professional Services</option>
+                    <option value="other">Other</option>
+                </select>
+            </label>
+
+            <button class="button primary" onclick="runAnalysis('business')">Calculate BI Loss</button>
+            <div id="result-business" class="results"></div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 ClaimNavigatorAI • Business Interruption Tool</p>
+        </div>
+    </footer>
+
+    <script>
+        // Auto-calculate days when dates change
+        document.getElementById('startDate').addEventListener('change', calculateDays);
+        document.getElementById('endDate').addEventListener('change', calculateDays);
+
+        function calculateDays() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (startDate && endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const diffTime = Math.abs(end - start);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                document.getElementById('days').value = diffDays;
+            }
+        }
+
+        async function runAnalysis(module) {
+            const resultDiv = document.getElementById('result-' + module);
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p><em>Analyzing, please wait...</em></p>';
+
+            const inputs = {
+                businessName: document.getElementById('businessName').value,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+                revenues: document.getElementById('revenues').value,
+                cogs: document.getElementById('cogs').value,
+                fixed: document.getElementById('fixed').value,
+                variable: document.getElementById('variable').value,
+                extra: document.getElementById('extra').value,
+                businessType: document.getElementById('businessType').value,
+                days: document.getElementById('days').value
+            };
+
+            try {
+                const res = await fetch('/.netlify/functions/claim-analysis', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ module, inputs })
+                });
+                
+                const data = await res.json();
+                resultDiv.innerHTML = data.ok ? data.html : '<p class="error">Error: ' + (data.error || 'No response') + '</p>';
+            } catch (e) {
+                resultDiv.innerHTML = '<p class="error">Network error. Try again.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
