@@ -1815,20 +1815,66 @@
   },
   {
     "id": "rental-income-loss",
-    "title": "Rental Income Loss Documentation",
+    "title": "Rental Income Loss Documentation - Industry Standard",
     "category": "Financial Documents",
-    "description": "Documentation of lost rental income due to property damage.",
+    "description": "Comprehensive rental income loss documentation meeting industry standards for property damage claims and lost rental income calculation.",
     "outputFormat": "pdf",
     "templateType": "form",
     "aiAssist": true,
     "fields": [
       {
-        "label": "Property Address",
+        "label": "Policyholder Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Policy Number",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Claim Number",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Property Address (Full Legal Description)",
         "type": "textarea",
         "required": true
       },
       {
+        "label": "Property Type",
+        "type": "select",
+        "options": ["Single Family", "Multi-Family", "Commercial", "Industrial", "Mixed Use", "Other"],
+        "required": true
+      },
+      {
+        "label": "Date of Loss",
+        "type": "date",
+        "required": true
+      },
+      {
+        "label": "Rental Income Loss Period",
+        "type": "table",
+        "columns": ["Start Date", "End Date", "Days Lost", "Monthly Rent", "Daily Rent", "Total Loss", "Notes"]
+      },
+      {
+        "label": "Pre-Loss Rental History",
+        "type": "table",
+        "columns": ["Month", "Rent Received", "Vacancy Days", "Vacancy Rate %", "Net Income", "Notes"]
+      },
+      {
         "label": "Monthly Rental Income",
+        "type": "number",
+        "required": true
+      },
+      {
+        "label": "Annual Rental Income",
+        "type": "number",
+        "required": true
+      },
+      {
+        "label": "Average Occupancy Rate",
         "type": "number",
         "required": true
       },
@@ -1843,24 +1889,144 @@
         "required": true
       },
       {
+        "label": "Total Days Lost",
+        "type": "number",
+        "required": true
+      },
+      {
+        "label": "Daily Rental Rate",
+        "type": "number",
+        "required": true
+      },
+      {
         "label": "Total Income Loss",
         "type": "number",
+        "required": true
+      },
+      {
+        "label": "Tenant Information",
+        "type": "table",
+        "columns": ["Tenant Name", "Lease Start Date", "Lease End Date", "Monthly Rent", "Security Deposit", "Lease Status"]
+      },
+      {
+        "label": "Lease Agreements Available",
+        "type": "select",
+        "options": ["Yes", "No"],
+        "required": true
+      },
+      {
+        "label": "Rental Market Analysis",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "Comparable Properties",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "Property Condition at Loss",
+        "type": "select",
+        "options": ["Uninhabitable", "Partially Damaged", "Under Repair", "Other"],
+        "required": true
+      },
+      {
+        "label": "Repair Timeline",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "Expected Re-rental Date",
+        "type": "date"
+      },
+      {
+        "label": "Supporting Documentation",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "Documentation Prepared By",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Preparer Title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Documentation Date",
+        "type": "date",
         "required": true
       }
     ]
   },
   {
     "id": "medical-expenses",
-    "title": "Medical Expenses Documentation",
+    "title": "Medical Expenses Documentation - Industry Standard",
     "category": "Financial Documents",
-    "description": "Documentation of medical expenses related to insurance claims.",
+    "description": "Comprehensive medical expenses documentation meeting industry standards for insurance claim medical cost reimbursement and injury-related expenses.",
     "outputFormat": "pdf",
     "templateType": "form",
     "aiAssist": true,
     "fields": [
       {
+        "label": "Policyholder Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Policy Number",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Claim Number",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Date of Loss",
+        "type": "date",
+        "required": true
+      },
+      {
+        "label": "Patient Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Patient Date of Birth",
+        "type": "date",
+        "required": true
+      },
+      {
+        "label": "Patient Social Security Number",
+        "type": "text"
+      },
+      {
+        "label": "Medical Expenses Schedule",
+        "type": "table",
+        "columns": ["Date", "Provider", "Service", "Diagnosis Code", "Amount", "Insurance Paid", "Out of Pocket", "Receipt Number", "Notes"]
+      },
+      {
         "label": "Medical Provider",
         "type": "text",
+        "required": true
+      },
+      {
+        "label": "Provider License Number",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Provider Address",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "Provider Phone Number",
+        "type": "tel",
         "required": true
       },
       {
@@ -1874,8 +2040,87 @@
         "required": true
       },
       {
+        "label": "Diagnosis Code (ICD-10)",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Treatment Code (CPT)",
+        "type": "text"
+      },
+      {
         "label": "Medical Cost",
         "type": "number",
+        "required": true
+      },
+      {
+        "label": "Insurance Coverage",
+        "type": "select",
+        "options": ["Primary Insurance", "Secondary Insurance", "No Insurance", "Self-Pay"],
+        "required": true
+      },
+      {
+        "label": "Insurance Company",
+        "type": "text"
+      },
+      {
+        "label": "Insurance Policy Number",
+        "type": "text"
+      },
+      {
+        "label": "Amount Paid by Insurance",
+        "type": "number"
+      },
+      {
+        "label": "Out-of-Pocket Amount",
+        "type": "number",
+        "required": true
+      },
+      {
+        "label": "Total Medical Expenses",
+        "type": "number",
+        "required": true
+      },
+      {
+        "label": "Future Medical Treatment Required",
+        "type": "select",
+        "options": ["Yes", "No"],
+        "required": true
+      },
+      {
+        "label": "Future Treatment Estimate",
+        "type": "number"
+      },
+      {
+        "label": "Medical Records Requested",
+        "type": "select",
+        "options": ["Yes", "No"],
+        "required": true
+      },
+      {
+        "label": "HIPAA Authorization Signed",
+        "type": "select",
+        "options": ["Yes", "No"],
+        "required": true
+      },
+      {
+        "label": "Supporting Documentation",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "Documentation Prepared By",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Preparer Title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Documentation Date",
+        "type": "date",
         "required": true
       }
     ]
