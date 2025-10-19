@@ -2127,16 +2127,42 @@
   },
   {
     "id": "transportation-costs",
-    "title": "Transportation Costs Documentation",
+    "title": "Transportation Costs Documentation - Industry Standard",
     "category": "Financial Documents",
-    "description": "Documentation of transportation costs incurred due to claim-related circumstances.",
+    "description": "Comprehensive transportation costs documentation meeting industry standards for insurance claim expense reimbursement and travel-related costs.",
     "outputFormat": "pdf",
     "templateType": "form",
     "aiAssist": true,
     "fields": [
       {
-        "label": "Transportation Type",
+        "label": "Policyholder Name",
         "type": "text",
+        "required": true
+      },
+      {
+        "label": "Policy Number",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Claim Number",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Date of Loss",
+        "type": "date",
+        "required": true
+      },
+      {
+        "label": "Transportation Expenses Schedule",
+        "type": "table",
+        "columns": ["Date", "Transportation Type", "From Location", "To Location", "Distance (Miles)", "Purpose", "Cost", "Receipt Number", "Notes"]
+      },
+      {
+        "label": "Transportation Type",
+        "type": "select",
+        "options": ["Personal Vehicle", "Rental Car", "Taxi/Uber/Lyft", "Public Transportation", "Airline", "Train", "Bus", "Other"],
         "required": true
       },
       {
@@ -2146,28 +2172,147 @@
       },
       {
         "label": "Travel Purpose",
-        "type": "textarea",
+        "type": "select",
+        "options": ["Property Inspection", "Medical Treatment", "Temporary Housing", "Work Commute", "Claim Meetings", "Emergency Services", "Other"],
+        "required": true
+      },
+      {
+        "label": "From Location",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "To Location",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Distance Traveled (Miles)",
+        "type": "number",
         "required": true
       },
       {
         "label": "Transportation Cost",
         "type": "number",
         "required": true
+      },
+      {
+        "label": "Receipt Attached",
+        "type": "select",
+        "options": ["Yes", "No"],
+        "required": true
+      },
+      {
+        "label": "Receipt Number",
+        "type": "text"
+      },
+      {
+        "label": "Vehicle Information",
+        "type": "textarea"
+      },
+      {
+        "label": "Driver License Number",
+        "type": "text"
+      },
+      {
+        "label": "Insurance Information",
+        "type": "textarea"
+      },
+      {
+        "label": "Mileage Rate Used",
+        "type": "number"
+      },
+      {
+        "label": "Total Mileage Cost",
+        "type": "number"
+      },
+      {
+        "label": "Parking Costs",
+        "type": "number"
+      },
+      {
+        "label": "Toll Costs",
+        "type": "number"
+      },
+      {
+        "label": "Total Transportation Costs",
+        "type": "number",
+        "required": true
+      },
+      {
+        "label": "Justification for Expenses",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "Supporting Documentation",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "Documentation Prepared By",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Preparer Title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Documentation Date",
+        "type": "date",
+        "required": true
       }
     ]
   },
   {
     "id": "storage-costs",
-    "title": "Storage Costs Documentation",
+    "title": "Storage Costs Documentation - Industry Standard",
     "category": "Financial Documents",
-    "description": "Documentation of storage costs for damaged or displaced property.",
+    "description": "Comprehensive storage costs documentation meeting industry standards for insurance claim expense reimbursement and property storage costs.",
     "outputFormat": "pdf",
     "templateType": "form",
     "aiAssist": true,
     "fields": [
       {
+        "label": "Policyholder Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Policy Number",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Claim Number",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Date of Loss",
+        "type": "date",
+        "required": true
+      },
+      {
+        "label": "Storage Costs Schedule",
+        "type": "table",
+        "columns": ["Date", "Storage Facility", "Item Description", "Storage Type", "Monthly Cost", "Total Cost", "Receipt Number", "Notes"]
+      },
+      {
         "label": "Storage Facility",
         "type": "text",
+        "required": true
+      },
+      {
+        "label": "Storage Facility Address",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "Storage Facility Phone",
+        "type": "tel",
         "required": true
       },
       {
@@ -2181,8 +2326,86 @@
         "required": true
       },
       {
+        "label": "Total Storage Period (Days)",
+        "type": "number",
+        "required": true
+      },
+      {
+        "label": "Storage Type",
+        "type": "select",
+        "options": ["Climate Controlled", "Standard", "Outdoor", "Specialized", "Other"],
+        "required": true
+      },
+      {
         "label": "Monthly Storage Cost",
         "type": "number",
+        "required": true
+      },
+      {
+        "label": "Total Storage Cost",
+        "type": "number",
+        "required": true
+      },
+      {
+        "label": "Items Stored",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "Storage Justification",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "Alternative Storage Options",
+        "type": "textarea"
+      },
+      {
+        "label": "Storage Contract Available",
+        "type": "select",
+        "options": ["Yes", "No"],
+        "required": true
+      },
+      {
+        "label": "Storage Insurance Coverage",
+        "type": "select",
+        "options": ["Yes", "No"],
+        "required": true
+      },
+      {
+        "label": "Storage Security Measures",
+        "type": "textarea"
+      },
+      {
+        "label": "Access to Stored Items",
+        "type": "select",
+        "options": ["24/7", "Business Hours", "By Appointment", "Limited"],
+        "required": true
+      },
+      {
+        "label": "Receipts Attached",
+        "type": "select",
+        "options": ["Yes", "No"],
+        "required": true
+      },
+      {
+        "label": "Supporting Documentation",
+        "type": "textarea",
+        "required": true
+      },
+      {
+        "label": "Documentation Prepared By",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Preparer Title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Documentation Date",
+        "type": "date",
         "required": true
       }
     ]
