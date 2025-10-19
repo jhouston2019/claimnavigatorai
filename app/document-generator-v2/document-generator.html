@@ -34,8 +34,7 @@
         .category-business{background:#f9fbe7;color:#827717}
         .category-catastrophic{background:#ffebee;color:#d32f2f}
         .output-type{font-size:12px;color:var(--muted);margin-bottom:8px}
-        .doc-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:8px}
-        .doc-description{font-size:14px;color:var(--muted);line-height:1.5;margin-bottom:16px}
+        .doc-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:16px;text-align:center}
         .generate-btn{background:var(--primary);color:#fff;border:none;padding:10px 20px;border-radius:8px;font-weight:500;cursor:pointer;transition:all 0.2s ease}
         .generate-btn:hover{background:var(--primary-600);transform:translateY(-1px)}
         .loading{text-align:center;padding:40px;color:var(--muted)}
@@ -129,13 +128,15 @@
                 return;
             }
 
-            const html = filteredDocuments.map(doc => `
+            // Sort documents alphabetically by title
+            const sortedDocuments = [...filteredDocuments].sort((a, b) => a.title.localeCompare(b.title));
+
+            const html = sortedDocuments.map(doc => `
                 <div class="doc-card">
                     <div class="doc-card-content">
                         <div class="category-badge category-${doc.category.toLowerCase().replace(/\s+/g, '-')}">${doc.category}</div>
                         <div class="output-type">Output: ${doc.outputFormat.toUpperCase()}</div>
                         <div class="doc-title">${doc.title}</div>
-                        <div class="doc-description">${doc.description}</div>
                     </div>
                     <div class="doc-card-footer">
                         <button class="generate-btn" onclick="generateDocument('${doc.id}')">
