@@ -251,11 +251,11 @@
                                     </thead>
                                     <tbody id="${field.label.toLowerCase().replace(/\s+/g, '_')}_table">
                                         <tr>
-                                            ${field.columns.map(() => '<td><input type="text" class="form-input" style="border:none;padding:4px;"></td>').join('')}
+                                            ${field.columns.map(() => '<td><input type="text" class="form-input"></td>').join('')}
                                         </tr>
                                     </tbody>
                                 </table>
-                                <button type="button" onclick="addTableRow('${field.label.toLowerCase().replace(/\s+/g, '_')}_table', ${field.columns.length})" class="btn btn-secondary" style="margin-top:8px;padding:4px 8px;font-size:12px;">Add Row</button>
+                                <button type="button" onclick="addTableRow('${field.label.toLowerCase().replace(/\s+/g, '_')}_table', ${field.columns.length})" class="add-row-btn">Add Row</button>
                             </div>
                         </div>
                     `;
@@ -273,8 +273,6 @@
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.className = 'form-input';
-                input.style.border = 'none';
-                input.style.padding = '4px';
                 cell.appendChild(input);
                 row.appendChild(cell);
             }
