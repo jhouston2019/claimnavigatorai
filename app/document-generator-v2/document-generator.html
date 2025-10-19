@@ -19,8 +19,10 @@
         .search-bar{flex:1;padding:12px 16px;border:1px solid var(--border);border-radius:8px;font-size:16px}
         .filter-dropdown{width:100%;padding:12px 16px;border:1px solid var(--border);border-radius:8px;font-size:16px;background:#fff}
         .doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:24px;margin-top:24px}
-        .doc-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:24px;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+        .doc-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:24px;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.05);display:flex;flex-direction:column;height:100%}
         .doc-card:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,0,0,0.1);border-color:var(--accent)}
+        .doc-card-content{flex:1;display:flex;flex-direction:column}
+        .doc-card-footer{margin-top:auto;padding-top:16px}
         .category-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:12px}
         .category-core{background:#e0f2fe;color:#0277bd}
         .category-legal{background:#f3e5f5;color:#7b1fa2}
@@ -129,13 +131,17 @@
 
             const html = filteredDocuments.map(doc => `
                 <div class="doc-card">
-                    <div class="category-badge category-${doc.category}">${doc.categoryLabel}</div>
-                    <div class="output-type">Output: ${doc.outputType}</div>
-                    <div class="doc-title">${doc.title}</div>
-                    <div class="doc-description">${doc.description}</div>
-                    <button class="generate-btn" onclick="generateDocument('${doc.id}')">
-                        Generate →
-                    </button>
+                    <div class="doc-card-content">
+                        <div class="category-badge category-${doc.category}">${doc.categoryLabel}</div>
+                        <div class="output-type">Output: ${doc.outputType}</div>
+                        <div class="doc-title">${doc.title}</div>
+                        <div class="doc-description">${doc.description}</div>
+                    </div>
+                    <div class="doc-card-footer">
+                        <button class="generate-btn" onclick="generateDocument('${doc.id}')">
+                            Generate →
+                        </button>
+                    </div>
                 </div>
             `).join('');
 
@@ -162,7 +168,28 @@
 
         // Generate document
         function generateDocument(docId) {
-            window.location.href = `/app/document-generator-v2/forms/form-template.html?id=${docId}`;
+            // Find the document details
+            const doc = allDocuments.find(d => d.id === docId);
+            if (!doc) {
+                alert('Document not found');
+                return;
+            }
+            
+            // Show loading state
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = 'Generating...';
+            button.disabled = true;
+            
+            // Simulate document generation (replace with actual implementation)
+            setTimeout(() => {
+                // For now, show an alert with document details
+                alert(`Document: ${doc.title}\nCategory: ${doc.categoryLabel}\nDescription: ${doc.description}\n\nThis would normally open a form to generate the document.`);
+                
+                // Reset button
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 1000);
         }
 
         // Event listeners
