@@ -134,45 +134,66 @@
         }
     </script>
 
-<style id="final-text-override">
-  /* FINAL, LAST-IN-CASCADE TEXT OVERRIDE - CLAIM ANALYSIS PAGE ONLY */
-  body.claim-analysis-page,
-  body.claim-analysis-page :where(*, *::before, *::after) {
-    color: #ffffff !important;   /* Force all text and pseudo-elements to white */
-  }
+<style id="final-white-text-enforcement">
+/* 🔥 FINAL WHITE TEXT ENFORCEMENT — NO OVERRIDES POSSIBLE */
 
-  /* Override specific conflicting rules */
-  body.claim-analysis-page .card,
-  body.claim-analysis-page .card h1,
-  body.claim-analysis-page .card h2,
-  body.claim-analysis-page .card h3,
-  body.claim-analysis-page .card h4,
-  body.claim-analysis-page .card h5,
-  body.claim-analysis-page .card h6,
-  body.claim-analysis-page .card p,
-  body.claim-analysis-page .card pre,
-  body.claim-analysis-page .card span,
-  body.claim-analysis-page .card div {
-    color: #ffffff !important;
-  }
+/* Reset and enforce white for all elements and pseudo elements */
+html, body.claim-analysis-page, 
+body.claim-analysis-page :is(*, *::before, *::after) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
 
-  /* Override main.container rules */
-  body.claim-analysis-page main.container .card,
-  body.claim-analysis-page main.container .card h1,
-  body.claim-analysis-page main.container .card h2,
-  body.claim-analysis-page main.container .card h3,
-  body.claim-analysis-page main.container .card h4,
-  body.claim-analysis-page main.container .card h5,
-  body.claim-analysis-page main.container .card h6,
-  body.claim-analysis-page main.container .card p,
-  body.claim-analysis-page main.container .card pre {
-    color: #ffffff !important;
-  }
+/* Keep links readable but consistent */
+body.claim-analysis-page a,
+body.claim-analysis-page a * {
+  color: #dbeafe !important;
+}
 
-  /* Optional: keep links slightly blue for contrast */
-  body.claim-analysis-page a {
-    color: #dbeafe !important;
-  }
+body.claim-analysis-page a:hover,
+body.claim-analysis-page a:focus {
+  color: #93c5fd !important;
+}
+
+/* Handle Tailwind and inline class-based color utilities */
+body.claim-analysis-page [class*="text-"],
+body.claim-analysis-page [class*="text-gray"],
+body.claim-analysis-page [class*="text-black"],
+body.claim-analysis-page [class*="text-slate"],
+body.claim-analysis-page [class*="text-neutral"],
+body.claim-analysis-page [class*="text-zinc"],
+body.claim-analysis-page [class*="text-stone"],
+body.claim-analysis-page [class*="text-amber"],
+body.claim-analysis-page [class*="text-rose"] {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Form inputs, placeholders, and buttons */
+body.claim-analysis-page input,
+body.claim-analysis-page textarea,
+body.claim-analysis-page select,
+body.claim-analysis-page button {
+  color: #ffffff !important;
+  background-color: rgba(255,255,255,0.1) !important;
+  border-color: rgba(255,255,255,0.3) !important;
+}
+
+body.claim-analysis-page input::placeholder,
+body.claim-analysis-page textarea::placeholder {
+  color: rgba(255,255,255,0.7) !important;
+}
+
+/* Fix shadow DOMs or injected Tailwind scopes */
+body.claim-analysis-page *:not(svg):not(path) {
+  filter: brightness(1.1) contrast(1.05);
+}
+
+/* Absolute last layer to override inline or JS-injected styles */
+body.claim-analysis-page *[style] {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
 </style>
 </body>
 </html>
