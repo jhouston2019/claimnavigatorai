@@ -3,715 +3,391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Claim Analysis Tools - ClaimNavigatorAI</title>
-    <!-- Tailwind CDN - will be replaced with local build in production -->
+    <title>Claim Analysis Tool - ClaimNavigatorAI</title>
     <link rel="stylesheet" href="/app/assets/css/style.css">
     <style>
-        :root{--navy:#0f172a;--primary:#1e40af;--primary-600:#1e3a8a;--accent:#3b82f6;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--panel:#f8fafc;--success:#10b981;--warn:#f59e0b;--error:#ef4444;}
-        *{box-sizing:border-box}
-        body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:#fff;line-height:1.6}
-        .header{position:sticky;top:0;z-index:1000;background:var(--navy);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08)}
-        .header .container{max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
-        .brand{display:flex;align-items:center;gap:10px;font-weight:800}
-        .nav a{color:#c9d4ff;text-decoration:none;padding:.5rem .75rem;border-radius:.5rem}
-        .nav a:hover{background:rgba(255,255,255,.1)}
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        .results {
+            display: none;
+            background: #f5f7fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #e1e5e9;
         }
-        .tool-card {
-            transition: all 0.3s ease;
+        .error {
+            color: #dc2626;
+            background: #fef2f2;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #fecaca;
         }
-        .tool-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        .input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 10px;
         }
-        .progress-bar {
-            background: linear-gradient(90deg, #3b82f6 0%, #1e40af 100%);
+        .input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
-        .spinner {
-            border: 3px solid #f3f4f6;
-            border-top: 3px solid #3b82f6;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
+        .damage-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .damage-table th,
+        .damage-table td {
+            border: 1px solid #d1d5db;
+            padding: 8px;
+            text-align: left;
         }
-        .output-card {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border: 1px solid #bae6fd;
+        .damage-table th {
+            background: #f9fafb;
+            font-weight: 600;
+        }
+        .add-row-btn {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .add-row-btn:hover {
+            background: #4b5563;
+        }
+        .remove-row-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+        .remove-row-btn:hover {
+            background: #b91c1c;
         }
     </style>
 </head>
-<body class="">
+<body>
     <!-- Header -->
     <header class="header">
-        <div class="container">
-            <div class="brand">ClaimNavigatorAI</div>
+        <div class="bar container">
+            <div class="brand">
+                <div class="logo"></div>
+                <div>ClaimNavigatorAI</div>
+            </div>
             <nav class="nav">
-                <a href="/app/index.html">Home</a>
-                <span >></span>
-                <span >Advanced Claim Analysis Tools</span>
-                <span >></span>
-                <a href="/app/resource-center.html">Resource Center</a>
+                <a href="/app/resource-center.html">← Resource Center</a>
             </nav>
         </div>
     </header>
 
-    <!-- Progress Tracker -->
-    <div class=" border-b ">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm font-medium ">Progress:</span>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-32  rounded-full h-2">
-                            <div id="progressBar" class="progress-bar h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
-                        </div>
-                        <span id="progressText" class="text-sm ">0/5 tools completed</span>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <button id="loadSampleBtn" class="px-3 py-1 text-sm  hover:  rounded-lg transition">
-                        Load Sample Claim
-                    </button>
-                    <button id="exportBtn" class="px-4 py-2 bg-[#1e40af] hover:bg-[#1e40af]/90  text-sm rounded-lg transition disabled:opacity-50" disabled>
-                        Export Full Report (PDF)
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-        <!-- Hero Section -->
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold  mb-4">Advanced Claim Analysis Tools</h1>
-            <p class="text-lg  max-w-4xl mx-auto">
-                AI-powered tools to analyze policies, assess damage, compare estimates, calculate business interruption, and negotiate settlements. 
-                Each tool provides professional analysis and actionable recommendations.
-            </p>
+    <main class="container">
+        <div class="card">
+            <h1>🧭 Claim Analysis Tool</h1>
+            <p>Use these advanced tools to review your policy, estimate damages, compare offers, and calculate your potential settlement value.</p>
         </div>
 
-        <!-- Tools Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-            
-            <!-- 1. Policy Review & Coverage Analysis -->
-            <div class="tool-card  rounded-2xl shadow-lg border  p-6 hover:border-[#3b82f6] flex flex-col">
-                <div class="mb-4 text-center">
-                    <h3 class="text-xl font-bold text-blue-800">Policy Review & Coverage Analysis</h3>
-                    <p class="text-sm ">Analyze policy coverage and exclusions</p>
-                </div>
-
-                <div class="space-y-4 flex-1">
-                    <div>
-                        <label class="block text-sm font-medium  mb-2">Policy Text or Upload</label>
-                        <textarea id="policyText" rows="4" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="Paste policy text or upload file..."></textarea>
-                        <input type="file" id="policyFile" accept=".txt,.pdf" class="mt-2 text-sm ">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium  mb-2">Policy Type</label>
-                            <select id="policyType" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent">
-                                <option value="">Select Type</option>
+        <!-- 1️⃣ Policy Review & Coverage Analysis -->
+        <div class="card">
+            <h3>⚖️ Policy Review & Coverage Analysis</h3>
+            <div class="inputs">
+                <label for="policyText">Policy Text/Excerpt:</label>
+                <textarea id="policyText" class="input" rows="4" placeholder="Paste your policy text or relevant coverage language here..."></textarea>
+                
+                <label for="policyType">Policy Type:</label>
+                <select id="policyType" class="input">
+                    <option value="">Select Policy Type</option>
                                 <option value="homeowners">Homeowners</option>
-                                <option value="commercial">Commercial</option>
                                 <option value="auto">Auto</option>
-                                <option value="other">Other</option>
+                    <option value="business">Business</option>
+                    <option value="renters">Renters</option>
+                    <option value="flood">Flood</option>
+                    <option value="umbrella">Umbrella</option>
                             </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium  mb-2">Jurisdiction</label>
-                            <input type="text" id="policyJurisdiction" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="State">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium  mb-2">Deductible Amount (Optional)</label>
-                        <input type="number" id="policyDeductible" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="$0">
-                    </div>
-                </div>
-
-                <button onclick="runAnalysis('policy')" class="w-full  hover:  px-4 py-3 rounded-lg font-medium transition-all duration-200 mt-4">
-                    <span id="policyBtnText">Analyze Coverage</span>
-                    <div id="policySpinner" class="spinner hidden ml-2"></div>
-                </button>
-
-                <!-- Results Section -->
-                <div id="policyResults" class="mt-6 hidden">
-                    <div class="output-card rounded-lg p-4 fade-in">
-                        <h4 class="font-semibold  mb-3">Analysis Results</h4>
-                        <div id="policyOutput"></div>
-                    </div>
-                </div>
+                
+                <label for="jurisdiction">Jurisdiction:</label>
+                <input type="text" id="jurisdiction" class="input" placeholder="State/Province">
+                
+                <label for="deductible">Deductible Amount:</label>
+                <input type="number" id="deductible" class="input" placeholder="Enter deductible amount">
+                
+                <button class="button primary" onclick="runAnalysis('policy')">Analyze Coverage</button>
             </div>
-
-            <!-- 2. Damage Assessment Calculator -->
-            <div class="tool-card  rounded-2xl shadow-lg border  p-6 hover:border-[#3b82f6] flex flex-col">
-                <div class="mb-4 text-center">
-                    <h3 class="text-xl font-bold text-blue-800">Damage Assessment Calculator</h3>
-                    <p class="text-sm ">Calculate damage costs and coverage</p>
+            <div id="result-policy" class="results"></div>
                 </div>
 
-                <div class="space-y-4 flex-1">
-                    <div>
-                        <label class="block text-sm font-medium  mb-2">Damage Description</label>
-                        <textarea id="damageDescription" rows="3" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="Describe the damage in detail..."></textarea>
+        <!-- 2️⃣ Damage Assessment Calculator -->
+        <div class="card">
+            <h3>🏚️ Damage Assessment Calculator</h3>
+            <div class="inputs">
+                <label for="damageDesc">Damage Description:</label>
+                <textarea id="damageDesc" class="input" rows="3" placeholder="Describe the damage in detail..."></textarea>
+                
+                <label>Damage Types:</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="damage-fire" value="fire">
+                        <label for="damage-fire">Fire</label>
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-medium  mb-2">Damage Types</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="flex items-center">
-                                <input type="checkbox" id="damageFire" class="mr-2">
-                                <span class="text-sm">Fire</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" id="damageWater" class="mr-2">
-                                <span class="text-sm">Water</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" id="damageWind" class="mr-2">
-                                <span class="text-sm">Wind</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" id="damageTheft" class="mr-2">
-                                <span class="text-sm">Theft</span>
-                            </label>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="damage-water" value="water">
+                        <label for="damage-water">Water</label>
                         </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="damage-wind" value="wind">
+                        <label for="damage-wind">Wind</label>
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-medium  mb-2">Items & Costs</label>
-                        <div id="damageItems" class="space-y-2">
-                            <div class="flex space-x-2">
-                                <input type="text" placeholder="Item" class="flex-1 px-3 py-2 border  rounded-lg text-sm">
-                                <input type="number" placeholder="Qty" class="w-20 px-3 py-2 border  rounded-lg text-sm">
-                                <input type="number" placeholder="Cost" class="w-24 px-3 py-2 border  rounded-lg text-sm">
-                            </div>
-                        </div>
-                        <button onclick="addDamageItem()" class="mt-2 text-sm text-[#3b82f6] hover:text-[#1e40af]">+ Add Item</button>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="damage-theft" value="theft">
+                        <label for="damage-theft">Theft</label>
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-medium  mb-2">Photos (Optional)</label>
-                        <input type="file" id="damagePhotos" multiple accept="image/*" class="w-full text-sm ">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="damage-other" value="other">
+                        <label for="damage-other">Other</label>
                     </div>
                 </div>
 
-                <button onclick="runAnalysis('damage')" class="w-full  hover:  px-4 py-3 rounded-lg font-medium transition-all duration-200 mt-4">
-                    <span id="damageBtnText">Run Damage Analysis</span>
-                    <div id="damageSpinner" class="spinner hidden ml-2"></div>
-                </button>
-
-                <!-- Results Section -->
-                <div id="damageResults" class="mt-6 hidden">
-                    <div class="output-card rounded-lg p-4 fade-in">
-                        <h4 class="font-semibold  mb-3">Analysis Results</h4>
-                        <div id="damageOutput"></div>
-                    </div>
-                </div>
+                <label>Damage Items:</label>
+                <table class="damage-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Unit Cost</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="damage-items">
+                        <tr>
+                            <td><input type="text" class="input" placeholder="Item description"></td>
+                            <td><input type="number" class="input" placeholder="Qty" step="0.01"></td>
+                            <td><input type="number" class="input" placeholder="Cost" step="0.01"></td>
+                            <td><span class="total">$0.00</span></td>
+                            <td><button type="button" class="remove-row-btn" onclick="removeDamageRow(this)">×</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="add-row-btn" onclick="addDamageRow()">+ Add Item</button>
+                
+                <button class="button primary" onclick="runAnalysis('damage')">Run Damage Analysis</button>
             </div>
-
-            <!-- 3. Estimate Review & Comparison -->
-            <div class="tool-card  rounded-2xl shadow-lg border  p-6 hover:border-[#3b82f6] flex flex-col">
-                <div class="mb-4 text-center">
-                    <h3 class="text-xl font-bold text-blue-800">Estimate Review & Comparison</h3>
-                    <p class="text-sm ">Compare contractor and insurer estimates</p>
+            <div id="result-damage" class="results"></div>
                 </div>
 
-                <div class="space-y-4 flex-1">
-                    <div>
-                        <label class="block text-sm font-medium  mb-2">Upload Estimates (2-3 files)</label>
-                        <input type="file" id="estimateFiles" multiple accept=".csv,.pdf" class="w-full text-sm ">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium  mb-2">Labor Rate (Optional)</label>
-                            <input type="number" id="laborRate" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="$/hour">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium  mb-2">Tax % (Optional)</label>
-                            <input type="number" id="taxPercent" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="%">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="flex items-center">
-                            <input type="checkbox" id="includeOverhead" class="mr-2">
-                            <span class="text-sm">Include Overhead & Profit (O&P)</span>
-                        </label>
-                    </div>
+        <!-- 3️⃣ Estimate Review & Comparison -->
+        <div class="card">
+            <h3>📊 Estimate Review & Comparison</h3>
+            <div class="inputs">
+                <label for="estimates">Upload Estimates:</label>
+                <input type="file" id="estimates" class="input" multiple accept=".pdf,.doc,.docx,.txt">
+                
+                <label for="laborRate">Labor Rate ($/hour):</label>
+                <input type="number" id="laborRate" class="input" placeholder="Enter hourly labor rate" step="0.01">
+                
+                <label for="taxRate">Tax Rate (%):</label>
+                <input type="number" id="taxRate" class="input" placeholder="Enter tax rate" step="0.01">
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="includeOverhead">
+                    <label for="includeOverhead">Include Overhead & Profit</label>
                 </div>
 
-                <button onclick="runAnalysis('estimates')" class="w-full  hover:  px-4 py-3 rounded-lg font-medium transition-all duration-200 mt-4">
-                    <span id="estimateBtnText">Compare Estimates</span>
-                    <div id="estimateSpinner" class="spinner hidden ml-2"></div>
-                </button>
-
-                <!-- Results Section -->
-                <div id="estimateResults" class="mt-6 hidden">
-                    <div class="output-card rounded-lg p-4 fade-in">
-                        <h4 class="font-semibold  mb-3">Analysis Results</h4>
-                        <div id="estimateOutput"></div>
-                    </div>
-                </div>
+                <button class="button primary" onclick="runAnalysis('estimates')">Compare Estimates</button>
             </div>
-
-            <!-- 4. Business Interruption Calculator -->
-            <div class="tool-card  rounded-2xl shadow-lg border  p-6 hover:border-[#3b82f6] flex flex-col">
-                <div class="mb-4 text-center">
-                    <h3 class="text-xl font-bold text-blue-800">Business Interruption Calculator</h3>
-                    <p class="text-sm ">Calculate lost income during restoration</p>
+            <div id="result-estimates" class="results"></div>
                 </div>
 
-                <div class="space-y-4 flex-1">
-                    <div>
-                        <label class="block text-sm font-medium  mb-2">Business Name</label>
-                        <input type="text" id="businessName" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="Your business name">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium  mb-2">Start Date</label>
-                            <input type="date" id="biStartDate" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium  mb-2">End Date</label>
-                            <input type="date" id="biEndDate" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium  mb-2">Monthly Revenue (Last 12 Months)</label>
-                        <div class="grid grid-cols-3 gap-2">
-                            <input type="number" placeholder="Jan" class="px-3 py-2 border  rounded-lg text-sm">
-                            <input type="number" placeholder="Feb" class="px-3 py-2 border  rounded-lg text-sm">
-                            <input type="number" placeholder="Mar" class="px-3 py-2 border  rounded-lg text-sm">
-                            <input type="number" placeholder="Apr" class="px-3 py-2 border  rounded-lg text-sm">
-                            <input type="number" placeholder="May" class="px-3 py-2 border  rounded-lg text-sm">
-                            <input type="number" placeholder="Jun" class="px-3 py-2 border  rounded-lg text-sm">
-                            <input type="number" placeholder="Jul" class="px-3 py-2 border  rounded-lg text-sm">
-                            <input type="number" placeholder="Aug" class="px-3 py-2 border  rounded-lg text-sm">
-                            <input type="number" placeholder="Sep" class="px-3 py-2 border  rounded-lg text-sm">
-                            <input type="number" placeholder="Oct" class="px-3 py-2 border  rounded-lg text-sm">
-                            <input type="number" placeholder="Nov" class="px-3 py-2 border  rounded-lg text-sm">
-                            <input type="number" placeholder="Dec" class="px-3 py-2 border  rounded-lg text-sm">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium  mb-2">COGS %</label>
-                            <input type="number" id="cogsPercent" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="%">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium  mb-2">Fixed Costs</label>
-                            <input type="number" id="fixedCosts" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="$">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium  mb-2">Extra Expenses / Notes</label>
-                        <textarea id="biExtraExpenses" rows="2" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="Additional expenses or notes..."></textarea>
-                    </div>
-                </div>
-
-                <button onclick="runAnalysis('bi')" class="w-full  hover:  px-4 py-3 rounded-lg font-medium transition-all duration-200 mt-4">
-                    <span id="biBtnText">Calculate BI Loss</span>
-                    <div id="biSpinner" class="spinner hidden ml-2"></div>
-                </button>
-
-                <!-- Results Section -->
-                <div id="biResults" class="mt-6 hidden">
-                    <div class="output-card rounded-lg p-4 fade-in">
-                        <h4 class="font-semibold  mb-3">Analysis Results</h4>
-                        <div id="biOutput"></div>
-                    </div>
-                </div>
+        <!-- 4️⃣ Business Interruption Calculator -->
+        <div class="card">
+            <h3>💼 Business Interruption Calculator</h3>
+            <div class="inputs">
+                <label for="businessName">Business Name:</label>
+                <input type="text" id="businessName" class="input" placeholder="Enter business name">
+                
+                <label for="startDate">Interruption Start Date:</label>
+                <input type="date" id="startDate" class="input">
+                
+                <label for="endDate">Interruption End Date:</label>
+                <input type="date" id="endDate" class="input">
+                
+                <label for="revenues">Monthly Revenues (comma separated):</label>
+                <input type="text" id="revenues" class="input" placeholder="e.g., 50000, 45000, 55000">
+                
+                <label for="cogs">COGS %:</label>
+                <input type="number" id="cogs" class="input" placeholder="Cost of goods sold percentage" step="0.01">
+                
+                <label for="fixed">Fixed Costs %:</label>
+                <input type="number" id="fixed" class="input" placeholder="Fixed costs percentage" step="0.01">
+                
+                <label for="variable">Variable Costs %:</label>
+                <input type="number" id="variable" class="input" placeholder="Variable costs percentage" step="0.01">
+                
+                <label for="extra">Extra Expenses:</label>
+                <textarea id="extra" class="input" rows="3" placeholder="Describe any extra expenses incurred..."></textarea>
+                
+                <button class="button primary" onclick="runAnalysis('bi')">Calculate BI Loss</button>
             </div>
-
-            <!-- 5. Settlement Analysis & Negotiation -->
-            <div class="tool-card  rounded-2xl shadow-lg border  p-6 hover:border-[#3b82f6] flex flex-col">
-                <div class="mb-4 text-center">
-                    <h3 class="text-xl font-bold text-blue-800">Settlement Analysis & Negotiation</h3>
-                    <p class="text-sm ">Assess settlement fairness and strategy</p>
+            <div id="result-bi" class="results"></div>
                 </div>
 
-                <div class="space-y-4 flex-1">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium  mb-2">Offer Amount</label>
-                            <input type="number" id="offerAmount" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="$">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium  mb-2">Your Valuation</label>
-                            <input type="number" id="yourValuation" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="$">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium  mb-2">Disputed Categories</label>
-                        <textarea id="disputedCategories" rows="3" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="Describe what's being disputed..."></textarea>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium  mb-2">Jurisdiction</label>
-                            <input type="text" id="settlementJurisdiction" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="State">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium  mb-2">Days Since Claim Filed</label>
-                            <input type="number" id="daysSinceClaim" class="w-full px-3 py-2 border  rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent" placeholder="Days">
-                        </div>
-                    </div>
-                </div>
-
-                <button onclick="runAnalysis('settlement')" class="w-full  hover:  px-4 py-3 rounded-lg font-medium transition-all duration-200 mt-4">
-                    <span id="settlementBtnText">Run Settlement Analysis</span>
-                    <div id="settlementSpinner" class="spinner hidden ml-2"></div>
-                </button>
-
-                <!-- Results Section -->
-                <div id="settlementResults" class="mt-6 hidden">
-                    <div class="output-card rounded-lg p-4 fade-in">
-                        <h4 class="font-semibold  mb-3">Analysis Results</h4>
-                        <div id="settlementOutput"></div>
-                    </div>
-                </div>
+        <!-- 5️⃣ Settlement Analysis & Negotiation -->
+        <div class="card">
+            <h3>🤝 Settlement Analysis & Negotiation</h3>
+            <div class="inputs">
+                <label for="offer">Insurance Offer Amount:</label>
+                <input type="number" id="offer" class="input" placeholder="Enter offer amount" step="0.01">
+                
+                <label for="valuation">Your Valuation:</label>
+                <input type="number" id="valuation" class="input" placeholder="Enter your valuation" step="0.01">
+                
+                <label for="disputed">Disputed Categories:</label>
+                <textarea id="disputed" class="input" rows="3" placeholder="List the categories being disputed..."></textarea>
+                
+                <label for="jurisdiction2">Jurisdiction:</label>
+                <input type="text" id="jurisdiction2" class="input" placeholder="State/Province">
+                
+                <label for="days">Days Since Claim Filed:</label>
+                <input type="number" id="days" class="input" placeholder="Number of days">
+                
+                <button class="button primary" onclick="runAnalysis('settlement')">Run Settlement Analysis</button>
             </div>
-
-        </div>
-
-        <!-- Footer -->
-        <div class="text-center mt-16 py-8 border-t ">
-            <p class=" text-sm">ClaimNavigatorAI – Advanced Claim Tools</p>
+            <div id="result-settlement" class="results"></div>
         </div>
     </main>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 ClaimNavigatorAI • Advanced Claim Analysis Tools</p>
+        </div>
+    </footer>
+
     <script>
-        // Global state
-        let completedTools = 0;
-        const totalTools = 5;
-        let analysisResults = {};
+        // Damage table management
+        function addDamageRow() {
+            const tbody = document.getElementById('damage-items');
+            const newRow = tbody.insertRow();
+            newRow.innerHTML = `
+                <td><input type="text" class="input" placeholder="Item description"></td>
+                <td><input type="number" class="input" placeholder="Qty" step="0.01" onchange="calculateRowTotal(this)"></td>
+                <td><input type="number" class="input" placeholder="Cost" step="0.01" onchange="calculateRowTotal(this)"></td>
+                <td><span class="total">$0.00</span></td>
+                <td><button type="button" class="remove-row-btn" onclick="removeDamageRow(this)">×</button></td>
+            `;
+        }
 
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            loadSavedData();
-            setupEventListeners();
-        });
+        function removeDamageRow(button) {
+            button.closest('tr').remove();
+        }
 
-        function setupEventListeners() {
-            // Auto-save functionality
-            document.querySelectorAll('input, textarea, select').forEach(element => {
-                element.addEventListener('input', saveData);
-            });
+        function calculateRowTotal(input) {
+            const row = input.closest('tr');
+            const qty = parseFloat(row.querySelector('input[type="number"]:nth-of-type(1)').value) || 0;
+            const cost = parseFloat(row.querySelector('input[type="number"]:nth-of-type(2)').value) || 0;
+            const total = qty * cost;
+            row.querySelector('.total').textContent = `$${total.toFixed(2)}`;
+        }
 
-            // Load sample data
-            document.getElementById('loadSampleBtn').addEventListener('click', loadSampleData);
+        // Main analysis function
+        async function runAnalysis(module) {
+            const button = document.querySelector(`button[onclick="runAnalysis('${module}')"]`);
+            const resultDiv = document.getElementById(`result-${module}`);
             
-            // Export functionality
-            document.getElementById('exportBtn').addEventListener('click', exportReport);
-        }
+            resultDiv.style.display = "block";
+            resultDiv.innerHTML = "<p><em>Analyzing... please wait.</em></p>";
 
-        function saveData() {
-            const formData = {};
-            document.querySelectorAll('input, textarea, select').forEach(element => {
-                if (element.type === 'checkbox') {
-                    formData[element.id] = element.checked;
-                } else {
-                    formData[element.id] = element.value;
-                }
-            });
-            localStorage.setItem('claimAnalysisData', JSON.stringify(formData));
-        }
-
-        function loadSavedData() {
-            const savedData = localStorage.getItem('claimAnalysisData');
-            if (savedData) {
-                const formData = JSON.parse(savedData);
-                Object.keys(formData).forEach(key => {
-                    const element = document.getElementById(key);
-                    if (element) {
-                        if (element.type === 'checkbox') {
-                            element.checked = formData[key];
-                        } else {
-                            element.value = formData[key];
+            let inputs = {};
+            
+            // Collect inputs per module
+            switch (module) {
+                case "policy":
+                    inputs.policyText = document.getElementById("policyText").value;
+                    inputs.policyType = document.getElementById("policyType").value;
+                    inputs.jurisdiction = document.getElementById("jurisdiction").value;
+                    inputs.deductible = document.getElementById("deductible").value;
+                    break;
+                    
+                case "damage":
+                    inputs.damageDesc = document.getElementById("damageDesc").value;
+                    inputs.damageTypes = [];
+                    document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+                        inputs.damageTypes.push(cb.value);
+                    });
+                    inputs.damageItems = [];
+                    document.querySelectorAll('#damage-items tr').forEach(row => {
+                        const item = row.querySelector('input[type="text"]').value;
+                        const qty = row.querySelector('input[type="number"]:nth-of-type(1)').value;
+                        const cost = row.querySelector('input[type="number"]:nth-of-type(2)').value;
+                        if (item && qty && cost) {
+                            inputs.damageItems.push({ item, qty: parseFloat(qty), cost: parseFloat(cost) });
                         }
-                    }
-                });
+                    });
+                    break;
+                    
+                case "estimates":
+                    inputs.laborRate = document.getElementById("laborRate").value;
+                    inputs.taxRate = document.getElementById("taxRate").value;
+                    inputs.includeOverhead = document.getElementById("includeOverhead").checked;
+                    break;
+                    
+                case "bi":
+                    inputs.businessName = document.getElementById("businessName").value;
+                    inputs.startDate = document.getElementById("startDate").value;
+                    inputs.endDate = document.getElementById("endDate").value;
+                    inputs.revenues = document.getElementById("revenues").value;
+                    inputs.cogs = document.getElementById("cogs").value;
+                    inputs.fixed = document.getElementById("fixed").value;
+                    inputs.variable = document.getElementById("variable").value;
+                    inputs.extra = document.getElementById("extra").value;
+                    break;
+                    
+                case "settlement":
+                    inputs.offer = document.getElementById("offer").value;
+                    inputs.valuation = document.getElementById("valuation").value;
+                    inputs.disputed = document.getElementById("disputed").value;
+                    inputs.jurisdiction = document.getElementById("jurisdiction2").value;
+                    inputs.days = document.getElementById("days").value;
+                    break;
             }
-        }
-
-        function loadSampleData() {
-            // Policy Review sample
-            document.getElementById('policyText').value = "COVERAGE A - DWELLING: We cover the dwelling on the residence premises shown in the Declarations, including structures attached to the dwelling, and the following property if not covered elsewhere in this policy: (1) Materials and supplies located on or next to the residence premises used to construct, alter or repair the dwelling or other structures on the residence premises; (2) If not covered elsewhere in this policy, building equipment and outdoor equipment on the residence premises used for the service of the premises; (3) Additions and extensions attached to the dwelling; (4) Interior trim, wall-to-wall carpeting, awnings, storm shutters, and outdoor antennas and aerials attached to the dwelling; (5) Installed wall-to-wall carpeting; (6) Appliances, such as refrigerators, washing machines, clothes dryers, cooking units, dishwashers and heating equipment; (7) Fire extinguishers, smoke detectors and other fire protective equipment; (8) Outdoor equipment and furniture; (9) Radio and television antennas and aerials, including their lead-in wiring, masts and towers; (10) Awnings and canopies; (11) Built-in dishwashers, garbage disposals and trash compactors; (12) Central air conditioning equipment; (13) Central heating equipment; (14) Domestic water heaters; (15) Floor furnaces; (16) Radiators; (17) Solar energy systems; (18) Swimming pool equipment; (19) Water softeners; (20) Well pumps and related equipment; (21) Window air conditioning units; (22) Window fans; (23) Window screens; (24) Window shades and blinds; (25) Window shutters; (26) Window storm sashes; (27) Window storm windows; (28) Window storm doors; (29) Window storm panels; (30) Window storm shutters; (31) Window storm screens; (32) Window storm awnings; (33) Window storm canopies; (34) Window storm covers; (35) Window storm enclosures; (36) Window storm guards; (37) Window storm panels; (38) Window storm screens; (39) Window storm shutters; (40) Window storm windows.";
-            document.getElementById('policyType').value = 'homeowners';
-            document.getElementById('policyJurisdiction').value = 'California';
-            document.getElementById('policyDeductible').value = '1000';
-
-            // Damage Assessment sample
-            document.getElementById('damageDescription').value = "Kitchen fire caused by electrical malfunction. Damage includes smoke damage throughout first floor, water damage from fire suppression, and structural damage to kitchen cabinets and appliances.";
-            document.getElementById('damageFire').checked = true;
-            document.getElementById('damageWater').checked = true;
-
-            // Business Interruption sample
-            document.getElementById('businessName').value = "Downtown Restaurant";
-            document.getElementById('biStartDate').value = "2024-01-15";
-            document.getElementById('biEndDate').value = "2024-03-15";
-            document.getElementById('cogsPercent').value = "35";
-            document.getElementById('fixedCosts').value = "15000";
-
-            // Settlement Analysis sample
-            document.getElementById('offerAmount').value = "45000";
-            document.getElementById('yourValuation').value = "75000";
-            document.getElementById('disputedCategories').value = "Structural damage, smoke damage, business interruption, and additional living expenses";
-            document.getElementById('settlementJurisdiction').value = "California";
-            document.getElementById('daysSinceClaim').value = "45";
-
-            saveData();
-        }
-
-        function addDamageItem() {
-            const container = document.getElementById('damageItems');
-            const newItem = document.createElement('div');
-            newItem.className = 'flex space-x-2';
-            newItem.innerHTML = `
-                <input type="text" placeholder="Item" class="flex-1 px-3 py-2 border  rounded-lg text-sm">
-                <input type="number" placeholder="Qty" class="w-20 px-3 py-2 border  rounded-lg text-sm">
-                <input type="number" placeholder="Cost" class="w-24 px-3 py-2 border  rounded-lg text-sm">
-            `;
-            container.appendChild(newItem);
-        }
-
-        async function runAnalysis(moduleId) {
-            // Handle the estimates module ID mismatch
-            const actualModuleId = moduleId === 'estimates' ? 'estimate' : moduleId;
             
-            const statusElement = document.getElementById(actualModuleId + 'Status');
-            const buttonText = document.getElementById(actualModuleId + 'BtnText');
-            const spinner = document.getElementById(actualModuleId + 'Spinner');
-            const resultsDiv = document.getElementById(actualModuleId + 'Results');
-            const outputDiv = document.getElementById(actualModuleId + 'Output');
-
-            // Check if all required elements exist
-            if (!statusElement || !buttonText || !spinner || !resultsDiv || !outputDiv) {
-                console.error('Required elements not found for module:', moduleId);
-                alert('Error: Required form elements not found. Please refresh the page and try again.');
-                return;
-            }
-
-            // Show loading state
-            statusElement.textContent = 'Analyzing';
-            statusElement.className = 'px-2 py-1 text-xs font-medium rounded-full  ';
-            buttonText.textContent = 'Analyzing...';
-            spinner.classList.remove('hidden');
-            resultsDiv.classList.add('hidden');
-
             try {
-                // Gather inputs
-                const inputs = gatherInputs(moduleId);
-                
-                // Make API call
-                const response = await fetch('/.netlify/functions/claim-analysis', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        claimText: JSON.stringify({ module: moduleId, inputs: inputs })
-                    })
+                const res = await fetch("/.netlify/functions/claim-analysis", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ module, inputs })
                 });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-
-                if (result.success && result.analysis) {
-                    // Show success state
-                    statusElement.textContent = 'Complete';
-                    statusElement.className = 'px-2 py-1 text-xs font-medium rounded-full bg-green-200 text-green-800';
-                    buttonText.textContent = getButtonText(moduleId);
-                    spinner.classList.add('hidden');
-                    
-                    // Display results
-                    outputDiv.innerHTML = result.analysis;
-                    resultsDiv.classList.remove('hidden');
-                    
-                    // Update progress
-                    if (!analysisResults[moduleId]) {
-                        completedTools++;
-                        analysisResults[moduleId] = result.analysis;
-                        updateProgress();
-                    }
+                
+                const data = await res.json();
+                
+                if (data.ok && data.html) {
+                    resultDiv.innerHTML = data.html;
                 } else {
-                    throw new Error(result.error || 'Analysis failed');
+                    resultDiv.innerHTML = `<p class="error">Error: ${data.error || 'No response'}</p>`;
                 }
-            } catch (error) {
-                console.error('Analysis error:', error);
-                
-                // Show error state
-                statusElement.textContent = 'Error';
-                statusElement.className = 'px-2 py-1 text-xs font-medium rounded-full bg-red-200 text-red-800';
-                buttonText.textContent = getButtonText(moduleId);
-                spinner.classList.add('hidden');
-                
-                // Show error message
-                outputDiv.innerHTML = `
-                    <div class="text-red-600 p-4 bg-red-50 rounded-lg border border-red-200">
-                        <h4 class="font-semibold mb-2">Analysis Failed</h4>
-                        <p class="mb-2">Error: ${error.message}</p>
-                        <p class="text-sm ">Please check your inputs and try again. If the problem persists, please refresh the page.</p>
-                    </div>
-                `;
-                resultsDiv.classList.remove('hidden');
+            } catch (err) {
+                resultDiv.innerHTML = `<p class="error">Network error. Please try again.</p>`;
             }
-        }
-
-        function gatherInputs(moduleId) {
-            const inputs = {};
-            
-            switch(moduleId) {
-                case 'policy':
-                    inputs.text = document.getElementById('policyText').value;
-                    inputs.type = document.getElementById('policyType').value;
-                    inputs.jurisdiction = document.getElementById('policyJurisdiction').value;
-                    inputs.deductible = document.getElementById('policyDeductible').value;
-                    break;
-                    
-                case 'damage':
-                    inputs.description = document.getElementById('damageDescription').value;
-                    inputs.types = [];
-                    if (document.getElementById('damageFire').checked) inputs.types.push('Fire');
-                    if (document.getElementById('damageWater').checked) inputs.types.push('Water');
-                    if (document.getElementById('damageWind').checked) inputs.types.push('Wind');
-                    if (document.getElementById('damageTheft').checked) inputs.types.push('Theft');
-                    break;
-                    
-                case 'estimates':
-                    inputs.files = document.getElementById('estimateFiles').files;
-                    inputs.laborRate = document.getElementById('laborRate').value;
-                    inputs.taxPercent = document.getElementById('taxPercent').value;
-                    inputs.includeOverhead = document.getElementById('includeOverhead').checked;
-                    break;
-                    
-                case 'bi':
-                    inputs.businessName = document.getElementById('businessName').value;
-                    inputs.startDate = document.getElementById('biStartDate').value;
-                    inputs.endDate = document.getElementById('biEndDate').value;
-                    inputs.cogsPercent = document.getElementById('cogsPercent').value;
-                    inputs.fixedCosts = document.getElementById('fixedCosts').value;
-                    inputs.extraExpenses = document.getElementById('biExtraExpenses').value;
-                    break;
-                    
-                case 'settlement':
-                    inputs.offerAmount = document.getElementById('offerAmount').value;
-                    inputs.yourValuation = document.getElementById('yourValuation').value;
-                    inputs.disputedCategories = document.getElementById('disputedCategories').value;
-                    inputs.jurisdiction = document.getElementById('settlementJurisdiction').value;
-                    inputs.daysSinceClaim = document.getElementById('daysSinceClaim').value;
-                    break;
-            }
-            
-            return inputs;
-        }
-
-        function getButtonText(moduleId) {
-            const buttonTexts = {
-                'policy': 'Analyze Coverage',
-                'damage': 'Run Damage Analysis',
-                'estimates': 'Compare Estimates',
-                'bi': 'Calculate BI Loss',
-                'settlement': 'Run Settlement Analysis'
-            };
-            return buttonTexts[moduleId];
-        }
-
-        function updateProgress() {
-            const progress = (completedTools / totalTools) * 100;
-            document.getElementById('progressBar').style.width = progress + '%';
-            document.getElementById('progressText').textContent = `${completedTools}/${totalTools} tools completed`;
-            
-            if (completedTools > 0) {
-                document.getElementById('exportBtn').disabled = false;
-            }
-        }
-
-        function exportReport() {
-            if (completedTools === 0) {
-                alert('Please complete at least one analysis before exporting.');
-                return;
-            }
-
-            // Create a comprehensive report
-            let reportContent = `
-                <html>
-                <head>
-                    <title>Claim Analysis Report - ClaimNavigatorAI</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 40px; }
-                        .header { text-align: center; margin-bottom: 30px; }
-                        .section { margin-bottom: 30px; page-break-inside: avoid; }
-                        .section h2 { color: #3b82f6; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; }
-                        .output { background: #f0f9ff; padding: 15px; border-radius: 8px; margin-top: 10px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>Claim Analysis Report</h1>
-                        <p>Generated by ClaimNavigatorAI - ${new Date().toLocaleDateString()}</p>
-                    </div>
-            `;
-
-            // Add each completed analysis
-            Object.keys(analysisResults).forEach(moduleId => {
-                const moduleNames = {
-                    'policy': 'Policy Review & Coverage Analysis',
-                    'damage': 'Damage Assessment Calculator',
-                    'estimates': 'Estimate Review & Comparison',
-                    'bi': 'Business Interruption Calculator',
-                    'settlement': 'Settlement Analysis & Negotiation'
-                };
-                
-                reportContent += `
-                    <div class="section">
-                        <h2>${moduleNames[moduleId]}</h2>
-                        <div class="output">${analysisResults[moduleId]}</div>
-                    </div>
-                `;
-            });
-
-            reportContent += `
-                    <div class="section">
-                        <h2>Summary</h2>
-                        <p>This report contains ${completedTools} completed analyses from ClaimNavigatorAI's Advanced Tools suite.</p>
-                        <p>Generated on ${new Date().toLocaleString()}</p>
-                    </div>
-                </body>
-                </html>
-            `;
-
-            // Open in new window for printing
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(reportContent);
-            printWindow.document.close();
-            printWindow.print();
         }
     </script>
 </body>
