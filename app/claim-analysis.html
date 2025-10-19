@@ -120,14 +120,22 @@
             
             if (forms[type]) {
                 console.log('Downloading:', forms[type]); // Debug log
-                // Create a temporary link element to trigger download
-                const link = document.createElement('a');
-                link.href = forms[type];
-                link.download = forms[type].split('/').pop(); // Get filename from path
-                link.target = '_blank'; // Open in new tab as fallback
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                try {
+                    // Create a temporary link element to trigger download
+                    const link = document.createElement('a');
+                    link.href = forms[type];
+                    link.download = forms[type].split('/').pop(); // Get filename from path
+                    link.target = '_blank'; // Open in new tab as fallback
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    console.log('Download initiated successfully');
+                } catch (error) {
+                    console.error('Download failed:', error);
+                    // Fallback: open in new tab
+                    window.open(forms[type], '_blank');
+                }
             } else {
                 alert('Download form not found for: ' + type);
             }
