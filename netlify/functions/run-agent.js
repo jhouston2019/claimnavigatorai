@@ -117,18 +117,29 @@ async function updateStatementOfLoss(userId, claimId) {
 }
 
 /**
- * Update deadlines by calling refresh-deadlines function
+ * Update deadlines by calling update-deadlines function
  */
-async function updateDeadlines(userId, claimId) {
+async function updateDeadlines(userId, claimId, documentText = null) {
   try {
-    // Import refresh-deadlines function directly
-    const refreshDeadlines = require('./refresh-deadlines');
+    // Import update-deadlines function directly
+    const updateDeadlinesFn = require('./update-deadlines');
     
     // Call directly (or use HTTP if needed)
     let result;
     try {
-      // Try direct call first
-      result = await refreshDeadlines.refreshDeadlines(claimId);
+      // Try direct call first - use the handler function
+      const mockEvent = {
+        httpMethod: 'POST',
+        body: JSON.stringify({
+          claim_id: claimId,
+          document_text: documentText
+        })
+      };
+      
+      // Create a mock handler call
+      const handlerResult = await updateDeadlinesFn.handler(mockEvent, {});
+      const parsedResult = JSON.parse(handlerResult.body);
+      result = parsedResult;
     } catch (directError) {
       // Fallback to HTTP call if direct import fails
       const https = require('https');
@@ -136,7 +147,7 @@ async function updateDeadlines(userId, claimId) {
       const url = require('url');
       
       const functionUrl = process.env.NETLIFY_URL || process.env.URL || 'https://your-site.netlify.app';
-      const functionPath = '/.netlify/functions/refresh-deadlines';
+      const functionPath = '/.netlify/functions/update-deadlines';
       
       result = await new Promise((resolve, reject) => {
         const parsedUrl = url.parse(functionUrl + functionPath);
@@ -172,17 +183,19 @@ async function updateDeadlines(userId, claimId) {
     
     // Log the update
     await logActivity(userId, claimId, 'update_deadlines', 'success', { 
-      deadlines_added: result.deadlines_added,
-      deadlines_updated: result.deadlines_updated,
-      total_deadlines: result.total_deadlines
+      added: result.added || 0,
+      updated: result.updated || 0,
+      extracted: result.extracted || 0,
+      total_processed: result.total_processed || 0
     });
 
     return {
       status: 'success',
-      message: 'Deadlines refreshed',
-      deadlines_added: result.deadlines_added,
-      deadlines_updated: result.deadlines_updated,
-      total_deadlines: result.total_deadlines
+      message: 'Deadlines updated',
+      added: result.added || 0,
+      updated: result.updated || 0,
+      extracted: result.extracted || 0,
+      total_processed: result.total_processed || 0
     };
   } catch (error) {
     console.error('Error updating deadlines:', error);
@@ -317,7 +330,7 @@ exports.handler = async (event, context) => {
           break;
 
         case 'update_deadlines':
-          result = await updateDeadlines(user_id, claim_id);
+          result = await updateDeadlines(user_id, claim_id, params.document_text || null);
           break;
 
         default:

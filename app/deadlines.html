@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Claim Deadlines • ClaimNavigatorAI</title>
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/assets/css/design-system.css">
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body.deadlines-page {
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+        url('../../assets/images/backgrounds/ai5.jpg') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-attachment: fixed !important;
+      color: #ffffff !important;
+    }
+
+    body.deadlines-page * {
+      color: #ffffff !important;
+    }
+
+    body.deadlines-page a {
+      color: #dbeafe !important;
+    }
+
+    .deadlines-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .deadlines-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .deadlines-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      color: #ffffff !important;
+    }
+
+    .deadlines-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: #ffffff !important;
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-warning {
+      background: #f59e0b;
+      color: #ffffff !important;
+    }
+
+    .btn-warning:hover {
+      background: #d97706;
+    }
+
+    .statistics-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0.5rem 0;
+      color: #ffffff !important;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: #dbeafe !important;
+    }
+
+    .stat-card.overdue .stat-value {
+      color: #ef4444 !important;
+    }
+
+    .stat-card.upcoming .stat-value {
+      color: #f59e0b !important;
+    }
+
+    .stat-card.high-priority .stat-value {
+      color: #dc2626 !important;
+    }
+
+    .deadlines-section {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .deadlines-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .deadlines-table th {
+      text-align: left;
+      padding: 0.75rem;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+      font-weight: 600;
+      color: #ffffff !important;
+    }
+
+    .deadlines-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff !important;
+    }
+
+    .deadlines-table tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .deadlines-table tr.overdue {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .deadlines-table tr.overdue td {
+      color: #ef4444 !important;
+    }
+
+    .deadlines-table tr.high-priority {
+      background: rgba(220, 38, 38, 0.1);
+    }
+
+    .deadlines-table tr.high-priority td {
+      color: #dc2626 !important;
+      font-weight: 600;
+    }
+
+    .deadlines-table tr.medium-priority td {
+      color: #f59e0b !important;
+    }
+
+    .deadlines-table tr.low-priority td {
+      color: #16a34a !important;
+    }
+
+    .priority-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .priority-high {
+      background: rgba(220, 38, 38, 0.3);
+      color: #dc2626;
+    }
+
+    .priority-medium {
+      background: rgba(245, 158, 11, 0.3);
+      color: #f59e0b;
+    }
+
+    .priority-low {
+      background: rgba(22, 163, 74, 0.3);
+      color: #16a34a;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: rgba(30, 41, 59, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      backdrop-filter: blur(12px);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #ffffff !important;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 0.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff !important;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .form-group textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #dbeafe !important;
+    }
+
+    @media (max-width: 768px) {
+      .deadlines-container {
+        padding: 1rem;
+      }
+
+      .deadlines-table {
+        font-size: 0.85rem;
+      }
+
+      .deadlines-table th,
+      .deadlines-table td {
+        padding: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body class="resource-center deadlines-page">
+  <header class="header">
+    <div class="bar container">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>ClaimNavigatorAI</div>
+      </div>
+      <nav class="nav">
+        <a href="/app/index.html">Home</a>
+        <a href="/app/resource-center.html">Resource Center</a>
+        <a href="/app/deadlines.html">Deadlines</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="deadlines-container">
+      <div class="deadlines-header">
+        <h1>Critical Claim Deadlines</h1>
+        <p style="color: #dbeafe !important; margin: 0;">Track and manage important dates for your claim</p>
+      </div>
+
+      <div class="deadlines-actions">
+        <button class="btn btn-primary" id="add-btn">Add Deadline</button>
+        <button class="btn btn-secondary" id="refresh-btn">Refresh</button>
+        <button class="btn btn-warning" id="scan-btn">Auto-Detect From Document</button>
+      </div>
+
+      <div class="statistics-section" id="statistics">
+        <div class="stat-card">
+          <div class="stat-label">Total Deadlines</div>
+          <div class="stat-value" id="stat-total">0</div>
+        </div>
+        <div class="stat-card upcoming">
+          <div class="stat-label">Upcoming</div>
+          <div class="stat-value" id="stat-upcoming">0</div>
+        </div>
+        <div class="stat-card overdue">
+          <div class="stat-label">Overdue</div>
+          <div class="stat-value" id="stat-overdue">0</div>
+        </div>
+        <div class="stat-card high-priority">
+          <div class="stat-label">High Priority</div>
+          <div class="stat-value" id="stat-high">0</div>
+        </div>
+      </div>
+
+      <div class="deadlines-section">
+        <h3 style="margin: 0 0 1rem 0; color: #ffffff !important;">Deadline List</h3>
+        <table class="deadlines-table" id="deadlines">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Event</th>
+              <th>Source</th>
+              <th>Priority</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="deadlines-body">
+            <tr>
+              <td colspan="5" class="empty-state">Loading deadlines...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add Deadline Modal -->
+  <div class="modal" id="add-modal">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="margin: 0; color: #ffffff !important;">Add Deadline</h3>
+        <button class="btn btn-secondary" onclick="closeModal('add-modal')" style="padding: 0.5rem 1rem;">&times;</button>
+      </div>
+      <form id="add-form" onsubmit="submitAddDeadline(event)">
+        <div class="form-group">
+          <label>Event Description</label>
+          <input type="text" id="event-name" placeholder="e.g. Proof of Loss Due, Appraisal Deadline" required>
+        </div>
+        <div class="form-group">
+          <label>Due Date</label>
+          <input type="date" id="deadline-date" required>
+        </div>
+        <div class="form-group">
+          <label>Priority</label>
+          <select id="deadline-priority" required>
+            <option value="High">High</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Source (Optional)</label>
+          <input type="text" id="deadline-source" placeholder="e.g. Policy Document, Letter from Insurer">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('add-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Deadline</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scan Document Modal -->
+  <div class="modal" id="scan-modal">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="margin: 0; color: #ffffff !important;">Auto-Detect Deadlines</h3>
+        <button class="btn btn-secondary" onclick="closeModal('scan-modal')" style="padding: 0.5rem 1rem;">&times;</button>
+      </div>
+      <form id="scan-form" onsubmit="submitScanDocument(event)">
+        <div class="form-group">
+          <label>Paste Letter or Policy Text</label>
+          <textarea id="document-text" placeholder="Paste the full text of the letter, policy, or document to scan for deadlines..." required></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('scan-modal')">Cancel</button>
+          <button type="submit" class="btn btn-warning">Scan for Deadlines</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const claim_id = localStorage.getItem('claim_id') || new URLSearchParams(window.location.search).get('claim_id') || 'TEST-CLAIM';
+
+    async function refresh() {
+      try {
+        const res = await fetch(`/.netlify/functions/get-deadlines?claim_id=${claim_id}`);
+        const data = await res.json();
+
+        if (data.status === 'error') {
+          throw new Error(data.error);
+        }
+
+        const deadlines = data.deadlines || [];
+        const stats = data.statistics || {};
+
+        // Update statistics
+        document.getElementById('stat-total').textContent = stats.total || 0;
+        document.getElementById('stat-upcoming').textContent = stats.upcoming || 0;
+        document.getElementById('stat-overdue').textContent = stats.overdue || 0;
+        document.getElementById('stat-high').textContent = stats.high_priority || 0;
+
+        // Update deadlines table
+        const tbody = document.getElementById('deadlines-body');
+        if (deadlines.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No deadlines yet. Click "Add Deadline" or "Auto-Detect" to get started.</td></tr>';
+        } else {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          tbody.innerHTML = deadlines.map(d => {
+            const deadlineDate = new Date(d.date);
+            deadlineDate.setHours(0, 0, 0, 0);
+            const isOverdue = deadlineDate < today;
+            const daysUntil = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
+            
+            let rowClass = '';
+            let statusText = '';
+            if (isOverdue) {
+              rowClass = 'overdue';
+              statusText = `Overdue by ${Math.abs(daysUntil)} day${Math.abs(daysUntil) !== 1 ? 's' : ''}`;
+            } else if (daysUntil <= 7) {
+              rowClass = 'high-priority';
+              statusText = `${daysUntil} day${daysUntil !== 1 ? 's' : ''} remaining`;
+            } else if (daysUntil <= 30) {
+              rowClass = 'medium-priority';
+              statusText = `${daysUntil} day${daysUntil !== 1 ? 's' : ''} remaining`;
+            } else {
+              rowClass = 'low-priority';
+              statusText = `${daysUntil} day${daysUntil !== 1 ? 's' : ''} remaining`;
+            }
+
+            const priorityClass = `priority-${d.priority.toLowerCase()}`;
+
+            return `
+              <tr class="${rowClass}">
+                <td>${new Date(d.date).toLocaleDateString()}</td>
+                <td>${d.event}</td>
+                <td>${d.source || '-'}</td>
+                <td><span class="priority-badge ${priorityClass}">${d.priority}</span></td>
+                <td>${statusText}</td>
+              </tr>
+            `;
+          }).join('');
+        }
+
+      } catch (error) {
+        console.error('Error refreshing:', error);
+        document.getElementById('deadlines-body').innerHTML = 
+          `<tr><td colspan="5" class="empty-state">Error loading deadlines: ${error.message}</td></tr>`;
+      }
+    }
+
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+      if (modalId === 'add-modal') {
+        document.getElementById('deadline-date').value = new Date().toISOString().split('T')[0];
+      }
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+      if (modalId === 'add-modal') {
+        document.getElementById('add-form').reset();
+      } else if (modalId === 'scan-modal') {
+        document.getElementById('scan-form').reset();
+      }
+    }
+
+    async function submitAddDeadline(event) {
+      event.preventDefault();
+      
+      const deadlineData = {
+        claim_id: claim_id,
+        event: document.getElementById('event-name').value,
+        date: document.getElementById('deadline-date').value,
+        priority: document.getElementById('deadline-priority').value,
+        source: document.getElementById('deadline-source').value || 'Manual Entry'
+      };
+
+      try {
+        const res = await fetch('/.netlify/functions/update-deadlines', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(deadlineData)
+        });
+
+        const data = await res.json();
+        
+        if (data.status === 'error') {
+          throw new Error(data.error);
+        }
+
+        closeModal('add-modal');
+        refresh();
+      } catch (error) {
+        alert('Error adding deadline: ' + error.message);
+      }
+    }
+
+    async function submitScanDocument(event) {
+      event.preventDefault();
+      
+      const documentText = document.getElementById('document-text').value;
+
+      if (!documentText || documentText.trim().length < 50) {
+        alert('Please paste at least 50 characters of text to scan.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/.netlify/functions/update-deadlines', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            claim_id: claim_id,
+            document_text: documentText
+          })
+        });
+
+        const data = await res.json();
+        
+        if (data.status === 'error') {
+          throw new Error(data.error);
+        }
+
+        closeModal('scan-modal');
+        alert(`Successfully extracted ${data.extracted || 0} deadline(s). ${data.added || 0} added, ${data.updated || 0} updated.`);
+        refresh();
+      } catch (error) {
+        alert('Error scanning document: ' + error.message);
+      }
+    }
+
+    // Event listeners
+    document.getElementById('add-btn').addEventListener('click', () => openModal('add-modal'));
+    document.getElementById('refresh-btn').addEventListener('click', refresh);
+    document.getElementById('scan-btn').addEventListener('click', () => openModal('scan-modal'));
+
+    // Initial load
+    refresh();
+  </script>
+</body>
+</html>
+
