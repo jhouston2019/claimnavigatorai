@@ -117,6 +117,85 @@ async function updateStatementOfLoss(userId, claimId) {
 }
 
 /**
+ * Log event to claim journal
+ */
+async function logEvent(userId, claimId, entryTitle, entryBody) {
+  try {
+    const addJournalEntry = require('./add-journal-entry');
+    
+    const mockEvent = {
+      httpMethod: 'POST',
+      body: JSON.stringify({
+        claim_id: claimId,
+        user_id: userId,
+        entry_title: entryTitle,
+        entry_body: entryBody
+      })
+    };
+
+    const handlerResult = await addJournalEntry.handler(mockEvent, {});
+    const parsedResult = JSON.parse(handlerResult.body);
+
+    if (parsedResult.status === 'error') {
+      throw new Error(parsedResult.error);
+    }
+
+    await logActivity(userId, claimId, 'log_event', 'success', { 
+      entry_title: entryTitle 
+    });
+
+    return {
+      status: 'success',
+      message: 'Event logged to journal',
+      entry: parsedResult.entry
+    };
+  } catch (error) {
+    console.error('Error logging event:', error);
+    await logActivity(userId, claimId, 'log_event', 'error', { error: error.message });
+    throw error;
+  }
+}
+
+/**
+ * Request expert opinion via email
+ */
+async function requestExpertOpinion(userId, claimId, message) {
+  try {
+    const sendExpertRequest = require('./send-expert-request');
+    
+    const mockEvent = {
+      httpMethod: 'POST',
+      body: JSON.stringify({
+        name: 'Auto-Agent',
+        email: process.env.FROM_EMAIL || 'no-reply@claimnavigator.ai',
+        claim_id: claimId,
+        message: message || 'Automated expert opinion request from ClaimNavigator Agent'
+      })
+    };
+
+    const handlerResult = await sendExpertRequest.handler(mockEvent, {});
+    const parsedResult = JSON.parse(handlerResult.body);
+
+    if (parsedResult.status === 'error') {
+      throw new Error(parsedResult.error);
+    }
+
+    await logActivity(userId, claimId, 'request_expert_opinion', 'success', { 
+      message: 'Expert opinion request sent'
+    });
+
+    return {
+      status: 'success',
+      message: 'Expert opinion request sent'
+    };
+  } catch (error) {
+    console.error('Error requesting expert opinion:', error);
+    await logActivity(userId, claimId, 'request_expert_opinion', 'error', { error: error.message });
+    throw error;
+  }
+}
+
+/**
  * Update deadlines by calling update-deadlines function
  */
 async function updateDeadlines(userId, claimId, documentText = null) {
@@ -331,6 +410,14 @@ exports.handler = async (event, context) => {
 
         case 'update_deadlines':
           result = await updateDeadlines(user_id, claim_id, params.document_text || null);
+          break;
+
+        case 'log_event':
+          result = await logEvent(user_id, claim_id, params.entry_title || 'Agent Event', params.entry_body || '');
+          break;
+
+        case 'request_expert_opinion':
+          result = await requestExpertOpinion(user_id, claim_id, params.message || '');
           break;
 
         default:
