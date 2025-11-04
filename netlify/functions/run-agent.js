@@ -196,6 +196,44 @@ async function requestExpertOpinion(userId, claimId, message) {
 }
 
 /**
+ * Get state information for legal deadlines
+ */
+async function getStateInfo(userId, claimId, stateName) {
+  try {
+    const getStateInfoFn = require('./get-state-info');
+    
+    const mockEvent = {
+      httpMethod: 'GET',
+      queryStringParameters: {
+        state: stateName
+      }
+    };
+
+    const handlerResult = await getStateInfoFn.handler(mockEvent, {});
+    const parsedResult = JSON.parse(handlerResult.body);
+
+    if (parsedResult.status === 'error') {
+      throw new Error(parsedResult.error);
+    }
+
+    await logActivity(userId, claimId, 'state_info', 'success', { 
+      state: stateName,
+      deadline: parsedResult.data?.deadline || 'N/A'
+    });
+
+    return {
+      status: 'success',
+      message: `State information retrieved for ${stateName}`,
+      data: parsedResult.data
+    };
+  } catch (error) {
+    console.error('Error getting state info:', error);
+    await logActivity(userId, claimId, 'state_info', 'error', { error: error.message, state: stateName });
+    throw error;
+  }
+}
+
+/**
  * Update deadlines by calling update-deadlines function
  */
 async function updateDeadlines(userId, claimId, documentText = null) {
@@ -418,6 +456,14 @@ exports.handler = async (event, context) => {
 
         case 'request_expert_opinion':
           result = await requestExpertOpinion(user_id, claim_id, params.message || '');
+          break;
+
+        case 'state_info':
+          result = await getStateInfo(user_id, claim_id, params.state || '');
+          break;
+
+        case 'legal_deadline':
+          result = await getStateInfo(user_id, claim_id, params.state || '');
           break;
 
         default:
