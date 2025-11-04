@@ -1,0 +1,899 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ClaimNavigator Agent • AI Copilot</title>
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/assets/css/design-system.css">
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    /* Agent-specific styles matching Resource Center theme */
+    body.agent-page {
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+        url('../../assets/images/backgrounds/ai5.jpg') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-attachment: fixed !important;
+      color: #ffffff !important;
+    }
+
+    body.agent-page * {
+      color: #ffffff !important;
+    }
+
+    body.agent-page a {
+      color: #dbeafe !important;
+    }
+
+    body.agent-page a:hover {
+      color: #93c5fd !important;
+    }
+
+    .agent-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .agent-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .agent-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      color: #ffffff !important;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+    }
+
+    .agent-header p {
+      font-size: 1.2rem;
+      color: #dbeafe !important;
+      margin: 0;
+    }
+
+    .agent-status {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .status-badge {
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      background: rgba(59, 130, 246, 0.3);
+      border: 1px solid rgba(59, 130, 246, 0.5);
+    }
+
+    .agent-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .action-button {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+      text-align: center;
+      color: #ffffff !important;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .action-button:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    .action-button:active {
+      transform: translateY(-1px);
+    }
+
+    .action-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .action-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .action-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+      color: #ffffff !important;
+    }
+
+    .action-description {
+      font-size: 0.9rem;
+      color: #dbeafe !important;
+      margin: 0;
+    }
+
+    .agent-log {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .agent-log h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0 0 1.5rem 0;
+      color: #ffffff !important;
+    }
+
+    .log-entries {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 0.5rem;
+      border-left: 4px solid #3b82f6;
+    }
+
+    .log-entry.success {
+      border-left-color: #22c55e;
+    }
+
+    .log-entry.error {
+      border-left-color: #ef4444;
+    }
+
+    .log-entry.pending {
+      border-left-color: #f59e0b;
+    }
+
+    .log-timestamp {
+      font-size: 0.85rem;
+      color: #dbeafe !important;
+      margin-bottom: 0.25rem;
+    }
+
+    .log-action {
+      font-weight: 600;
+      color: #ffffff !important;
+      margin-bottom: 0.25rem;
+    }
+
+    .log-message {
+      font-size: 0.9rem;
+      color: #dbeafe !important;
+    }
+
+    .log-status {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    .log-status.success {
+      background: rgba(34, 197, 94, 0.3);
+      color: #22c55e;
+    }
+
+    .log-status.error {
+      background: rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+    }
+
+    .log-status.pending {
+      background: rgba(245, 158, 11, 0.3);
+      color: #f59e0b;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid #ffffff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 0.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: rgba(30, 41, 59, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      backdrop-filter: blur(12px);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-header h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0;
+      color: #ffffff !important;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #ffffff !important;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.5rem;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #ffffff !important;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 0.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff !important;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: #ffffff !important;
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    @media (max-width: 768px) {
+      .agent-container {
+        padding: 1rem;
+      }
+
+      .agent-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body class="resource-center agent-page">
+  <header class="header">
+    <div class="bar container">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>ClaimNavigatorAI</div>
+      </div>
+      <nav class="nav">
+        <a href="/app/index.html">Home</a>
+        <a href="/app/resource-center.html">Resource Center</a>
+        <a href="/app/cn-agent.html">CN Agent</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="agent-container">
+      <!-- Agent Header -->
+      <div class="agent-header">
+        <h1>🧠 ClaimNavigator Agent</h1>
+        <p>Your AI Copilot for Claims</p>
+        <div class="agent-status">
+          <span class="status-badge">Claim ID: <span id="claim-id-display">Not Selected</span></span>
+          <span class="status-badge" id="agent-status">Ready</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="agent-actions">
+        <button class="action-button" id="draft-email" onclick="handleAction('draft_email')">
+          <span class="action-icon">📝</span>
+          <div class="action-title">Draft Email</div>
+          <div class="action-description">Generate professional email drafts</div>
+        </button>
+
+        <button class="action-button" id="send-email" onclick="handleAction('send_email')">
+          <span class="action-icon">📨</span>
+          <div class="action-title">Send Email</div>
+          <div class="action-description">Send emails via SendGrid</div>
+        </button>
+
+        <button class="action-button" id="create-alert" onclick="handleAction('create_alert')">
+          <span class="action-icon">⏰</span>
+          <div class="action-title">Create Alert</div>
+          <div class="action-description">Set reminders and deadlines</div>
+        </button>
+
+        <button class="action-button" id="detect-deadlines" onclick="handleAction('detect_deadline')">
+          <span class="action-icon">📅</span>
+          <div class="action-title">Detect Deadlines</div>
+          <div class="action-description">Extract deadlines from documents</div>
+        </button>
+
+        <button class="action-button" id="detect-payments" onclick="handleAction('detect_payment')">
+          <span class="action-icon">💰</span>
+          <div class="action-title">Detect Payments</div>
+          <div class="action-description">Find payment information</div>
+        </button>
+
+        <button class="action-button" id="detect-invoices" onclick="handleAction('detect_invoice')">
+          <span class="action-icon">🧾</span>
+          <div class="action-title">Detect Invoices</div>
+          <div class="action-description">Extract invoice details</div>
+        </button>
+
+        <button class="action-button" id="update-statement" onclick="handleAction('update_statement_of_loss')">
+          <span class="action-icon">💰</span>
+          <div class="action-title">Update Statement of Loss</div>
+          <div class="action-description">Recalculate and regenerate statement PDF</div>
+        </button>
+
+        <button class="action-button" id="update-deadlines" onclick="handleAction('update_deadlines')">
+          <span class="action-icon">📅</span>
+          <div class="action-title">Update Deadlines</div>
+          <div class="action-description">Refresh deadlines from documents</div>
+        </button>
+      </div>
+
+      <!-- Agent Log -->
+      <div class="agent-log">
+        <h3>Recent Agent Actions</h3>
+        <div class="log-entries" id="log-entries">
+          <div class="log-entry">
+            <div class="log-timestamp">No actions yet</div>
+            <div class="log-message">Agent is ready. Select an action to begin.</div>
+          </div>
+        </div>
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.2); font-size: 0.85rem; color: #dbeafe !important;">
+          Agent actions logged automatically – last sync <span id="last-sync-time">Never</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modals for Actions -->
+  <!-- Draft Email Modal -->
+  <div class="modal" id="draft-email-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Draft Email</h3>
+        <button class="modal-close" onclick="closeModal('draft-email-modal')">&times;</button>
+      </div>
+      <form id="draft-email-form" onsubmit="submitDraftEmail(event)">
+        <div class="form-group">
+          <label>Subject</label>
+          <input type="text" id="draft-subject" placeholder="Email subject" required>
+        </div>
+        <div class="form-group">
+          <label>Context</label>
+          <textarea id="draft-context" placeholder="Describe what the email should cover..." required></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('draft-email-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Generate Draft</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Send Email Modal -->
+  <div class="modal" id="send-email-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Send Email</h3>
+        <button class="modal-close" onclick="closeModal('send-email-modal')">&times;</button>
+      </div>
+      <form id="send-email-form" onsubmit="submitSendEmail(event)">
+        <div class="form-group">
+          <label>To</label>
+          <input type="email" id="send-to" placeholder="recipient@example.com" required>
+        </div>
+        <div class="form-group">
+          <label>Subject</label>
+          <input type="text" id="send-subject" placeholder="Email subject" required>
+        </div>
+        <div class="form-group">
+          <label>Body</label>
+          <textarea id="send-body" placeholder="Email body (HTML supported)" required></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('send-email-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Send Email</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Alert Modal -->
+  <div class="modal" id="create-alert-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create Alert</h3>
+        <button class="modal-close" onclick="closeModal('create-alert-modal')">&times;</button>
+      </div>
+      <form id="create-alert-form" onsubmit="submitCreateAlert(event)">
+        <div class="form-group">
+          <label>Message</label>
+          <textarea id="alert-message" placeholder="Alert message" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Due Date (optional)</label>
+          <input type="date" id="alert-due-date">
+        </div>
+        <div class="form-group">
+          <label>Priority</label>
+          <select id="alert-priority" style="width: 100%; padding: 0.75rem; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 0.5rem; background: rgba(255, 255, 255, 0.1); color: #ffffff;">
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+            <option value="Critical">Critical</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('create-alert-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Alert</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Detect Deadline Modal -->
+  <div class="modal" id="detect-deadline-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Detect Deadlines</h3>
+        <button class="modal-close" onclick="closeModal('detect-deadline-modal')">&times;</button>
+      </div>
+      <form id="detect-deadline-form" onsubmit="submitDetectDeadline(event)">
+        <div class="form-group">
+          <label>Document Text</label>
+          <textarea id="deadline-text" placeholder="Paste document text to analyze for deadlines..." required></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('detect-deadline-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Detect Deadlines</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Detect Payment Modal -->
+  <div class="modal" id="detect-payment-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Detect Payments</h3>
+        <button class="modal-close" onclick="closeModal('detect-payment-modal')">&times;</button>
+      </div>
+      <form id="detect-payment-form" onsubmit="submitDetectPayment(event)">
+        <div class="form-group">
+          <label>Document Text</label>
+          <textarea id="payment-text" placeholder="Paste document text to analyze for payment information..." required></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('detect-payment-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Detect Payments</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Detect Invoice Modal -->
+  <div class="modal" id="detect-invoice-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Detect Invoices</h3>
+        <button class="modal-close" onclick="closeModal('detect-invoice-modal')">&times;</button>
+      </div>
+      <form id="detect-invoice-form" onsubmit="submitDetectInvoice(event)">
+        <div class="form-group">
+          <label>Document Text</label>
+          <textarea id="invoice-text" placeholder="Paste document text to analyze for invoice information..." required></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('detect-invoice-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Detect Invoices</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Global state
+    let currentUserId = null;
+    let currentClaimId = null;
+
+    // Initialize - get user and claim from localStorage or URL params
+    function initializeAgent() {
+      // Try to get from URL params
+      const urlParams = new URLSearchParams(window.location.search);
+      currentClaimId = urlParams.get('claim_id') || localStorage.getItem('current_claim_id');
+      currentUserId = urlParams.get('user_id') || localStorage.getItem('current_user_id') || 'demo-user';
+
+      // Update display
+      document.getElementById('claim-id-display').textContent = currentClaimId || 'Not Selected';
+
+      // Load recent logs
+      loadRecentLogs();
+    }
+
+    // Handle action button clicks
+    function handleAction(action) {
+      if (!currentClaimId) {
+        alert('Please select a claim first. You can set claim_id in the URL or localStorage.');
+        return;
+      }
+
+      const modalMap = {
+        'draft_email': 'draft-email-modal',
+        'send_email': 'send-email-modal',
+        'create_alert': 'create-alert-modal',
+        'detect_deadline': 'detect-deadline-modal',
+        'detect_payment': 'detect-payment-modal',
+        'detect_invoice': 'detect-invoice-modal'
+      };
+
+      const modalId = modalMap[action];
+      if (modalId) {
+        document.getElementById(modalId).classList.add('active');
+      } else {
+        // Direct actions (no modal)
+        if (action === 'update_statement_of_loss' || action === 'update_deadlines') {
+          runAgent(action);
+        }
+      }
+    }
+
+    // Close modal
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    // Add log entry
+    function addLogEntry(action, status, message, details = {}) {
+      const logEntries = document.getElementById('log-entries');
+      
+      // Remove "No actions yet" message
+      if (logEntries.children.length === 1 && logEntries.children[0].textContent.includes('No actions yet')) {
+        logEntries.innerHTML = '';
+      }
+
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${status}`;
+      
+      const timestamp = new Date().toLocaleTimeString();
+      const statusBadge = `<span class="log-status ${status}">${status.toUpperCase()}</span>`;
+      
+      entry.innerHTML = `
+        <div class="log-timestamp">${timestamp}</div>
+        <div class="log-action">${action.replace(/_/g, ' ').toUpperCase()}</div>
+        <div class="log-message">${message}</div>
+        ${statusBadge}
+      `;
+
+      logEntries.insertBefore(entry, logEntries.firstChild);
+
+      // Keep only last 50 entries
+      while (logEntries.children.length > 50) {
+        logEntries.removeChild(logEntries.lastChild);
+      }
+    }
+
+    // Run agent action
+    async function runAgent(action, params = {}) {
+      try {
+        addLogEntry(action, 'pending', 'Processing...', params);
+
+        const response = await fetch('/.netlify/functions/run-agent', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            user_id: currentUserId,
+            claim_id: currentClaimId,
+            action: action,
+            ...params
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+          const message = data.result?.message || `Completed successfully`;
+          const details = data.result?.pdf_url || data.result?.total_deadlines || JSON.stringify(data.result).substring(0, 100);
+          addLogEntry(action, 'success', `${message} - ${details}`, data);
+          
+          // Update last sync time
+          document.getElementById('last-sync-time').textContent = new Date().toLocaleString();
+          
+          // Show success toast
+          showToast(`${action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} completed successfully!`, 'success');
+          return data;
+        } else {
+          addLogEntry(action, 'error', `Error: ${data.error || 'Unknown error'}`, data);
+          showToast(`Error: ${data.error || 'Unknown error'}`, 'error');
+          throw new Error(data.error || 'Unknown error');
+        }
+      } catch (error) {
+        addLogEntry(action, 'error', `Error: ${error.message}`, { error: error.message });
+        throw error;
+      }
+    }
+
+    // Form handlers
+    async function submitDraftEmail(event) {
+      event.preventDefault();
+      const subject = document.getElementById('draft-subject').value;
+      const context = document.getElementById('draft-context').value;
+
+      closeModal('draft-email-modal');
+
+      try {
+        const result = await runAgent('email_draft', { subject, context });
+        alert('Email draft generated! Check the log for details.');
+        // Could show the draft in a result modal here
+      } catch (error) {
+        alert('Failed to generate email draft: ' + error.message);
+      }
+    }
+
+    async function submitSendEmail(event) {
+      event.preventDefault();
+      const to = document.getElementById('send-to').value;
+      const subject = document.getElementById('send-subject').value;
+      const body = document.getElementById('send-body').value;
+
+      if (!confirm('Are you sure you want to send this email?')) {
+        return;
+      }
+
+      closeModal('send-email-modal');
+
+      try {
+        const result = await runAgent('email_send', { to, subject, body });
+        alert('Email sent successfully!');
+      } catch (error) {
+        alert('Failed to send email: ' + error.message);
+      }
+    }
+
+    async function submitCreateAlert(event) {
+      event.preventDefault();
+      const message = document.getElementById('alert-message').value;
+      const dueDate = document.getElementById('alert-due-date').value || null;
+      const priority = document.getElementById('alert-priority').value;
+
+      closeModal('create-alert-modal');
+
+      try {
+        const result = await runAgent('create_alert', { message, due_date: dueDate, priority });
+        alert('Alert created successfully!');
+      } catch (error) {
+        alert('Failed to create alert: ' + error.message);
+      }
+    }
+
+    async function submitDetectDeadline(event) {
+      event.preventDefault();
+      const documentText = document.getElementById('deadline-text').value;
+
+      closeModal('detect-deadline-modal');
+
+      try {
+        const result = await runAgent('detect_deadline', { document_text: documentText });
+        alert('Deadlines detected! Check the log for details.');
+        // Could show results in a result modal here
+      } catch (error) {
+        alert('Failed to detect deadlines: ' + error.message);
+      }
+    }
+
+    async function submitDetectPayment(event) {
+      event.preventDefault();
+      const documentText = document.getElementById('payment-text').value;
+
+      closeModal('detect-payment-modal');
+
+      try {
+        const result = await runAgent('detect_payment', { document_text: documentText });
+        alert('Payment information detected! Check the log for details.');
+      } catch (error) {
+        alert('Failed to detect payments: ' + error.message);
+      }
+    }
+
+    async function submitDetectInvoice(event) {
+      event.preventDefault();
+      const documentText = document.getElementById('invoice-text').value;
+
+      closeModal('detect-invoice-modal');
+
+      try {
+        const result = await runAgent('detect_invoice', { document_text: documentText });
+        alert('Invoice information detected! Check the log for details.');
+      } catch (error) {
+        alert('Failed to detect invoices: ' + error.message);
+      }
+    }
+
+    // Load recent logs from Supabase (optional enhancement)
+    async function loadRecentLogs() {
+      // This could fetch recent logs from Supabase agent_logs table
+      // For now, we'll just initialize
+    }
+
+    // Show toast notification
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? 'rgba(34, 197, 94, 0.9)' : 'rgba(239, 68, 68, 0.9)'};
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // Add CSS for toast animations
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes slideOut {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', initializeAgent);
+  </script>
+</body>
+</html>
+
