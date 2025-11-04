@@ -312,6 +312,7 @@ exports.handler = async (event, context) => {
           break;
 
         case 'update_statement_of_loss':
+        case 'generate_statement_of_loss':
           result = await updateStatementOfLoss(user_id, claim_id);
           break;
 
