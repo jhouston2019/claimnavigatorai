@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Claim Stage Tracker • ClaimNavigatorAI</title>
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/assets/css/design-system.css">
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body.stage-tracker-page {
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+        url('../../assets/images/backgrounds/ai5.jpg') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-attachment: fixed !important;
+      color: #ffffff !important;
+    }
+
+    body.stage-tracker-page * {
+      color: #ffffff !important;
+    }
+
+    body.stage-tracker-page a {
+      color: #dbeafe !important;
+    }
+
+    .tracker-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .tracker-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .tracker-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      color: #ffffff !important;
+    }
+
+    .tracker-header p {
+      font-size: 1.1rem;
+      color: #dbeafe !important;
+      margin: 0;
+    }
+
+    .stage-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .stage {
+      width: 90%;
+      max-width: 800px;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      text-align: center;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+      border: 2px solid;
+      position: relative;
+    }
+
+    .stage.pending {
+      background: rgba(55, 65, 81, 0.6);
+      border-color: rgba(156, 163, 175, 0.5);
+      color: #9CA3AF !important;
+    }
+
+    .stage.active {
+      background: rgba(37, 99, 235, 0.6);
+      border-color: rgba(59, 130, 246, 0.8);
+      color: white !important;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    .stage.complete {
+      background: rgba(22, 163, 74, 0.6);
+      border-color: rgba(34, 197, 94, 0.8);
+      color: white !important;
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+    }
+
+    .stage h3 {
+      font-size: 1.5rem;
+      margin: 0 0 0.5rem 0;
+      font-weight: 700;
+    }
+
+    .stage p {
+      font-size: 0.95rem;
+      margin: 0.5rem 0 1rem 0;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+
+    .stage-buttons {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-stage {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      text-transform: capitalize;
+    }
+
+    .btn-stage:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-active {
+      background: #3b82f6;
+      color: white !important;
+    }
+
+    .btn-active:hover {
+      background: #2563eb;
+    }
+
+    .btn-complete {
+      background: #16a34a;
+      color: white !important;
+    }
+
+    .btn-complete:hover {
+      background: #15803d;
+    }
+
+    .btn-stage:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .stage-status-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .stage.pending .stage-status-badge {
+      background: rgba(156, 163, 175, 0.3);
+      color: #9CA3AF !important;
+    }
+
+    .stage.active .stage-status-badge {
+      background: rgba(59, 130, 246, 0.3);
+      color: #93c5fd !important;
+    }
+
+    .stage.complete .stage-status-badge {
+      background: rgba(34, 197, 94, 0.3);
+      color: #86efac !important;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #dbeafe !important;
+      font-size: 1.1rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 9999px;
+      margin: 2rem 0;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #16a34a);
+      transition: width 0.5s ease;
+      border-radius: 9999px;
+    }
+
+    .progress-text {
+      text-align: center;
+      margin-top: 1rem;
+      color: #dbeafe !important;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body class="stage-tracker-page resource-center">
+  <header class="header">
+    <div class="bar container">
+      <div class="brand"><div class="logo"></div><div>ClaimNavigatorAI</div></div>
+      <nav class="nav">
+        <a href="/app/index.html">Home</a>
+        <a href="/app/resource-center.html">Resource Center</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="tracker-container">
+    <div class="tracker-header">
+      <h1>Claim Stage Tracker</h1>
+      <p>View your claim's current stage, progress, and what comes next.</p>
+    </div>
+
+    <div id="progressSection" style="display: none;">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-text" id="progressText"></div>
+    </div>
+
+    <div id="stages" class="stage-container">
+      <div class="loading">Loading claim stages...</div>
+    </div>
+  </div>
+
+<script>
+const claim_id = localStorage.getItem('claim_id') || 'TEST-CLAIM';
+
+async function loadStages() {
+  try {
+    const res = await fetch(`/.netlify/functions/get-claim-stages?claim_id=${claim_id}`);
+    const data = await res.json();
+
+    if (data.status === 'error') {
+      throw new Error(data.error);
+    }
+
+    const stages = data.stages || [];
+    const div = document.getElementById('stages');
+    div.innerHTML = '';
+
+    if (stages.length === 0) {
+      div.innerHTML = '<div class="loading">No stages found for this claim.</div>';
+      return;
+    }
+
+    // Calculate progress
+    const completed = stages.filter(s => s.status === 'complete').length;
+    const total = stages.length;
+    const progress = Math.round((completed / total) * 100);
+
+    // Show progress bar
+    const progressSection = document.getElementById('progressSection');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    
+    progressSection.style.display = 'block';
+    progressFill.style.width = `${progress}%`;
+    progressText.textContent = `${completed} of ${total} stages completed (${progress}%)`;
+
+    // Render stages
+    stages.forEach((stage, index) => {
+      const stageDiv = document.createElement('div');
+      stageDiv.className = `stage ${stage.status}`;
+      
+      stageDiv.innerHTML = `
+        <span class="stage-status-badge">${stage.status}</span>
+        <h3>${stage.stage_name}</h3>
+        <p>${stage.description || 'No description available'}</p>
+        <div class="stage-buttons">
+          ${stage.status !== 'active' ? `<button class="btn-stage btn-active" onclick="updateStage('${stage.stage_name}', 'active')">Mark Active</button>` : ''}
+          ${stage.status !== 'complete' ? `<button class="btn-stage btn-complete" onclick="updateStage('${stage.stage_name}', 'complete')">Mark Complete</button>` : ''}
+          ${stage.status === 'complete' ? `<button class="btn-stage btn-active" onclick="updateStage('${stage.stage_name}', 'pending')" style="background: #6b7280;">Reset</button>` : ''}
+        </div>
+        ${stage.updated_at ? `<small style="display: block; margin-top: 0.5rem; opacity: 0.7; font-size: 0.85rem;">Last updated: ${new Date(stage.updated_at).toLocaleString()}</small>` : ''}
+      `;
+      
+      div.appendChild(stageDiv);
+    });
+
+  } catch (error) {
+    console.error('Error loading stages:', error);
+    document.getElementById('stages').innerHTML = `
+      <div class="loading" style="color: #ef4444 !important;">
+        Error loading stages: ${error.message}
+      </div>
+    `;
+  }
+}
+
+async function updateStage(stageName, newStatus) {
+  try {
+    const res = await fetch('/.netlify/functions/update-claim-stage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        claim_id,
+        stage_name: stageName,
+        new_status: newStatus
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      // Reload stages to show updated state
+      await loadStages();
+      
+      // Show success message
+      const notification = document.createElement('div');
+      notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #16a34a; color: white; padding: 1rem 1.5rem; border-radius: 0.5rem; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
+      notification.textContent = `Stage "${stageName}" updated to ${newStatus}`;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    } else {
+      throw new Error(data.error || 'Failed to update stage');
+    }
+  } catch (error) {
+    console.error('Error updating stage:', error);
+    alert(`Error updating stage: ${error.message}`);
+  }
+}
+
+// Load stages on page load
+loadStages();
+</script>
+</body>
+</html>
+

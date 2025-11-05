@@ -279,6 +279,46 @@ async function estimateRepairCost(userId, claimId, category, severity, squareFee
 }
 
 /**
+ * Update claim stage
+ */
+async function updateClaimStage(userId, claimId, stageName, newStatus) {
+  try {
+    const updateClaimStageFn = require('./update-claim-stage');
+    
+    const mockEvent = {
+      httpMethod: 'POST',
+      body: JSON.stringify({
+        claim_id: claimId,
+        stage_name: stageName,
+        new_status: newStatus
+      })
+    };
+
+    const handlerResult = await updateClaimStageFn.handler(mockEvent, {});
+    const parsedResult = JSON.parse(handlerResult.body);
+
+    if (parsedResult.status === 'error') {
+      throw new Error(parsedResult.error);
+    }
+
+    await logActivity(userId, claimId, 'update_stage', 'success', { 
+      stage_name: stageName,
+      new_status: newStatus
+    });
+
+    return {
+      status: 'success',
+      message: `Stage "${stageName}" updated to ${newStatus}`,
+      stage: parsedResult.stage
+    };
+  } catch (error) {
+    console.error('Error updating claim stage:', error);
+    await logActivity(userId, claimId, 'update_stage', 'error', { error: error.message });
+    throw error;
+  }
+}
+
+/**
  * Update deadlines by calling update-deadlines function
  */
 async function updateDeadlines(userId, claimId, documentText = null) {
@@ -521,6 +561,18 @@ exports.handler = async (event, context) => {
             params.category, 
             params.severity, 
             params.square_feet
+          );
+          break;
+
+        case 'update_stage':
+          if (!params.stage_name || !params.new_status) {
+            throw new Error('Missing required fields: stage_name and new_status are required');
+          }
+          result = await updateClaimStage(
+            user_id,
+            claim_id,
+            params.stage_name,
+            params.new_status
           );
           break;
 
