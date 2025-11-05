@@ -234,6 +234,51 @@ async function getStateInfo(userId, claimId, stateName) {
 }
 
 /**
+ * Estimate repair/replacement cost using ROM tool
+ */
+async function estimateRepairCost(userId, claimId, category, severity, squareFeet) {
+  try {
+    const romEstimate = require('./rom-estimate');
+    
+    const mockEvent = {
+      httpMethod: 'POST',
+      body: JSON.stringify({
+        claim_id: claimId,
+        category: category,
+        severity: severity,
+        square_feet: parseFloat(squareFeet)
+      })
+    };
+
+    const handlerResult = await romEstimate.handler(mockEvent);
+    const parsedResult = JSON.parse(handlerResult.body);
+
+    if (parsedResult.status === 'error') {
+      throw new Error(parsedResult.error);
+    }
+
+    await logActivity(userId, claimId, 'estimate_repair_cost', 'success', { 
+      estimate: parsedResult.estimate,
+      category,
+      severity,
+      square_feet: squareFeet
+    });
+
+    return {
+      status: 'success',
+      message: `Repair cost estimate generated: $${parsedResult.estimate.toLocaleString()}`,
+      estimate: parsedResult.estimate,
+      explanation: parsedResult.explanation,
+      breakdown: parsedResult.breakdown
+    };
+  } catch (error) {
+    console.error('Error estimating repair cost:', error);
+    await logActivity(userId, claimId, 'estimate_repair_cost', 'error', { error: error.message });
+    throw error;
+  }
+}
+
+/**
  * Update deadlines by calling update-deadlines function
  */
 async function updateDeadlines(userId, claimId, documentText = null) {
@@ -464,6 +509,19 @@ exports.handler = async (event, context) => {
 
         case 'legal_deadline':
           result = await getStateInfo(user_id, claim_id, params.state || '');
+          break;
+
+        case 'estimate_repair_cost':
+          if (!params.category || !params.severity || !params.square_feet) {
+            throw new Error('Missing required fields: category, severity, and square_feet are required');
+          }
+          result = await estimateRepairCost(
+            user_id, 
+            claim_id, 
+            params.category, 
+            params.severity, 
+            params.square_feet
+          );
           break;
 
         default:

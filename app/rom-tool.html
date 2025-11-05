@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ROM Estimator • ClaimNavigatorAI</title>
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/assets/css/design-system.css">
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body.rom-page {
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+        url('../../assets/images/backgrounds/ai5.jpg') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-attachment: fixed !important;
+      color: #ffffff !important;
+    }
+
+    body.rom-page * {
+      color: #ffffff !important;
+    }
+
+    body.rom-page a {
+      color: #dbeafe !important;
+    }
+
+    .rom-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .rom-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .rom-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      color: #ffffff !important;
+    }
+
+    .rom-header p {
+      font-size: 1.1rem;
+      color: #dbeafe !important;
+      margin: 0;
+    }
+
+    .rom-form-section {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #ffffff !important;
+      font-size: 1rem;
+    }
+
+    .form-group select,
+    .form-group input[type="number"] {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff !important;
+      font-size: 1rem;
+      backdrop-filter: blur(4px);
+    }
+
+    .form-group select:focus,
+    .form-group input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .form-group select option {
+      background: #1e293b;
+      color: #ffffff;
+    }
+
+    .btn-estimate {
+      width: 100%;
+      padding: 1rem;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-estimate:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    .output-section {
+      background: rgba(59, 130, 246, 0.15);
+      border: 2px solid rgba(59, 130, 246, 0.3);
+      border-radius: 1rem;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+      margin-top: 2rem;
+      display: none;
+    }
+
+    .output-section.show {
+      display: block;
+    }
+
+    .output-section h3 {
+      font-size: 2rem;
+      margin: 0 0 1rem 0;
+      color: #ffffff !important;
+    }
+
+    .estimate-amount {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #60a5fa !important;
+      margin: 1rem 0;
+    }
+
+    .explanation {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #dbeafe !important;
+      margin: 1rem 0;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 0.5rem;
+    }
+
+    .breakdown {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      color: #cbd5e1 !important;
+    }
+
+    .breakdown strong {
+      color: #ffffff !important;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #dbeafe !important;
+    }
+  </style>
+</head>
+<body class="rom-page resource-center">
+  <header class="header">
+    <div class="bar container">
+      <div class="brand"><div class="logo"></div><div>ClaimNavigatorAI</div></div>
+      <nav class="nav">
+        <a href="/app/index.html">Home</a>
+        <a href="/app/resource-center.html">Resource Center</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="rom-container">
+    <div class="rom-header">
+      <h1>Repair/Replacement Cost Estimator (ROM Tool)</h1>
+      <p>Estimate repair or replacement costs for your property loss. AI will calculate and explain the result.</p>
+    </div>
+
+    <div class="rom-form-section">
+      <form id="romForm">
+        <div class="form-group">
+          <label for="category">Damage Category:</label>
+          <select id="category" required>
+            <option value="">Select a category...</option>
+            <option value="fire">🔥 Fire Damage</option>
+            <option value="water">💧 Water Damage</option>
+            <option value="roof">🏠 Roof Damage</option>
+            <option value="contents">📦 Contents/Loss</option>
+            <option value="structural">🏗️ Structural Damage</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="severity">Severity Level:</label>
+          <select id="severity" required>
+            <option value="">Select severity...</option>
+            <option value="minor">Minor - Surface damage, cosmetic repairs needed</option>
+            <option value="moderate">Moderate - Significant damage requiring repairs</option>
+            <option value="severe">Severe - Extensive damage, major repairs required</option>
+            <option value="total_loss">Total Loss - Complete replacement necessary</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="sqft">Square Feet Affected:</label>
+          <input type="number" id="sqft" placeholder="e.g. 1500" min="1" step="0.01" required />
+        </div>
+
+        <button type="submit" class="btn-estimate">Calculate Estimate</button>
+      </form>
+    </div>
+
+    <div id="output" class="output-section">
+      <div class="loading" id="loading">Calculating estimate...</div>
+      <div id="results" style="display: none;">
+        <h3>Estimated Repair/Replacement Cost</h3>
+        <div class="estimate-amount" id="estimateAmount"></div>
+        <div class="explanation" id="explanation"></div>
+        <div class="breakdown" id="breakdown"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const claim_id = localStorage.getItem('claim_id') || 'TEST-CLAIM';
+
+document.getElementById('romForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const category = document.getElementById('category').value;
+  const severity = document.getElementById('severity').value;
+  const sqft = parseFloat(document.getElementById('sqft').value);
+
+  if (!category || !severity || !sqft || sqft <= 0) {
+    alert('Please fill in all fields correctly.');
+    return;
+  }
+
+  const outputSection = document.getElementById('output');
+  const loading = document.getElementById('loading');
+  const results = document.getElementById('results');
+  
+  outputSection.classList.add('show');
+  loading.style.display = 'block';
+  results.style.display = 'none';
+
+  try {
+    const res = await fetch('/.netlify/functions/rom-estimate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        claim_id, 
+        category, 
+        severity, 
+        square_feet: sqft 
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.status === 'success' && data.estimate) {
+      loading.style.display = 'none';
+      results.style.display = 'block';
+      
+      document.getElementById('estimateAmount').textContent = `$${data.estimate.toLocaleString()}`;
+      document.getElementById('explanation').textContent = data.explanation || 'Estimate calculated successfully.';
+      
+      if (data.breakdown) {
+        document.getElementById('breakdown').innerHTML = `
+          <strong>Calculation Breakdown:</strong><br>
+          ${data.breakdown.calculation}<br><br>
+          <strong>Square Feet:</strong> ${data.breakdown.square_feet.toLocaleString()}<br>
+          <strong>Base Rate:</strong> $${data.breakdown.base_rate} per sq ft<br>
+          <strong>Severity Multiplier:</strong> ${data.breakdown.severity_multiplier}x
+        `;
+      }
+    } else {
+      loading.textContent = 'Error generating estimate. Please try again.';
+      throw new Error(data.error || 'Unknown error');
+    }
+  } catch (error) {
+    console.error('ROM estimate error:', error);
+    loading.textContent = `Error: ${error.message || 'Failed to generate estimate. Please try again.'}`;
+    results.style.display = 'none';
+  }
+});
+</script>
+</body>
+</html>
+
