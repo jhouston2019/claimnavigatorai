@@ -319,6 +319,87 @@ async function updateClaimStage(userId, claimId, stageName, newStatus) {
 }
 
 /**
+ * Suggest articles from Knowledge Center
+ */
+async function suggestArticles(userId, claimId, query = '') {
+  try {
+    const getPosts = require('./get-posts');
+    
+    const mockEvent = {
+      httpMethod: 'GET'
+    };
+
+    const handlerResult = await getPosts.handler(mockEvent, {});
+    const parsedResult = JSON.parse(handlerResult.body);
+
+    if (parsedResult.status === 'error') {
+      throw new Error(parsedResult.error);
+    }
+
+    let posts = parsedResult.posts || [];
+
+    // Filter posts by query if provided
+    if (query) {
+      const lowerQuery = query.toLowerCase();
+      posts = posts.filter(post => 
+        post.title.toLowerCase().includes(lowerQuery) ||
+        post.snippet.toLowerCase().includes(lowerQuery) ||
+        post.category.toLowerCase().includes(lowerQuery)
+      );
+    }
+
+    await logActivity(userId, claimId, 'suggest_articles', 'success', { 
+      query,
+      count: posts.length
+    });
+
+    return {
+      status: 'success',
+      message: `Found ${posts.length} article(s)`,
+      articles: posts.slice(0, 5) // Return top 5
+    };
+  } catch (error) {
+    console.error('Error suggesting articles:', error);
+    await logActivity(userId, claimId, 'suggest_articles', 'error', { error: error.message });
+    throw error;
+  }
+}
+
+/**
+ * Fetch a specific article by slug
+ */
+async function fetchArticle(userId, claimId, slug) {
+  try {
+    const getPost = require('./get-post');
+    
+    const mockEvent = {
+      httpMethod: 'GET',
+      queryStringParameters: { slug }
+    };
+
+    const handlerResult = await getPost.handler(mockEvent, {});
+    
+    // get-post returns HTML, not JSON
+    const html = handlerResult.body;
+
+    await logActivity(userId, claimId, 'fetch_article', 'success', { 
+      slug
+    });
+
+    return {
+      status: 'success',
+      message: `Article "${slug}" fetched successfully`,
+      html: html,
+      slug: slug
+    };
+  } catch (error) {
+    console.error('Error fetching article:', error);
+    await logActivity(userId, claimId, 'fetch_article', 'error', { error: error.message, slug });
+    throw error;
+  }
+}
+
+/**
  * Update deadlines by calling update-deadlines function
  */
 async function updateDeadlines(userId, claimId, documentText = null) {
@@ -574,6 +655,17 @@ exports.handler = async (event, context) => {
             params.stage_name,
             params.new_status
           );
+          break;
+
+        case 'suggest_articles':
+          result = await suggestArticles(user_id, claim_id, params.query || '');
+          break;
+
+        case 'fetch_article':
+          if (!params.slug) {
+            throw new Error('Missing required field: slug is required');
+          }
+          result = await fetchArticle(user_id, claim_id, params.slug);
           break;
 
         default:

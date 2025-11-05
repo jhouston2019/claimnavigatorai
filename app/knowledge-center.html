@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Claim Knowledge Center • ClaimNavigatorAI</title>
+  <meta name="description" content="Guides, claim tips, and insurance insights from ClaimNavigator.">
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/assets/css/design-system.css">
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body.knowledge-center-page {
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+        url('../../assets/images/backgrounds/ai5.jpg') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-attachment: fixed !important;
+      color: #ffffff !important;
+    }
+
+    body.knowledge-center-page * {
+      color: #ffffff !important;
+    }
+
+    body.knowledge-center-page a {
+      color: #dbeafe !important;
+    }
+
+    .knowledge-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .knowledge-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .knowledge-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      color: #ffffff !important;
+    }
+
+    .knowledge-header p {
+      font-size: 1.1rem;
+      color: #dbeafe !important;
+      margin: 0;
+    }
+
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .post-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .post-card:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .post-card h3 {
+      font-size: 1.5rem;
+      margin: 0 0 1rem 0;
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+
+    .post-card p {
+      color: #dbeafe !important;
+      line-height: 1.6;
+      margin: 0 0 1.5rem 0;
+      flex-grow: 1;
+    }
+
+    .post-meta {
+      font-size: 0.85rem;
+      color: #9ca3af !important;
+      margin-bottom: 1rem;
+    }
+
+    .btn-read-more {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: #3b82f6;
+      color: white !important;
+      text-decoration: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      text-align: center;
+      margin-top: auto;
+    }
+
+    .btn-read-more:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #dbeafe !important;
+      font-size: 1.1rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #9ca3af !important;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #ffffff !important;
+    }
+  </style>
+</head>
+<body class="knowledge-center-page resource-center">
+  <header class="header">
+    <div class="bar container">
+      <div class="brand"><div class="logo"></div><div>ClaimNavigatorAI</div></div>
+      <nav class="nav">
+        <a href="/app/index.html">Home</a>
+        <a href="/app/resource-center.html">Resource Center</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="knowledge-container">
+    <div class="knowledge-header">
+      <h1>Claim Knowledge Center</h1>
+      <p>Explore expert guides on insurance claims, policy rights, and best practices.</p>
+    </div>
+
+    <div id="posts" class="posts-grid">
+      <div class="loading">Loading articles...</div>
+    </div>
+  </div>
+
+<script>
+async function loadPosts() {
+  try {
+    const res = await fetch('/.netlify/functions/get-posts');
+    const data = await res.json();
+
+    if (data.status === 'error') {
+      throw new Error(data.error);
+    }
+
+    const posts = data.posts || [];
+    const div = document.getElementById('posts');
+    div.innerHTML = '';
+
+    if (posts.length === 0) {
+      div.innerHTML = `
+        <div class="empty-state" style="grid-column: 1 / -1;">
+          <h3>No articles yet</h3>
+          <p>Check back soon for expert guides and insurance insights.</p>
+        </div>
+      `;
+      return;
+    }
+
+    posts.forEach(post => {
+      const card = document.createElement('div');
+      card.className = 'post-card';
+      card.innerHTML = `
+        <div class="post-meta">${post.date || ''} • ${post.category || 'General'}</div>
+        <h3>${post.title}</h3>
+        <p>${post.snippet}</p>
+        <a href="/app/post.html?slug=${post.slug}" class="btn-read-more">Read More →</a>
+      `;
+      div.appendChild(card);
+    });
+
+  } catch (error) {
+    console.error('Error loading posts:', error);
+    document.getElementById('posts').innerHTML = `
+      <div class="empty-state" style="grid-column: 1 / -1;">
+        <h3>Error loading articles</h3>
+        <p>${error.message}</p>
+      </div>
+    `;
+  }
+}
+
+loadPosts();
+</script>
+</body>
+</html>
+

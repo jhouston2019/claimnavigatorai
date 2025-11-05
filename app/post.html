@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ClaimNavigator Article</title>
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/assets/css/design-system.css">
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body.post-page {
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+        url('../../assets/images/backgrounds/ai5.jpg') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-attachment: fixed !important;
+      color: #ffffff !important;
+    }
+
+    body.post-page * {
+      color: #ffffff !important;
+    }
+
+    body.post-page a {
+      color: #dbeafe !important;
+    }
+
+    .post-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+      min-height: 80vh;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #dbeafe !important;
+      font-size: 1.1rem;
+    }
+
+    #content {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 1rem;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body class="post-page resource-center">
+  <header class="header">
+    <div class="bar container">
+      <div class="brand"><div class="logo"></div><div>ClaimNavigatorAI</div></div>
+      <nav class="nav">
+        <a href="/app/index.html">Home</a>
+        <a href="/app/knowledge-center.html">Knowledge Center</a>
+        <a href="/app/resource-center.html">Resource Center</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="post-container">
+    <div id="content" class="loading">Loading article...</div>
+  </div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const slug = params.get('slug');
+
+async function loadPost() {
+  if (!slug) {
+    document.getElementById('content').innerHTML = '<p>No article specified.</p>';
+    return;
+  }
+
+  try {
+    const res = await fetch(`/.netlify/functions/get-post?slug=${slug}`);
+    const html = await res.text();
+    
+    if (res.status !== 200) {
+      throw new Error(html);
+    }
+    
+    document.getElementById('content').innerHTML = html;
+  } catch (error) {
+    console.error('Error loading post:', error);
+    document.getElementById('content').innerHTML = `
+      <p style="color: #ef4444 !important;">Error loading article: ${error.message}</p>
+      <a href="/app/knowledge-center.html">← Back to Knowledge Center</a>
+    `;
+  }
+}
+
+loadPost();
+</script>
+</body>
+</html>
+
