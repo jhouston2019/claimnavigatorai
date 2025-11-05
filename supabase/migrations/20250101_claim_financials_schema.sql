@@ -70,3 +70,4 @@ CREATE TRIGGER update_claim_dates_updated_at
 COMMENT ON TABLE claim_financials IS 'Financial breakdown for Statement of Loss generation';
 COMMENT ON TABLE claim_dates IS 'Important dates and deadlines for claims';
 
+

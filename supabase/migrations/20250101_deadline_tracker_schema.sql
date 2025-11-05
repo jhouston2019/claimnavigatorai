@@ -48,3 +48,4 @@ COMMENT ON COLUMN claim_dates.source IS 'Source of the deadline (AI Parser, Manu
 COMMENT ON COLUMN claim_dates.priority IS 'Priority level: High, Medium, or Low';
 COMMENT ON COLUMN claim_dates.notified IS 'Whether the user has been notified about this deadline';
 
+

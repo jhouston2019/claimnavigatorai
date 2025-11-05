@@ -26,3 +26,4 @@ COMMENT ON COLUMN state_views.state IS 'State abbreviation or name';
 COMMENT ON COLUMN state_views.claim_type IS 'Type of claim guide viewed (fire, water, wind, etc.)';
 COMMENT ON COLUMN state_views.page_url IS 'URL of the page viewed';
 
+

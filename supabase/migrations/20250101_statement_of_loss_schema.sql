@@ -60,3 +60,4 @@ CREATE TRIGGER update_claim_financials_updated_at
 COMMENT ON TABLE claim_financials IS 'Financial ledger entries for Statement of Loss tracking';
 COMMENT ON VIEW running_statement_of_loss IS 'Aggregated totals view for Statement of Loss calculations';
 
+

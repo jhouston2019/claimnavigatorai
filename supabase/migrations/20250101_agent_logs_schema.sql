@@ -70,3 +70,4 @@ COMMENT ON COLUMN agent_logs.details IS 'JSON object containing action-specific 
 COMMENT ON COLUMN claim_reminders.priority IS 'Priority level: Critical, High, Medium, or Low';
 COMMENT ON COLUMN claim_reminders.sent IS 'Whether the reminder notification has been sent';
 
+

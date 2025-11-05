@@ -41,3 +41,4 @@ COMMENT ON TABLE claim_journal IS 'Timeline of claim activity, events, calls, su
 COMMENT ON COLUMN claim_journal.entry_title IS 'Brief title or summary of the journal entry';
 COMMENT ON COLUMN claim_journal.entry_body IS 'Detailed description of the event or activity';
 
+
