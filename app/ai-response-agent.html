@@ -382,7 +382,9 @@
 
                 // Check if response is streaming
                 const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('text/stream') || contentType && contentType.includes('text/event-stream')) {
+                let data = null;
+                
+                if (contentType && (contentType.includes('text/stream') || contentType.includes('text/event-stream'))) {
                     // Handle streaming response
                     const reader = response.body.getReader();
                     const decoder = new TextDecoder();
@@ -401,24 +403,31 @@
                         accumulatedText += chunk;
                         streamingContent.textContent = accumulatedText;
                     }
+                    
+                    // Try to parse accumulated text as JSON for issues/suggestions
+                    try {
+                        data = JSON.parse(accumulatedText);
+                    } catch (e) {
+                        data = { draftLetter: accumulatedText, analysis: accumulatedText };
+                    }
                 } else {
                     // Handle regular JSON response
-                    const data = await response.json();
+                    data = await response.json();
 
                     // Hide loading, show results
                     loadingIndicator.classList.add('hidden');
                     aiResponse.classList.remove('hidden');
-                    aiResponse.innerHTML = `<div class="fade-in"><h4 class="font-semibold text-gray-900 mb-3">📝 Draft Response Letter</h4><div class="text-gray-800 bg-white p-4 rounded-md border-l-4 border-blue-500 whitespace-pre-wrap">${data.draftLetter || data.analysis}</div></div>`;
+                    aiResponse.innerHTML = `<div class="fade-in"><h4 class="font-semibold text-gray-900 mb-3">📝 Draft Response Letter</h4><div class="text-gray-800 bg-white p-4 rounded-md border-l-4 border-blue-500 whitespace-pre-wrap">${data.draftLetter || data.analysis || ''}</div></div>`;
                 }
 
                 // Show detected issues
-                if (data.issues && data.issues.length > 0) {
+                if (data && data.issues && data.issues.length > 0) {
                     aiInsights.classList.remove('hidden');
                     issuesList.innerHTML = data.issues.map(issue => `<li class="flex items-start"><span class="text-red-500 mr-2">•</span><span>${issue}</span></li>`).join('');
                 }
 
                 // Show suggestions
-                if (data.suggestions && data.suggestions.length > 0) {
+                if (data && data.suggestions && data.suggestions.length > 0) {
                     aiSuggestions.classList.remove('hidden');
                     suggestionsList.innerHTML = data.suggestions.map(suggestion => `<li class="flex items-start"><span class="text-green-500 mr-2">•</span><span>${suggestion}</span></li>`).join('');
                 }
