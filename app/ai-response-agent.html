@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Response & Analysis Agent - ClaimNavigatorAI</title>
+    <title>AI Claim Response Assistant - ClaimNavigatorAI</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -51,7 +51,7 @@
             <nav class="nav">
                 <a href="/app/index.html">Home</a>
                 <span >></span>
-                <span >AI Response & Analysis Agent</span>
+                <span >AI Claim Response Assistant</span>
                 <span >></span>
                 <a href="/app/resource-center.html">Resource Center</a>
             </nav>
@@ -62,8 +62,8 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Title Section -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold  mb-4">AI Response & Analysis Agent</h1>
-            <p class="text-xl  max-w-3xl mx-auto">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">AI Claim Response Assistant</h1>
+            <p class="text-xl text-gray-700 max-w-3xl mx-auto">
                 Analyze insurer correspondence, generate professional replies, and receive expert recommendations instantly.
             </p>
         </div>
@@ -71,8 +71,8 @@
         <!-- Main Grid Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Left Column - Input Panel -->
-            <div class="card  rounded-lg shadow-lg p-6">
-                <h2 class="text-2xl font-semibold  mb-6">AI Response & Analysis</h2>
+            <div class="card bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-6">AI Response & Analysis</h2>
                 
                 <!-- Auto-populated User Information Display -->
                 <div id="userInfoDisplay" class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
@@ -138,32 +138,32 @@
             </div>
 
             <!-- Right Column - AI Output Panel -->
-            <div class="card  rounded-lg shadow-lg p-6">
-                <h2 class="text-2xl font-semibold  mb-6">AI Analysis Output</h2>
+            <div class="card bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-6">AI Analysis Output</h2>
                 
                 <!-- AI Output Display -->
-                <div id="aiOutput" class=" rounded-lg p-4 min-h-64 border ">
-                    <div id="placeholder" class=" text-center py-8">
+                <div id="aiOutput" class="bg-gray-50 rounded-lg p-4 min-h-64 border border-gray-200">
+                    <div id="placeholder" class="text-gray-600 text-center py-8">
                         <div class="text-4xl mb-4">🤖</div>
                         <p>Click "Analyze & Draft Reply" to get AI-powered analysis and draft response.</p>
                     </div>
                     <div id="loadingIndicator" class="hidden text-center py-8">
                         <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-                        <p class="">AI is analyzing your correspondence...</p>
+                        <p class="text-gray-600">AI is analyzing your correspondence...</p>
                     </div>
-                    <div id="aiResponse" class="hidden"></div>
+                    <div id="aiResponse" class="hidden text-gray-900"></div>
                 </div>
 
                 <!-- AI Detected Issues -->
                 <div id="aiInsights" class="mt-6 hidden">
-                    <h3 class="text-lg font-semibold  mb-3">🔍 AI Detected Issues / Key Points</h3>
-                    <ul id="issuesList" class="space-y-2"></ul>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">🔍 AI Detected Issues / Key Points</h3>
+                    <ul id="issuesList" class="space-y-2 text-gray-700"></ul>
     </div>
 
                 <!-- Suggested Actions -->
                 <div id="aiSuggestions" class="mt-6 hidden">
-                    <h3 class="text-lg font-semibold  mb-3">💡 Suggested Actions</h3>
-                    <ul id="suggestionsList" class="space-y-2"></ul>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">💡 Suggested Actions</h3>
+                    <ul id="suggestionsList" class="space-y-2 text-gray-700"></ul>
   </div>
   
                 <!-- Footer Note -->
@@ -385,7 +385,7 @@
                 // Hide loading, show results
                 loadingIndicator.classList.add('hidden');
                 aiResponse.classList.remove('hidden');
-                aiResponse.innerHTML = `<div class="fade-in"><h4 class="font-semibold  mb-3">📝 Draft Response Letter</h4><div class=" p-4 rounded-md border-l-4 border-blue-500 whitespace-pre-wrap">${data.draftLetter || data.analysis}</div></div>`;
+                aiResponse.innerHTML = `<div class="fade-in"><h4 class="font-semibold text-gray-900 mb-3">📝 Draft Response Letter</h4><div class="text-gray-800 bg-white p-4 rounded-md border-l-4 border-blue-500 whitespace-pre-wrap">${data.draftLetter || data.analysis}</div></div>`;
 
                 // Show detected issues
                 if (data.issues && data.issues.length > 0) {
