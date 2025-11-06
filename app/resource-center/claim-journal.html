@@ -1,15 +1,391 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Claim Journal - ClaimNavigatorAI</title>
-  <meta http-equiv="refresh" content="0; url=/app/claim-journal.html">
-  <link rel="canonical" href="/app/claim-journal.html">
-  <script>window.location.href = '/app/claim-journal.html';</script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Claim Journal • ClaimNavigatorAI</title>
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/assets/css/design-system.css">
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body.journal-page {
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+        url('../../assets/images/backgrounds/ai5.jpg') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-attachment: fixed !important;
+      color: #ffffff !important;
+    }
+
+    body.journal-page * {
+      color: #ffffff !important;
+    }
+
+    body.journal-page a {
+      color: #dbeafe !important;
+    }
+
+    .journal-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .journal-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .journal-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      color: #ffffff !important;
+    }
+
+    .journal-header p {
+      color: #dbeafe !important;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .journal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: #ffffff !important;
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .journal-section {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .journal-entries {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .journal-entry {
+      background: rgba(0, 0, 0, 0.2);
+      border-left: 4px solid #3b82f6;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: all 0.2s;
+    }
+
+    .journal-entry:hover {
+      background: rgba(0, 0, 0, 0.3);
+      transform: translateX(4px);
+    }
+
+    .journal-entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .journal-entry-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #ffffff !important;
+      margin: 0;
+    }
+
+    .journal-entry-date {
+      font-size: 0.9rem;
+      color: #dbeafe !important;
+    }
+
+    .journal-entry-body {
+      color: #ffffff !important;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      margin: 0;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #dbeafe !important;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: rgba(30, 41, 59, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      backdrop-filter: blur(12px);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #ffffff !important;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 0.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff !important;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .form-group textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+
+    @media (max-width: 768px) {
+      .journal-container {
+        padding: 1rem;
+      }
+
+      .journal-entry-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
 </head>
-<body>
-  <p>Redirecting to <a href="/app/claim-journal.html">Claim Journal</a>...</p>
+<body class="resource-center journal-page">
+  <header class="header">
+    <div class="bar container">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>ClaimNavigatorAI</div>
+      </div>
+      <nav class="nav">
+        <a href="/app/index.html">Home</a>
+        <a href="/app/resource-center.html">Resource Center</a>
+        <a href="/app/claim-journal.html">Claim Journal</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="journal-container">
+      <div class="journal-header">
+        <h1>Claim Journal</h1>
+        <p>Keep track of claim events, calls, submissions, and progress. Your entries are timestamped and securely stored.</p>
+      </div>
+
+      <div class="journal-actions">
+        <button class="btn btn-primary" id="add-btn">Add Entry</button>
+        <button class="btn btn-secondary" id="refresh-btn">Refresh</button>
+      </div>
+
+      <div class="journal-section">
+        <h3 style="margin: 0 0 1rem 0; color: #ffffff !important;">Journal Entries</h3>
+        <ul class="journal-entries" id="entries">
+          <li class="empty-state">Loading entries...</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add Entry Modal -->
+  <div class="modal" id="add-modal">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="margin: 0; color: #ffffff !important;">Add Journal Entry</h3>
+        <button class="btn btn-secondary" onclick="closeModal()" style="padding: 0.5rem 1rem;">&times;</button>
+      </div>
+      <form id="add-form" onsubmit="submitAddEntry(event)">
+        <div class="form-group">
+          <label>Entry Title</label>
+          <input type="text" id="entry-title" placeholder="e.g. Phone call with adjuster, Document submitted, Claim status update" required>
+        </div>
+        <div class="form-group">
+          <label>Details</label>
+          <textarea id="entry-body" placeholder="Describe what happened, what was discussed, or any important details..." required></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Entry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const claim_id = localStorage.getItem('claim_id') || new URLSearchParams(window.location.search).get('claim_id') || 'TEST-CLAIM';
+
+    async function refresh() {
+      try {
+        const res = await fetch(`/.netlify/functions/get-journal?claim_id=${claim_id}`);
+        const data = await res.json();
+
+        if (data.status === 'error') {
+          throw new Error(data.error);
+        }
+
+        const entries = data.entries || [];
+        const entriesList = document.getElementById('entries');
+
+        if (entries.length === 0) {
+          entriesList.innerHTML = '<li class="empty-state">No journal entries yet. Click "Add Entry" to get started.</li>';
+        } else {
+          entriesList.innerHTML = entries.map(entry => {
+            const date = new Date(entry.created_at);
+            const dateStr = date.toLocaleDateString();
+            const timeStr = date.toLocaleTimeString();
+            
+            return `
+              <li class="journal-entry">
+                <div class="journal-entry-header">
+                  <h4 class="journal-entry-title">${entry.entry_title}</h4>
+                  <span class="journal-entry-date">${dateStr} at ${timeStr}</span>
+                </div>
+                <p class="journal-entry-body">${entry.entry_body}</p>
+              </li>
+            `;
+          }).join('');
+        }
+
+      } catch (error) {
+        console.error('Error refreshing:', error);
+        document.getElementById('entries').innerHTML = 
+          `<li class="empty-state">Error loading entries: ${error.message}</li>`;
+      }
+    }
+
+    function openModal() {
+      document.getElementById('add-modal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('add-modal').classList.remove('active');
+      document.getElementById('add-form').reset();
+    }
+
+    async function submitAddEntry(event) {
+      event.preventDefault();
+      
+      const entryData = {
+        claim_id: claim_id,
+        user_id: localStorage.getItem('user_id') || null,
+        entry_title: document.getElementById('entry-title').value,
+        entry_body: document.getElementById('entry-body').value
+      };
+
+      try {
+        const res = await fetch('/.netlify/functions/add-journal-entry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entryData)
+        });
+
+        const data = await res.json();
+        
+        if (data.status === 'error') {
+          throw new Error(data.error);
+        }
+
+        closeModal();
+        refresh();
+      } catch (error) {
+        alert('Error adding entry: ' + error.message);
+      }
+    }
+
+    // Event listeners
+    document.getElementById('add-btn').addEventListener('click', openModal);
+    document.getElementById('refresh-btn').addEventListener('click', refresh);
+
+    // Initial load
+    refresh();
+  </script>
 </body>
 </html>
+
 

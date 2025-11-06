@@ -1,15 +1,936 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Negotiation Tools - ClaimNavigatorAI</title>
-  <meta http-equiv="refresh" content="0; url=/app/negotiation-tools.html">
-  <link rel="canonical" href="/app/negotiation-tools.html">
-  <script>window.location.href = '/app/negotiation-tools.html';</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negotiation Scripts</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --accent: #3b82f6;
+            --background: #f9fafb;
+            --border: #e5e7eb;
+            --text-dark: #0f172a;
+        }
+        
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--text-dark);
+            color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,.08);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+        }
+        
+        .nav a {
+            color: #c9d4ff;
+            text-decoration: none;
+            padding: .5rem .75rem;
+            border-radius: .5rem;
+        }
+        
+        .nav a:hover {
+            background: rgba(255,255,255,.1);
+        }
+        
+        .breadcrumb a {
+            color: #1e40af;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        
+        .accordion-section {
+            background: #f8f9fa;
+            border: none;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+            overflow: hidden;
+        }
+        
+        .accordion-header {
+            background: #f3f4f6;
+            color: #1d4ed8 !important;
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: background 0.2s;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .accordion-header:hover {
+            background: #e5e7eb;
+        }
+        
+        .accordion-content {
+            padding: 2rem;
+            display: none;
+        }
+        
+        .accordion-content.open {
+            display: block;
+        }
+        
+        .script-card {
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .script-card .script-title {
+            font-weight: bold !important;
+            color: #2563eb !important;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        /* Override external CSS for script titles */
+        div.script-title {
+            color: #2563eb !important;
+            font-weight: bold !important;
+        }
+        
+        .script-content {
+            color: #2563eb;
+            font-weight: bold;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .script-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-copy {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        
+        .btn-copy:hover {
+            background: #059669;
+        }
+        
+        .btn-ai {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        
+        .btn-ai:hover {
+            background: #1e40af;
+        }
+        
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .strategy-card {
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+        
+        .strategy-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
+        }
+        
+        .strategy-card h4 {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .strategy-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .strategy-card li {
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+        
+        .strategy-card li:before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: var(--text-dark);
+        }
+        
+        .modal-body textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+        
+        .modal-body textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-primary {
+            background: #f8f9fa;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: #e5e7eb;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .journal-section {
+            background: #f8f9fa;
+            border: none;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+        }
+        
+        .journal-entry {
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .journal-entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .journal-entry-date {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .journal-entry-summary {
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .journal-entry-action {
+            color: #374151;
+            font-style: italic;
+        }
+        
+        .footer {
+            background: var(--text-dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--text-dark);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .strategy-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .script-actions {
+                flex-direction: column;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+        }
+    </style>
 </head>
-<body>
-  <p>Redirecting to <a href="/app/negotiation-tools.html">Negotiation Tools</a>...</p>
+    <body class="min-h-screen ">
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="brand">ClaimNavigatorAI</div>
+            <nav class="nav">
+                <a href="/app/index.html">Home</a>
+                <span >></span>
+                <span >Negotiation Tools</span>
+                <span >></span>
+                <a href="/app/resource-center.html">Resource Center</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+        <a href="/app/resource-center.html">← Resource Center</a>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-6">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold  mb-4">Negotiation Scripts</h1>
+            <p class="text-lg ">
+                Professional negotiation scripts, tactics, and strategies to maximize your claim settlement.
+            </p>
+        </div>
+
+
+        <!-- Initial Response Scripts -->
+        <div class="accordion-section">
+            <div class="accordion-header" onclick="toggleAccordion('initial-response')">
+                <span >Initial Response Scripts</span>
+                <span id="initial-response-arrow">▼</span>
+            </div>
+            <div class="accordion-content" id="initial-response">
+                <p class=" mb-4">Professional scripts for your first contact with the insurance company.</p>
+                
+                <div class="script-card negotiation-card">
+                    <h3 class="card-title" >First Call Script</h3>
+                    <div class="script-content">
+                        "Hello, I'm calling to report a [Claim Type] loss filed on [Date of Loss]. I have documentation and photos ready. I'd like to schedule an inspection. What's the next step?"
+                    </div>
+                    <div class="script-actions">
+                        <button class="btn-copy" onclick="copyScript(this)">📋 Copy Script</button>
+                        <button class="btn-ai" onclick="openAIModal('first-call')">⚙️ Generate Custom Script with AI</button>
+                    </div>
+                </div>
+                
+                <div class="script-card negotiation-card">
+                    <h3 class="card-title" >Follow-Up Script</h3>
+                    <div class="script-content">
+                        "I'm following up on my claim filed on [Date of Loss]. I have additional documentation and would like to discuss the next steps. When can I expect an update?"
+                    </div>
+                    <div class="script-actions">
+                        <button class="btn-copy" onclick="copyScript(this)">📋 Copy Script</button>
+                        <button class="btn-ai" onclick="openAIModal('follow-up')">⚙️ Generate Custom Script with AI</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settlement Negotiation Suite -->
+        <div class="accordion-section">
+            <div class="accordion-header" onclick="toggleAccordion('settlement')">
+                <span >Settlement Negotiation Suite</span>
+                <span id="settlement-arrow">▼</span>
+            </div>
+            <div class="accordion-content" id="settlement">
+                <p class=" mb-4">Strategies for negotiating higher settlement offers.</p>
+                
+                <div class="script-card negotiation-card">
+                    <h3 class="card-title" >Lowball Offer Response</h3>
+                    <div class="script-content">
+                        "I appreciate your offer, but based on my documentation and comparable claims, I believe the settlement should reflect the full extent of damages totaling [Evidence]. Can we discuss revising this?"
+                    </div>
+                    <div class="script-actions">
+                        <button class="btn-copy" onclick="copyScript(this)">📋 Copy Script</button>
+                        <button class="btn-ai" onclick="openAIModal('lowball-response')">⚙️ Generate Custom Script with AI</button>
+                    </div>
+                </div>
+                
+                <div class="script-card negotiation-card">
+                    <h3 class="card-title" >Counter-Offer Script</h3>
+                    <div class="script-content">
+                        "I've reviewed your offer of $[X]. Based on my contractor's estimate of $[Y], I'm prepared to accept that amount to fairly settle this claim."
+                    </div>
+                    <div class="script-actions">
+                        <button class="btn-copy" onclick="copyScript(this)">📋 Copy Script</button>
+                        <button class="btn-ai" onclick="openAIModal('counter-offer')">⚙️ Generate Custom Script with AI</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documentation & Evidence Requests -->
+        <div class="accordion-section">
+            <div class="accordion-header" onclick="toggleAccordion('documentation')">
+                <span >Documentation & Evidence Requests</span>
+                <span id="documentation-arrow">▼</span>
+            </div>
+            <div class="accordion-content" id="documentation">
+                <p class=" mb-4">Scripts for requesting necessary documentation and information.</p>
+                
+                <div class="script-card negotiation-card">
+                    <h3 class="card-title" >Policy Copy Request</h3>
+                    <div class="script-content">
+                        "Please provide a complete copy of my policy, all endorsements, and the applicable declarations page. I'd also like a written explanation of coverage limits and exclusions."
+                    </div>
+                    <div class="script-actions">
+                        <button class="btn-copy" onclick="copyScript(this)">📋 Copy Script</button>
+                        <button class="btn-ai" onclick="openAIModal('policy-request')">⚙️ Generate Custom Script with AI</button>
+                    </div>
+                </div>
+                
+                <div class="script-card negotiation-card">
+                    <h3 class="card-title" >Adjuster Report Request</h3>
+                    <div class="script-content">
+                        "I'm requesting a full copy of the adjuster's report, all photos taken, and the scope or methodology used for the evaluation."
+                    </div>
+                    <div class="script-actions">
+                        <button class="btn-copy" onclick="copyScript(this)">📋 Copy Script</button>
+                        <button class="btn-ai" onclick="openAIModal('adjuster-report')">⚙️ Generate Custom Script with AI</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Escalation & Legal Leverage -->
+        <div class="accordion-section">
+            <div class="accordion-header" onclick="toggleAccordion('escalation')">
+                <span >Escalation & Legal Leverage</span>
+                <span id="escalation-arrow">▼</span>
+            </div>
+            <div class="accordion-content" id="escalation">
+                <p class=" mb-4">When to escalate and how to do it professionally.</p>
+                
+                <div class="script-card negotiation-card">
+                    <h3 class="card-title" >Supervisor Escalation</h3>
+                    <div class="script-content">
+                        "I'd like to speak with a supervisor about delays and unresolved issues in my claim. A higher-level review seems necessary at this point."
+                    </div>
+                    <div class="script-actions">
+                        <button class="btn-copy" onclick="copyScript(this)">📋 Copy Script</button>
+                        <button class="btn-ai" onclick="openAIModal('supervisor-escalation')">⚙️ Generate Custom Script with AI</button>
+                    </div>
+                </div>
+                
+                <div class="script-card negotiation-card">
+                    <h3 class="card-title" >Regulatory Complaint Draft</h3>
+                    <div class="script-content">
+                        "This complaint concerns the mishandling of claim #[Claim #]. Despite repeated follow-ups, the insurer has failed to meet statutory timeframes. I'm requesting regulatory review."
+                    </div>
+                    <div class="script-actions">
+                        <button class="btn-copy" onclick="copyScript(this)">📋 Copy Script</button>
+                        <button class="btn-ai" onclick="openAIModal('regulatory-complaint')">⚙️ Generate Custom Script with AI</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Negotiation Strategy Center -->
+        <div class="accordion-section">
+            <div class="accordion-header" onclick="toggleAccordion('strategy')">
+                <span >Advanced Negotiation Strategy Center</span>
+                <span id="strategy-arrow">▼</span>
+            </div>
+            <div class="accordion-content" id="strategy">
+                <p class=" mb-4">Comprehensive negotiation strategies and psychological tactics.</p>
+                
+                <div class="strategy-grid">
+                    <div class="strategy-card">
+                        <h4>Psychological Tactics</h4>
+                        <ul>
+                            <li>Use anchoring and documentation leverage</li>
+                            <li>Create urgency with polite deadlines</li>
+                            <li>Build rapport with adjusters</li>
+                            <li>Present strongest evidence first</li>
+                        </ul>
+                        <div class="tooltip">
+                            💡 Learn More
+                            <span class="tooltiptext">Psychological tactics help you maintain control of the negotiation while building positive relationships with insurance representatives.</span>
+                        </div>
+                    </div>
+                    
+                    <div class="strategy-card">
+                        <h4>Legal Leverage</h4>
+                        <ul>
+                            <li>Reference state unfair claims statutes</li>
+                            <li>Cite policy obligations and deadlines</li>
+                            <li>Document all communications</li>
+                            <li>Mention regulatory oversight when appropriate</li>
+                        </ul>
+                        <div class="tooltip">
+                            💡 Learn More
+                            <span class="tooltiptext">Legal leverage ensures you're operating within your rights and can escalate if necessary.</span>
+                        </div>
+                    </div>
+                    
+                    <div class="strategy-card">
+                        <h4>Evidence Strategy</h4>
+                        <ul>
+                            <li>Present strongest proof first</li>
+                            <li>Use expert reports and cost estimates</li>
+                            <li>Compare with market rates</li>
+                            <li>Highlight policy coverage clearly</li>
+                        </ul>
+                        <div class="tooltip">
+                            💡 Learn More
+                            <span class="tooltiptext">Strong evidence presentation makes your case undeniable and supports higher settlement amounts.</span>
+                        </div>
+                    </div>
+                    
+                    <div class="strategy-card">
+                        <h4>Tone & Rapport</h4>
+                        <ul>
+                            <li>Be assertive, not aggressive</li>
+                            <li>Use professionalism and patience</li>
+                            <li>Reinforce fairness and clarity</li>
+                            <li>Maintain detailed records</li>
+                        </ul>
+                        <div class="tooltip">
+                            💡 Learn More
+                            <span class="tooltiptext">Professional tone builds trust while maintaining your position and ensuring fair treatment.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Negotiation Journal -->
+        <div class="journal-section">
+            <h2 class="text-xl font-semibold mb-4" >Negotiation Journal</h2>
+            <p class=" mb-4">Track your negotiation progress and outcomes.</p>
+            
+            <button class="btn-primary" onclick="openJournalModal()">Add Entry</button>
+            
+            <div id="journal-entries" class="mt-4">
+                <!-- Journal entries will be populated here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- AI Generation Modal -->
+    <div id="ai-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">⚙️ Generate Custom Script with AI</h3>
+                <span class="close" onclick="closeAIModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <label for="ai-context">Provide additional context or details:</label>
+                <textarea id="ai-context" placeholder="Describe your specific situation, any unique circumstances, or additional details you'd like included in the script..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeAIModal()">Cancel</button>
+                <button class="btn-primary" onclick="generateAIScript()">Generate Script</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Response Modal -->
+    <div id="ai-response-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">🤖 AI Generated Script</h3>
+                <span class="close" onclick="closeAIResponseModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="ai-generated-script" class="script-content"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-copy" onclick="copyAIScript()">📋 Copy Script</button>
+                <button class="btn-primary" onclick="exportAIScript()">📄 Export as PDF</button>
+                <button class="btn-secondary" onclick="insertClaimInfo()">Insert Claim Info</button>
+                <button class="btn-secondary" onclick="regenerateScript()">🔄 Regenerate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Journal Entry Modal -->
+    <div id="journal-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Journal Entry</h3>
+                <span class="close" onclick="closeJournalModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="claim-info-field">
+                    <label for="journal-date">Date:</label>
+                    <input type="date" id="journal-date">
+                </div>
+                <div class="claim-info-field">
+                    <label for="journal-summary">Summary:</label>
+                    <textarea id="journal-summary" placeholder="Brief summary of the negotiation or communication..."></textarea>
+                </div>
+                <div class="claim-info-field">
+                    <label for="journal-action">Next Action:</label>
+                    <textarea id="journal-action" placeholder="What's your next step?"></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeJournalModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveJournalEntry()">Save Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 ClaimNavigatorAI — All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // Accordion functionality
+        function toggleAccordion(sectionId) {
+            const content = document.getElementById(sectionId);
+            const arrow = document.getElementById(sectionId + '-arrow');
+            
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                arrow.textContent = '▼';
+            } else {
+                // Close all other accordions
+                document.querySelectorAll('.accordion-content').forEach(acc => {
+                    acc.classList.remove('open');
+                });
+                document.querySelectorAll('[id$="-arrow"]').forEach(arr => {
+                    arr.textContent = '▼';
+                });
+                
+                // Open this accordion
+                content.classList.add('open');
+                arrow.textContent = '▲';
+            }
+        }
+
+        // Copy script functionality
+        function copyScript(button) {
+            const scriptContent = button.parentElement.previousElementSibling.textContent;
+            navigator.clipboard.writeText(scriptContent).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = '#059669';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#10b981';
+                }, 2000);
+            });
+        }
+
+        // AI Modal functionality
+        let currentScriptType = '';
+        
+        function openAIModal(scriptType) {
+            currentScriptType = scriptType;
+            document.getElementById('ai-modal').style.display = 'block';
+        }
+        
+        function closeAIModal() {
+            document.getElementById('ai-modal').style.display = 'none';
+            document.getElementById('ai-context').value = '';
+        }
+        
+        function generateAIScript() {
+            const context = document.getElementById('ai-context').value;
+            
+            // Mock AI generation - in production, this would call your AI endpoint
+            const mockScripts = {
+                'first-call': `"Hello, I'm calling to report a ${getClaimType()} loss filed on ${getDateOfLoss()}. I have comprehensive documentation and photos ready. I'd like to schedule an inspection as soon as possible. What's the next step in your process?"`,
+                'follow-up': `"I'm following up on my claim filed on ${getDateOfLoss()}. I have additional documentation and would like to discuss the timeline for resolution. When can I expect an update on the status?"`,
+                'lowball-response': `"I appreciate your offer, but based on my documentation and comparable claims in the area, I believe the settlement should reflect the full extent of damages. I have evidence showing [specific damage details]. Can we discuss a more appropriate figure that reflects the actual costs?"`,
+                'counter-offer': `"I've reviewed your offer of $[X]. Based on my contractor's detailed estimate of $[Y] and market research, I'm prepared to accept $[Y] to fairly settle this claim. This amount is supported by [evidence]."`,
+                'policy-request': `"Please provide a complete copy of my policy, all endorsements, and the applicable declarations page. I'd also like a written explanation of coverage limits and exclusions that may apply to my specific claim."`,
+                'adjuster-report': `"I'm requesting a full copy of the adjuster's report, all photos taken during the inspection, and the scope or methodology used for the damage evaluation. This will help me understand the assessment process."`,
+                'supervisor-escalation': `"I'd like to speak with a supervisor about delays and unresolved issues in my claim. A higher-level review seems necessary at this point to ensure proper handling."`,
+                'regulatory-complaint': `"This complaint concerns the mishandling of claim #${getClaimNumber()}. Despite repeated follow-ups, the insurer has failed to meet statutory timeframes. I'm requesting regulatory review of this matter."`
+            };
+            
+            let script = mockScripts[currentScriptType] || "AI-generated script based on your context...";
+            
+            if (context) {
+                script += `\n\nAdditional context: ${context}`;
+            }
+            
+            document.getElementById('ai-generated-script').textContent = script;
+            closeAIModal();
+            document.getElementById('ai-response-modal').style.display = 'block';
+        }
+        
+        function closeAIResponseModal() {
+            document.getElementById('ai-response-modal').style.display = 'none';
+        }
+        
+        function copyAIScript() {
+            const script = document.getElementById('ai-generated-script').textContent;
+            navigator.clipboard.writeText(script).then(() => {
+                alert('Script copied to clipboard!');
+            });
+        }
+        
+        function exportAIScript() {
+            const script = document.getElementById('ai-generated-script').textContent;
+            const blob = new Blob([script], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'negotiation-script.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function insertClaimInfo() {
+            const script = document.getElementById('ai-generated-script').textContent;
+            const updatedScript = script
+                .replace(/\[Claim Type\]/g, getClaimType())
+                .replace(/\[Date of Loss\]/g, getDateOfLoss())
+                .replace(/\[Claim #\]/g, getClaimNumber())
+                .replace(/\[Name\]/g, getClaimantName());
+            
+            document.getElementById('ai-generated-script').textContent = updatedScript;
+        }
+        
+        function regenerateScript() {
+            generateAIScript();
+        }
+        
+        // Helper functions to get claim data (from user intake)
+        function getClaimantName() {
+            return '[Your Name]'; // Will be populated from user intake
+        }
+        
+        function getClaimType() {
+            return '[Claim Type]'; // Will be populated from user intake
+        }
+        
+        function getDateOfLoss() {
+            return '[Date of Loss]'; // Will be populated from user intake
+        }
+        
+        function getClaimNumber() {
+            return '[Claim #]'; // Will be populated from user intake
+        }
+        
+        // Journal functionality
+        function openJournalModal() {
+            document.getElementById('journal-modal').style.display = 'block';
+            document.getElementById('journal-date').value = new Date().toISOString().split('T')[0];
+        }
+        
+        function closeJournalModal() {
+            document.getElementById('journal-modal').style.display = 'none';
+            document.getElementById('journal-summary').value = '';
+            document.getElementById('journal-action').value = '';
+        }
+        
+        function saveJournalEntry() {
+            const date = document.getElementById('journal-date').value;
+            const summary = document.getElementById('journal-summary').value;
+            const action = document.getElementById('journal-action').value;
+            
+            if (!date || !summary) {
+                alert('Please fill in date and summary');
+                return;
+            }
+            
+            const entry = {
+                date,
+                summary,
+                action,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            let entries = JSON.parse(localStorage.getItem('negotiationJournal') || '[]');
+            entries.unshift(entry); // Add to beginning
+            localStorage.setItem('negotiationJournal', JSON.stringify(entries));
+            
+            // Refresh display
+            displayJournalEntries();
+            closeJournalModal();
+        }
+        
+        function displayJournalEntries() {
+            const entries = JSON.parse(localStorage.getItem('negotiationJournal') || '[]');
+            const container = document.getElementById('journal-entries');
+            
+            if (entries.length === 0) {
+                container.innerHTML = '<p class="">No journal entries yet. Add your first entry above.</p>';
+                return;
+            }
+            
+            container.innerHTML = entries.map(entry => `
+                <div class="journal-entry">
+                    <div class="journal-entry-header">
+                        <span class="journal-entry-date">${new Date(entry.date).toLocaleDateString()}</span>
+                    </div>
+                    <div class="journal-entry-summary">${entry.summary}</div>
+                    ${entry.action ? `<div class="journal-entry-action">Next: ${entry.action}</div>` : ''}
+                </div>
+            `).join('');
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            displayJournalEntries();
+        });
+        
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const aiModal = document.getElementById('ai-modal');
+            const aiResponseModal = document.getElementById('ai-response-modal');
+            const journalModal = document.getElementById('journal-modal');
+            
+            if (event.target === aiModal) {
+                closeAIModal();
+            }
+            if (event.target === aiResponseModal) {
+                closeAIResponseModal();
+            }
+            if (event.target === journalModal) {
+                closeJournalModal();
+            }
+        }
+    </script>
+    
 </body>
 </html>
-

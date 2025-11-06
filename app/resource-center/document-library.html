@@ -1,15 +1,369 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document Library - ClaimNavigatorAI</title>
-  <meta http-equiv="refresh" content="0; url=/app/document-library/index.html">
-  <link rel="canonical" href="/app/document-library/index.html">
-  <script>window.location.href = '/app/document-library/index.html';</script>
-</head>
-<body>
-  <p>Redirecting to <a href="/app/document-library/index.html">Document Library</a>...</p>
-</body>
-</html>
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>📚 Document Library</title>
+<link rel="stylesheet" href="/app/assets/css/style.css">
+<style>
+:root{--navy:#0f172a;--primary:#1e40af;--primary-600:#1e3a8a;--accent:#3b82f6;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--panel:#f8fafc;--success:#10b981;--warn:#f59e0b;--error:#ef4444;}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:#fff;line-height:1.6}
+.header{position:sticky;top:0;z-index:1000;background:#f8f9fa;color:#000;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.header .container{max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800}
+.nav a{color:#374151;text-decoration:none;padding:.5rem .75rem;border-radius:.5rem}
+.nav a:hover{background:rgba(0,0,0,.1)}
+</style>
+</head><body>
+<header class="header">
+  <div class="container">
+    <div class="brand">ClaimNavigatorAI</div>
+    <nav class="nav">
+      <a href="/app/index.html">Home</a>
+      <span >></span>
+      <span >Document Library</span>
+      <span >></span>
+      <a href="/app/resource-center.html">Resource Center</a>
+    </nav>
+  </div>
+</header>
+<main class="container" id="main">
+  <div class="card">
+    <div class="section-header">
+      <h2 >Document Library</h2>
+      <p>Access your complete library of professional claim documents and templates.</p>
+      
+      <div class="language-toggle">
+        <button id="lang-en" class="lang-btn active" data-lang="en">English</button>
+        <button id="lang-es" class="lang-btn" data-lang="es">Español</button>
+      </div>
+    </div>
+    
+    <div class="search-section" style="max-width: 50%; margin: 0 auto; display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+      <input id="q" placeholder="Search documents..." style="width: 50%; padding: 0.1875rem; border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 1rem;">
+      <button class="btn btn-primary" id="load" style="padding: 0.375rem 0.75rem; font-size: 0.875rem;">Load Documents</button>
+    </div>
+  </div>
+  <div id="warning" class="card" style="display:none;color:#f59e0b"></div>
+  <div id="list" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-top:12px"></div>
+</main>
+<script type="module">
+  import {qs,on} from '/app/assets/js/ui-helpers.js';
 
+  let currentLanguage = 'en';
+  let allDocuments = [];
+
+  function createDocumentCard(doc) {
+    return `<div class="card document-item">
+      <div class="document-header">
+        <h3>${doc.label}</h3>
+        <p>${doc.description}</p>
+      </div>
+      <div class="document-actions">
+        ${doc.templatePath ? `<button class="btn btn-secondary" onclick="downloadDocument('${doc.templatePath}', 'template')">Download Template</button>` : ''}
+        ${doc.samplePath ? `<button class="btn btn-secondary" onclick="downloadDocument('${doc.samplePath}', 'sample')">View Sample</button>` : ''}
+      </div>
+    </div>`;
+  }
+
+  async function loadDocuments(language = 'en') {
+    const warn = qs('#warning');
+    const list = qs('#list');
+    
+    warn.style.display = 'none';
+    list.innerHTML = '<div class="loading">Loading documents...</div>';
+    
+    try {
+      const docsUrl = language === 'es' ? '/assets/docs/es/documents.json' : '/assets/data/documents.json';
+      const response = await fetch(docsUrl);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to load documents: ${response.status}`);
+      }
+      
+      const docsData = await response.json();
+      
+      // Convert object to array and sort by label
+      allDocuments = Object.values(docsData).sort((a, b) => a.label.localeCompare(b.label));
+      
+      renderDocuments(allDocuments);
+      
+    } catch (error) {
+      console.error('Error loading documents:', error);
+      list.innerHTML = `<div class="error-message" >Error loading documents: ${error.message}</div>`;
+    }
+  }
+
+  function renderDocuments(documents) {
+    const list = qs('#list');
+    const searchTerm = (qs('#q').value || '').toLowerCase();
+    
+    const filtered = documents.filter(doc => {
+      const title = doc.label.toLowerCase();
+      const description = doc.description.toLowerCase();
+      return title.includes(searchTerm) || description.includes(searchTerm);
+    });
+    
+    if (filtered.length === 0) {
+      list.innerHTML = '<div class="no-results">No documents found matching your search.</div>';
+      return;
+    }
+    
+    list.innerHTML = filtered.map(doc => createDocumentCard(doc)).join('');
+  }
+
+
+  function switchLanguage(language) {
+    currentLanguage = language;
+    
+    // Update language button states
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    document.querySelector(`[data-lang="${language}"]`).classList.add('active');
+    
+    // Load documents for the selected language
+    loadDocuments(language);
+  }
+
+  function searchDocuments() {
+    renderDocuments(allDocuments);
+  }
+
+  function downloadDocument(filePath, type) {
+    // Create a link to download the document
+    const link = document.createElement('a');
+    const libraryPath = currentLanguage === 'es' ? 'Document Library - Final Spanish' : 'Document Library - Final English';
+    link.href = `/${libraryPath}/${filePath}`;
+    link.download = filePath;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // Make functions globally available
+  window.downloadDocument = downloadDocument;
+  window.switchLanguage = switchLanguage;
+  window.searchDocuments = searchDocuments;
+
+  // Event listeners
+  on(qs('#load'), 'click', () => loadDocuments(currentLanguage));
+  on(qs('#q'), 'input', searchDocuments);
+  
+  // Language toggle events
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const lang = this.dataset.lang;
+      switchLanguage(lang);
+    });
+  });
+  
+  // Auto-load English documents on page load
+  loadDocuments('en');
+</script>
+<!-- Provide these in a global script tag (e.g., in /app/index.html or Netlify _headers/_redirects inject) 
+<script>
+  window.__SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
+  window.__SUPABASE_ANON_KEY = "YOUR-ANON-KEY";
+</script>
+-->
+<script type="module" src="/app/assets/js/diagnostics.js"></script>
+
+<style>
+/* Document Library Styles */
+/* Add blue shadow to document cards only */
+.document-item {
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.4) !important;
+}
+
+/* Override main CSS file black text rules for header */
+body:has(main.container) .section-header,
+.section-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  background: #ffffff !important;
+  color: black !important;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+/* Remove border from the card containing the section header */
+.card:has(.section-header) {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Force black title with maximum specificity */
+body:has(main.container) .section-header h2,
+body:has(main.container) .card .section-header h2,
+.section-header h2 {
+  color: black !important;
+  margin-bottom: 0.5rem;
+  font-weight: bold !important;
+  font-size: 2.5rem !important;
+}
+
+body:has(main.container) .section-header p,
+.section-header p {
+  color: black !important;
+}
+
+/* Additional override for any remaining black text */
+.card .section-header h2,
+main.container .card .section-header h2 {
+  color: black !important;
+  font-size: 2.5rem !important;
+}
+
+.language-toggle {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.lang-btn {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--border, #e5e7eb);
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.lang-btn.active {
+  background: var(--primary, #2563eb);
+  color: white;
+  border-color: var(--primary, #2563eb);
+}
+
+.lang-btn:hover {
+  border-color: var(--primary, #2563eb);
+}
+
+.document-item {
+  background: #f8f9fa;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.document-item:hover {
+  box-shadow: 0 4px 8px rgba(15, 23, 42, 0.3);
+  border-color: var(--primary, #2563eb);
+}
+
+/* Override main CSS file black text rules */
+body:has(main.container) .document-item .document-header h3,
+.document-item .document-header h3,
+.document-item h3,
+.card.document-item h3,
+#list .document-item h3 {
+  color: #2563eb !important;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: bold !important;
+  text-align: center;
+}
+
+.document-header p {
+  color: #666;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.document-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.document-actions .btn-secondary {
+  padding: 0.5rem 1rem;
+  background: var(--bg-light, #f8fafc);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 4px;
+  color: var(--text, #374151);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.document-actions .btn-secondary:hover {
+  background: var(--primary, #2563eb);
+  color: white;
+  border-color: var(--primary, #2563eb);
+}
+
+.info-box {
+  background: #e0f2fe;
+  border: 1px solid #b3e5fc;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  color: #0277bd;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.error-message {
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 8px;
+  padding: 1rem;
+  color: #c62828;
+}
+
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* Force blue color for all document card titles - override main CSS */
+.document-item h3,
+.card.document-item h3,
+#list .document-item h3,
+.document-header h3,
+main .document-item h3,
+main .card.document-item h3,
+main #list .document-item h3,
+main .document-header h3 {
+  color: #1e3a8a !important;
+  font-weight: bold !important;
+}
+
+/* ULTIMATE OVERRIDE - Force blue color for document card titles */
+body main .container .card .document-item .document-header h3,
+body main .container #list .document-item .document-header h3,
+body main .container .document-item h3,
+body main .container .card.document-item h3 {
+  color: #1e3a8a !important;
+  font-weight: bold !important;
+}
+
+@media (max-width: 768px) {
+  .document-actions {
+    flex-direction: column;
+  }
+  
+  .language-toggle {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+</style>
+
+</body></html>

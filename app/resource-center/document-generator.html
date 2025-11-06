@@ -1,15 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document Generator - ClaimNavigatorAI</title>
-  <meta http-equiv="refresh" content="0; url=/app/document-generator-v2/document-generator.html">
-  <link rel="canonical" href="/app/document-generator-v2/document-generator.html">
-  <script>window.location.href = '/app/document-generator-v2/document-generator.html';</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Generator - ClaimNavigatorAI</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/document-generator.css">
+    <style>
+        :root{--navy:#0f172a;--primary:#1e40af;--primary-600:#1e3a8a;--accent:#3b82f6;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--panel:#f8fafc;--success:#10b981;--warn:#f59e0b;--error:#ef4444;}
+        *{box-sizing:border-box}
+        body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('/assets/images/backgrounds/12.jpg') center/cover no-repeat;line-height:1.6;position:relative}
+        .header{position:sticky;top:0;z-index:1000;background:var(--navy);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+        .header .container{max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+        .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+        .nav a{color:#c9d4ff;text-decoration:none;padding:.5rem .75rem;border-radius:.5rem}
+        .nav a:hover{background:rgba(255,255,255,.1)}
+        
+        .search-container{display:flex;gap:16px;margin-bottom:32px;align-items:stretch;justify-content:center;max-width:600px;margin-left:auto;margin-right:auto;flex-wrap:nowrap}
+        .search-bar{width:250px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;flex-shrink:0;height:36px;box-sizing:border-box}
+        .filter-dropdown{width:250px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:#fff;flex-shrink:0;height:36px;box-sizing:border-box}
+        .doc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
+        .doc-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px;transition:all 0.3s ease;box-shadow:0 2px 4px rgba(0,0,0,0.05);display:flex;flex-direction:column;height:100%}
+        .doc-card:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,0,0,0.1);border-color:var(--accent)}
+        .doc-card-content{flex:1;display:flex;flex-direction:column}
+        .doc-card-footer{margin-top:auto;padding-top:16px}
+        .category-badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:600;margin-bottom:8px;text-align:center}
+        .category-core{background:#e0f2fe;color:#0277bd}
+        .category-legal{background:#f3e5f5;color:#7b1fa2}
+        .category-financial{background:#e8f5e8;color:#2e7d32}
+        .category-forms{background:#fff3e0;color:#f57c00}
+        .category-appeals{background:#fce4ec;color:#c2185b}
+        .category-specialty{background:#f1f8e9;color:#558b2f}
+        .category-property{background:#e3f2fd;color:#1976d2}
+        .category-business{background:#f9fbe7;color:#827717}
+        .category-catastrophic{background:#ffebee;color:#d32f2f}
+        .output-type{font-size:10px;color:var(--muted);margin-bottom:6px}
+        .doc-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;text-align:center}
+        .doc-description{font-size:12px;color:var(--muted);line-height:1.4;margin-bottom:8px;text-align:center}
+        .generate-btn{background:var(--primary);color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:500;cursor:pointer;transition:all 0.2s ease;font-size:12px}
+        .generate-btn:hover{background:var(--primary-600);transform:translateY(-1px)}
+        .loading{text-align:center;padding:40px;color:var(--muted)}
+        .error{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px;border-radius:8px;margin:16px 0}
+        .hero-section{text-align:center;margin-bottom:16px;padding:16px 0}
+        .hero-title{font-size:1.75rem;font-weight:700;margin-bottom:8px;color:#fff}
+        .hero-subtitle{font-size:1rem;max-width:48rem;margin:0 auto;color:#e5e7eb}
+    </style>
 </head>
 <body>
-  <p>Redirecting to <a href="/app/document-generator-v2/document-generator.html">Document Generator</a>...</p>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="brand">ClaimNavigatorAI</div>
+            <nav class="nav">
+                <a href="/app/index.html">Home</a>
+                <span>></span>
+                <span>Document Generator</span>
+                <span>></span>
+                <a href="/app/resource-center.html">Resource Center</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h2 class="hero-title">Professional Document Generator</h2>
+            <p class="hero-subtitle">
+                Generate professional insurance claim documents with AI assistance. Choose from core forms, letters & responses, financial worksheets, and specialized reports.
+            </p>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="search-container">
+            <!-- Search Bar -->
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Search documents..." 
+                class="search-bar"
+            >
+            
+            <!-- Category Filter -->
+                    <select id="categoryFilter" class="filter-dropdown">
+                        <option value="">All Categories</option>
+                        <option value="core-claim-documents">Core Claim Documents</option>
+                        <option value="legal-documents">Legal Documents</option>
+                        <option value="financial-documents">Financial Documents</option>
+                        <option value="forms-&-requests">Forms & Requests</option>
+                        <option value="appeals-&-disputes">Appeals & Disputes</option>
+                        <option value="specialty-documents">Specialty Documents</option>
+                        <option value="property-specific-documents">Property-Specific Documents</option>
+                        <option value="business-specific-documents">Business-Specific Documents</option>
+                        <option value="catastrophic-event-documents">Catastrophic Event Documents</option>
+                    </select>
+        </div>
+
+        <!-- Documents Grid -->
+        <div id="documentsContainer">
+            <div class="loading">Loading documents...</div>
+        </div>
+    </main>
+
+    <script>
+        let allDocuments = [];
+        let filteredDocuments = [];
+
+        // Load documents from JSON
+        async function loadDocuments() {
+            try {
+                const response = await fetch('./config/documents.json');
+                if (!response.ok) throw new Error('Failed to load documents');
+                allDocuments = await response.json();
+                filteredDocuments = [...allDocuments];
+                renderDocuments();
+            } catch (error) {
+                console.error('Error loading documents:', error);
+                document.getElementById('documentsContainer').innerHTML = 
+                    '<div class="error">Failed to load documents. Please try again later.</div>';
+            }
+        }
+
+        // Render documents in grid
+        function renderDocuments() {
+            const container = document.getElementById('documentsContainer');
+            
+            if (filteredDocuments.length === 0) {
+                container.innerHTML = '<div class="text-center py-8 text-gray-500">No documents found matching your criteria.</div>';
+                return;
+            }
+
+            // Sort documents alphabetically by title
+            const sortedDocuments = [...filteredDocuments].sort((a, b) => a.title.localeCompare(b.title));
+
+            const html = sortedDocuments.map(doc => `
+                <div class="doc-card">
+                    <div class="doc-card-content">
+                        <div class="doc-title">${doc.title}</div>
+                        <div class="doc-description">${doc.description}</div>
+                        <div class="category-badge category-${doc.category.toLowerCase().replace(/\s+/g, '-')}">${doc.category}</div>
+                    </div>
+                    <div class="doc-card-footer">
+                        <button class="generate-btn" onclick="generateDocument('${doc.id}')">
+                            Generate →
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `<div class="doc-grid">${html}</div>`;
+        }
+
+        // Filter documents
+        function filterDocuments() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+
+            filteredDocuments = allDocuments.filter(doc => {
+                const matchesSearch = !searchTerm || 
+                    doc.title.toLowerCase().includes(searchTerm) ||
+                    doc.description.toLowerCase().includes(searchTerm);
+                
+                const matchesCategory = !categoryFilter || doc.category.toLowerCase().replace(/\s+/g, '-') === categoryFilter;
+                
+                return matchesSearch && matchesCategory;
+            });
+
+            renderDocuments();
+        }
+
+        // Generate document
+        function generateDocument(docId) {
+            // Find the document details
+            const doc = allDocuments.find(d => d.id === docId);
+            if (!doc) {
+                alert('Document not found');
+                return;
+            }
+            
+            // Show loading state
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = 'Opening...';
+            button.disabled = true;
+            
+            // Redirect to form template with document ID
+            setTimeout(() => {
+                window.location.href = `/app/document-generator-v2/forms/form-template.html?id=${docId}`;
+            }, 500);
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterDocuments);
+        document.getElementById('categoryFilter').addEventListener('change', filterDocuments);
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadDocuments);
+    </script>
 </body>
 </html>
-
