@@ -493,10 +493,28 @@ h3.column-title,
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
-/* Tool grid spacing */
+/* Tool grid spacing - 4 cards per row */
 .tool-grid {
   gap: 12px !important;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+
+@media (max-width: 1200px) {
+  .tool-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .tool-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .tool-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 /* Tool cards with glassy effect */
