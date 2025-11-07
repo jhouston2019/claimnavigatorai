@@ -117,6 +117,87 @@ async function updateStatementOfLoss(userId, claimId) {
 }
 
 /**
+ * Find insurer contact information
+ */
+async function findInsurerContact(userId, claimId, insurerName) {
+  try {
+    const https = require('https');
+    const http = require('http');
+    const url = require('url');
+    
+    const functionUrl = process.env.NETLIFY_URL || process.env.URL || 'https://your-site.netlify.app';
+    const functionPath = `/.netlify/functions/get-insurer?name=${encodeURIComponent(insurerName)}`;
+    
+    const result = await new Promise((resolve, reject) => {
+      const parsedUrl = url.parse(functionUrl + functionPath);
+      const httpModule = parsedUrl.protocol === 'https:' ? https : http;
+      
+      const options = {
+        hostname: parsedUrl.hostname,
+        port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80),
+        path: parsedUrl.path,
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      };
+      
+      const req = httpModule.request(options, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          if (res.statusCode === 200) {
+            try {
+              resolve(JSON.parse(data));
+            } catch (e) {
+              reject(new Error('Invalid JSON response'));
+            }
+          } else {
+            reject(new Error(`HTTP error! status: ${res.statusCode}`));
+          }
+        });
+      });
+      
+      req.on('error', reject);
+      req.end();
+    });
+    
+    // Log to journal if result found
+    if (result && result.name) {
+      try {
+        await logEvent(
+          userId,
+          claimId,
+          `Insurer contact fetched: ${insurerName}`,
+          JSON.stringify(result, null, 2)
+        );
+      } catch (logError) {
+        console.warn('Failed to log insurer contact to journal:', logError);
+        // Don't fail the whole operation if logging fails
+      }
+    }
+    
+    await logActivity(userId, claimId, 'find_insurer_contact', 'success', { 
+      insurer_name: insurerName,
+      found: !!result.name
+    });
+    
+    return {
+      status: 'success',
+      message: result.name ? 'Insurer contact found' : 'Insurer not found',
+      contact: result
+    };
+  } catch (error) {
+    console.error('Error finding insurer contact:', error);
+    await logActivity(userId, claimId, 'find_insurer_contact', 'error', { 
+      error: error.message,
+      insurer_name: insurerName
+    });
+    throw error;
+  }
+}
+
+/**
  * Log event to claim journal
  */
 async function logEvent(userId, claimId, entryTitle, entryBody) {
@@ -666,6 +747,13 @@ exports.handler = async (event, context) => {
             throw new Error('Missing required field: slug is required');
           }
           result = await fetchArticle(user_id, claim_id, params.slug);
+          break;
+
+        case 'find_insurer_contact':
+          if (!params.insurer_name) {
+            throw new Error('Missing required field: insurer_name is required');
+          }
+          result = await findInsurerContact(user_id, claim_id, params.insurer_name);
           break;
 
         default:

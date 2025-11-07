@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Insurance Company Contact Directory | ClaimNavigatorAI</title>
+  <meta name="description" content="Find insurance company claim department phone, email, and links in seconds.">
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/assets/css/design-system.css">
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body {
+      background: url('../../assets/images/backgrounds/ai5.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #ffffff;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 10, 35, 0.65);
+      z-index: -1;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: #0f172a;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #0f172a;
+    }
+
+    .header .bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .brand {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .nav a {
+      margin-left: 14px;
+      color: #ffffff;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav a:hover {
+      color: #93c5fd;
+    }
+
+    .tool-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .tool-section h1 {
+      color: #ffffff;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    }
+
+    .tool-section p.muted {
+      color: #dbeafe;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .searchbar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .searchbar input {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background: rgba(11, 18, 32, 0.8);
+      color: #e6ecff;
+      font-size: 1rem;
+    }
+
+    .searchbar input::placeholder {
+      color: rgba(230, 236, 255, 0.5);
+    }
+
+    .searchbar input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: #1d4ed8;
+      color: #fff;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: #1e40af;
+      transform: translateY(-1px);
+    }
+
+    .btn.ghost {
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #e6ecff;
+    }
+
+    .btn.ghost:hover {
+      background: #1e293b;
+      border-color: #475569;
+    }
+
+    #count {
+      color: #9fb0d6;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    }
+
+    .card {
+      background: rgba(11, 18, 32, 0.8);
+      color: #e6ecff;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.25);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0,0,0,.35);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .card h3 {
+      color: #ffffff;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 12px 0;
+    }
+
+    .card .small {
+      color: #9fb0d6;
+      font-size: 0.9rem;
+      margin: 8px 0;
+      line-height: 1.5;
+    }
+
+    .card .muted {
+      color: #9fb0d6;
+    }
+
+    .card .btn {
+      margin-right: 6px;
+      margin-top: 8px;
+      padding: 6px 10px;
+      font-size: 0.875rem;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .searchbar {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body class="resource-center">
+  <header class="header">
+    <div class="bar">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>ClaimNavigatorAI</div>
+      </div>
+      <nav class="nav">
+        <a href="/app/index.html">Home</a>
+        <a href="/app/resource-center.html">Resource Center</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="tool-section">
+    <h1>☎️ Insurance Company Contact Directory</h1>
+    <p class="muted">Search by company name or brand. Click to call, email, or open the claims portal.</p>
+
+    <div class="searchbar">
+      <input 
+        id="q" 
+        type="text"
+        placeholder="Search company… (e.g., State Farm, USAA)" 
+      />
+      <button id="search" class="btn">Search</button>
+      <button id="reset" class="btn ghost">Reset</button>
+    </div>
+
+    <div id="count" class="small"></div>
+    <div id="results" class="grid"></div>
+  </section>
+
+  <script>
+    async function fetchInsurers(q = '') {
+      const url = q 
+        ? `/.netlify/functions/get-insurers?q=${encodeURIComponent(q)}` 
+        : '/.netlify/functions/get-insurers';
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    }
+
+    function cardHTML(r) {
+      const phone = r.claims_phone 
+        ? `<a class="btn" href="tel:${r.claims_phone.replace(/[^0-9]/g, '')}">📞 Call ${r.claims_phone}</a>` 
+        : '';
+      const email = r.claims_email 
+        ? `<a class="btn ghost" href="mailto:${r.claims_email}">✉️ Email</a>` 
+        : '';
+      const web = r.claims_web 
+        ? `<a class="btn ghost" target="_blank" rel="noopener" href="${r.claims_web}">🌐 Open Portal</a>` 
+        : '';
+      const addr = r.mailing_address 
+        ? `<div class="small">📬 ${r.mailing_address}</div>` 
+        : '';
+      const notes = r.notes 
+        ? `<div class="small muted">ⓘ ${r.notes}</div>` 
+        : '';
+      
+      return `
+        <div class="card">
+          <h3>${r.name || r.brand}</h3>
+          ${addr}
+          ${notes}
+          <div style="margin-top:10px">${phone} ${email} ${web}</div>
+        </div>
+      `;
+    }
+
+    async function render(q = '') {
+      try {
+        const list = await fetchInsurers(q);
+        document.getElementById('count').innerText = `${list.length} result${list.length === 1 ? '' : 's'}`;
+        document.getElementById('results').innerHTML = list.map(cardHTML).join('');
+      } catch (error) {
+        console.error('Error fetching insurers:', error);
+        document.getElementById('count').innerText = 'Error loading directory';
+        document.getElementById('results').innerHTML = '<div class="card"><p>Error loading directory. Please try again.</p></div>';
+      }
+    }
+
+    document.getElementById('search').onclick = () => {
+      const query = document.getElementById('q').value.trim();
+      render(query);
+    };
+
+    document.getElementById('reset').onclick = () => {
+      document.getElementById('q').value = '';
+      render('');
+    };
+
+    document.getElementById('q').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        render(e.target.value.trim());
+      }
+    });
+
+    // Initial load
+    render('');
+  </script>
+</body>
+</html>
+
