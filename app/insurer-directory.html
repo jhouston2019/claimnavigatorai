@@ -240,11 +240,16 @@
       const url = q 
         ? `/.netlify/functions/get-insurers?q=${encodeURIComponent(q)}` 
         : '/.netlify/functions/get-insurers';
+      
       const res = await fetch(url);
+      const data = await res.json();
+      
       if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+        // If response has an error message, use it
+        throw new Error(data.error || `HTTP error! status: ${res.status}`);
       }
-      return res.json();
+      
+      return data;
     }
 
     function cardHTML(r) {
@@ -277,12 +282,32 @@
     async function render(q = '') {
       try {
         const list = await fetchInsurers(q);
+        
+        // Check if response is an error object
+        if (list.error) {
+          throw new Error(list.error);
+        }
+        
+        // Ensure list is an array
+        if (!Array.isArray(list)) {
+          throw new Error('Invalid response format');
+        }
+        
         document.getElementById('count').innerText = `${list.length} result${list.length === 1 ? '' : 's'}`;
-        document.getElementById('results').innerHTML = list.map(cardHTML).join('');
+        document.getElementById('results').innerHTML = list.length > 0 
+          ? list.map(cardHTML).join('')
+          : '<div class="card"><p>No insurers found. Try a different search term.</p></div>';
       } catch (error) {
         console.error('Error fetching insurers:', error);
-        document.getElementById('count').innerText = 'Error loading directory';
-        document.getElementById('results').innerHTML = '<div class="card"><p>Error loading directory. Please try again.</p></div>';
+        const errorMsg = error.message || 'Error loading directory';
+        document.getElementById('count').innerText = 'Error';
+        document.getElementById('results').innerHTML = `
+          <div class="card">
+            <h3>⚠️ Error Loading Directory</h3>
+            <p>${errorMsg}</p>
+            <p class="small muted">Please check your connection and try again, or contact support if the problem persists.</p>
+          </div>
+        `;
       }
     }
 

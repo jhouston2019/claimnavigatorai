@@ -4,29 +4,66 @@ const path = require('path');
 function csvToJson(csv) {
   const [headerLine, ...lines] = csv.trim().split(/\r?\n/);
   const headers = headerLine.split(',').map(h => h.trim());
-  return lines.map(line => {
-    const cols = [];
-    let cur = '', inQ = false;
-    for (let i = 0; i < line.length; i++) {
-      const c = line[i];
-      if (c === '"' && line[i + 1] !== '"') { inQ = !inQ; continue; }
-      if (c === '"' && line[i + 1] === '"') { cur += '"'; i++; continue; }
-      if (c === ',' && !inQ) { cols.push(cur); cur = ''; continue; }
-      cur += c;
-    }
-    cols.push(cur);
-    const obj = {};
-    headers.forEach((h, idx) => obj[h] = (cols[idx] || '').trim());
-    return obj;
-  });
+  return lines
+    .filter(line => line.trim().length > 0) // Filter out empty lines
+    .map(line => {
+      const cols = [];
+      let cur = '', inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"' && line[i + 1] !== '"') { inQ = !inQ; continue; }
+        if (c === '"' && line[i + 1] === '"') { cur += '"'; i++; continue; }
+        if (c === ',' && !inQ) { cols.push(cur); cur = ''; continue; }
+        cur += c;
+      }
+      cols.push(cur);
+      const obj = {};
+      headers.forEach((h, idx) => obj[h] = (cols[idx] || '').trim());
+      return obj;
+    });
 }
 
 exports.handler = async (event) => {
+  // CORS headers
+  const headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS'
+  };
+
+  // Handle preflight requests
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers,
+      body: ''
+    };
+  }
+
+  if (event.httpMethod !== 'GET') {
+    return {
+      statusCode: 405,
+      headers,
+      body: JSON.stringify({ error: 'Method not allowed' })
+    };
+  }
+
   try {
     const q = (event.queryStringParameters?.q || '').toLowerCase();
     
-    // Resolve path relative to project root (netlify/functions -> project root -> data)
-    const file = path.resolve(__dirname, '../../data/insurers.csv');
+    // Use process.cwd() for Netlify functions (points to project root)
+    const file = path.join(process.cwd(), 'data', 'insurers.csv');
+    
+    // Check if file exists
+    if (!fs.existsSync(file)) {
+      return {
+        statusCode: 404,
+        headers,
+        body: JSON.stringify({ error: 'Insurers data file not found' })
+      };
+    }
+    
     const csv = fs.readFileSync(file, 'utf8');
     let list = csvToJson(csv);
 
@@ -42,20 +79,15 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
+      headers,
       body: JSON.stringify(list)
     };
   } catch (err) {
+    console.error('Error in get-insurers:', err);
     return {
       statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({ error: err.message })
+      headers,
+      body: JSON.stringify({ error: err.message || 'Internal server error' })
     };
   }
 };
