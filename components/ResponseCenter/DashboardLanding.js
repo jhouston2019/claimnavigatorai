@@ -282,20 +282,25 @@ class DashboardLanding {
         }
 
         .stat-card {
-          background: white;
-          border: 1px solid var(--border);
-          border-radius: 12px;
+          background: rgba(20, 24, 28, 0.55);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border-radius: 18px;
+          box-shadow: 0px 10px 28px rgba(0, 0, 0, 0.45);
           padding: 1.5rem;
           text-align: center;
           display: flex;
           align-items: center;
           gap: 1rem;
-          transition: all 0.3s ease;
+          transition: all 0.25s ease;
         }
 
         .stat-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+          background: rgba(26, 30, 36, 0.60);
+          border-color: rgba(255, 255, 255, 0.12);
+          transform: translateY(-3px);
+          box-shadow: 0px 14px 34px rgba(0, 0, 0, 0.55);
         }
 
         .stat-icon {
@@ -327,11 +332,14 @@ class DashboardLanding {
         }
 
         .dashboard-card {
-          background: white;
-          border: 1px solid var(--border);
-          border-radius: 16px;
+          background: rgba(20, 24, 28, 0.55);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border-radius: 18px;
+          box-shadow: 0px 10px 28px rgba(0, 0, 0, 0.45);
           padding: 2rem;
-          transition: all 0.3s ease;
+          transition: all 0.25s ease;
           cursor: pointer;
           position: relative;
           overflow: hidden;
@@ -346,12 +354,14 @@ class DashboardLanding {
           height: 4px;
           background: var(--primary);
           transform: scaleX(0);
-          transition: transform 0.3s ease;
+          transition: transform 0.25s ease;
         }
 
         .dashboard-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+          background: rgba(26, 30, 36, 0.60);
+          border-color: rgba(255, 255, 255, 0.12);
+          transform: translateY(-3px);
+          box-shadow: 0px 14px 34px rgba(0, 0, 0, 0.55);
         }
 
         .dashboard-card:hover::before {
