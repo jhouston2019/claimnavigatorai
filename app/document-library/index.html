@@ -218,10 +218,18 @@ body:has(main.container) .section-header,
 }
 
 /* Force white title with maximum specificity - override main CSS black text */
-body:has(main.container) .section-header h2,
+/* This must come after all other rules and be very specific */
+/* Using ID selector for maximum specificity - must be more specific than body:has(main.container) .card h2 */
+body:has(main#main.container) .card .section-header h2,
+body:has(main#main.container) .section-header h2,
+body:has(main.container#main) .card .section-header h2,
+body:has(main.container#main) .section-header h2,
+main#main.container .card .section-header h2,
+main#main.container .section-header h2,
 body:has(main.container) .card .section-header h2,
-body:has(main.container) .card:has(.section-header) h2,
 body:has(main.container) .section-header h2,
+body:has(main.container) .card:has(.section-header) .section-header h2,
+body:has(main.container) .card:has(.section-header) h2,
 .section-header h2,
 .card .section-header h2,
 main.container .card .section-header h2,
