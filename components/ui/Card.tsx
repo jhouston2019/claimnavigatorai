@@ -43,20 +43,18 @@ export function Card({
   };
 
   const baseStyle: React.CSSProperties = {
-    background: 'rgba(20, 24, 28, 0.55)',
-    border: '1px solid rgba(255, 255, 255, 0.06)',
-    backdropFilter: 'blur(10px)',
-    WebkitBackdropFilter: 'blur(10px)',
-    borderRadius: '18px',
-    boxShadow: '0px 10px 28px rgba(0, 0, 0, 0.45)',
+    background: 'rgba(255, 255, 255, 0.1)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+    backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
+    borderRadius: '1rem',
     transition: 'all 0.25s ease',
   };
 
   const hoverStyle: React.CSSProperties = hover ? {
-    background: 'rgba(26, 30, 36, 0.60)',
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    background: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.3)',
     transform: 'translateY(-3px)',
-    boxShadow: '0px 14px 34px rgba(0, 0, 0, 0.55)',
   } : {};
 
   return (
