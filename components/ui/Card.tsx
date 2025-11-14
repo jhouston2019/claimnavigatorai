@@ -42,17 +42,47 @@ export function Card({
     '2xl': 'rounded-2xl'
   };
 
+  const baseStyle: React.CSSProperties = {
+    background: 'rgba(14, 22, 40, 0.45)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    borderRadius: '20px',
+    boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.35)',
+    transition: 'all 0.25s ease',
+  };
+
+  const hoverStyle: React.CSSProperties = hover ? {
+    background: 'rgba(18, 28, 50, 0.55)',
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    transform: 'translateY(-3px)',
+    boxShadow: '0px 12px 32px rgba(0, 0, 0, 0.45)',
+  } : {};
+
   return (
     <div
       className={`
-        bg-white dark:bg-gray-800
         ${paddingClasses[padding]}
-        ${shadowClasses[shadow]}
         ${roundedClasses[rounded]}
-        ${border ? 'border border-gray-200 dark:border-gray-700' : ''}
-        ${hover ? 'hover:shadow-lg transition-shadow duration-200' : ''}
         ${className}
       `}
+      style={{ ...baseStyle, ...hoverStyle }}
+      onMouseEnter={(e) => {
+        if (hover) {
+          e.currentTarget.style.background = 'rgba(18, 28, 50, 0.55)';
+          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+          e.currentTarget.style.transform = 'translateY(-3px)';
+          e.currentTarget.style.boxShadow = '0px 12px 32px rgba(0, 0, 0, 0.45)';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (hover) {
+          e.currentTarget.style.background = 'rgba(14, 22, 40, 0.45)';
+          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0px 8px 24px rgba(0, 0, 0, 0.35)';
+        }
+      }}
     >
       {children}
     </div>
@@ -66,7 +96,7 @@ export interface CardHeaderProps {
 
 export function CardHeader({ children, className = '' }: CardHeaderProps) {
   return (
-    <div className={`border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 ${className}`}>
+    <div className={`border-b border-white/10 pb-4 mb-4 ${className}`}>
       {children}
     </div>
   );
@@ -84,7 +114,7 @@ export function CardTitle({
   as: Component = 'h3' 
 }: CardTitleProps) {
   return (
-    <Component className={`text-lg font-semibold text-gray-900 dark:text-white ${className}`}>
+    <Component className={`text-lg font-semibold text-white ${className}`}>
       {children}
     </Component>
   );
@@ -97,7 +127,7 @@ export interface CardDescriptionProps {
 
 export function CardDescription({ children, className = '' }: CardDescriptionProps) {
   return (
-    <p className={`text-sm text-gray-600 dark:text-gray-400 mt-1 ${className}`}>
+    <p className={`text-sm text-gray-300 mt-1 ${className}`}>
       {children}
     </p>
   );
@@ -123,7 +153,7 @@ export interface CardFooterProps {
 
 export function CardFooter({ children, className = '' }: CardFooterProps) {
   return (
-    <div className={`border-t border-gray-200 dark:border-gray-700 pt-4 mt-4 ${className}`}>
+    <div className={`border-t border-white/10 pt-4 mt-4 ${className}`}>
       {children}
     </div>
   );
@@ -210,10 +240,10 @@ export function StatCard({
       <CardContent>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+            <p className="text-sm font-medium text-gray-300">
               {title}
             </p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+            <p className="text-2xl font-bold text-white">
               {value}
             </p>
             {change && (
