@@ -281,6 +281,36 @@ main.container .card .section-header h2 {
   display: flex;
   flex-direction: column;
   text-align: center;
+  color: #ffffff !important;
+}
+
+/* Force ALL text within document-item to be white - override main CSS black text */
+body:has(main.container) .document-item,
+body:has(main.container) .document-item *,
+body:has(main.container) .card.document-item,
+body:has(main.container) .card.document-item *,
+.document-item,
+.document-item *,
+.document-item h3,
+.document-item p,
+.document-item span,
+.document-item div,
+.document-item button,
+.card.document-item,
+.card.document-item *,
+.card.document-item h3,
+.card.document-item p,
+.card.document-item span,
+.card.document-item div,
+.card.document-item button,
+#list .document-item,
+#list .document-item *,
+#list .document-item h3,
+#list .document-item p,
+#list .document-item span,
+#list .document-item div,
+#list .document-item button {
+  color: #ffffff !important;
 }
 
 .document-item:hover {
@@ -289,17 +319,23 @@ main.container .card .section-header h2 {
   transform: translateY(-3px);
 }
 
-/* All document item text in white */
+/* All document item text in white - comprehensive override */
 body:has(main.container) .document-item .document-header h3,
 .document-item .document-header h3,
 .document-item h3,
 .card.document-item h3,
-#list .document-item h3 {
+#list .document-item h3,
+.document-item .document-header *,
+.document-item .document-actions * {
   color: #ffffff !important;
+}
+
+.document-item h3 {
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
   font-weight: bold !important;
   text-align: center;
+  color: #ffffff !important;
 }
 
 .document-header p {
@@ -307,6 +343,14 @@ body:has(main.container) .document-item .document-header h3,
   margin-bottom: 1rem;
   line-height: 1.5;
   text-align: center;
+}
+
+.document-header {
+  color: #ffffff !important;
+}
+
+.document-header * {
+  color: #ffffff !important;
 }
 
 .document-actions {
@@ -317,7 +361,12 @@ body:has(main.container) .document-item .document-header h3,
   margin-top: auto;
 }
 
-.document-actions .btn-secondary {
+.document-actions .btn-secondary,
+.document-item .btn-secondary,
+.card.document-item .btn-secondary,
+#list .document-item .btn-secondary,
+body:has(main.container) .document-item .btn-secondary,
+body:has(main.container) .card.document-item .btn-secondary {
   padding: 0.5rem 1rem;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
