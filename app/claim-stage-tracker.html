@@ -597,24 +597,35 @@ async function loadClaims() {
     
     if (!res.ok) {
       // Try to get error message from response
+      let errorData = {};
       try {
-        const errorData = await res.json();
-        errorMessage = errorData.error || `HTTP ${res.status}: ${res.statusText}`;
+        const responseText = await res.text();
+        console.error('Raw error response:', responseText);
+        try {
+          errorData = JSON.parse(responseText);
+        } catch (e) {
+          errorData = { raw: responseText };
+        }
+        errorMessage = errorData.error || errorData.message || `HTTP ${res.status}: ${res.statusText}`;
         errorDetails = JSON.stringify(errorData, null, 2);
       } catch (e) {
-        const errorText = await res.text();
+        console.error('Error parsing error response:', e);
         errorMessage = `HTTP ${res.status}: ${res.statusText}`;
-        errorDetails = errorText || 'No error details available';
+        errorDetails = 'No error details available';
       }
       
-      console.error('API Error:', {
+      console.error('API Error Details:', {
         status: res.status,
         statusText: res.statusText,
         message: errorMessage,
-        details: errorDetails
+        fullError: errorData
       });
       
-      throw new Error(errorMessage);
+      // Create a more detailed error with all the info
+      const detailedError = new Error(errorMessage);
+      detailedError.status = res.status;
+      detailedError.details = errorData;
+      throw detailedError;
     }
 
     const data = await res.json();
@@ -648,20 +659,34 @@ async function loadClaims() {
     }
   } catch (error) {
     console.error('Error loading claims:', error);
+    console.error('Full error object:', error);
+    
     const errorMsg = error.message || 'Unknown error occurred';
+    const errorDetails = error.details || {};
+    const errorStatus = error.status || 'Unknown';
+    
     showToast(`Error loading claims: ${errorMsg}`, 'error');
+    
+    // Build detailed error info
+    const errorInfo = {
+      message: error.message,
+      status: errorStatus,
+      name: error.name,
+      details: errorDetails,
+      stack: error.stack
+    };
     
     document.getElementById('stages').innerHTML = `
       <div class="empty-state">
         <h3>Error Loading Claims</h3>
-        <p style="color: #ef4444 !important; font-weight: 600;">${escapeHtml(errorMsg)}</p>
+        <p style="color: #ef4444 !important; font-weight: 600; font-size: 1.1rem;">${escapeHtml(errorMsg)}</p>
+        ${errorStatus !== 'Unknown' ? `<p style="color: #dbeafe !important; margin-top: 0.5rem;">Status Code: ${errorStatus}</p>` : ''}
+        ${errorDetails.details ? `<p style="color: #fbbf24 !important; margin-top: 0.5rem;">Details: ${escapeHtml(errorDetails.details)}</p>` : ''}
+        ${errorDetails.code ? `<p style="color: #dbeafe !important; margin-top: 0.5rem;">Error Code: ${escapeHtml(errorDetails.code)}</p>` : ''}
+        ${errorDetails.hint ? `<p style="color: #dbeafe !important; margin-top: 0.5rem;">Hint: ${escapeHtml(errorDetails.hint)}</p>` : ''}
         <details style="margin-top: 1rem; text-align: left; max-width: 600px;">
-          <summary style="cursor: pointer; color: #dbeafe !important; margin-bottom: 0.5rem;">Error Details (Click to expand)</summary>
-          <pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.85rem; color: #dbeafe !important;">${escapeHtml(JSON.stringify({
-            message: error.message,
-            stack: error.stack,
-            name: error.name
-          }, null, 2))}</pre>
+          <summary style="cursor: pointer; color: #dbeafe !important; margin-bottom: 0.5rem; font-weight: 600;">Full Error Details (Click to expand)</summary>
+          <pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.85rem; color: #dbeafe !important; white-space: pre-wrap; word-wrap: break-word;">${escapeHtml(JSON.stringify(errorInfo, null, 2))}</pre>
         </details>
         <div style="margin-top: 1.5rem;">
           <button onclick="location.reload()" style="padding: 0.75rem 1.5rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer; margin-right: 0.5rem;">Retry</button>
