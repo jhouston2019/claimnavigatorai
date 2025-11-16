@@ -77,7 +77,12 @@ exports.handler = async (event, context) => {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ error: 'Failed to fetch claims' })
+        body: JSON.stringify({ 
+          error: 'Failed to fetch claims',
+          details: error.message,
+          code: error.code,
+          hint: error.hint
+        })
       };
     }
 
@@ -98,7 +103,11 @@ exports.handler = async (event, context) => {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ error: 'Internal server error' })
+      body: JSON.stringify({ 
+        error: 'Internal server error',
+        message: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      })
     };
   }
 };
