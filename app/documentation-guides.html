@@ -44,12 +44,13 @@ body a:hover {
   color: #93c5fd !important;
 }
 
-/* Full width layout */
-main {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  background: transparent;
+/* Main Container - must override external CSS */
+main.main {
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 24px !important;
+  width: auto !important;
+  background: transparent !important;
 }
 
 /* Page Header */
@@ -71,15 +72,8 @@ main {
   margin: 0 auto;
 }
 
-/* Main Container */
-.main {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px;
-}
-
-/* Standard Card Styling - matches rest of site */
-.card {
+/* Standard Card Styling - matches rest of site - must override external CSS */
+main.main .card {
   background: rgba(255, 255, 255, 0.1) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   backdrop-filter: blur(8px) !important;
@@ -89,19 +83,25 @@ main {
   color: #ffffff !important;
   transition: all 0.25s ease !important;
   margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
 }
 
-.card:hover {
+main.main .card:hover {
   background: rgba(255, 255, 255, 0.2) !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
   transform: translateY(-3px) !important;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
-.card h1, .card h2, .card h3, .card h4 {
+main.main .card h1, 
+main.main .card h2, 
+main.main .card h3, 
+main.main .card h4 {
   color: #ffffff !important;
 }
 
-.card p, .card li {
+main.main .card p, 
+main.main .card li {
   color: #dbeafe !important;
   line-height: 1.7;
 }
@@ -154,7 +154,7 @@ strong {
 }
 
 /* Ensure all text in cards is properly styled */
-.card strong {
+main.main .card strong {
   color: var(--light-blue);
 }
 
@@ -301,7 +301,7 @@ a:hover {
     padding: 16px;
   }
   
-  .card {
+  main.main .card {
     padding: 1rem !important;
   }
   
@@ -421,22 +421,20 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
     </div>
     
     <div class="card">
-        <h3>🎯 System Overview</h3>
-        <p>This complete system covers every aspect of property claim documentation from initial setup through final submission and negotiation.</p>
-        <div class="two-column">
-          <ul>
-            <li><strong>Core Setup:</strong> Essential tools and professional documentation</li>
-            <li><strong>Financial Documentation:</strong> ALE tracking and business interruption</li>
-            <li><strong>Communication:</strong> Claim diary and correspondence tracking</li>
-          </ul>
-          <ul>
-            <li><strong>Specialized Documentation:</strong> Catastrophe and commercial claims</li>
-            <li><strong>Verification:</strong> Audit and submission processes</li>
-            <li><strong>Advanced Strategies:</strong> Negotiation and evidence authentication</li>
-          </ul>
-        </div>
+      <h3>🎯 System Overview</h3>
+      <p>This complete system covers every aspect of property claim documentation from initial setup through final submission and negotiation.</p>
+      <div class="two-column">
+        <ul>
+          <li><strong>Core Setup:</strong> Essential tools and professional documentation</li>
+          <li><strong>Financial Documentation:</strong> ALE tracking and business interruption</li>
+          <li><strong>Communication:</strong> Claim diary and correspondence tracking</li>
+        </ul>
+        <ul>
+          <li><strong>Specialized Documentation:</strong> Catastrophe and commercial claims</li>
+          <li><strong>Verification:</strong> Audit and submission processes</li>
+          <li><strong>Advanced Strategies:</strong> Negotiation and evidence authentication</li>
+        </ul>
       </div>
-
     </div>
 
     <div class="card">
