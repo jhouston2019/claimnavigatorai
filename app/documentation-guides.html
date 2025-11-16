@@ -52,47 +52,63 @@ main {
   background: transparent;
 }
 
-/* Blue Card Sections */
-.blue-card {
-  background: rgba(255, 255, 255, 0.1) !important;
-  backdrop-filter: blur(10px);
-  color: #ffffff !important;
-  padding: 4rem 8%;
-  border-bottom: 4px solid rgba(59, 130, 246, 0.5);
-  width: 100%;
+/* Page Header */
+.page-header {
+  text-align: center;
+  margin: 6px 0 32px;
 }
 
-.blue-card-content {
-  max-width: 1400px;
+.page-header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  font-weight: 800;
+  color: #fff;
+}
+
+.page-header p {
+  color: #dbeafe;
+  max-width: 900px;
   margin: 0 auto;
 }
 
-.blue-card h1, .blue-card h2, .blue-card h3 {
+/* Main Container */
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Standard Card Styling - matches rest of site */
+.card {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border-radius: 1rem !important;
+  padding: 1.5rem !important;
+  color: #ffffff !important;
+  transition: all 0.25s ease !important;
+  margin-bottom: 1.5rem;
+}
+
+.card:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  transform: translateY(-3px) !important;
+}
+
+.card h1, .card h2, .card h3, .card h4 {
   color: #ffffff !important;
 }
 
-.blue-card p, .blue-card li {
+.card p, .card li {
   color: #dbeafe !important;
   line-height: 1.7;
 }
 
-/* White Sub-Cards */
-.white-subcard {
-  background: rgba(255, 255, 255, 0.15) !important;
-  backdrop-filter: blur(10px);
-  color: #ffffff !important;
-  padding: 1.5rem 2rem;
-  border-radius: 4px;
-  margin: 1.25rem 0;
-  border-left: 5px solid rgba(59, 130, 246, 0.5);
-}
-
-.white-subcard h3, .white-subcard h4 {
-  color: #ffffff !important;
-}
-
-.white-subcard p, .white-subcard li {
-  color: #dbeafe !important;
+/* Section Container */
+.section-container {
+  margin-bottom: 2rem;
 }
 
 /* Typography */
@@ -137,8 +153,8 @@ strong {
   font-weight: 600;
 }
 
-/* Ensure all text in white areas is dark */
-.white-subcard strong {
+/* Ensure all text in cards is properly styled */
+.card strong {
   color: var(--light-blue);
 }
 
@@ -281,12 +297,12 @@ a:hover {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .blue-card {
-    padding: 2rem 4%;
+  .main {
+    padding: 16px;
   }
   
-  .white-subcard {
-    padding: 1rem 1.5rem;
+  .card {
+    padding: 1rem !important;
   }
   
   h1 { font-size: 1.8rem; }
@@ -382,7 +398,7 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
   </div>
 </header>
 
-<main>
+<main class="main">
   <!-- Table of Contents -->
   <nav class="toc-bar">
     <a href="#step1">Section 1</a> • 
@@ -398,12 +414,13 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
   </nav>
 
   <!-- Overview Section -->
-  <section class="blue-card" id="overview">
-    <div class="blue-card-content">
-      <h1 style="text-align: center;">Claim Documentation Guides</h1>
-      <p style="text-align: center;">Everything you need to document, organize, and maximize your insurance claim. Follow this comprehensive step-by-step system for professional results.</p>
-      
-      <div class="white-subcard">
+  <section class="section-container" id="overview">
+    <div class="page-header">
+      <h1>Claim Documentation Guides</h1>
+      <p>Everything you need to document, organize, and maximize your insurance claim. Follow this comprehensive step-by-step system for professional results.</p>
+    </div>
+    
+    <div class="card">
         <h3>🎯 System Overview</h3>
         <p>This complete system covers every aspect of property claim documentation from initial setup through final submission and negotiation.</p>
         <div class="two-column">
@@ -420,32 +437,34 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
         </div>
       </div>
 
-      <div class="white-subcard">
-        <h3>📊 Success Metrics</h3>
-        <p>Track your documentation progress with these key indicators:</p>
-        <div class="two-column">
-          <ul>
-            <li>✅ All required documents collected and organized</li>
-            <li>✅ Professional photo documentation completed</li>
-            <li>✅ Financial records properly categorized</li>
-          </ul>
-          <ul>
-            <li>✅ Timeline and correspondence logged</li>
-            <li>✅ Expert reports and estimates obtained</li>
-            <li>✅ Digital submission package prepared</li>
-          </ul>
-        </div>
+    </div>
+
+    <div class="card">
+      <h3>📊 Success Metrics</h3>
+      <p>Track your documentation progress with these key indicators:</p>
+      <div class="two-column">
+        <ul>
+          <li>✅ All required documents collected and organized</li>
+          <li>✅ Professional photo documentation completed</li>
+          <li>✅ Financial records properly categorized</li>
+        </ul>
+        <ul>
+          <li>✅ Timeline and correspondence logged</li>
+          <li>✅ Expert reports and estimates obtained</li>
+          <li>✅ Digital submission package prepared</li>
+        </ul>
       </div>
     </div>
   </section>
 
   <!-- Section 1: Essential Tools & Apps -->
-  <section class="blue-card" id="step1">
-    <div class="blue-card-content">
+  <section class="section-container" id="step1">
+    <div class="card">
       <h2>📱 Section 1: Essential Tools & Apps</h2>
       <p>Set up your digital toolkit with these essential apps and tools for claim documentation.</p>
+    </div>
 
-      <div class="white-subcard">
+    <div class="card">
         <h3>📱 Document Scanning & Organization</h3>
         <div class="two-column">
           <div>
@@ -475,10 +494,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             <a href="https://drive.google.com" class="primary-btn" target="_blank" rel="noopener">Get Google Drive →</a>
           </div>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>📸 Photo Documentation</h3>
+    <div class="card">
+      <h3>📸 Photo Documentation</h3>
         <div class="two-column">
           <div>
             <h4>Camera+ 2</h4>
@@ -493,10 +512,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             <a href="https://apps.apple.com/app/photo-measures/id302630417" class="primary-btn" target="_blank" rel="noopener">Get Photo Measures →</a>
           </div>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>💰 Financial Tracking</h3>
+    <div class="card">
+      <h3>💰 Financial Tracking</h3>
         <div class="two-column">
           <div>
             <h4>Mint</h4>
@@ -511,17 +530,17 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             <a href="https://www.expensify.com" class="primary-btn" target="_blank" rel="noopener">Get Expensify →</a>
           </div>
         </div>
-      </div>
     </div>
   </section>
 
   <!-- Section 2: Professional Photography Techniques -->
-  <section class="blue-card" id="step2">
-    <div class="blue-card-content">
+  <section class="section-container" id="step2">
+    <div class="card">
       <h2>📸 Section 2: Professional Photography Techniques</h2>
       <p>Learn how to document property damage like a professional adjuster.</p>
+    </div>
 
-      <div class="white-subcard">
+    <div class="card">
         <h3>📐 Photography Process</h3>
         <div class="two-column">
           <div>
@@ -549,10 +568,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             <li>Avoid harsh shadows</li>
           </ul>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>📱 Equipment Recommendations</h3>
+    <div class="card">
+      <h3>📱 Equipment Recommendations</h3>
         <div class="two-column">
           <div>
             <h4>Smartphone Accessories:</h4>
@@ -582,17 +601,17 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             <li>Portable lighting kit ($100-300)</li>
           </ul>
         </div>
-      </div>
     </div>
   </section>
 
   <!-- Section 3: Document Organization System -->
-  <section class="blue-card" id="step3">
-    <div class="blue-card-content">
+  <section class="section-container" id="step3">
+    <div class="card">
       <h2>📁 Section 3: Document Organization System</h2>
       <p>Set up a professional filing system to manage all your claim documents.</p>
+    </div>
 
-      <div class="white-subcard">
+    <div class="card">
         <h3>📁 Folder Structure</h3>
         <pre>01_Policy_Documents
 02_Claim_Forms
@@ -606,10 +625,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
           <li>2024-01-15_Roof_Damage_Photo_001.jpg</li>
           <li>2024-01-20_Contractor_Estimate_Roof.pdf</li>
         </ul>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>📄 Document Categories</h3>
+    <div class="card">
+      <h3>📄 Document Categories</h3>
         <div class="two-column">
           <div>
             <h4>Policy Documents:</h4>
@@ -639,10 +658,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             <li>Tax returns (for BI claims)</li>
           </ul>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>📊 Tracking & Timeline</h3>
+    <div class="card">
+      <h3>📊 Tracking & Timeline</h3>
         <ul>
           <li><strong>Document Log:</strong> Master list of all documents with submission dates</li>
           <li><strong>Follow-up Tracking:</strong> Track insurer acknowledgments</li>
@@ -650,17 +669,17 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
           <li><strong>Backup Strategy:</strong> Physical copies and multiple digital backups</li>
           <li><strong>Access Control:</strong> Secure sharing with authorized parties</li>
         </ul>
-      </div>
     </div>
   </section>
 
   <!-- Section 4: Business Interruption Documentation -->
-  <section class="blue-card" id="step4">
-    <div class="blue-card-content">
+  <section class="section-container" id="step4">
+    <div class="card">
       <h2>💰 Section 4: Business Interruption Documentation</h2>
       <p>Essential tools and reports for proving business losses and maximizing BI claims.</p>
+    </div>
 
-      <div class="white-subcard">
+    <div class="card">
         <h3>📊 Accounting Software Comparison</h3>
         <table>
           <thead>
@@ -698,10 +717,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </tr>
           </tbody>
         </table>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>💰 Financial Reports for BI Claims</h3>
+    <div class="card">
+      <h3>💰 Financial Reports for BI Claims</h3>
         <div class="two-column">
           <div>
             <h4>📊 Profit & Loss Statements</h4>
@@ -724,10 +743,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>✅ BI Documentation Checklist</h3>
+    <div class="card">
+      <h3>✅ BI Documentation Checklist</h3>
         <div class="two-column">
           <ul>
             <li><strong>Financial Records:</strong> 3 years of tax returns, P&L statements, balance sheets</li>
@@ -742,17 +761,17 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             <li><strong>Recovery Plans:</strong> Business continuity plans, alternative arrangements</li>
           </ul>
         </div>
-      </div>
     </div>
   </section>
 
   <!-- Section 5: Core Setup & Essential Tools -->
-  <section class="blue-card" id="core-setup">
-    <div class="blue-card-content">
+  <section class="section-container" id="core-setup">
+    <div class="card">
       <h2>📋 Section 5: Core Setup & Essential Tools</h2>
       <p>Professional setup for maximum claim success. These tools and processes form the foundation of your documentation system.</p>
+    </div>
 
-      <div class="white-subcard">
+    <div class="card">
         <h3>🔧 Essential Tools & Apps Setup Guide</h3>
         <div class="two-column">
           <div>
@@ -773,10 +792,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>📸 Professional Property Evidence Documentation</h3>
+    <div class="card">
+      <h3>📸 Professional Property Evidence Documentation</h3>
         <h4>Photography Process:</h4>
         <ol>
           <li><strong>Wide Shots First:</strong> Establish context and location</li>
@@ -791,10 +810,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
           <li>25-foot measuring tape ($10-20)</li>
           <li>Moisture meter ($50-150)</li>
         </ul>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>📝 Witness Statements & Property Incident Report</h3>
+    <div class="card">
+      <h3>📝 Witness Statements & Property Incident Report</h3>
         <div class="two-column">
           <div>
             <h4>Witness Statement Template:</h4>
@@ -817,10 +836,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>📦 Personal Property Inventory & Valuation</h3>
+    <div class="card">
+      <h3>📦 Personal Property Inventory & Valuation</h3>
         <h4>Inventory Process:</h4>
         <ol>
           <li><strong>Room-by-Room Documentation:</strong> Systematic approach to cataloging</li>
@@ -836,17 +855,17 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
           <li>Market value research</li>
           <li>Professional appraisals for high-value items</li>
         </ul>
-      </div>
     </div>
   </section>
 
   <!-- Section 6: Property Loss Financial Documentation -->
-  <section class="blue-card" id="financial-docs">
-    <div class="blue-card-content">
+  <section class="section-container" id="financial-docs">
+    <div class="card">
       <h2>💰 Section 6: Property Loss Financial Documentation</h2>
       <p>Comprehensive financial tracking and documentation for maximum claim recovery.</p>
+    </div>
 
-      <div class="white-subcard">
+    <div class="card">
         <h3>🏠 Additional Living Expenses (ALE) Tracker</h3>
         <div class="two-column">
           <div>
@@ -869,10 +888,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>🔧 Emergency Repair & Mitigation Expense</h3>
+    <div class="card">
+      <h3>🔧 Emergency Repair & Mitigation Expense</h3>
         <div class="two-column">
           <div>
             <h4>Emergency Repairs:</h4>
@@ -893,10 +912,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>🏢 Business Interruption Documentation</h3>
+    <div class="card">
+      <h3>🏢 Business Interruption Documentation</h3>
         <div class="two-column">
           <div>
             <h4>Financial Records Required:</h4>
@@ -918,10 +937,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>🏗️ Structural Repair Estimates & Contractor Bids</h3>
+    <div class="card">
+      <h3>🏗️ Structural Repair Estimates & Contractor Bids</h3>
         <div class="two-column">
           <div>
             <h4>Multiple Estimates Required:</h4>
@@ -942,17 +961,17 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
     </div>
   </section>
 
   <!-- Section 7: Property Claim Communication -->
-  <section class="blue-card" id="communication">
-    <div class="blue-card-content">
+  <section class="section-container" id="communication">
+    <div class="card">
       <h2>📞 Section 7: Property Claim Communication</h2>
       <p>Professional communication strategies and documentation for claim success.</p>
+    </div>
 
-      <div class="white-subcard">
+    <div class="card">
         <h3>📅 Claim Diary & Timeline</h3>
         <div class="two-column">
           <div>
@@ -976,10 +995,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>📧 Insurance Correspondence</h3>
+    <div class="card">
+      <h3>📧 Insurance Correspondence</h3>
         <div class="two-column">
           <div>
             <h4>Email Management:</h4>
@@ -1001,17 +1020,17 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
     </div>
   </section>
 
   <!-- Section 8: Specialized Property Documentation -->
-  <section class="blue-card" id="specialized">
-    <div class="blue-card-content">
+  <section class="section-container" id="specialized">
+    <div class="card">
       <h2>🌪️ Section 8: Specialized Property Documentation</h2>
       <p>Advanced documentation for complex property claims and specialized situations.</p>
+    </div>
 
-      <div class="white-subcard">
+    <div class="card">
         <h3>🌀 Catastrophe Property Claims</h3>
         <div class="two-column">
           <div>
@@ -1034,10 +1053,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>🏢 Commercial Property Documentation</h3>
+    <div class="card">
+      <h3>🏢 Commercial Property Documentation</h3>
         <div class="two-column">
           <div>
             <h4>Business-Specific Documentation:</h4>
@@ -1059,17 +1078,17 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
     </div>
   </section>
 
   <!-- Section 9: Verification & Submission -->
-  <section class="blue-card" id="verification">
-    <div class="blue-card-content">
+  <section class="section-container" id="verification">
+    <div class="card">
       <h2>✅ Section 9: Verification & Submission</h2>
       <p>Final verification and professional submission processes for maximum claim success.</p>
+    </div>
 
-      <div class="white-subcard">
+    <div class="card">
         <h3>🔍 Property Claim Audit & Verification</h3>
         <div class="two-column">
           <div>
@@ -1095,10 +1114,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>💻 Digital Property Claim Submission</h3>
+    <div class="card">
+      <h3>💻 Digital Property Claim Submission</h3>
         <div class="two-column">
           <div>
             <h4>Digital Submission Package:</h4>
@@ -1120,17 +1139,17 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
     </div>
   </section>
 
   <!-- Section 10: Advanced Property Claim Strategies -->
-  <section class="blue-card" id="advanced">
-    <div class="blue-card-content">
+  <section class="section-container" id="advanced">
+    <div class="card">
       <h2>🎯 Section 10: Advanced Property Claim Strategies</h2>
       <p>Professional strategies for evidence authentication, negotiation, and claim maximization.</p>
+    </div>
 
-      <div class="white-subcard">
+    <div class="card">
         <h3>📸 Property Photo Metadata & Evidence Authentication</h3>
         <div class="two-column">
           <div>
@@ -1152,10 +1171,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>🤝 Property Claim Negotiation Documentation</h3>
+    <div class="card">
+      <h3>🤝 Property Claim Negotiation Documentation</h3>
         <div class="two-column">
           <div>
             <h4>Negotiation Preparation:</h4>
@@ -1176,10 +1195,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>📄 Property Claim Cover Letter Template</h3>
+    <div class="card">
+      <h3>📄 Property Claim Cover Letter Template</h3>
         <div class="two-column">
           <div>
             <h4>Professional Cover Letter Elements:</h4>
@@ -1202,17 +1221,17 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
     </div>
   </section>
 
   <!-- Final Checklist Section -->
-  <section class="blue-card" id="checklist">
-    <div class="blue-card-content">
+  <section class="section-container" id="checklist">
+    <div class="card">
       <h2>✅ Property Claim Success Checklist</h2>
       <p>Use this comprehensive checklist to ensure you've completed all necessary documentation for maximum claim success.</p>
+    </div>
 
-      <div class="white-subcard">
+    <div class="card">
         <h3>📋 Documentation Checklist</h3>
         <div class="two-column">
           <div>
@@ -1236,10 +1255,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>📞 Communication Checklist</h3>
+    <div class="card">
+      <h3>📞 Communication Checklist</h3>
         <div class="two-column">
           <div>
             <h4>Insurance Communication:</h4>
@@ -1262,10 +1281,10 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
+    </div>
 
-      <div class="white-subcard">
-        <h3>🎯 Final Submission Checklist</h3>
+    <div class="card">
+      <h3>🎯 Final Submission Checklist</h3>
         <div class="two-column">
           <div>
             <h4>Pre-Submission Review:</h4>
@@ -1288,7 +1307,6 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
             </ul>
           </div>
         </div>
-      </div>
     </div>
   </section>
 </main>
