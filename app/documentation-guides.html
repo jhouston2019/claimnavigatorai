@@ -5,383 +5,70 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Claim Documentation Guides - ClaimNavigatorAI</title>
 <meta name="description" content="Professional property claim documentation system with tools, templates, and step-by-step guides for maximum claim success.">
-<link rel="stylesheet" href="/app/assets/css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --navy: #f5f5f5;         /* Light gray background */
-  --blue: #f5f5f5;         /* Light gray - matches navigation */
-  --light-blue: #1e40af;   /* Primary blue - matches site */
-  --white: #ffffff;
-  --dark-text: #000000;    /* Black text for white backgrounds */
-  --border: #1e40af;
-}
-
-html { 
-  scroll-behavior: smooth; 
-}
-
-body {
-  background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url('../../assets/images/backgrounds/paperwork6.jpeg') no-repeat center center fixed;
-  background-size: cover;
-  color: #ffffff !important;
-  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
-  line-height: 1.6;
-  font-size: 16px;
-  margin: 0;
-  padding: 0;
-}
+:root{--navy:#0f172a;--primary:#1e40af;--primary-600:#1e3a8a;--accent:#3b82f6;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--panel:#f8fafc;--success:#10b981;--warn:#f59e0b;--error:#ef4444;}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:#ffffff !important;background:linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('../../assets/images/backgrounds/paperwork6.jpeg') center/cover no-repeat fixed !important;background-size:cover !important;background-attachment:fixed !important;line-height:1.6;min-height:100vh}
 
 /* Ensure all text is readable on dark background */
 body, body * {
-  color: #ffffff !important;
+    color: #ffffff !important;
 }
 
 body a {
-  color: #dbeafe !important;
+    color: #dbeafe !important;
 }
 
 body a:hover {
-  color: #93c5fd !important;
+    color: #93c5fd !important;
 }
 
-/* Main Container - must override external CSS */
-main.main {
-  max-width: 1200px !important;
-  margin: 0 auto !important;
-  padding: 24px !important;
-  width: auto !important;
-  background: transparent !important;
-}
-
-/* Page Header */
-.page-header {
-  text-align: center;
-  margin: 6px 0 32px;
-}
-
-.page-header h1 {
-  margin: 0 0 8px;
-  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
-  font-weight: 800;
-  color: #fff;
-}
-
-.page-header p {
-  color: #dbeafe;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-/* Standard Card Styling - matches rest of site - must override external CSS */
-main.main .card {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-  border-radius: 1rem !important;
-  padding: 1.5rem !important;
-  color: #ffffff !important;
-  transition: all 0.25s ease !important;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
-}
-
-main.main .card:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
-  transform: translateY(-3px) !important;
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15) !important;
-}
-
-main.main .card h1, 
-main.main .card h2, 
-main.main .card h3, 
-main.main .card h4 {
-  color: #ffffff !important;
-}
-
-main.main .card p, 
-main.main .card li {
-  color: #dbeafe !important;
-  line-height: 1.7;
-}
-
-/* Section Container */
-.section-container {
-  margin-bottom: 2rem;
-}
-
-/* Typography */
-h1 { 
-  font-size: 2.2rem; 
-  font-weight: 700; 
-  margin-bottom: 1rem; 
-}
-
-h2 { 
-  font-size: 1.8rem; 
-  font-weight: 600; 
-  margin-top: 2rem; 
-  margin-bottom: 1.5rem;
-}
-
-h3 { 
-  font-size: 1.3rem; 
-  font-weight: 600; 
-  margin-top: 1.25rem; 
-  margin-bottom: 1rem;
-}
-
-h4 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
-
-p { 
-  font-size: 1rem; 
-  margin-bottom: 0.75rem; 
-}
-
-ul, ol { 
-  margin-left: 1.25rem; 
-  margin-bottom: 1rem;
-}
-
-strong { 
-  color: var(--light-blue); 
-  font-weight: 600;
-}
-
-/* Ensure all text in cards is properly styled */
-main.main .card strong {
-  color: var(--light-blue);
-}
-
-/* Table of Contents */
-.toc-bar {
-  background: var(--white);
-  color: var(--dark-text);
-  text-align: center;
-  padding: 1rem 0;
-  border-bottom: 2px solid var(--border);
-  font-weight: 600;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.toc-bar a {
-  color: var(--light-blue);
-  margin: 0 0.5rem;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.toc-bar a:hover { 
-  text-decoration: underline; 
-}
-
-/* Tables */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--white);
-  color: var(--dark-text);
-  margin: 1.5rem 0;
-  font-size: 0.95rem;
-}
-
-th {
-  background: var(--light-blue);
-  color: var(--white);
-  padding: 0.75rem;
-  font-weight: 600;
-}
-
-td {
-  border: 1px solid #e5e7eb;
-  padding: 0.65rem 0.8rem;
-  color: #111827 !important;
-}
-
-tr:nth-child(even) td { 
-  background: #f8fafc; 
-  color: #111827 !important;
-}
-
-/* Two Column Layout */
-.two-column {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin: 1.5rem 0;
-}
-
-/* Lists */
-ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-ul li {
-  padding: 0.5rem 0;
-  padding-left: 1.5rem;
-  position: relative;
-}
-
-ul li:before {
-  content: "→";
-  position: absolute;
-  left: 0;
-  color: var(--light-blue);
-  font-weight: bold;
-}
-
-/* Code/Pre */
-pre, code {
-  background: #f1f5f9;
-  padding: 0.4rem 0.6rem;
-  border-radius: 4px;
-  color: var(--navy);
-  font-size: 14px;
-  overflow-x: auto;
-}
-
-/* Buttons & Links */
-.primary-btn {
-  background: var(--light-blue);
-  color: var(--white);
-  padding: 10px 16px;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: 600;
-  display: inline-block;
-  margin: 0.5rem 0.5rem 0.5rem 0;
-  border: none;
-  cursor: pointer;
-}
-
-.primary-btn:hover { 
-  background: var(--blue); 
-}
-
-a { 
-  color: var(--light-blue); 
-  text-decoration: none; 
-  font-weight: 500; 
-}
-
-a:hover { 
-  text-decoration: underline; 
-}
-
-/* Back to Top */
-#backToTop {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: var(--light-blue);
-  color: var(--white);
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-weight: 600;
-  text-decoration: none;
-  display: none;
-  z-index: 1000;
-}
-
-#backToTop:hover { 
-  background: var(--blue); 
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .main {
-    padding: 16px;
-  }
-  
-  main.main .card {
-    padding: 1rem !important;
-  }
-  
-  h1 { font-size: 1.8rem; }
-  h2 { font-size: 1.5rem; }
-  h3 { font-size: 1.2rem; }
-  
-  .two-column {
-    grid-template-columns: 1fr;
-  }
-  
-  .toc-bar {
-    font-size: 14px;
-    padding: 0.75rem 0;
-  }
-  
-  .toc-bar a {
-    margin: 0 0.25rem;
-  }
-}
-
-/* Header */
-.header {
-  background: var(--blue);
-  border-bottom: 2px solid var(--light-blue);
-}
-
-.header .brand {
-  color: var(--white);
-  font-weight: 700;
-}
-
-.header .nav a {
-  color: #c9d4ff;
-  font-weight: 600;
-}
-
-/* Footer */
-footer {
-  background: var(--white);
-  color: #64748b;
-  text-align: center;
-  margin-top: 2rem;
-  padding: 1rem;
-  border-top: 1px solid #e5e7eb;
-  font-size: 0.9rem;
-}
-
-.nav a {
-  color: #c9d4ff;
-  text-decoration: none;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.375rem;
-  transition: all 0.3s ease;
-}
-
-.nav a:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-.nav-current {
-  color: white;
-  font-weight: 600;
-  padding: 0.25rem 0.5rem;
-}
-
-.nav-separator {
-  color: #64748b;
-  margin: 0 0.25rem;
-}
-
-:root{--navy:#0f172a;--primary:#1e40af;--primary-600:#1e3a8a;--accent:#3b82f6;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--panel:#f8fafc;--success:#10b981;--warn:#f59e0b;--error:#ef4444;}
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:#fff;line-height:1.6}
 .header{position:sticky;top:0;z-index:1000;background:var(--navy);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08)}
 .header .container{max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800}
 .nav a{color:#c9d4ff;text-decoration:none;padding:.5rem .75rem;border-radius:.5rem}
 .nav a:hover{background:rgba(255,255,255,.1)}
+.main{max-width:1200px;margin:0 auto;padding:24px}
+.page-header{text-align:center;margin:6px 0 22px}
+.page-header h1{margin:0 0 8px;font-size:clamp(1.6rem,2.8vw,2.4rem);font-weight:800;color:#fff}
+.page-header p{color:#dbeafe;max-width:900px;margin:0 auto}
+.card{background:rgba(255, 255, 255, 0.1);border:1px solid rgba(255, 255, 255, 0.2);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:1rem;padding:1.5rem;color:#ffffff;transition:all 0.25s ease;margin-bottom:1.5rem}
+.card:hover{background:rgba(255, 255, 255, 0.2);border-color:rgba(255, 255, 255, 0.3);transform:translateY(-3px)}
+.card h1,.card h2,.card h3,.card h4{margin:0 0 0.75rem;color:#ffffff}
+.card p,.card li{color:rgba(255, 255, 255, 0.9);line-height:1.7;margin:0.5rem 0}
+.card strong{color:#93c5fd;font-weight:600}
+
+.section-container{margin-bottom:2rem}
+h1{font-size:2.2rem;font-weight:700;margin-bottom:1rem;color:#fff}
+h2{font-size:1.8rem;font-weight:600;margin-top:2rem;margin-bottom:1.5rem;color:#fff}
+h3{font-size:1.3rem;font-weight:600;margin-top:1.25rem;margin-bottom:1rem;color:#fff}
+h4{font-size:1.1rem;font-weight:600;margin-bottom:0.75rem;color:#fff}
+p{font-size:1rem;margin-bottom:0.75rem;color:rgba(255,255,255,0.9)}
+ul,ol{margin-left:1.25rem;margin-bottom:1rem;color:rgba(255,255,255,0.9)}
+ul li{padding:0.5rem 0;padding-left:1.5rem;position:relative;list-style:none}
+ul li:before{content:"→";position:absolute;left:0;color:#93c5fd;font-weight:bold}
+.toc-bar{background:rgba(255, 255, 255, 0.1);border-bottom:1px solid rgba(255, 255, 255, 0.2);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);text-align:center;padding:1rem 0;font-weight:600;position:sticky;top:60px;z-index:100;border-radius:0 0 1rem 1rem}
+.toc-bar a{color:#dbeafe;margin:0 0.5rem;text-decoration:none;font-weight:600}
+.toc-bar a:hover{color:#93c5fd;text-decoration:underline}
+
+table{width:100%;border-collapse:collapse;background:rgba(255, 255, 255, 0.1);border:1px solid rgba(255, 255, 255, 0.2);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:1rem;margin:1.5rem 0;font-size:0.95rem;overflow:hidden}
+th{background:rgba(30, 64, 175, 0.3);color:#fff;padding:0.75rem;font-weight:600;border-bottom:1px solid rgba(255, 255, 255, 0.2)}
+td{border-bottom:1px solid rgba(255, 255, 255, 0.1);padding:0.65rem 0.8rem;color:rgba(255, 255, 255, 0.9)}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even) td{background:rgba(255, 255, 255, 0.05)}
+
+.two-column{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin:1.5rem 0}
+pre,code{background:rgba(255, 255, 255, 0.1);border:1px solid rgba(255, 255, 255, 0.2);padding:0.4rem 0.6rem;border-radius:4px;color:rgba(255, 255, 255, 0.9);font-size:14px;overflow-x:auto}
+.primary-btn{background:var(--primary);color:#fff;padding:10px 16px;border-radius:0.5rem;text-decoration:none;font-weight:600;display:inline-block;margin:0.5rem 0.5rem 0.5rem 0;border:none;cursor:pointer;transition:all 0.2s}
+.primary-btn:hover{background:var(--primary-600);transform:translateY(-1px)}
+#backToTop{position:fixed;bottom:24px;right:24px;background:var(--primary);color:#fff;padding:8px 12px;border-radius:0.5rem;font-weight:600;text-decoration:none;display:none;z-index:1000;transition:all 0.2s}
+#backToTop:hover{background:var(--primary-600);transform:translateY(-2px)}
+
+footer{background:rgba(255, 255, 255, 0.1);border-top:1px solid rgba(255, 255, 255, 0.2);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:rgba(255, 255, 255, 0.9);text-align:center;margin-top:2rem;padding:1.5rem;font-size:0.9rem}
+footer p{margin:0.5rem 0;color:rgba(255, 255, 255, 0.8)}
+@media (max-width:768px){.main{padding:16px}.card{padding:1rem}h1{font-size:1.8rem}h2{font-size:1.5rem}h3{font-size:1.2rem}.two-column{grid-template-columns:1fr}.toc-bar{font-size:14px;padding:0.75rem 0}.toc-bar a{margin:0 0.25rem}}
 </style>
 </head>
 <body>
@@ -398,7 +85,7 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color
   </div>
 </header>
 
-<main class="main">
+<main class="main" style="background:transparent !important;">
   <!-- Table of Contents -->
   <nav class="toc-bar">
     <a href="#step1">Section 1</a> • 
