@@ -15,8 +15,8 @@ exports.handler = async (event, context) => {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        supabaseUrl: process.env.SUPABASE_URL,
-        supabaseAnonKey: process.env.SUPABASE_ANON_KEY
+        SUPABASE_URL: process.env.SUPABASE_URL,
+        SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY
       })
     };
   } catch (error) {

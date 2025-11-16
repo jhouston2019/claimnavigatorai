@@ -477,11 +477,7 @@
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-// Initialize Supabase
-const supabaseUrl = '{{ SUPABASE_URL }}';
-const supabaseAnonKey = '{{ SUPABASE_ANON_KEY }}';
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
+let supabase = null;
 let currentClaimId = null;
 let currentUser = null;
 let claims = [];
@@ -505,10 +501,58 @@ function showToast(message, type = 'success') {
   }, 3000);
 }
 
+// Initialize Supabase with fallback
+async function initializeSupabase() {
+  if (supabase) return supabase;
+
+  try {
+    // Try to get config from Netlify function first
+    let supabaseUrl = '{{ SUPABASE_URL }}';
+    let supabaseAnonKey = '{{ SUPABASE_ANON_KEY }}';
+
+    // Check if placeholders weren't replaced (local dev or build issue)
+    if (supabaseUrl.includes('{{') || supabaseAnonKey.includes('{{')) {
+      console.warn('Supabase config placeholders not replaced, trying to fetch from API...');
+      try {
+        const configRes = await fetch('/.netlify/functions/get-supabase-config');
+        if (configRes.ok) {
+          const config = await configRes.json();
+          supabaseUrl = config.SUPABASE_URL;
+          supabaseAnonKey = config.SUPABASE_ANON_KEY;
+        }
+      } catch (e) {
+        console.error('Could not fetch Supabase config:', e);
+        showToast('Supabase configuration error. Please check your environment variables.', 'error');
+        return null;
+      }
+    }
+
+    // Validate that we have valid values
+    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('{{') || supabaseAnonKey.includes('{{')) {
+      console.error('Invalid Supabase configuration');
+      showToast('Supabase configuration is missing. Please contact support.', 'error');
+      return null;
+    }
+
+    supabase = createClient(supabaseUrl, supabaseAnonKey);
+    console.log('Supabase initialized successfully');
+    return supabase;
+  } catch (error) {
+    console.error('Failed to initialize Supabase:', error);
+    showToast('Failed to initialize database connection. Please refresh the page.', 'error');
+    return null;
+  }
+}
+
 // Check authentication
 async function checkAuth() {
+  const client = await initializeSupabase();
+  if (!client) {
+    return false;
+  }
+
   try {
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const { data: { session }, error } = await client.auth.getSession();
     if (error || !session) {
       showToast('Please log in to access the claim stage tracker', 'error');
       setTimeout(() => {
@@ -517,6 +561,7 @@ async function checkAuth() {
       return false;
     }
     currentUser = session.user;
+    console.log('User authenticated:', currentUser.email);
     return true;
   } catch (error) {
     console.error('Auth error:', error);
@@ -527,9 +572,15 @@ async function checkAuth() {
 
 // Load user's claims
 async function loadClaims() {
+  const client = await initializeSupabase();
+  if (!client) return;
+
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
+    const { data: { session } } = await client.auth.getSession();
+    if (!session) {
+      showToast('Session expired. Please log in again.', 'error');
+      return;
+    }
 
     const headers = {
       'Authorization': `Bearer ${session.access_token}`,
@@ -537,6 +588,11 @@ async function loadClaims() {
     };
 
     const res = await fetch('/.netlify/functions/list-claims', { headers });
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
     const data = await res.json();
 
     if (data.claims && data.claims.length > 0) {
@@ -549,7 +605,9 @@ async function loadClaims() {
       const claimIdFromStorage = localStorage.getItem('claim_id');
       
       const selectedClaimId = claimIdFromUrl || claimIdFromStorage || claims[0].id;
-      document.getElementById('claimSelect').value = selectedClaimId;
+      if (document.getElementById('claimSelect')) {
+        document.getElementById('claimSelect').value = selectedClaimId;
+      }
       currentClaimId = selectedClaimId;
       await loadStages();
     } else {
@@ -557,7 +615,14 @@ async function loadClaims() {
     }
   } catch (error) {
     console.error('Error loading claims:', error);
-    showToast('Error loading claims. Please try again.', 'error');
+    showToast(`Error loading claims: ${error.message}. Please try again.`, 'error');
+    document.getElementById('stages').innerHTML = `
+      <div class="empty-state">
+        <h3>Error Loading Claims</h3>
+        <p>${error.message}</p>
+        <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.75rem 1.5rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Retry</button>
+      </div>
+    `;
   }
 }
 
@@ -598,16 +663,32 @@ async function loadStages() {
     return;
   }
 
+  const client = await initializeSupabase();
+  if (!client) {
+    document.getElementById('stages').innerHTML = '<div class="loading" style="color: #ef4444 !important;">Database connection error</div>';
+    return;
+  }
+
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
+    const { data: { session } } = await client.auth.getSession();
+    if (!session) {
+      showToast('Session expired. Please log in again.', 'error');
+      return;
+    }
 
     const headers = {
       'Authorization': `Bearer ${session.access_token}`,
       'Content-Type': 'application/json'
     };
 
+    console.log('Loading stages for claim:', currentClaimId);
     const res = await fetch(`/.netlify/functions/get-claim-stages?claim_id=${currentClaimId}`, { headers });
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`HTTP error! status: ${res.status}, message: ${errorText}`);
+    }
+
     const data = await res.json();
 
     if (data.status === 'error') {
@@ -709,8 +790,14 @@ window.updateStage = async function(stageName, newStatus) {
     return;
   }
 
+  const client = await initializeSupabase();
+  if (!client) {
+    showToast('Database connection error', 'error');
+    return;
+  }
+
   try {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await client.auth.getSession();
     if (!session) {
       showToast('Session expired. Please log in again.', 'error');
       return;
@@ -721,6 +808,7 @@ window.updateStage = async function(stageName, newStatus) {
       'Content-Type': 'application/json'
     };
 
+    console.log('Updating stage:', stageName, 'to', newStatus);
     const res = await fetch('/.netlify/functions/update-claim-stage', {
       method: 'POST',
       headers,
@@ -730,6 +818,11 @@ window.updateStage = async function(stageName, newStatus) {
         new_status: newStatus
       })
     });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`HTTP error! status: ${res.status}, message: ${errorText}`);
+    }
 
     const data = await res.json();
 
@@ -752,11 +845,17 @@ window.saveNotes = async function(stageName, index) {
     return;
   }
 
+  const client = await initializeSupabase();
+  if (!client) {
+    showToast('Database connection error', 'error');
+    return;
+  }
+
   const notesTextarea = document.getElementById(`notes-${index}`);
   const notes = notesTextarea.value.trim();
 
   try {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await client.auth.getSession();
     if (!session) {
       showToast('Session expired. Please log in again.', 'error');
       return;
@@ -769,6 +868,9 @@ window.saveNotes = async function(stageName, index) {
 
     // Get current stage status first
     const stagesRes = await fetch(`/.netlify/functions/get-claim-stages?claim_id=${currentClaimId}`, { headers });
+    if (!stagesRes.ok) {
+      throw new Error(`Failed to fetch current stage: ${stagesRes.status}`);
+    }
     const stagesData = await stagesRes.json();
     const currentStage = stagesData.stages?.find(s => s.stage_name === stageName);
     const currentStatus = currentStage?.status || 'pending';
@@ -784,6 +886,11 @@ window.saveNotes = async function(stageName, index) {
         notes: notes
       })
     });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`HTTP error! status: ${res.status}, message: ${errorText}`);
+    }
 
     const data = await res.json();
 
@@ -818,14 +925,37 @@ function showEmptyState(message) {
 
 // Initialize app
 async function init() {
-  const isAuthenticated = await checkAuth();
-  if (!isAuthenticated) return;
+  console.log('Initializing claim stage tracker...');
+  
+  try {
+    const isAuthenticated = await checkAuth();
+    if (!isAuthenticated) {
+      console.log('User not authenticated');
+      return;
+    }
 
-  await loadClaims();
+    console.log('User authenticated, loading claims...');
+    await loadClaims();
+  } catch (error) {
+    console.error('Initialization error:', error);
+    showToast(`Initialization error: ${error.message}`, 'error');
+    document.getElementById('stages').innerHTML = `
+      <div class="empty-state">
+        <h3>Initialization Error</h3>
+        <p>${error.message}</p>
+        <p style="font-size: 0.9rem; margin-top: 1rem; opacity: 0.7;">Check the browser console for more details.</p>
+        <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.75rem 1.5rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Reload Page</button>
+      </div>
+    `;
+  }
 }
 
-// Start the app
-init();
+// Start the app when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 </script>
 </body>
 </html>
