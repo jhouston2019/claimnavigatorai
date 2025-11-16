@@ -475,10 +475,45 @@
               showSuccess("Account created successfully! You can add your claim information later.");
             } else {
               showSuccess("Account and claim created successfully!");
+              
+              // Save user data to localStorage for AI Response Agent and other tools
+              const userData = {
+                name: claimData.insured_name,
+                email: email,
+                phone: claimData.phone_number,
+                address: `${claimData.loss_location.address}, ${claimData.loss_location.city}, ${claimData.loss_location.state} ${claimData.loss_location.zip}`,
+                policyNumber: claimData.policy_number,
+                claimNumber: claim?.claim_number || 'Not provided',
+                dateOfLoss: claimData.date_of_loss,
+                company: claimData.insurer,
+                typeOfLoss: claimData.type_of_loss,
+                propertyType: claimData.property_type
+              };
+              
+              // Save to both localStorage and sessionStorage for compatibility
+              localStorage.setItem('claimNavigatorUserData', JSON.stringify(userData));
+              sessionStorage.setItem('claimNavigatorUserData', JSON.stringify(userData));
             }
           } catch (claimError) {
             console.error('Claim creation error:', claimError);
             showSuccess("Account created successfully! You can add your claim information later.");
+            
+            // Still save basic user data even if claim creation fails
+            const userData = {
+              name: claimData.insured_name,
+              email: email,
+              phone: claimData.phone_number,
+              address: `${claimData.loss_location.address}, ${claimData.loss_location.city}, ${claimData.loss_location.state} ${claimData.loss_location.zip}`,
+              policyNumber: claimData.policy_number || 'Not provided',
+              claimNumber: 'Not provided',
+              dateOfLoss: claimData.date_of_loss,
+              company: claimData.insurer,
+              typeOfLoss: claimData.type_of_loss,
+              propertyType: claimData.property_type
+            };
+            
+            localStorage.setItem('claimNavigatorUserData', JSON.stringify(userData));
+            sessionStorage.setItem('claimNavigatorUserData', JSON.stringify(userData));
           }
 
           // Redirect after a short delay
