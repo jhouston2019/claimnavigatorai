@@ -30,13 +30,62 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    // Get authorization header for user authentication
+    const authHeader = event.headers.authorization || event.headers.Authorization;
+    if (!authHeader) {
+      return {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({ 
+          status: 'error',
+          error: 'Authorization header required' 
+        })
+      };
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    
+    if (userError || !user) {
+      return {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({ 
+          status: 'error',
+          error: 'Invalid or expired token' 
+        })
+      };
+    }
+
     const claim_id = event.queryStringParameters?.claim_id;
 
     if (!claim_id) {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ error: 'claim_id query parameter is required' })
+        body: JSON.stringify({ 
+          status: 'error',
+          error: 'claim_id query parameter is required' 
+        })
+      };
+    }
+
+    // Verify user owns this claim
+    const { data: claim, error: claimError } = await supabase
+      .from('claims')
+      .select('id, user_id')
+      .eq('id', claim_id)
+      .eq('user_id', user.id)
+      .single();
+
+    if (claimError || !claim) {
+      return {
+        statusCode: 403,
+        headers,
+        body: JSON.stringify({ 
+          status: 'error',
+          error: 'Claim not found or access denied' 
+        })
       };
     }
 

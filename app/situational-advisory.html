@@ -3,86 +3,471 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Situational Advisory</title>
+  <title>Situational Advisory - ClaimNavigatorAI</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="/app/assets/css/style.css">
   <style>
     :root{--navy:#0f172a;--primary:#1e40af;--primary-600:#1e3a8a;--accent:#3b82f6;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--panel:#f8fafc;--success:#10b981;--warn:#f59e0b;--error:#ef4444;}
     *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:#ffffff !important;background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url('../../assets/images/backgrounds/paperwork6.jpeg') no-repeat center center fixed; background-size: cover; line-height:1.6}
+    
+    body.situational-advisory-page {
+      margin:0;
+      font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+      color:#ffffff !important;
+      background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url('/app/assets/images/backgrounds/paperwork6.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      line-height:1.6;
+    }
     
     /* Ensure all text is readable on dark background */
-    body, body * {
+    body.situational-advisory-page, 
+    body.situational-advisory-page * {
         color: #ffffff !important;
     }
     
-    body a {
+    body.situational-advisory-page a {
         color: #dbeafe !important;
     }
     
-    .ai-hero-card {
-        background: rgba(255, 255, 255, 0.1) !important;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    .header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:var(--navy);
+      color:#fff;
+      box-shadow:0 2px 6px rgba(0,0,0,.08);
+    }
+    .header .container{
+      max-width:1200px;
+      margin:0 auto;
+      padding:7px 24px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:800;
+    }
+    .nav a{
+      color:#c9d4ff;
+      text-decoration:none;
+      padding:.5rem .75rem;
+      border-radius:.5rem;
+    }
+    .nav a:hover{
+      background:rgba(255,255,255,.1);
     }
     
-    .ai-response-container {
-        background: rgba(255, 255, 255, 0.1) !important;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    /* Hero Header */
+    .hero-header {
+      padding: 2rem 0;
+      text-align: center;
+      margin-bottom: 2rem;
     }
-    .header{position:sticky;top:0;z-index:1000;background:var(--navy);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08)}
-    .header .container{max-width:1200px;margin:0 auto;padding:7px 24px;display:flex;align-items:center;justify-content:space-between}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
-    .nav a{color:#c9d4ff;text-decoration:none;padding:.5rem .75rem;border-radius:.5rem}
-    .nav a:hover{background:rgba(255,255,255,.1)}
+    
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0 0 0.5rem 0;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: #e2e8f0;
+      margin: 0;
+    }
+    
+    /* Card Styles - Consistent with other tools */
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      color: #fff;
+    }
+    
+    .card:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-3px);
+    }
+    
+    .card h3 {
+      color: #1e3a8a !important;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      font-weight: bold !important;
+    }
+    
+    .card p {
+      color: #ffffff !important;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+    
+    /* AI Input Card */
+    .ai-input-card {
+      margin-bottom: 2rem;
+    }
+    
+    .ai-input-card textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 1rem;
+      resize: vertical;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-family: inherit;
+    }
+    
+    .ai-input-card textarea::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .ai-input-card textarea:focus {
+      border-color: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+      outline: none;
+    }
+    
+    .ai-analyze-btn {
+      background: #1e3a8a;
+      color: #ffffff;
+      border: 2px solid #1e3a8a;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    
+    .ai-analyze-btn:hover {
+      background: #1e40af;
+      border-color: #1e40af;
+      transform: translateY(-1px);
+    }
+    
+    .ai-analyze-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    /* AI Response Card */
+    .ai-response-card {
+      margin-bottom: 2rem;
+    }
+    
+    .ai-response-card h3 {
+      color: #ffffff !important;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .response-section {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .response-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    
+    .response-section h4 {
+      color: #ffffff !important;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    
+    .response-section p {
+      color: #e2e8f0 !important;
+      margin: 0;
+      line-height: 1.6;
+    }
+    
+    /* Search and Filter Card */
+    .search-filter-card {
+      margin-bottom: 1.5rem;
+    }
+    
+    .search-container {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .search-input,
+    .category-select {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 14px;
+    }
+    
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .search-input:focus,
+    .category-select:focus {
+      border-color: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+      outline: none;
+    }
+    
+    /* Category Tabs */
+    .category-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    
+    .category-tab {
+      padding: 10px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .category-tab:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .category-tab.active {
+      background: #1e3a8a;
+      border-color: #1e3a8a;
+      color: #ffffff;
+    }
+    
+    /* Scenarios Grid */
+    .scenarios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .scenario-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      color: #fff;
+    }
+    
+    .scenario-card:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-3px);
+    }
+    
+    .scenario-header {
+      margin-bottom: 1rem;
+    }
+    
+    .scenario-title {
+      color: #1e3a8a !important;
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin: 0 0 0.5rem 0;
+    }
+    
+    .scenario-summary {
+      color: #ffffff !important;
+      font-size: 0.9rem;
+      margin: 0;
+      line-height: 1.5;
+    }
+    
+    .scenario-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: auto;
+      flex-wrap: wrap;
+    }
+    
+    .view-advice-btn,
+    .generate-letter-btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 10px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .view-advice-btn:hover,
+    .generate-letter-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .generate-letter-btn {
+      background: #1e3a8a;
+      border-color: #1e3a8a;
+    }
+    
+    .generate-letter-btn:hover {
+      background: #1e40af;
+      border-color: #1e40af;
+    }
+    
+    .scenario-details {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .scenario-details.hidden {
+      display: none;
+    }
+    
+    .details-content h4 {
+      color: #ffffff !important;
+      font-size: 1rem;
+      margin: 0.75rem 0 0.25rem 0;
+      font-weight: 600;
+    }
+    
+    .details-content h4:first-child {
+      margin-top: 0;
+    }
+    
+    .details-content p {
+      color: #e2e8f0 !important;
+      font-size: 0.9rem;
+      margin: 0 0 0.75rem 0;
+      line-height: 1.5;
+    }
+    
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+    
+    main.container {
+      padding: 2rem 1rem;
+    }
+    
+    /* Hidden utility */
+    .hidden {
+      display: none !important;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .scenarios-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      .hero-subtitle {
+        font-size: 1rem;
+      }
+      
+      .search-container {
+        flex-direction: column;
+      }
+      
+      .category-tabs {
+        justify-content: center;
+      }
+    }
   </style>
 </head>
-<body class="  font-inter">
+<body class="situational-advisory-page font-inter">
   <header class="header">
     <div class="container">
       <div class="brand">ClaimNavigatorAI</div>
       <nav class="nav">
         <a href="/app/index.html">Home</a>
-        <span >></span>
-        <span >Situational Advisory</span>
-        <span >></span>
+        <span>></span>
+        <span>Situational Advisory</span>
+        <span>></span>
         <a href="/app/resource-center.html">Resource Center</a>
       </nav>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto" style="padding: 0.5rem;">
-    <!-- AI Input Hero Card -->
-    <div class="ai-hero-card">
-      <div class="ai-hero-content">
-        <h2 class="ai-hero-title">Situational Advisory</h2>
-        <p class="ai-hero-subtitle">Describe your claim situation and receive expert guidance tailored to your specific circumstances.</p>
-        
-        <div class="ai-input-container">
-          <textarea 
-            id="situationInput" 
-            placeholder="Describe your situation (e.g., 'My insurer said my roof leak isn't covered due to wear and tear')"
-            class="ai-input"
-            rows="2"
-          ></textarea>
-          <button id="analyzeBtn" class="ai-analyze-btn">
-            <span id="analyzeText">Analyze & Advise</span>
-            <span id="analyzeSpinner" class="hidden">Analyzing...</span>
-          </button>
-        </div>
+  <main class="container">
+    <!-- Hero Header -->
+    <div class="hero-header">
+      <h1 class="hero-title">Situational Advisory</h1>
+      <p class="hero-subtitle">Describe your claim situation and receive expert guidance tailored to your specific circumstances.</p>
+    </div>
+
+    <!-- AI Input Card -->
+    <div class="card ai-input-card">
+      <div class="ai-input-container">
+        <textarea 
+          id="situationInput" 
+          placeholder="Describe your situation (e.g., 'My insurer said my roof leak isn't covered due to wear and tear')"
+          rows="4"
+        ></textarea>
+        <button id="analyzeBtn" class="ai-analyze-btn">
+          <span id="analyzeText">Analyze & Advise</span>
+          <span id="analyzeSpinner" class="hidden">Analyzing...</span>
+        </button>
       </div>
     </div>
 
     <!-- AI Response Display -->
-    <div id="aiResponse" class="ai-response-container hidden">
-      <div class="ai-response-content">
-        <h3 class="ai-response-title">AI Analysis & Recommendations</h3>
-        <div id="aiResponseContent" class="ai-response-details"></div>
-      </div>
+    <div id="aiResponse" class="card ai-response-card hidden">
+      <h3>AI Analysis & Recommendations</h3>
+      <div id="aiResponseContent" class="ai-response-details"></div>
     </div>
 
-    <!-- Search and Filter Section -->
-    <div class="search-filter-section">
+    <!-- Search and Filter Card -->
+    <div class="card search-filter-card">
       <div class="search-container">
         <input type="text" id="searchInput" placeholder="Search scenarios..." class="search-input" />
         <select id="categoryFilter" class="category-select">
@@ -158,7 +543,7 @@
         renderScenarios();
       } catch (error) {
         console.error('Error loading scenarios:', error);
-        document.getElementById('scenariosGrid').innerHTML = '<p class="text-red-600">Error loading scenarios. Please try again.</p>';
+        document.getElementById('scenariosGrid').innerHTML = '<p style="text-align: center; padding: 2rem; color: #ef4444;">Error loading scenarios. Please try again.</p>';
       }
     }
 
@@ -182,7 +567,7 @@
       }
       
       if (scenariosToShow.length === 0) {
-        container.innerHTML = '<p class=" text-center py-8">No scenarios found for this category.</p>';
+        container.innerHTML = '<p style="text-align: center; padding: 2rem; color: #ffffff;">No scenarios found for this category.</p>';
         return;
       }
 

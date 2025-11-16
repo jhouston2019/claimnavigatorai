@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="/app/assets/css/style.css">
   <link rel="stylesheet" href="/app/assets/css/design-system.css">
   <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm" type="module"></script>
+  <script src="/assets/js/auth-utils.js" defer></script>
   <style>
     body.stage-tracker-page {
       background: 
@@ -227,6 +229,211 @@
       color: #dbeafe !important;
       font-size: 1rem;
     }
+
+    .claim-selector {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .claim-selector label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #ffffff !important;
+    }
+
+    .claim-selector select {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff !important;
+      font-size: 1rem;
+    }
+
+    .claim-selector select option {
+      background: #1f2937;
+      color: #ffffff;
+    }
+
+    .stage-notes {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stage-notes textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff !important;
+      font-family: inherit;
+      resize: vertical;
+    }
+
+    .stage-notes textarea::placeholder {
+      color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    .stage-notes button {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .stage-notes button:hover {
+      background: #2563eb;
+    }
+
+    .notes-display {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      color: #dbeafe !important;
+      white-space: pre-wrap;
+    }
+
+    .timeline-view {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 2rem 0;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      overflow-x: auto;
+    }
+
+    .timeline-stage {
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+      position: relative;
+      padding: 0 1rem;
+    }
+
+    .timeline-stage:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 20px;
+      right: -50%;
+      width: 100%;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.3);
+      z-index: 0;
+    }
+
+    .timeline-stage.complete:not(:last-child)::after {
+      background: #16a34a;
+    }
+
+    .timeline-dot {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin: 0 auto 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      position: relative;
+      z-index: 1;
+      background: rgba(156, 163, 175, 0.3);
+      border: 2px solid rgba(156, 163, 175, 0.5);
+    }
+
+    .timeline-stage.active .timeline-dot {
+      background: rgba(59, 130, 246, 0.3);
+      border-color: #3b82f6;
+      color: #93c5fd;
+    }
+
+    .timeline-stage.complete .timeline-dot {
+      background: rgba(34, 197, 94, 0.3);
+      border-color: #16a34a;
+      color: #86efac;
+    }
+
+    .timeline-stage-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #ffffff !important;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s ease;
+      max-width: 400px;
+    }
+
+    .toast.success {
+      background: #16a34a;
+      color: white;
+    }
+
+    .toast.error {
+      background: #ef4444;
+      color: white;
+    }
+
+    .toast.info {
+      background: #3b82f6;
+      color: white;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #dbeafe !important;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+      font-size: 1.1rem;
+      opacity: 0.8;
+    }
   </style>
 </head>
 <body class="stage-tracker-page resource-center">
@@ -243,7 +450,14 @@
   <div class="tracker-container">
     <div class="tracker-header">
       <h1>Claim Stage Tracker</h1>
-      <p>View your claim's current stage, progress, and what comes next.</p>
+      <p>Track your claim's progress through each stage with visual timeline and detailed notes.</p>
+    </div>
+
+    <div id="claimSelector" class="claim-selector" style="display: none;">
+      <label for="claimSelect">Select Claim:</label>
+      <select id="claimSelect">
+        <option value="">Loading claims...</option>
+      </select>
     </div>
 
     <div id="progressSection" style="display: none;">
@@ -253,17 +467,147 @@
       <div class="progress-text" id="progressText"></div>
     </div>
 
+    <div id="timelineView" class="timeline-view" style="display: none;"></div>
+
     <div id="stages" class="stage-container">
       <div class="loading">Loading claim stages...</div>
     </div>
   </div>
 
-<script>
-const claim_id = localStorage.getItem('claim_id') || 'TEST-CLAIM';
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-async function loadStages() {
+// Initialize Supabase
+const supabaseUrl = '{{ SUPABASE_URL }}';
+const supabaseAnonKey = '{{ SUPABASE_ANON_KEY }}';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+let currentClaimId = null;
+let currentUser = null;
+let claims = [];
+
+// Utility functions
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function showToast(message, type = 'success') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideIn 0.3s ease reverse';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// Check authentication
+async function checkAuth() {
   try {
-    const res = await fetch(`/.netlify/functions/get-claim-stages?claim_id=${claim_id}`);
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error || !session) {
+      showToast('Please log in to access the claim stage tracker', 'error');
+      setTimeout(() => {
+        window.location.href = '/app/login.html';
+      }, 2000);
+      return false;
+    }
+    currentUser = session.user;
+    return true;
+  } catch (error) {
+    console.error('Auth error:', error);
+    showToast('Authentication error. Please try again.', 'error');
+    return false;
+  }
+}
+
+// Load user's claims
+async function loadClaims() {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    const headers = {
+      'Authorization': `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json'
+    };
+
+    const res = await fetch('/.netlify/functions/list-claims', { headers });
+    const data = await res.json();
+
+    if (data.claims && data.claims.length > 0) {
+      claims = data.claims;
+      populateClaimSelector();
+      
+      // Auto-select claim from localStorage or URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const claimIdFromUrl = urlParams.get('claim_id');
+      const claimIdFromStorage = localStorage.getItem('claim_id');
+      
+      const selectedClaimId = claimIdFromUrl || claimIdFromStorage || claims[0].id;
+      document.getElementById('claimSelect').value = selectedClaimId;
+      currentClaimId = selectedClaimId;
+      await loadStages();
+    } else {
+      showEmptyState('No claims found. Please create a claim first.');
+    }
+  } catch (error) {
+    console.error('Error loading claims:', error);
+    showToast('Error loading claims. Please try again.', 'error');
+  }
+}
+
+function populateClaimSelector() {
+  const select = document.getElementById('claimSelect');
+  const selector = document.getElementById('claimSelector');
+  
+  if (claims.length > 1) {
+    selector.style.display = 'block';
+    select.innerHTML = '<option value="">Select a claim...</option>';
+    claims.forEach(claim => {
+      const option = document.createElement('option');
+      option.value = claim.id;
+      const claimLabel = claim.policy_number 
+        ? `${claim.policy_number} - ${claim.type_of_loss || 'Claim'}`
+        : `Claim ${claim.id.substring(0, 8)}`;
+      option.textContent = claimLabel;
+      select.appendChild(option);
+    });
+    
+    select.addEventListener('change', async (e) => {
+      currentClaimId = e.target.value;
+      if (currentClaimId) {
+        localStorage.setItem('claim_id', currentClaimId);
+        await loadStages();
+      }
+    });
+  } else if (claims.length === 1) {
+    currentClaimId = claims[0].id;
+    localStorage.setItem('claim_id', currentClaimId);
+  }
+}
+
+// Load claim stages
+async function loadStages() {
+  if (!currentClaimId) {
+    document.getElementById('stages').innerHTML = '<div class="loading">Please select a claim</div>';
+    return;
+  }
+
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    const headers = {
+      'Authorization': `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json'
+    };
+
+    const res = await fetch(`/.netlify/functions/get-claim-stages?claim_id=${currentClaimId}`, { headers });
     const data = await res.json();
 
     if (data.status === 'error') {
@@ -275,7 +619,7 @@ async function loadStages() {
     div.innerHTML = '';
 
     if (stages.length === 0) {
-      div.innerHTML = '<div class="loading">No stages found for this claim.</div>';
+      div.innerHTML = '<div class="empty-state"><h3>No stages found</h3><p>Stages will be created automatically when you start tracking.</p></div>';
       return;
     }
 
@@ -293,21 +637,32 @@ async function loadStages() {
     progressFill.style.width = `${progress}%`;
     progressText.textContent = `${completed} of ${total} stages completed (${progress}%)`;
 
-    // Render stages
+    // Render timeline view
+    renderTimelineView(stages);
+
+    // Render detailed stages
     stages.forEach((stage, index) => {
       const stageDiv = document.createElement('div');
       stageDiv.className = `stage ${stage.status}`;
       
+      const statusLabel = stage.status === 'complete' ? 'Complete' : 
+                          stage.status === 'active' ? 'Active' : 'Pending';
+      
       stageDiv.innerHTML = `
-        <span class="stage-status-badge">${stage.status}</span>
+        <span class="stage-status-badge">${statusLabel}</span>
         <h3>${stage.stage_name}</h3>
         <p>${stage.description || 'No description available'}</p>
         <div class="stage-buttons">
-          ${stage.status !== 'active' ? `<button class="btn-stage btn-active" onclick="updateStage('${stage.stage_name}', 'active')">Mark Active</button>` : ''}
-          ${stage.status !== 'complete' ? `<button class="btn-stage btn-complete" onclick="updateStage('${stage.stage_name}', 'complete')">Mark Complete</button>` : ''}
-          ${stage.status === 'complete' ? `<button class="btn-stage btn-active" onclick="updateStage('${stage.stage_name}', 'pending')" style="background: #6b7280;">Reset</button>` : ''}
+          ${stage.status !== 'active' ? `<button class="btn-stage btn-active" onclick="window.updateStage('${stage.stage_name}', 'active')">Mark Active</button>` : ''}
+          ${stage.status !== 'complete' ? `<button class="btn-stage btn-complete" onclick="window.updateStage('${stage.stage_name}', 'complete')">Mark Complete</button>` : ''}
+          ${stage.status === 'complete' ? `<button class="btn-stage btn-active" onclick="window.updateStage('${stage.stage_name}', 'pending')" style="background: #6b7280;">Reset</button>` : ''}
         </div>
         ${stage.updated_at ? `<small style="display: block; margin-top: 0.5rem; opacity: 0.7; font-size: 0.85rem;">Last updated: ${new Date(stage.updated_at).toLocaleString()}</small>` : ''}
+        <div class="stage-notes">
+          <textarea id="notes-${index}" placeholder="Add notes about this stage...">${escapeHtml(stage.notes || '')}</textarea>
+          <button onclick="window.saveNotes('${stage.stage_name}', ${index})">Save Notes</button>
+          ${stage.notes ? `<div class="notes-display">${escapeHtml(stage.notes)}</div>` : ''}
+        </div>
       `;
       
       div.appendChild(stageDiv);
@@ -320,16 +675,57 @@ async function loadStages() {
         Error loading stages: ${error.message}
       </div>
     `;
+    showToast('Error loading stages. Please try again.', 'error');
   }
 }
 
-async function updateStage(stageName, newStatus) {
+// Render timeline view
+function renderTimelineView(stages) {
+  const timelineDiv = document.getElementById('timelineView');
+  timelineDiv.innerHTML = '';
+  timelineDiv.style.display = 'flex';
+
+  stages.forEach((stage, index) => {
+    const stageEl = document.createElement('div');
+    stageEl.className = `timeline-stage ${stage.status}`;
+    
+    const statusIcon = stage.status === 'complete' ? '✓' : 
+                      stage.status === 'active' ? '→' : 
+                      (index + 1).toString();
+    
+    stageEl.innerHTML = `
+      <div class="timeline-dot">${statusIcon}</div>
+      <div class="timeline-stage-name">${stage.stage_name}</div>
+    `;
+    
+    timelineDiv.appendChild(stageEl);
+  });
+}
+
+// Update stage status
+window.updateStage = async function(stageName, newStatus) {
+  if (!currentClaimId) {
+    showToast('Please select a claim first', 'error');
+    return;
+  }
+
   try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      showToast('Session expired. Please log in again.', 'error');
+      return;
+    }
+
+    const headers = {
+      'Authorization': `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json'
+    };
+
     const res = await fetch('/.netlify/functions/update-claim-stage', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
-        claim_id,
+        claim_id: currentClaimId,
         stage_name: stageName,
         new_status: newStatus
       })
@@ -338,29 +734,98 @@ async function updateStage(stageName, newStatus) {
     const data = await res.json();
 
     if (data.status === 'success') {
-      // Reload stages to show updated state
+      showToast(`Stage "${stageName}" updated to ${newStatus}`, 'success');
       await loadStages();
-      
-      // Show success message
-      const notification = document.createElement('div');
-      notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #16a34a; color: white; padding: 1rem 1.5rem; border-radius: 0.5rem; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
-      notification.textContent = `Stage "${stageName}" updated to ${newStatus}`;
-      document.body.appendChild(notification);
-      
-      setTimeout(() => {
-        notification.remove();
-      }, 3000);
     } else {
       throw new Error(data.error || 'Failed to update stage');
     }
   } catch (error) {
     console.error('Error updating stage:', error);
-    alert(`Error updating stage: ${error.message}`);
+    showToast(`Error updating stage: ${error.message}`, 'error');
   }
+};
+
+// Save notes for a stage
+window.saveNotes = async function(stageName, index) {
+  if (!currentClaimId) {
+    showToast('Please select a claim first', 'error');
+    return;
+  }
+
+  const notesTextarea = document.getElementById(`notes-${index}`);
+  const notes = notesTextarea.value.trim();
+
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      showToast('Session expired. Please log in again.', 'error');
+      return;
+    }
+
+    const headers = {
+      'Authorization': `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json'
+    };
+
+    // Get current stage status first
+    const stagesRes = await fetch(`/.netlify/functions/get-claim-stages?claim_id=${currentClaimId}`, { headers });
+    const stagesData = await stagesRes.json();
+    const currentStage = stagesData.stages?.find(s => s.stage_name === stageName);
+    const currentStatus = currentStage?.status || 'pending';
+
+    // Update notes via the update-claim-stage endpoint
+    const res = await fetch('/.netlify/functions/update-claim-stage', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        claim_id: currentClaimId,
+        stage_name: stageName,
+        new_status: currentStatus, // Keep current status
+        notes: notes
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      // Update the display
+      const stageDiv = notesTextarea.closest('.stage');
+      let notesDisplay = stageDiv.querySelector('.notes-display');
+      if (notes && !notesDisplay) {
+        notesDisplay = document.createElement('div');
+        notesDisplay.className = 'notes-display';
+        stageDiv.querySelector('.stage-notes').appendChild(notesDisplay);
+      }
+      if (notesDisplay) {
+        notesDisplay.textContent = notes;
+        notesDisplay.style.display = notes ? 'block' : 'none';
+      }
+      
+      showToast('Notes saved successfully', 'success');
+    } else {
+      throw new Error(data.error || 'Failed to save notes');
+    }
+  } catch (error) {
+    console.error('Error saving notes:', error);
+    showToast(`Error saving notes: ${error.message}`, 'error');
+  }
+};
+
+function showEmptyState(message) {
+  const div = document.getElementById('stages');
+  div.innerHTML = `<div class="empty-state"><h3>No Claims Found</h3><p>${message}</p></div>`;
 }
 
-// Load stages on page load
-loadStages();
+// Initialize app
+async function init() {
+  const isAuthenticated = await checkAuth();
+  if (!isAuthenticated) return;
+
+  await loadClaims();
+}
+
+// Start the app
+init();
 </script>
 </body>
 </html>

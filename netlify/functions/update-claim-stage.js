@@ -30,8 +30,35 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    // Get authorization header for user authentication
+    const authHeader = event.headers.authorization || event.headers.Authorization;
+    if (!authHeader) {
+      return {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({ 
+          status: 'error',
+          error: 'Authorization header required' 
+        })
+      };
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    
+    if (userError || !user) {
+      return {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({ 
+          status: 'error',
+          error: 'Invalid or expired token' 
+        })
+      };
+    }
+
     const requestData = JSON.parse(event.body || '{}');
-    const { claim_id, stage_name, new_status } = requestData;
+    const { claim_id, stage_name, new_status, notes } = requestData;
 
     // Validate required fields
     if (!claim_id || !stage_name || !new_status) {
@@ -39,7 +66,27 @@ exports.handler = async (event, context) => {
         statusCode: 400,
         headers,
         body: JSON.stringify({ 
+          status: 'error',
           error: 'Missing required fields: claim_id, stage_name, and new_status are required' 
+        })
+      };
+    }
+
+    // Verify user owns this claim
+    const { data: claim, error: claimError } = await supabase
+      .from('claims')
+      .select('id, user_id')
+      .eq('id', claim_id)
+      .eq('user_id', user.id)
+      .single();
+
+    if (claimError || !claim) {
+      return {
+        statusCode: 403,
+        headers,
+        body: JSON.stringify({ 
+          status: 'error',
+          error: 'Claim not found or access denied' 
         })
       };
     }
@@ -51,18 +98,27 @@ exports.handler = async (event, context) => {
         statusCode: 400,
         headers,
         body: JSON.stringify({ 
+          status: 'error',
           error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` 
         })
       };
     }
 
+    // Prepare update data
+    const updateData = { 
+      status: new_status, 
+      updated_at: new Date().toISOString() 
+    };
+
+    // Add notes if provided
+    if (notes !== undefined) {
+      updateData.notes = notes;
+    }
+
     // Update the stage status
     const { data: updatedData, error: updateError } = await supabase
       .from('claim_stages')
-      .update({ 
-        status: new_status, 
-        updated_at: new Date().toISOString() 
-      })
+      .update(updateData)
       .eq('claim_id', claim_id)
       .eq('stage_name', stage_name)
       .select()
