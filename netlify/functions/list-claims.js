@@ -30,8 +30,6 @@ exports.handler = async (event, context) => {
       };
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
     // Get authorization header
     const authHeader = event.headers.authorization || event.headers.Authorization;
     if (!authHeader) {
@@ -45,20 +43,32 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Set the auth token
+    // Extract the token
     const token = authHeader.replace('Bearer ', '');
-    supabase.auth.setAuth(token);
+
+    // Create Supabase client with the user's access token
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      global: {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    });
 
     // Get current user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     if (userError || !user) {
+      console.error('Auth error:', userError);
       return {
         statusCode: 401,
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ error: 'Invalid or expired token' })
+        body: JSON.stringify({ 
+          error: 'Invalid or expired token',
+          details: userError?.message || 'Authentication failed'
+        })
       };
     }
 
