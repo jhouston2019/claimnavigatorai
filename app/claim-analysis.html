@@ -13,20 +13,48 @@
     <style>
         /* Background Image for Claim Analysis Page */
         body.claim-analysis-page {
-            background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url('/app/assets/images/backgrounds/paperwork6.jpeg') no-repeat center center fixed !important;
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+                url('../../assets/images/backgrounds/paperwork6.jpeg') !important;
             background-size: cover !important;
-        }
-        
-        /* Hero header styling */
-        body.claim-analysis-page .hero-header {
-            background: rgba(255, 255, 255, 0.1) !important;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
-        }
-        
-        body.claim-analysis-page .hero-title,
-        body.claim-analysis-page .hero-subtitle {
+            background-position: center !important;
+            background-attachment: fixed !important;
             color: #ffffff !important;
+        }
+        
+        body.claim-analysis-page * {
+            color: #ffffff !important;
+        }
+        
+        body.claim-analysis-page a {
+            color: #dbeafe !important;
+        }
+        
+        /* ROM header styling */
+        .rom-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .rom-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: #ffffff !important;
+        }
+        .rom-header p {
+            font-size: 1.1rem;
+            color: #dbeafe !important;
+            margin: 0;
+        }
+        .rom-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
         }
     </style>
 </head>
@@ -49,17 +77,15 @@
     </header>
 
     <!-- Hero Header -->
-    <header class="hero-header">
-        <div class="hero-content container">
-            <h1 class="hero-title">Claim Analysis Tools</h1>
-            <p class="hero-subtitle">Professional tools to analyze your claim, review coverage, and assess damages with AI precision.</p>
-        </div>
-    </header>
+    <div class="rom-header" style="max-width: 1000px; margin: 2rem auto;">
+        <h1>Claim Analysis Tools</h1>
+        <p>Professional tools to analyze your claim, review coverage, and assess damages with AI precision.</p>
+    </div>
 
     <!-- Main Content -->
-    <main class="container">
+    <main class="rom-container" style="max-width: 1200px;">
         <!-- Tools Grid -->
-        <div class="tools-grid">
+        <div class="tools-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; padding: 0;">
             <!-- Policy Review & Coverage Analysis -->
             <div class="card">
                 <h3>Policy Review & Coverage Analysis</h3>
@@ -181,80 +207,92 @@ body.claim-analysis-page :is(*, *::before, *::after) {
 }
 
 
-/* Title styling - darker blue, bold, larger font, single line */
+/* Title styling - white text matching ROM tool */
 body.claim-analysis-page .card h3 {
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
-  color: #1e2a5e !important;
-  -webkit-text-fill-color: #1e2a5e !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
   font-weight: 600 !important;
-  font-size: 1.4rem !important;
-  margin-bottom: 0.5rem !important;
+  font-size: 1.25rem !important;
+  margin-bottom: 0.75rem !important;
   margin-top: 0 !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
   letter-spacing: 0.01em !important;
 }
 
-/* Make cards white with drop shadow like the image */
+/* Make cards match ROM tool style - glassmorphism effect */
 body.claim-analysis-page .card {
   background: rgba(255, 255, 255, 0.1) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
-  padding: 1.5rem !important;
+  padding: 2rem !important;
   border-radius: 1rem !important;
-  transition: all 0.25s ease !important;
+  transition: all 0.3s ease !important;
   color: #ffffff !important;
+  margin-bottom: 0 !important;
 }
 body.claim-analysis-page .card:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
-  transform: translateY(-3px) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Set 3-column grid layout like in the image */
+/* Set responsive grid layout */
 body.claim-analysis-page .tools-grid {
   gap: 1.5rem !important;
-  padding: 0.5rem !important;
+  padding: 0 !important;
   display: grid !important;
   grid-template-columns: repeat(3, 1fr) !important;
 }
+@media (max-width: 1024px) {
+  body.claim-analysis-page .tools-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+@media (max-width: 768px) {
+  body.claim-analysis-page .tools-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
 
-/* Make descriptive text black and visible */
+/* Make descriptive text white matching ROM tool */
 body.claim-analysis-page .card p {
   font-family: 'Source Sans 3', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
-  color: #d1d5db !important;
-  -webkit-text-fill-color: #000000 !important;
+  color: #dbeafe !important;
+  -webkit-text-fill-color: #dbeafe !important;
   font-size: 1rem !important;
   line-height: 1.6 !important;
-  margin-bottom: 0.75rem !important;
+  margin-bottom: 1rem !important;
   margin-top: 0 !important;
   font-weight: 400 !important;
 }
 
-/* Style textareas - black text, normal weight, smaller font, medium gray border */
+/* Style textareas - matching ROM tool form inputs */
 body.claim-analysis-page .card textarea {
   font-family: 'Source Sans 3', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
-  border: 2px solid #6b7280 !important;
-  border-radius: 6px !important;
-  background-color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 0.5rem !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(4px) !important;
   margin-bottom: 1rem !important;
   padding: 0.75rem !important;
-  font-size: 0.9rem !important;
-  color: #000000 !important;
-  -webkit-text-fill-color: #000000 !important;
+  font-size: 1rem !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
   font-weight: 400 !important;
   resize: vertical !important;
   min-height: 80px !important;
 }
-
-/* Override white text enforcement for textareas */
-body.claim-analysis-page .card textarea,
-body.claim-analysis-page .card textarea * {
-  color: #000000 !important;
-  -webkit-text-fill-color: #000000 !important;
+body.claim-analysis-page .card textarea:focus {
+  outline: none !important;
+  border-color: #3b82f6 !important;
+  background: rgba(255, 255, 255, 0.15) !important;
 }
+body.claim-analysis-page .card textarea::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
 
 /* Style buttons side by side, flush left */
 body.claim-analysis-page .card .card-actions {
@@ -264,30 +302,46 @@ body.claim-analysis-page .card .card-actions {
   align-items: center !important;
 }
 
-/* Open Tool button - light gray with black text */
+/* Buttons matching ROM tool style */
 body.claim-analysis-page .card .button.primary {
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
-  color: #000000 !important;
-  -webkit-text-fill-color: #000000 !important;
-  background-color: #f3f4f6 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background: #3b82f6 !important;
   border: none !important;
-  border-radius: 6px !important;
-  padding: 0.6rem 1.2rem !important;
-  font-size: 0.9rem !important;
-  font-weight: 500 !important;
+  border-radius: 0.5rem !important;
+  padding: 0.75rem 1.5rem !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+}
+body.claim-analysis-page .card .button.primary:hover {
+  background: #2563eb !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
 }
 
-/* Download button - light gray with black text */
 body.claim-analysis-page .card .button.secondary {
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
-  color: #000000 !important;
-  -webkit-text-fill-color: #000000 !important;
-  background-color: #f3f4f6 !important;
-  border: none !important;
-  border-radius: 6px !important;
-  padding: 0.6rem 1.2rem !important;
-  font-size: 0.9rem !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 0.5rem !important;
+  padding: 0.75rem 1.5rem !important;
+  font-size: 1rem !important;
   font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+}
+body.claim-analysis-page .card .button.secondary:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  transform: translateY(-2px) !important;
 }
 
 /* Remove conflicting button text color rule */
