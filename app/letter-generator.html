@@ -200,7 +200,7 @@
     /* Letter Content Area */
     .letter-content {
       background: rgba(255, 255, 255, 0.95);
-      color: #1f2937 !important;
+      color: #000000 !important;
       padding: 2rem;
       border-radius: 8px;
       max-height: 600px;
@@ -212,17 +212,26 @@
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     
-    .letter-content * {
-      color: #1f2937 !important;
+    /* Force black text in letter content - override global white rule */
+    body.letter-generator-page .letter-content,
+    body.letter-generator-page .letter-content *,
+    .letter-content,
+    .letter-content *,
+    .letter-content p,
+    .letter-content div,
+    .letter-content span {
+      color: #000000 !important;
+      -webkit-text-fill-color: #000000 !important;
     }
     
     .letter-content strong {
       font-weight: 700;
-      color: #111827 !important;
+      color: #000000 !important;
     }
     
     .letter-content em {
       font-style: italic;
+      color: #000000 !important;
     }
     
     /* Generation Options Grid */
@@ -399,7 +408,7 @@
           </button>
         </div>
       </div>
-      <div id="letterContent" class="letter-content">
+      <div id="letterContent" class="letter-content" style="color: #000000 !important;">
         <!-- Generated letter content will appear here -->
       </div>
     </div>
