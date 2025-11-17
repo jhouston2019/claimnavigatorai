@@ -823,6 +823,10 @@ async function loadStages() {
     // Render timeline view
     renderTimelineView(stages);
 
+    // Store related data for use
+    window.relatedDeadlines = data.related_deadlines || [];
+    window.relatedJournalEntries = data.related_journal_entries || [];
+
     // Render detailed stages
     stages.forEach((stage, index) => {
       const stageDiv = document.createElement('div');
@@ -831,10 +835,50 @@ async function loadStages() {
       const statusLabel = stage.status === 'complete' ? 'Complete' : 
                           stage.status === 'active' ? 'Active' : 'Pending';
       
+      const guidance = stage.guidance || {};
+      const nextSteps = guidance.next_steps || [];
+      const resources = guidance.resources || [];
+      
       stageDiv.innerHTML = `
         <span class="stage-status-badge">${statusLabel}</span>
         <h3>${stage.stage_name}</h3>
         <p>${stage.description || 'No description available'}</p>
+        
+        ${guidance.tips ? `<div class="stage-tip" style="background: rgba(59, 130, 246, 0.2); padding: 0.75rem; border-radius: 0.5rem; margin: 1rem 0; border-left: 3px solid #3b82f6;">
+          <strong style="color: #93c5fd !important;">💡 Tip:</strong> <span style="color: #dbeafe !important;">${escapeHtml(guidance.tips)}</span>
+        </div>` : ''}
+        
+        ${guidance.typical_duration ? `<div style="margin: 0.5rem 0; color: #dbeafe !important; font-size: 0.9rem;">
+          <strong>⏱ Typical Duration:</strong> ${escapeHtml(guidance.typical_duration)}
+        </div>` : ''}
+        
+        ${nextSteps.length > 0 ? `
+          <div class="stage-next-steps" style="margin: 1rem 0;">
+            <h4 style="color: #ffffff !important; font-size: 1.1rem; margin-bottom: 0.75rem;">Next Steps:</h4>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              ${nextSteps.map((step, i) => `
+                <li style="padding: 0.5rem 0; color: #dbeafe !important; display: flex; align-items: start; gap: 0.5rem;">
+                  <span style="color: #3b82f6 !important; font-weight: bold;">${i + 1}.</span>
+                  <span>${escapeHtml(step)}</span>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+        ` : ''}
+        
+        ${resources.length > 0 ? `
+          <div class="stage-resources" style="margin: 1rem 0;">
+            <h4 style="color: #ffffff !important; font-size: 1.1rem; margin-bottom: 0.75rem;">Helpful Resources:</h4>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+              ${resources.map(resource => `
+                <a href="${resource.url}" style="display: inline-block; padding: 0.5rem 1rem; background: rgba(59, 130, 246, 0.2); color: #93c5fd !important; border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 0.5rem; text-decoration: none; font-size: 0.9rem; transition: all 0.2s;">
+                  ${escapeHtml(resource.name)} →
+                </a>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+        
         <div class="stage-buttons">
           ${stage.status !== 'active' ? `<button class="btn-stage btn-active" onclick="window.updateStage('${stage.stage_name}', 'active')">Mark Active</button>` : ''}
           ${stage.status !== 'complete' ? `<button class="btn-stage btn-complete" onclick="window.updateStage('${stage.stage_name}', 'complete')">Mark Complete</button>` : ''}
@@ -850,6 +894,58 @@ async function loadStages() {
       
       div.appendChild(stageDiv);
     });
+    
+    // Show related deadlines and journal entries if available
+    if (window.relatedDeadlines.length > 0 || window.relatedJournalEntries.length > 0) {
+      const relatedDiv = document.createElement('div');
+      relatedDiv.className = 'related-info';
+      relatedDiv.style.cssText = 'margin-top: 2rem; padding: 1.5rem; background: rgba(255, 255, 255, 0.1); border-radius: 1rem; backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.2);';
+      
+      let relatedContent = '<h3 style="color: #ffffff !important; margin-bottom: 1rem;">Related Information</h3>';
+      
+      if (window.relatedDeadlines.length > 0) {
+        relatedContent += `
+          <div style="margin-bottom: 1.5rem;">
+            <h4 style="color: #dbeafe !important; font-size: 1rem; margin-bottom: 0.5rem;">Upcoming Deadlines:</h4>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              ${window.relatedDeadlines.slice(0, 5).map(deadline => {
+                const date = new Date(deadline.date_value || deadline.date);
+                const isOverdue = date < new Date();
+                return `
+                  <li style="padding: 0.5rem 0; color: ${isOverdue ? '#ef4444' : '#dbeafe'} !important; display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="color: ${isOverdue ? '#ef4444' : '#f59e0b'} !important;">⚠</span>
+                    <span><strong>${escapeHtml(deadline.deadline_name || deadline.date_type || 'Deadline')}:</strong> ${date.toLocaleDateString()}</span>
+                  </li>
+                `;
+              }).join('')}
+            </ul>
+            <a href="/app/deadlines.html?claim_id=${currentClaimId}" style="display: inline-block; margin-top: 0.5rem; color: #93c5fd !important; text-decoration: underline;">View all deadlines →</a>
+          </div>
+        `;
+      }
+      
+      if (window.relatedJournalEntries.length > 0) {
+        relatedContent += `
+          <div>
+            <h4 style="color: #dbeafe !important; font-size: 1rem; margin-bottom: 0.5rem;">Recent Journal Entries:</h4>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              ${window.relatedJournalEntries.slice(0, 3).map(entry => {
+                const date = new Date(entry.created_at);
+                return `
+                  <li style="padding: 0.5rem 0; color: #dbeafe !important;">
+                    <strong>${escapeHtml(entry.entry_title || 'Entry')}:</strong> ${date.toLocaleDateString()} - ${escapeHtml((entry.entry_body || '').substring(0, 100))}${entry.entry_body && entry.entry_body.length > 100 ? '...' : ''}
+                  </li>
+                `;
+              }).join('')}
+            </ul>
+            <a href="/app/claim-journal.html?claim_id=${currentClaimId}" style="display: inline-block; margin-top: 0.5rem; color: #93c5fd !important; text-decoration: underline;">View journal →</a>
+          </div>
+        `;
+      }
+      
+      relatedDiv.innerHTML = relatedContent;
+      div.appendChild(relatedDiv);
+    }
 
   } catch (error) {
     console.error('Error loading stages:', error);
