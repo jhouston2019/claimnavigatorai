@@ -9,7 +9,7 @@ export function createNavigationBar(currentTool, currentPage = '') {
       <div class="bar container">
         <div class="brand">
           <div class="logo"></div>
-          <div>ClaimNavigatorAI</div>
+          <div>Claim Navigation AI</div>
         </div>
         <nav class="nav">
           <a href="/app/index.html">Home</a>
@@ -35,7 +35,7 @@ export function createToolNavigationBar(toolName, toolPath = '') {
       <div class="bar container">
         <div class="brand">
           <div class="logo"></div>
-          <div>ClaimNavigatorAI</div>
+          <div>Claim Navigation AI</div>
         </div>
         <nav class="nav">
           ${navigationItems.map((item, index) => {
