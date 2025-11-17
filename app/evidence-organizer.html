@@ -33,7 +33,9 @@
             font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             color: var(--text);
             background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), 
-                        url('/app/assets/images/backgrounds/paperwork6.jpeg') center/cover no-repeat fixed;
+                        url('../../assets/images/backgrounds/paperwork6.jpeg') center/cover no-repeat fixed;
+            background-size: cover;
+            background-attachment: fixed;
             line-height: 1.6;
             min-height: 100vh;
         }
@@ -726,7 +728,7 @@
 
         <!-- Stats Dashboard -->
         <section class="section">
-            <h2 class="section-title">📊 Evidence Dashboard</h2>
+            <h2 class="section-title">Evidence Dashboard</h2>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-value total" id="totalFiles">0</div>
@@ -763,10 +765,10 @@
 
         <!-- Upload Section -->
         <section class="section">
-            <h2 class="section-title">📤 Upload Evidence</h2>
+            <h2 class="section-title">Upload Evidence</h2>
             
             <div id="upload-zone" class="upload-zone">
-                <div class="upload-icon">📁</div>
+                <div class="upload-icon"></div>
                 <div class="upload-text">Drop files here or click to upload</div>
                 <div class="upload-hint">Supports PDF, JPG, PNG, DOCX, XLSX, ZIP files (Max 50MB per file)</div>
                 <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx,.zip" style="display: none;" />
@@ -774,16 +776,16 @@
 
             <div class="action-buttons">
                 <button class="btn btn-primary" id="categorizeBtn">
-                    🤖 AI Categorize All
+                    AI Categorize All
                 </button>
                 <button class="btn btn-success" id="checkEvidenceBtn">
-                    ✅ Check Evidence Completeness
+                    Check Evidence Completeness
                 </button>
                 <button class="btn btn-warning" id="generateReportBtn">
-                    📄 Generate Summary Report
+                    Generate Summary Report
                 </button>
                 <button class="btn btn-secondary" id="exportAllBtn">
-                    📦 Export All (ZIP)
+                    Export All (ZIP)
                 </button>
             </div>
 
@@ -792,7 +794,7 @@
 
         <!-- Evidence Files Section -->
         <section class="section">
-            <h2 class="section-title">📋 Evidence Files</h2>
+            <h2 class="section-title">Evidence Files</h2>
             
             <!-- Search and Filter -->
             <div class="search-filter-bar">
@@ -815,16 +817,16 @@
             <!-- Category Tabs -->
             <div class="category-tabs">
                 <button class="category-tab active" data-category="all">All Files</button>
-                <button class="category-tab" data-category="photos">📸 Photos</button>
-                <button class="category-tab" data-category="documents">📄 Documents</button>
-                <button class="category-tab" data-category="receipts">💰 Receipts</button>
-                <button class="category-tab" data-category="other">📦 Other</button>
+                <button class="category-tab" data-category="photos">Photos</button>
+                <button class="category-tab" data-category="documents">Documents</button>
+                <button class="category-tab" data-category="receipts">Receipts</button>
+                <button class="category-tab" data-category="other">Other</button>
             </div>
 
             <!-- File Grid -->
             <div id="fileGrid" class="file-grid">
                 <div class="empty-state">
-                    <div class="empty-icon">📁</div>
+                    <div class="empty-icon"></div>
                     <h3>No evidence files yet</h3>
                     <p>Upload your first file to get started</p>
                 </div>
@@ -870,9 +872,9 @@
                     await loadUserClaims();
                 }
                 
-                console.log('✅ Supabase initialized');
+                console.log('Supabase initialized');
             } catch (error) {
-                console.warn('⚠️ Supabase not available, using localStorage fallback:', error);
+                console.warn('Supabase not available, using localStorage fallback:', error);
                 supabase = null;
             }
         }
@@ -1105,7 +1107,7 @@
                         if (data && data.length > 0) {
                             evidenceFile.id = data[0].id;
                             evidenceFile.file_url = urlData.publicUrl;
-                            console.log('✅ Evidence file saved to database:', data[0].id);
+                            console.log('Evidence file saved to database:', data[0].id);
                         }
                     } catch (error) {
                         console.error('Error saving to Supabase:', error);
@@ -1129,7 +1131,7 @@
             card.dataset.fileId = fileId;
             
             const isImage = file.type.startsWith('image/');
-            const fileIcon = isImage ? '🖼️' : getFileIcon(file.type);
+            const fileIcon = isImage ? '' : getFileIcon(file.type);
             
             card.innerHTML = `
                 <div class="file-header">
@@ -1140,10 +1142,10 @@
                     </div>
                     <div class="file-actions">
                         <button class="btn-icon view" title="View" onclick="viewFile('${fileId}')">
-                            👁️
+                            View
                         </button>
                         <button class="btn-icon delete" title="Delete" onclick="deleteFile('${fileId}')">
-                            🗑️
+                            Delete
                         </button>
                     </div>
                 </div>
@@ -1180,11 +1182,11 @@
         }
 
         function getFileIcon(type) {
-            if (type.includes('pdf')) return '📄';
-            if (type.includes('word') || type.includes('document')) return '📝';
-            if (type.includes('excel') || type.includes('spreadsheet')) return '📊';
-            if (type.includes('zip') || type.includes('archive')) return '📦';
-            return '📄';
+            if (type.includes('pdf')) return 'PDF';
+            if (type.includes('word') || type.includes('document')) return 'DOC';
+            if (type.includes('excel') || type.includes('spreadsheet')) return 'XLS';
+            if (type.includes('zip') || type.includes('archive')) return 'ZIP';
+            return 'FILE';
         }
 
         function formatFileSize(bytes) {
@@ -1235,7 +1237,7 @@
         async function categorizeAllFiles() {
             const button = document.getElementById('categorizeBtn');
             button.disabled = true;
-            button.innerHTML = '🤖 Categorizing...';
+            button.innerHTML = 'Categorizing...';
             
             try {
                 for (const file of evidenceFiles) {
@@ -1266,14 +1268,14 @@
                 showAIResults('Error re-categorizing files: ' + error.message, 'error');
             } finally {
                 button.disabled = false;
-                button.innerHTML = '🤖 AI Categorize All';
+                button.innerHTML = 'AI Categorize All';
             }
         }
 
         async function checkEvidenceCompleteness() {
             const button = document.getElementById('checkEvidenceBtn');
             button.disabled = true;
-            button.innerHTML = '✅ Checking...';
+            button.innerHTML = 'Checking...';
             
             try {
                 const response = await fetch('/.netlify/functions/ai-evidence-check', {
@@ -1307,7 +1309,7 @@
                 showAIResults(message, 'warning');
             } finally {
                 button.disabled = false;
-                button.innerHTML = '✅ Check Evidence Completeness';
+                button.innerHTML = 'Check Evidence Completeness';
             }
         }
 
@@ -1342,7 +1344,7 @@
         async function generateSummaryReport() {
             const button = document.getElementById('generateReportBtn');
             button.disabled = true;
-            button.innerHTML = '📄 Generating...';
+            button.innerHTML = 'Generating...';
             
             try {
                 const claimInfo = {
@@ -1377,7 +1379,7 @@
                 generateFallbackReport();
             } finally {
                 button.disabled = false;
-                button.innerHTML = '📄 Generate Summary Report';
+                button.innerHTML = 'Generate Summary Report';
             }
         }
 
@@ -1678,7 +1680,7 @@
             if (filtered.length === 0) {
                 fileGrid.innerHTML = `
                     <div class="empty-state" style="grid-column: 1 / -1;">
-                        <div class="empty-icon">📁</div>
+                        <div class="empty-icon"></div>
                         <h3>No files found</h3>
                         <p>Try adjusting your search or filter criteria</p>
                     </div>
@@ -1700,7 +1702,7 @@
             card.dataset.fileId = file.id;
             
             const isImage = file.file_type && file.file_type.startsWith('image/');
-            const fileIcon = isImage ? '🖼️' : getFileIcon(file.file_type || '');
+            const fileIcon = isImage ? '' : getFileIcon(file.file_type || '');
             
             card.innerHTML = `
                 <div class="file-header">
@@ -1711,10 +1713,10 @@
                     </div>
                     <div class="file-actions">
                         <button class="btn-icon view" title="View" onclick="viewFile('${file.id}')">
-                            👁️
+                            View
                         </button>
                         <button class="btn-icon delete" title="Delete" onclick="deleteFile('${file.id}')">
-                            🗑️
+                            Delete
                         </button>
                     </div>
                 </div>
@@ -1770,7 +1772,7 @@
                         }));
                         updateDashboard();
                         renderFiles();
-                        console.log('✅ Loaded', data.length, 'evidence files from database');
+                        console.log('Loaded', data.length, 'evidence files from database');
                     }
                 } catch (error) {
                     console.error('Error loading evidence files:', error);
