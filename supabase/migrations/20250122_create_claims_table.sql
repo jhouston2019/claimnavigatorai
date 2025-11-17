@@ -1,7 +1,4 @@
--- Create claims table if it doesn't exist
--- This migration creates the claims table for storing user insurance claims
-
-CREATE TABLE IF NOT EXISTS claims (
+CREATE TABLE IF NOT EXISTS public.claims (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     user_id UUID NOT NULL,
     date_of_loss DATE NOT NULL,
@@ -23,36 +20,31 @@ CREATE TABLE IF NOT EXISTS claims (
     metadata JSONB
 );
 
--- Create indexes for better performance
-CREATE INDEX IF NOT EXISTS idx_claims_user_id ON claims(user_id);
-CREATE INDEX IF NOT EXISTS idx_claims_status ON claims(status);
-CREATE INDEX IF NOT EXISTS idx_claims_type_of_loss ON claims(type_of_loss);
-CREATE INDEX IF NOT EXISTS idx_claims_created_at ON claims(created_at);
-CREATE INDEX IF NOT EXISTS idx_claims_policy_number ON claims(policy_number);
+CREATE INDEX IF NOT EXISTS idx_claims_user_id ON public.claims(user_id);
+CREATE INDEX IF NOT EXISTS idx_claims_status ON public.claims(status);
+CREATE INDEX IF NOT EXISTS idx_claims_type_of_loss ON public.claims(type_of_loss);
+CREATE INDEX IF NOT EXISTS idx_claims_created_at ON public.claims(created_at);
+CREATE INDEX IF NOT EXISTS idx_claims_policy_number ON public.claims(policy_number);
 
--- Enable Row Level Security
-ALTER TABLE claims ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.claims ENABLE ROW LEVEL SECURITY;
 
--- Drop existing policies if they exist (to avoid conflicts)
-DROP POLICY IF EXISTS "Users can view their own claims" ON claims;
-DROP POLICY IF EXISTS "Users can insert their own claims" ON claims;
-DROP POLICY IF EXISTS "Users can update their own claims" ON claims;
-DROP POLICY IF EXISTS "Users can delete their own claims" ON claims;
+DROP POLICY IF EXISTS "Users can view their own claims" ON public.claims;
+DROP POLICY IF EXISTS "Users can insert their own claims" ON public.claims;
+DROP POLICY IF EXISTS "Users can update their own claims" ON public.claims;
+DROP POLICY IF EXISTS "Users can delete their own claims" ON public.claims;
 
--- RLS Policies for claims table
-CREATE POLICY "Users can view their own claims" ON claims
+CREATE POLICY "Users can view their own claims" ON public.claims
     FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can insert their own claims" ON claims
+CREATE POLICY "Users can insert their own claims" ON public.claims
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own claims" ON claims
+CREATE POLICY "Users can update their own claims" ON public.claims
     FOR UPDATE USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete their own claims" ON claims
+CREATE POLICY "Users can delete their own claims" ON public.claims
     FOR DELETE USING (auth.uid() = user_id);
 
--- Create function to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_claims_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -61,13 +53,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create trigger to automatically update updated_at
-DROP TRIGGER IF EXISTS update_claims_updated_at_trigger ON claims;
+DROP TRIGGER IF EXISTS update_claims_updated_at_trigger ON public.claims;
 CREATE TRIGGER update_claims_updated_at_trigger
-    BEFORE UPDATE ON claims
+    BEFORE UPDATE ON public.claims
     FOR EACH ROW
     EXECUTE FUNCTION update_claims_updated_at();
 
--- Add comment
-COMMENT ON TABLE claims IS 'User insurance claims with full details and tracking';
-
+COMMENT ON TABLE public.claims IS 'User insurance claims with full details and tracking';
