@@ -686,7 +686,16 @@ async function loadClaims() {
       await loadStages();
     } else {
       console.log('No claims found for user');
-      showEmptyState('No claims found. Please create a claim first.');
+      document.getElementById('stages').innerHTML = `
+        <div class="empty-state">
+          <h3>No Claims Found</h3>
+          <p>You don't have any claims yet. Create a claim to start tracking its stages.</p>
+          <div style="margin-top: 1.5rem;">
+            <a href="/app/claims.html" style="display: inline-block; padding: 0.75rem 1.5rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer; text-decoration: none; margin-right: 0.5rem;">View All Claims</a>
+            <a href="/app/resource-center.html" style="display: inline-block; padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.1); color: #ffffff !important; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.5rem; text-decoration: none;">Back to Resource Center</a>
+          </div>
+        </div>
+      `;
     }
   } catch (error) {
     console.error('Error loading claims:', error);
@@ -802,7 +811,14 @@ async function loadStages() {
     div.innerHTML = '';
 
     if (stages.length === 0) {
-      div.innerHTML = '<div class="empty-state"><h3>No stages found</h3><p>Stages will be created automatically when you start tracking.</p></div>';
+      div.innerHTML = `
+        <div class="empty-state">
+          <h3>No Stages Found</h3>
+          <p>Stages will be created automatically when you start tracking your claim.</p>
+          <p style="margin-top: 1rem; opacity: 0.8;">If you just created a claim, stages should appear shortly. Try refreshing the page.</p>
+          <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.75rem 1.5rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Refresh Page</button>
+        </div>
+      `;
       return;
     }
 
@@ -1118,17 +1134,41 @@ window.saveNotes = async function(stageName, index) {
 
 function showEmptyState(message) {
   const div = document.getElementById('stages');
-  div.innerHTML = `<div class="empty-state"><h3>No Claims Found</h3><p>${message}</p></div>`;
+  div.innerHTML = `
+    <div class="empty-state">
+      <h3>No Claims Found</h3>
+      <p>${message}</p>
+      <div style="margin-top: 1.5rem;">
+        <a href="/app/claims.html" style="display: inline-block; padding: 0.75rem 1.5rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer; text-decoration: none; margin-right: 0.5rem;">View All Claims</a>
+        <a href="/app/resource-center.html" style="display: inline-block; padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.1); color: #ffffff !important; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.5rem; text-decoration: none;">Back to Resource Center</a>
+      </div>
+    </div>
+  `;
 }
 
 // Initialize app
 async function init() {
   console.log('Initializing claim stage tracker...');
   
+  // Ensure stages div exists and shows loading state
+  const stagesDiv = document.getElementById('stages');
+  if (stagesDiv) {
+    stagesDiv.innerHTML = '<div class="loading">Initializing...</div>';
+  }
+  
   try {
     const isAuthenticated = await checkAuth();
     if (!isAuthenticated) {
       console.log('User not authenticated');
+      if (stagesDiv) {
+        stagesDiv.innerHTML = `
+          <div class="empty-state">
+            <h3>Authentication Required</h3>
+            <p>Please log in to access the claim stage tracker.</p>
+            <a href="/app/login.html" style="display: inline-block; margin-top: 1rem; padding: 0.75rem 1.5rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer; text-decoration: none;">Go to Login</a>
+          </div>
+        `;
+      }
       return;
     }
 
@@ -1136,15 +1176,30 @@ async function init() {
     await loadClaims();
   } catch (error) {
     console.error('Initialization error:', error);
+    console.error('Error stack:', error.stack);
     showToast(`Initialization error: ${error.message}`, 'error');
-    document.getElementById('stages').innerHTML = `
-      <div class="empty-state">
-        <h3>Initialization Error</h3>
-        <p>${error.message}</p>
-        <p style="font-size: 0.9rem; margin-top: 1rem; opacity: 0.7;">Check the browser console for more details.</p>
-        <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.75rem 1.5rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Reload Page</button>
-      </div>
-    `;
+    
+    if (stagesDiv) {
+      stagesDiv.innerHTML = `
+        <div class="empty-state">
+          <h3>Initialization Error</h3>
+          <p style="color: #ef4444 !important; font-weight: 600;">${escapeHtml(error.message)}</p>
+          <p style="font-size: 0.9rem; margin-top: 1rem; opacity: 0.7; color: #dbeafe !important;">Check the browser console (F12) for more details.</p>
+          <details style="margin-top: 1rem; text-align: left; max-width: 600px;">
+            <summary style="cursor: pointer; color: #dbeafe !important; margin-bottom: 0.5rem;">Error Details</summary>
+            <pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.85rem; color: #dbeafe !important;">${escapeHtml(JSON.stringify({
+              message: error.message,
+              name: error.name,
+              stack: error.stack
+            }, null, 2))}</pre>
+          </details>
+          <div style="margin-top: 1.5rem;">
+            <button onclick="location.reload()" style="padding: 0.75rem 1.5rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer; margin-right: 0.5rem;">Reload Page</button>
+            <a href="/app/resource-center.html" style="display: inline-block; padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.1); color: #ffffff !important; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.5rem; text-decoration: none;">Back to Resource Center</a>
+          </div>
+        </div>
+      `;
+    }
   }
 }
 
@@ -1152,6 +1207,7 @@ async function init() {
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {
+  // DOM already loaded, run immediately
   init();
 }
 </script>
