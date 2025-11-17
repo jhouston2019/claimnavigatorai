@@ -1,100 +1,229 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Claims - ClaimNavigatorAI</title>
-  <meta name="description" content="Manage your insurance claims with ClaimNavigatorAI">
-  
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>My Claims • ClaimNavigatorAI</title>
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/assets/css/design-system.css">
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    :root {
-      --primary: #1e40af;
-      --primary-dark: #0f172a;
-      --accent: #3b82f6;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --text-primary: #111827;
-      --text-secondary: #6b7280;
-      --: #ffffff;
-      --bg-light: #f9fafb;
-      --bg-gray: #f3f4f6;
-      --border: #e5e7eb;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    body.claims-page {
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+        url('../../assets/images/backgrounds/paperwork6.jpeg') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-attachment: fixed !important;
+      color: #ffffff !important;
+      min-height: 100vh;
     }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      line-height: 1.6;
-      color: var(--text-primary);
-      background: var(--bg-light);
+
+    body.claims-page * {
+      color: #ffffff !important;
     }
-    
-    .container {
+
+    body.claims-page a {
+      color: #dbeafe !important;
+    }
+
+    body.claims-page a:hover {
+      color: #93c5fd !important;
+    }
+
+    .claims-container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 2rem;
     }
-    
-    /* Header */
-    .header {
-      background: var(--primary-dark);
-      color: white;
-      padding: 1rem 0;
-      box-shadow: var(--shadow-md);
+
+    /* Breadcrumb Navigation */
+    .breadcrumb {
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      color: #dbeafe !important;
     }
-    
-    .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: white;
+
+    .breadcrumb a {
+      color: #dbeafe !important;
       text-decoration: none;
+      transition: color 0.2s;
     }
-    
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      align-items: center;
+
+    .breadcrumb a:hover {
+      color: #93c5fd !important;
     }
-    
-    .nav-links a {
-      color: white;
-      text-decoration: none;
-      transition: color 0.3s;
+
+    .breadcrumb-separator {
+      margin: 0 0.5rem;
+      color: #64748b !important;
     }
-    
-    .nav-links a:hover {
-      color: var(--accent);
-    }
-    
-    /* Main Content */
-    .main {
-      padding: 2rem 0;
-    }
-    
+
+    /* Page Header */
     .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .page-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      color: #ffffff !important;
+    }
+
+    .page-header p {
+      font-size: 1.1rem;
+      color: #dbeafe !important;
+      margin: 0 0 1.5rem 0;
+    }
+
+    .page-header-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Claims Grid */
+    .claims-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    /* Claim Card */
+    .claim-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .claim-card:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .claim-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .claim-card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0;
+      color: #ffffff !important;
+      flex: 1;
+    }
+
+    .claim-card-status {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+
+    .claim-card-body {
+      margin-bottom: 1rem;
+    }
+
+    .claim-info-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 2rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-    
-    .page-title {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--text-primary);
+
+    .claim-info-row:last-child {
+      border-bottom: none;
     }
-    
+
+    .claim-info-label {
+      font-size: 0.875rem;
+      color: #dbeafe !important;
+      font-weight: 500;
+    }
+
+    .claim-info-value {
+      font-size: 0.875rem;
+      color: #ffffff !important;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .claim-card-footer {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-new { 
+      background: rgba(59, 130, 246, 0.3); 
+      color: #93c5fd !important; 
+      border: 1px solid rgba(59, 130, 246, 0.5);
+    }
+    .status-pending { 
+      background: rgba(245, 158, 11, 0.3); 
+      color: #fcd34d !important; 
+      border: 1px solid rgba(245, 158, 11, 0.5);
+    }
+    .status-settled { 
+      background: rgba(34, 197, 94, 0.3); 
+      color: #86efac !important; 
+      border: 1px solid rgba(34, 197, 94, 0.5);
+    }
+    .status-disputed { 
+      background: rgba(239, 68, 68, 0.3); 
+      color: #fca5a5 !important; 
+      border: 1px solid rgba(239, 68, 68, 0.5);
+    }
+    .status-litigation { 
+      background: rgba(124, 58, 237, 0.3); 
+      color: #c4b5fd !important; 
+      border: 1px solid rgba(124, 58, 237, 0.5);
+    }
+
+    .type-badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff !important;
+      border-radius: 0.375rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+
+    /* Buttons */
     .btn {
       display: inline-block;
       padding: 0.75rem 1.5rem;
@@ -107,194 +236,142 @@
       cursor: pointer;
       transition: all 0.3s;
     }
-    
+
     .btn-primary {
-      background: var(--primary);
-      color: white;
+      background: #3b82f6;
+      color: white !important;
     }
-    
+
     .btn-primary:hover {
-      background: #1d4ed8;
-      transform: translateY(-1px);
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
     }
-    
+
     .btn-secondary {
-      background: var(--);
-      color: var(--text-primary);
-      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    
+
     .btn-secondary:hover {
-      background: var(--bg-gray);
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
     }
-    
+
     .btn-sm {
       padding: 0.5rem 1rem;
       font-size: 0.875rem;
     }
-    
-    /* Claims Table */
-    .claims-container {
-      background: var(--);
-      border-radius: 0.75rem;
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-    }
-    
-    .claims-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    
-    .claims-table th {
-      background: var(--bg-gray);
-      padding: 1rem;
-      text-align: left;
-      font-weight: 600;
-      color: var(--text-primary);
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .claims-table td {
-      padding: 1rem;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .claims-table tr:hover {
-      background: var(--bg-light);
-    }
-    
-    .status-badge {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-    
-    .status-new { background: #dbeafe; color: #1e40af; }
-    .status-pending { background: #fef3c7; color: #d97706; }
-    .status-settled { background: #d1fae5; color: #059669; }
-    .status-disputed { background: #fee2e2; color: #dc2626; }
-    .status-litigation { background: #f3e8ff; color: #7c3aed; }
-    
-    .type-badge {
-      display: inline-block;
-      padding: 0.25rem 0.5rem;
-      background: var(--bg-gray);
-      color: var(--text-primary);
-      border-radius: 0.375rem;
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-    
+
+    /* Empty State */
     .empty-state {
       text-align: center;
-      padding: 3rem 2rem;
-      color: var(--text-secondary);
+      padding: 4rem 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    
+
     .empty-state h3 {
+      font-size: 1.5rem;
       margin-bottom: 1rem;
-      color: var(--text-primary);
+      color: #ffffff !important;
     }
-    
+
+    .empty-state p {
+      font-size: 1.1rem;
+      color: #dbeafe !important;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Loading State */
     .loading {
       text-align: center;
-      padding: 2rem;
-      color: var(--text-secondary);
+      padding: 4rem 2rem;
+      color: #dbeafe !important;
+      font-size: 1.1rem;
     }
-    
+
+    /* Error State */
     .error {
-      background: #fee2e2;
-      color: #dc2626;
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5 !important;
       padding: 1rem;
       border-radius: 0.5rem;
       margin-bottom: 1rem;
+      border: 1px solid rgba(239, 68, 68, 0.3);
     }
-    
+
     /* Responsive */
     @media (max-width: 768px) {
-      .header-content {
-        flex-direction: column;
-        gap: 1rem;
+      .claims-grid {
+        grid-template-columns: 1fr;
       }
-      
-      .nav-links {
-        gap: 1rem;
-      }
-      
+
       .page-header {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: stretch;
+        padding: 1.5rem;
       }
-      
-      .claims-table {
-        font-size: 0.875rem;
+
+      .page-header h1 {
+        font-size: 2rem;
       }
-      
-      .claims-table th,
-      .claims-table td {
-        padding: 0.75rem 0.5rem;
+
+      .claim-card {
+        padding: 1.25rem;
       }
     }
   </style>
 </head>
-<body>
-  <!-- Header -->
+<body class="claims-page">
   <header class="header">
-    <div class="container">
-      <div class="header-content">
-        <a href="/" class="logo">ClaimNavigatorAI</a>
-        <nav class="nav-links">
-          <a href="/">Home</a>
-          <a href="/app/response-center.html">Claim Resource & AI Response Center</a>
-          <a href="/app/claims.html">My Claims</a>
-          <a href="/app/settings.html">Settings</a>
-          <button id="logout-btn" class="btn btn-secondary btn-sm">Logout</button>
-        </nav>
+    <div class="bar container">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>Claim Navigation AI</div>
       </div>
+      <nav class="nav">
+        <a href="/app/index.html">Home</a>
+        <span class="nav-separator">></span>
+        <span class="nav-current">My Claims</span>
+      </nav>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="main">
-    <div class="container">
-      <div class="page-header">
-        <h1 class="page-title">My Claims</h1>
-        <a href="/app/claims/new.html" class="btn btn-primary">New Claim</a>
+  <main class="claims-container">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb">
+      <a href="/">Home</a>
+      <span class="breadcrumb-separator">></span>
+      <span>My Claims</span>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>My Claims</h1>
+      <p>Manage and track all your insurance claims in one place</p>
+      <div class="page-header-actions">
+        <a href="/app/claims/new.html" class="btn btn-primary">+ New Claim</a>
+        <a href="/app/resource-center.html" class="btn btn-secondary">Resource Center</a>
       </div>
+    </div>
 
-      <div id="error-message" class="error" style="display: none;"></div>
+    <div id="error-message" class="error" style="display: none;"></div>
 
-      <div class="claims-container">
-        <div id="loading" class="loading">
-          Loading your claims...
-        </div>
+    <div id="loading" class="loading" style="display: block;">
+      Loading your claims...
+    </div>
 
-        <div id="empty-state" class="empty-state" style="display: none;">
-          <h3>No Claims Yet</h3>
-          <p>You haven't created any claims yet. Start by creating your first claim.</p>
-          <a href="/app/claims/new.html" class="btn btn-primary" style="margin-top: 1rem;">Create Your First Claim</a>
-        </div>
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <h3>No Claims Yet</h3>
+      <p>You haven't created any claims yet. Start by creating your first claim to track its progress and manage all your claim-related activities.</p>
+      <a href="/app/claims/new.html" class="btn btn-primary" style="margin-top: 1rem;">Create Your First Claim</a>
+    </div>
 
-        <table id="claims-table" class="claims-table" style="display: none;">
-          <thead>
-            <tr>
-              <th>Date of Loss</th>
-              <th>Type of Loss</th>
-              <th>Insurer</th>
-              <th>Status</th>
-              <th>Property Type</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="claims-tbody">
-          </tbody>
-        </table>
-      </div>
+    <div id="claims-grid" class="claims-grid" style="display: none;">
+      <!-- Claim cards will be inserted here -->
     </div>
   </main>
 
@@ -309,9 +386,6 @@
 
       // Load claims
       await loadClaims();
-      
-      // Setup logout
-      document.getElementById('logout-btn').addEventListener('click', window.AuthUtils.logout);
     }
 
     // Initialize when page loads
@@ -320,7 +394,7 @@
     async function loadClaims() {
       const loadingEl = document.getElementById('loading');
       const emptyStateEl = document.getElementById('empty-state');
-      const tableEl = document.getElementById('claims-table');
+      const gridEl = document.getElementById('claims-grid');
       const errorEl = document.getElementById('error-message');
 
       try {
@@ -370,6 +444,11 @@
         // Production mode - fetch from API
         const response = await window.AuthUtils.authenticatedFetch('/.netlify/functions/list-claims');
 
+        if (!response) {
+          // Authentication failed, redirect handled by authenticatedFetch
+          return;
+        }
+
         if (!response.ok) {
           throw new Error('Failed to load claims');
         }
@@ -388,8 +467,7 @@
     function displayClaims(claims) {
       const loadingEl = document.getElementById('loading');
       const emptyStateEl = document.getElementById('empty-state');
-      const tableEl = document.getElementById('claims-table');
-      const tbodyEl = document.getElementById('claims-tbody');
+      const gridEl = document.getElementById('claims-grid');
 
       loadingEl.style.display = 'none';
 
@@ -398,26 +476,71 @@
         return;
       }
 
-      tableEl.style.display = 'table';
-      tbodyEl.innerHTML = '';
+      gridEl.style.display = 'grid';
+      gridEl.innerHTML = '';
 
       claims.forEach(claim => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${formatDate(claim.date_of_loss)}</td>
-          <td><span class="type-badge">${formatTypeOfLoss(claim.type_of_loss)}</span></td>
-          <td>${claim.insurer || 'N/A'}</td>
-          <td><span class="status-badge status-${claim.status}">${claim.status}</span></td>
-          <td>${claim.property_type || 'N/A'}</td>
-          <td>
-            <a href="/app/claims/edit.html?id=${claim.id}" class="btn btn-secondary btn-sm">View/Edit</a>
-          </td>
+        const card = document.createElement('div');
+        card.className = 'claim-card';
+        
+        const location = claim.loss_location || {};
+        const locationStr = location.address 
+          ? `${location.address}, ${location.city}, ${location.state} ${location.zip}`
+          : 'Location not specified';
+
+        card.innerHTML = `
+          <div class="claim-card-header">
+            <h3 class="claim-card-title">${escapeHtml(claim.insured_name || 'Unnamed Claim')}</h3>
+            <div class="claim-card-status">
+              <span class="status-badge status-${claim.status || 'new'}">${claim.status || 'new'}</span>
+            </div>
+          </div>
+          <div class="claim-card-body">
+            <div class="claim-info-row">
+              <span class="claim-info-label">Date of Loss</span>
+              <span class="claim-info-value">${formatDate(claim.date_of_loss)}</span>
+            </div>
+            <div class="claim-info-row">
+              <span class="claim-info-label">Type of Loss</span>
+              <span class="claim-info-value">
+                <span class="type-badge">${formatTypeOfLoss(claim.type_of_loss)}</span>
+              </span>
+            </div>
+            <div class="claim-info-row">
+              <span class="claim-info-label">Location</span>
+              <span class="claim-info-value" style="font-size: 0.8rem; max-width: 60%; text-align: right;">${escapeHtml(locationStr)}</span>
+            </div>
+            ${claim.insurer ? `
+            <div class="claim-info-row">
+              <span class="claim-info-label">Insurer</span>
+              <span class="claim-info-value">${escapeHtml(claim.insurer)}</span>
+            </div>
+            ` : ''}
+            ${claim.policy_number ? `
+            <div class="claim-info-row">
+              <span class="claim-info-label">Policy Number</span>
+              <span class="claim-info-value">${escapeHtml(claim.policy_number)}</span>
+            </div>
+            ` : ''}
+            ${claim.property_type ? `
+            <div class="claim-info-row">
+              <span class="claim-info-label">Property Type</span>
+              <span class="claim-info-value">${formatTypeOfLoss(claim.property_type)}</span>
+            </div>
+            ` : ''}
+          </div>
+          <div class="claim-card-footer">
+            <a href="/app/claim-stage-tracker.html?claim_id=${claim.id}" class="btn btn-primary btn-sm" style="flex: 1;">Track Stages</a>
+            <a href="/app/claim.html?id=${claim.id}" class="btn btn-secondary btn-sm" style="flex: 1;">View Details</a>
+          </div>
         `;
-        tbodyEl.appendChild(row);
+        
+        gridEl.appendChild(card);
       });
     }
 
     function formatDate(dateString) {
+      if (!dateString) return 'N/A';
       const date = new Date(dateString);
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
@@ -427,7 +550,15 @@
     }
 
     function formatTypeOfLoss(type) {
-      return type.charAt(0).toUpperCase() + type.slice(1);
+      if (!type) return 'N/A';
+      return type.charAt(0).toUpperCase() + type.slice(1).replace(/_/g, ' ');
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
     }
 
   </script>
