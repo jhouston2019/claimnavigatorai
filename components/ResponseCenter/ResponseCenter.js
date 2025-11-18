@@ -675,8 +675,8 @@ class ResponseCenter {
         }
 
         .tool-title {
-          font-size: 1.25rem;
-          font-weight: 600;
+          font-size: 1.5rem;
+          font-weight: 700;
           color: var(--primary);
           margin: 0 0 0.5rem 0;
         }
