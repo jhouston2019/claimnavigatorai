@@ -639,7 +639,22 @@
       background: #1a202c;
     }
     
-    .tool-cards {
+    .value-highlight-banner {
+      background: #1e293b;
+      color: #4db8ff;
+      text-align: center;
+      padding: 1.25rem 1.5rem;
+      border-radius: 1rem;
+      margin: 2rem 0 2.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(77, 184, 255, 0.2);
+      border: 1px solid rgba(77, 184, 255, 0.3);
+      text-shadow: 0 0 8px rgba(77, 184, 255, 0.3);
+    }
+    
+    .tool-cards,
+    .tool-grid {
       display: grid;
       gap: 2rem;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -677,6 +692,7 @@
       font-size: 0.85rem;
       font-weight: 600;
       margin-bottom: 1rem;
+      white-space: nowrap;
     }
     
     .value-stack-section {
@@ -1535,9 +1551,18 @@
         font-size: 1.25rem;
       }
       
-      .why-list,
-      .tool-cards {
+      .why-list {
         grid-template-columns: 1fr;
+      }
+      
+      .tool-cards,
+      .tool-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .value-highlight-banner {
+        padding: 1.25rem 1rem;
+        font-size: 1rem;
       }
       
       .logo {
@@ -1672,13 +1697,57 @@
       
       .faq-question {
         padding: 1.25rem;
-        font-size: 1.1rem;
+      }
+    }
+    
+    /* Tablet: 2 cards per row (640px - 1023px) */
+    @media (min-width: 640px) and (max-width: 1023px) {
+      .tool-cards,
+      .tool-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
       
-      .faq-answer {
-        padding: 0 1.25rem 1.25rem;
-        font-size: 1rem;
-        line-height: 1.6;
+      .value-highlight-banner {
+        padding: 1.5rem 1.25rem;
+        font-size: 1.05rem;
+      }
+    }
+    
+    /* Small Desktop: 3 cards per row (1024px - 1439px) */
+    @media (min-width: 1024px) and (max-width: 1439px) {
+      .tool-cards,
+      .tool-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .value-highlight-banner {
+        padding: 1.5rem 1.5rem;
+        font-size: 1.1rem;
+      }
+    }
+    
+    /* Large Desktop: 4 cards per row (1440px+) */
+    @media (min-width: 1440px) {
+      .tool-cards,
+      .tool-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      
+      .value-highlight-banner {
+        padding: 1.75rem 1.5rem;
+        font-size: 1.15rem;
+      }
+    }
+    
+    /* Ensure cards maintain uniform height on desktop only */
+    @media (min-width: 1024px) {
+      .tool-card {
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .tool-card p {
+        flex-grow: 1;
       }
     }
     
@@ -1838,6 +1907,10 @@
   <section class="tools-section container">
     <h2>What's Inside — Every Tool You Need to Win Your Claim</h2>
 
+    <div class="value-highlight-banner">
+      Total Value of Included Tools: $12,630+ (Yours Free Inside Claim Navigator AI)
+    </div>
+
     <div class="tool-grid">
 
       <div class="tool-card">
@@ -1849,13 +1922,13 @@
       <div class="tool-card">
         <h3>Evidence Organizer</h3>
         <span class="value-badge">$199 value</span>
-        <p>Organizes photos, receipts, inspections, estimates, and correspondence into compliant evidence packages.</p>
+        <p>Organizes receipts, inspections, estimates, and correspondence into compliant evidence packages.</p>
       </div>
 
       <div class="tool-card">
         <h3>Proof of Loss Builder</h3>
         <span class="value-badge">$399 value</span>
-        <p>Creates a complete, compliant Proof of Loss with exact itemization and documentation.</p>
+        <p>Creates a complete, compliant Proof of Loss with full itemization and documentation.</p>
       </div>
 
       <div class="tool-card">
@@ -1867,7 +1940,7 @@
       <div class="tool-card">
         <h3>Timeline & Deadline Tracker</h3>
         <span class="value-badge">$199 value</span>
-        <p>Tracks every insurer deadline and prevents critical claim-ending mistakes.</p>
+        <p>Tracks every insurer deadline automatically and prevents critical claim-ending mistakes.</p>
       </div>
 
       <div class="tool-card">
@@ -1885,7 +1958,91 @@
       <div class="tool-card">
         <h3>Claim Playbook & Strategy System</h3>
         <span class="value-badge">$99 value</span>
-        <p>A complete roadmap: exactly what to do, when to do it, and how to respond to your insurer.</p>
+        <p>A complete roadmap: exactly what to do, how to do it, and when to respond to your insurer.</p>
+      </div>
+
+      <div class="tool-card">
+        <h3>ClaimNavigator AI Agent</h3>
+        <span class="value-badge">$2,500 value</span>
+        <p>Automates emails, detects deadlines, sends alerts, and syncs with all claim tools.</p>
+      </div>
+
+      <div class="tool-card">
+        <h3>Claim Document Library</h3>
+        <span class="value-badge">$395 value</span>
+        <p>Access a complete library of professional, ready-to-send insurance claim templates.</p>
+      </div>
+
+      <div class="tool-card">
+        <h3>AI Response Agent</h3>
+        <span class="value-badge">$595 value</span>
+        <p>Generates expert-level responses to insurer letters and emails instantly.</p>
+      </div>
+
+      <div class="tool-card">
+        <h3>State Rights & Deadlines Guide</h3>
+        <span class="value-badge">$150 value</span>
+        <p>Know your state-specific deadlines, rights, and escalation options.</p>
+      </div>
+
+      <div class="tool-card">
+        <h3>Authority Guides</h3>
+        <span class="value-badge">$295 value</span>
+        <p>State-specific regulations, filing rules, and escalation procedures.</p>
+      </div>
+
+      <div class="tool-card">
+        <h3>ROM Estimator</h3>
+        <span class="value-badge">$495 value</span>
+        <p>AI-powered repair and replacement cost estimates with clear explanations.</p>
+      </div>
+
+      <div class="tool-card">
+        <h3>Claim Stage Tracker</h3>
+        <span class="value-badge">$295 value</span>
+        <p>Visually track your claim from incident to payout across every stage.</p>
+      </div>
+
+      <div class="tool-card">
+        <h3>Knowledge Center</h3>
+        <span class="value-badge">$250 value</span>
+        <p>Expert insights, guides, and best practices for every type of claim.</p>
+      </div>
+
+      <div class="tool-card">
+        <h3>Claim Analysis Tools</h3>
+        <span class="value-badge">$750 value</span>
+        <p>Policy review, damage assessment, BI calculations, and settlement analysis.</p>
+      </div>
+
+      <div class="tool-card">
+        <h3>Situational Advisory System</h3>
+        <span class="value-badge">$395 value</span>
+        <p>Personalized guidance based on your exact claim situation.</p>
+      </div>
+
+      <div class="tool-card">
+        <h3>Negotiation Scripts</h3>
+        <span class="value-badge">$395 value</span>
+        <p>Professional scripts for adjuster calls, escalations, and negotiations.</p>
+      </div>
+
+      <div class="tool-card">
+        <h3>Documentation Guides</h3>
+        <span class="value-badge">$195 value</span>
+        <p>The exact documentation strategies needed to build an airtight claim file.</p>
+      </div>
+
+      <div class="tool-card">
+        <h3>Insurer Directory</h3>
+        <span class="value-badge">$150 value</span>
+        <p>Phone numbers, emails, portals, and claim submission sources for all major insurers.</p>
+      </div>
+
+      <div class="tool-card">
+        <h3>State Insurance Department Directory</h3>
+        <span class="value-badge">$150 value</span>
+        <p>Complete list of all 50 state departments and federal regulators.</p>
       </div>
 
     </div>
