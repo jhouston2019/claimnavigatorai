@@ -1772,16 +1772,17 @@
 
   <!-- Hero -->
   <section class="hero-section">
-    <div class="hero-content container">
+    <div class="hero-inner">
 
-      <h1>
+      <h1 class="hero-headline">
         When Disaster Hits, Your Insurance Company Is
         <span class="accent">NOT</span> On Your Side
       </h1>
 
-      <h2 class="hero-subheadline">
-        Claim Navigator AI gives you the expert tools, documents, and strategy needed to protect your claim and fight for the full value of your loss.
-      </h2>
+      <p class="hero-subheadline">
+        Claim Navigator AI gives you the expert tools, documents, and strategy needed
+        to protect your claim and fight for the full value of your loss.
+      </p>
 
       <div class="hero-buttons">
         <a href="/pricing" class="btn btn-primary">Get Your Claim Toolkit →</a>
@@ -3057,19 +3058,18 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  const testimonials = document.querySelectorAll('.hero-testimonial-rotator .hero-testimonial');
-  let index = Math.floor(Math.random() * testimonials.length);
+  const testimonials = document.querySelectorAll('.hero-testimonial');
+  let i = Math.floor(Math.random() * testimonials.length);
 
-  function show(n) {
-    testimonials.forEach((t,i)=>t.classList.toggle('active', i===n));
+  function rotate() {
+    testimonials.forEach((t, index) => {
+      t.classList.toggle('active', index === i);
+    });
+    i = (i + 1) % testimonials.length;
   }
 
-  show(index);
-
-  setInterval(()=>{
-    index = (index + 1) % testimonials.length;
-    show(index);
-  }, 5500);
+  rotate();
+  setInterval(rotate, 5500);
 });
 
 document.addEventListener("DOMContentLoaded", function() {

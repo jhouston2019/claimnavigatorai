@@ -1158,17 +1158,15 @@ body:has(.main-grid) .content-column p {
   color: #000000 !important;
 }
 
-/* =================================================================
-   HERO SECTION — IMAGE + OVERLAY + HEADLINE + ROTATING QUOTES
-   ================================================================= */
-
+/* HERO SECTION */
 .hero-section {
   position: relative;
   background: url('/assets/images/damage1.jpg') center center/cover no-repeat;
-  min-height: 75vh;
+  padding: 7rem 1.5rem;
+  min-height: 90vh;
   display: flex;
+  justify-content: center;
   align-items: center;
-  padding: 4rem 1rem;
 }
 
 .hero-section::before {
@@ -1182,66 +1180,66 @@ body:has(.main-grid) .content-column p {
   z-index: 1;
 }
 
-.hero-content {
+/* FORCE SINGLE COLUMN + CENTERED */
+.hero-inner {
   position: relative;
   z-index: 2;
-  max-width: 900px;
+  max-width: 780px;
+  width: 100%;
   margin: 0 auto;
   text-align: center;
-}
-
-.hero-section h1 {
-  font-size: 2.75rem;
-  line-height: 3.25rem;
-  font-weight: 700;
-  color: #ffffff;
-}
-
-.accent {
-  color: #4db8ff;
-}
-
-.hero-subheadline {
-  margin-top: 1rem;
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-  opacity: 0.9;
-  color: #ffffff;
-}
-
-.hero-buttons {
-  margin-top: 2rem;
   display: flex;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* HEADLINE */
+.hero-headline {
+  font-size: 3rem;
+  line-height: 3.4rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.hero-headline .accent {
+  color: #4aa8ff;
+}
+
+/* SUBHEADLINE */
+.hero-subheadline {
+  font-size: 1.35rem;
+  line-height: 1.95rem;
+  opacity: 0.9;
+  color: #fff;
+  margin-top: -0.5rem;
+}
+
+/* BUTTONS */
+.hero-buttons {
+  display: flex;
   justify-content: center;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
-/* =================================================================
-   ROTATING HERO TESTIMONIAL CSS + MOBILE SUPPORT
-   ================================================================= */
-
+/* TESTIMONIAL ROTATOR */
 .hero-testimonial-rotator {
-  margin-top: 1.75rem;
+  width: 100%;
+  max-width: 700px;
   position: relative;
-  max-width: 650px;
-  margin-left: auto;
-  margin-right: auto;
-  min-height: 110px;
+  min-height: 150px;
+  margin: 0 auto;
 }
 
 .hero-testimonial {
-  opacity: 0;
   position: absolute;
   width: 100%;
-  left: 0;
-  top: 0;
+  opacity: 0;
+  padding: 1.25rem 1.75rem;
   background: rgba(0,0,0,0.45);
-  padding: 1rem 1.25rem;
-  border-radius: 0.5rem;
+  border-radius: .5rem;
   border: 1px solid rgba(255,255,255,0.15);
-  transition: opacity 0.8s ease;
-  box-sizing: border-box;
+  transition: opacity .8s ease-in-out;
 }
 
 .hero-testimonial.active {
@@ -1249,18 +1247,37 @@ body:has(.main-grid) .content-column p {
   position: relative;
 }
 
+/* QUOTE TEXT */
 .hero-quote {
+  font-size: 1.25rem !important;
+  line-height: 1.75rem !important;
+  color: #fff;
   font-style: italic;
-  font-size: 1.05rem;
-  line-height: 1.45rem;
-  color: #ffffff;
 }
 
 .hero-author {
   margin-top: 0.5rem;
-  opacity: 0.75;
-  font-size: 0.95rem;
-  color: #ffffff;
+  font-size: 1.05rem !important;
+  opacity: 0.85;
+  color: #fff;
+}
+
+/* MOBILE OPTIMIZATION */
+@media (max-width: 680px) {
+  .hero-headline {
+    font-size: 2.2rem;
+    line-height: 2.6rem;
+  }
+  .hero-subheadline {
+    font-size: 1.15rem;
+    line-height: 1.6rem;
+  }
+  .hero-quote {
+    font-size: 1.1rem !important;
+  }
+  .hero-testimonial-rotator {
+    min-height: 180px;
+  }
 }
 
 /* =================================================================
@@ -1447,23 +1464,6 @@ body:has(.main-grid) .content-column p {
    ================================================================= */
 
 @media (max-width: 640px) {
-  .hero-section h1 {
-    font-size: 2rem;
-    line-height: 2.4rem;
-  }
-  
-  .hero-subheadline {
-    font-size: 1.1rem;
-  }
-  
-  .hero-testimonial {
-    padding: 0.75rem 1rem;
-  }
-  
-  .hero-testimonial-rotator {
-    min-height: 130px;
-  }
-  
   .why-section h2 {
     font-size: 1.75rem;
   }
