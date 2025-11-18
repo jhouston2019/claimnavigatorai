@@ -26,25 +26,6 @@
       color: #dbeafe !important;
     }
 
-    /* Exception for entry-type dropdown - needs black text for visibility */
-    body.statement-page .modal .form-group select#entry-type,
-    body.statement-page #add-modal .form-group select#entry-type,
-    body.statement-page .form-group select#entry-type {
-      color: #000000 !important;
-      -webkit-text-fill-color: #000000 !important;
-      background: #ffffff !important;
-      background-color: #ffffff !important;
-    }
-
-    body.statement-page .modal .form-group select#entry-type option,
-    body.statement-page #add-modal .form-group select#entry-type option,
-    body.statement-page .form-group select#entry-type option {
-      color: #000000 !important;
-      -webkit-text-fill-color: #000000 !important;
-      background: #ffffff !important;
-      background-color: #ffffff !important;
-    }
-
     .statement-container {
       max-width: 1200px;
       margin: 0 auto;
@@ -231,6 +212,25 @@
       color: #ffffff !important;
       font-size: 1rem;
       font-family: inherit;
+    }
+
+    /* CRITICAL: Override for entry-type dropdown - MUST come after general form-group rule */
+    body.statement-page .modal .form-group select#entry-type,
+    body.statement-page #add-modal .form-group select#entry-type,
+    body.statement-page .form-group select#entry-type {
+      color: #000000 !important;
+      -webkit-text-fill-color: #000000 !important;
+      background: #ffffff !important;
+      background-color: #ffffff !important;
+    }
+
+    body.statement-page .modal .form-group select#entry-type option,
+    body.statement-page #add-modal .form-group select#entry-type option,
+    body.statement-page .form-group select#entry-type option {
+      color: #000000 !important;
+      -webkit-text-fill-color: #000000 !important;
+      background: #ffffff !important;
+      background-color: #ffffff !important;
     }
 
 
@@ -450,6 +450,22 @@
     function openModal() {
       document.getElementById('add-modal').classList.add('active');
       document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
+      
+      // Force black text on entry-type dropdown
+      const entryTypeSelect = document.getElementById('entry-type');
+      if (entryTypeSelect) {
+        entryTypeSelect.style.setProperty('color', '#000000', 'important');
+        entryTypeSelect.style.setProperty('background', '#ffffff', 'important');
+        entryTypeSelect.style.setProperty('-webkit-text-fill-color', '#000000', 'important');
+        entryTypeSelect.style.setProperty('background-color', '#ffffff', 'important');
+        
+        // Force black text on all options
+        Array.from(entryTypeSelect.options).forEach(option => {
+          option.style.setProperty('color', '#000000', 'important');
+          option.style.setProperty('background', '#ffffff', 'important');
+          option.style.setProperty('-webkit-text-fill-color', '#000000', 'important');
+        });
+      }
     }
 
     function closeModal() {
@@ -517,6 +533,23 @@
       }
     }
 
+    // Force styles on entry-type dropdown immediately
+    function forceEntryTypeStyles() {
+      const entryTypeSelect = document.getElementById('entry-type');
+      if (entryTypeSelect) {
+        entryTypeSelect.style.setProperty('color', '#000000', 'important');
+        entryTypeSelect.style.setProperty('background', '#ffffff', 'important');
+        entryTypeSelect.style.setProperty('-webkit-text-fill-color', '#000000', 'important');
+        entryTypeSelect.style.setProperty('background-color', '#ffffff', 'important');
+        
+        Array.from(entryTypeSelect.options).forEach(option => {
+          option.style.setProperty('color', '#000000', 'important');
+          option.style.setProperty('background', '#ffffff', 'important');
+          option.style.setProperty('-webkit-text-fill-color', '#000000', 'important');
+        });
+      }
+    }
+
     // Event listeners
     document.getElementById('add-btn').addEventListener('click', openModal);
     document.getElementById('refresh-btn').addEventListener('click', refresh);
@@ -524,6 +557,11 @@
 
     // Initial load
     refresh();
+    
+    // Force styles on page load and after a short delay to ensure DOM is ready
+    forceEntryTypeStyles();
+    setTimeout(forceEntryTypeStyles, 100);
+    setTimeout(forceEntryTypeStyles, 500);
   </script>
 </body>
 </html>
