@@ -52,8 +52,9 @@ exports.handler = async (event) => {
   try {
     const q = (event.queryStringParameters?.q || '').toLowerCase();
     
-    // Use process.cwd() for Netlify functions (points to project root)
-    const file = path.join(process.cwd(), 'data', 'insurers.csv');
+    // When bundled on Netlify, __dirname points to the function folder.
+    // Package insurers.csv inside netlify/functions/data so it ships with the function.
+    const file = path.join(__dirname, 'data', 'insurers.csv');
     
     // Check if file exists
     if (!fs.existsSync(file)) {
