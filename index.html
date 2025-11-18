@@ -529,6 +529,181 @@
       color: rgba(255, 255, 255, 0.85);
     }
     
+    .hero-section {
+      position: relative;
+      background: url('/assets/images/damage1.jpg') center center/cover no-repeat;
+      min-height: 75vh;
+      display: flex;
+      align-items: center;
+      padding: 4rem 1rem;
+      color: #f1f5f9;
+    }
+    
+    .hero-section::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 1;
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .hero-content h1 {
+      font-size: 3rem;
+      line-height: 1.2;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 1.5rem;
+    }
+    
+    .hero-subheadline {
+      font-size: 1.5rem;
+      line-height: 1.5;
+      color: rgba(241, 245, 249, 0.95);
+      margin-bottom: 2rem;
+      font-weight: 600;
+    }
+    
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .hero-buttons .btn-primary,
+    .hero-buttons .btn-secondary {
+      min-width: 220px;
+    }
+    
+    .hero-highlight {
+      color: #4db8ff;
+    }
+    
+    .why-section,
+    .tools-section,
+    .value-stack-section {
+      padding: 4rem 0;
+      background: #0f172a;
+    }
+    
+    .why-section h2,
+    .tools-section h2,
+    .tools-section h3,
+    .value-stack-section h2,
+    .value-stack-section h3 {
+      color: #f1f5f9;
+    }
+    
+    .why-intro,
+    .value-summary {
+      color: #cbd5e1;
+      font-size: 1.2rem;
+      line-height: 1.7;
+      max-width: 900px;
+      margin: 1rem auto 2rem;
+      text-align: center;
+    }
+    
+    .why-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .why-list li {
+      background: #1e293b;
+      border: 1px solid #1e40af;
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      font-weight: 600;
+      text-align: center;
+      color: #f1f5f9;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .tools-section {
+      background: #1a202c;
+    }
+    
+    .tool-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+    
+    .tool-card {
+      background: #111a2f;
+      border: 1px solid #1e3a8a;
+      border-radius: 1rem;
+      padding: 1.75rem;
+      box-shadow: var(--shadow-md);
+      position: relative;
+    }
+    
+    .tool-card h3 {
+      color: #4db8ff;
+      margin-bottom: 0.5rem;
+      font-size: 1.3rem;
+    }
+    
+    .tool-card p {
+      color: #cbd5e1;
+      margin: 0;
+      line-height: 1.6;
+    }
+    
+    .value-badge {
+      display: inline-block;
+      background: rgba(77, 184, 255, 0.15);
+      border: 1px solid #4db8ff;
+      color: #4db8ff;
+      border-radius: 999px;
+      padding: 0.25rem 0.8rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    
+    .value-stack-section {
+      background: #0b1225;
+      text-align: center;
+    }
+    
+    .value-total {
+      font-size: 2rem;
+      color: #4db8ff;
+      margin: 2rem 0 0.5rem;
+    }
+    
+    .value-price {
+      font-size: 2.5rem;
+      color: #22d3ee;
+      margin-bottom: 2rem;
+    }
+    
+    .value-buttons {
+      display: flex;
+      justify-content: center;
+    }
+    
+    .value-buttons .btn-primary {
+      min-width: 260px;
+    }
     .hero-content {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1053,9 +1228,22 @@
     }
 
     @media (max-width: 768px) {
-      .hero-content {
+      .hero-section {
+        min-height: auto;
+        padding: 3rem 1rem;
+      }
+      
+      .hero-content h1 {
+        font-size: 2.25rem;
+      }
+      
+      .hero-subheadline {
+        font-size: 1.25rem;
+      }
+      
+      .why-list,
+      .tool-cards {
         grid-template-columns: 1fr;
-        gap: 2rem;
       }
       
       .logo {
@@ -1083,23 +1271,6 @@
         min-height: 48px;
         width: 100%;
         max-width: 300px;
-      }
-      
-      .statistics {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-      
-      .statistics > div {
-        padding: 1.5rem 1rem;
-      }
-      
-      .statistics > div > div {
-        font-size: 2.5rem;
-      }
-      
-      .statistics > div > p {
-        font-size: 1rem;
       }
       
       .value-grid {
@@ -1164,7 +1335,7 @@
         padding: 0 1rem;
       }
       
-      .hero {
+      .hero-section {
         padding: 3rem 0;
       }
       
@@ -1206,13 +1377,18 @@
         padding: 0 0.75rem;
       }
       
-      h1 {
-        font-size: 1.75rem;
+      .hero-content h1 {
+        font-size: 1.8rem;
         line-height: 1.2;
       }
       
-      .subtitle {
-        font-size: 1rem;
+      .hero-subheadline {
+        font-size: 1.05rem;
+      }
+      
+      .hero-buttons .btn-primary,
+      .hero-buttons .btn-secondary {
+        min-width: 100%;
       }
       
       .btn-primary, .btn-secondary {
@@ -1220,15 +1396,7 @@
         font-size: 0.95rem;
       }
       
-      .statistics > div > div {
-        font-size: 2rem;
-      }
-      
-      .statistics > div > p {
-        font-size: 0.9rem;
-      }
-      
-      .hero {
+      .hero-section {
         padding: 2rem 0;
       }
       
@@ -1292,51 +1460,142 @@
   </header>
 
 
-  <!-- Hero - Updated title formatting -->
-  <section class="hero" style="background: linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.5)), url('assets/images/backgrounds/paperwork5.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat; color: white; padding: 4rem 0; text-align: center;">
+  <!-- Hero -->
+  <section class="hero-section">
+    <div class="hero-content container">
+      <h1
+        data-en="When Disaster Hits, Your Insurance Company Is <span class='hero-highlight'>NOT</span> On Your Side"
+        data-es="Cuando llega el desastre, su compañía de seguros <span class='hero-highlight'>NO</span> está de su lado">
+        When Disaster Hits, Your Insurance Company Is <span class="hero-highlight">NOT</span> On Your Side
+      </h1>
+
+      <h2 class="hero-subheadline"
+          data-en="Claim Navigator AI gives you the expert tools, documents, and strategy needed to protect your claim and fight for the full value of your loss."
+          data-es="Claim Navigator AI le da las herramientas expertas, documentos y estrategia que necesita para proteger su reclamo y luchar por el valor total de su pérdida.">
+        Claim Navigator AI gives you the expert tools, documents, and strategy needed to protect your claim and fight for the full value of your loss.
+      </h2>
+
+      <div class="hero-buttons">
+        <a href="/pricing" class="btn-primary"
+           data-en="Get Your Claim Toolkit →"
+           data-es="Obtenga su kit de reclamo →">Get Your Claim Toolkit →</a>
+        <a href="app/login.html" class="btn-secondary"
+           data-en="Login to Access Tools"
+           data-es="Iniciar sesión para acceder a las herramientas">Login to Access Tools</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Section -->
+  <section class="why-section">
     <div class="container">
-      <h1 style="color: #f1f5f9; font-size: 3rem; font-weight: 700; line-height: 1.2; margin: 0 0 1.5rem 0;" 
-          data-en="Claim Navigator AI is<br>Your AI-Powered DIY Claim Management System" 
-          data-es="Claim Navigator AI es<br>Su DIY Impulsado Por IA Sistema De Gestión De Reclamos">
-          Claim Navigator AI is<br>Your AI-Powered DIY Claim Management System
-        </h1>
-      
-      <p class="subtitle" style="color: rgba(255, 255, 255, 0.9); font-size: 1.75rem; font-weight: 600; line-height: 1.4; max-width: 900px; margin: 0 auto 2rem;" 
-         data-en="Insurance claims are stressful and difficult…and the Insurance Company Is NOT On Your Side" 
-         data-es="Los reclamos de seguro son estresantes y difíciles...y la Compañía de Seguros NO Está De Su Lado">
-         Insurance claims are stressful and difficult…<br>
-         and the Insurance Company Is NOT On Your Side
-        </p>
-      
-      <!-- Statistics in Hero -->
-      <div class="statistics" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; max-width: 800px; margin: 0 auto 2rem;">
-        <div style="background: rgba(255, 255, 255, 0.1); padding: 2rem 1.5rem; text-align: center; border-radius: 0.75rem; backdrop-filter: blur(10px);">
-          <div style="font-size: 3rem; color: #f1f5f9; font-weight: 700; margin-bottom: 0.5rem;">73%</div>
-          <p style="color: white; font-size: 1.1rem; font-weight: 600; margin: 0;" 
-             data-en="of claims underpaid" 
-             data-es="de reclamos mal pagados">of claims underpaid</p>
-          </div>
-        <div style="background: rgba(255, 255, 255, 0.1); padding: 2rem 1.5rem; text-align: center; border-radius: 0.75rem; backdrop-filter: blur(10px);">
-          <div style="font-size: 3rem; color: #f1f5f9; font-weight: 700; margin-bottom: 0.5rem;">40%</div>
-          <p style="color: white; font-size: 1.1rem; font-weight: 600; margin: 0;" 
-             data-en="is the average underpayment of claims" 
-             data-es="es el pago insuficiente promedio de reclamos">is the average underpayment of claims</p>
-          </div>
-        <div style="background: rgba(255, 255, 255, 0.1); padding: 2rem 1.5rem; text-align: center; border-radius: 0.75rem; backdrop-filter: blur(10px);">
-          <div style="font-size: 3rem; color: #f1f5f9; font-weight: 700; margin-bottom: 0.5rem;">92%</div>
-          <p style="color: white; font-size: 1.1rem; font-weight: 600; margin: 0;" 
-             data-en="are never challenged" 
-             data-es="nunca son desafiados">are never challenged</p>
-          </div>
-          </div>
-      
-      <div style="display: flex; gap: 1.5rem; justify-content: center; align-items: center; flex-wrap: wrap;">
-        <button onclick="startCheckout()" class="btn-primary checkout-btn" 
-                data-en="Get Your Claim Toolkit →" 
-                data-es="Obtener Su Kit de Herramientas →">Get Your Claim Toolkit →</button>
-        <a href="app/login.html" class="btn-primary" style="text-decoration: none;" 
-           data-en="Login to Access Tools" 
-           data-es="Iniciar Sesión para Acceder a Herramientas">Login to Access Tools</a>
+      <h2 data-en="Why You Need Claim Navigator AI" data-es="Por qué necesita Claim Navigator AI">Why You Need Claim Navigator AI</h2>
+      <p class="why-intro"
+         data-en="Insurance companies deny, delay, and underpay because most policyholders don’t know their rights, the required documents, or the correct language. Claim Navigator AI reverses that advantage instantly."
+         data-es="Las aseguradoras niegan, retrasan y pagan de menos porque la mayoría de los asegurados no conocen sus derechos, los documentos requeridos o el lenguaje correcto. Claim Navigator AI invierte esa ventaja al instante.">
+        Insurance companies deny, delay, and underpay because most policyholders don’t know their rights, the required documents, or the correct language. Claim Navigator AI reverses that advantage instantly.
+      </p>
+
+      <ul class="why-list">
+        <li>Eliminates insurer delay tactics</li>
+        <li>Strengthens your documentation and evidence</li>
+        <li>Ensures compliance with legally required deadlines</li>
+        <li>Generates expert-level claim responses in seconds</li>
+        <li>Guides your strategy step-by-step from start to finish</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Tools Section -->
+  <section class="tools-section">
+    <div class="container">
+      <h2 data-en="What’s Inside — Every Tool You Need to Win Your Claim" data-es="Qué incluye: cada herramienta que necesita para ganar su reclamo">What’s Inside — Every Tool You Need to Win Your Claim</h2>
+
+      <div class="tool-cards">
+        <div class="tool-card">
+          <h3>AI Claim Response Agent</h3>
+          <span class="value-badge">$499 value</span>
+          <p>Writes expert-level responses to denials, delays, inspections, lowball offers, and bad-faith tactics.</p>
+        </div>
+
+        <div class="tool-card">
+          <h3>Evidence Organizer</h3>
+          <span class="value-badge">$199 value</span>
+          <p>Automatically organizes photos, receipts, estimates, inspections, videos, and correspondence into compliant evidence packages.</p>
+        </div>
+
+        <div class="tool-card">
+          <h3>Proof of Loss Builder</h3>
+          <span class="value-badge">$399 value</span>
+          <p>Creates a complete Proof of Loss with itemization, totals, damage descriptions, and documentation.</p>
+        </div>
+
+        <div class="tool-card">
+          <h3>Coverage Decoder</h3>
+          <span class="value-badge">$199 value</span>
+          <p>Reads and explains your policy in plain English, revealing what IS covered and what adjusters won’t mention.</p>
+        </div>
+
+        <div class="tool-card">
+          <h3>Claim Timeline & Deadline Tracker</h3>
+          <span class="value-badge">$199 value</span>
+          <p>Tracks required insurer deadlines and sends alerts so you never miss a critical step.</p>
+        </div>
+
+        <div class="tool-card">
+          <h3>Claim Diary Log</h3>
+          <span class="value-badge">$149 value</span>
+          <p>Creates a legally defensible, timestamped activity log insurers must acknowledge.</p>
+        </div>
+
+        <div class="tool-card">
+          <h3>Document Generator (60+ Templates)</h3>
+          <span class="value-badge">$499 value</span>
+          <p>Includes notices, demands, appeals, inspection requests, coverage challenges, and more.</p>
+        </div>
+
+        <div class="tool-card">
+          <h3>Claim Playbook & Strategy System</h3>
+          <span class="value-badge">$99 value</span>
+          <p>A step-by-step, battle-tested roadmap showing you exactly how to proceed from Day 1 to settlement.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Value Stack Section -->
+  <section class="value-stack-section">
+    <div class="container">
+      <h2 data-en="Total Value Stack" data-es="Valor total del paquete">Total Value Stack</h2>
+
+      <p class="value-summary"
+         data-en="AI Claim Response Agent — $499 <br> Proof of Loss Builder — $399 <br> Document Generator (60+ docs) — $499 <br> Evidence Organizer — $199 <br> Coverage Decoder — $199 <br> Claim Timeline & Deadline System — $199 <br> Claim Diary — $149 <br> Claim Playbook — $99 <br>"
+         data-es="Agente de Respuesta de Reclamos con IA — $499 <br> Constructor de Prueba de Pérdida — $399 <br> Generador de Documentos (60+ docs) — $499 <br> Organizador de Evidencia — $199 <br> Decodificador de Cobertura — $199 <br> Sistema de Cronograma y Fechas Límite — $199 <br> Diario del Reclamo — $149 <br> Playbook del Reclamo — $99 <br>">
+        AI Claim Response Agent — $499 <br>
+        Proof of Loss Builder — $399 <br>
+        Document Generator (60+ docs) — $499 <br>
+        Evidence Organizer — $199 <br>
+        Coverage Decoder — $199 <br>
+        Claim Timeline & Deadline System — $199 <br>
+        Claim Diary — $149 <br>
+        Claim Playbook — $99 <br>
+      </p>
+
+      <h3 class="value-total"
+          data-en="Total Professional Value: $2,540"
+          data-es="Valor profesional total: $2,540">
+        Total Professional Value: $2,540
+      </h3>
+      <h3 class="value-price"
+          data-en="Your Price Today: $997"
+          data-es="Su precio hoy: $997">
+        Your Price Today: $997
+      </h3>
+
+      <div class="value-buttons">
+        <a href="/pricing" class="btn-primary"
+           data-en="Unlock Claim Navigator AI"
+           data-es="Desbloquee Claim Navigator AI">Unlock Claim Navigator AI</a>
       </div>
     </div>
   </section>
@@ -1350,6 +1609,11 @@
             data-es="USTED DEBE PROBAR SU PÉRDIDA!<br>LA COMPAÑÍA DE SEGUROS NO LO HARÁ POR USTED!">
             YOU MUST PROVE YOUR LOSS!<br>THE INSURANCE COMPANY WON'T DO IT FOR YOU!
         </h2>
+        <p style="color: #cbd5e1; font-size: 1.2rem; text-align: center; margin-bottom: 1.5rem;"
+           data-en="Claim Navigator AI is the only AI-powered claim management system that locks down your documentation, organizes irrefutable evidence, and arms you with expert language before the insurer even drafts their first estimate."
+           data-es="Claim Navigator AI es el único sistema de gestión de reclamos impulsado por IA que asegura su documentación, organiza evidencia irrefutable y lo arma con lenguaje experto antes de que el asegurador escriba su primera estimación.">
+          Claim Navigator AI is the only AI-powered claim management system that locks down your documentation, organizes irrefutable evidence, and arms you with expert language before the insurer even drafts their first estimate.
+        </p>
         
         <div style="background: #1e293b; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 2px 4px rgba(0,0,0,0.3); margin-bottom: 1.5rem; border: 1px solid #475569;">
           <p style="margin-bottom: 1rem; color: #f1f5f9;" data-en="FACT #1: YOU have the burden of proof. The insurer only pays what YOU can prove." 
@@ -1367,9 +1631,9 @@
             <strong style="color: #f1f5f9;">FACT #3:</strong> If you rely on the insurance company, they will provide an estimate that often doesn't reflect the true value of your loss…so you must provide your own estimate that truly values your loss.
           </p>
           
-          <p style="margin-bottom: 0.75rem; color: #f1f5f9;" data-en="FACT #4: Without proper documentation you'll: ❌ Accept offers that don't fully compensate for your loss ❌ Miss deadlines ❌ Leave money on the table" 
-             data-es="HECHO #4: Sin documentación adecuada usted: ❌ Aceptará ofertas que no compensen completamente su pérdida ❌ Perderá fechas límite ❌ Dejará dinero sobre la mesa">
-            <strong style="color: #f1f5f9;">FACT #4:</strong> Without proper documentation you'll: ❌ Accept offers that don't fully compensate for your loss ❌ Miss deadlines ❌ Leave money on the table
+          <p style="margin-bottom: 0.75rem; color: #f1f5f9;" data-en="FACT #4: Without Claim Navigator AI’s AI-powered claim management system you'll: ❌ Accept offers that don't fully compensate for your loss ❌ Miss deadlines ❌ Leave money on the table" 
+             data-es="HECHO #4: Sin el sistema de gestión de reclamos con IA de Claim Navigator AI usted: ❌ Aceptará ofertas que no compensen completamente su pérdida ❌ Perderá fechas límite ❌ Dejará dinero sobre la mesa">
+            <strong style="color: #f1f5f9;">FACT #4:</strong> Without Claim Navigator AI’s AI-powered claim management system you'll: ❌ Accept offers that don't fully compensate for your loss ❌ Miss deadlines ❌ Leave money on the table
           </p>
         </div>
         
@@ -1417,24 +1681,34 @@
     <div class="container">
       <div style="width: 100%; margin: 0 auto; text-align: center;">
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 2.5rem;">
-          <div style="color: white; font-size: 3.5rem; font-weight: 700; text-align: center; line-height: 1.4; margin-bottom: 0.5rem; white-space: nowrap;">
-            Claim Navigator AI Will Help You
-        </div>
-          <div style="color: white; font-size: 3.5rem; font-weight: 700; text-align: center; line-height: 1.4; white-space: nowrap;">
-            Successfully Manage & Maximize Your Claim.
-        </div>
+          <div style="color: white; font-size: 3.2rem; font-weight: 700; text-align: center; line-height: 1.3; margin-bottom: 0.5rem;"
+               data-en="Claim Navigator AI Is Your AI-Powered Claim Command Center"
+               data-es="Claim Navigator AI es su centro de comando de reclamos impulsado por IA">
+            Claim Navigator AI Is Your AI-Powered Claim Command Center
+          </div>
+          <div style="color: white; font-size: 2.5rem; font-weight: 700; text-align: center; line-height: 1.4;"
+               data-en="Protects documentation, evidence, deadlines, and negotiation leverage so you stay in control."
+               data-es="Protege la documentación, la evidencia, los plazos y la negociación para que usted mantenga el control.">
+            Protects documentation, evidence, deadlines, and negotiation leverage so you stay in control.
+          </div>
         </div>
         
         <div style="color: #e2e8f0; font-size: 1.5rem; line-height: 1.8; margin-bottom: 2.5rem; text-align: center;">
-          <div style="margin-bottom: 0.5rem;">
-            <strong style="font-size: 1.8rem; font-style: italic; color: #f1f5f9;">Claim Navigator AI will SAVE YOU HUNDREDS OF HOURS</strong> and ensure you have
+          <div style="margin-bottom: 0.5rem;"
+               data-en="Deploy enterprise-grade documentation, evidence packages, and scripts without paying a 25% contingency fee."
+               data-es="Implemente documentación, paquetes de evidencia y guiones de nivel empresarial sin pagar una comisión del 25%.">
+            Deploy enterprise-grade documentation, evidence packages, and scripts without paying a 25% contingency fee.
           </div>
-          <div style="margin-bottom: 0.5rem;">
-            the documentation, methodologies, and critical directives you need to properly manage and collect
+          <div style="margin-bottom: 0.5rem;"
+               data-en="Our AI-driven workflows enforce every deadline, generate professional proof, and expose insurer tactics in seconds."
+               data-es="Nuestros flujos impulsados por IA hacen cumplir cada plazo, generan pruebas profesionales y exponen las tácticas del asegurador en segundos.">
+            Our AI-driven workflows enforce every deadline, generate professional proof, and expose insurer tactics in seconds.
           </div>
-          <div>
-            the claim settlement you deserve.
-        </div>
+          <div
+               data-en="You get the same strategic firepower elite claim professionals use—minus the delay, minus the middleman."
+               data-es="Obtiene el mismo poder estratégico que usan los profesionales élite de reclamos, sin demoras ni intermediarios.">
+            You get the same strategic firepower elite claim professionals use—minus the delay, minus the middleman.
+          </div>
       </div>
       
       <div style="text-align: center;">
@@ -1459,9 +1733,9 @@
             data-en="Compare Your Claim Management Options" 
             data-es="Compare Sus Opciones de Gestión de Reclamos">Compare Your Claim Management Options</h2>
         <p style="color: #cbd5e1; font-size: 1.2rem; max-width: 600px; margin: 0 auto; white-space: nowrap;" 
-           data-en="See exactly how much more you keep with ClaimNavigatorAI vs. other options" 
-           data-es="Vea exactamente cuánto más se queda con ClaimNavigatorAI vs. otras opciones">
-           See exactly how much more you keep with ClaimNavigatorAI vs. other options
+           data-en="Compare how our AI-powered claim management system protects $25K–$40K more than any other path."
+           data-es="Compare cómo nuestro sistema de gestión de reclamos con IA protege $25K–$40K más que cualquier otra opción.">
+           Compare how our AI-powered claim management system protects $25K–$40K more than any other path.
         </p>
       </div>
 
@@ -1499,8 +1773,8 @@
           <tbody>
             <tr style="border-bottom: 1px solid #475569; background: #1e293b;">
               <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 600;" 
-                  data-en="DIY Alone" 
-                  data-es="Hazlo Tú Mismo">DIY Alone</td>
+                  data-en="Go-It-Alone" 
+                  data-es="Ir solo">Go-It-Alone</td>
               <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 600; font-size: 1.1rem;">$35,000</td>
               <td style="padding: 1.5rem; color: #f1f5f9; font-weight: 600;" 
                   data-en="Full but ineffective" 
@@ -2018,9 +2292,9 @@
                 data-en="Get Instant Access" 
                 data-es="Obtener Acceso Instantáneo">Get Instant Access</button>
         <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary); font-size: 0.875rem;" 
-           data-en="Digital delivery • All sales final • AI Powered DIY claim management & documentation tools only – no consulting, legal, or adjusting services" 
-           data-es="Entrega digital • Todas las ventas son finales • Solo herramientas de gestión y documentación de reclamos DIY con IA – sin servicios de consultoría, legales o de ajuste">
-          Digital delivery • All sales final • AI Powered DIY claim management & documentation tools only – no consulting, legal, or adjusting services
+           data-en="Digital delivery • All sales final • AI-powered claim management & documentation system only – no consulting, legal, or adjusting services" 
+           data-es="Entrega digital • Todas las ventas son finales • Sistema de gestión y documentación de reclamos impulsado por IA únicamente – sin servicios de consultoría, legales o de ajuste">
+          Digital delivery • All sales final • AI-powered claim management & documentation system only – no consulting, legal, or adjusting services
         </p>
       </div>
     </div>
