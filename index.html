@@ -7,81 +7,434 @@
 
   <!-- PRESERVE ALL EXISTING CSS AND FONTS -->
   <link rel="stylesheet" href="/assets/css/styles.css">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #0f172a;
+      --primary-header: #0f172a;
+      --accent: #3b82f6;
+      --middle-blue: #2563eb;
+      --success: #10b981;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --bg-white: #0f172a;
+      --bg-light: #1e293b;
+      --bg-gray: #1a202c;
+      --border: #475569;
+      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.2);
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: #0f172a;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header */
+    header {
+      background: var(--primary-header);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+      gap: 2rem;
+    }
+    
+    .logo {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #3b82f6;
+      white-space: nowrap;
+      display: inline-block;
+      flex-shrink: 0;
+      min-width: max-content;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.9);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+      font-size: 1rem;
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+    }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 24px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .hamburger span {
+      display: block;
+      height: 3px;
+      width: 100%;
+      background: white;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: translateY(7.5px) rotate(45deg);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: translateY(-7.5px) rotate(-45deg);
+    }
+
+    /* Mobile Menu */
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: #1e293b;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      width: 230px;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      overflow: hidden;
+      z-index: 1000;
+    }
+
+    .mobile-menu.active {
+      display: flex;
+    }
+
+    .mobile-menu a,
+    .mobile-menu button {
+      padding: 1rem;
+      text-align: left;
+      color: #f1f5f9;
+      background: none;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      width: 100%;
+      text-decoration: none;
+    }
+
+    .mobile-menu a:hover,
+    .mobile-menu button:hover {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .btn-primary {
+      background: #374151 !important;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      border: none;
+      display: inline-block;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    .btn-primary:hover {
+      background: #1f2937 !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .btn-secondary {
+      background: #374151 !important;
+      color: white !important;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: 1px solid #1e3a8a;
+      transition: all 0.2s;
+      display: inline-block;
+      text-align: center;
+    }
+    
+    .btn-secondary:hover {
+      background: #1f2937 !important;
+      color: white !important;
+      border-color: #4b5563;
+    }
+    
+    .checkout-btn {
+      background: #3b82f6 !important;
+      color: white !important;
+      border: 1px solid #3b82f6 !important;
+    }
+    
+    .checkout-btn:hover {
+      background: #2563eb !important;
+      color: white !important;
+      border-color: #2563eb !important;
+    }
+    
+    .why-section,
+    .tools-section {
+      padding: 4rem 0;
+      background: #0f172a;
+    }
+    
+    .why-section h2,
+    .tools-section h2,
+    .tools-section h3 {
+      color: #f1f5f9;
+    }
+    
+    .tools-section h2 {
+      text-align: center;
+    }
+    
+    .why-section h2 {
+      color: #ffffff;
+      text-align: center;
+    }
+    
+    .why-intro {
+      color: #ffffff;
+      font-size: 1.2rem;
+      line-height: 1.7;
+      max-width: 900px;
+      margin: 1rem auto 2rem;
+      text-align: center;
+    }
+    
+    .why-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      padding: 0;
+      margin: 2rem 0 0;
+    }
+    
+    .why-list li {
+      background: #1e293b;
+      border: 1px solid #1e40af;
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-align: center;
+      color: #f1f5f9;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .tools-section {
+      background: #1a202c;
+    }
+    
+    .tools-intro {
+      color: #ffffff;
+      font-size: 1.2rem;
+      line-height: 1.7;
+      max-width: 900px;
+      margin: 1rem auto 2rem;
+      text-align: center;
+    }
+    
+    .value-highlight-banner {
+      background: #1e293b;
+      color: #f1f5f9;
+      text-align: center;
+      padding: 1.25rem 1.5rem;
+      border-radius: 1rem;
+      margin: 2rem auto 2.5rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(77, 184, 255, 0.2);
+      border: 1px solid rgba(77, 184, 255, 0.3);
+      text-shadow: 0 0 8px rgba(77, 184, 255, 0.3);
+      max-width: 600px;
+    }
+    
+    .tool-grid {
+      display: grid;
+      gap: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      margin-top: 2.5rem;
+    }
+    
+    .tool-card {
+      background: #111a2f;
+      border: 1px solid #1e3a8a;
+      border-radius: 1rem;
+      padding: 1.75rem;
+      box-shadow: var(--shadow-md);
+      position: relative;
+    }
+    
+    .tool-card h3 {
+      color: #f1f5f9;
+      margin-bottom: 0.5rem;
+      font-size: 1.3rem;
+      text-align: center;
+    }
+    
+    .tool-card p {
+      color: #cbd5e1;
+      margin: 0;
+      line-height: 1.6;
+    }
+    
+    .value-badge {
+      display: block;
+      background: rgba(77, 184, 255, 0.15);
+      border: 1px solid #4db8ff;
+      color: #4db8ff;
+      border-radius: 999px;
+      padding: 0.25rem 0.8rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin: 0 auto 1rem;
+      white-space: nowrap;
+      text-align: center;
+      width: fit-content;
+    }
+    
+    .testimonials-section {
+      text-align: center;
+      margin-top: 4rem;
+      margin-bottom: 4rem;
+      background: #0f172a;
+      padding: 4rem 0;
+    }
+    
+    .testimonials-section h2 {
+      color: #f1f5f9;
+      margin-bottom: 2rem;
+    }
+    
+    .testimonial-slider {
+      text-align: center;
+      margin-top: 2rem;
+      position: relative;
+      min-height: 120px;
+    }
+    
+    .t-slide {
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      position: absolute;
+      width: 100%;
+    }
+    
+    .t-slide.active {
+      opacity: 1;
+      position: relative;
+    }
+    
+    .t-slide .quote {
+      font-size: 1.2rem;
+      color: #e2e8f0;
+      font-style: italic;
+      margin-bottom: 1rem;
+    }
+    
+    .t-slide .author {
+      font-size: 1rem;
+      color: #f1f5f9;
+      font-style: normal;
+      font-weight: 600;
+    }
+    
+    @media (max-width: 768px) {
+      .hamburger {
+        display: flex;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+      
+      nav {
+        position: relative;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
   <!-- HEADER -->
-  <header class="header">
-    <div class="bar">
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">Claim Navigator AI</div>
 
-      <!-- BRAND / LOGO -->
-      <div class="brand">
-        <div class="logo"></div>
-        <div>ClaimNavigatorAI</div>
-      </div>
-
-      <!-- NAVIGATION LINKS -->
-      <nav class="nav">
-        <a href="/">Home</a>
-
-        <!-- HOW IT WORKS -->
-        <div class="nav-dropdown">
-          <button class="nav-dropdown-toggle">
-            How It Works <span class="nav-arrow">▼</span>
-          </button>
-          <div class="nav-dropdown-content">
-            <a href="/product.html">Overview</a>
-            <a href="/app/how-to-use.html">How to Use</a>
-
-            <div class="how-to-steps">
-              <div class="step">
-                <div class="step-number">1</div>
-                <div class="step-content">
-                  <h4>Describe Your Claim</h4>
-                  <p>Tell the system what's happening.</p>
-                </div>
-              </div>
-              <div class="step">
-                <div class="step-number">2</div>
-                <div class="step-content">
-                  <h4>Generate Documents</h4>
-                  <p>Letters, responses, and evidence requests.</p>
-                </div>
-              </div>
-              <div class="step">
-                <div class="step-number">3</div>
-                <div class="step-content">
-                  <h4>Respond & Track</h4>
-                  <p>Use the automated timeline and tools.</p>
-                </div>
-              </div>
-            </div>
-
-            <a class="nav-link" href="/app/quick-start.html">Quick Start Guide</a>
-          </div>
+        <div class="nav-links">
+          <a href="#services" data-en="Services" data-es="Servicios">Services</a>
+          <a href="#resources" data-en="Resources" data-es="Recursos">Resources</a>
+          <a href="#pricing" data-en="Pricing" data-es="Precios">Pricing</a>
+          <a href="#faq" data-en="FAQ" data-es="Preguntas Frecuentes">FAQ</a>
+          <a href="#contact" data-en="Contact" data-es="Contacto">Contact</a>
+          <a href="#pricing" class="btn-primary checkout-btn" data-en="Get Your Claim Toolkit" data-es="Obtener Su Kit de Herramientas">Get Your Claim Toolkit</a>
+          <a href="app/login.html" class="btn-primary" data-en="Login" data-es="Iniciar Sesión">Login</a>
+          <a href="professional-login.html" class="btn-secondary" data-en="Professional Dashboard" data-es="Panel Profesional">Professional Dashboard</a>
+          <button onclick="toggleLanguage()" class="btn-primary" id="lang-toggle-btn" data-en="For Spanish" data-es="For English">For Spanish</button>
         </div>
 
-        <!-- RESOURCES -->
-        <div class="nav-dropdown">
-          <button class="nav-dropdown-toggle">
-            Resources <span class="nav-arrow">▼</span>
-          </button>
-          <div class="nav-dropdown-content">
-            <a href="/app/resource-center.html">Resource Center</a>
-            <a href="/app/state-rights.html">State Rights & Deadlines</a>
-            <a href="/app/insurance-tactics.html">Insurance Company Tactics</a>
-            <a href="/app/timeline.html">Claim Timeline</a>
-          </div>
+        <div class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
 
-        <!-- PRICING -->
-        <a href="/product.html">Pricing</a>
-
-        <!-- CONTACT -->
-        <a href="/contact.html">Contact</a>
+        <div class="mobile-menu" id="mobileMenu">
+          <a href="#services" data-en="Services" data-es="Servicios">Services</a>
+          <a href="#resources" data-en="Resources" data-es="Recursos">Resources</a>
+          <a href="#pricing" data-en="Pricing" data-es="Precios">Pricing</a>
+          <a href="#faq" data-en="FAQ" data-es="Preguntas Frecuentes">FAQ</a>
+          <a href="#contact" data-en="Contact" data-es="Contacto">Contact</a>
+          <a href="#pricing" data-en="Get Your Claim Toolkit" data-es="Obtener Su Kit de Herramientas">Get Your Claim Toolkit</a>
+          <a href="app/login.html" data-en="Login" data-es="Iniciar Sesión">Login</a>
+          <a href="professional-login.html" data-en="Professional Dashboard" data-es="Panel Profesional">Professional Dashboard</a>
+          <button onclick="toggleLanguage()" data-en="For Spanish" data-es="For English">For Spanish</button>
+        </div>
       </nav>
-
     </div>
   </header>
 
