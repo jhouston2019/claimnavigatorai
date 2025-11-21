@@ -10,42 +10,58 @@ exports.handler = async (event) => {
     );
 
     if (evt.type === "checkout.session.completed") {
-      const email = evt.data.object.customer_details?.email;
+      const session = evt.data.object;
+      const email = session.customer_details?.email;
+      const sessionId = session.id;
+      const amountPaid = session.amount_total; // in cents
 
       if (email) {
         console.log("✅ Stripe checkout complete for:", email);
 
-        // Send Supabase Auth invite
-        const resp = await fetch(`${process.env.SUPABASE_URL}/auth/v1/admin/invite`, {
-          method: "POST",
-          headers: {
-            apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
-            Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        });
-
-        const data = await resp.json();
-        console.log("✅ Supabase invite response:", data);
-
-        // Assign initial credits to the user
+        // Get or create user in Supabase
+        let userId = null;
         try {
-          // Get user ID from Supabase
-          const { data: users } = await fetch(
-            `${process.env.SUPABASE_URL}/auth/v1/users?email=eq.${email}`,
+          // Check if user exists
+          const userResp = await fetch(
+            `${process.env.SUPABASE_URL}/auth/v1/users?email=eq.${encodeURIComponent(email)}`,
             {
               headers: {
                 apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
                 Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
               }
             }
-          ).then(r => r.json());
+          );
+          const users = await userResp.json();
+          
+          if (users && users.length > 0) {
+            userId = users[0].id;
+          } else {
+            // Create user via Supabase Auth
+            const createResp = await fetch(`${process.env.SUPABASE_URL}/auth/v1/admin/users`, {
+              method: "POST",
+              headers: {
+                apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+                Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ 
+                email,
+                email_confirm: true,
+                user_metadata: { source: 'stripe_checkout' }
+              }),
+            });
+            const newUser = await createResp.json();
+            userId = newUser.id;
+            console.log("✅ Created new user:", userId);
+          }
+        } catch (userError) {
+          console.error("❌ Error getting/creating user:", userError);
+        }
 
-          const user_id = users?.[0]?.id;
-
-          if (user_id) {
-            await fetch(`${process.env.SUPABASE_URL}/rest/v1/user_credits`, {
+        // Record payment in payments table
+        if (userId) {
+          try {
+            await fetch(`${process.env.SUPABASE_URL}/rest/v1/payments`, {
               method: 'POST',
               headers: {
                 apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
@@ -53,14 +69,19 @@ exports.handler = async (event) => {
                 'Content-Type': 'application/json',
                 Prefer: 'return=minimal'
               },
-              body: JSON.stringify({ user_id, credits: 20 })
+              body: JSON.stringify({
+                user_id: userId,
+                stripe_checkout_session_id: sessionId,
+                stripe_customer_id: session.customer,
+                status: 'completed',
+                plan: session.metadata?.product || 'claim_navigator_toolkit',
+                amount_paid: amountPaid
+              })
             });
-            console.log("✅ 20 credits assigned to user:", email);
-          } else {
-            console.log("⚠️ User not found for credits assignment:", email);
+            console.log("✅ Payment recorded for user:", userId);
+          } catch (paymentError) {
+            console.error("❌ Error recording payment:", paymentError);
           }
-        } catch (creditError) {
-          console.error("❌ Error assigning credits:", creditError);
         }
       }
     }

@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Statement of Loss • ClaimNavigatorAI</title>
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/assets/css/design-system.css">
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body.statement-page {
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+        url('../../assets/images/backgrounds/paperwork6.jpeg') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-attachment: fixed !important;
+      color: #ffffff !important;
+    }
+
+    body.statement-page * {
+      color: #ffffff !important;
+    }
+
+    body.statement-page a {
+      color: #dbeafe !important;
+    }
+
+    .statement-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .statement-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .statement-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      color: #ffffff !important;
+    }
+
+    .statement-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .btn-primary:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .ledger-section {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+      margin-bottom: 2rem;
+    }
+
+    .ledger-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .ledger-table th {
+      text-align: left;
+      padding: 0.75rem;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+      font-weight: 600;
+      color: #ffffff !important;
+    }
+
+    .ledger-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff !important;
+    }
+
+    .ledger-table tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .totals-section {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-top: 2rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .totals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .total-item {
+      text-align: center;
+    }
+
+    .total-label {
+      font-size: 0.9rem;
+      color: #dbeafe !important;
+      margin-bottom: 0.5rem;
+    }
+
+    .total-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff !important;
+    }
+
+    .total-grand {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ffffff !important;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: rgba(30, 41, 59, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      backdrop-filter: blur(12px);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #ffffff !important;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 0.5rem;
+      background: #ffffff;
+      color: #000000 !important;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .form-group input::placeholder {
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #dbeafe !important;
+    }
+
+    @media (max-width: 768px) {
+      .statement-container {
+        padding: 1rem;
+      }
+
+      .ledger-table {
+        font-size: 0.85rem;
+      }
+
+      .ledger-table th,
+      .ledger-table td {
+        padding: 0.5rem;
+      }
+    }
+
+    body.statement-page select,
+    body.statement-page option {
+      color: #000 !important;
+      background: #fff !important;
+    }
+
+    /* Make all text in modal white */
+    .modal-content,
+    .modal-content * {
+      color: #ffffff !important;
+    }
+
+    /* Ensure labels are white */
+    .modal-content label,
+    .modal-content .form-group label {
+      color: #ffffff !important;
+    }
+
+    /* Override input/select/textarea to have black text on white background */
+    .modal-content input,
+    .modal-content select,
+    .modal-content textarea {
+      color: #000000 !important;
+      background: #ffffff !important;
+    }
+
+    .modal-content input::placeholder {
+      color: rgba(0, 0, 0, 0.6) !important;
+    }
+  </style>
+</head>
+<body class="resource-center statement-page">
+  <header class="header">
+    <div class="bar container">
+      <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
+      <nav class="nav">
+        <a href="/app/index.html">Home</a>
+        <span class="nav-separator">></span>
+        <span class="nav-current">Statement of Loss</span>
+        <span class="nav-separator">></span>
+        <a href="/app/resource-center.html">Resource Center</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="statement-container">
+      <div class="statement-header">
+        <h1>Statement of Loss</h1>
+        <p style="color: #dbeafe !important; margin: 0;">Financial Ledger & PDF Generator</p>
+      </div>
+
+      <div class="statement-actions">
+        <button class="btn btn-primary" id="add-btn">Add Entry</button>
+        <button class="btn btn-secondary" id="refresh-btn">Refresh</button>
+        <button class="btn btn-primary" id="export-btn">Export PDF</button>
+      </div>
+
+      <div class="ledger-section">
+        <h3 style="margin: 0 0 1rem 0; color: #ffffff !important;">Transaction Ledger</h3>
+        <table class="ledger-table" id="ledger">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Source</th>
+              <th>Amount</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody id="ledger-body">
+            <tr>
+              <td colspan="6" class="empty-state">Loading transactions...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="totals-section">
+        <h3 style="margin: 0 0 1rem 0; color: #ffffff !important;">Financial Summary</h3>
+        <div class="totals-grid" id="totals">
+          <div class="total-item">
+            <div class="total-label">Total Payments</div>
+            <div class="total-value" id="total-payments">$0.00</div>
+          </div>
+          <div class="total-item">
+            <div class="total-label">Total Invoices</div>
+            <div class="total-value" id="total-invoices">$0.00</div>
+          </div>
+          <div class="total-item">
+            <div class="total-label">Total Expenses</div>
+            <div class="total-value" id="total-expenses">$0.00</div>
+          </div>
+          <div class="total-item">
+            <div class="total-label">Total Supplements</div>
+            <div class="total-value" id="total-supplements">$0.00</div>
+          </div>
+          <div class="total-item">
+            <div class="total-label">Total Depreciation</div>
+            <div class="total-value" id="total-depreciation">$0.00</div>
+          </div>
+          <div class="total-item">
+            <div class="total-label">Grand Total</div>
+            <div class="total-value total-grand" id="total-all">$0.00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add Entry Modal -->
+  <div class="modal" id="add-modal">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="margin: 0; color: #ffffff !important;">Add Transaction</h3>
+        <button class="btn btn-secondary" onclick="closeModal()" style="padding: 0.5rem 1rem;">&times;</button>
+      </div>
+      <form id="add-form" onsubmit="submitAddEntry(event)">
+        <div class="form-group">
+          <label>Entry Type</label>
+          <select id="entry-type" required>
+            <option value="">Select type...</option>
+            <option value="payment">Payment</option>
+            <option value="invoice">Invoice</option>
+            <option value="expense">Expense</option>
+            <option value="supplement">Supplement</option>
+            <option value="depreciation">Depreciation</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <input type="text" id="description" placeholder="Transaction description" required>
+        </div>
+        <div class="form-group">
+          <label>Source (Optional)</label>
+          <input type="text" id="source" placeholder="Source or reference">
+        </div>
+        <div class="form-group">
+          <label>Amount</label>
+          <input type="number" id="amount" step="0.01" placeholder="0.00" required>
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="entry-date">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Entry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const claim_id = localStorage.getItem('claim_id') || new URLSearchParams(window.location.search).get('claim_id') || 'TEST-CLAIM';
+
+    async function refresh() {
+      try {
+        const res = await fetch(`/.netlify/functions/get-transactions?claim_id=${claim_id}`);
+        const data = await res.json();
+
+        if (data.status === 'error') {
+          throw new Error(data.error);
+        }
+
+        const transactions = data.transactions || [];
+        const totals = data.totals || {};
+
+        // Update ledger table
+        const tbody = document.getElementById('ledger-body');
+        if (transactions.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No transactions yet. Click "Add Entry" to get started.</td></tr>';
+        } else {
+          tbody.innerHTML = transactions.map(txn => {
+            const date = new Date(txn.date).toLocaleDateString();
+            const amount = parseFloat(txn.amount) || 0;
+            const balance = parseFloat(txn.running_balance) || 0;
+            return `
+              <tr>
+                <td>${date}</td>
+                <td>${txn.entry_type}</td>
+                <td>${txn.description}</td>
+                <td>${txn.source || '-'}</td>
+                <td>$${amount.toFixed(2)}</td>
+                <td>$${balance.toFixed(2)}</td>
+              </tr>
+            `;
+          }).join('');
+        }
+
+        // Update totals
+        document.getElementById('total-payments').textContent = `$${(parseFloat(totals.total_payments) || 0).toFixed(2)}`;
+        document.getElementById('total-invoices').textContent = `$${(parseFloat(totals.total_invoices) || 0).toFixed(2)}`;
+        document.getElementById('total-expenses').textContent = `$${(parseFloat(totals.total_expenses) || 0).toFixed(2)}`;
+        document.getElementById('total-supplements').textContent = `$${(parseFloat(totals.total_supplements) || 0).toFixed(2)}`;
+        document.getElementById('total-depreciation').textContent = `$${(parseFloat(totals.total_depreciation) || 0).toFixed(2)}`;
+        document.getElementById('total-all').textContent = `$${(parseFloat(totals.total_all) || 0).toFixed(2)}`;
+
+      } catch (error) {
+        console.error('Error refreshing:', error);
+        document.getElementById('ledger-body').innerHTML = 
+          `<tr><td colspan="6" class="empty-state">Error loading transactions: ${error.message}</td></tr>`;
+      }
+    }
+
+    function openModal() {
+      document.getElementById('add-modal').classList.add('active');
+      document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
+    }
+
+    function closeModal() {
+      document.getElementById('add-modal').classList.remove('active');
+      document.getElementById('add-form').reset();
+    }
+
+    async function submitAddEntry(event) {
+      event.preventDefault();
+      
+      const entryData = {
+        claim_id: claim_id,
+        entry_type: document.getElementById('entry-type').value,
+        description: document.getElementById('description').value,
+        source: document.getElementById('source').value || null,
+        amount: document.getElementById('amount').value,
+        date: document.getElementById('entry-date').value || new Date().toISOString()
+      };
+
+      try {
+        const res = await fetch('/.netlify/functions/add-transaction', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entryData)
+        });
+
+        const data = await res.json();
+        
+        if (data.status === 'error') {
+          throw new Error(data.error);
+        }
+
+        closeModal();
+        refresh();
+      } catch (error) {
+        alert('Error adding entry: ' + error.message);
+      }
+    }
+
+    async function exportPDF() {
+      try {
+        const email = prompt('Enter email to send PDF (optional, leave blank to skip):');
+        const res = await fetch('/.netlify/functions/generate-statement-of-loss', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            claim_id: claim_id,
+            to_email: email || null
+          })
+        });
+
+        const data = await res.json();
+        
+        if (data.status === 'error') {
+          throw new Error(data.error);
+        }
+
+        if (data.pdf_url) {
+          window.open(data.pdf_url, '_blank');
+        }
+        
+        alert('PDF generated and stored' + (email ? ' and emailed!' : '!'));
+      } catch (error) {
+        alert('Error generating PDF: ' + error.message);
+      }
+    }
+
+    // Event listeners
+    document.getElementById('add-btn').addEventListener('click', openModal);
+    document.getElementById('refresh-btn').addEventListener('click', refresh);
+    document.getElementById('export-btn').addEventListener('click', exportPDF);
+
+    // Initial load
+    refresh();
+  </script>
+</body>
+</html>
+
+

@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Claim Authority Hub • ClaimNavigatorAI</title>
+  <meta name="description" content="ClaimNavigator's comprehensive national and state insurance claim guides, deadlines, and regulatory information.">
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/assets/css/design-system.css">
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body.authority-page {
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+        url('../../assets/images/backgrounds/paperwork6.jpeg') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-attachment: fixed !important;
+      color: #ffffff !important;
+    }
+
+    body.authority-page * {
+      color: #ffffff !important;
+    }
+
+    body.authority-page a {
+      color: #dbeafe !important;
+    }
+
+    .authority-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Centered navigation bar */
+    .header .bar.container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .authority-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .authority-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      color: #ffffff !important;
+    }
+
+    .authority-header p {
+      color: #dbeafe !important;
+      margin: 0;
+      line-height: 1.6;
+      font-size: 1.1rem;
+    }
+
+    .section {
+      margin-bottom: 4rem;
+    }
+
+    .section h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: #ffffff !important;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+      padding-bottom: 0.5rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #ffffff !important;
+    }
+
+    .card:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-3px);
+    }
+
+    /* Force ALL text within cards to be white - override main CSS black text */
+    body.authority-page:has(main.container) .card,
+    body.authority-page:has(main.container) .card *,
+    body.authority-page:has(main.container) .card h2,
+    body.authority-page:has(main.container) .card h3,
+    body.authority-page:has(main.container) .card h4,
+    body.authority-page:has(main.container) .card p,
+    body.authority-page:has(main.container) .card span,
+    body.authority-page:has(main.container) .card div,
+    body.authority-page:has(main.container) .card pre,
+    body:has(main.container) .authority-page .card,
+    body:has(main.container) .authority-page .card *,
+    body:has(main.container) .authority-page .card h2,
+    body:has(main.container) .authority-page .card h3,
+    body:has(main.container) .authority-page .card h4,
+    body:has(main.container) .authority-page .card p,
+    body:has(main.container) .authority-page .card span,
+    body:has(main.container) .authority-page .card div,
+    body:has(main.container) .authority-page .card pre,
+    body:has(main.container) .card,
+    body:has(main.container) .card *,
+    body:has(main.container) .card h2,
+    body:has(main.container) .card h3,
+    body:has(main.container) .card h4,
+    body:has(main.container) .card p,
+    body:has(main.container) .card span,
+    body:has(main.container) .card div,
+    body:has(main.container) .card pre,
+    .authority-page .card,
+    .authority-page .card *,
+    .authority-page .card h2,
+    .authority-page .card h3,
+    .authority-page .card h4,
+    .authority-page .card p,
+    .authority-page .card span,
+    .authority-page .card div,
+    .authority-page .card pre,
+    .card,
+    .card *,
+    .card h2,
+    .card h3,
+    .card h4,
+    .card p,
+    .card span,
+    .card div,
+    .card pre {
+      color: #ffffff !important;
+    }
+
+    body.authority-page:has(main.container) .card h3,
+    body:has(main.container) .authority-page .card h3,
+    body:has(main.container) .card h3,
+    .authority-page .card h3,
+    .card h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+      color: #ffffff !important;
+    }
+
+    body.authority-page:has(main.container) .card p,
+    body:has(main.container) .authority-page .card p,
+    body:has(main.container) .card p,
+    .authority-page .card p,
+    .card p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #ffffff !important;
+    }
+
+    .pillar-card {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #ffffff !important;
+    }
+
+    .pillar-card:hover {
+      background: rgba(255, 255, 255, 0.2) !important;
+      border-color: rgba(255, 255, 255, 0.3) !important;
+      transform: translateY(-3px);
+    }
+
+    /* Force ALL text within pillar cards to be white */
+    body.authority-page:has(main.container) .pillar-card,
+    body.authority-page:has(main.container) .pillar-card *,
+    body.authority-page:has(main.container) .pillar-card h2,
+    body.authority-page:has(main.container) .pillar-card h3,
+    body.authority-page:has(main.container) .pillar-card h4,
+    body.authority-page:has(main.container) .pillar-card p,
+    body.authority-page:has(main.container) .pillar-card span,
+    body.authority-page:has(main.container) .pillar-card div,
+    body.authority-page:has(main.container) .pillar-card pre,
+    body:has(main.container) .authority-page .pillar-card,
+    body:has(main.container) .authority-page .pillar-card *,
+    body:has(main.container) .authority-page .pillar-card h2,
+    body:has(main.container) .authority-page .pillar-card h3,
+    body:has(main.container) .authority-page .pillar-card h4,
+    body:has(main.container) .authority-page .pillar-card p,
+    body:has(main.container) .authority-page .pillar-card span,
+    body:has(main.container) .authority-page .pillar-card div,
+    body:has(main.container) .authority-page .pillar-card pre,
+    body:has(main.container) .pillar-card,
+    body:has(main.container) .pillar-card *,
+    .authority-page .pillar-card,
+    .authority-page .pillar-card *,
+    .authority-page .pillar-card h2,
+    .authority-page .pillar-card h3,
+    .authority-page .pillar-card h4,
+    .authority-page .pillar-card p,
+    .authority-page .pillar-card span,
+    .authority-page .pillar-card div,
+    .authority-page .pillar-card pre,
+    .pillar-card,
+    .pillar-card *,
+    .pillar-card h2,
+    .pillar-card h3,
+    .pillar-card h4,
+    .pillar-card p,
+    .pillar-card span,
+    .pillar-card div,
+    .pillar-card pre {
+      color: #ffffff !important;
+    }
+
+    .info-box {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      color: #ffffff !important;
+    }
+
+    .info-box h3 {
+      margin: 0 0 0.5rem 0;
+      color: #ffffff !important;
+    }
+
+    .info-box ul {
+      margin: 0.5rem 0 0 1.5rem;
+      padding: 0;
+    }
+
+    .info-box li {
+      margin: 0.25rem 0;
+      color: #ffffff !important;
+    }
+
+    .info-box strong {
+      color: #ffffff !important;
+    }
+
+    .info-box p {
+      color: #ffffff !important;
+    }
+
+    .info-box * {
+      color: #ffffff !important;
+    }
+
+    @media (max-width: 768px) {
+      .authority-container {
+        padding: 1rem;
+      }
+
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body class="resource-center authority-page">
+  <header class="header">
+    <div class="bar container">
+      <div class="brand"><div>Claim Navigation AI</div></div>
+      <nav class="nav">
+        <a href="/app/index.html">Home</a>
+        <span class="nav-separator">></span>
+        <span class="nav-current">Authority Hub</span>
+        <span class="nav-separator">></span>
+        <a href="/app/resource-center.html">Resource Center</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="authority-container">
+      <div class="authority-header">
+        <h1>Claim Authority Hub</h1>
+        <p>Explore claim rules, deadlines, and best practices by state or claim type. Get authoritative information on insurance regulations, filing deadlines, and state-specific requirements.</p>
+      </div>
+
+      <div class="info-box">
+        <h3>What You'll Find Here</h3>
+        <ul>
+          <li><strong>State Guides:</strong> Fire claim deadlines, proof of loss requirements, and state insurance department contacts for all 50 states</li>
+          <li><strong>Pillar Guides:</strong> Comprehensive guides for different claim types (Fire, Water, Wind, Hail, Flood, Hurricane, and more)</li>
+          <li><strong>Integration:</strong> All guides link to ClaimNavigator tools like Deadline Tracker and Statement of Loss</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>State Fire Claim Guides</h2>
+        <p style="color: #dbeafe !important; margin-bottom: 1.5rem;">Click on any state to view specific deadlines, contact information, and regulatory requirements for fire insurance claims.</p>
+        <div id="states" class="grid"></div>
+      </div>
+
+      <div class="section">
+        <h2>National Claim Type Guides</h2>
+        <p style="color: #dbeafe !important; margin-bottom: 1.5rem;">Comprehensive guides covering specific types of insurance claims with best practices and documentation requirements.</p>
+        <div id="pillars" class="grid"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    async function loadData() {
+      try {
+        // Load states
+        const statesRes = await fetch('/data/states.json');
+        const states = await statesRes.json();
+
+        const statesDiv = document.getElementById('states');
+        states.forEach(state => {
+          const card = document.createElement('a');
+          card.href = `/app/state-guides/${state.abbr}.html`;
+          card.className = 'card';
+          card.innerHTML = `
+            <h3>${state.state}</h3>
+            <p>${state.abbr} • ${state.deadline} deadline</p>
+          `;
+          statesDiv.appendChild(card);
+        });
+
+        // Load pillars
+        const pillarsRes = await fetch('/data/pillars.json');
+        const pillars = await pillarsRes.json();
+
+        const pillarsDiv = document.getElementById('pillars');
+        pillars.forEach(pillar => {
+          const card = document.createElement('a');
+          card.href = `/app/pillar-guides/${pillar.slug}.html`;
+          card.className = 'card pillar-card';
+          card.innerHTML = `
+            <h3>${pillar.title}</h3>
+            <p>${pillar.desc.substring(0, 100)}...</p>
+          `;
+          pillarsDiv.appendChild(card);
+        });
+
+      } catch (error) {
+        console.error('Error loading data:', error);
+        document.getElementById('states').innerHTML = '<p style="color: #ef4444 !important;">Error loading state guides. Please refresh the page.</p>';
+        document.getElementById('pillars').innerHTML = '<p style="color: #ef4444 !important;">Error loading pillar guides. Please refresh the page.</p>';
+      }
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
+
+

@@ -1,0 +1,909 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Claim Navigator • Resource Center</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+<style>
+/* USE CSS CUSTOM PROPERTIES TO OVERRIDE COLORS */
+:root {
+  --text-color: #ffffff !important;
+  --link-color: #dbeafe !important;
+  --shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
+}
+
+/* FORCE ALL ELEMENTS TO USE CUSTOM PROPERTIES */
+* {
+  color: var(--text-color) !important;
+  text-shadow: var(--shadow) !important;
+}
+
+a {
+  color: var(--link-color) !important;
+}
+
+a:hover {
+  color: #93c5fd !important;
+}
+
+/* Remove light gray box from hero section */
+.hero-section {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 40px 0 !important;
+  text-align: center !important;
+}
+
+.main-content {
+  background: transparent !important;
+}
+</style>
+</head>
+<body class="resource-center" >
+<header class="header">
+  <div class="bar container">
+    <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
+    <nav class="nav">
+      <a href="/app/index.html">Home</a>
+      
+      <!-- Claim Navigator Agent Dropdown -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('cn-agent')">
+          Claim Navigator Agent
+        </button>
+        <div class="nav-dropdown-content" id="cn-agent">
+          <a href="/app/cn-agent.html">CN Agent Dashboard</a>
+          <a href="/app/cn-agent.html#draft-email">Draft Email</a>
+          <a href="/app/cn-agent.html#send-email">Send Email</a>
+          <a href="/app/cn-agent.html#create-alert">Create Alert</a>
+          <a href="/app/cn-agent.html#detect-deadlines">Detect Deadlines</a>
+          <a href="/app/cn-agent.html#detect-payments">Detect Payments</a>
+          <a href="/app/cn-agent.html#detect-invoices">Detect Invoices</a>
+          <a href="/app/cn-agent.html#update-statement">Update Statement of Loss</a>
+          <a href="/app/cn-agent.html#update-deadlines">Update Deadlines</a>
+        </div>
+      </div>
+      
+      <!-- How to Use Dropdown -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('how-to-use')">
+          How to Use
+        </button>
+        <div class="nav-dropdown-content" id="how-to-use">
+          <div class="how-to-steps">
+            <div class="step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h4>Describe Your Situation</h4>
+                <p>Use the search bar or Situational Advisory to get started.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h4>Generate Documents</h4>
+                <p>Create letters, forms, and evidence with AI assistance.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h4>Analyze & Compare</h4>
+                <p>Review policies, compare estimates, and assess damage.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-number">4</div>
+              <div class="step-content">
+                <h4>Track Progress</h4>
+                <p>Use Trackers & Timeline to monitor your claim journey.</p>
+              </div>
+            </div>
+          </div>
+          <a href="/app/how-to-use.html" class="nav-link">View Detailed Guide</a>
+        </div>
+      </div>
+
+      <!-- Quick Start Dropdown -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('quick-start')">
+          Quick Start
+        </button>
+        <div class="nav-dropdown-content" id="quick-start">
+          <div class="quick-start-scenarios">
+            <div class="scenario">
+              <h4>My claim was just denied</h4>
+              <div class="scenario-links">
+                <a href="/app/ai-response-agent.html" class="scenario-link">AI Response</a>
+                <a href="/app/negotiation-tools.html" class="scenario-link">Negotiation</a>
+                <a href="/app/document-generator-v2/document-generator.html" class="scenario-link">Appeal</a>
+              </div>
+            </div>
+            <div class="scenario">
+              <h4>I got a lowball offer</h4>
+              <div class="scenario-links">
+                <a href="/app/claim-analysis.html" class="scenario-link">Damage</a>
+                <a href="/app/claim-analysis.html" class="scenario-link">Policy</a>
+                <a href="/app/negotiation-tools.html" class="scenario-link">Counter</a>
+              </div>
+            </div>
+            <div class="scenario">
+              <h4>Filing for the first time</h4>
+              <div class="scenario-links">
+                <a href="/app/claim-playbook.html" class="scenario-link">Playbook</a>
+                <a href="/app/resource-center/claim-timeline.html" class="scenario-link">Timeline</a>
+                <a href="/app/document-generator-v2/document-generator.html" class="scenario-link">Notice</a>
+              </div>
+            </div>
+            <div class="scenario">
+              <h4>Stuck - No Response</h4>
+              <div class="scenario-links">
+                <a href="/app/state-rights.html" class="scenario-link">Rights</a>
+                <a href="/app/document-generator-v2/document-generator.html" class="scenario-link">Complaint</a>
+                <a href="/app/trackers.html" class="scenario-link">Track</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Strategy & Guidance Dropdown -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('strategy')">
+          Strategy & Guidance
+        </button>
+        <div class="nav-dropdown-content" id="strategy">
+          <a href="/app/claim-playbook.html">Claim Playbook</a>
+          <a href="/app/resource-center/claim-timeline.html">Claim Timeline & Sequence Guide</a>
+          <a href="/app/resource-center/insurance-company-tactics.html">Insurance Company Tactics</a>
+          <a href="/app/maximize-claim.html">Maximize Your Claim</a>
+          <a href="/app/state-rights.html">State Rights & Deadlines</a>
+        </div>
+      </div>
+
+      <!-- Core Claim Tools Dropdown -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('core-tools')">
+          Core Claim Tools
+        </button>
+        <div class="nav-dropdown-content" id="core-tools">
+          <a href="/app/document-library/">Claim Document Library</a>
+          <a href="/app/resource-center/ai-response-agent.html">AI Response Agent</a>
+          <a href="/app/cn-agent.html">ClaimNavigator Agent (AI Copilot)</a>
+          <a href="/app/statement-of-loss.html">Statement of Loss</a>
+          <a href="/app/deadlines.html">Deadlines</a>
+          <a href="/app/claim-journal.html">Claim Journal</a>
+          <a href="/app/authority-hub.html">Authority Guides</a>
+          <a href="/app/rom-tool.html">ROM Estimator</a>
+          <a href="/app/claim-stage-tracker.html">Claim Stage Tracker</a>
+          <a href="/app/knowledge-center.html">Knowledge Center</a>
+          <a href="/app/claim-analysis.html">Claim Analysis Tools</a>
+          <a href="/app/situational-advisory.html">Situational Advisory</a>
+          <a href="/app/negotiation-tools.html">Negotiation Scripts & Escalation</a>
+          <a href="/app/documentation-guides.html">Claim Documentation Guides</a>
+          <a href="/app/evidence-organizer.html">Evidence Organizer</a>
+          <a href="/app/recommended-resources.html">Recommended Resources</a>
+          <a href="/app/insurer-directory.html">Insurer Directory</a>
+          <a href="/app/document-generator-v2/document-generator.html">Document Generator</a>
+        </div>
+      </div>
+
+      <!-- Document Generator Dropdown -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('documents')">
+          Document Generator
+        </button>
+        <div class="nav-dropdown-content" id="documents">
+          <a href="/app/document-generator-v2/document-generator.html">All Documents (61+)</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=proof-of-loss">Proof of Loss</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=demand-letter">Demand Letter</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=appeal-letter">Appeal Letter</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=damage-assessment">Damage Assessment</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=business-interruption-claim">Business Interruption</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=evidence-log">Evidence Log</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=expense-reimbursement">Expense Reimbursement</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=appraisal-request">Appraisal Request</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=regulatory-complaint">Regulatory Complaint</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=settlement-offer">Settlement Offer</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=notice-of-claim">Notice of Claim</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=coverage-clarification">Coverage Clarification</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=delay-complaint">Delay Complaint</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=photograph-log">Photograph Log</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=repair-replace-analysis">Repair vs Replace Analysis</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=out-of-pocket-log">Out-of-Pocket Expenses</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=rom-estimate">ROM Estimate</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=comparative-estimates">Comparative Estimates</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=document-index">Document Index</a>
+        </div>
+      </div>
+
+      <!-- Claim Analysis Tools Dropdown -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('analysis')">
+          Claim Analysis Tools
+        </button>
+        <div class="nav-dropdown-content" id="analysis">
+          <a href="/app/claim-analysis.html">Policy Review & Coverage Analysis</a>
+          <a href="/app/claim-analysis.html">Damage Assessment Calculator</a>
+          <a href="/app/maximize-claim.html">Financial Impact Calculator</a>
+          <a href="/app/claim-analysis.html">Estimate Review & Comparison</a>
+          <a href="/app/claim-analysis.html">Business Interruption Calculator</a>
+          <a href="/app/negotiation-tools.html">Settlement Analysis & Negotiation</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main class="container" id="main">
+  <!-- Main Content Area -->
+  <div class="main-content no-card">
+      <!-- Centered Tagline -->
+      <div class="hero-section">
+        <h1 class="main-title">Your AI-Powered Resource Center</h1>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+          <input id="smart-search" placeholder="Search tools or describe your situation..." class="main-search"/>
+          <button class="btn btn-primary search-btn" id="search-go">Search</button>
+        </div>
+      </div>
+
+    <!-- Two Columns: Strategy & Guidance and Core Claim Tools -->
+    <div class="content-columns">
+      <!-- Strategy & Guidance Column -->
+      <div class="content-column">
+        <h3 class="column-title">Strategy & Guidance</h3>
+        <div class="tool-grid">
+          <a class="tool-card" href="/app/how-to-use.html">
+            <span class="badge">Guide</span>
+            <h4>How to Use this Site</h4>
+            <p>Step-by-step guide: Describe situation → Generate documents → Analyze & compare → Track progress</p>
+          </a>
+          <a class="tool-card" href="/app/quick-start.html">
+            <span class="badge">Quick Start</span>
+            <h4>Quick Start Guide</h4>
+            <p>Claim Denied/Lowball Offer/First-Time Filing/No Response</p>
+          </a>
+          <a class="tool-card" href="/app/claim-playbook.html">
+            <span class="badge">Strategy</span>
+            <h4>Claim Playbook: How to Manage Your Claim</h4>
+            <p>Step-by-step strategic approach to winning your claim</p>
+          </a>
+          <a class="tool-card" href="/app/resource-center/claim-timeline.html">
+            <span class="badge">Guide</span>
+            <h4>Claim Timeline & Sequence Guide</h4>
+            <p>Follow the proper sequence for maximum impact</p>
+          </a>
+          <a class="tool-card" href="/app/resource-center/insurance-company-tactics.html">
+            <span class="badge">Awareness</span>
+            <h4>Insurance Company Tactics</h4>
+            <p>Recognize and counter common insurance tactics</p>
+          </a>
+          <a class="tool-card" href="/app/maximize-claim.html">
+            <span class="badge">Maximize</span>
+            <h4>Maximize Your Claim</h4>
+            <p>Strategies to get the full value you deserve</p>
+          </a>
+          <a class="tool-card" href="/app/state-rights.html">
+            <span class="badge">Rights</span>
+            <h4>State Rights & Deadlines</h4>
+            <p>Know your rights and critical deadlines</p>
+          </a>
+        </div>
+      </div>
+
+      <!-- Core Claim Tools Column -->
+      <div class="content-column">
+        <h3 class="column-title">Core Claim Tools</h3>
+        
+        <!-- CN Agent Dedicated Section -->
+        <div class="cn-agent-section" style="margin-bottom: 2.5rem; padding: 1.5rem; background: rgba(59, 130, 246, 0.15); border: 2px solid rgba(59, 130, 246, 0.3); border-radius: 1rem; backdrop-filter: blur(8px); text-align: center;">
+          <div style="margin-bottom: 1rem;">
+            <h4 style="margin: 0 0 0.25rem 0; font-size: 1.5rem; font-weight: 700; color: #ffffff !important; text-align: center;">ClaimNavigator Agent</h4>
+            <p style="margin: 0; color: #dbeafe !important; font-size: 0.95rem; text-align: center;">Your AI Copilot for Claims Automation</p>
+          </div>
+          <p style="margin: 0 0 1rem 0; color: #ffffff !important; line-height: 1.6; text-align: center;">
+            Automate email drafting, send communications, create alerts, detect deadlines and payments, 
+            and sync your Statement of Loss and Deadline Tracker automatically.
+          </p>
+          <p style="margin: 0 0 1rem 0; color: #dbeafe !important; font-size: 0.85rem; text-align: center;">
+            Email Automation • Deadline Tracking • Statement of Loss • Auto Alerts
+          </p>
+          <div style="text-align: center;">
+            <a href="/app/cn-agent.html" class="btn btn-primary" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; text-decoration: none; font-weight: 600; display: inline-block;">
+              Open CN Agent
+            </a>
+          </div>
+        </div>
+        
+        <div class="tool-grid">
+          <a class="tool-card" href="/app/document-library/">
+            <span class="badge">Library</span>
+            <h4>Claim Document Library</h4>
+            <p>Access professional templates and resources</p>
+          </a>
+          <a class="tool-card" href="/app/resource-center/ai-response-agent.html">
+            <span class="badge">AI</span>
+            <h4>AI Response Agent</h4>
+            <p>Get AI-powered responses to insurer communications</p>
+          </a>
+          <a class="tool-card" href="/app/statement-of-loss.html">
+            <span class="badge">Financial</span>
+            <h4>Statement of Loss</h4>
+            <p>Financial ledger and PDF generator for claim transactions</p>
+          </a>
+          <a class="tool-card" href="/app/deadlines.html">
+            <span class="badge">Critical</span>
+            <h4>Deadlines</h4>
+            <p>Track and manage critical claim deadlines with AI detection</p>
+          </a>
+          <a class="tool-card" href="/app/claim-journal.html">
+            <span class="badge">Journal</span>
+            <h4>Claim Journal</h4>
+            <p>Track claim events, calls, submissions, and progress timeline</p>
+          </a>
+          <a class="tool-card" href="/app/authority-hub.html">
+            <span class="badge">Authority</span>
+            <h4>Authority Guides</h4>
+            <p>State-specific claim deadlines, regulations, and claim type guides</p>
+          </a>
+          <a class="tool-card" href="/app/rom-tool.html">
+            <span class="badge">Estimator</span>
+            <h4>ROM Estimator</h4>
+            <p>Calculate repair/replacement cost estimates with AI-powered explanations</p>
+          </a>
+          <a class="tool-card" href="/app/claim-stage-tracker.html">
+            <span class="badge">Tracker</span>
+            <h4>Claim Stage Tracker</h4>
+            <p>Track your claim progress through all stages with visual timeline</p>
+          </a>
+          <a class="tool-card" href="/app/knowledge-center.html">
+            <span class="badge">Knowledge</span>
+            <h4>Knowledge Center</h4>
+            <p>Expert guides, tips, and insights on insurance claims and best practices</p>
+          </a>
+          <a class="tool-card" href="/app/claim-analysis.html">
+            <span class="badge">AI</span>
+            <h4>Claim Analysis Tools</h4>
+            <p>Policy review, damage assessment, and settlement analysis</p>
+          </a>
+          <a class="tool-card" href="/app/situational-advisory.html">
+            <span class="badge">AI</span>
+            <h4>Situational Advisory</h4>
+            <p>Get personalized guidance for your specific situation</p>
+          </a>
+          <a class="tool-card" href="/app/negotiation-tools.html">
+            <span class="badge">Negotiate</span>
+            <h4>Negotiation Scripts</h4>
+            <p>Professional scripts for effective negotiations</p>
+          </a>
+          <a class="tool-card" href="/app/documentation-guides.html">
+            <span class="badge">Guides</span>
+            <h4>Documentation Guides</h4>
+            <p>Essential documentation strategies and tools</p>
+          </a>
+          <a class="tool-card" href="/app/evidence-organizer.html">
+            <span class="badge">AI</span>
+            <h4>Evidence Organizer</h4>
+            <p>AI-powered evidence categorization and management</p>
+          </a>
+          <a class="tool-card" href="/app/recommended-resources.html">
+            <span class="badge">Resources</span>
+            <h4>Recommended Resources</h4>
+            <p>Connect with professionals and find additional help</p>
+          </a>
+          <a class="tool-card" href="/app/insurer-directory.html">
+            <span class="badge">Directory</span>
+            <h4>Insurer Directory</h4>
+            <p>Searchable directory of insurer claim departments (phone, email, web)</p>
+          </a>
+          <a class="tool-card" href="/app/resource-center/state-insurance-departments.html">
+            <span class="badge">Directory</span>
+            <h4>State Insurance Department Directory</h4>
+            <p>One-click access to all 50 state insurance departments and key federal regulators.</p>
+          </a>
+          <a class="tool-card" href="/app/document-generator-v2/document-generator.html">
+            <span class="badge">AI</span>
+            <h4>Document Generator</h4>
+            <p>Generate 61+ professional insurance claim documents with AI assistance</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  // Navigation dropdown toggle function
+  function toggleNavDropdown(id) {
+    const dropdown = document.getElementById(id);
+    if (dropdown.style.display === 'block') {
+      dropdown.style.display = 'none';
+    } else {
+      // Close all other dropdowns
+      document.querySelectorAll('.nav-dropdown-content').forEach(d => {
+        d.style.display = 'none';
+      });
+      
+      // Open this dropdown
+      dropdown.style.display = 'block';
+    }
+  }
+</script>
+
+<style>
+/* Fix brand text to stay on one line */
+.brand {
+  white-space: nowrap !important;
+  margin-right: 3rem !important;
+}
+.brand div {
+  white-space: nowrap !important;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: url('../../assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Overlay to make text readable */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 10, 35, 0.56);
+  z-index: -1;
+}
+
+/* Remove box backgrounds for a transparent layout */
+.content-columns {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.content-column {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Section titles */
+.column-title {
+  color: #ffffff !important;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  font-weight: 700;
+  font-size: 2.5rem !important;
+}
+
+/* Force override for all possible selectors */
+h3.column-title,
+.content-column h3,
+.content-column .column-title {
+  color: #ffffff !important;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6) !important;
+  font-weight: 700 !important;
+  font-size: 2.5rem !important;
+}
+
+/* CN Agent Dedicated Section Styles */
+.cn-agent-section {
+  transition: all 0.3s ease;
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background: rgba(59, 130, 246, 0.15);
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+}
+
+.cn-agent-section:hover {
+  background: rgba(59, 130, 246, 0.2) !important;
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+}
+
+.cn-agent-section .btn-primary {
+  transition: all 0.2s ease;
+}
+
+.cn-agent-section .btn-primary:hover {
+  background: #2563eb !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* Tool grid spacing - 4 cards per row */
+.tool-grid {
+  gap: 12px !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+
+@media (max-width: 1200px) {
+  .tool-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .tool-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .tool-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+  /* Tool cards with white translucent design */
+  .tool-card {
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 1rem;
+    transition: all 0.25s ease;
+    padding: 0.75rem;
+    text-decoration: none;
+    color: #fff;
+    height: 160px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.15rem;
+  }
+
+  .tool-card:hover {
+    background: rgba(255, 255, 255, 0.35);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-3px);
+  }
+
+/* Card text styling */
+.tool-card h4 {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 1.5rem !important;
+  margin: 0;
+  line-height: 1.3;
+  margin-bottom: 0.25rem;
+  text-shadow: none !important;
+}
+
+/* Force override for tool card titles */
+.tool-card h4,
+.tool-card .card-title,
+a.tool-card h4 {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 1.5rem !important;
+  text-shadow: none !important;
+}
+
+.tool-card p {
+  color: #dbeafe;
+  font-size: 0.8rem;
+  margin: 0;
+  line-height: 1.4;
+  margin-top: 0.25rem;
+  text-shadow: none !important;
+}
+
+/* Remove text shadows and force normal font-weight on all tool card text */
+.tool-card * {
+  text-shadow: none !important;
+  font-weight: 400 !important;
+}
+
+
+.tool-card p strong,
+.tool-card strong {
+  font-weight: 400 !important;
+  font-size: 0.75rem;
+}
+
+/* Badge styles */
+.badge {
+  background: #3b82f6;
+  color: white;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 400;
+  margin-bottom: 0.25rem;
+  display: inline-block;
+  line-height: 1.2;
+}
+
+/* Hero title */
+.main-title {
+  font-size: 2.5rem;
+  color: #ffffff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+/* Search section */
+.search-container {
+  display: flex;
+  max-width: 350px;
+  margin: 0 auto;
+  gap: 0.5rem;
+}
+
+.main-search {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+.main-search::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+
+.search-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.search-btn:hover {
+  background: #2563eb;
+}
+
+/* Navigation dropdown text color - dark for Resource Center */
+.nav-dropdown-content {
+  color: #000000 !important;
+  background: #ffffff !important;
+  font-family: 'Arial Black', Arial, sans-serif !important;
+}
+
+/* Limit navigation bar button text to three lines and center */
+.nav-dropdown-toggle {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 3 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.3 !important;
+  max-height: 3.9em !important;
+  word-wrap: break-word !important;
+  white-space: normal !important;
+  text-align: center !important;
+  font-size: 12px !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.nav-dropdown-content a,
+.nav-dropdown-content h4,
+.nav-dropdown-content p,
+.nav-dropdown-content *,
+.nav-dropdown-content .step,
+.nav-dropdown-content .step-content,
+.nav-dropdown-content .step-number,
+.nav-dropdown-content .scenario,
+.nav-dropdown-content .scenario h4 {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+  font-family: 'Arial Black', Arial, sans-serif !important;
+}
+
+.nav-dropdown-content .scenario-links,
+.nav-dropdown-content .how-to-steps,
+.nav-dropdown-content .quick-start-scenarios {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+/* Ensure scenario h4 titles are darker blue, overriding parent container */
+.nav-dropdown-content .quick-start-scenarios .scenario h4,
+.nav-dropdown-content .quick-start-scenarios h4 {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+.nav-dropdown-content .scenario-link {
+  color: #1e3a8a !important;
+  -webkit-text-fill-color: #1e3a8a !important;
+}
+
+.nav-dropdown-content .scenario-link:hover {
+  color: #1e40af !important;
+  -webkit-text-fill-color: #1e40af !important;
+}
+
+.nav-dropdown-content .nav-link {
+  color: #1e40af !important;
+  -webkit-text-fill-color: #1e40af !important;
+}
+
+</style>
+
+<script type="module" src="/app/assets/js/validation-utils.js"></script>
+<script type="module" src="/app/assets/js/error-handler.js"></script>
+<script type="module" src="/app/assets/js/api-client.js"></script>
+<script type="module" src="/app/assets/js/response-center.js"></script>
+<script type="module" src="/app/assets/js/window-bridge.js"></script>
+<script type="module" src="/app/assets/js/diagnostics.js"></script>
+
+<style id="final-text-override">
+  /* FINAL, LAST-IN-CASCADE TEXT OVERRIDE */
+  body.resource-center,
+  body.resource-center :where(*, *::before, *::after) {
+    color: #ffffff !important;   /* Force all text and pseudo-elements to white */
+  }
+
+  /* Optional: keep links slightly blue for contrast */
+  body.resource-center a {
+    color: #dbeafe !important;
+  }
+
+</style>
+
+<style id="final-white-text-enforcement">
+/* 🔥 FINAL WHITE TEXT ENFORCEMENT — NO OVERRIDES POSSIBLE */
+
+/* Add dark overlay to background - override the white overlay */
+body.resource-center::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.89) !important;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Override the white overlay from style.css */
+body.resource-center {
+  background: 
+    linear-gradient(rgba(0, 0, 0, 0.89), rgba(0, 0, 0, 0.89)),
+    url('../../assets/images/backgrounds/Damage1.jpg') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Reset and enforce white for all elements and pseudo elements */
+html, body.resource-center, 
+body.resource-center :is(*, *::before, *::after) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Keep links readable but consistent */
+body.resource-center a,
+body.resource-center a * {
+  color: #dbeafe !important;
+}
+
+body.resource-center a:hover,
+body.resource-center a:focus {
+  color: #93c5fd !important;
+}
+
+/* Handle Tailwind and inline class-based color utilities */
+body.resource-center [class*="text-"],
+body.resource-center [class*="text-gray"],
+body.resource-center [class*="text-black"],
+body.resource-center [class*="text-slate"],
+body.resource-center [class*="text-neutral"],
+body.resource-center [class*="text-zinc"],
+body.resource-center [class*="text-stone"],
+body.resource-center [class*="text-amber"],
+body.resource-center [class*="text-rose"] {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Form inputs, placeholders, and buttons */
+body.resource-center input,
+body.resource-center textarea,
+body.resource-center select,
+body.resource-center button {
+  color: #ffffff !important;
+  background-color: rgba(255,255,255,0.1) !important;
+  border-color: rgba(255,255,255,0.3) !important;
+}
+
+body.resource-center input::placeholder,
+body.resource-center textarea::placeholder {
+  color: rgba(255,255,255,0.7) !important;
+}
+
+/* Fix shadow DOMs or injected Tailwind scopes */
+body.resource-center *:not(svg):not(path) {
+  filter: brightness(1.1) contrast(1.05);
+}
+
+/* Absolute last layer to override inline or JS-injected styles */
+body.resource-center *[style] {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* FINAL OVERRIDE: Force dropdown text to black - must come after all other styles */
+body.resource-center .nav-dropdown-content,
+body.resource-center .nav-dropdown-content *,
+body.resource-center .nav-dropdown-content a,
+body.resource-center .nav-dropdown-content h4,
+body.resource-center .nav-dropdown-content p,
+body.resource-center .nav-dropdown-content .step,
+body.resource-center .nav-dropdown-content .step-content,
+body.resource-center .nav-dropdown-content .step-number,
+body.resource-center .nav-dropdown-content .scenario,
+body.resource-center .nav-dropdown-content .scenario h4 {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+  font-family: 'Arial Black', Arial, sans-serif !important;
+}
+
+body.resource-center .nav-dropdown-content .scenario-links,
+body.resource-center .nav-dropdown-content .how-to-steps,
+body.resource-center .nav-dropdown-content .quick-start-scenarios {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+/* Ensure scenario h4 titles are darker blue, overriding parent container */
+body.resource-center .nav-dropdown-content .quick-start-scenarios .scenario h4,
+body.resource-center .nav-dropdown-content .quick-start-scenarios h4 {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+body.resource-center .nav-dropdown-content .scenario-link,
+body.resource-center .nav-dropdown-content .nav-link {
+  color: #1e3a8a !important;
+  -webkit-text-fill-color: #1e3a8a !important;
+}
+
+body.resource-center .nav-dropdown-content .scenario-link:hover {
+  color: #1e40af !important;
+  -webkit-text-fill-color: #1e40af !important;
+}
+
+/* Limit navigation bar button text to three lines and center - final override */
+body.resource-center .nav-dropdown-toggle {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 3 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.3 !important;
+  max-height: 3.9em !important;
+  word-wrap: break-word !important;
+  white-space: normal !important;
+  text-align: center !important;
+  font-size: 12px !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+</style>
+
+</body></html>

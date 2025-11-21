@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Insurance Company Contact Directory | ClaimNavigatorAI</title>
+  <meta name="description" content="Find insurance company claim department phone, email, and links in seconds.">
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/assets/css/design-system.css">
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body {
+      background: 
+        linear-gradient(rgba(3, 7, 18, 0.85), rgba(3, 7, 18, 0.85)),
+        url('../../assets/images/backgrounds/paperwork6.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      color: #ffffff;
+      position: relative;
+      min-height: 100vh;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(2, 6, 23, 0.55);
+      z-index: -1;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: #0f172a;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #0f172a;
+    }
+
+    .header .bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+    }
+
+    .header .bar.container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .brand {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .nav a {
+      margin-left: 14px;
+      color: #ffffff;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav a:hover {
+      color: #93c5fd;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .tool-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .tool-section h1 {
+      color: #ffffff;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    }
+
+    .tool-section p.muted {
+      color: #dbeafe;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .searchbar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .searchbar input {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background: rgba(11, 18, 32, 0.8);
+      color: #e6ecff;
+      font-size: 1rem;
+    }
+
+    .searchbar input::placeholder {
+      color: rgba(230, 236, 255, 0.5);
+    }
+
+    .searchbar input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: #1d4ed8;
+      color: #fff;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: #1e40af;
+      transform: translateY(-1px);
+    }
+
+    .btn.ghost {
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #e6ecff;
+    }
+
+    .btn.ghost:hover {
+      background: #1e293b;
+      border-color: #475569;
+    }
+
+    #count {
+      color: #9fb0d6;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border-radius: 1rem;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: all 0.25s ease;
+    }
+
+    .card:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-3px);
+    }
+
+    .card h3 {
+      color: #ffffff;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 12px 0;
+    }
+
+    .card .small {
+      color: #9fb0d6;
+      font-size: 0.9rem;
+      margin: 8px 0;
+      line-height: 1.5;
+    }
+
+    .card .muted {
+      color: #9fb0d6;
+    }
+
+    .card .btn {
+      margin-right: 6px;
+      margin-top: 8px;
+      padding: 6px 10px;
+      font-size: 0.875rem;
+    }
+
+    .carrier-directory {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+      margin-top: 2rem;
+    }
+
+    .carrier-directory h2 {
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      color: #ffffff;
+    }
+
+    .carrier-directory h3 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: #bfdbfe;
+    }
+
+    .carrier-directory .small {
+      color: #bfdbfe;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .carrier-list {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .carrier-list li {
+      padding: 1rem;
+      border-radius: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(15, 23, 42, 0.45);
+      line-height: 1.5;
+    }
+
+    .carrier-list strong {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    .carrier-list .phone-link {
+      color: #93c5fd;
+      font-size: 0.9rem;
+      text-decoration: none;
+      display: inline-block;
+      margin-right: 1rem;
+    }
+
+    .carrier-list .phone-link:hover {
+      text-decoration: underline;
+    }
+
+    .carrier-list .web-link {
+      color: #93c5fd;
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+
+    .carrier-list .web-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .searchbar {
+        flex-direction: column;
+      }
+
+      .carrier-directory {
+        padding: 1.5rem;
+      }
+
+      .carrier-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="resource-center">
+  <header class="header">
+    <div class="bar container">
+      <div class="brand"><div>Claim Navigation AI</div></div>
+      <nav class="nav">
+        <a href="/app/index.html">Home</a>
+        <span class="nav-separator">></span>
+        <span class="nav-current">Insurer Directory</span>
+        <span class="nav-separator">></span>
+        <a href="/app/resource-center.html">Resource Center</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+  <section class="tool-section">
+    <h1>Insurance Company Contact Directory</h1>
+    <p class="muted">Search by company name or brand. Click to call, email, or open the claims portal.</p>
+
+    <div class="searchbar">
+      <input 
+        id="q" 
+        type="text"
+        placeholder="Search company… (e.g., State Farm, USAA)" 
+      />
+      <button id="search" class="btn">Search</button>
+      <button id="reset" class="btn ghost">Reset</button>
+    </div>
+
+  </section>
+
+    <section class="carrier-directory">
+      <h2>Property Insurance Carrier Directory</h2>
+      <p class="small">
+        This directory lists the major property insurance carriers that account for the vast majority of U.S. homeowner and property policies.
+        For each carrier, use the contact information below to access claims phone numbers and online claim portals.
+        Always verify against the contact information printed on your policy declarations page.
+      </p>
+
+      <!-- 1. MAJOR NATIONAL PROPERTY CARRIERS -->
+      <h3>Major National Property Carriers</h3>
+      <ul class="carrier-list">
+        <li><strong>AIG / Lexington</strong><br><a href="tel:8889785371" class="phone-link">📞 888-978-5371</a><a href="https://www.aig.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Allstate</strong><br><a href="tel:8002557828" class="phone-link">📞 800-255-7828</a><a href="https://www.allstate.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>American Family</strong><br><a href="tel:8006926326" class="phone-link">📞 800-692-6326</a><a href="https://www.amfam.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Amica Mutual</strong><br><a href="tel:8002426422" class="phone-link">📞 800-242-6422</a><a href="https://www.google.com/search?q=Amica+Mutual+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Auto-Owners Insurance</strong><br><a href="tel:8882524626" class="phone-link">📞 888-252-4626</a><a href="https://www.auto-owners.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Chubb</strong><br><a href="tel:8002524670" class="phone-link">📞 800-252-4670</a><a href="https://www.chubb.com/us-en/claims/" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Cincinnati Insurance</strong><br><a href="tel:8772422544" class="phone-link">📞 877-242-2544</a><a href="https://www.cinfin.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>COUNTRY Financial</strong><br><a href="tel:8662686877" class="phone-link">📞 866-268-6877</a><a href="https://www.google.com/search?q=COUNTRY+Financial+insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Erie Insurance</strong><br><a href="tel:8003673743" class="phone-link">📞 800-367-3743</a><a href="https://www.erieinsurance.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Farmers Insurance</strong><br><a href="tel:8004357764" class="phone-link">📞 800-435-7764</a><a href="https://www.farmers.com/claims/" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>GEICO (Property via partners)</strong><br><a href="tel:8008413000" class="phone-link">📞 800-841-3000</a><a href="https://www.geico.com/claims/" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>The Hanover Insurance Group</strong><br><a href="tel:8006280250" class="phone-link">📞 800-628-0250</a><a href="https://www.hanover.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>The Hartford</strong><br><a href="tel:8002435860" class="phone-link">📞 800-243-5860</a><a href="https://www.thehartford.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Kemper</strong><br><a href="tel:8007778467" class="phone-link">📞 800-777-8467</a><a href="https://www.google.com/search?q=Kemper+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Liberty Mutual</strong><br><a href="tel:8002908206" class="phone-link">📞 800-290-8206</a><a href="https://www.libertymutual.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>MetLife Auto & Home</strong><br><a href="tel:8008546011" class="phone-link">📞 800-854-6011</a><a href="https://www.metlife.com/claims/" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Mercury Insurance</strong><br><a href="tel:8005033724" class="phone-link">📞 800-503-3724</a><a href="https://www.google.com/search?q=Mercury+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Nationwide</strong><br><a href="tel:8004213535" class="phone-link">📞 800-421-3535</a><a href="https://www.nationwide.com/personal/insurance/claims/" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Progressive Home (ASI)</strong><br><a href="tel:8007764737" class="phone-link">📞 800-776-4737</a><a href="https://www.progressive.com/claims/" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>PURE Insurance (Privilege Underwriters)</strong><br><a href="tel:8888137873" class="phone-link">📞 888-813-7873</a><a href="https://www.pureinsurance.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Safeco</strong><br><a href="tel:8003323226" class="phone-link">📞 800-332-3226</a><a href="https://www.safeco.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>State Farm</strong><br><a href="tel:8007828332" class="phone-link">📞 800-782-8332</a><a href="https://www.statefarm.com/claims/claim-center" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Travelers</strong><br><a href="tel:8002524633" class="phone-link">📞 800-252-4633</a><a href="https://www.travelers.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>USAA</strong><br><a href="tel:8005318722" class="phone-link">📞 800-531-8722</a><a href="https://www.usaa.com/inet/wc/insurance-claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Westfield Insurance</strong><br><a href="tel:8002430210" class="phone-link">📞 800-243-0210</a><a href="https://www.google.com/search?q=Westfield+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+      </ul>
+
+      <!-- 2. LARGE REGIONAL / MULTI-STATE CARRIERS -->
+      <h3>Large Regional & Multi-State Property Carriers</h3>
+      <ul class="carrier-list">
+        <li><strong>AAA – Auto Club Group</strong><br><a href="tel:8006725246" class="phone-link">📞 800-672-5246</a><a href="https://www.google.com/search?q=Auto+Club+Group+AAA+insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>AAA – CSAA Insurance Group</strong><br><a href="tel:8006725246" class="phone-link">📞 800-672-5246</a><a href="https://www.google.com/search?q=CSAA+Insurance+Group+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>The Andover Companies</strong><br><a href="tel:8002250770" class="phone-link">📞 800-225-0770</a><a href="https://www.google.com/search?q=The+Andover+Companies+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Arbella Insurance</strong><br><a href="tel:8009725348" class="phone-link">📞 800-972-5348</a><a href="https://www.google.com/search?q=Arbella+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Central Insurance</strong><br><a href="tel:8002346926" class="phone-link">📞 800-234-6926</a><a href="https://www.google.com/search?q=Central+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Donegal Insurance Group</strong><br><a href="tel:8008778676" class="phone-link">📞 800-877-8676</a><a href="https://www.google.com/search?q=Donegal+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Encova Insurance</strong><br><a href="tel:8003446677" class="phone-link">📞 800-344-6677</a><a href="https://www.google.com/search?q=Encova+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Frankenmuth Insurance</strong><br><a href="tel:8002366000" class="phone-link">📞 800-236-6000</a><a href="https://www.google.com/search?q=Frankenmuth+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Grange Insurance</strong><br><a href="tel:8004453030" class="phone-link">📞 800-445-3030</a><a href="https://www.google.com/search?q=Grange+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>GuideOne Insurance</strong><br><a href="tel:8774484331" class="phone-link">📞 877-448-4331</a><a href="https://www.google.com/search?q=GuideOne+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Harford Mutual</strong><br><a href="tel:8006385433" class="phone-link">📞 800-638-5433</a><a href="https://www.google.com/search?q=Harford+Mutual+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Hastings Mutual</strong><br><a href="tel:8004428277" class="phone-link">📞 800-442-8277</a><a href="https://www.google.com/search?q=Hastings+Mutual+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Island Insurance (Hawaii)</strong><br><a href="tel:8085311311" class="phone-link">📞 808-531-1311</a><a href="https://www.google.com/search?q=Island+Insurance+Hawaii+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Main Street America Insurance</strong><br><a href="tel:8774252467" class="phone-link">📞 877-425-2467</a><a href="https://www.google.com/search?q=Main+Street+America+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Merchants Insurance Group</strong><br><a href="tel:8004621077" class="phone-link">📞 800-462-1077</a><a href="https://www.google.com/search?q=Merchants+Insurance+Group+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Mutual of Enumclaw</strong><br><a href="tel:8003215344" class="phone-link">📞 800-321-5344</a><a href="https://www.google.com/search?q=Mutual+of+Enumclaw+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Pekin Insurance</strong><br><a href="tel:8003227378" class="phone-link">📞 800-322-7378</a><a href="https://www.google.com/search?q=Pekin+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Penn National Insurance</strong><br><a href="tel:8002339944" class="phone-link">📞 800-233-9944</a><a href="https://www.google.com/search?q=Penn+National+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Philadelphia Insurance Companies</strong><br><a href="tel:8774387459" class="phone-link">📞 877-438-7459</a><a href="https://www.google.com/search?q=Philadelphia+Insurance+Companies+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Plymouth Rock Assurance</strong><br><a href="tel:8004375556" class="phone-link">📞 800-437-5556</a><a href="https://www.google.com/search?q=Plymouth+Rock+Assurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Preferred Mutual</strong><br><a href="tel:8002346926" class="phone-link">📞 800-234-6926</a><a href="https://www.google.com/search?q=Preferred+Mutual+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Quincy Mutual</strong><br><a href="tel:8002352355" class="phone-link">📞 800-235-2355</a><a href="https://www.google.com/search?q=Quincy+Mutual+Group+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Utica National Insurance</strong><br><a href="tel:8002748765" class="phone-link">📞 800-274-8765</a><a href="https://www.google.com/search?q=Utica+National+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>West Bend Mutual Insurance</strong><br><a href="tel:8002366000" class="phone-link">📞 800-236-6000</a><a href="https://www.google.com/search?q=West+Bend+Mutual+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Western National Insurance</strong><br><a href="tel:8006584958" class="phone-link">📞 800-658-4958</a><a href="https://www.google.com/search?q=Western+National+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Wright National Flood</strong><br><a href="tel:8008203242" class="phone-link">📞 800-820-3242</a><a href="https://www.google.com/search?q=Wright+National+Flood+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+      </ul>
+
+      <!-- 3. FAIR PLANS & RESIDUAL MARKET CARRIERS -->
+      <h3>FAIR Plans & Residual Market Carriers</h3>
+      <ul class="carrier-list">
+        <li><strong>Alabama Insurance Underwriting Association (AIUA)</strong><br><a href="tel:3349434029" class="phone-link">📞 334-943-4029</a><a href="https://www.google.com/search?q=Alabama+Insurance+Underwriting+Association+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>California FAIR Plan</strong><br><a href="tel:8003394099" class="phone-link">📞 800-339-4099</a><a href="https://www.google.com/search?q=California+FAIR+Plan+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Connecticut FAIR Plan</strong><br><a href="tel:8605289546" class="phone-link">📞 860-528-9546</a><a href="https://www.google.com/search?q=Connecticut+FAIR+Plan+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Delaware FAIR Plan</strong><br><a href="tel:2156298800" class="phone-link">📞 215-629-8800</a><a href="https://www.google.com/search?q=Delaware+FAIR+Plan+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Florida Citizens Property Insurance</strong><br><a href="tel:8664112742" class="phone-link">📞 866-411-2742</a><a href="https://www.citizensfla.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Georgia Underwriting Association</strong><br><a href="tel:8008425075" class="phone-link">📞 800-842-5075</a><a href="https://www.google.com/search?q=Georgia+Underwriting+Association+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Louisiana Citizens</strong><br><a href="tel:8667229239" class="phone-link">📞 866-722-9239</a><a href="https://www.google.com/search?q=Louisiana+Citizens+insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Maryland Joint Insurance Association</strong><br><a href="tel:4105396808" class="phone-link">📞 410-539-6808</a><a href="https://www.google.com/search?q=Maryland+Joint+Insurance+Association+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Massachusetts FAIR Plan</strong><br><a href="tel:8003926108" class="phone-link">📞 800-392-6108</a><a href="https://www.google.com/search?q=Massachusetts+FAIR+Plan+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Mississippi Windstorm Underwriting Association</strong><br><a href="tel:6019812915" class="phone-link">📞 601-981-2915</a><a href="https://www.google.com/search?q=Mississippi+Windstorm+Underwriting+Association+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Missouri FAIR Plan</strong><br><a href="tel:3144210170" class="phone-link">📞 314-421-0170</a><a href="https://www.google.com/search?q=Missouri+FAIR+Plan+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>NFIP (FEMA Flood)</strong><br><a href="tel:8006386620" class="phone-link">📞 800-638-6620</a><a href="https://www.floodsmart.gov/how-do-i-start-my-flood-claim" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>New Jersey FAIR Plan</strong><br><a href="tel:9736223838" class="phone-link">📞 973-622-3838</a><a href="https://www.google.com/search?q=New+Jersey+FAIR+Plan+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>New York FAIR Plan</strong><br><a href="tel:2122089700" class="phone-link">📞 212-208-9700</a><a href="https://www.google.com/search?q=New+York+FAIR+Plan+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>North Carolina Joint Underwriting Association</strong><br><a href="tel:9198211299" class="phone-link">📞 919-821-1299</a><a href="https://www.google.com/search?q=North+Carolina+JUA+insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Pennsylvania FAIR Plan</strong><br><a href="tel:2156298800" class="phone-link">📞 215-629-8800</a><a href="https://www.google.com/search?q=Pennsylvania+FAIR+Plan+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Rhode Island Joint Reinsurance Association</strong><br><a href="tel:4019462400" class="phone-link">📞 401-946-2400</a><a href="https://www.google.com/search?q=Rhode+Island+Joint+Reinsurance+Association+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Texas FAIR Plan</strong><br><a href="tel:8009796440" class="phone-link">📞 800-979-6440</a><a href="https://www.texasfairplan.org/claims/" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Texas Windstorm Insurance Association (TWIA)</strong><br><a href="tel:8007888247" class="phone-link">📞 800-788-8247</a><a href="https://www.twia.org/claims/" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Virginia Property Insurance Association</strong><br><a href="tel:8046440121" class="phone-link">📞 804-644-0121</a><a href="https://www.google.com/search?q=Virginia+Property+Insurance+Association+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Washington D.C. FAIR Plan</strong><br><a href="tel:2023934640" class="phone-link">📞 202-393-4640</a><a href="https://www.google.com/search?q=DC+FAIR+Plan+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+      </ul>
+
+      <!-- 4. SURPLUS LINES / E&S PROPERTY WRITERS -->
+      <h3>Surplus Lines & E&amp;S Property Carriers</h3>
+      <ul class="carrier-list">
+        <li><strong>Admiral Insurance</strong><br><a href="tel:8564299200" class="phone-link">📞 856-429-9200</a><a href="https://www.google.com/search?q=Admiral+Insurance+Company+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Arch Specialty</strong><br><a href="tel:8008173252" class="phone-link">📞 800-817-3252</a><a href="https://www.google.com/search?q=Arch+Specialty+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Aspen Specialty</strong><br><a href="tel:8002217274" class="phone-link">📞 800-221-7274</a><a href="https://www.google.com/search?q=Aspen+Specialty+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>AXIS Surplus Lines</strong><br><a href="tel:8005437170" class="phone-link">📞 800-543-7170</a><a href="https://www.google.com/search?q=AXIS+Surplus+Lines+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Beazley</strong><br><a href="tel:8005437170" class="phone-link">📞 800-543-7170</a><a href="https://www.google.com/search?q=Beazley+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Berkshire Hathaway Specialty</strong><br><a href="tel:8006732465" class="phone-link">📞 800-673-2465</a><a href="https://www.google.com/search?q=Berkshire+Hathaway+Specialty+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Colony Specialty</strong><br><a href="tel:8005776614" class="phone-link">📞 800-577-6614</a><a href="https://www.google.com/search?q=Colony+Specialty+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Hiscox</strong><br><a href="tel:8662380202" class="phone-link">📞 866-238-0202</a><a href="https://www.google.com/search?q=Hiscox+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Ironshore</strong><br><a href="tel:8664636673" class="phone-link">📞 866-463-6673</a><a href="https://www.google.com/search?q=Ironshore+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>James River Insurance</strong><br><a href="tel:8042899200" class="phone-link">📞 804-289-9200</a><a href="https://www.google.com/search?q=James+River+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Kinsale Insurance</strong><br><a href="tel:8042899200" class="phone-link">📞 804-289-9200</a><a href="https://www.google.com/search?q=Kinsale+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Lexington Insurance (AIG)</strong><br><a href="tel:8009319546" class="phone-link">📞 800-931-9546</a><a href="https://www.google.com/search?q=Lexington+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Lloyd's of London</strong><br><a href="tel:8663673424" class="phone-link">📞 866-367-3424</a><a href="https://www.google.com/search?q=Lloyds+of+London+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Markel Specialty</strong><br><a href="tel:8004311270" class="phone-link">📞 800-431-1270</a><a href="https://www.google.com/search?q=Markel+Specialty+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Prime Insurance Company</strong><br><a href="tel:8002575590" class="phone-link">📞 800-257-5590</a><a href="https://www.google.com/search?q=Prime+Insurance+Company+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>RLI Insurance</strong><br><a href="tel:8004453524" class="phone-link">📞 800-445-3524</a><a href="https://www.google.com/search?q=RLI+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Scottsdale Insurance (Nationwide E&amp;S)</strong><br><a href="tel:8004237675" class="phone-link">📞 800-423-7675</a><a href="https://www.google.com/search?q=Scottsdale+Insurance+Nationwide+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Steadfast Insurance (Zurich)</strong><br><a href="tel:8003822150" class="phone-link">📞 800-382-2150</a><a href="https://www.google.com/search?q=Steadfast+Insurance+Zurich+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Tokio Marine HCC</strong><br><a href="tel:8003450456" class="phone-link">📞 800-345-0456</a><a href="https://www.google.com/search?q=Tokio+Marine+HCC+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>United Specialty Insurance</strong><br><a href="tel:8004707958" class="phone-link">📞 800-470-7958</a><a href="https://www.google.com/search?q=United+Specialty+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Westchester (Chubb)</strong><br><a href="tel:8002524670" class="phone-link">📞 800-252-4670</a><a href="https://www.google.com/search?q=Westchester+Chubb+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+      </ul>
+
+      <!-- 5. MAJOR STATE-BASED DOMESTIC PROPERTY CARRIERS -->
+      <h3>Major State-Based Domestic Property Carriers (High-Volume States)</h3>
+      <p class="small">
+        These domestic carriers write a large share of property business in high-risk or catastrophe-prone states (especially Florida, Texas, and Louisiana).
+      </p>
+      <ul class="carrier-list">
+        <li><strong>Assurant</strong><br><a href="tel:8003580600" class="phone-link">📞 800-358-0600</a><a href="https://www.assurant.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Florida Peninsula Insurance</strong><br><a href="tel:8663243138" class="phone-link">📞 866-324-3138</a><a href="https://www.google.com/search?q=Florida+Peninsula+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Foremost</strong><br><a href="tel:8005273907" class="phone-link">📞 800-527-3907</a><a href="https://www.foremost.com/claims/" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Germania Insurance (Texas)</strong><br><a href="tel:8774376264" class="phone-link">📞 877-437-6264</a><a href="https://www.google.com/search?q=Germania+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>HCI / Homeowners Choice (Florida)</strong><br><a href="tel:8663243138" class="phone-link">📞 866-324-3138</a><a href="https://www.google.com/search?q=HCI+Homeowners+Choice+Property+and+Casualty+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Heritage Insurance (Florida)</strong><br><a href="tel:8554157120" class="phone-link">📞 855-415-7120</a><a href="https://www.google.com/search?q=Heritage+Property+and+Casualty+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Hippo</strong><br><a href="tel:8559999746" class="phone-link">📞 855-999-9746</a><a href="https://www.hippo.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>HOAIC – Homeowners of America (Texas)</strong><br><a href="tel:8664079896" class="phone-link">📞 866-407-9896</a><a href="https://www.google.com/search?q=Homeowners+of+America+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Kin Insurance (Florida &amp; Texas)</strong><br><a href="tel:8552167674" class="phone-link">📞 855-216-7674</a><a href="https://www.kin.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Lemonade</strong><br><a href="tel:8444992056" class="phone-link">📞 844-499-2056</a><a href="https://www.lemonade.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+        <li><strong>Maison Insurance (Louisiana / Texas)</strong><br><a href="tel:8002563378" class="phone-link">📞 800-256-3378</a><a href="https://www.google.com/search?q=Maison+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Olympus Insurance (Florida)</strong><br><a href="tel:8663243138" class="phone-link">📞 866-324-3138</a><a href="https://www.google.com/search?q=Olympus+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Southern Oak Insurance</strong><br><a href="tel:8779002280" class="phone-link">📞 877-900-2280</a><a href="https://www.google.com/search?q=Southern+Oak+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Tower Hill Insurance (Florida)</strong><br><a href="tel:8003423407" class="phone-link">📞 800-342-3407</a><a href="https://www.google.com/search?q=Tower+Hill+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>TypTap Insurance (Florida &amp; Texas)</strong><br><a href="tel:8663243138" class="phone-link">📞 866-324-3138</a><a href="https://www.google.com/search?q=TypTap+Insurance+claims+portal" target="_blank" rel="noopener" class="web-link">🌐 Search Portal</a></li>
+        <li><strong>Universal Property &amp; Casualty (Florida)</strong><br><a href="tel:8882563378" class="phone-link">📞 888-256-3378</a><a href="https://www.upcinsurance.com/claims" target="_blank" rel="noopener" class="web-link">🌐 Claims Portal</a></li>
+      </ul>
+
+      <!-- 6. NOTE TO USERS -->
+      <p class="small">
+        <strong>Important:</strong> Contact information can change after mergers, withdrawals, or insolvencies.
+        Always confirm the carrier name on your declarations page and use the most recent contact information shown there.
+        This directory is for navigation and identification purposes and is not legal advice.
+      </p>
+    </section>
+  </main>
+</body>
+</html>

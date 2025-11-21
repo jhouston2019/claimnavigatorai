@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Dashboard • ClaimNavigatorAI</title>
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/assets/css/design-system.css">
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body.dashboard-page {
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+        url('/app/assets/images/backgrounds/paperwork6.jpeg') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-attachment: fixed !important;
+      color: #ffffff !important;
+      min-height: 100vh;
+    }
+
+    body.dashboard-page * {
+      color: #ffffff !important;
+    }
+
+    body.dashboard-page a {
+      color: #dbeafe !important;
+    }
+
+    body.dashboard-page a:hover {
+      color: #93c5fd !important;
+    }
+
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .dashboard-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .dashboard-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .dashboard-header p {
+      font-size: 1.1rem;
+      color: #dbeafe !important;
+      margin: 0;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .dashboard-section {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      padding: 2rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .dashboard-section h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0 0 1rem 0;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .dashboard-section.empty {
+      text-align: center;
+      padding: 3rem 2rem;
+    }
+
+    .dashboard-section.empty p {
+      color: rgba(255, 255, 255, 0.7) !important;
+      margin: 0.5rem 0;
+    }
+
+    .item-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .item-list li {
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .item-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .item-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .item-meta {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.7) !important;
+      margin-top: 0.25rem;
+    }
+
+    .item-actions {
+      margin-top: 0.5rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: #3b82f6;
+      color: #ffffff !important;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .tool-card {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .tool-card:hover {
+      background: rgba(59, 130, 246, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .tool-card h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+
+    .tool-card p {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.8) !important;
+      margin: 0;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    .error {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      color: #fca5a5 !important;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin: 1rem 0;
+    }
+  </style>
+</head>
+<body class="dashboard-page">
+  <header class="header">
+    <div class="bar container">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>Claim Navigation AI</div>
+      </div>
+      <nav class="nav">
+        <a href="/app/resource-center.html">Resource Center</a>
+        <a href="/app/dashboard.html">Dashboard</a>
+        <a href="#" id="logout-link">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="dashboard-container">
+    <div class="dashboard-header">
+      <h1>Your Dashboard</h1>
+      <p>Manage your documents, evidence, deadlines, and access all your tools</p>
+    </div>
+
+    <div id="loading" class="loading">Loading your data...</div>
+    <div id="error" class="error" style="display: none;"></div>
+
+    <div id="dashboard-content" style="display: none;">
+      <div class="dashboard-grid">
+        <!-- Documents Section -->
+        <div class="dashboard-section">
+          <h2>Your Documents</h2>
+          <ul id="documents-list" class="item-list">
+            <li class="loading">Loading documents...</li>
+          </ul>
+        </div>
+
+        <!-- Evidence Section -->
+        <div class="dashboard-section">
+          <h2>Your Evidence</h2>
+          <ul id="evidence-list" class="item-list">
+            <li class="loading">Loading evidence...</li>
+          </ul>
+        </div>
+
+        <!-- Deadlines Section -->
+        <div class="dashboard-section">
+          <h2>Your Deadlines</h2>
+          <ul id="deadlines-list" class="item-list">
+            <li class="loading">Loading deadlines...</li>
+          </ul>
+        </div>
+
+        <!-- Policy Summaries Section -->
+        <div class="dashboard-section">
+          <h2>Policy Summaries</h2>
+          <ul id="policies-list" class="item-list">
+            <li class="loading">Loading policies...</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Tools Section -->
+      <div class="dashboard-section">
+        <h2>Start a New Tool</h2>
+        <div class="tools-grid">
+          <a href="/app/ai-response-agent.html" class="tool-card">
+            <h3>AI Response Agent</h3>
+            <p>Generate professional response letters</p>
+          </a>
+          <a href="/app/document-generator-v2/document-generator.html" class="tool-card">
+            <h3>Document Generator</h3>
+            <p>Create claim documents with AI</p>
+          </a>
+          <a href="/app/statement-of-loss.html" class="tool-card">
+            <h3>Statement of Loss</h3>
+            <p>Build comprehensive proof of loss</p>
+          </a>
+          <a href="/app/evidence-organizer.html" class="tool-card">
+            <h3>Evidence Organizer</h3>
+            <p>Organize and manage evidence</p>
+          </a>
+          <a href="/app/resource-center/coverage-decoder.html" class="tool-card">
+            <h3>Coverage Decoder</h3>
+            <p>Analyze your insurance policy</p>
+          </a>
+          <a href="/app/timeline.html" class="tool-card">
+            <h3>Timeline & Deadlines</h3>
+            <p>Track important dates</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="/app/assets/js/dashboard.js"></script>
+</body>
+</html>
+
