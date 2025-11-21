@@ -17,52 +17,40 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers, body: '' };
   }
 
-  if (event.httpMethod !== 'POST') {
+  if (event.httpMethod !== 'GET') {
     return {
       statusCode: 405,
-      headers,
       body: JSON.stringify({ error: 'Method not allowed' })
     };
   }
 
   try {
-    const { priceId, userEmail } = JSON.parse(event.body || '{}');
+    const priceId = process.env.STRIPE_PRICE_CLAIM_NAVIGATOR_DIY_TOOLKIT;
 
-    // Use default price if not provided
-    const finalPriceId = priceId || process.env.STRIPE_PRICE_CLAIM_NAVIGATOR;
-
-    if (!finalPriceId) {
+    if (!priceId) {
       return {
         statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Price ID not configured' })
+        body: JSON.stringify({ error: 'Price ID not configured' }),
       };
     }
 
-    const siteUrl = process.env.SITE_URL || 'https://claimnavigatorai.com';
-
-    // Create checkout session
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      payment_method_types: ['card'],
       line_items: [
         {
-          price: finalPriceId,
-          quantity: 1
-        }
+          price: priceId,
+          quantity: 1,
+        },
       ],
-      customer_email: userEmail || undefined,
-      success_url: `${siteUrl}/app/checkout-success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/app/pricing.html`,
-      metadata: {
-        product: 'claim_navigator_toolkit'
-      }
+      success_url: `${process.env.URL}/success.html`,
+      cancel_url: `${process.env.URL}/cancel.html`,
     });
 
     return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ url: session.url, sessionId: session.id })
+      statusCode: 302,
+      headers: {
+        Location: session.url,
+      },
     };
   } catch (error) {
     console.error('Checkout session error:', error);
