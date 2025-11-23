@@ -383,3 +383,4 @@ function formatText(text) {
   return escapeHtml(text).replace(/\n/g, '<br>');
 }
 
+

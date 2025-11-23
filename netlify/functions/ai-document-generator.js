@@ -165,3 +165,4 @@ function formatAsHTML(text) {
   return `<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">${html}</div>`;
 }
 
+

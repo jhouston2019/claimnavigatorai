@@ -202,3 +202,4 @@ function extractDeadlinesFromText(text) {
   return deadlines.slice(0, 10); // Limit to 10
 }
 
+
