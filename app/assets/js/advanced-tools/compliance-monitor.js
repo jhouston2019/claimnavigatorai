@@ -79,9 +79,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Export report
-    document.getElementById('export-report')?.addEventListener('click', () => {
-        // TODO: Implement PDF export
-        alert('Report export coming soon');
+    document.getElementById('export-report')?.addEventListener('click', async () => {
+        const targetSelector = document.getElementById('export-report')?.getAttribute('data-export-target') || '#results-panel';
+        const filename = document.getElementById('export-report')?.getAttribute('data-export-filename') || 'compliance-monitor-report.pdf';
+        
+        if (window.PDFExporter && typeof window.PDFExporter.exportSectionToPDF === 'function') {
+            await window.PDFExporter.exportSectionToPDF(targetSelector, filename);
+        } else {
+            console.error('PDF export helper not available');
+            alert('PDF export is not available. Please refresh the page and try again.');
+        }
     });
 });
 
@@ -129,8 +136,16 @@ function displayResults(result) {
     }
     
     // Re-attach export button
-    document.getElementById('export-report')?.addEventListener('click', () => {
-        alert('Report export coming soon');
+    document.getElementById('export-report')?.addEventListener('click', async () => {
+        const targetSelector = document.getElementById('export-report')?.getAttribute('data-export-target') || '#results-panel';
+        const filename = document.getElementById('export-report')?.getAttribute('data-export-filename') || 'compliance-monitor-report.pdf';
+        
+        if (window.PDFExporter && typeof window.PDFExporter.exportSectionToPDF === 'function') {
+            await window.PDFExporter.exportSectionToPDF(targetSelector, filename);
+        } else {
+            console.error('PDF export helper not available');
+            alert('PDF export is not available. Please refresh the page and try again.');
+        }
     });
 }
 

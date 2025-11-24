@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mediation Preparation Kit - ClaimNavigatorAI</title>
+    <title>Expert Opinion Generator - ClaimNavigatorAI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/app/assets/css/design-system.css">
     <link rel="stylesheet" href="/app/assets/css/claim-analysis.css">
     <style>
-        body.mediation-kit-page {
+        body.expert-opinion-page {
             background: 
                 linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
                 url('/assets/images/backgrounds/paperwork6.jpeg') !important;
@@ -21,11 +21,11 @@
             color: #ffffff !important;
         }
         
-        body.mediation-kit-page * {
+        body.expert-opinion-page * {
             color: #ffffff !important;
         }
         
-        body.mediation-kit-page a {
+        body.expert-opinion-page a {
             color: #dbeafe !important;
         }
         
@@ -93,7 +93,7 @@
         }
         
         .form-group textarea {
-            min-height: 100px;
+            min-height: 150px;
             resize: vertical;
         }
         
@@ -112,7 +112,7 @@
             background: rgba(255, 255, 255, 0.05);
         }
         
-        .kit-section {
+        .opinion-section {
             background: rgba(0, 0, 0, 0.2);
             border-left: 4px solid #1e40af;
             padding: 1.5rem;
@@ -120,7 +120,7 @@
             border-radius: 0.5rem;
         }
         
-        .kit-section h3 {
+        .opinion-section h3 {
             margin: 0 0 1rem 0;
             color: #ffffff !important;
         }
@@ -149,6 +149,11 @@
             box-shadow: 0 4px 12px rgba(30, 64, 175, 0.4);
         }
         
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff !important;
+        }
+        
         .results-panel {
             display: none;
             margin-top: 2rem;
@@ -159,7 +164,7 @@
         }
     </style>
 </head>
-<body class="mediation-kit-page">
+<body class="expert-opinion-page">
     <!-- Header -->
     <header class="header">
         <div class="bar container">
@@ -174,90 +179,84 @@
                 <span>></span>
                 <a href="/app/resource-center/advanced-tools/advanced-tools.html">Advanced Tools Suite</a>
                 <span>></span>
-                <span>Mediation Preparation Kit</span>
+                <span>Expert Opinion Generator</span>
             </nav>
         </div>
     </header>
 
     <!-- Hero Header -->
     <div class="tool-header" style="max-width: 1000px; margin: 2rem auto;">
-        <h1>Mediation Preparation Kit</h1>
-        <p>Prepare for mediation with organized evidence, settlement calculations, negotiation strategies, and talking points.</p>
+        <h1>Expert Opinion Generator</h1>
+        <p>Generate professional requests for expert opinions, coordinate with specialists, and create expert witness engagement letters.</p>
     </div>
 
     <!-- Main Content -->
     <main class="tool-container">
         <div class="card">
-            <h2 style="margin-top: 0;">Build Mediation Kit</h2>
+            <h2 style="margin-top: 0;">Generate Expert Opinion</h2>
             
-            <form id="mediation-form">
+            <form id="expert-opinion-form">
                 <div class="form-group">
-                    <label>Upload Insurer Offer (Optional)</label>
+                    <label>Upload Photos / PDFs (Optional)</label>
                     <div class="upload-area" id="upload-area">
-                        <p>📄 Upload insurer offer letter (PDF or image)</p>
-                        <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+                        <p>📄 Upload supporting documents</p>
+                        <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png" multiple style="display: none;">
                     </div>
-                    <div id="file-preview" style="display: none; margin-top: 0.5rem; font-size: 0.875rem;">
-                        <span id="file-name"></span>
-                    </div>
+                    <div id="file-list" style="margin-top: 0.5rem; font-size: 0.875rem;"></div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="dispute-description">Describe Dispute</label>
-                    <textarea id="dispute-description" placeholder="Describe the dispute and your position..." required></textarea>
+                    <label for="situation-description">Describe Situation</label>
+                    <textarea id="situation-description" placeholder="Describe the situation requiring expert opinion..." required></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label for="mediation-type">Mediation Type</label>
-                    <select id="mediation-type" required>
-                        <option value="">Select type...</option>
-                        <option value="state-run">State-Run Mediation</option>
-                        <option value="private">Private Mediation</option>
-                        <option value="insurance-dept">Insurance Department Mediation</option>
+                    <label for="expert-type">Expert Type</label>
+                    <select id="expert-type" required>
+                        <option value="">Select expert type...</option>
+                        <option value="engineer">Engineer</option>
+                        <option value="roofing">Roofing Specialist</option>
+                        <option value="hvac">HVAC Specialist</option>
+                        <option value="mold">Mold Remediation Expert</option>
+                        <option value="general-adjuster">General Adjuster</option>
+                        <option value="construction">Construction Expert</option>
+                        <option value="plumbing">Plumbing Expert</option>
+                        <option value="electrical">Electrical Expert</option>
+                        <option value="other">Other</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Build Mediation Kit →</button>
+                    <button type="submit" class="btn btn-primary">Generate Expert Opinion →</button>
                 </div>
             </form>
         </div>
         
-        <div class="card results-panel" id="results-panel" data-export-target="#results-panel">
-            <h2>Mediation Preparation Kit</h2>
+        <div class="card results-panel" id="results-container">
+            <h2>Expert Opinion</h2>
             
-            <div class="kit-section" id="opening-statement">
-                <h3>Opening Statement</h3>
-                <div id="opening-content"></div>
+            <div class="opinion-section" id="cause-analysis">
+                <h3>Cause Analysis</h3>
+                <div id="cause-content"></div>
             </div>
             
-            <div class="kit-section" id="key-evidence">
-                <h3>Key Evidence to Present</h3>
-                <div id="evidence-content"></div>
+            <div class="opinion-section" id="severity-assessment">
+                <h3>Severity Assessment</h3>
+                <div id="severity-content"></div>
             </div>
             
-            <div class="kit-section" id="weakness-analysis">
-                <h3>Weakness Analysis</h3>
-                <div id="weakness-content"></div>
+            <div class="opinion-section" id="documentation-requirements">
+                <h3>Documentation Requirements</h3>
+                <div id="documentation-content"></div>
             </div>
             
-            <div class="kit-section" id="settlement-range">
-                <h3>Settlement Range</h3>
-                <div id="settlement-content"></div>
-            </div>
-            
-            <div class="kit-section" id="questions-mediator">
-                <h3>Questions to Ask Mediator</h3>
-                <div id="questions-content"></div>
-            </div>
-            
-            <div class="kit-section" id="carrier-tactics">
-                <h3>Carrier Tactics to Anticipate</h3>
-                <div id="tactics-content"></div>
+            <div class="opinion-section" id="recommendations">
+                <h3>Recommendations</h3>
+                <div id="recommendations-content"></div>
             </div>
             
             <div style="margin-top: 2rem;">
-                <button class="btn btn-primary export-pdf-btn" id="export-pdf" data-export-target="#results-panel" data-export-filename="mediation-preparation-kit.pdf">Export to PDF</button>
+                <button class="btn btn-secondary export-pdf-btn" id="export-pdf" data-export-target="#results-container" data-export-filename="expert-opinion.pdf">Export PDF</button>
             </div>
         </div>
     </main>
@@ -265,14 +264,14 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>© 2025 ClaimNavigatorAI • Mediation Preparation Kit</p>
+            <p>© 2025 ClaimNavigatorAI • Expert Opinion Generator</p>
         </div>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="/app/assets/js/utils/pdf-export.js"></script>
-    <script src="/app/assets/js/advanced-tools/mediation-preparation-kit.js"></script>
+    <script src="/app/assets/js/advanced-tools/expert-opinion-generator.js"></script>
 </body>
 </html>
 

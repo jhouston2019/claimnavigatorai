@@ -66,9 +66,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Export PDF
-    document.getElementById('export-pdf')?.addEventListener('click', () => {
-        // TODO: Implement PDF export
-        alert('PDF export coming soon');
+    document.getElementById('export-pdf')?.addEventListener('click', async () => {
+        const targetSelector = document.getElementById('export-pdf')?.getAttribute('data-export-target') || '#results-panel';
+        const filename = document.getElementById('export-pdf')?.getAttribute('data-export-filename') || 'arbitration-strategy-guide.pdf';
+        
+        if (window.PDFExporter && typeof window.PDFExporter.exportSectionToPDF === 'function') {
+            await window.PDFExporter.exportSectionToPDF(targetSelector, filename);
+        } else {
+            console.error('PDF export helper not available');
+            alert('PDF export is not available. Please refresh the page and try again.');
+        }
     });
 });
 
@@ -135,8 +142,16 @@ function displayResults(result) {
     }
     
     // Re-attach export button
-    document.getElementById('export-pdf')?.addEventListener('click', () => {
-        alert('PDF export coming soon');
+    document.getElementById('export-pdf')?.addEventListener('click', async () => {
+        const targetSelector = document.getElementById('export-pdf')?.getAttribute('data-export-target') || '#results-panel';
+        const filename = document.getElementById('export-pdf')?.getAttribute('data-export-filename') || 'arbitration-strategy-guide.pdf';
+        
+        if (window.PDFExporter && typeof window.PDFExporter.exportSectionToPDF === 'function') {
+            await window.PDFExporter.exportSectionToPDF(targetSelector, filename);
+        } else {
+            console.error('PDF export helper not available');
+            alert('PDF export is not available. Please refresh the page and try again.');
+        }
     });
 }
 

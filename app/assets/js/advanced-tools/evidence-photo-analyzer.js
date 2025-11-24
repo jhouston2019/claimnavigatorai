@@ -70,6 +70,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
+    // Export to PDF
+    document.getElementById('export-pdf')?.addEventListener('click', async () => {
+        const targetSelector = document.getElementById('export-pdf')?.getAttribute('data-export-target') || '#results-panel';
+        const filename = document.getElementById('export-pdf')?.getAttribute('data-export-filename') || 'evidence-photo-analysis.pdf';
+        
+        if (window.PDFExporter && typeof window.PDFExporter.exportSectionToPDF === 'function') {
+            await window.PDFExporter.exportSectionToPDF(targetSelector, filename);
+        } else {
+            console.error('PDF export helper not available');
+            alert('PDF export is not available. Please refresh the page and try again.');
+        }
+    });
+    
     // Add to evidence organizer
     document.getElementById('add-to-organizer')?.addEventListener('click', () => {
         // TODO: Integrate with evidence organizer

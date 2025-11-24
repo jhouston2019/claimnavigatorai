@@ -71,6 +71,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
+    // Export to PDF
+    document.getElementById('export-pdf')?.addEventListener('click', async () => {
+        const targetSelector = document.getElementById('export-pdf')?.getAttribute('data-export-target') || '#results-panel';
+        const filename = document.getElementById('export-pdf')?.getAttribute('data-export-filename') || 'fraud-detection-scan.pdf';
+        
+        if (window.PDFExporter && typeof window.PDFExporter.exportSectionToPDF === 'function') {
+            await window.PDFExporter.exportSectionToPDF(targetSelector, filename);
+        } else {
+            console.error('PDF export helper not available');
+            alert('PDF export is not available. Please refresh the page and try again.');
+        }
+    });
+    
     // Generate action plan
     document.getElementById('generate-action-plan')?.addEventListener('click', () => {
         // TODO: Implement action plan generation

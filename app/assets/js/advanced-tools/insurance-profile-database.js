@@ -156,6 +156,26 @@ async function showCarrierProfile(carrier) {
     `;
     
     modal.classList.add('show');
+    
+    // Show export button
+    const exportBtn = document.getElementById('export-carrier-pdf');
+    if (exportBtn) {
+        exportBtn.style.display = 'inline-block';
+        exportBtn.setAttribute('data-export-filename', `carrier-profile-${(carrier.carrier_name || 'unknown').replace(/\s+/g, '-').toLowerCase()}.pdf`);
+    }
+    
+    // Wire up export button
+    exportBtn?.addEventListener('click', async () => {
+        const targetSelector = exportBtn.getAttribute('data-export-target') || '#modal-content-container';
+        const filename = exportBtn.getAttribute('data-export-filename') || 'carrier-profile.pdf';
+        
+        if (window.PDFExporter && typeof window.PDFExporter.exportSectionToPDF === 'function') {
+            await window.PDFExporter.exportSectionToPDF(targetSelector, filename);
+        } else {
+            console.error('PDF export helper not available');
+            alert('PDF export is not available. Please refresh the page and try again.');
+        }
+    });
 }
 
 function formatJSONField(field) {

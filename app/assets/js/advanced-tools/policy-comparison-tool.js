@@ -63,9 +63,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Export report
-    document.getElementById('export-report')?.addEventListener('click', () => {
-        // TODO: Implement report export
-        alert('Report export coming soon');
+    document.getElementById('export-report')?.addEventListener('click', async () => {
+        const targetSelector = document.getElementById('export-report')?.getAttribute('data-export-target') || '#results-panel';
+        const filename = document.getElementById('export-report')?.getAttribute('data-export-filename') || 'policy-comparison-report.pdf';
+        
+        if (window.PDFExporter && typeof window.PDFExporter.exportSectionToPDF === 'function') {
+            await window.PDFExporter.exportSectionToPDF(targetSelector, filename);
+        } else {
+            console.error('PDF export helper not available');
+            alert('PDF export is not available. Please refresh the page and try again.');
+        }
     });
 });
 

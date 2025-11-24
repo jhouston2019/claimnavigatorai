@@ -193,7 +193,7 @@
             </div>
         </div>
         
-        <div class="card results-panel" id="results-panel">
+        <div class="card results-panel" id="results-panel" data-export-target="#results-panel">
             <h2>Analysis Results</h2>
             
             <div style="margin-top: 1.5rem;">
@@ -216,8 +216,9 @@
                 <div id="supplemental-photos" style="margin-top: 1rem;"></div>
             </div>
             
-            <div style="margin-top: 2rem;">
-                <button class="btn btn-primary" id="add-to-organizer">Add to Evidence Organizer</button>
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-primary export-pdf-btn" id="export-pdf" data-export-target="#results-panel" data-export-filename="evidence-photo-analysis.pdf">Export to PDF</button>
+                <button class="btn btn-secondary" id="add-to-organizer">Add to Evidence Organizer</button>
             </div>
         </div>
     </main>
@@ -229,6 +230,9 @@
         </div>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="/app/assets/js/utils/pdf-export.js"></script>
     <script src="/app/assets/js/advanced-tools/evidence-photo-analyzer.js"></script>
 </body>
 </html>

@@ -53,9 +53,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Export to PDF
-    document.getElementById('export-pdf')?.addEventListener('click', () => {
-        // TODO: Implement PDF export
-        alert('PDF export feature coming soon');
+    document.getElementById('export-pdf')?.addEventListener('click', async () => {
+        const targetSelector = document.getElementById('export-pdf')?.getAttribute('data-export-target') || '#results-panel';
+        const filename = document.getElementById('export-pdf')?.getAttribute('data-export-filename') || 'settlement-calculator-pro-report.pdf';
+        
+        if (window.PDFExporter && typeof window.PDFExporter.exportSectionToPDF === 'function') {
+            await window.PDFExporter.exportSectionToPDF(targetSelector, filename);
+        } else {
+            console.error('PDF export helper not available');
+            alert('PDF export is not available. Please refresh the page and try again.');
+        }
     });
     
     // Compare to carrier estimate
@@ -106,8 +113,16 @@ function displayResults(result) {
     `;
     
     // Re-attach event listeners
-    document.getElementById('export-pdf')?.addEventListener('click', () => {
-        alert('PDF export feature coming soon');
+    document.getElementById('export-pdf')?.addEventListener('click', async () => {
+        const targetSelector = document.getElementById('export-pdf')?.getAttribute('data-export-target') || '#results-panel';
+        const filename = document.getElementById('export-pdf')?.getAttribute('data-export-filename') || 'settlement-calculator-pro-report.pdf';
+        
+        if (window.PDFExporter && typeof window.PDFExporter.exportSectionToPDF === 'function') {
+            await window.PDFExporter.exportSectionToPDF(targetSelector, filename);
+        } else {
+            console.error('PDF export helper not available');
+            alert('PDF export is not available. Please refresh the page and try again.');
+        }
     });
     
     document.getElementById('compare-carrier')?.addEventListener('click', () => {

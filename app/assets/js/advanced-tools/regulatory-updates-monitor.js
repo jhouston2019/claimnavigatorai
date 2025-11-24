@@ -45,9 +45,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Download PDF
-    document.getElementById('download-pdf')?.addEventListener('click', () => {
-        // TODO: Implement PDF export
-        alert('PDF export feature coming soon');
+    document.getElementById('download-pdf')?.addEventListener('click', async () => {
+        const targetSelector = document.getElementById('download-pdf')?.getAttribute('data-export-target') || '#results-panel';
+        const filename = document.getElementById('download-pdf')?.getAttribute('data-export-filename') || 'regulatory-updates-report.pdf';
+        
+        if (window.PDFExporter && typeof window.PDFExporter.exportSectionToPDF === 'function') {
+            await window.PDFExporter.exportSectionToPDF(targetSelector, filename);
+        } else {
+            console.error('PDF export helper not available');
+            alert('PDF export is not available. Please refresh the page and try again.');
+        }
     });
     
     // Save to journal
@@ -93,8 +100,16 @@ function displayResults(result, state, category) {
     }
     
     // Re-attach event listeners
-    document.getElementById('download-pdf')?.addEventListener('click', () => {
-        alert('PDF export feature coming soon');
+    document.getElementById('download-pdf')?.addEventListener('click', async () => {
+        const targetSelector = document.getElementById('download-pdf')?.getAttribute('data-export-target') || '#results-panel';
+        const filename = document.getElementById('download-pdf')?.getAttribute('data-export-filename') || 'regulatory-updates-report.pdf';
+        
+        if (window.PDFExporter && typeof window.PDFExporter.exportSectionToPDF === 'function') {
+            await window.PDFExporter.exportSectionToPDF(targetSelector, filename);
+        } else {
+            console.error('PDF export helper not available');
+            alert('PDF export is not available. Please refresh the page and try again.');
+        }
     });
     
     document.getElementById('save-journal')?.addEventListener('click', () => {

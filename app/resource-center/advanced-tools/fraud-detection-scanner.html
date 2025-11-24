@@ -199,7 +199,7 @@
             </div>
         </div>
         
-        <div class="card results-panel" id="results-panel">
+        <div class="card results-panel" id="results-panel" data-export-target="#results-panel">
             <h2>AI Risk Analysis</h2>
             
             <div style="text-align: center; margin: 2rem 0;">
@@ -215,8 +215,9 @@
                 <div id="recommended-actions" style="margin-top: 1rem;"></div>
             </div>
             
-            <div style="margin-top: 2rem;">
-                <button class="btn btn-primary" id="generate-action-plan">Generate Action Plan</button>
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-primary export-pdf-btn" id="export-pdf" data-export-target="#results-panel" data-export-filename="fraud-detection-scan.pdf">Export to PDF</button>
+                <button class="btn btn-secondary" id="generate-action-plan">Generate Action Plan</button>
             </div>
         </div>
     </main>
@@ -228,6 +229,9 @@
         </div>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="/app/assets/js/utils/pdf-export.js"></script>
     <script src="/app/assets/js/advanced-tools/fraud-detection-scanner.js"></script>
 </body>
 </html>

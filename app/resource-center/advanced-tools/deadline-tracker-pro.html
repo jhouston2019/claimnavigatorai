@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Regulatory Updates Monitor - ClaimNavigatorAI</title>
+    <title>Deadline Tracker Pro - ClaimNavigatorAI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/app/assets/css/design-system.css">
     <link rel="stylesheet" href="/app/assets/css/claim-analysis.css">
     <style>
-        body.regulatory-monitor-page {
+        body.deadline-tracker-page {
             background: 
                 linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
                 url('/assets/images/backgrounds/paperwork6.jpeg') !important;
@@ -21,11 +21,11 @@
             color: #ffffff !important;
         }
         
-        body.regulatory-monitor-page * {
+        body.deadline-tracker-page * {
             color: #ffffff !important;
         }
         
-        body.regulatory-monitor-page a {
+        body.deadline-tracker-page a {
             color: #dbeafe !important;
         }
         
@@ -75,7 +75,9 @@
             color: #ffffff !important;
         }
         
-        .form-group select {
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 0.75rem;
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -88,6 +90,54 @@
         .form-group select option {
             background: #1e3a8a;
             color: #ffffff;
+        }
+        
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+        
+        .upload-area:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .event-log {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .event-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+        }
+        
+        .event-item input {
+            flex: 1;
+        }
+        
+        .deadline-item {
+            background: rgba(30, 64, 175, 0.2);
+            border-left: 4px solid #1e40af;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+        }
+        
+        .deadline-item.red-flag {
+            border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.2);
         }
         
         .btn {
@@ -119,23 +169,9 @@
             color: #ffffff !important;
         }
         
-        .update-item {
-            background: rgba(0, 0, 0, 0.2);
-            border-left: 4px solid #1e40af;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            border-radius: 0.5rem;
-        }
-        
-        .update-item h3 {
-            margin: 0 0 0.5rem 0;
-            color: #ffffff !important;
-        }
-        
-        .update-item .meta {
+        .btn-small {
+            padding: 0.5rem 1rem;
             font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.7) !important;
-            margin-bottom: 1rem;
         }
         
         .results-panel {
@@ -146,17 +182,9 @@
         .results-panel.show {
             display: block;
         }
-        
-        .ai-summary {
-            background: rgba(30, 64, 175, 0.2);
-            border: 1px solid rgba(30, 64, 175, 0.4);
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            margin-top: 2rem;
-        }
     </style>
 </head>
-<body class="regulatory-monitor-page">
+<body class="deadline-tracker-page">
     <!-- Header -->
     <header class="header">
         <div class="bar container">
@@ -171,23 +199,28 @@
                 <span>></span>
                 <a href="/app/resource-center/advanced-tools/advanced-tools.html">Advanced Tools Suite</a>
                 <span>></span>
-                <span>Regulatory Updates Monitor</span>
+                <span>Deadline Tracker Pro</span>
             </nav>
         </div>
     </header>
 
     <!-- Hero Header -->
     <div class="tool-header" style="max-width: 1000px; margin: 2rem auto;">
-        <h1>Regulatory Updates Monitor</h1>
-        <p>Stay informed about changes in insurance regulations, new case law, statutory updates, and regulatory enforcement actions.</p>
+        <h1>Deadline Tracker Pro</h1>
+        <p>Advanced deadline tracking with carrier-specific rules, policy deadlines, and statutory requirements.</p>
     </div>
 
     <!-- Main Content -->
     <main class="tool-container">
         <div class="card">
-            <h2 style="margin-top: 0;">Monitor Regulatory Updates</h2>
+            <h2 style="margin-top: 0;">Track Deadlines</h2>
             
-            <form id="regulatory-form">
+            <form id="deadline-form">
+                <div class="form-group">
+                    <label for="carrier-select">Carrier</label>
+                    <input type="text" id="carrier-select" placeholder="Enter carrier name" required>
+                </div>
+                
                 <div class="form-group">
                     <label for="state-select">State</label>
                     <select id="state-select" required>
@@ -246,37 +279,49 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="category-filter">Category</label>
-                    <select id="category-filter" required>
-                        <option value="">All Categories</option>
-                        <option value="Claims">Claims</option>
-                        <option value="Deadlines">Deadlines</option>
-                        <option value="Bad Faith">Bad Faith</option>
-                        <option value="Inspections">Inspections</option>
-                        <option value="Payments">Payments</option>
-                        <option value="Appraisal">Appraisal</option>
-                        <option value="Mediation">Mediation</option>
-                    </select>
+                    <label>Upload Policy (Optional)</label>
+                    <div class="upload-area" id="upload-area">
+                        <p>📄 Upload policy document (PDF)</p>
+                        <input type="file" id="file-input" accept=".pdf" style="display: none;">
+                    </div>
+                    <div id="file-preview" style="display: none; margin-top: 0.5rem; font-size: 0.875rem;">
+                        <span id="file-name"></span>
+                    </div>
+                </div>
+                
+                <div class="event-log">
+                    <h3 style="margin-top: 0;">Event Log</h3>
+                    <div id="events-list">
+                        <div class="event-item">
+                            <input type="date" class="event-date" placeholder="Date">
+                            <input type="text" class="event-description" placeholder="Event description">
+                            <button type="button" class="btn btn-secondary btn-small remove-event">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-small" id="add-event" style="margin-top: 1rem;">+ Add Event</button>
                 </div>
                 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Fetch Updates →</button>
+                    <button type="submit" class="btn btn-primary">Analyze Deadlines →</button>
                 </div>
             </form>
         </div>
         
-        <div class="card results-panel" id="results-panel" data-export-target="#results-panel">
-            <h2>Regulatory Updates</h2>
-            <div id="updates-list"></div>
+        <div class="card results-panel" id="results-container">
+            <h2>Deadline Analysis</h2>
             
-            <div class="ai-summary" id="ai-summary" style="display: none;">
-                <h3>What This Means for Your Claim</h3>
-                <div id="ai-summary-content"></div>
-            </div>
+            <div id="statutory-deadlines"></div>
+            
+            <div id="carrier-patterns"></div>
+            
+            <div id="policy-deadlines"></div>
+            
+            <div id="red-flags"></div>
             
             <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-                <button class="btn btn-primary export-pdf-btn" id="download-pdf" data-export-target="#results-panel" data-export-filename="regulatory-updates-report.pdf">Download as PDF</button>
-                <button class="btn btn-secondary" id="save-journal">Save to Claim Journal</button>
+                <button class="btn btn-primary" id="add-calendar">Add to Calendar</button>
+                <button class="btn btn-primary" id="send-reminder">Send Email Reminder</button>
+                <button class="btn btn-secondary export-pdf-btn" id="export-pdf" data-export-target="#results-container" data-export-filename="deadline-tracker-report.pdf">Export PDF</button>
             </div>
         </div>
     </main>
@@ -284,14 +329,14 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>© 2025 ClaimNavigatorAI • Regulatory Updates Monitor</p>
+            <p>© 2025 ClaimNavigatorAI • Deadline Tracker Pro</p>
         </div>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="/app/assets/js/utils/pdf-export.js"></script>
-    <script src="/app/assets/js/advanced-tools/regulatory-updates-monitor.js"></script>
+    <script src="/app/assets/js/advanced-tools/deadline-tracker-pro.js"></script>
 </body>
 </html>
 

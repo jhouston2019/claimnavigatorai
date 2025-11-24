@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Regulatory Updates Monitor - ClaimNavigatorAI</title>
+    <title>Expert Witness Database - ClaimNavigatorAI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/app/assets/css/design-system.css">
     <link rel="stylesheet" href="/app/assets/css/claim-analysis.css">
     <style>
-        body.regulatory-monitor-page {
+        body.expert-witness-page {
             background: 
                 linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
                 url('/assets/images/backgrounds/paperwork6.jpeg') !important;
@@ -21,11 +21,11 @@
             color: #ffffff !important;
         }
         
-        body.regulatory-monitor-page * {
+        body.expert-witness-page * {
             color: #ffffff !important;
         }
         
-        body.regulatory-monitor-page a {
+        body.expert-witness-page a {
             color: #dbeafe !important;
         }
         
@@ -75,6 +75,7 @@
             color: #ffffff !important;
         }
         
+        .form-group input,
         .form-group select {
             width: 100%;
             padding: 0.75rem;
@@ -88,6 +89,38 @@
         .form-group select option {
             background: #1e3a8a;
             color: #ffffff;
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-bar input {
+            flex: 1;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .results-table th,
+        .results-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .results-table th {
+            font-weight: 600;
+            color: #ffffff !important;
+        }
+        
+        .results-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
         }
         
         .btn {
@@ -119,44 +152,71 @@
             color: #ffffff !important;
         }
         
-        .update-item {
-            background: rgba(0, 0, 0, 0.2);
-            border-left: 4px solid #1e40af;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            border-radius: 0.5rem;
-        }
-        
-        .update-item h3 {
-            margin: 0 0 0.5rem 0;
-            color: #ffffff !important;
-        }
-        
-        .update-item .meta {
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.7) !important;
-            margin-bottom: 1rem;
-        }
-        
-        .results-panel {
+        .modal {
             display: none;
-            margin-top: 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
         }
         
-        .results-panel.show {
-            display: block;
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
         }
         
-        .ai-summary {
-            background: rgba(30, 64, 175, 0.2);
-            border: 1px solid rgba(30, 64, 175, 0.4);
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            margin-top: 2rem;
+        .modal-content {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: #ffffff !important;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 2rem;
+            height: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .search-bar {
+                flex-direction: column;
+            }
+            
+            .results-table {
+                font-size: 0.875rem;
+            }
+            
+            .results-table th,
+            .results-table td {
+                padding: 0.5rem;
+            }
         }
     </style>
 </head>
-<body class="regulatory-monitor-page">
+<body class="expert-witness-page">
     <!-- Header -->
     <header class="header">
         <div class="bar container">
@@ -171,27 +231,39 @@
                 <span>></span>
                 <a href="/app/resource-center/advanced-tools/advanced-tools.html">Advanced Tools Suite</a>
                 <span>></span>
-                <span>Regulatory Updates Monitor</span>
+                <span>Expert Witness Database</span>
             </nav>
         </div>
     </header>
 
     <!-- Hero Header -->
     <div class="tool-header" style="max-width: 1000px; margin: 2rem auto;">
-        <h1>Regulatory Updates Monitor</h1>
-        <p>Stay informed about changes in insurance regulations, new case law, statutory updates, and regulatory enforcement actions.</p>
+        <h1>Expert Witness Database</h1>
+        <p>Access a comprehensive database of expert witnesses across multiple disciplines. Find qualified professionals for your claim type.</p>
     </div>
 
     <!-- Main Content -->
     <main class="tool-container">
         <div class="card">
-            <h2 style="margin-top: 0;">Monitor Regulatory Updates</h2>
+            <h2 style="margin-top: 0;">Search Expert Witnesses</h2>
             
-            <form id="regulatory-form">
-                <div class="form-group">
-                    <label for="state-select">State</label>
-                    <select id="state-select" required>
-                        <option value="">Select state...</option>
+            <form id="expert-search-form">
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Search by name or specialty...">
+                    <select id="specialty-filter">
+                        <option value="">All Specialties</option>
+                        <option value="construction">Construction</option>
+                        <option value="engineering">Engineering</option>
+                        <option value="roofing">Roofing</option>
+                        <option value="plumbing">Plumbing</option>
+                        <option value="electrical">Electrical</option>
+                        <option value="hvac">HVAC</option>
+                        <option value="mold">Mold Remediation</option>
+                        <option value="forensic-accounting">Forensic Accounting</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <select id="state-filter">
+                        <option value="">All States</option>
                         <option value="AL">Alabama</option>
                         <option value="AK">Alaska</option>
                         <option value="AZ">Arizona</option>
@@ -243,55 +315,45 @@
                         <option value="WI">Wisconsin</option>
                         <option value="WY">Wyoming</option>
                     </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="category-filter">Category</label>
-                    <select id="category-filter" required>
-                        <option value="">All Categories</option>
-                        <option value="Claims">Claims</option>
-                        <option value="Deadlines">Deadlines</option>
-                        <option value="Bad Faith">Bad Faith</option>
-                        <option value="Inspections">Inspections</option>
-                        <option value="Payments">Payments</option>
-                        <option value="Appraisal">Appraisal</option>
-                        <option value="Mediation">Mediation</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Fetch Updates →</button>
+                    <button type="submit" class="btn btn-primary">Search</button>
                 </div>
             </form>
         </div>
         
-        <div class="card results-panel" id="results-panel" data-export-target="#results-panel">
-            <h2>Regulatory Updates</h2>
-            <div id="updates-list"></div>
+        <div class="card" id="results-container" style="display: none;">
+            <h2>Search Results</h2>
+            <div id="results-table-container"></div>
             
-            <div class="ai-summary" id="ai-summary" style="display: none;">
-                <h3>What This Means for Your Claim</h3>
-                <div id="ai-summary-content"></div>
-            </div>
-            
-            <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-                <button class="btn btn-primary export-pdf-btn" id="download-pdf" data-export-target="#results-panel" data-export-filename="regulatory-updates-report.pdf">Download as PDF</button>
-                <button class="btn btn-secondary" id="save-journal">Save to Claim Journal</button>
+            <div style="margin-top: 2rem;">
+                <button class="btn btn-secondary export-pdf-btn" id="export-pdf" data-export-target="#results-container" data-export-filename="expert-witness-database-results.pdf">Export to PDF</button>
             </div>
         </div>
     </main>
 
+    <!-- Expert Profile Modal -->
+    <div class="modal" id="expert-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-expert-name">Expert Profile</h2>
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+            <div id="modal-expert-content">
+                <!-- Profile content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>© 2025 ClaimNavigatorAI • Regulatory Updates Monitor</p>
+            <p>© 2025 ClaimNavigatorAI • Expert Witness Database</p>
         </div>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="/app/assets/js/utils/pdf-export.js"></script>
-    <script src="/app/assets/js/advanced-tools/regulatory-updates-monitor.js"></script>
+    <script src="/app/assets/js/advanced-tools/expert-witness-database.js"></script>
 </body>
 </html>
 
