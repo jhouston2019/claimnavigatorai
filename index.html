@@ -1009,15 +1009,15 @@
     <div class="tool-grid" style="margin-top: 2rem;">
       <div class="tool-card">
         <h3>Financial Clarity</h3>
-        <p style="text-align: center; color: #d9e3ee;">See exactly where your claim stands, what's missing, and what documentation strengthens your position.</p>
+        <p style="text-align: center; color: #d9e3ee; font-size:1.2rem;">See exactly where your claim stands, what's missing, and what documentation strengthens your position.</p>
       </div>
       <div class="tool-card">
         <h3>Strategic Advantage</h3>
-        <p style="text-align: center; color: #d9e3ee;">Use the same professional standards adjusters and attorneys rely on — now built into your tools.</p>
+        <p style="text-align: center; color: #d9e3ee; font-size:1.2rem;">Use the same professional standards adjusters and attorneys rely on — now built into your tools.</p>
       </div>
       <div class="tool-card">
         <h3>Confidence & Control</h3>
-        <p style="text-align: center; color: #d9e3ee;">Know every step, what to do next, and how to avoid costly claim-ending mistakes.</p>
+        <p style="text-align: center; color: #d9e3ee; font-size:1.2rem;">Know every step, what to do next, and how to avoid costly claim-ending mistakes.</p>
       </div>
     </div>
   </section>
@@ -1328,12 +1328,21 @@
 
   <script>
 function calculateROI() {
-  const damage = Number(document.getElementById("roi-damage").value);
-  const offer = Number(document.getElementById("roi-offer").value);
-  const deductible = Number(document.getElementById("roi-deductible").value);
+  const damageInput = document.getElementById("roi-damage").value;
+  const offerInput = document.getElementById("roi-offer").value;
+  const deductibleInput = document.getElementById("roi-deductible").value;
 
-  if (!damage || !offer || !deductible) {
+  if (!damageInput || !offerInput || deductibleInput === "") {
     document.getElementById("roi-result").innerText = "Please complete all fields.";
+    return;
+  }
+
+  const damage = Number(damageInput);
+  const offer = Number(offerInput);
+  const deductible = Number(deductibleInput);
+
+  if (isNaN(damage) || isNaN(offer) || isNaN(deductible) || damage <= 0 || offer < 0 || deductible < 0) {
+    document.getElementById("roi-result").innerText = "Please enter valid numbers. Damage must be greater than 0.";
     return;
   }
 
