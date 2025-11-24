@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bad Faith Evidence Tracker - ClaimNavigatorAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/claim-analysis.css">
+    <style>
+        body.bad-faith-tracker-page {
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+                url('/assets/images/backgrounds/paperwork6.jpeg') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            color: #ffffff !important;
+        }
+        
+        body.bad-faith-tracker-page * {
+            color: #ffffff !important;
+        }
+        
+        body.bad-faith-tracker-page a {
+            color: #dbeafe !important;
+        }
+        
+        .tool-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .tool-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: #ffffff !important;
+        }
+        .tool-header p {
+            font-size: 1.1rem;
+            color: #dbeafe !important;
+            margin: 0;
+        }
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(8px) !important;
+            padding: 2rem !important;
+            border-radius: 1rem !important;
+            margin-bottom: 2rem !important;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #ffffff !important;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff !important;
+            font-size: 1rem;
+        }
+        
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+        
+        .upload-area:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .risk-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+        
+        .risk-score.low { color: #10b981 !important; }
+        .risk-score.medium { color: #f59e0b !important; }
+        .risk-score.high { color: #ef4444 !important; }
+        
+        .timeline-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 4px solid #1e40af;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.25rem;
+        }
+        
+        .timeline-item .date {
+            font-weight: 600;
+            color: #dbeafe !important;
+        }
+        
+        .btn {
+            font-family: 'Poppins', sans-serif;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #1e40af;
+            color: #ffffff !important;
+        }
+        
+        .btn-primary:hover {
+            background: #1e3a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff !important;
+        }
+    </style>
+</head>
+<body class="bad-faith-tracker-page">
+    <!-- Header -->
+    <header class="header">
+        <div class="bar container">
+            <div class="brand">
+                <div class="logo"></div>
+                <div>Claim Navigation AI</div>
+            </div>
+            <nav class="nav">
+                <a href="/app/index.html">Home</a>
+                <span>></span>
+                <a href="/app/resource-center.html">Resource Center</a>
+                <span>></span>
+                <a href="/app/resource-center/advanced-tools/advanced-tools.html">Advanced Tools Suite</a>
+                <span>></span>
+                <span>Bad Faith Evidence Tracker</span>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Header -->
+    <div class="tool-header" style="max-width: 1000px; margin: 2rem auto;">
+        <h1>Bad Faith Evidence Tracker</h1>
+        <p>Systematically document and organize evidence of bad faith practices. Track delays, denials, lowball offers, and policy violations.</p>
+    </div>
+
+    <!-- Main Content -->
+    <main class="tool-container">
+        <div class="card">
+            <h2 style="margin-top: 0;">Add Bad Faith Event</h2>
+            
+            <form id="bad-faith-form">
+                <div class="form-group">
+                    <label for="event-date">Event Date</label>
+                    <input type="date" id="event-date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="event-description">Event Description</label>
+                    <textarea id="event-description" rows="4" placeholder="Describe the bad faith event..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="carrier-action">Carrier Action Category</label>
+                    <select id="carrier-action" required>
+                        <option value="">Select category...</option>
+                        <option value="delay">Unreasonable Delay</option>
+                        <option value="misstatement">Misstatement of Facts</option>
+                        <option value="request-abuse">Request Abuse / Excessive Documentation</option>
+                        <option value="underpayment">Underpayment / Lowball Offer</option>
+                        <option value="denial">Improper Denial</option>
+                        <option value="policy-misinterpretation">Policy Misinterpretation</option>
+                        <option value="failure-to-respond">Failure to Respond</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Supporting Evidence</label>
+                    <div class="upload-area" id="upload-area">
+                        <p>📄 Upload supporting documents</p>
+                        <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png" multiple style="display: none;">
+                    </div>
+                    <div id="file-list" style="margin-top: 0.5rem; font-size: 0.875rem;"></div>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Add Event & Analyze</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="card" id="analysis-panel" style="display: none;">
+            <h2>AI Analysis</h2>
+            
+            <div style="text-align: center; margin: 2rem 0;">
+                <p style="margin-bottom: 0.5rem;">Bad-Faith Risk Score</p>
+                <div class="risk-score" id="risk-score">0</div>
+                <p style="color: rgba(255, 255, 255, 0.7);">out of 100</p>
+            </div>
+            
+            <div id="severity-display" style="margin-top: 1rem;"></div>
+            
+            <div id="ai-notes" style="margin-top: 1.5rem;"></div>
+        </div>
+        
+        <div class="card" id="timeline-panel" style="display: none;">
+            <h2>Bad Faith Timeline</h2>
+            <div id="timeline" style="margin-top: 1rem;"></div>
+            
+            <div style="margin-top: 2rem; text-align: center;">
+                <p style="margin-bottom: 0.5rem;">Running Bad-Faith Risk Score</p>
+                <div class="risk-score" id="running-risk-score">0</div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <button class="btn btn-primary" id="export-report">Export Full Report</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 ClaimNavigatorAI • Bad Faith Evidence Tracker</p>
+        </div>
+    </footer>
+
+    <script src="/app/assets/js/advanced-tools/bad-faith-evidence-tracker.js"></script>
+</body>
+</html>
+

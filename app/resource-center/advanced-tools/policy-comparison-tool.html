@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Policy Comparison Tool - ClaimNavigatorAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/claim-analysis.css">
+    <style>
+        body.policy-comparison-page {
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+                url('/assets/images/backgrounds/paperwork6.jpeg') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            color: #ffffff !important;
+        }
+        
+        body.policy-comparison-page * {
+            color: #ffffff !important;
+        }
+        
+        body.policy-comparison-page a {
+            color: #dbeafe !important;
+        }
+        
+        .tool-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .tool-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: #ffffff !important;
+        }
+        .tool-header p {
+            font-size: 1.1rem;
+            color: #dbeafe !important;
+            margin: 0;
+        }
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(8px) !important;
+            padding: 2rem !important;
+            border-radius: 1rem !important;
+            margin-bottom: 2rem !important;
+        }
+        
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-area:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .comparison-section {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+        
+        .difference-highlight {
+            background: rgba(239, 68, 68, 0.2);
+            border-left: 4px solid #ef4444;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border-radius: 0.25rem;
+        }
+        
+        .btn {
+            font-family: 'Poppins', sans-serif;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #1e40af;
+            color: #ffffff !important;
+        }
+        
+        .btn-primary:hover {
+            background: #1e3a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff !important;
+        }
+        
+        .results-panel {
+            display: none;
+            margin-top: 2rem;
+        }
+        
+        .results-panel.show {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="policy-comparison-page">
+    <!-- Header -->
+    <header class="header">
+        <div class="bar container">
+            <div class="brand">
+                <div class="logo"></div>
+                <div>Claim Navigation AI</div>
+            </div>
+            <nav class="nav">
+                <a href="/app/index.html">Home</a>
+                <span>></span>
+                <a href="/app/resource-center.html">Resource Center</a>
+                <span>></span>
+                <a href="/app/resource-center/advanced-tools/advanced-tools.html">Advanced Tools Suite</a>
+                <span>></span>
+                <span>Policy Comparison Tool</span>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Header -->
+    <div class="tool-header" style="max-width: 1000px; margin: 2rem auto;">
+        <h1>Policy Comparison Tool</h1>
+        <p>Compare multiple insurance policies side-by-side to identify coverage gaps, exclusions, and favorable terms.</p>
+    </div>
+
+    <!-- Main Content -->
+    <main class="tool-container">
+        <div class="card">
+            <h2 style="margin-top: 0;">Upload Policies</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <h3>Policy A</h3>
+                    <div class="upload-area" id="upload-area-a">
+                        <p>📄 Upload Policy A (PDF)</p>
+                        <input type="file" id="file-input-a" accept=".pdf" style="display: none;">
+                    </div>
+                    <div id="file-preview-a" style="display: none; margin-top: 0.5rem; font-size: 0.875rem;">
+                        <span id="file-name-a"></span>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>Policy B</h3>
+                    <div class="upload-area" id="upload-area-b">
+                        <p>📄 Upload Policy B (PDF)</p>
+                        <input type="file" id="file-input-b" accept=".pdf" style="display: none;">
+                    </div>
+                    <div id="file-preview-b" style="display: none; margin-top: 0.5rem; font-size: 0.875rem;">
+                        <span id="file-name-b"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 1.5rem;">
+                <button class="btn btn-primary" id="compare-btn" disabled>Compare Policies</button>
+            </div>
+        </div>
+        
+        <div class="card results-panel" id="results-panel">
+            <h2>Policy Comparison Results</h2>
+            
+            <div class="comparison-grid">
+                <div class="comparison-section">
+                    <h3>Policy A Coverage</h3>
+                    <div id="policy-a-sections"></div>
+                </div>
+                
+                <div class="comparison-section">
+                    <h3>Policy B Coverage</h3>
+                    <div id="policy-b-sections"></div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <h3>Key Differences</h3>
+                <div id="differences" style="margin-top: 1rem;"></div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <h3>Exclusions Comparison</h3>
+                <div id="exclusions" style="margin-top: 1rem;"></div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <button class="btn btn-primary" id="export-report">Export Comparison Report</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 ClaimNavigatorAI • Policy Comparison Tool</p>
+        </div>
+    </footer>
+
+    <script src="/app/assets/js/advanced-tools/policy-comparison-tool.js"></script>
+</body>
+</html>
+

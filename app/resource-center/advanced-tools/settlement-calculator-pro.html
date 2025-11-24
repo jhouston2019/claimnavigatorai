@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settlement Calculator Pro - ClaimNavigatorAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/claim-analysis.css">
+    <style>
+        body.settlement-calculator-page {
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+                url('/assets/images/backgrounds/paperwork6.jpeg') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            color: #ffffff !important;
+        }
+        
+        body.settlement-calculator-page * {
+            color: #ffffff !important;
+        }
+        
+        body.settlement-calculator-page a {
+            color: #dbeafe !important;
+        }
+        
+        .tool-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .tool-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: #ffffff !important;
+        }
+        .tool-header p {
+            font-size: 1.1rem;
+            color: #dbeafe !important;
+            margin: 0;
+        }
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(8px) !important;
+            padding: 2rem !important;
+            border-radius: 1rem !important;
+            margin-bottom: 2rem !important;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #ffffff !important;
+        }
+        
+        .form-group select,
+        .form-group input[type="number"],
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff !important;
+            font-size: 1rem;
+        }
+        
+        .form-group select option {
+            background: #1e3a8a;
+            color: #ffffff;
+        }
+        
+        .slider-container {
+            margin-top: 0.5rem;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1e40af;
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1e40af;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .slider-value {
+            text-align: center;
+            margin-top: 0.5rem;
+            font-weight: 600;
+            color: #dbeafe !important;
+        }
+        
+        .btn {
+            font-family: 'Poppins', sans-serif;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #1e40af;
+            color: #ffffff !important;
+        }
+        
+        .btn-primary:hover {
+            background: #1e3a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff !important;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .results-panel {
+            display: none;
+            margin-top: 2rem;
+        }
+        
+        .results-panel.show {
+            display: block;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .result-card {
+            background: rgba(30, 64, 175, 0.2);
+            border: 1px solid rgba(30, 64, 175, 0.4);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+        
+        .result-card h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #dbeafe !important;
+        }
+        
+        .result-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff !important;
+        }
+        
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="settlement-calculator-page">
+    <!-- Header -->
+    <header class="header">
+        <div class="bar container">
+            <div class="brand">
+                <div class="logo"></div>
+                <div>Claim Navigation AI</div>
+            </div>
+            <nav class="nav">
+                <a href="/app/index.html">Home</a>
+                <span>></span>
+                <a href="/app/resource-center.html">Resource Center</a>
+                <span>></span>
+                <a href="/app/resource-center/advanced-tools/advanced-tools.html">Advanced Tools Suite</a>
+                <span>></span>
+                <span>Settlement Calculator Pro</span>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Header -->
+    <div class="tool-header" style="max-width: 1000px; margin: 2rem auto;">
+        <h1>Settlement Calculator Pro</h1>
+        <p>Advanced settlement valuation tool that factors in policy limits, depreciation, replacement costs, and legal precedents.</p>
+    </div>
+
+    <!-- Main Content -->
+    <main class="tool-container">
+        <div class="card">
+            <h2 style="margin-top: 0;">Calculate Settlement Value</h2>
+            
+            <form id="settlement-form">
+                <div class="form-group">
+                    <label for="damage-category">Damage Category</label>
+                    <select id="damage-category" required>
+                        <option value="">Select category...</option>
+                        <option value="roof">Roof Damage</option>
+                        <option value="interior">Interior Damage</option>
+                        <option value="structural">Structural Damage</option>
+                        <option value="plumbing">Plumbing/Water Damage</option>
+                        <option value="electrical">Electrical Damage</option>
+                        <option value="hvac">HVAC System</option>
+                        <option value="appliances">Appliances</option>
+                        <option value="personal-property">Personal Property</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="square-footage">Square Footage</label>
+                    <input type="number" id="square-footage" min="0" step="1" placeholder="Enter square footage" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="material-grade">Material Grade</label>
+                    <select id="material-grade" required>
+                        <option value="">Select grade...</option>
+                        <option value="economy">Economy</option>
+                        <option value="standard">Standard</option>
+                        <option value="premium">Premium</option>
+                        <option value="luxury">Luxury</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="labor-multiplier">Labor Multiplier</label>
+                    <input type="number" id="labor-multiplier" min="1" max="3" step="0.1" value="1.5" placeholder="1.0 - 3.0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="depreciation">Depreciation: <span id="depreciation-value">0</span>%</label>
+                    <div class="slider-container">
+                        <input type="range" id="depreciation" min="0" max="100" value="0" class="slider">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Calculate Settlement →</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="card results-panel" id="results-panel">
+            <h2>Settlement Calculation Results</h2>
+            <div class="results-grid">
+                <div class="result-card">
+                    <h4>Total RCV</h4>
+                    <div class="value" id="total-rcv">$0.00</div>
+                </div>
+                <div class="result-card">
+                    <h4>Total ACV</h4>
+                    <div class="value" id="total-acv">$0.00</div>
+                </div>
+                <div class="result-card">
+                    <h4>Depreciation</h4>
+                    <div class="value" id="depreciation-amount">$0.00</div>
+                </div>
+                <div class="result-card">
+                    <h4>Fair Range</h4>
+                    <div class="value" id="fair-range">$0.00 - $0.00</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <h3>AI Valuation Notes</h3>
+                <div id="ai-notes" style="padding: 1rem; background: rgba(0, 0, 0, 0.2); border-radius: 0.5rem; margin-top: 1rem;"></div>
+            </div>
+            
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-primary" id="export-pdf">Export to PDF</button>
+                <button class="btn btn-secondary" id="compare-carrier">Compare to Carrier Estimate</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 ClaimNavigatorAI • Settlement Calculator Pro</p>
+        </div>
+    </footer>
+
+    <script src="/app/assets/js/advanced-tools/settlement-calculator-pro.js"></script>
+</body>
+</html>
+
