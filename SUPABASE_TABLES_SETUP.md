@@ -505,6 +505,47 @@ CREATE POLICY "Anyone can view AI examples"
   USING (true);
 ```
 
+### 16. compliance_engine_audits
+
+Stores audit logs for Compliance Engine analyses.
+
+```sql
+CREATE TABLE IF NOT EXISTS compliance_engine_audits (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  claim_reference TEXT,
+  state TEXT NOT NULL,
+  carrier TEXT NOT NULL,
+  claim_type TEXT NOT NULL,
+  input_summary TEXT,
+  result_summary TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_compliance_engine_audits_user ON compliance_engine_audits(user_id);
+CREATE INDEX IF NOT EXISTS idx_compliance_engine_audits_state ON compliance_engine_audits(state);
+CREATE INDEX IF NOT EXISTS idx_compliance_engine_audits_carrier ON compliance_engine_audits(carrier);
+CREATE INDEX IF NOT EXISTS idx_compliance_engine_audits_created ON compliance_engine_audits(created_at);
+```
+
+## Additional RLS Policies (Compliance Engine)
+
+```sql
+-- Enable RLS for compliance_engine_audits
+ALTER TABLE compliance_engine_audits ENABLE ROW LEVEL SECURITY;
+
+-- Users can view their own audit logs
+CREATE POLICY "Users can view own compliance audits"
+  ON compliance_engine_audits FOR SELECT
+  USING (auth.uid() = user_id OR user_id IS NULL);
+
+-- Users can insert their own audit logs
+CREATE POLICY "Users can insert own compliance audits"
+  ON compliance_engine_audits FOR INSERT
+  WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
+```
+
 ## Notes
 
 - All tables use UUID primary keys
@@ -513,4 +554,5 @@ CREATE POLICY "Anyone can view AI examples"
 - Carrier profiles, regulatory updates, expert witnesses, settlement history, communication templates, and AI configs/rules/examples are publicly readable (no sensitive user data)
 - JSONB fields allow flexible storage of structured data
 - Indexes improve query performance
+- Compliance Engine audits allow NULL user_id for anonymous usage tracking
 

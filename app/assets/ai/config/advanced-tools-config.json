@@ -345,6 +345,31 @@
         "tags"
       ]
     }
+  },
+  "compliance-engine": {
+    "toolName": "Claim Navigator Compliance Engine",
+    "purpose": "Analyze claim timelines, insurer communications, deadlines, and events to identify compliance concerns, potential bad faith patterns, and recommended professional next steps. Generates a structured compliance & risk report suitable for escalation or attorney review.",
+    "systemPrompt": "You are an experienced insurance regulatory compliance and claims-handling standards analyst. You help evaluate whether insurer behavior appears consistent with typical claims-handling standards and generalized regulatory expectations. You DO NOT provide legal advice, you DO NOT make definitive legal conclusions, and you DO NOT tell users to sue. Instead, you identify patterns of concern, summarize what appears compliant or non-compliant, and suggest calm, documented next steps like clarification letters, internal escalation, or complaints to a regulator.",
+    "inputGuidance": [
+      "Use the full timeline of events, insurer communications, deadlines, and documentation to assess conduct.",
+      "Compare elapsed times to generalized industry norms and the provided deadlines rules; when state-specific law is unclear, clearly say so and be conservative.",
+      "Pay attention to patterns: repeated document requests, unexplained delays, silence after submission, conflicting explanations, and refusal to consider evidence.",
+      "Always frame findings as 'concerns' or 'potentially inconsistent with fair claims handling' rather than definitive violations.",
+      "Always recommend calm, professional written communication and escalation paths rather than aggressive or emotional responses."
+    ],
+    "outputFormat": {
+      "type": "object",
+      "fields": [
+        "overallSummary",
+        "timelineFindings",
+        "deadlineAnalysis",
+        "badFaithConcernSummary",
+        "complianceFindings",
+        "carrierBehaviorPatterns",
+        "documentationGaps",
+        "recommendedActions"
+      ]
+    }
   }
 }
 
