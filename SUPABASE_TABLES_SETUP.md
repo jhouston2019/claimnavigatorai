@@ -582,6 +582,49 @@ CREATE POLICY "Users can update own compliance alerts"
   USING (auth.uid() = user_id);
 ```
 
+### 18. compliance_health_snapshots
+
+Stores historical compliance health score snapshots.
+
+```sql
+CREATE TABLE IF NOT EXISTS compliance_health_snapshots (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  claim_id TEXT,
+  state TEXT NOT NULL,
+  carrier TEXT NOT NULL,
+  claim_type TEXT NOT NULL,
+  score INTEGER NOT NULL CHECK (score >= 0 AND score <= 100),
+  status TEXT NOT NULL CHECK (status IN ('good', 'watch', 'elevated-risk', 'critical')),
+  factors JSONB DEFAULT '[]'::jsonb,
+  recommendations JSONB DEFAULT '[]'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_compliance_health_snapshots_user ON compliance_health_snapshots(user_id);
+CREATE INDEX IF NOT EXISTS idx_compliance_health_snapshots_claim ON compliance_health_snapshots(claim_id);
+CREATE INDEX IF NOT EXISTS idx_compliance_health_snapshots_created ON compliance_health_snapshots(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_compliance_health_snapshots_status ON compliance_health_snapshots(status);
+```
+
+## Additional RLS Policies (Compliance Health Snapshots)
+
+```sql
+-- Enable RLS for compliance_health_snapshots
+ALTER TABLE compliance_health_snapshots ENABLE ROW LEVEL SECURITY;
+
+-- Users can view their own health snapshots
+CREATE POLICY "Users can view own health snapshots"
+  ON compliance_health_snapshots FOR SELECT
+  USING (auth.uid() = user_id);
+
+-- Users can insert their own health snapshots
+CREATE POLICY "Users can insert own health snapshots"
+  ON compliance_health_snapshots FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+```
+
 Stores audit logs for Compliance Engine analyses.
 
 ```sql

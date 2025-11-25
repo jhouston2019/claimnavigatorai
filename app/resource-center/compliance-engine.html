@@ -399,6 +399,9 @@
 
     <!-- Main Content -->
     <main class="tool-container">
+        <!-- Compliance Health Overview -->
+        <div id="compliance-health-widget" style="max-width: 600px; margin: 0 auto 2rem auto;"></div>
+        
         <!-- Input Panel -->
         <div class="card">
             <h2 style="margin-top: 0;">Claim Information</h2>
@@ -626,6 +629,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="/app/assets/js/utils/pdf-export.js"></script>
+    <script src="/app/assets/js/utils/compliance-health-widget.js" type="module"></script>
     <script src="/app/assets/js/compliance-engine.js"></script>
+    <script type="module">
+        import { renderComplianceHealthWidget } from '/app/assets/js/utils/compliance-health-widget.js';
+        document.addEventListener('DOMContentLoaded', () => {
+            renderComplianceHealthWidget('#compliance-health-widget');
+        });
+    </script>
 </body>
 </html>

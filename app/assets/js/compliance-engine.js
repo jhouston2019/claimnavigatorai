@@ -3,7 +3,16 @@
  * Comprehensive compliance and bad faith risk analysis
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Dynamically import auth helper
+    let getSupabaseClient;
+    try {
+        const authModule = await import('../auth.js');
+        getSupabaseClient = authModule.getSupabaseClient;
+    } catch (error) {
+        console.warn('Failed to load auth module:', error);
+        getSupabaseClient = () => null;
+    }
     // State
     let events = [];
     let letterFiles = [];
@@ -299,6 +308,9 @@ document.addEventListener('DOMContentLoaded', () => {
             resultsPanel.classList.add('show');
             actionButtonsPanel.style.display = 'block';
             
+            // Update compliance dashboard
+            updateComplianceDashboard();
+            
         } catch (error) {
             console.error('Compliance analysis error:', error);
             alert('Compliance analysis failed. Please try again. Error: ' + error.message);
@@ -440,3 +452,99 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+/**
+ * Update compliance dashboard with stats
+ */
+async function updateComplianceDashboard() {
+    try {
+        // Get Supabase client
+        let getSupabaseClient;
+        try {
+            const authModule = await import('../auth.js');
+            getSupabaseClient = authModule.getSupabaseClient;
+        } catch (error) {
+            console.warn('Failed to load auth module:', error);
+            return;
+        }
+        
+        const client = await getSupabaseClient();
+        if (!client) return;
+        
+        const { data: { user } } = await client.auth.getUser();
+        if (!user) return;
+        
+        // Get active alerts count
+        const { data: alerts } = await client
+            .from('compliance_alerts')
+            .select('id', { count: 'exact' })
+            .eq('user_id', user.id)
+            .is('resolved_at', null);
+        
+        const activeAlertsCount = alerts?.length || 0;
+        
+        // Get high severity alerts
+        const { data: highAlerts } = await client
+            .from('compliance_alerts')
+            .select('id', { count: 'exact' })
+            .eq('user_id', user.id)
+            .eq('severity', 'high')
+            .is('resolved_at', null);
+        
+        const highSeverityCount = highAlerts?.length || 0;
+        
+        // Get deadlines count
+        const { data: deadlines } = await client
+            .from('deadlines')
+            .select('id', { count: 'exact' })
+            .eq('user_id', user.id)
+            .eq('completed', false);
+        
+        const totalDeadlines = deadlines?.length || 0;
+        
+        // Get upcoming deadlines (next 7 days)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const nextWeek = new Date(today);
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        
+        const { data: upcomingDeadlines } = await client
+            .from('deadlines')
+            .select('id', { count: 'exact' })
+            .eq('user_id', user.id)
+            .eq('completed', false)
+            .gte('date', today.toISOString().split('T')[0])
+            .lte('date', nextWeek.toISOString().split('T')[0]);
+        
+        const upcomingCount = upcomingDeadlines?.length || 0;
+        
+        // Render dashboard stats
+        const dashboardStats = document.getElementById('dashboard-stats');
+        const dashboard = document.getElementById('compliance-dashboard');
+        
+        if (dashboardStats && dashboard) {
+            dashboardStats.innerHTML = `
+                <div class="stat-card" style="background: rgba(255, 255, 255, 0.05); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                    <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: #ffffff !important;">${activeAlertsCount}</div>
+                    <div class="stat-label" style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.7) !important;">Active Alerts</div>
+                </div>
+                <div class="stat-card" style="background: rgba(255, 255, 255, 0.05); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                    <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: #ef4444 !important;">${highSeverityCount}</div>
+                    <div class="stat-label" style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.7) !important;">High Severity</div>
+                </div>
+                <div class="stat-card" style="background: rgba(255, 255, 255, 0.05); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                    <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: #ffffff !important;">${totalDeadlines}</div>
+                    <div class="stat-label" style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.7) !important;">Total Deadlines</div>
+                </div>
+                <div class="stat-card" style="background: rgba(255, 255, 255, 0.05); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                    <div class="stat-number" style="font-size: 2rem; font-weight: 700; color: #f59e0b !important;">${upcomingCount}</div>
+                    <div class="stat-label" style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.7) !important;">Upcoming (7 days)</div>
+                </div>
+            `;
+            
+            dashboard.style.display = 'block';
+        }
+    } catch (error) {
+        console.warn('Failed to update compliance dashboard:', error);
+    }
+}
