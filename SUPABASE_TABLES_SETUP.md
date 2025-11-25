@@ -756,6 +756,54 @@ CREATE POLICY "Users can delete their own estimate interpretations"
   USING (auth.uid() = user_id);
 ```
 
+### 22. claim_checklist_tasks
+
+Stores checklist tasks (both auto-generated and user-created) for claim management.
+
+```sql
+CREATE TABLE IF NOT EXISTS claim_checklist_tasks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  claim_id TEXT NOT NULL,
+  task_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  due_date DATE,
+  severity TEXT CHECK (severity IN ('critical', 'recommended', 'optional')),
+  category TEXT,
+  related_tool TEXT,
+  completed BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  completed_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_claim_checklist_tasks_user_id ON claim_checklist_tasks(user_id);
+CREATE INDEX IF NOT EXISTS idx_claim_checklist_tasks_claim_id ON claim_checklist_tasks(claim_id);
+CREATE INDEX IF NOT EXISTS idx_claim_checklist_tasks_task_id ON claim_checklist_tasks(task_id);
+CREATE INDEX IF NOT EXISTS idx_claim_checklist_tasks_due_date ON claim_checklist_tasks(due_date);
+CREATE INDEX IF NOT EXISTS idx_claim_checklist_tasks_completed ON claim_checklist_tasks(completed);
+
+-- RLS Policies
+ALTER TABLE claim_checklist_tasks ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own checklist tasks"
+  ON claim_checklist_tasks FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own checklist tasks"
+  ON claim_checklist_tasks FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own checklist tasks"
+  ON claim_checklist_tasks FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own checklist tasks"
+  ON claim_checklist_tasks FOR DELETE
+  USING (auth.uid() = user_id);
+```
+
 ## Notes
 
 - All tables use UUID primary keys
