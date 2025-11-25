@@ -3,7 +3,7 @@
  * Track and analyze deadlines for insurance claims
  */
 
-const { runOpenAI } = require('../lib/ai-utils');
+const { runToolAI, runToolAIJSON } = require('../lib/advanced-tools-ai-helper');
 const { createClient } = require('@supabase/supabase-js');
 const pdfParse = require('pdf-parse');
 
@@ -66,17 +66,24 @@ exports.handler = async (event) => {
       // Note: In production, fetch and parse the policy PDF
       // For now, use AI to generate policy-based deadlines
       try {
-        const systemPrompt = `You are an insurance policy analyst. Extract deadline information from policy documents.`;
         const userPrompt = `Based on a ${state} insurance policy for ${carrier}, identify key policy deadlines and timeframes that policyholders should be aware of. Return as a JSON array of deadline objects with title, description, and typical timeframe.`;
 
-        const aiResponse = await runOpenAI(systemPrompt, userPrompt);
+        const aiResponseObj = await runToolAIJSON('deadline-tracker-pro', userPrompt, {}, 'deadline-rules');
         try {
-          policyDeadlines = JSON.parse(aiResponse);
+          // Handle both object and string responses
+          if (Array.isArray(aiResponseObj)) {
+            policyDeadlines = aiResponseObj;
+          } else if (typeof aiResponseObj === 'object' && aiResponseObj !== null) {
+            policyDeadlines = [aiResponseObj];
+          } else {
+            policyDeadlines = JSON.parse(String(aiResponseObj));
+          }
         } catch (e) {
           // If not JSON, create a simple deadline entry
+          const aiResponseStr = typeof aiResponseObj === 'string' ? aiResponseObj : JSON.stringify(aiResponseObj);
           policyDeadlines = [{
             title: 'Policy Review Required',
-            description: aiResponse.substring(0, 200),
+            description: aiResponseStr.substring(0, 200),
             dueDate: 'Review policy document'
           }];
         }
@@ -89,7 +96,6 @@ exports.handler = async (event) => {
     let carrierPatterns = '';
     if (process.env.OPENAI_API_KEY) {
       try {
-        const systemPrompt = `You are an insurance claims deadline analyst. Analyze carrier-specific deadline patterns and expectations.`;
         const userPrompt = `For ${carrier} in ${state}, based on the following events:
 ${JSON.stringify(events || [], null, 2)}
 
@@ -101,7 +107,7 @@ Provide insights on:
 
 Keep response concise (2-3 paragraphs).`;
 
-        carrierPatterns = await runOpenAI(systemPrompt, userPrompt);
+        carrierPatterns = await runToolAI('deadline-tracker-pro', userPrompt, {}, 'deadline-rules');
       } catch (aiError) {
         console.error('AI carrier analysis error:', aiError);
       }

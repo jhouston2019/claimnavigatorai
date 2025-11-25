@@ -4,7 +4,7 @@
  */
 
 const pdfParse = require('pdf-parse');
-const { runOpenAI } = require('../lib/ai-utils');
+const { runToolAIJSON } = require('../lib/advanced-tools-ai-helper');
 const { createClient } = require('@supabase/supabase-js');
 
 // Simple multipart parser
@@ -126,8 +126,6 @@ exports.handler = async (event) => {
     }
 
     // AI compliance analysis
-    const systemPrompt = `You are an expert insurance compliance analyst. Analyze carrier behavior for statutory violations.`;
-    
     const userPrompt = `Analyze this compliance issue:
 
 Carrier: ${carrierName}
@@ -149,21 +147,14 @@ Format as JSON:
   "recommendedAction": "<action>"
 }`;
 
-    const aiResponse = await runOpenAI(systemPrompt, userPrompt, {
-      model: 'gpt-4o',
-      temperature: 0.3,
-      max_tokens: 1000
-    });
-
     // Parse AI response
     let result;
     try {
-      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        result = JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error('No JSON found');
-      }
+      result = await runToolAIJSON('compliance-monitor', userPrompt, {
+        model: 'gpt-4o',
+        temperature: 0.3,
+        max_tokens: 1000
+      }, 'compliance-rules');
     } catch (parseError) {
       // Fallback
       result = {

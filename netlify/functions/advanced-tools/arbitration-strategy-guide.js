@@ -4,7 +4,7 @@
  */
 
 const pdfParse = require('pdf-parse');
-const { runOpenAI } = require('../lib/ai-utils');
+const { runToolAIJSON } = require('../lib/advanced-tools-ai-helper');
 
 // Simple multipart parser
 function parseMultipartForm(body, contentType) {
@@ -105,8 +105,6 @@ exports.handler = async (event) => {
     const arbitrationType = files.arbitrationType || 'binding';
 
     // AI strategy guide generation
-    const systemPrompt = `You are an expert arbitration strategist. Generate comprehensive arbitration strategy guides.`;
-    
     const userPrompt = `Generate an arbitration strategy guide:
 
 CARRIER ESTIMATE:
@@ -137,7 +135,7 @@ Format as JSON:
   "expectedOutcomes": "<outcomes>"
 }`;
 
-    const aiResponse = await runOpenAI(systemPrompt, userPrompt, {
+    const aiResponse = await runToolAIJSON('arbitration-strategy-guide', userPrompt, {
       model: 'gpt-4o',
       temperature: 0.3,
       max_tokens: 2000
@@ -146,11 +144,16 @@ Format as JSON:
     // Parse AI response
     let result;
     try {
-      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        result = JSON.parse(jsonMatch[0]);
+      // runToolAIJSON returns an object, but handle string fallback
+      if (typeof aiResponse === 'object' && aiResponse !== null) {
+        result = aiResponse;
       } else {
-        throw new Error('No JSON found');
+        const jsonMatch = String(aiResponse).match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          result = JSON.parse(jsonMatch[0]);
+        } else {
+          throw new Error('No JSON found');
+        }
       }
     } catch (parseError) {
       // Fallback

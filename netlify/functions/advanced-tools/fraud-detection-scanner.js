@@ -4,7 +4,7 @@
  */
 
 const pdfParse = require('pdf-parse');
-const { runOpenAI } = require('../lib/ai-utils');
+const { runToolAIJSON } = require('../lib/advanced-tools-ai-helper');
 const { createClient } = require('@supabase/supabase-js');
 
 // Simple multipart parser
@@ -104,8 +104,6 @@ exports.handler = async (event) => {
     }
 
     // AI fraud detection
-    const systemPrompt = `You are an expert insurance fraud detection analyst. Analyze insurance claim communications for fraud patterns, bad faith indicators, and suspicious language.`;
-    
     const userPrompt = `Analyze this insurance communication for fraud patterns and bad faith indicators:
 
 ${extractedText.substring(0, 8000)}
@@ -124,24 +122,16 @@ Format as JSON:
   "recommendedActions": ["<action1>", "<action2>"]
 }`;
 
-    const aiResponse = await runOpenAI(systemPrompt, userPrompt, {
-      model: 'gpt-4o',
-      temperature: 0.3,
-      max_tokens: 1500
-    });
-
-    // Parse AI response
     let result;
     try {
-      // Try to extract JSON from response
-      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        result = JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error('No JSON found in response');
-      }
-    } catch (parseError) {
-      // Fallback: parse manually
+      result = await runToolAIJSON('fraud-detection-scanner', userPrompt, {
+        model: 'gpt-4o',
+        temperature: 0.3,
+        max_tokens: 1500
+      }, 'fraud-patterns');
+    } catch (aiError) {
+      console.error('AI fraud detection failed:', aiError);
+      // Fallback
       result = {
         riskScore: 50,
         suspiciousSections: [],

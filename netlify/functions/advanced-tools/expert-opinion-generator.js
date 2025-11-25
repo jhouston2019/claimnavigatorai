@@ -3,7 +3,7 @@
  * Generate professional expert opinions based on evidence
  */
 
-const { runOpenAI } = require('../lib/ai-utils');
+const { runToolAI } = require('../lib/advanced-tools-ai-helper');
 const { createClient } = require('@supabase/supabase-js');
 const pdfParse = require('pdf-parse');
 
@@ -54,8 +54,6 @@ exports.handler = async (event) => {
       extractedText = `\n\nUploaded files: ${fileUrls.join(', ')}`;
     }
 
-    const systemPrompt = `You are a professional ${expertType} expert providing a formal expert opinion for an insurance claim. Write in a professional, objective tone. Do not provide legal advice, only technical/expert analysis.`;
-
     const userPrompt = `Generate a comprehensive expert opinion based on the following situation:
 
 Situation Description:
@@ -76,7 +74,7 @@ Provide a structured expert opinion with the following sections:
 
 Format each section clearly. Keep the tone professional and objective.`;
 
-    const opinionText = await runOpenAI(systemPrompt, userPrompt);
+    const opinionText = await runToolAI('expert-opinion-generator', userPrompt);
 
     // Parse the opinion into structured sections
     const sections = parseOpinionSections(opinionText);

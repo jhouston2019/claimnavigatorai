@@ -3,7 +3,7 @@
  * Search and retrieve expert witness profiles
  */
 
-const { runOpenAI } = require('../lib/ai-utils');
+const { runToolAIJSON } = require('../lib/advanced-tools-ai-helper');
 const { createClient } = require('@supabase/supabase-js');
 
 exports.handler = async (event) => {
@@ -111,8 +111,6 @@ exports.handler = async (event) => {
 
     // If no experts found and database is empty, generate some initial entries
     if ((!experts || experts.length === 0) && process.env.OPENAI_API_KEY) {
-      const systemPrompt = `You are a database administrator creating expert witness profiles for an insurance claim assistance platform. Generate realistic expert witness profiles.`;
-      
       const userPrompt = `Generate 5 expert witness profiles in JSON format. Each profile should have:
 - name (full name)
 - specialty (construction, engineering, roofing, plumbing, electrical, HVAC, mold, forensic-accounting, or other)
@@ -125,8 +123,7 @@ exports.handler = async (event) => {
 Return as JSON array.`;
 
       try {
-        const aiResponse = await runOpenAI(systemPrompt, userPrompt);
-        const generatedProfiles = JSON.parse(aiResponse);
+        const generatedProfiles = await runToolAIJSON('expert-witness-database', userPrompt);
 
         // Insert generated profiles
         if (Array.isArray(generatedProfiles)) {

@@ -3,7 +3,7 @@
  * Organize and prepare evidence packages for dispute resolution
  */
 
-const { runOpenAI } = require('../lib/ai-utils');
+const { runToolAI } = require('../lib/advanced-tools-ai-helper');
 const { createClient } = require('@supabase/supabase-js');
 
 exports.handler = async (event) => {
@@ -83,8 +83,6 @@ exports.handler = async (event) => {
     });
 
     // Generate evidence package using AI
-    const systemPrompt = `You are a legal evidence organizer preparing evidence packages for ${disputeType} proceedings. Create structured, professional evidence packages.`;
-
     const userPrompt = `For a ${disputeType} proceeding, organize the following evidence files into a comprehensive evidence package:
 
 Files:
@@ -99,7 +97,7 @@ Provide:
 
 Format each section clearly. Keep the tone professional and objective.`;
 
-    const evidencePackage = await runOpenAI(systemPrompt, userPrompt);
+    const evidencePackage = await runToolAI('mediation-arbitration-evidence-organizer', userPrompt);
 
     // Parse the package into structured sections
     const sections = parseEvidencePackage(evidencePackage);

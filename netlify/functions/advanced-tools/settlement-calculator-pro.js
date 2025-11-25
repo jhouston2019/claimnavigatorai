@@ -3,7 +3,7 @@
  * Advanced settlement valuation with AI sanity check
  */
 
-const { runOpenAI } = require('../lib/ai-utils');
+const { runToolAI } = require('../lib/advanced-tools-ai-helper');
 
 exports.handler = async (event) => {
   const headers = {
@@ -57,8 +57,6 @@ exports.handler = async (event) => {
     const fairRangeHigh = totalACV * 1.15;
 
     // AI sanity check
-    const systemPrompt = `You are an expert insurance claim adjuster and settlement valuation specialist. Review settlement calculations and provide professional notes.`;
-    
     const userPrompt = `Review this settlement calculation:
 - Damage Category: ${damageCategory}
 - Square Footage: ${squareFootage}
@@ -78,7 +76,7 @@ Keep response concise (3-4 sentences).`;
 
     let notes = '';
     try {
-      notes = await runOpenAI(systemPrompt, userPrompt, {
+      notes = await runToolAI('settlement-calculator-pro', userPrompt, {
         model: 'gpt-4o-mini',
         temperature: 0.3,
         max_tokens: 300

@@ -426,12 +426,91 @@ CREATE POLICY "Users can insert own evidence packages"
   WITH CHECK (auth.uid() = user_id);
 ```
 
+### 13. ai_tool_configs
+
+Stores AI configuration for advanced tools (AI Training Dataset System).
+
+```sql
+CREATE TABLE IF NOT EXISTS ai_tool_configs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tool_slug TEXT NOT NULL UNIQUE,
+  config_json JSONB NOT NULL,
+  version INTEGER DEFAULT 1,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create index
+CREATE INDEX IF NOT EXISTS idx_ai_tool_configs_slug ON ai_tool_configs(tool_slug);
+```
+
+### 14. ai_rulesets
+
+Stores AI rulesets for high-risk domains (AI Training Dataset System).
+
+```sql
+CREATE TABLE IF NOT EXISTS ai_rulesets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ruleset_name TEXT NOT NULL UNIQUE,
+  ruleset_json JSONB NOT NULL,
+  version INTEGER DEFAULT 1,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create index
+CREATE INDEX IF NOT EXISTS idx_ai_rulesets_name ON ai_rulesets(ruleset_name);
+```
+
+### 15. ai_examples
+
+Stores example prompts and responses for AI training (AI Training Dataset System).
+
+```sql
+CREATE TABLE IF NOT EXISTS ai_examples (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tool_slug TEXT NOT NULL,
+  example_type TEXT NOT NULL,
+  input_example JSONB,
+  output_example JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_ai_examples_tool_slug ON ai_examples(tool_slug);
+CREATE INDEX IF NOT EXISTS idx_ai_examples_type ON ai_examples(example_type);
+```
+
+## Additional RLS Policies (AI Training Dataset System)
+
+```sql
+-- Enable RLS for new tables
+ALTER TABLE ai_tool_configs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ai_rulesets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ai_examples ENABLE ROW LEVEL SECURITY;
+
+-- AI configs: public read access (no sensitive user data)
+CREATE POLICY "Anyone can view AI tool configs"
+  ON ai_tool_configs FOR SELECT
+  USING (true);
+
+-- AI rulesets: public read access (no sensitive user data)
+CREATE POLICY "Anyone can view AI rulesets"
+  ON ai_rulesets FOR SELECT
+  USING (true);
+
+-- AI examples: public read access (no sensitive user data)
+CREATE POLICY "Anyone can view AI examples"
+  ON ai_examples FOR SELECT
+  USING (true);
+```
+
 ## Notes
 
 - All tables use UUID primary keys
 - Timestamps are automatically managed
 - RLS policies ensure users can only access their own data
-- Carrier profiles, regulatory updates, expert witnesses, settlement history, and communication templates are publicly readable (no sensitive user data)
+- Carrier profiles, regulatory updates, expert witnesses, settlement history, communication templates, and AI configs/rules/examples are publicly readable (no sensitive user data)
 - JSONB fields allow flexible storage of structured data
 - Indexes improve query performance
 

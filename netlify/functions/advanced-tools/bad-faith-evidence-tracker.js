@@ -3,7 +3,7 @@
  * Track and score bad faith events
  */
 
-const { runOpenAI } = require('../lib/ai-utils');
+const { runToolAIJSON } = require('../lib/advanced-tools-ai-helper');
 const { createClient } = require('@supabase/supabase-js');
 
 // Simple multipart parser
@@ -118,8 +118,6 @@ exports.handler = async (event) => {
     const baseScore = categoryScores[category] || 15;
 
     // AI analysis
-    const systemPrompt = `You are an expert bad faith insurance analyst. Analyze bad faith events and provide severity assessments.`;
-    
     const userPrompt = `Analyze this bad faith event:
 - Date: ${date}
 - Category: ${category}
@@ -139,18 +137,11 @@ Format as JSON:
 
     let aiResult;
     try {
-      const aiResponse = await runOpenAI(systemPrompt, userPrompt, {
+      aiResult = await runToolAIJSON('bad-faith-evidence-tracker', userPrompt, {
         model: 'gpt-4o-mini',
         temperature: 0.3,
         max_tokens: 500
-      });
-      
-      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        aiResult = JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error('No JSON found');
-      }
+      }, 'bad-faith-rules');
     } catch (aiError) {
       console.error('AI analysis failed:', aiError);
       aiResult = {

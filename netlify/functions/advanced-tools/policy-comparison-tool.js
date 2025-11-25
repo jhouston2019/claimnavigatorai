@@ -4,7 +4,7 @@
  */
 
 const pdfParse = require('pdf-parse');
-const { runOpenAI } = require('../lib/ai-utils');
+const { runToolAIJSON } = require('../lib/advanced-tools-ai-helper');
 
 // Simple multipart parser
 function parseMultipartForm(body, contentType) {
@@ -96,8 +96,6 @@ exports.handler = async (event) => {
     ]);
 
     // AI comparison
-    const systemPrompt = `You are an expert insurance policy analyst. Compare insurance policies and identify differences, coverage gaps, and exclusions.`;
-    
     const userPrompt = `Compare these two insurance policies:
 
 POLICY A:
@@ -129,7 +127,7 @@ Format as JSON:
   "exclusions": ["<exclusion1>", "<exclusion2>"]
 }`;
 
-    const aiResponse = await runOpenAI(systemPrompt, userPrompt, {
+    const aiResponse = await runToolAIJSON('policy-comparison-tool', userPrompt, {
       model: 'gpt-4o',
       temperature: 0.3,
       max_tokens: 2000
@@ -138,11 +136,16 @@ Format as JSON:
     // Parse AI response
     let result;
     try {
-      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        result = JSON.parse(jsonMatch[0]);
+      // runToolAIJSON returns an object, but handle string fallback
+      if (typeof aiResponse === 'object' && aiResponse !== null) {
+        result = aiResponse;
       } else {
-        throw new Error('No JSON found');
+        const jsonMatch = String(aiResponse).match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          result = JSON.parse(jsonMatch[0]);
+        } else {
+          throw new Error('No JSON found');
+        }
       }
     } catch (parseError) {
       // Fallback

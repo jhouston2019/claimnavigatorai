@@ -3,7 +3,7 @@
  * Search historical settlement data and analyze trends
  */
 
-const { runOpenAI } = require('../lib/ai-utils');
+const { runToolAI } = require('../lib/advanced-tools-ai-helper');
 const { createClient } = require('@supabase/supabase-js');
 
 exports.handler = async (event) => {
@@ -73,8 +73,6 @@ exports.handler = async (event) => {
 
     // If analyzeTrends is requested, use AI to analyze
     if (analyzeTrends && settlements && settlements.length > 0 && process.env.OPENAI_API_KEY) {
-      const systemPrompt = `You are an insurance claims analyst specializing in settlement trend analysis. Analyze historical settlement data and provide insights.`;
-      
       const settlementSummary = settlements.map(s => ({
         carrier: s.carrier,
         claimType: s.claim_type,
@@ -98,7 +96,7 @@ ${JSON.stringify(settlementSummary, null, 2)}
 Provide a concise analysis (3-4 paragraphs).`;
 
       try {
-        const trendsAnalysis = await runOpenAI(systemPrompt, userPrompt);
+        const trendsAnalysis = await runToolAI('settlement-history-database', userPrompt);
         
         return {
           statusCode: 200,

@@ -3,7 +3,7 @@
  * Query and generate carrier profiles
  */
 
-const { runOpenAI } = require('../lib/ai-utils');
+const { runToolAIJSON } = require('../lib/advanced-tools-ai-helper');
 const { createClient } = require('@supabase/supabase-js');
 
 exports.handler = async (event) => {
@@ -123,8 +123,6 @@ exports.handler = async (event) => {
 };
 
 async function generateCarrierProfile(carrierName, state, supabase) {
-  const systemPrompt = `You are an expert insurance industry analyst. Generate comprehensive carrier profiles based on public information.`;
-  
   const userPrompt = `Generate a profile for insurance carrier: ${carrierName}${state ? ` in ${state}` : ''}
 
 Provide:
@@ -146,18 +144,24 @@ Format as JSON:
 }`;
 
   try {
-    const aiResponse = await runOpenAI(systemPrompt, userPrompt, {
+    const aiResponseObj = await runToolAIJSON('insurance-profile-database', userPrompt, {
       model: 'gpt-4o-mini',
       temperature: 0.3,
       max_tokens: 1000
     });
-
-    const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error('No JSON in AI response');
+    
+    // Handle both object and string responses
+    let profile;
+    if (typeof aiResponseObj === 'object' && aiResponseObj !== null) {
+      profile = aiResponseObj;
+    } else {
+      const aiResponse = typeof aiResponseObj === 'string' ? aiResponseObj : String(aiResponseObj);
+      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No JSON in AI response');
+      }
+      profile = JSON.parse(jsonMatch[0]);
     }
-
-    const profile = JSON.parse(jsonMatch[0]);
 
     // Insert into database
     const { data: carrier, error } = await supabase

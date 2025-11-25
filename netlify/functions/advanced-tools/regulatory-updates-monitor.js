@@ -3,7 +3,7 @@
  * Monitor state-specific regulatory updates
  */
 
-const { runOpenAI } = require('../lib/ai-utils');
+const { runToolAI } = require('../lib/advanced-tools-ai-helper');
 const { createClient } = require('@supabase/supabase-js');
 
 exports.handler = async (event) => {
@@ -71,8 +71,6 @@ exports.handler = async (event) => {
 
     // If no updates found, generate using AI
     if (updates.length === 0) {
-      const systemPrompt = `You are an expert insurance regulatory analyst. Generate state-specific regulatory updates and summaries.`;
-      
       const userPrompt = `Generate regulatory updates for ${state}${category ? ` in the ${category} category` : ''}.
 
 Provide:
@@ -84,7 +82,7 @@ Provide:
 Format as a summary of key regulatory developments.`;
 
       try {
-        const aiResponse = await runOpenAI(systemPrompt, userPrompt, {
+        const aiResponse = await runToolAI('regulatory-updates-monitor', userPrompt, {
           model: 'gpt-4o-mini',
           temperature: 0.3,
           max_tokens: 1500
@@ -111,8 +109,6 @@ Format as a summary of key regulatory developments.`;
 
     // Generate AI impact summary
     if (updates.length > 0) {
-      const systemPrompt = `You are an expert insurance claim advisor. Explain how regulatory updates impact policyholders.`;
-      
       const userPrompt = `Based on these regulatory updates for ${state}:
 
 ${updates.map(u => `${u.title}: ${u.summary || u.full_text}`).join('\n\n')}
@@ -120,7 +116,7 @@ ${updates.map(u => `${u.title}: ${u.summary || u.full_text}`).join('\n\n')}
 Explain what this means for policyholders and their claims. Provide actionable insights.`;
 
       try {
-        aiNotes = await runOpenAI(systemPrompt, userPrompt, {
+        aiNotes = await runToolAI('regulatory-updates-monitor', userPrompt, {
           model: 'gpt-4o-mini',
           temperature: 0.3,
           max_tokens: 800
