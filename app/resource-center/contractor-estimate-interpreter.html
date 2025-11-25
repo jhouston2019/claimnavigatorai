@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contractor Estimate Interpreter - ClaimNavigatorAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/claim-analysis.css">
+    <style>
+        body.contractor-estimate-page {
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+                url('/assets/images/backgrounds/paperwork6.jpeg') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            color: #ffffff !important;
+        }
+        
+        body.contractor-estimate-page * {
+            color: #ffffff !important;
+        }
+        
+        body.contractor-estimate-page a {
+            color: #dbeafe !important;
+        }
+        
+        .tool-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .tool-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: #ffffff !important;
+        }
+        
+        .tool-header p {
+            font-size: 1.1rem;
+            color: #dbeafe !important;
+            margin: 0;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 968px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(8px) !important;
+            padding: 2rem !important;
+            border-radius: 1rem !important;
+            margin-bottom: 2rem !important;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #ffffff !important;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff !important;
+            font-size: 1rem;
+        }
+        
+        .form-group select option {
+            background: #1e3a8a;
+            color: #ffffff;
+        }
+        
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+        
+        .upload-area:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .upload-area.dragover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-list {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .file-item {
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+        }
+        
+        .btn {
+            font-family: 'Poppins', sans-serif;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #1e40af;
+            color: #ffffff !important;
+        }
+        
+        .btn-primary:hover {
+            background: #1e3a8a;
+        }
+        
+        .btn-primary:disabled {
+            background: rgba(255, 255, 255, 0.2);
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff !important;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .results-panel {
+            display: none;
+        }
+        
+        .results-panel.show {
+            display: block;
+        }
+        
+        .summary-card {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .summary-stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-stat strong {
+            color: #dbeafe !important;
+        }
+        
+        .line-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+        
+        .line-items-table th,
+        .line-items-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .line-items-table th {
+            font-weight: 600;
+            color: #dbeafe !important;
+        }
+        
+        .line-item-flagged {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .flag-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+        
+        .flag-underpricing {
+            background: #ef4444;
+            color: #ffffff;
+        }
+        
+        .flag-missing-qty {
+            background: #f59e0b;
+            color: #ffffff;
+        }
+        
+        .flag-ambiguous {
+            background: #8b5cf6;
+            color: #ffffff;
+        }
+        
+        .missing-scope-list,
+        .recommendations-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .missing-scope-list li,
+        .recommendations-list li {
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .rom-comparison {
+            padding: 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .rom-comparison.below {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        .rom-comparison.above {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+        
+        .actions-footer {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .loading-indicator {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: #dbeafe !important;
+        }
+        
+        .loading-indicator.show {
+            display: block;
+        }
+    </style>
+</head>
+<body class="contractor-estimate-page">
+    <!-- Header -->
+    <header class="header">
+        <div class="bar container">
+            <div class="brand">
+                <div class="logo"></div>
+                <div>Claim Navigation AI</div>
+            </div>
+            <nav class="nav">
+                <a href="/app/index.html">Home</a>
+                <span>></span>
+                <a href="/app/resource-center.html">Resource Center</a>
+                <span>></span>
+                <span>Contractor Estimate Interpreter</span>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Header -->
+        <div class="tool-header">
+            <h1>Contractor Estimate Interpreter</h1>
+            <p>Upload an estimate and get a clear breakdown, missing scope analysis, and comparison guidance.</p>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Upload & Input Panel -->
+            <div class="card">
+                <h2 style="margin-top: 0; color: #ffffff !important;">Upload & Input</h2>
+                
+                <div class="form-group">
+                    <label for="estimate-file">Contractor Estimate (PDF or Image) *</label>
+                    <div class="upload-area" id="upload-area">
+                        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">📄 Drag & Drop Estimate Here</p>
+                        <p style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.7) !important;">or click to browse</p>
+                        <input type="file" id="estimate-file" class="file-input" accept=".pdf,.png,.jpg,.jpeg" required>
+                    </div>
+                    <div id="file-list" class="file-list"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Property Areas/Rooms Affected (Select all that apply)</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="areas" value="roof">
+                            <span>Roof</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="areas" value="interior">
+                            <span>Interior</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="areas" value="exterior">
+                            <span>Exterior</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="areas" value="foundation">
+                            <span>Foundation</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="areas" value="plumbing">
+                            <span>Plumbing</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="areas" value="electrical">
+                            <span>Electrical</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="areas" value="hvac">
+                            <span>HVAC</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="areas" value="kitchen">
+                            <span>Kitchen</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="areas" value="bathroom">
+                            <span>Bathroom</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="areas" value="other">
+                            <span>Other</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loss-type">Loss Type</label>
+                    <select id="loss-type">
+                        <option value="">Select loss type...</option>
+                        <option value="Fire">Fire</option>
+                        <option value="Water">Water</option>
+                        <option value="Wind">Wind</option>
+                        <option value="Hail">Hail</option>
+                        <option value="Hurricane">Hurricane</option>
+                        <option value="Mold">Mold</option>
+                        <option value="Theft">Theft</option>
+                        <option value="Vandalism">Vandalism</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="severity">Severity</label>
+                    <select id="severity">
+                        <option value="">Select severity...</option>
+                        <option value="Low">Low</option>
+                        <option value="Moderate">Moderate</option>
+                        <option value="Severe">Severe</option>
+                        <option value="Catastrophic">Catastrophic</option>
+                    </select>
+                </div>
+                
+                <button type="button" class="btn btn-primary" id="analyze-btn" style="width: 100%;">
+                    Analyze Estimate
+                </button>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="card results-panel" id="results-panel">
+                <h2 style="margin-top: 0; color: #ffffff !important;">Analysis Results</h2>
+                
+                <!-- Summary Card -->
+                <div class="summary-card" id="summary-card">
+                    <!-- Will be populated by JS -->
+                </div>
+                
+                <!-- ROM Cross-Check -->
+                <div class="rom-comparison" id="rom-comparison">
+                    <!-- Will be populated by JS -->
+                </div>
+                
+                <!-- Line Item Breakdown -->
+                <div id="line-items-section">
+                    <h3 style="color: #ffffff !important; margin-bottom: 1rem;">Line Item Breakdown</h3>
+                    <table class="line-items-table" id="line-items-table">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>Unit</th>
+                                <th>Unit Price</th>
+                                <th>Line Total</th>
+                                <th>Category</th>
+                            </tr>
+                        </thead>
+                        <tbody id="line-items-body">
+                            <!-- Will be populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Missing Scope -->
+                <div id="missing-scope-section">
+                    <h3 style="color: #ffffff !important; margin-bottom: 1rem;">Missing Scope & Gaps</h3>
+                    <ul class="missing-scope-list" id="missing-scope-list">
+                        <!-- Will be populated by JS -->
+                    </ul>
+                </div>
+                
+                <!-- Recommendations -->
+                <div id="recommendations-section">
+                    <h3 style="color: #ffffff !important; margin-bottom: 1rem;">Recommendations</h3>
+                    <ul class="recommendations-list" id="recommendations-list">
+                        <!-- Will be populated by JS -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div class="loading-indicator" id="loading-indicator">
+            <p>Analyzing estimate...</p>
+        </div>
+
+        <!-- Actions Footer -->
+        <div class="actions-footer" id="actions-footer" style="display: none;">
+            <button type="button" class="btn btn-primary" id="save-journal-btn">Save to Claim Journal</button>
+            <button type="button" class="btn btn-secondary" id="add-evidence-btn">Add to Evidence Organizer</button>
+            <button type="button" class="btn btn-secondary" id="add-timeline-btn">Add to Timeline</button>
+            <button type="button" class="btn btn-secondary" id="export-pdf-btn" data-export-target="#results-panel" data-export-filename="contractor-estimate-interpretation.pdf">Export PDF Report</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 ClaimNavigatorAI • Contractor Estimate Interpreter</p>
+        </div>
+    </footer>
+
+    <script type="module" src="/app/assets/js/contractor-estimate-interpreter.js"></script>
+    <script src="/app/assets/js/utils/pdf-export.js"></script>
+</body>
+</html>
+

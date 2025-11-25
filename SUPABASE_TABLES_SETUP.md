@@ -709,6 +709,53 @@ CREATE POLICY "Users can delete their own timeline events"
   USING (auth.uid() = user_id);
 ```
 
+### 21. contractor_estimate_interpretations
+
+Stores interpretations of contractor estimates with line item analysis, missing scope detection, and ROM comparisons.
+
+```sql
+CREATE TABLE IF NOT EXISTS contractor_estimate_interpretations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  claim_id TEXT,
+  estimate_total NUMERIC,
+  rom_low NUMERIC,
+  rom_high NUMERIC,
+  rom_relation TEXT,
+  loss_type TEXT,
+  severity TEXT,
+  areas TEXT[],
+  line_items JSONB DEFAULT '[]'::jsonb,
+  missing_scope JSONB DEFAULT '[]'::jsonb,
+  recommendations JSONB DEFAULT '[]'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_contractor_estimate_user_id ON contractor_estimate_interpretations(user_id);
+CREATE INDEX IF NOT EXISTS idx_contractor_estimate_claim_id ON contractor_estimate_interpretations(claim_id);
+CREATE INDEX IF NOT EXISTS idx_contractor_estimate_created ON contractor_estimate_interpretations(created_at);
+
+-- RLS Policies
+ALTER TABLE contractor_estimate_interpretations ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own estimate interpretations"
+  ON contractor_estimate_interpretations FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own estimate interpretations"
+  ON contractor_estimate_interpretations FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own estimate interpretations"
+  ON contractor_estimate_interpretations FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own estimate interpretations"
+  ON contractor_estimate_interpretations FOR DELETE
+  USING (auth.uid() = user_id);
+```
+
 ## Notes
 
 - All tables use UUID primary keys
