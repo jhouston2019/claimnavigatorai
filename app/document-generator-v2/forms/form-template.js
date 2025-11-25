@@ -235,7 +235,7 @@ async function handleFormSubmit(event) {
         const result = await response.json();
         
         if (result.success) {
-            showSuccess(result);
+            await showSuccess(result, data);
         } else {
             throw new Error(result.error || 'Document generation failed');
         }
@@ -251,7 +251,7 @@ async function handleFormSubmit(event) {
 }
 
 // Show success message with download link
-function showSuccess(result) {
+async function showSuccess(result, formData = {}) {
     const resultContainer = document.getElementById('resultContainer');
     
     const html = `
@@ -268,6 +268,11 @@ function showSuccess(result) {
     
     resultContainer.innerHTML = html;
     resultContainer.style.display = 'block';
+    
+    // If this is FNOL, add compliance summary
+    if (currentDocument && currentDocument.id === 'first-notice-loss') {
+        await addFNOLComplianceSummary(result, formData);
+    }
 }
 
 // Show error message
@@ -283,4 +288,72 @@ function showError(message) {
     
     resultContainer.innerHTML = html;
     resultContainer.style.display = 'block';
+}
+
+/**
+ * Add compliance summary to FNOL success screen
+ */
+async function addFNOLComplianceSummary(result, formData) {
+    try {
+        // Get state and carrier from form data
+        const state = formData.state || formData.propertyState || '';
+        const carrier = formData.insurer || formData.carrier || '';
+        const claimType = formData.causeOfLoss || formData.cause_of_loss || 'Property';
+        const dateOfLoss = formData.dateOfLoss || formData.date_of_loss || new Date().toISOString().split('T')[0];
+        
+        if (!state || !carrier) {
+            return; // Skip if no state/carrier
+        }
+        
+        // Import compliance helper
+        const { getFNOLComplianceSummary } = await import('/app/assets/js/utils/compliance-engine-helper.js');
+        
+        // Get compliance summary
+        const complianceSummary = await getFNOLComplianceSummary(state, carrier, claimType, dateOfLoss);
+        
+        // Find result container
+        const resultContainer = document.getElementById('resultContainer');
+        if (!resultContainer) return;
+        
+        // Create compliance summary panel
+        let compliancePanel = document.getElementById('fnol-compliance-summary');
+        if (!compliancePanel) {
+            compliancePanel = document.createElement('div');
+            compliancePanel.id = 'fnol-compliance-summary';
+            compliancePanel.className = 'compliance-summary-panel';
+            compliancePanel.style.cssText = 'margin-top: 2rem; padding: 1.5rem; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 0.5rem;';
+            resultContainer.appendChild(compliancePanel);
+        }
+        
+        // Build compliance summary HTML
+        let html = '<h3 style="margin-top: 0; color: #ffffff !important;">Compliance Summary</h3>';
+        
+        if (complianceSummary.requiredDeadlines && complianceSummary.requiredDeadlines.length > 0) {
+            html += '<div style="margin-bottom: 1rem;"><strong>Required Deadlines:</strong><ul style="margin-top: 0.5rem; padding-left: 1.5rem;">';
+            complianceSummary.requiredDeadlines.forEach(deadline => {
+                html += `<li>${deadline}</li>`;
+            });
+            html += '</ul></div>';
+        }
+        
+        if (complianceSummary.fastNoticeWarning) {
+            html += `<div style="margin-bottom: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 0.5rem;"><strong>⚠️ Fast Notice Required:</strong><p style="margin-top: 0.5rem;">Your state requires fast notice. Ensure you submit this FNOL immediately.</p></div>`;
+        }
+        
+        if (complianceSummary.complianceChecklist && complianceSummary.complianceChecklist.length > 0) {
+            html += '<div style="margin-bottom: 1rem;"><strong>Initial Compliance Checklist:</strong><ul style="margin-top: 0.5rem; padding-left: 1.5rem;">';
+            complianceSummary.complianceChecklist.forEach(item => {
+                html += `<li>${item}</li>`;
+            });
+            html += '</ul></div>';
+        }
+        
+        html += `<a href="/app/resource-center/compliance-engine.html" style="color: #dbeafe !important; text-decoration: underline; display: inline-block; margin-top: 1rem;">Open Full Compliance Report →</a>`;
+        
+        compliancePanel.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error adding FNOL compliance summary:', error);
+        // Don't block FNOL success if compliance check fails
+    }
 }

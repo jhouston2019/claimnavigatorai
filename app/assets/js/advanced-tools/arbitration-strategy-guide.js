@@ -59,6 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const result = await response.json();
             displayResults(result);
+            
+            // Add compliance section
+            await addComplianceSectionToArbitration(result);
         } catch (error) {
             console.error('Error:', error);
             resultsPanel.innerHTML = `<p class="error">Error: ${error.message}</p>`;
@@ -78,6 +81,75 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+/**
+ * Add compliance section to arbitration guide
+ */
+async function addComplianceSectionToArbitration(arbitrationResult) {
+    try {
+        const state = document.getElementById('state')?.value || '';
+        const carrier = document.getElementById('carrier')?.value || '';
+        const claimType = document.getElementById('claim-type')?.value || 'Property';
+        
+        if (!state || !carrier) return;
+        
+        const { analyzeCompliance } = await import('../utils/compliance-engine-helper.js');
+        const complianceData = await analyzeCompliance({
+            state,
+            carrier,
+            claimType,
+            events: [{ name: 'Arbitration Strategy', date: new Date().toISOString().split('T')[0], description: 'Arbitration guide generated' }]
+        });
+        
+        let complianceSection = document.getElementById('compliance-section');
+        if (!complianceSection) {
+            complianceSection = document.createElement('div');
+            complianceSection.id = 'compliance-section';
+            complianceSection.className = 'results-section';
+            complianceSection.style.cssText = 'margin-top: 2rem; padding: 1.5rem; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 0.5rem;';
+            const resultsPanel = document.getElementById('results-panel');
+            if (resultsPanel) resultsPanel.appendChild(complianceSection);
+        }
+        
+        let html = '<h3 style="margin-top: 0; color: #ffffff !important;">Compliance & Rights Information</h3>';
+        if (complianceData.statutoryDeadlines) {
+            const arbitrationRights = extractArbitrationRights(complianceData.statutoryDeadlines);
+            if (arbitrationRights) html += `<div style="margin-bottom: 1rem;"><strong>Arbitration Rights Triggered:</strong><p style="margin-top: 0.5rem;">${arbitrationRights}</p></div>`;
+        }
+        if (complianceData.statutoryDeadlines) {
+            const timelines = extractTimelines(complianceData.statutoryDeadlines, 'arbitration');
+            if (timelines) html += `<div style="margin-bottom: 1rem;"><strong>Timelines for Arbitration Rights:</strong><p style="margin-top: 0.5rem;">${timelines}</p></div>`;
+        }
+        if (complianceData.requiredDocuments) {
+            html += `<div style="margin-bottom: 1rem;"><strong>Required Documentation:</strong><p style="margin-top: 0.5rem;">${complianceData.requiredDocuments.substring(0, 400)}...</p></div>`;
+        }
+        if (complianceData.statutoryDeadlines) {
+            html += `<div style="margin-bottom: 1rem;"><strong>Statutory Support:</strong><p style="margin-top: 0.5rem; font-size: 0.9rem;">${complianceData.statutoryDeadlines.substring(0, 400)}...</p></div>`;
+        }
+        
+        complianceSection.innerHTML = html;
+    } catch (error) {
+        console.error('Error adding compliance section:', error);
+    }
+}
+
+function extractArbitrationRights(text) {
+    if (!text) return null;
+    const lines = text.split('\n');
+    for (const line of lines) {
+        if (line.toLowerCase().includes('arbitration') && (line.includes('right') || line.includes('trigger'))) {
+            return line.trim();
+        }
+    }
+    return null;
+}
+
+function extractTimelines(text, type) {
+    if (!text) return null;
+    const lines = text.split('\n');
+    const relevant = lines.filter(l => l.toLowerCase().includes(type) && (l.includes('day') || l.includes('hour')));
+    return relevant.slice(0, 3).join('; ');
+}
 
 function handleFile(file, type) {
     const fileName = document.getElementById(`file-name-${type}`);

@@ -575,6 +575,9 @@
 
         timelineData = { phases, milestones, deadlines };
         
+        // Apply compliance deadlines
+        await applyComplianceDeadlinesToTimeline();
+        
         // Render timeline
         renderTimeline();
         renderChecklist();
@@ -582,6 +585,77 @@
       } catch (error) {
         console.error('Error loading timeline data:', error);
         throw error;
+      }
+    }
+
+    // Compliance Engine integration
+    async function applyComplianceDeadlinesToTimeline() {
+      try {
+        if (!currentClaim) return;
+        
+        const { applyDeadlines } = await import('/app/assets/js/utils/compliance-engine-helper.js');
+        
+        const events = (timelineData?.milestones || []).map(m => ({
+          name: m.milestone_name,
+          date: m.due_date || new Date().toISOString().split('T')[0],
+          description: m.description || ''
+        }));
+        
+        const result = await applyDeadlines(
+          currentClaim.state || '',
+          currentClaim.insurer || '',
+          currentClaim.claim_type || 'Property',
+          events
+        );
+        
+        // Add compliance deadlines to timeline
+        if (result.deadlines && Array.isArray(result.deadlines)) {
+          for (const deadline of result.deadlines) {
+            // Check if deadline already exists
+            const exists = timelineData.deadlines?.some(d => d.label === deadline.label);
+            if (!exists) {
+              // Add to Supabase
+              await supabase.from('claim_timeline_deadlines').insert({
+                claim_id: claimId,
+                label: deadline.label,
+                due_date: deadline.date,
+                deadline_type: deadline.type || 'statutory',
+                priority: deadline.priority || 'medium',
+                source: 'Compliance Engine'
+              });
+            }
+          }
+          
+          // Reload timeline
+          await loadTimelineData();
+        }
+      } catch (error) {
+        console.error('Error applying compliance deadlines:', error);
+      }
+    }
+    
+    // Add compliance tags to timeline items
+    function addComplianceTagsToTimelineItem(itemElement, itemData) {
+      if (!itemElement || !itemData) return;
+      
+      // Check if item has compliance concerns
+      const isStatutory = itemData.deadline_type === 'statutory' || itemData.source === 'Compliance Engine';
+      const isHighRisk = itemData.priority === 'high' || (itemData.due_date && new Date(itemData.due_date) < new Date());
+      
+      if (isStatutory) {
+        const tag = document.createElement('span');
+        tag.className = 'compliance-tag statutory';
+        tag.textContent = 'State Deadline';
+        tag.style.cssText = 'display: inline-block; padding: 0.25rem 0.5rem; background: rgba(59, 130, 246, 0.3); border-radius: 0.25rem; font-size: 0.75rem; margin-left: 0.5rem; color: #ffffff !important;';
+        itemElement.appendChild(tag);
+      }
+      
+      if (isHighRisk) {
+        const tag = document.createElement('span');
+        tag.className = 'compliance-tag risk-high';
+        tag.textContent = 'Violation Risk';
+        tag.style.cssText = 'display: inline-block; padding: 0.25rem 0.5rem; background: rgba(239, 68, 68, 0.3); border-radius: 0.25rem; font-size: 0.75rem; margin-left: 0.5rem; color: #ffffff !important;';
+        itemElement.appendChild(tag);
       }
     }
 
@@ -641,16 +715,22 @@
             ${phaseDeadlines.length > 0 ? `
               <div class="deadlines-section">
                 <div class="deadlines-title">⚠️ Critical Deadlines</div>
-                ${phaseDeadlines.map(deadline => `
+                ${phaseDeadlines.map(deadline => {
+                  const isStatutory = deadline.deadline_type === 'statutory' || deadline.source === 'Compliance Engine';
+                  const isHighRisk = deadline.is_missed || (deadline.priority === 'high');
+                  return `
                   <div class="deadline-item">
                     <div class="deadline-name ${deadline.is_missed ? 'deadline-missed' : ''}">
                       ${deadline.deadline_name}
+                      ${isStatutory ? '<span class="compliance-tag statutory" style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(59, 130, 246, 0.3); border-radius: 0.25rem; font-size: 0.75rem; margin-left: 0.5rem; color: #ffffff !important;">State Deadline</span>' : ''}
+                      ${isHighRisk ? '<span class="compliance-tag risk-high" style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(239, 68, 68, 0.3); border-radius: 0.25rem; font-size: 0.75rem; margin-left: 0.5rem; color: #ffffff !important;">Violation Risk</span>' : ''}
                     </div>
                     <div class="deadline-due ${deadline.is_missed ? 'deadline-missed' : ''}">
                       Day ${deadline.due_day} ${deadline.is_missed ? '(MISSED)' : ''}
                     </div>
                   </div>
-                `).join('')}
+                `;
+                }).join('')}
               </div>
             ` : ''}
           </div>

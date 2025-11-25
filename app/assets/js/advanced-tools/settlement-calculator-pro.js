@@ -46,6 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const result = await response.json();
             displayResults(result);
+            
+            // Add compliance impact section
+            await addComplianceImpactSection(result);
         } catch (error) {
             console.error('Error:', error);
             resultsPanel.innerHTML = `<p class="error">Error: ${error.message}</p>`;
@@ -138,5 +141,84 @@ function formatCurrency(amount) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     }).format(amount || 0);
+}
+
+/**
+ * Add compliance impact section to settlement results
+ */
+async function addComplianceImpactSection(settlementResult) {
+    try {
+        // Get state/carrier from form or intake
+        const state = document.getElementById('state')?.value || '';
+        const carrier = document.getElementById('carrier')?.value || '';
+        const claimType = document.getElementById('claim-type')?.value || 'Property';
+        
+        if (!state || !carrier) {
+            return; // Skip if no state/carrier
+        }
+        
+        // Import compliance helper
+        const { analyzeCompliance } = await import('../utils/compliance-engine-helper.js');
+        
+        // Get compliance analysis
+        const complianceData = await analyzeCompliance({
+            state,
+            carrier,
+            claimType,
+            events: [{
+                name: 'Settlement Calculation',
+                date: new Date().toISOString().split('T')[0],
+                description: 'Settlement value calculated'
+            }]
+        });
+        
+        // Find or create compliance impact section
+        let complianceSection = document.getElementById('compliance-impact-section');
+        if (!complianceSection) {
+            complianceSection = document.createElement('div');
+            complianceSection.id = 'compliance-impact-section';
+            complianceSection.className = 'results-section';
+            complianceSection.style.cssText = 'margin-top: 2rem; padding: 1.5rem; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 0.5rem;';
+            
+            const resultsPanel = document.getElementById('results-panel');
+            if (resultsPanel) {
+                resultsPanel.appendChild(complianceSection);
+            }
+        }
+        
+        // Build compliance impact HTML
+        let html = '<h3 style="margin-top: 0; color: #ffffff !important;">Compliance Impact on Settlement Timeline</h3>';
+        
+        if (complianceData.statutoryDeadlines) {
+            const paymentDeadline = extractPaymentDeadline(complianceData.statutoryDeadlines);
+            if (paymentDeadline) {
+                html += `<div style="margin-bottom: 1rem;"><strong>Payment Deadline:</strong><p style="margin-top: 0.5rem;">${paymentDeadline}</p></div>`;
+            }
+        }
+        
+        if (complianceData.carrierOverlayRules) {
+            html += `<div style="margin-bottom: 1rem;"><strong>Carrier Delays:</strong><p style="margin-top: 0.5rem;">${complianceData.carrierOverlayRules.substring(0, 300)}...</p></div>`;
+        }
+        
+        if (complianceData.recommendedActions && complianceData.recommendedActions.escalationPaths) {
+            html += `<div style="margin-bottom: 1rem;"><strong>Escalation Windows:</strong><p style="margin-top: 0.5rem;">${complianceData.recommendedActions.escalationPaths.substring(0, 300)}...</p></div>`;
+        }
+        
+        complianceSection.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error adding compliance impact:', error);
+    }
+}
+
+function extractPaymentDeadline(statutoryDeadlinesText) {
+    if (!statutoryDeadlinesText) return null;
+    const lines = statutoryDeadlinesText.split('\n');
+    for (const line of lines) {
+        if (line.toLowerCase().includes('payment') && (line.includes('day') || line.includes('hour'))) {
+            return line.trim();
+        }
+    }
+    return null;
 }
 

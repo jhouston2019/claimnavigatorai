@@ -3,7 +3,16 @@
  * Generate comprehensive appeal packages
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Load compliance helper dynamically
+    let analyzeCompliance;
+    try {
+        const module = await import('../utils/compliance-engine-helper.js');
+        analyzeCompliance = module.analyzeCompliance;
+    } catch (error) {
+        console.warn('Compliance helper not available:', error);
+        analyzeCompliance = async () => ({ violationsLikelihood: {}, requiredDocuments: '', statutoryDeadlines: '', recommendedActions: {} });
+    }
     const form = document.getElementById('appeal-form');
     const uploadArea = document.getElementById('upload-area');
     const fileInput = document.getElementById('file-input');
@@ -68,6 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const result = await response.json();
             displayResults(result);
+            
+            // Get compliance violations and add to appeal package
+            await addComplianceViolationsToAppeal(result);
         } catch (error) {
             console.error('Error:', error);
             resultsPanel.innerHTML = `<p class="error">Error: ${error.message}</p>`;
@@ -147,5 +159,88 @@ function displayResults(result) {
             alert('PDF export is not available. Please refresh the page and try again.');
         }
     });
+}
+
+/**
+ * Add compliance violations section to appeal package
+ */
+async function addComplianceViolationsToAppeal(appealResult) {
+    // Dynamically import compliance helper
+    let analyzeCompliance;
+    try {
+        const module = await import('../utils/compliance-engine-helper.js');
+        analyzeCompliance = module.analyzeCompliance;
+    } catch (error) {
+        console.warn('Compliance helper not available:', error);
+        return;
+    }
+    try {
+        // Try to get state/carrier from form or intake data
+        const state = document.getElementById('state')?.value || '';
+        const carrier = document.getElementById('carrier')?.value || '';
+        const claimType = document.getElementById('claim-type')?.value || 'Property';
+        
+        if (!state || !carrier) {
+            // Skip if we don't have state/carrier
+            return;
+        }
+        
+        // Get compliance analysis
+        const complianceData = await analyzeCompliance({
+            state,
+            carrier,
+            claimType,
+            events: [{
+                name: 'Appeal Package Generated',
+                date: new Date().toISOString().split('T')[0],
+                description: 'Appeal package created for denial'
+            }]
+        });
+        
+        // Find or create compliance violations section
+        let violationsSection = document.getElementById('compliance-violations-section');
+        if (!violationsSection) {
+            violationsSection = document.createElement('div');
+            violationsSection.id = 'compliance-violations-section';
+            violationsSection.className = 'results-section';
+            violationsSection.style.cssText = 'margin-top: 2rem; padding: 1.5rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 0.5rem;';
+            
+            const resultsPanel = document.getElementById('results-panel');
+            if (resultsPanel) {
+                resultsPanel.appendChild(violationsSection);
+            }
+        }
+        
+        // Build compliance violations HTML
+        let html = '<h3 style="margin-top: 0; color: #ffffff !important;">Compliance Violations Summary</h3>';
+        
+        if (complianceData.violationsLikelihood) {
+            if (complianceData.violationsLikelihood.possibleViolations) {
+                html += `<div style="margin-bottom: 1rem;"><strong>Possible Violations:</strong><p style="margin-top: 0.5rem;">${complianceData.violationsLikelihood.possibleViolations}</p></div>`;
+            }
+            
+            if (complianceData.violationsLikelihood.missedDeadlines) {
+                html += `<div style="margin-bottom: 1rem;"><strong>Missed Deadlines:</strong><p style="margin-top: 0.5rem;">${complianceData.violationsLikelihood.missedDeadlines}</p></div>`;
+            }
+        }
+        
+        if (complianceData.requiredDocuments) {
+            html += `<div style="margin-bottom: 1rem;"><strong>Required Documents Not Provided:</strong><p style="margin-top: 0.5rem;">${complianceData.requiredDocuments}</p></div>`;
+        }
+        
+        if (complianceData.statutoryDeadlines) {
+            html += `<div style="margin-bottom: 1rem;"><strong>Statutory Citations:</strong><p style="margin-top: 0.5rem; font-size: 0.9rem;">${complianceData.statutoryDeadlines.substring(0, 500)}...</p></div>`;
+        }
+        
+        if (complianceData.recommendedActions && complianceData.recommendedActions.escalationPaths) {
+            html += `<div style="margin-bottom: 1rem;"><strong>Suggested Escalation Pathways:</strong><p style="margin-top: 0.5rem;">${complianceData.recommendedActions.escalationPaths}</p></div>`;
+        }
+        
+        violationsSection.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error adding compliance violations:', error);
+        // Don't block appeal package display if compliance check fails
+    }
 }
 

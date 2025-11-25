@@ -5,6 +5,7 @@
 
 import { requireAuth, checkPaymentStatus, getAuthToken, getSupabaseClient } from '../auth.js';
 import { getIntakeData } from '../autofill.js';
+import { applyDeadlines } from '../utils/compliance-engine-helper.js';
 
 // Initialize controller
 document.addEventListener('DOMContentLoaded', async () => {
@@ -79,6 +80,28 @@ async function attachEventListeners() {
       await loadExistingDeadlines();
       if (window.refresh) window.refresh();
     });
+  }
+  
+  // Add Compliance Engine refresh button
+  const complianceRefreshBtn = document.getElementById('compliance-refresh-btn');
+  if (complianceRefreshBtn) {
+    complianceRefreshBtn.addEventListener('click', async () => {
+      await refreshDeadlinesFromComplianceEngine();
+    });
+  } else {
+    // Create button if it doesn't exist
+    const refreshContainer = document.querySelector('.refresh-container') || document.querySelector('#refresh-btn')?.parentElement;
+    if (refreshContainer) {
+      const newBtn = document.createElement('button');
+      newBtn.id = 'compliance-refresh-btn';
+      newBtn.className = 'btn btn-secondary';
+      newBtn.textContent = 'Refresh Deadlines from Compliance Engine';
+      newBtn.style.cssText = 'margin-left: 0.5rem;';
+      refreshContainer.appendChild(newBtn);
+      newBtn.addEventListener('click', async () => {
+        await refreshDeadlinesFromComplianceEngine();
+      });
+    }
   }
 }
 
@@ -355,6 +378,78 @@ function escapeHtml(text) {
 /**
  * Show payment required message
  */
+/**
+ * Refresh deadlines from Compliance Engine
+ */
+async function refreshDeadlinesFromComplianceEngine() {
+  try {
+    const intakeData = await getIntakeData();
+    if (!intakeData || !intakeData.state || !intakeData.carrier) {
+      alert('Please complete intake form with state and carrier information first.');
+      return;
+    }
+    
+    const btn = document.getElementById('compliance-refresh-btn');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Refreshing...';
+    }
+    
+    // Get existing events from deadlines
+    const client = await getSupabaseClient();
+    const { data: { user } } = await client.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+    
+    const { data: existingDeadlines } = await client
+      .from('deadlines')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('date', { ascending: true });
+    
+    const events = (existingDeadlines || []).map(d => ({
+      name: d.label,
+      date: d.date,
+      description: d.source || 'Deadline'
+    }));
+    
+    // Call Compliance Engine to get deadlines
+    const result = await applyDeadlines(
+      intakeData.state,
+      intakeData.carrier,
+      intakeData.claim_type || 'Property',
+      events
+    );
+    
+    // Save new deadlines from Compliance Engine
+    if (result.deadlines && Array.isArray(result.deadlines)) {
+      for (const deadline of result.deadlines) {
+        await saveDeadlineToDatabase({
+          label: deadline.label || deadline.name,
+          date: deadline.date,
+          source: 'Compliance Engine',
+          priority: deadline.priority || 'medium',
+          completed: false
+        });
+      }
+    }
+    
+    // Reload display
+    await loadExistingDeadlines();
+    
+    alert(`Refreshed ${result.deadlines?.length || 0} deadlines from Compliance Engine`);
+    
+  } catch (error) {
+    console.error('Refresh deadlines error:', error);
+    alert(`Error refreshing deadlines: ${error.message}`);
+  } finally {
+    const btn = document.getElementById('compliance-refresh-btn');
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Refresh Deadlines from Compliance Engine';
+    }
+  }
+}
+
 function showPaymentRequired() {
   const main = document.querySelector('main') || document.body;
   if (main) {

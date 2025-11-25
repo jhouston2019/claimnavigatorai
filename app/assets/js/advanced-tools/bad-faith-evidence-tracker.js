@@ -68,6 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
             displayAnalysis(result);
             addEventToTimeline(result);
             
+            // Run compliance violation check
+            await runComplianceViolationCheck(result);
+            
             // Reset form
             form.reset();
             fileList.innerHTML = '';
@@ -130,6 +133,88 @@ function displayAnalysis(result) {
     analysisPanel.style.display = 'block';
 }
 
+/**
+ * Run compliance violation check on bad faith event
+ */
+async function runComplianceViolationCheck(badFaithResult) {
+    try {
+        // Get state/carrier from form or intake
+        const state = document.getElementById('state')?.value || '';
+        const carrier = document.getElementById('carrier')?.value || '';
+        const claimType = document.getElementById('claim-type')?.value || 'Property';
+        
+        if (!state || !carrier) {
+            return; // Skip if no state/carrier
+        }
+        
+        // Import compliance helper
+        const { analyzeCompliance } = await import('../utils/compliance-engine-helper.js');
+        
+        // Check for compliance violations
+        const complianceData = await analyzeCompliance({
+            state,
+            carrier,
+            claimType,
+            events: [{
+                name: badFaithResult.category || 'Bad Faith Event',
+                date: badFaithResult.date || new Date().toISOString().split('T')[0],
+                description: badFaithResult.event || 'Bad faith evidence tracked'
+            }]
+        });
+        
+        // Update risk score with compliance data
+        if (complianceData.violationsLikelihood && complianceData.violationsLikelihood.severityScoring) {
+            const complianceRisk = extractComplianceRiskScore(complianceData.violationsLikelihood.severityScoring);
+            if (complianceRisk > 0) {
+                badFaithResult.complianceRiskScore = complianceRisk;
+                badFaithResult.combinedRiskScore = Math.min(100, (badFaithResult.score || 0) + complianceRisk);
+            }
+        }
+        
+        // Display compliance warnings
+        displayComplianceWarnings(complianceData);
+        
+    } catch (error) {
+        console.error('Compliance violation check error:', error);
+    }
+}
+
+function extractComplianceRiskScore(severityScoringText) {
+    if (!severityScoringText) return 0;
+    const text = severityScoringText.toLowerCase();
+    if (text.includes('high') || text.includes('severe')) return 30;
+    if (text.includes('medium') || text.includes('moderate')) return 15;
+    if (text.includes('low') || text.includes('minor')) return 5;
+    return 0;
+}
+
+function displayComplianceWarnings(complianceData) {
+    const analysisPanel = document.getElementById('analysis-panel');
+    if (!analysisPanel) return;
+    
+    let warningsHTML = '';
+    if (complianceData.violationsLikelihood) {
+        if (complianceData.violationsLikelihood.possibleViolations) {
+            warningsHTML += `<div style="margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 0.5rem;"><strong>Compliance Violations:</strong><p style="margin-top: 0.5rem; font-size: 0.9rem;">${complianceData.violationsLikelihood.possibleViolations.substring(0, 300)}...</p></div>`;
+        }
+        if (complianceData.violationsLikelihood.redFlags) {
+            warningsHTML += `<div style="margin-top: 1rem; padding: 1rem; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 0.5rem;"><strong>Red Flags:</strong><p style="margin-top: 0.5rem; font-size: 0.9rem;">${complianceData.violationsLikelihood.redFlags.substring(0, 300)}...</p></div>`;
+        }
+    }
+    
+    if (warningsHTML) {
+        const existingWarnings = analysisPanel.querySelector('.compliance-warnings');
+        if (existingWarnings) {
+            existingWarnings.innerHTML = warningsHTML;
+        } else {
+            const warningsDiv = document.createElement('div');
+            warningsDiv.className = 'compliance-warnings';
+            warningsDiv.innerHTML = warningsHTML;
+            analysisPanel.appendChild(warningsDiv);
+        }
+    }
+}
+
 function addEventToTimeline(result) {
     events.push(result);
     
@@ -137,8 +222,8 @@ function addEventToTimeline(result) {
     const timeline = document.getElementById('timeline');
     const runningRiskScore = document.getElementById('running-risk-score');
     
-    // Calculate running risk score
-    const avgScore = events.reduce((sum, e) => sum + (e.score || 0), 0) / events.length;
+    // Calculate running risk score (include compliance risk if available)
+    const avgScore = events.reduce((sum, e) => sum + (e.combinedRiskScore || e.score || 0), 0) / events.length;
     runningRiskScore.textContent = Math.round(avgScore);
     runningRiskScore.className = 'risk-score';
     if (avgScore >= 70) {
@@ -152,11 +237,19 @@ function addEventToTimeline(result) {
     // Add event to timeline
     const timelineItem = document.createElement('div');
     timelineItem.className = 'timeline-item';
+    
+    // Add compliance tags if available
+    let complianceTags = '';
+    if (result.complianceRiskScore) {
+        complianceTags = '<span class="compliance-tag risk-high" style="display: inline-block; padding: 0.25rem 0.5rem; background: rgba(239, 68, 68, 0.3); border-radius: 0.25rem; font-size: 0.75rem; margin-left: 0.5rem;">Violation Risk</span>';
+    }
+    
     timelineItem.innerHTML = `
         <div class="date">${result.date || 'Unknown date'}</div>
-        <div><strong>${result.category || 'Event'}:</strong> ${result.event || 'No description'}</div>
+        <div><strong>${result.category || 'Event'}:</strong> ${result.event || 'No description'}${complianceTags}</div>
         <div style="margin-top: 0.5rem; font-size: 0.875rem; color: rgba(255, 255, 255, 0.7);">
-            Risk Score: ${result.score || 0}/100 | Severity: ${result.severity || 'Unknown'}
+            Risk Score: ${result.combinedRiskScore || result.score || 0}/100 | Severity: ${result.severity || 'Unknown'}
+            ${result.complianceRiskScore ? ` (includes ${result.complianceRiskScore} compliance risk)` : ''}
         </div>
     `;
     timeline.insertBefore(timelineItem, timeline.firstChild);

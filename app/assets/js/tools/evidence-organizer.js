@@ -6,6 +6,7 @@
 import { requireAuth, checkPaymentStatus, getAuthToken, getSupabaseClient } from '../auth.js';
 import { uploadToStorage, uploadMultipleFiles } from '../storage.js';
 import { getIntakeData } from '../autofill.js';
+import { runViolationCheck } from '../utils/compliance-engine-helper.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -68,13 +69,15 @@ async function handleFileUpload(files) {
     const client = await getSupabaseClient();
     const { data: { user } } = await client.auth.getUser();
     if (!user) throw new Error('User not authenticated');
+    
+    const intakeData = await getIntakeData();
 
     for (const file of Array.from(files)) {
       // Upload to storage
       const uploadResult = await uploadToStorage(file, 'evidence');
       
       // Save to evidence_items table
-      await client.from('evidence_items').insert({
+      const { data: evidenceItem } = await client.from('evidence_items').insert({
         user_id: user.id,
         category: 'other', // Will be updated by AI categorization
         file_url: uploadResult.url,
@@ -82,7 +85,39 @@ async function handleFileUpload(files) {
         file_size: file.size,
         mime_type: file.type,
         notes: ''
-      });
+      }).select().single();
+      
+      // Run compliance violation check if we have state/carrier
+      if (intakeData && intakeData.state && intakeData.carrier && evidenceItem) {
+        try {
+          const violationCheck = await runViolationCheck(
+            intakeData.state,
+            intakeData.carrier,
+            {
+              fileName: file.name,
+              fileType: file.type,
+              category: 'other',
+              uploadedAt: new Date().toISOString()
+            }
+          );
+          
+          // Update evidence item with compliance labels
+          if (violationCheck.labels && violationCheck.labels.length > 0) {
+            await client.from('evidence_items').update({
+              metadata: {
+                complianceLabels: violationCheck.labels,
+                complianceCritical: violationCheck.labels.includes('Compliance-Critical'),
+                requiredByStatute: violationCheck.labels.includes('Required by Statute'),
+                requiredByCarrier: violationCheck.labels.includes('Required by Carrier'),
+                missingRequired: violationCheck.labels.includes('Missing Required Document')
+              }
+            }).eq('id', evidenceItem.id);
+          }
+        } catch (error) {
+          console.warn('Compliance check failed for evidence:', error);
+          // Don't block upload if compliance check fails
+        }
+      }
     }
 
     // Reload evidence
