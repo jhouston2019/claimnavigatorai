@@ -68,6 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Add compliance section
             await addComplianceSectionToMediation(result);
+            
+            // Generate compliance alerts after mediation kit generation
+            await triggerComplianceAlerts();
         } catch (error) {
             console.error('Error:', error);
             resultsPanel.innerHTML = `<p class="error">Error: ${error.message}</p>`;
@@ -136,6 +139,31 @@ async function addComplianceSectionToMediation(mediationResult) {
         complianceSection.innerHTML = html;
     } catch (error) {
         console.error('Error adding compliance section:', error);
+    }
+}
+
+/**
+ * Trigger compliance alerts after mediation kit generation
+ */
+async function triggerComplianceAlerts() {
+    try {
+        const state = document.getElementById('state')?.value || '';
+        const carrier = document.getElementById('carrier')?.value || '';
+        const claimType = document.getElementById('claim-type')?.value || 'Property';
+        
+        if (!state || !carrier) return;
+        
+        const { generateAlerts } = await import('../utils/compliance-engine-helper.js');
+        
+        await generateAlerts(
+            { state, carrier, claimType },
+            [{ name: 'Mediation Preparation Kit Generated', date: new Date().toISOString().split('T')[0], description: 'Mediation kit created' }],
+            [],
+            '',
+            []
+        );
+    } catch (error) {
+        console.warn('Failed to trigger compliance alerts:', error);
     }
 }
 

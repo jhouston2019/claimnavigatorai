@@ -71,6 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Run compliance violation check
             await runComplianceViolationCheck(result);
             
+            // Generate compliance alerts after bad faith event
+            await triggerComplianceAlerts(result);
+            
             // Reset form
             form.reset();
             fileList.innerHTML = '';
@@ -176,6 +179,35 @@ async function runComplianceViolationCheck(badFaithResult) {
         
     } catch (error) {
         console.error('Compliance violation check error:', error);
+    }
+}
+
+/**
+ * Trigger compliance alerts after bad faith event
+ */
+async function triggerComplianceAlerts(badFaithResult) {
+    try {
+        const state = document.getElementById('state')?.value || '';
+        const carrier = document.getElementById('carrier')?.value || '';
+        const claimType = document.getElementById('claim-type')?.value || 'Property';
+        
+        if (!state || !carrier) return;
+        
+        const { generateAlerts } = await import('../utils/compliance-engine-helper.js');
+        
+        await generateAlerts(
+            { state, carrier, claimType },
+            [{
+                name: badFaithResult.category || 'Bad Faith Event',
+                date: document.getElementById('event-date')?.value || new Date().toISOString().split('T')[0],
+                description: badFaithResult.event || badFaithResult.description || ''
+            }],
+            [],
+            '',
+            []
+        );
+    } catch (error) {
+        console.warn('Failed to trigger compliance alerts:', error);
     }
 }
 

@@ -62,6 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Add compliance section
             await addComplianceSectionToArbitration(result);
+            
+            // Generate compliance alerts after arbitration guide generation
+            await triggerComplianceAlerts();
         } catch (error) {
             console.error('Error:', error);
             resultsPanel.innerHTML = `<p class="error">Error: ${error.message}</p>`;
@@ -225,5 +228,30 @@ function displayResults(result) {
             alert('PDF export is not available. Please refresh the page and try again.');
         }
     });
+}
+
+/**
+ * Trigger compliance alerts after arbitration guide generation
+ */
+async function triggerComplianceAlerts() {
+    try {
+        const state = document.getElementById('state')?.value || '';
+        const carrier = document.getElementById('carrier')?.value || '';
+        const claimType = document.getElementById('claim-type')?.value || 'Property';
+        
+        if (!state || !carrier) return;
+        
+        const { generateAlerts } = await import('../utils/compliance-engine-helper.js');
+        
+        await generateAlerts(
+            { state, carrier, claimType },
+            [{ name: 'Arbitration Strategy Guide Generated', date: new Date().toISOString().split('T')[0], description: 'Arbitration guide created' }],
+            [],
+            '',
+            []
+        );
+    } catch (error) {
+        console.warn('Failed to trigger compliance alerts:', error);
+    }
 }
 

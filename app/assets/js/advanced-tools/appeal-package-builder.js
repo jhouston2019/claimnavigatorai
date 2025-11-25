@@ -5,13 +5,15 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Load compliance helper dynamically
-    let analyzeCompliance;
+    let analyzeCompliance, generateAlerts;
     try {
         const module = await import('../utils/compliance-engine-helper.js');
         analyzeCompliance = module.analyzeCompliance;
+        generateAlerts = module.generateAlerts;
     } catch (error) {
         console.warn('Compliance helper not available:', error);
         analyzeCompliance = async () => ({ violationsLikelihood: {}, requiredDocuments: '', statutoryDeadlines: '', recommendedActions: {} });
+        generateAlerts = async () => ({ alerts: [] });
     }
     const form = document.getElementById('appeal-form');
     const uploadArea = document.getElementById('upload-area');
@@ -80,6 +82,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             // Get compliance violations and add to appeal package
             await addComplianceViolationsToAppeal(result);
+            
+            // Generate compliance alerts after appeal generation
+            await triggerComplianceAlerts();
         } catch (error) {
             console.error('Error:', error);
             resultsPanel.innerHTML = `<p class="error">Error: ${error.message}</p>`;
@@ -241,6 +246,29 @@ async function addComplianceViolationsToAppeal(appealResult) {
     } catch (error) {
         console.error('Error adding compliance violations:', error);
         // Don't block appeal package display if compliance check fails
+    }
+}
+
+/**
+ * Trigger compliance alerts after appeal generation
+ */
+async function triggerComplianceAlerts() {
+    try {
+        const state = document.getElementById('state')?.value || '';
+        const carrier = document.getElementById('carrier')?.value || '';
+        const claimType = document.getElementById('claim-type')?.value || 'Property';
+        
+        if (!state || !carrier || !generateAlerts) return;
+        
+        await generateAlerts(
+            { state, carrier, claimType },
+            [{ name: 'Appeal Package Generated', date: new Date().toISOString().split('T')[0], description: 'Appeal package created' }],
+            [],
+            '',
+            []
+        );
+    } catch (error) {
+        console.warn('Failed to trigger compliance alerts:', error);
     }
 }
 

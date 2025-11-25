@@ -5,7 +5,7 @@
 
 import { requireAuth, checkPaymentStatus, getAuthToken, getSupabaseClient } from '../auth.js';
 import { getIntakeData } from '../autofill.js';
-import { applyDeadlines } from '../utils/compliance-engine-helper.js';
+import { applyDeadlines, generateAlerts } from '../utils/compliance-engine-helper.js';
 
 // Initialize controller
 document.addEventListener('DOMContentLoaded', async () => {
@@ -303,6 +303,9 @@ async function loadExistingDeadlines() {
 
     // Update statistics
     updateStatistics(deadlines || []);
+    
+    // Generate compliance alerts after loading deadlines
+    await triggerComplianceAlerts(deadlines || []);
 
   } catch (error) {
     console.error('Load deadlines error:', error);
@@ -462,6 +465,41 @@ function showPaymentRequired() {
       <a href="/app/pricing.html" class="btn btn-primary">Get Full Access</a>
     `;
     main.insertBefore(message, main.firstChild);
+  }
+}
+
+/**
+ * Trigger compliance alerts after deadlines are loaded
+ */
+async function triggerComplianceAlerts(deadlines = []) {
+  try {
+    const intakeData = await getIntakeData();
+    if (!intakeData?.state || !intakeData?.carrier) {
+      return; // Skip if no state/carrier
+    }
+
+    // Convert deadlines to timeline events format
+    const timelineEvents = deadlines.map(d => ({
+      name: d.label,
+      date: d.date,
+      description: d.source || 'Deadline'
+    }));
+
+    // Generate alerts
+    await generateAlerts(
+      {
+        state: intakeData.state,
+        carrier: intakeData.carrier_name || intakeData.carrier,
+        claimType: intakeData.claim_type || 'Property',
+        claimId: intakeData.claim_id || null
+      },
+      timelineEvents,
+      [],
+      '',
+      []
+    );
+  } catch (error) {
+    console.warn('Failed to trigger compliance alerts:', error);
   }
 }
 

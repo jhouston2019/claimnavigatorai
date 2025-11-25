@@ -6,7 +6,7 @@
 import { requireAuth, checkPaymentStatus, getAuthToken, getSupabaseClient } from '../auth.js';
 import { uploadToStorage, uploadMultipleFiles } from '../storage.js';
 import { getIntakeData } from '../autofill.js';
-import { runViolationCheck } from '../utils/compliance-engine-helper.js';
+import { runViolationCheck, generateAlerts } from '../utils/compliance-engine-helper.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -122,6 +122,9 @@ async function handleFileUpload(files) {
 
     // Reload evidence
     await loadExistingEvidence();
+    
+    // Generate compliance alerts after upload
+    await triggerComplianceAlerts();
 
   } catch (error) {
     console.error('File upload error:', error);
@@ -367,6 +370,59 @@ function showPaymentRequired() {
       <a href="/app/pricing.html" class="btn btn-primary">Get Full Access</a>
     `;
     main.insertBefore(message, main.firstChild);
+  }
+}
+
+/**
+ * Trigger compliance alerts after evidence changes
+ */
+async function triggerComplianceAlerts() {
+  try {
+    const intakeData = await getIntakeData();
+    if (!intakeData?.state || !intakeData?.carrier) {
+      return; // Skip if no state/carrier
+    }
+
+    const client = await getSupabaseClient();
+    const { data: { user } } = await client.auth.getUser();
+    if (!user) return;
+
+    // Get all evidence items
+    const { data: evidence } = await client
+      .from('evidence_items')
+      .select('*')
+      .eq('user_id', user.id);
+
+    // Get timeline events (if available)
+    const { data: timelineEvents } = await client
+      .from('claim_timeline_milestones')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('due_day', { ascending: true });
+
+    // Generate alerts
+    await generateAlerts(
+      {
+        state: intakeData.state,
+        carrier: intakeData.carrier_name || intakeData.carrier,
+        claimType: intakeData.claim_type || 'Property',
+        claimId: intakeData.claim_id || null
+      },
+      (timelineEvents || []).map(e => ({
+        name: e.milestone_name,
+        date: e.due_day ? new Date(Date.now() + e.due_day * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        description: e.milestone_description
+      })),
+      (evidence || []).map(e => ({
+        category: e.category,
+        fileName: e.file_name,
+        fileType: e.mime_type
+      })),
+      '',
+      []
+    );
+  } catch (error) {
+    console.warn('Failed to trigger compliance alerts:', error);
   }
 }
 

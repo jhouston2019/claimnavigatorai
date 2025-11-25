@@ -182,3 +182,66 @@ function extractComplianceChecklist(data) {
   return checklist;
 }
 
+/**
+ * Generate compliance alerts based on claim data
+ * @param {Object} claimData - Claim context data (state, carrier, claimType, claimId, sessionId)
+ * @param {Array} timelineEvents - Timeline events
+ * @param {Array} evidenceData - Evidence items
+ * @param {string} policyUpload - Optional policy text
+ * @param {Array} communicationsLog - Communications log
+ * @returns {Promise<Object>} Alerts result
+ */
+export async function generateAlerts(claimData = {}, timelineEvents = [], evidenceData = [], policyUpload = '', communicationsLog = []) {
+  try {
+    const token = localStorage.getItem('supabase.auth.token');
+    let headers = {
+      'Content-Type': 'application/json'
+    };
+    if (token) {
+      try {
+        const parsedToken = JSON.parse(token);
+        if (parsedToken.access_token) {
+          headers['Authorization'] = `Bearer ${parsedToken.access_token}`;
+        }
+      } catch (e) {
+        // Token not in expected format, continue without auth
+      }
+    }
+
+    const response = await fetch('/.netlify/functions/compliance-engine/generate-alerts', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({
+        claimId: claimData.claimId || null,
+        sessionId: claimData.sessionId || null,
+        state: claimData.state || '',
+        carrier: claimData.carrier || claimData.carrier_name || '',
+        claimType: claimData.claimType || claimData.claim_type || 'Property',
+        timelineEvents: timelineEvents,
+        evidenceData: evidenceData,
+        policyUpload: policyUpload,
+        communicationsLog: communicationsLog
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    
+    // Dispatch new-alert events for each alert
+    if (result.alerts && result.alerts.length > 0) {
+      result.alerts.forEach(alert => {
+        window.dispatchEvent(new CustomEvent('new-alert', { detail: { alert } }));
+      });
+    }
+    
+    return result;
+  } catch (error) {
+    console.warn('Alert generation failed:', error);
+    return { alerts: [] };
+  }
+}
+
