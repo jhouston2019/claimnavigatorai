@@ -92,22 +92,6 @@
             color: #ffffff;
         }
         
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-        
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .checkbox-group input[type="checkbox"] {
-            width: auto;
-        }
-        
         .upload-area {
             border: 2px dashed rgba(255, 255, 255, 0.3);
             border-radius: 0.5rem;
@@ -162,6 +146,7 @@
             background: rgba(255, 255, 255, 0.2);
             color: #ffffff !important;
             margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
         }
         
         .btn-secondary:hover {
@@ -177,26 +162,180 @@
             display: block;
         }
         
-        .results-section {
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        .collapsible-section {
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            overflow: hidden;
         }
         
-        .results-section:last-child {
-            border-bottom: none;
+        .collapsible-header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
         }
         
-        .results-section h3 {
+        .collapsible-header:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .collapsible-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: #ffffff !important;
+        }
+        
+        .collapsible-icon {
             font-size: 1.5rem;
-            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .collapsible-section.open .collapsible-icon {
+            transform: rotate(180deg);
+        }
+        
+        .collapsible-content {
+            padding: 1.5rem;
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .collapsible-section.open .collapsible-content {
+            display: block;
+        }
+        
+        .event-item {
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .event-item-info {
+            flex: 1;
+        }
+        
+        .event-item-date {
+            font-weight: 600;
             color: #dbeafe !important;
         }
         
-        .results-section p,
-        .results-section ul {
-            line-height: 1.6;
+        .event-item-name {
+            font-size: 1.1rem;
+            margin: 0.25rem 0;
+        }
+        
+        .event-item-description {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        .remove-event-btn {
+            background: rgba(239, 68, 68, 0.3);
+            border: none;
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        
+        .remove-event-btn:hover {
+            background: rgba(239, 68, 68, 0.5);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .modal-content {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
             color: #ffffff !important;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: #ffffff !important;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 2rem;
+            height: 2rem;
+            line-height: 1;
+        }
+        
+        .close-btn:hover {
+            color: #dbeafe !important;
+        }
+        
+        .file-list {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .file-item {
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .file-item-name {
+            flex: 1;
+        }
+        
+        .remove-file-btn {
+            background: rgba(239, 68, 68, 0.3);
+            border: none;
+            color: #ffffff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.875rem;
         }
         
         .loading-indicator {
@@ -210,16 +349,27 @@
             display: block;
         }
         
-        .file-list {
-            margin-top: 0.5rem;
-            font-size: 0.875rem;
+        .violation-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            margin: 0.5rem 0.5rem 0.5rem 0;
         }
         
-        .file-item {
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 0.25rem;
-            margin-bottom: 0.5rem;
+        .violation-badge.low {
+            background: rgba(16, 185, 129, 0.3);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+        }
+        
+        .violation-badge.medium {
+            background: rgba(245, 158, 11, 0.3);
+            border: 1px solid rgba(245, 158, 11, 0.5);
+        }
+        
+        .violation-badge.high {
+            background: rgba(239, 68, 68, 0.3);
+            border: 1px solid rgba(239, 68, 68, 0.5);
         }
     </style>
 </head>
@@ -243,15 +393,15 @@
 
     <!-- Hero Header -->
     <div class="tool-header" style="max-width: 1000px; margin: 2rem auto;">
-        <h1>Claim Navigator Compliance Engine™</h1>
-        <p>Comprehensive compliance and bad faith risk analysis. Analyze claim timelines, insurer communications, deadlines, and events to identify compliance concerns and recommended professional next steps.</p>
+        <h1>Compliance Engine</h1>
+        <p>Analyze state rules, carrier timelines, deadlines, and potential violations.</p>
     </div>
 
     <!-- Main Content -->
     <main class="tool-container">
-        <!-- Section 1: Claim Context & Filters -->
+        <!-- Input Panel -->
         <div class="card">
-            <h2 style="margin-top: 0;">Claim Context & Filters</h2>
+            <h2 style="margin-top: 0;">Claim Information</h2>
             
             <form id="compliance-form">
                 <div class="form-group">
@@ -312,8 +462,12 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="carrier">Carrier Name</label>
-                    <input type="text" id="carrier" placeholder="Enter carrier name" required>
+                    <label for="carrier">Carrier</label>
+                    <select id="carrier" required>
+                        <option value="">Select carrier...</option>
+                        <!-- Will be populated from insurers.json -->
+                    </select>
+                    <input type="text" id="carrier-text" placeholder="Or enter carrier name" style="margin-top: 0.5rem; display: none;">
                 </div>
                 
                 <div class="form-group">
@@ -323,136 +477,144 @@
                         <option value="Property">Property</option>
                         <option value="Fire">Fire</option>
                         <option value="Water">Water</option>
+                        <option value="Roof">Roof</option>
                         <option value="Hurricane">Hurricane</option>
-                        <option value="Wind">Wind</option>
-                        <option value="Hail">Hail</option>
-                        <option value="Business Interruption">Business Interruption</option>
+                        <option value="Vandalism">Vandalism</option>
                         <option value="Theft">Theft</option>
-                        <option value="Liability">Liability</option>
-                        <option value="Other">Other</option>
+                        <option value="Business Interruption">Business Interruption</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="claim-reference">Claim Reference ID (Optional)</label>
-                    <input type="text" id="claim-reference" placeholder="Enter claim reference ID">
+                    <label>Upload Insurer Letter</label>
+                    <div class="upload-area" id="letter-upload-area">
+                        <p>📄 Drag and drop insurer letter (PDF or image)</p>
+                        <input type="file" id="letter-input" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+                    </div>
+                    <div id="letter-file-list" class="file-list"></div>
                 </div>
                 
                 <div class="form-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="include-bad-faith" checked>
-                        <label for="include-bad-faith" style="margin: 0;">Include Bad Faith Analysis</label>
+                    <label>Upload Policy Page / Declarations</label>
+                    <div class="upload-area" id="policy-upload-area">
+                        <p>📄 Drag and drop policy document (PDF or image)</p>
+                        <input type="file" id="policy-input" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
                     </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="include-deadlines" checked>
-                        <label for="include-deadlines" style="margin: 0;">Include Deadline Analysis</label>
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="include-docs-check" checked>
-                        <label for="include-docs-check" style="margin: 0;">Include Documentation Gap Check</label>
+                    <div id="policy-file-list" class="file-list"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Events</label>
+                    <div id="events-list"></div>
+                    <button type="button" class="btn btn-secondary" id="add-event-btn">Add Event</button>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" id="run-analysis-btn">Run Compliance Analysis</button>
+                    <div class="loading-indicator" id="loading-indicator">
+                        <p>Analyzing compliance and deadlines...</p>
                     </div>
                 </div>
-        </div>
-        
-        <!-- Section 2: Event & Communication Summary -->
-        <div class="card">
-            <h2 style="margin-top: 0;">Event & Communication Summary</h2>
-            <p style="margin-bottom: 1rem; color: #dbeafe !important; font-size: 0.9rem;">
-                Provide a timeline of key events, communications, and deadlines. Detailed events from existing tools will be pulled where possible.
-            </p>
-            <div class="form-group">
-                <label for="timeline-summary">Timeline Summary</label>
-                <textarea id="timeline-summary" placeholder="Example: Claim filed on 01/15/2024. Initial inspection on 01/20/2024. Denial letter received on 02/10/2024. Appeal submitted on 02/15/2024..."></textarea>
-            </div>
-        </div>
-        
-        <!-- Section 3: Attach Key Documents -->
-        <div class="card">
-            <h2 style="margin-top: 0;">Attach Key Documents</h2>
-            <div class="form-group">
-                <label>Upload Documents (Optional)</label>
-                <div class="upload-area" id="upload-area">
-                    <p>📄 Drag and drop files here or click to upload</p>
-                    <p style="font-size: 0.875rem; margin-top: 0.5rem; color: #dbeafe !important;">
-                        Insurer letters, denial letters, key emails, policy documents (PDF or images)
-                    </p>
-                    <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png" multiple style="display: none;">
-                </div>
-                <div id="file-list" class="file-list"></div>
-            </div>
-        </div>
-        
-        <!-- Section 4: Run Compliance Audit -->
-        <div class="card">
-            <div class="form-group">
-                <div class="checkbox-group">
-                    <input type="checkbox" id="generate-escalation" checked>
-                    <label for="generate-escalation" style="margin: 0;">Generate Escalation Recommendations</label>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary" id="run-audit-btn">Run Compliance Audit →</button>
-            <div class="loading-indicator" id="loading-indicator">
-                <p>Analyzing compliance and risk factors...</p>
-            </div>
-        </div>
             </form>
+        </div>
         
-        <!-- Section 5: Results -->
-        <div class="card results-panel" id="compliance-results">
-            <h2 style="margin-top: 0;">Compliance & Risk Analysis Report</h2>
+        <!-- Results Section -->
+        <div class="card results-panel" id="results-panel">
+            <h2 style="margin-top: 0;">Compliance Analysis Results</h2>
             
-            <div class="results-section" id="overall-summary-section">
-                <h3>Overall Summary</h3>
-                <div id="overall-summary"></div>
+            <!-- Statutory Deadlines -->
+            <div class="collapsible-section open" id="statutory-deadlines-section">
+                <div class="collapsible-header">
+                    <h3>Statutory Deadlines</h3>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content" id="statutory-deadlines-content">
+                    <!-- Content will be populated by JS -->
+                </div>
             </div>
             
-            <div class="results-section" id="timeline-findings-section">
-                <h3>Timeline & Deadline Analysis</h3>
-                <div id="timeline-findings"></div>
+            <!-- Carrier Overlay Rules -->
+            <div class="collapsible-section open" id="carrier-overlay-section">
+                <div class="collapsible-header">
+                    <h3>Carrier Overlay Rules</h3>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content" id="carrier-overlay-content">
+                    <!-- Content will be populated by JS -->
+                </div>
             </div>
             
-            <div class="results-section" id="deadline-analysis-section">
-                <h3>Deadline Analysis</h3>
-                <div id="deadline-analysis"></div>
+            <!-- Required Documents -->
+            <div class="collapsible-section open" id="required-documents-section">
+                <div class="collapsible-header">
+                    <h3>Required Documents</h3>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content" id="required-documents-content">
+                    <!-- Content will be populated by JS -->
+                </div>
             </div>
             
-            <div class="results-section" id="bad-faith-section">
-                <h3>Potential Bad Faith Concerns</h3>
-                <div id="bad-faith-concern-summary"></div>
+            <!-- Violations Likelihood -->
+            <div class="collapsible-section open" id="violations-section">
+                <div class="collapsible-header">
+                    <h3>Violations Likelihood</h3>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content" id="violations-content">
+                    <!-- Content will be populated by JS -->
+                </div>
             </div>
             
-            <div class="results-section" id="compliance-findings-section">
-                <h3>Compliance Findings</h3>
-                <div id="compliance-findings"></div>
-            </div>
-            
-            <div class="results-section" id="carrier-behavior-section">
-                <h3>Carrier Behavior Patterns</h3>
-                <div id="carrier-behavior-patterns"></div>
-            </div>
-            
-            <div class="results-section" id="documentation-gaps-section">
-                <h3>Documentation & Evidence Gaps</h3>
-                <div id="documentation-gaps"></div>
-            </div>
-            
-            <div class="results-section" id="recommended-actions-section">
-                <h3>Recommended Professional Next Steps</h3>
-                <div id="recommended-actions"></div>
+            <!-- Recommended Actions -->
+            <div class="collapsible-section open" id="recommended-actions-section">
+                <div class="collapsible-header">
+                    <h3>Recommended Actions</h3>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content" id="recommended-actions-content">
+                    <!-- Content will be populated by JS -->
+                </div>
             </div>
         </div>
         
-        <!-- Section 6: Export & Next Steps -->
-        <div class="card">
-            <h2 style="margin-top: 0;">Export & Next Steps</h2>
-            <button class="btn btn-primary export-pdf-btn" data-export-target="#compliance-results" data-export-filename="claim-compliance-report.pdf">
-                Export Compliance Report as PDF
-            </button>
-            <a href="/app/resource-center/advanced-tools/deadline-tracker-pro.html" class="btn btn-secondary">Open Deadline Tracker</a>
-            <a href="/app/resource-center/advanced-tools/bad-faith-evidence-tracker.html" class="btn btn-secondary">Open Bad Faith Tracker</a>
-            <a href="/app/resource-center/advanced-tools/compliance-monitor.html" class="btn btn-secondary">Open Compliance Monitor</a>
+        <!-- Action Buttons -->
+        <div class="card" id="action-buttons-panel" style="display: none;">
+            <h2 style="margin-top: 0;">Next Steps</h2>
+            <button class="btn btn-primary export-pdf-btn" data-export-target="#results-panel" data-export-filename="compliance-report.pdf">Export Compliance Report</button>
+            <button class="btn btn-secondary" id="add-to-journal-btn">Add to Claim Journal</button>
+            <button class="btn btn-secondary" id="sync-timeline-btn">Sync to Timeline</button>
+            <a href="/app/evidence-organizer.html" class="btn btn-secondary">Open Evidence Organizer</a>
         </div>
     </main>
+
+    <!-- Event Modal -->
+    <div class="modal" id="event-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Event</h2>
+                <button class="close-btn" id="close-event-modal">&times;</button>
+            </div>
+            <form id="event-form">
+                <div class="form-group">
+                    <label for="event-name">Event Name</label>
+                    <input type="text" id="event-name" placeholder="e.g., Denial Letter Received" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-date">Date</label>
+                    <input type="date" id="event-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="event-description">Description</label>
+                    <textarea id="event-description" rows="4" placeholder="Describe the event..."></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Add Event</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-event-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -467,4 +629,3 @@
     <script src="/app/assets/js/compliance-engine.js"></script>
 </body>
 </html>
-

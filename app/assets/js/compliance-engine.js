@@ -4,94 +4,276 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // State
+    let events = [];
+    let letterFiles = [];
+    let policyFiles = [];
+    
+    // DOM Elements
     const form = document.getElementById('compliance-form');
-    const uploadArea = document.getElementById('upload-area');
-    const fileInput = document.getElementById('file-input');
-    const resultsPanel = document.getElementById('compliance-results');
+    const stateSelect = document.getElementById('state');
+    const carrierSelect = document.getElementById('carrier');
+    const carrierText = document.getElementById('carrier-text');
+    const claimTypeSelect = document.getElementById('claim-type');
+    const letterUploadArea = document.getElementById('letter-upload-area');
+    const letterInput = document.getElementById('letter-input');
+    const letterFileList = document.getElementById('letter-file-list');
+    const policyUploadArea = document.getElementById('policy-upload-area');
+    const policyInput = document.getElementById('policy-input');
+    const policyFileList = document.getElementById('policy-file-list');
+    const eventsList = document.getElementById('events-list');
+    const addEventBtn = document.getElementById('add-event-btn');
+    const runAnalysisBtn = document.getElementById('run-analysis-btn');
     const loadingIndicator = document.getElementById('loading-indicator');
-    const runAuditBtn = document.getElementById('run-audit-btn');
-    const fileList = document.getElementById('file-list');
+    const resultsPanel = document.getElementById('results-panel');
+    const actionButtonsPanel = document.getElementById('action-buttons-panel');
     
-    let uploadedFiles = [];
+    // Modal elements
+    const eventModal = document.getElementById('event-modal');
+    const eventForm = document.getElementById('event-form');
+    const closeEventModal = document.getElementById('close-event-modal');
+    const cancelEventBtn = document.getElementById('cancel-event-btn');
     
-    // File upload handling
-    uploadArea.addEventListener('click', () => fileInput.click());
+    // Initialize
+    loadCarriers();
+    setupFileUploads();
+    setupEventModal();
+    setupCollapsibleSections();
+    setupActionButtons();
     
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('dragover');
-    });
-    
-    uploadArea.addEventListener('dragleave', () => {
-        uploadArea.classList.remove('dragover');
-    });
-    
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-        const files = Array.from(e.dataTransfer.files);
-        handleFiles(files);
-    });
-    
-    fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handleFiles(Array.from(e.target.files));
+    // Load carriers from insurers.json
+    async function loadCarriers() {
+        try {
+            const response = await fetch('/app/resource-center/insurer-directory/insurers.json');
+            const insurers = await response.json();
+            
+            if (Array.isArray(insurers) && insurers.length > 0) {
+                insurers.forEach(insurer => {
+                    const option = document.createElement('option');
+                    option.value = insurer.name || insurer;
+                    option.textContent = insurer.name || insurer;
+                    carrierSelect.appendChild(option);
+                });
+            } else {
+                // If no carriers in JSON, show text input
+                carrierSelect.style.display = 'none';
+                carrierText.style.display = 'block';
+                carrierText.required = true;
+            }
+        } catch (error) {
+            console.warn('Could not load carriers from JSON, using text input:', error);
+            carrierSelect.style.display = 'none';
+            carrierText.style.display = 'block';
+            carrierText.required = true;
         }
-    });
+    }
     
-    function handleFiles(files) {
-        files.forEach(file => {
-            if (file.type.startsWith('image/') || file.type === 'application/pdf') {
-                uploadedFiles.push(file);
-                displayFile(file);
+    // Setup file uploads
+    function setupFileUploads() {
+        // Letter upload
+        letterUploadArea.addEventListener('click', () => letterInput.click());
+        letterUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            letterUploadArea.classList.add('dragover');
+        });
+        letterUploadArea.addEventListener('dragleave', () => {
+            letterUploadArea.classList.remove('dragover');
+        });
+        letterUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            letterUploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files, 'letter');
+        });
+        letterInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFiles(e.target.files, 'letter');
+            }
+        });
+        
+        // Policy upload
+        policyUploadArea.addEventListener('click', () => policyInput.click());
+        policyUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            policyUploadArea.classList.add('dragover');
+        });
+        policyUploadArea.addEventListener('dragleave', () => {
+            policyUploadArea.classList.remove('dragover');
+        });
+        policyUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            policyUploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files, 'policy');
+        });
+        policyInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFiles(e.target.files, 'policy');
             }
         });
     }
     
-    function displayFile(file) {
+    function handleFiles(files, type) {
+        Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/') || file.type === 'application/pdf') {
+                if (type === 'letter') {
+                    letterFiles.push(file);
+                    displayFile(file, letterFileList, letterFiles);
+                } else if (type === 'policy') {
+                    policyFiles.push(file);
+                    displayFile(file, policyFileList, policyFiles);
+                }
+            }
+        });
+    }
+    
+    function displayFile(file, container, fileArray) {
         const fileItem = document.createElement('div');
         fileItem.className = 'file-item';
         fileItem.innerHTML = `
-            <span>📄 ${file.name}</span>
-            <button type="button" style="float: right; background: rgba(239, 68, 68, 0.3); border: none; color: #ffffff; padding: 0.25rem 0.5rem; border-radius: 0.25rem; cursor: pointer;" onclick="this.parentElement.remove(); uploadedFiles = uploadedFiles.filter(f => f.name !== '${file.name}');">
-                Remove
-            </button>
+            <span class="file-item-name">📄 ${file.name}</span>
+            <button type="button" class="remove-file-btn" onclick="removeFile('${file.name}', ${fileArray === letterFiles ? 'letter' : 'policy'})">Remove</button>
         `;
-        fileList.appendChild(fileItem);
+        container.appendChild(fileItem);
+    }
+    
+    // Make removeFile available globally for onclick handlers
+    window.removeFile = function(fileName, type) {
+        if (type === 'letter') {
+            letterFiles = letterFiles.filter(f => f.name !== fileName);
+            letterFileList.innerHTML = '';
+            letterFiles.forEach(f => displayFile(f, letterFileList, letterFiles));
+        } else if (type === 'policy') {
+            policyFiles = policyFiles.filter(f => f.name !== fileName);
+            policyFileList.innerHTML = '';
+            policyFiles.forEach(f => displayFile(f, policyFileList, policyFiles));
+        }
+    };
+    
+    // Setup event modal
+    function setupEventModal() {
+        addEventBtn.addEventListener('click', () => {
+            eventModal.classList.add('show');
+        });
+        
+        closeEventModal.addEventListener('click', () => {
+            eventModal.classList.remove('show');
+            eventForm.reset();
+        });
+        
+        cancelEventBtn.addEventListener('click', () => {
+            eventModal.classList.remove('show');
+            eventForm.reset();
+        });
+        
+        eventModal.addEventListener('click', (e) => {
+            if (e.target === eventModal) {
+                eventModal.classList.remove('show');
+                eventForm.reset();
+            }
+        });
+        
+        eventForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const eventName = document.getElementById('event-name').value;
+            const eventDate = document.getElementById('event-date').value;
+            const eventDescription = document.getElementById('event-description').value;
+            
+            const event = {
+                name: eventName,
+                date: eventDate,
+                description: eventDescription
+            };
+            
+            events.push(event);
+            displayEvent(event);
+            
+            eventModal.classList.remove('show');
+            eventForm.reset();
+        });
+    }
+    
+    function displayEvent(event) {
+        const eventItem = document.createElement('div');
+        eventItem.className = 'event-item';
+        eventItem.innerHTML = `
+            <div class="event-item-info">
+                <div class="event-item-date">${formatDate(event.date)}</div>
+                <div class="event-item-name">${event.name}</div>
+                ${event.description ? `<div class="event-item-description">${event.description}</div>` : ''}
+            </div>
+            <button type="button" class="remove-event-btn" onclick="removeEvent(${events.length - 1})">Remove</button>
+        `;
+        eventsList.appendChild(eventItem);
+    }
+    
+    window.removeEvent = function(index) {
+        events.splice(index, 1);
+        eventsList.innerHTML = '';
+        events.forEach((event, idx) => {
+            const eventItem = document.createElement('div');
+            eventItem.className = 'event-item';
+            eventItem.innerHTML = `
+                <div class="event-item-info">
+                    <div class="event-item-date">${formatDate(event.date)}</div>
+                    <div class="event-item-name">${event.name}</div>
+                    ${event.description ? `<div class="event-item-description">${event.description}</div>` : ''}
+                </div>
+                <button type="button" class="remove-event-btn" onclick="removeEvent(${idx})">Remove</button>
+            `;
+            eventsList.appendChild(eventItem);
+        });
+    };
+    
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+    
+    // Setup collapsible sections
+    function setupCollapsibleSections() {
+        const sections = document.querySelectorAll('.collapsible-section');
+        sections.forEach(section => {
+            const header = section.querySelector('.collapsible-header');
+            header.addEventListener('click', () => {
+                section.classList.toggle('open');
+            });
+        });
     }
     
     // Form submission
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        // Show loading state
-        runAuditBtn.disabled = true;
+        // Show loading
+        runAnalysisBtn.disabled = true;
         loadingIndicator.classList.add('show');
         resultsPanel.classList.remove('show');
+        actionButtonsPanel.style.display = 'none';
         
         try {
-            // Build payload
-            const payload = {
-                state: document.getElementById('state').value,
-                carrier: document.getElementById('carrier').value,
-                claimType: document.getElementById('claim-type').value,
-                claimReference: document.getElementById('claim-reference').value || null,
-                timelineSummaryText: document.getElementById('timeline-summary').value || '',
-                includeBadFaith: document.getElementById('include-bad-faith').checked,
-                includeDeadlines: document.getElementById('include-deadlines').checked,
-                includeDocsCheck: document.getElementById('include-docs-check').checked,
-                generateEscalation: document.getElementById('generate-escalation').checked
-            };
+            // Get carrier name
+            const carrier = carrierSelect.value || carrierText.value;
             
-            // For now, we'll send file metadata only
-            // In a production system, files would be uploaded to S3/Supabase first
-            if (uploadedFiles.length > 0) {
-                payload.fileCount = uploadedFiles.length;
-                payload.fileNames = uploadedFiles.map(f => f.name);
+            if (!carrier) {
+                throw new Error('Please select or enter a carrier name');
             }
             
-            // Call Netlify function
-            const response = await fetch('/.netlify/functions/compliance-engine', {
+            // Build payload
+            const payload = {
+                state: stateSelect.value,
+                carrier: carrier,
+                claimType: claimTypeSelect.value,
+                events: events,
+                letterFiles: letterFiles.map(f => ({ name: f.name, size: f.size, type: f.type })),
+                policyFiles: policyFiles.map(f => ({ name: f.name, size: f.size, type: f.type }))
+            };
+            
+            // For file uploads, we'll need to handle them separately
+            // For now, send metadata and let backend handle file URLs if needed
+            
+            // Call backend
+            const response = await fetch('/.netlify/functions/compliance-engine/analyze', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -100,7 +282,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             if (!response.ok) {
-                throw new Error(`Server error: ${response.status}`);
+                const errorData = await response.json().catch(() => ({ error: 'Server error' }));
+                throw new Error(errorData.error || `Server error: ${response.status}`);
             }
             
             const data = await response.json();
@@ -112,113 +295,148 @@ document.addEventListener('DOMContentLoaded', () => {
             // Render results
             renderResults(data);
             
-            // Show results panel
+            // Show results and action buttons
             resultsPanel.classList.add('show');
+            actionButtonsPanel.style.display = 'block';
             
         } catch (error) {
-            console.error('Compliance audit error:', error);
-            alert('Compliance audit failed. Please try again. Error: ' + error.message);
+            console.error('Compliance analysis error:', error);
+            alert('Compliance analysis failed. Please try again. Error: ' + error.message);
         } finally {
-            runAuditBtn.disabled = false;
+            runAnalysisBtn.disabled = false;
             loadingIndicator.classList.remove('show');
         }
     });
     
     function renderResults(data) {
-        // Overall Summary
-        const overallSummaryEl = document.getElementById('overall-summary');
-        if (data.overallSummary) {
-            overallSummaryEl.innerHTML = `<p>${formatText(data.overallSummary)}</p>`;
+        // Statutory Deadlines
+        const statutoryContent = document.getElementById('statutory-deadlines-content');
+        if (data.statutoryDeadlines) {
+            statutoryContent.innerHTML = formatResults(data.statutoryDeadlines);
         } else {
-            overallSummaryEl.innerHTML = '<p>No summary available.</p>';
+            statutoryContent.innerHTML = '<p>No statutory deadline information available.</p>';
         }
         
-        // Timeline Findings
-        const timelineFindingsEl = document.getElementById('timeline-findings');
-        if (data.timelineFindings) {
-            timelineFindingsEl.innerHTML = `<p>${formatText(data.timelineFindings)}</p>`;
+        // Carrier Overlay Rules
+        const carrierContent = document.getElementById('carrier-overlay-content');
+        if (data.carrierOverlayRules) {
+            carrierContent.innerHTML = formatResults(data.carrierOverlayRules);
         } else {
-            timelineFindingsEl.innerHTML = '<p>No timeline findings available.</p>';
+            carrierContent.innerHTML = '<p>No carrier overlay rules available.</p>';
         }
         
-        // Deadline Analysis
-        const deadlineAnalysisEl = document.getElementById('deadline-analysis');
-        if (data.deadlineAnalysis) {
-            deadlineAnalysisEl.innerHTML = `<p>${formatText(data.deadlineAnalysis)}</p>`;
+        // Required Documents
+        const documentsContent = document.getElementById('required-documents-content');
+        if (data.requiredDocuments) {
+            documentsContent.innerHTML = formatResults(data.requiredDocuments);
         } else {
-            deadlineAnalysisEl.innerHTML = '<p>No deadline analysis available.</p>';
+            documentsContent.innerHTML = '<p>No required documents information available.</p>';
         }
         
-        // Bad Faith Concerns
-        const badFaithEl = document.getElementById('bad-faith-concern-summary');
-        if (data.badFaithConcernSummary) {
-            badFaithEl.innerHTML = `<p>${formatText(data.badFaithConcernSummary)}</p>`;
+        // Violations Likelihood
+        const violationsContent = document.getElementById('violations-content');
+        if (data.violationsLikelihood) {
+            let violationsHTML = '';
+            if (data.violationsLikelihood.possibleViolations) {
+                violationsHTML += `<p><strong>Possible Violations:</strong></p>${formatResults(data.violationsLikelihood.possibleViolations)}`;
+            }
+            if (data.violationsLikelihood.severityScoring) {
+                violationsHTML += `<p><strong>Severity Scoring:</strong></p>${formatResults(data.violationsLikelihood.severityScoring)}`;
+            }
+            if (data.violationsLikelihood.redFlags) {
+                violationsHTML += `<p><strong>Red Flags:</strong></p>${formatResults(data.violationsLikelihood.redFlags)}`;
+            }
+            violationsContent.innerHTML = violationsHTML || '<p>No violations identified.</p>';
         } else {
-            badFaithEl.innerHTML = '<p>No bad faith concerns identified.</p>';
-        }
-        
-        // Compliance Findings
-        const complianceFindingsEl = document.getElementById('compliance-findings');
-        if (data.complianceFindings) {
-            complianceFindingsEl.innerHTML = `<p>${formatText(data.complianceFindings)}</p>`;
-        } else {
-            complianceFindingsEl.innerHTML = '<p>No compliance findings available.</p>';
-        }
-        
-        // Carrier Behavior Patterns
-        const carrierBehaviorEl = document.getElementById('carrier-behavior-patterns');
-        if (data.carrierBehaviorPatterns) {
-            carrierBehaviorEl.innerHTML = `<p>${formatText(data.carrierBehaviorPatterns)}</p>`;
-        } else {
-            carrierBehaviorEl.innerHTML = '<p>No carrier behavior patterns identified.</p>';
-        }
-        
-        // Documentation Gaps
-        const documentationGapsEl = document.getElementById('documentation-gaps');
-        if (data.documentationGaps) {
-            documentationGapsEl.innerHTML = `<p>${formatText(data.documentationGaps)}</p>`;
-        } else {
-            documentationGapsEl.innerHTML = '<p>No documentation gaps identified.</p>';
+            violationsContent.innerHTML = '<p>No violations analysis available.</p>';
         }
         
         // Recommended Actions
-        const recommendedActionsEl = document.getElementById('recommended-actions');
+        const actionsContent = document.getElementById('recommended-actions-content');
         if (data.recommendedActions) {
-            recommendedActionsEl.innerHTML = `<p>${formatText(data.recommendedActions)}</p>`;
+            let actionsHTML = '';
+            if (data.recommendedActions.steps) {
+                actionsHTML += `<p><strong>Steps to Take:</strong></p>${formatResults(data.recommendedActions.steps)}`;
+            }
+            if (data.recommendedActions.escalationPaths) {
+                actionsHTML += `<p><strong>Escalation Paths:</strong></p>${formatResults(data.recommendedActions.escalationPaths)}`;
+            }
+            if (data.recommendedActions.journalNotes) {
+                actionsHTML += `<p><strong>Notes to Add to Journal:</strong></p>${formatResults(data.recommendedActions.journalNotes)}`;
+            }
+            actionsContent.innerHTML = actionsHTML || formatResults(data.recommendedActions);
         } else {
-            recommendedActionsEl.innerHTML = '<p>No recommended actions available.</p>';
+            actionsContent.innerHTML = '<p>No recommended actions available.</p>';
         }
     }
     
-    function formatText(text) {
-        if (!text) return '';
-        // Convert newlines to <br> and preserve formatting
-        return text
-            .replace(/\n\n/g, '</p><p>')
-            .replace(/\n/g, '<br>')
-            .replace(/^/, '<p>')
-            .replace(/$/, '</p>');
+    function formatResults(content) {
+        if (typeof content === 'string') {
+            // Convert newlines to <br> and preserve formatting
+            return `<p>${content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`;
+        } else if (Array.isArray(content)) {
+            return `<ul>${content.map(item => `<li>${typeof item === 'string' ? item : JSON.stringify(item)}</li>`).join('')}</ul>`;
+        } else if (typeof content === 'object') {
+            let html = '';
+            for (const [key, value] of Object.entries(content)) {
+                html += `<p><strong>${key}:</strong> ${typeof value === 'string' ? value : JSON.stringify(value)}</p>`;
+            }
+            return html;
+        }
+        return '<p>No content available.</p>';
     }
     
-    // PDF Export
-    const exportBtn = document.querySelector('.export-pdf-btn');
-    if (exportBtn) {
-        exportBtn.addEventListener('click', async () => {
-            const targetSelector = exportBtn.getAttribute('data-export-target') || '#compliance-results';
-            const filename = exportBtn.getAttribute('data-export-filename') || 'claim-compliance-report.pdf';
-            
-            try {
-                if (window.PDFExporter && typeof window.PDFExporter.exportSectionToPDF === 'function') {
-                    await window.PDFExporter.exportSectionToPDF(targetSelector, filename);
-                } else {
-                    console.error('PDF export helper not available');
-                    alert('PDF export is not available. Please refresh the page and try again.');
+    // Setup action buttons
+    function setupActionButtons() {
+        // PDF Export
+        const exportBtn = document.querySelector('.export-pdf-btn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', async () => {
+                const targetSelector = exportBtn.getAttribute('data-export-target') || '#results-panel';
+                const filename = exportBtn.getAttribute('data-export-filename') || 'compliance-report.pdf';
+                
+                try {
+                    if (window.PDFExporter && typeof window.PDFExporter.exportSectionToPDF === 'function') {
+                        await window.PDFExporter.exportSectionToPDF(targetSelector, filename);
+                    } else {
+                        console.error('PDF export helper not available');
+                        alert('PDF export is not available. Please refresh the page and try again.');
+                    }
+                } catch (err) {
+                    console.error('Error exporting PDF', err);
+                    alert('Failed to export PDF. Please try again.');
                 }
-            } catch (err) {
-                console.error('Error exporting PDF', err);
-                alert('Failed to export PDF. Please try again.');
-            }
-        });
+            });
+        }
+        
+        // Add to Claim Journal
+        const addToJournalBtn = document.getElementById('add-to-journal-btn');
+        if (addToJournalBtn) {
+            addToJournalBtn.addEventListener('click', async () => {
+                try {
+                    // This would call a journal API endpoint
+                    // For now, show a message
+                    alert('Feature coming soon: This will add the compliance analysis to your Claim Journal.');
+                } catch (err) {
+                    console.error('Error adding to journal:', err);
+                    alert('Failed to add to journal. Please try again.');
+                }
+            });
+        }
+        
+        // Sync to Timeline
+        const syncTimelineBtn = document.getElementById('sync-timeline-btn');
+        if (syncTimelineBtn) {
+            syncTimelineBtn.addEventListener('click', async () => {
+                try {
+                    // This would sync deadlines to the timeline
+                    // For now, show a message
+                    alert('Feature coming soon: This will sync deadlines to your Claim Timeline.');
+                } catch (err) {
+                    console.error('Error syncing timeline:', err);
+                    alert('Failed to sync timeline. Please try again.');
+                }
+            });
+        }
     }
 });
-
