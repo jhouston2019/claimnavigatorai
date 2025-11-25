@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FNOL Auto-File Wizard - ClaimNavigatorAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/claim-analysis.css">
+    <style>
+        body.fnol-wizard-page {
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+                url('/assets/images/backgrounds/paperwork6.jpeg') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            color: #ffffff !important;
+        }
+        
+        body.fnol-wizard-page * {
+            color: #ffffff !important;
+        }
+        
+        body.fnol-wizard-page a {
+            color: #dbeafe !important;
+        }
+        
+        .wizard-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .wizard-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: #ffffff !important;
+        }
+        .wizard-header p {
+            font-size: 1.1rem;
+            color: #dbeafe !important;
+            margin: 0;
+        }
+        .wizard-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(8px) !important;
+            padding: 2rem !important;
+            border-radius: 1rem !important;
+            margin-bottom: 2rem !important;
+        }
+        
+        .wizard-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+        }
+        
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem;
+            position: relative;
+        }
+        
+        .progress-step::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 0;
+        }
+        
+        .progress-step:last-child::after {
+            display: none;
+        }
+        
+        .progress-step.active::after {
+            background: #3b82f6;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 2.5rem;
+            height: 2.5rem;
+            line-height: 2.5rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff !important;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .progress-step.active .step-number {
+            background: #3b82f6;
+        }
+        
+        .progress-step.completed .step-number {
+            background: #10b981;
+        }
+        
+        .step-label {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+        
+        .progress-step.active .step-label {
+            color: #ffffff !important;
+            font-weight: 600;
+        }
+        
+        .wizard-step {
+            display: none;
+        }
+        
+        .wizard-step.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #ffffff !important;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff !important;
+            font-size: 1rem;
+        }
+        
+        .form-group select option {
+            background: #1e3a8a;
+            color: #ffffff;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+        }
+        
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+        
+        .upload-area:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .upload-area.dragover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .file-list {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .file-item {
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .wizard-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+        
+        .btn {
+            font-family: 'Poppins', sans-serif;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #1e40af;
+            color: #ffffff !important;
+        }
+        
+        .btn-primary:hover {
+            background: #1e3a8a;
+        }
+        
+        .btn-primary:disabled {
+            background: rgba(255, 255, 255, 0.2);
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff !important;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .summary-item {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .summary-item h4 {
+            margin: 0 0 0.5rem 0;
+            color: #dbeafe !important;
+        }
+        
+        .summary-item p {
+            margin: 0.25rem 0;
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        .loading-indicator {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: #dbeafe !important;
+        }
+        
+        .loading-indicator.show {
+            display: block;
+        }
+        
+        .success-message {
+            display: none;
+            padding: 2rem;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body class="fnol-wizard-page">
+    <!-- Header -->
+    <header class="header">
+        <div class="bar container">
+            <div class="brand">
+                <div class="logo"></div>
+                <div>Claim Navigation AI</div>
+            </div>
+            <nav class="nav">
+                <a href="/app/index.html">Home</a>
+                <span>></span>
+                <a href="/app/resource-center.html">Resource Center</a>
+                <span>></span>
+                <span>FNOL Wizard</span>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Header -->
+    <div class="wizard-header" style="max-width: 1000px; margin: 2rem auto;">
+        <h1>FNOL Auto-File Wizard</h1>
+        <p>Complete your First Notice of Loss submission in 5 simple steps</p>
+    </div>
+
+    <!-- Main Content -->
+    <main class="wizard-container">
+        <!-- Progress Indicator -->
+        <div class="card">
+            <div class="wizard-progress">
+                <div class="progress-step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Policyholder</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Property & Loss</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Damage Details</div>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Evidence</div>
+                </div>
+                <div class="progress-step" data-step="5">
+                    <div class="step-number">5</div>
+                    <div class="step-label">Review & Submit</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: Policyholder & Policy Info -->
+        <div class="card wizard-step active" id="step-1">
+            <h2>Step 1: Policyholder & Policy Information</h2>
+            
+            <div class="form-group">
+                <label for="policyholder-name">Full Name *</label>
+                <input type="text" id="policyholder-name" required>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="policyholder-email">Email Address *</label>
+                    <input type="email" id="policyholder-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="policyholder-phone">Phone Number *</label>
+                    <input type="tel" id="policyholder-phone" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="policyholder-address">Mailing Address *</label>
+                <textarea id="policyholder-address" rows="3" required></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="policy-number">Policy Number *</label>
+                    <input type="text" id="policy-number" required>
+                </div>
+                <div class="form-group">
+                    <label for="carrier-select">Insurance Carrier *</label>
+                    <select id="carrier-select" required>
+                        <option value="">Select carrier...</option>
+                        <!-- Options will be loaded dynamically -->
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Property & Loss Info -->
+        <div class="card wizard-step" id="step-2">
+            <h2>Step 2: Property & Loss Information</h2>
+            
+            <div class="form-group">
+                <label for="property-address">Property Address *</label>
+                <textarea id="property-address" rows="2" placeholder="If different from mailing address, enter property address here"></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="loss-type">Type of Loss *</label>
+                    <select id="loss-type" required>
+                        <option value="">Select loss type...</option>
+                        <option value="Fire">Fire</option>
+                        <option value="Water">Water</option>
+                        <option value="Wind">Wind</option>
+                        <option value="Hail">Hail</option>
+                        <option value="Hurricane">Hurricane</option>
+                        <option value="Theft">Theft</option>
+                        <option value="Vandalism">Vandalism</option>
+                        <option value="Business Interruption">Business Interruption</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="loss-date">Date of Loss *</label>
+                    <input type="date" id="loss-date" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="loss-time">Time of Loss (Approximate) *</label>
+                <input type="time" id="loss-time" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Was Emergency Work Performed? *</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="radio" name="emergency-work" value="yes" required>
+                        <span>Yes</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="radio" name="emergency-work" value="no" required>
+                        <span>No</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group" id="emergency-notes-group" style="display: none;">
+                <label for="emergency-notes">Emergency Work Details</label>
+                <textarea id="emergency-notes" rows="3" placeholder="Describe any emergency work performed (mitigation, boarding up, etc.)"></textarea>
+            </div>
+        </div>
+
+        <!-- Step 3: Damage & Impact Details -->
+        <div class="card wizard-step" id="step-3">
+            <h2>Step 3: Damage & Impact Details</h2>
+            
+            <div class="form-group">
+                <label for="damage-description">Description of Damage *</label>
+                <textarea id="damage-description" rows="5" required placeholder="Provide a detailed description of the damage, what happened, and the extent of the loss"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Areas Affected (Select all that apply)</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="areas-affected" value="roof">
+                        <span>Roof</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="areas-affected" value="interior">
+                        <span>Interior</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="areas-affected" value="exterior">
+                        <span>Exterior</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="areas-affected" value="foundation">
+                        <span>Foundation</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="areas-affected" value="plumbing">
+                        <span>Plumbing</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="areas-affected" value="electrical">
+                        <span>Electrical</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="areas-affected" value="hvac">
+                        <span>HVAC</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="areas-affected" value="other">
+                        <span>Other</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="severity">Estimated Severity *</label>
+                <select id="severity" required>
+                    <option value="">Select severity...</option>
+                    <option value="low">Low</option>
+                    <option value="moderate">Moderate</option>
+                    <option value="severe">Severe</option>
+                    <option value="catastrophic">Catastrophic</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Is Property Habitable? *</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="radio" name="habitable" value="yes" required>
+                        <span>Yes</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="radio" name="habitable" value="no" required>
+                        <span>No</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Any Injuries? *</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="radio" name="injuries" value="yes" required>
+                        <span>Yes</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="radio" name="injuries" value="no" required>
+                        <span>No</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group" id="injury-notes-group" style="display: none;">
+                <label for="injury-notes">Injury Details</label>
+                <textarea id="injury-notes" rows="3" placeholder="Describe any injuries sustained"></textarea>
+            </div>
+        </div>
+
+        <!-- Step 4: Evidence & Documents -->
+        <div class="card wizard-step" id="step-4">
+            <h2>Step 4: Evidence & Documents</h2>
+            
+            <div class="form-group">
+                <label>Upload Photos (Images)</label>
+                <div class="upload-area" id="photo-upload-area">
+                    <p>📷 Drag & Drop Photos Here or Click to Upload</p>
+                    <input type="file" id="photo-input" accept="image/*" multiple style="display: none;">
+                </div>
+                <div id="photo-file-list" class="file-list"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>Upload Initial Reports or Invoices (PDF)</label>
+                <div class="upload-area" id="report-upload-area">
+                    <p>📄 Drag & Drop PDFs Here or Click to Upload</p>
+                    <input type="file" id="report-input" accept=".pdf" multiple style="display: none;">
+                </div>
+                <div id="report-file-list" class="file-list"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>Upload Contractor Estimate (Optional)</label>
+                <div class="upload-area" id="estimate-upload-area">
+                    <p>📋 Drag & Drop Estimate Here or Click to Upload</p>
+                    <input type="file" id="estimate-input" accept=".pdf,.doc,.docx" style="display: none;">
+                </div>
+                <div id="estimate-file-list" class="file-list"></div>
+            </div>
+        </div>
+
+        <!-- Step 5: Review & Submit -->
+        <div class="card wizard-step" id="step-5">
+            <h2>Step 5: Review & Submit</h2>
+            
+            <div id="review-summary">
+                <!-- Summary will be populated by JS -->
+            </div>
+            
+            <div class="form-group">
+                <label class="checkbox-item" style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                    <input type="checkbox" id="confirm-accuracy" required style="width: auto; margin-top: 0.25rem;">
+                    <span>I confirm this information is accurate to the best of my knowledge. *</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div class="loading-indicator" id="loading-indicator">
+            <p>Submitting your FNOL...</p>
+        </div>
+
+        <!-- Success Message -->
+        <div class="card success-message" id="success-message">
+            <h2>✅ FNOL Submitted Successfully!</h2>
+            <p>Your First Notice of Loss has been submitted to your insurance carrier.</p>
+            <div id="success-details"></div>
+            <div style="margin-top: 1.5rem;">
+                <a href="/app/resource-center.html" class="btn btn-primary">Return to Resource Center</a>
+                <a href="/app/resource-center/compliance-engine.html" class="btn btn-secondary">View Compliance Summary</a>
+            </div>
+        </div>
+
+        <!-- Wizard Actions -->
+        <div class="wizard-actions" id="wizard-actions">
+            <button type="button" class="btn btn-secondary" id="back-btn" style="display: none;">← Back</button>
+            <button type="button" class="btn btn-primary" id="next-btn">Next →</button>
+            <button type="button" class="btn btn-primary" id="submit-btn" style="display: none;">Submit FNOL</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 ClaimNavigatorAI • FNOL Auto-File Wizard</p>
+        </div>
+    </footer>
+
+    <script src="/app/assets/js/fnol-wizard.js" defer></script>
+</body>
+</html>
+
