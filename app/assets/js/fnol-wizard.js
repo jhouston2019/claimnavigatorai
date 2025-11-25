@@ -607,26 +607,25 @@ async function addToClaimJournal(result) {
  */
 async function addToTimeline(result) {
     try {
-        const client = await getSupabaseClient();
-        const { data: { user } } = await client.auth.getUser();
-        if (!user) return;
-
-        // Get claim ID or create one
+        const { addTimelineEvent } = await import('./utils/timeline-autosync.js');
+        
         const claimId = localStorage.getItem('claim_id') || `claim-${Date.now()}`;
         localStorage.setItem('claim_id', claimId);
 
-        await client.from('claim_timeline_milestones').insert({
-            claim_id: claimId,
-            milestone_name: 'FNOL Submitted',
-            milestone_description: `First Notice of Loss submitted to ${fnolPayload.policy.carrier} for ${fnolPayload.loss.type} loss on ${fnolPayload.loss.date}`,
-            due_day: 0,
-            is_completed: true,
-            is_critical: true,
+        await addTimelineEvent({
+            type: 'fnol_submitted',
+            date: fnolPayload.loss.date,
+            source: 'fnol',
+            title: 'FNOL Submitted',
+            description: `First Notice of Loss submitted to ${fnolPayload.policy.carrier} for ${fnolPayload.loss.type} loss on ${fnolPayload.loss.date}`,
             metadata: {
                 fnolId: result.fnolId,
                 carrier: fnolPayload.policy.carrier,
-                lossType: fnolPayload.loss.type
-            }
+                claimType: fnolPayload.loss.type,
+                lossType: fnolPayload.loss.type,
+                pdfUrl: result.pdfUrl
+            },
+            claimId: claimId
         });
     } catch (error) {
         console.warn('Failed to add to timeline:', error);

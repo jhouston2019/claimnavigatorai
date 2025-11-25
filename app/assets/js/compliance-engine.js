@@ -304,6 +304,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Render results
             renderResults(data);
             
+            // Add timeline events
+            await addComplianceTimelineEvents(data, payload);
+            
             // Show results and action buttons
             resultsPanel.classList.add('show');
             actionButtonsPanel.style.display = 'block';
@@ -396,6 +399,55 @@ document.addEventListener('DOMContentLoaded', async () => {
             return html;
         }
         return '<p>No content available.</p>';
+    }
+    
+    // Add timeline events for compliance analysis
+    async function addComplianceTimelineEvents(data, payload) {
+        try {
+            const { addTimelineEvent } = await import('../utils/timeline-autosync.js');
+            const claimId = localStorage.getItem('claim_id') || `claim-${Date.now()}`;
+            
+            // Add main compliance analysis event
+            await addTimelineEvent({
+                type: 'compliance_analysis',
+                date: new Date().toISOString().split('T')[0],
+                source: 'compliance',
+                title: 'Compliance Analysis Completed',
+                description: `Compliance analysis completed for ${payload.carrier} in ${payload.state}`,
+                metadata: {
+                    state: payload.state,
+                    carrier: payload.carrier,
+                    claimType: payload.claimType,
+                    hasDeadlines: !!data.statutoryDeadlines,
+                    hasViolations: !!data.violationsLikelihood
+                },
+                claimId: claimId
+            });
+            
+            // Add deadline events if detected
+            if (data.statutoryDeadlines && typeof data.statutoryDeadlines === 'string') {
+                // Try to extract deadline dates from the text
+                const deadlineMatches = data.statutoryDeadlines.match(/(\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{2}-\d{2})/g);
+                if (deadlineMatches && deadlineMatches.length > 0) {
+                    for (const deadlineDate of deadlineMatches.slice(0, 5)) { // Limit to 5 deadlines
+                        await addTimelineEvent({
+                            type: 'deadline_statutory',
+                            date: deadlineDate,
+                            source: 'compliance',
+                            title: 'Statutory Deadline Detected',
+                            description: `Statutory deadline identified: ${deadlineDate}`,
+                            metadata: {
+                                deadlineType: 'statutory',
+                                state: payload.state
+                            },
+                            claimId: claimId
+                        });
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to add compliance timeline events:', error);
+        }
     }
     
     // Setup action buttons

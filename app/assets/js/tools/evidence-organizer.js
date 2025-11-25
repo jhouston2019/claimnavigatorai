@@ -123,6 +123,9 @@ async function handleFileUpload(files) {
     // Reload evidence
     await loadExistingEvidence();
     
+    // Add timeline event for evidence upload
+    await addEvidenceTimelineEvent(Array.from(files));
+    
     // Generate compliance alerts after upload
     await triggerComplianceAlerts();
 

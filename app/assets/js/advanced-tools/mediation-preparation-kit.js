@@ -66,6 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             displayResults(result);
             
+            // Add timeline event
+            await addAdvancedToolTimelineEvent('mediation_plan_generated', 'Mediation Plan Generated', result);
+            
             // Add compliance section
             await addComplianceSectionToMediation(result);
             

@@ -60,6 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             displayResults(result);
             
+            // Add timeline event
+            await addAdvancedToolTimelineEvent('arbitration_strategy_generated', 'Arbitration Strategy Generated', result);
+            
             // Add compliance section
             await addComplianceSectionToArbitration(result);
             

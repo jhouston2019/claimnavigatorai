@@ -47,6 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             displayResults(result);
             
+            // Add timeline event
+            await addAdvancedToolTimelineEvent('settlement_analysis_run', 'Settlement Analysis Completed', result);
+            
             // Add compliance impact section
             await addComplianceImpactSection(result);
         } catch (error) {
@@ -208,6 +211,31 @@ async function addComplianceImpactSection(settlementResult) {
         
     } catch (error) {
         console.error('Error adding compliance impact:', error);
+    }
+}
+
+/**
+ * Add timeline event for advanced tool usage
+ */
+async function addAdvancedToolTimelineEvent(eventType, title, result) {
+    try {
+        const { addTimelineEvent } = await import('../../utils/timeline-autosync.js');
+        const claimId = localStorage.getItem('claim_id') || `claim-${Date.now()}`;
+        
+        await addTimelineEvent({
+            type: eventType,
+            date: new Date().toISOString().split('T')[0],
+            source: 'advanced-tool',
+            title: title,
+            description: `Generated using ${title}`,
+            metadata: {
+                toolName: 'settlement-calculator-pro',
+                hasResult: !!result
+            },
+            claimId: claimId
+        });
+    } catch (error) {
+        console.warn('Failed to add advanced tool timeline event:', error);
     }
 }
 

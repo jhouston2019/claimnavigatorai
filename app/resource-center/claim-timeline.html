@@ -758,6 +758,155 @@ document.addEventListener("change", async (e) => {
 // Initialize
 updateProgress();
 updateDashboard();
-</script>
+  </script>
+  
+  <!-- Enhanced Timeline View -->
+  <script type="module" src="/app/assets/js/timeline-view-enhanced.js"></script>
+  
+  <style>
+    /* Timeline Event Styles */
+    .timeline-date-group {
+      margin-bottom: 2rem;
+    }
+    
+    .timeline-date-header {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #ffffff !important;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .timeline-events-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .timeline-event {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .timeline-event:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .timeline-event.compliance-critical {
+      border-left: 4px solid #f59e0b;
+      background: rgba(245, 158, 11, 0.1);
+    }
+    
+    .timeline-event-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    
+    .timeline-event-badges {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .timeline-event-time {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+    
+    .timeline-event-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #ffffff !important;
+      margin: 0.5rem 0;
+    }
+    
+    .timeline-event-description {
+      color: rgba(255, 255, 255, 0.9) !important;
+      margin: 0.5rem 0;
+      line-height: 1.5;
+    }
+    
+    .timeline-event-actions {
+      margin-top: 0.75rem;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .badge-fnol { background: #3b82f6; color: #ffffff; }
+    .badge-compliance { background: #f59e0b; color: #ffffff; }
+    .badge-evidence { background: #10b981; color: #ffffff; }
+    .badge-journal { background: #8b5cf6; color: #ffffff; }
+    .badge-advanced { background: #ec4899; color: #ffffff; }
+    .badge-deadline { background: #ef4444; color: #ffffff; }
+    .badge-default { background: #6b7280; color: #ffffff; }
+    .badge-deadline-type { background: #ef4444; color: #ffffff; }
+    
+    .btn-small {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+    }
+    
+    /* Filters */
+    .timeline-filters {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .filter-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      color: #ffffff !important;
+    }
+    
+    .filter-checkbox input[type="checkbox"] {
+      width: auto;
+    }
+    
+    #timeline-events-container {
+      margin-top: 2rem;
+    }
+  </style>
+  
+  <!-- Timeline Events Container -->
+  <section id="timeline-events-container" style="margin-top: 2rem;">
+    <!-- Events will be rendered here -->
+  </section>
+  
+  <!-- Filters (if not already present) -->
+  <div class="timeline-filters" id="timeline-filters" style="display: none;">
+    <h3 style="color: #ffffff !important; margin-bottom: 1rem;">Filters</h3>
+    <div>
+      <label style="color: #ffffff !important; display: block; margin-bottom: 0.5rem;">Source:</label>
+      <div id="source-filters"></div>
+    </div>
+    <div style="margin-top: 1rem;">
+      <label style="color: #ffffff !important; display: block; margin-bottom: 0.5rem;">Time Range:</label>
+      <select id="time-range-filter" style="width: 100%; padding: 0.5rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.25rem; color: #ffffff;">
+        <option value="all">All</option>
+        <option value="7days">Last 7 days</option>
+        <option value="30days">Last 30 days</option>
+      </select>
+    </div>
+    <button id="refresh-timeline-btn" class="btn btn-primary" style="margin-top: 1rem;">Refresh Timeline</button>
+  </div>
 </body>
 </html>

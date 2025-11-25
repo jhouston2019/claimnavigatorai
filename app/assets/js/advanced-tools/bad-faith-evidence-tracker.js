@@ -106,11 +106,14 @@ function handleFile(file) {
     fileList.appendChild(fileItem);
 }
 
-function displayAnalysis(result) {
+async function displayAnalysis(result) {
     const analysisPanel = document.getElementById('analysis-panel');
     const riskScore = document.getElementById('risk-score');
     const severityDisplay = document.getElementById('severity-display');
     const aiNotes = document.getElementById('ai-notes');
+    
+    // Add timeline event
+    await addAdvancedToolTimelineEvent('bad_faith_event_logged', 'Bad Faith Event Logged', result);
     
     // Update risk score
     riskScore.textContent = result.score || 0;

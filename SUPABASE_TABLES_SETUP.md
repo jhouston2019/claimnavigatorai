@@ -664,6 +664,51 @@ CREATE POLICY "Users can insert own compliance audits"
   WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
 ```
 
+### 20. claim_timeline
+
+Stores auto-synced timeline events from various sources (FNOL, Compliance, Evidence, Journal, Advanced Tools).
+
+```sql
+CREATE TABLE IF NOT EXISTS claim_timeline (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  claim_id TEXT NOT NULL,
+  event_type TEXT NOT NULL,
+  event_date DATE NOT NULL,
+  source TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_claim_timeline_claim_id ON claim_timeline(claim_id);
+CREATE INDEX IF NOT EXISTS idx_claim_timeline_event_date ON claim_timeline(event_date);
+CREATE INDEX IF NOT EXISTS idx_claim_timeline_source ON claim_timeline(source);
+CREATE INDEX IF NOT EXISTS idx_claim_timeline_event_type ON claim_timeline(event_type);
+CREATE INDEX IF NOT EXISTS idx_claim_timeline_user_id ON claim_timeline(user_id);
+
+-- RLS Policies
+ALTER TABLE claim_timeline ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own timeline events"
+  ON claim_timeline FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own timeline events"
+  ON claim_timeline FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own timeline events"
+  ON claim_timeline FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own timeline events"
+  ON claim_timeline FOR DELETE
+  USING (auth.uid() = user_id);
+```
+
 ## Notes
 
 - All tables use UUID primary keys

@@ -67,6 +67,37 @@ async function saveEntryToDatabase(entry) {
     content: entry.body,
     metadata: { entry_type: 'journal', created_at: new Date().toISOString() }
   });
+  
+  // Add timeline event
+  await addJournalTimelineEvent(entry);
+}
+
+/**
+ * Add timeline event for journal entry
+ */
+async function addJournalTimelineEvent(entry) {
+  try {
+    const { addTimelineEvent } = await import('../utils/timeline-autosync.js');
+    const claimId = localStorage.getItem('claim_id') || `claim-${Date.now()}`;
+    
+    const truncatedDescription = entry.body.length > 100 
+      ? entry.body.substring(0, 100) + '...' 
+      : entry.body;
+    
+    await addTimelineEvent({
+      type: 'journal_entry',
+      date: new Date().toISOString().split('T')[0],
+      source: 'journal',
+      title: entry.title,
+      description: truncatedDescription,
+      metadata: {
+        entryLength: entry.body.length
+      },
+      claimId: claimId
+    });
+  } catch (error) {
+    console.warn('Failed to add journal timeline event:', error);
+  }
 }
 
 async function loadExistingEntries() {

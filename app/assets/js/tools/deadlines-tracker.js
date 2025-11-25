@@ -86,6 +86,12 @@ async function attachEventListeners() {
   const complianceRefreshBtn = document.getElementById('compliance-refresh-btn');
   if (complianceRefreshBtn) {
     complianceRefreshBtn.addEventListener('click', async () => {
+      await refreshDeadlinesFromCompliance();
+    });
+  }
+  const complianceRefreshBtn = document.getElementById('compliance-refresh-btn');
+  if (complianceRefreshBtn) {
+    complianceRefreshBtn.addEventListener('click', async () => {
       await refreshDeadlinesFromComplianceEngine();
     });
   } else {
@@ -276,6 +282,9 @@ async function loadExistingDeadlines() {
       .order('date', { ascending: true });
 
     if (error) throw error;
+
+    // Add timeline events for key deadlines
+    await addDeadlineTimelineEvents(deadlines || []);
 
     // Update display
     if (window.updateDeadlinesDisplay && deadlines) {

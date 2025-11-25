@@ -80,6 +80,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             const result = await response.json();
             displayResults(result);
             
+            // Add timeline event
+            await addAdvancedToolTimelineEvent('appeal_package_generated', 'Appeal Package Generated', result);
+            
             // Get compliance violations and add to appeal package
             await addComplianceViolationsToAppeal(result);
             
@@ -269,6 +272,31 @@ async function triggerComplianceAlerts() {
         );
     } catch (error) {
         console.warn('Failed to trigger compliance alerts:', error);
+    }
+}
+
+/**
+ * Add timeline event for advanced tool usage
+ */
+async function addAdvancedToolTimelineEvent(eventType, title, result) {
+    try {
+        const { addTimelineEvent } = await import('../../utils/timeline-autosync.js');
+        const claimId = localStorage.getItem('claim_id') || `claim-${Date.now()}`;
+        
+        await addTimelineEvent({
+            type: eventType,
+            date: new Date().toISOString().split('T')[0],
+            source: 'advanced-tool',
+            title: title,
+            description: `Generated using ${title}`,
+            metadata: {
+                toolName: 'appeal-package-builder',
+                hasResult: !!result
+            },
+            claimId: claimId
+        });
+    } catch (error) {
+        console.warn('Failed to add advanced tool timeline event:', error);
     }
 }
 
