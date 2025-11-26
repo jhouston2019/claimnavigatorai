@@ -2,7 +2,7 @@
  * Record system event endpoint
  */
 
-const { getSupabaseClient, sendSuccess, sendError, parseBody } = require('../api/lib/api-utils');
+const { getSupabaseClient, sendSuccess, sendError, parseBody } = require('../lib/api-utils');
 
 exports.handler = async (event) => {
   try {
