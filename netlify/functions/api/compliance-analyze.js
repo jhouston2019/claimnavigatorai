@@ -19,7 +19,7 @@ exports.handler = async (event) => {
 
     const validation = validateSchema(body, schema);
     if (!validation.valid) {
-      return sendError(validation.errors[0].message, 'VALIDATION_ERROR', 400);
+      return sendError(validation.errors[0].message, 'CN-1000', 400);
     }
 
     // Call compliance engine
@@ -40,8 +40,13 @@ exports.handler = async (event) => {
     });
 
     if (result.statusCode !== 200) {
-      const errorData = JSON.parse(result.body);
-      return sendError(errorData.error || 'Compliance analysis failed', 'COMPLIANCE_ERROR', result.statusCode);
+      const errorData = JSON.parse(result.body || '{}');
+      return sendError(
+        errorData.error || 'Compliance analysis failed',
+        'CN-2001',
+        result.statusCode,
+        { originalError: errorData.error }
+      );
     }
 
     const analysisData = JSON.parse(result.body);
@@ -77,7 +82,31 @@ exports.handler = async (event) => {
 
   } catch (error) {
     console.error('Compliance Analyze API Error:', error);
-    return sendError('Failed to analyze compliance', 'INTERNAL_ERROR', 500);
+    
+    try {
+      return sendError(
+        'Failed to analyze compliance',
+        'CN-5000',
+        500,
+        { errorType: error.name }
+      );
+    } catch (fallbackError) {
+      return {
+        statusCode: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({
+          success: false,
+          data: null,
+          error: {
+            code: 'CN-9000',
+            message: 'Critical system failure'
+          }
+        })
+      };
+    }
   }
 };
 

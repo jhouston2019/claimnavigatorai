@@ -3,7 +3,16 @@
  * Interprets contractor estimate
  */
 
-const { sendSuccess, sendError, validateSchema } = require('./lib/api-utils');
+const { sendSuccess, sendError, validateSchema, sanitizeInput } = require('./lib/api-utils');
+
+// Security configuration
+const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE || '52428800'); // 50 MB default
+const ALLOWED_MIME_TYPES = [
+  'application/pdf',
+  'image/jpeg',
+  'image/jpg',
+  'image/png'
+];
 
 exports.handler = async (event) => {
   try {
@@ -11,15 +20,30 @@ exports.handler = async (event) => {
 
     // Validate input
     const schema = {
-      file_url: { required: true, type: 'string' },
-      loss_type: { required: false, type: 'string' },
-      severity: { required: false, type: 'string' },
+      file_url: { required: true, type: 'string', maxLength: 2048 },
+      loss_type: { required: false, type: 'string', maxLength: 100 },
+      severity: { required: false, type: 'string', maxLength: 50 },
       areas: { required: false, array: true }
     };
 
     const validation = validateSchema(body, schema);
     if (!validation.valid) {
-      return sendError(validation.errors[0].message, 'VALIDATION_ERROR', 400);
+      return sendError(validation.errors[0].message, 'CN-1000', 400);
+    }
+
+    // Sanitize inputs
+    const sanitizedFileUrl = sanitizeInput(body.file_url, 2048);
+    const sanitizedLossType = body.loss_type ? sanitizeInput(body.loss_type, 100) : null;
+    const sanitizedSeverity = body.severity ? sanitizeInput(body.severity, 50) : null;
+
+    // Validate file URL format
+    try {
+      const url = new URL(sanitizedFileUrl);
+      if (url.protocol !== 'https:') {
+        return sendError('File URL must use HTTPS protocol', 'CN-1001', 400);
+      }
+    } catch (e) {
+      return sendError('Invalid file URL format', 'CN-1000', 400);
     }
 
     // Call contractor estimate interpreter
@@ -39,8 +63,13 @@ exports.handler = async (event) => {
     });
 
     if (result.statusCode !== 200) {
-      const errorData = JSON.parse(result.body);
-      return sendError(errorData.error || 'Estimate interpretation failed', 'INTERPRETATION_ERROR', result.statusCode);
+      const errorData = JSON.parse(result.body || '{}');
+      return sendError(
+        errorData.error || 'Estimate interpretation failed',
+        'CN-5003',
+        result.statusCode,
+        { originalError: errorData.error }
+      );
     }
 
     const interpretationData = JSON.parse(result.body);
@@ -109,7 +138,26 @@ exports.handler = async (event) => {
 
   } catch (error) {
     console.error('Estimate Interpret API Error:', error);
-    return sendError('Failed to interpret estimate', 'INTERNAL_ERROR', 500);
+    
+    try {
+      return sendError('Failed to interpret estimate', 'CN-5000', 500, { errorType: error.name });
+    } catch (fallbackError) {
+      return {
+        statusCode: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({
+          success: false,
+          data: null,
+          error: {
+            code: 'CN-9000',
+            message: 'Critical system failure'
+          }
+        })
+      };
+    }
   }
 };
 

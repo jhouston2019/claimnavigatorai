@@ -19,7 +19,7 @@ exports.handler = async (event) => {
 
     const validation = validateSchema(body, schema);
     if (!validation.valid) {
-      return sendError(validation.errors[0].message, 'VALIDATION_ERROR', 400);
+      return sendError(validation.errors[0].message, 'CN-1000', 400);
     }
 
     // Get deadlines from compliance engine
@@ -39,7 +39,12 @@ exports.handler = async (event) => {
 
     if (deadlineResult.statusCode !== 200) {
       const errorData = JSON.parse(deadlineResult.body || '{}');
-      return sendError(errorData.error || 'Failed to retrieve deadlines', 'DEADLINE_ERROR', deadlineResult.statusCode);
+      return sendError(
+        errorData.error || 'Failed to retrieve deadlines',
+        'CN-2002',
+        deadlineResult.statusCode,
+        { originalError: errorData.error }
+      );
     }
 
     const deadlineData = JSON.parse(deadlineResult.body || '{}');
@@ -69,7 +74,31 @@ exports.handler = async (event) => {
 
   } catch (error) {
     console.error('Deadlines Check API Error:', error);
-    return sendError('Failed to check deadlines', 'INTERNAL_ERROR', 500);
+    
+    try {
+      return sendError(
+        'Failed to check deadlines',
+        'CN-5000',
+        500,
+        { errorType: error.name }
+      );
+    } catch (fallbackError) {
+      return {
+        statusCode: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({
+          success: false,
+          data: null,
+          error: {
+            code: 'CN-9000',
+            message: 'Critical system failure'
+          }
+        })
+      };
+    }
   }
 };
 

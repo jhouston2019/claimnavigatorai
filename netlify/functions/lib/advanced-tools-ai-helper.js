@@ -27,12 +27,123 @@ function getSupabaseClient() {
 }
 
 /**
+ * Load live prompt from versioned table
+ * @param {string} toolName - Tool identifier
+ * @returns {Promise<string>} System prompt
+ */
+async function loadLivePrompts(toolName) {
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('ai_prompt_versions')
+        .select('prompt')
+        .eq('tool_name', toolName)
+        .order('version', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (!error && data) {
+        return data.prompt;
+      }
+    } catch (err) {
+      console.warn(`Live prompt load failed for ${toolName}, using fallback:`, err.message);
+    }
+  }
+  return null;
+}
+
+/**
+ * Load live ruleset from versioned table
+ * @param {string} rulesetName - Ruleset name
+ * @returns {Promise<object|null>} Ruleset object
+ */
+async function loadLiveRuleset(rulesetName) {
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('ai_ruleset_versions')
+        .select('rules')
+        .eq('ruleset_name', rulesetName)
+        .order('version', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (!error && data) {
+        return data.rules;
+      }
+    } catch (err) {
+      console.warn(`Live ruleset load failed for ${rulesetName}, using fallback:`, err.message);
+    }
+  }
+  return null;
+}
+
+/**
+ * Load live examples from versioned table
+ * @param {string} toolName - Tool identifier
+ * @returns {Promise<array>} Examples array
+ */
+async function loadLiveExamples(toolName) {
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('ai_example_versions')
+        .select('examples')
+        .eq('tool_name', toolName)
+        .order('version', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (!error && data) {
+        return data.examples || [];
+      }
+    } catch (err) {
+      console.warn(`Live examples load failed for ${toolName}, using fallback:`, err.message);
+    }
+  }
+  return null;
+}
+
+/**
+ * Load live output format from versioned table
+ * @param {string} toolName - Tool identifier
+ * @returns {Promise<object|null>} Output format schema
+ */
+async function loadLiveOutputFormat(toolName) {
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('ai_output_format_versions')
+        .select('output_format')
+        .eq('tool_name', toolName)
+        .order('version', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (!error && data) {
+        return data.output_format;
+      }
+    } catch (err) {
+      console.warn(`Live output format load failed for ${toolName}, using fallback:`, err.message);
+    }
+  }
+  return null;
+}
+
+/**
  * Load tool config from Supabase or local file
  * @param {string} toolSlug - Tool identifier (e.g., 'settlement-calculator-pro')
  * @returns {object|null} Tool config object
  */
 async function loadToolConfig(toolSlug) {
-  // Try Supabase first
+  // Try live prompt first
+  const livePrompt = await loadLivePrompts(toolSlug);
+  
+  // Try Supabase config table
   const supabase = getSupabaseClient();
   if (supabase) {
     try {
@@ -43,7 +154,12 @@ async function loadToolConfig(toolSlug) {
         .single();
 
       if (!error && data) {
-        return data.config_json;
+        const config = data.config_json;
+        // Override with live prompt if available
+        if (livePrompt) {
+          config.systemPrompt = livePrompt;
+        }
+        return config;
       }
     } catch (err) {
       console.warn(`Supabase config load failed for ${toolSlug}, falling back to local file:`, err.message);
@@ -56,7 +172,12 @@ async function loadToolConfig(toolSlug) {
     if (fs.existsSync(configPath)) {
       const configFile = fs.readFileSync(configPath, 'utf8');
       const allConfigs = JSON.parse(configFile);
-      return allConfigs[toolSlug] || null;
+      const config = allConfigs[toolSlug] || null;
+      // Override with live prompt if available
+      if (config && livePrompt) {
+        config.systemPrompt = livePrompt;
+      }
+      return config;
     }
   } catch (err) {
     console.error(`Failed to load local config for ${toolSlug}:`, err.message);
@@ -71,12 +192,19 @@ async function loadToolConfig(toolSlug) {
  * @returns {object|null} Ruleset object
  */
 async function loadRuleset(rulesetName) {
-  // Check cache first
+  // Try live ruleset first
+  const liveRules = await loadLiveRuleset(rulesetName);
+  if (liveRules) {
+    rulesCache[rulesetName] = liveRules;
+    return liveRules;
+  }
+
+  // Check cache
   if (rulesCache[rulesetName]) {
     return rulesCache[rulesetName];
   }
 
-  // Try Supabase first
+  // Try Supabase rulesets table
   const supabase = getSupabaseClient();
   if (supabase) {
     try {
@@ -118,6 +246,16 @@ async function loadRuleset(rulesetName) {
  * @returns {array} Array of example objects
  */
 async function loadExamples(toolSlug, exampleType = null) {
+  // Try live examples first
+  const liveExamples = await loadLiveExamples(toolSlug);
+  if (liveExamples && liveExamples.length > 0) {
+    if (exampleType) {
+      return liveExamples.filter(ex => ex.example_type === exampleType);
+    }
+    return liveExamples;
+  }
+
+  // Fallback to ai_examples table
   const supabase = getSupabaseClient();
   if (!supabase) {
     return [];
@@ -229,6 +367,10 @@ module.exports = {
   loadToolConfig,
   loadRuleset,
   loadExamples,
+  loadLivePrompts,
+  loadLiveRuleset,
+  loadLiveExamples,
+  loadLiveOutputFormat,
   runToolAI,
   runToolAIJSON
 };

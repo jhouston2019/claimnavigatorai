@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Version History - AI Console</title>
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background: #f9fafb; margin: 0; }
+    .admin-container { display: flex; min-height: 100vh; }
+    .sidebar { width: 250px; background: #1e40af; color: white; padding: 1.5rem 0; position: fixed; height: 100vh; }
+    .sidebar h2 { padding: 0 1.5rem; margin-bottom: 2rem; font-size: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 1rem; }
+    .sidebar nav a { display: block; padding: 0.75rem 1.5rem; color: rgba(255,255,255,0.9); text-decoration: none; }
+    .sidebar nav a:hover, .sidebar nav a.active { background: rgba(255,255,255,0.1); }
+    .main-content { margin-left: 250px; flex: 1; padding: 2rem; }
+    .warning-banner { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; margin-bottom: 2rem; border-radius: 0.5rem; }
+    .card { background: white; border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .diff-viewer { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+    .diff-side { border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 1rem; font-family: monospace; font-size: 12px; }
+    .diff-added { background: #d1fae5; }
+    .diff-removed { background: #fee2e2; }
+    .diff-unchanged { background: #f3f4f6; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+    .btn { padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+    .btn-primary { background: #1e40af; color: white; }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <aside class="sidebar">
+      <h2>🔧 Admin Console</h2>
+      <nav>
+        <a href="/app/admin/ai-console/index.html">Dashboard</a>
+        <a href="/app/admin/ai-console/prompts.html">System Prompts</a>
+        <a href="/app/admin/ai-console/rules.html">Rulesets</a>
+        <a href="/app/admin/ai-console/examples.html">Examples</a>
+        <a href="/app/admin/ai-console/outputs.html">Output Formats</a>
+        <a href="/app/admin/ai-console/versions.html" class="active">Version History</a>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <div class="warning-banner"><strong>⚠️ Admin Access Only</strong></div>
+      <h1>Version History & Rollback</h1>
+      <div class="card">
+        <label><strong>Filter:</strong></label>
+        <select id="filter-type"><option value="">All Types</option><option value="prompt">Prompts</option><option value="ruleset">Rulesets</option><option value="example">Examples</option><option value="output">Output Formats</option></select>
+        <select id="filter-tool"><option value="">All Tools</option></select>
+        <div id="versions-list">Loading...</div>
+      </div>
+      <div class="card" id="rollback-section">
+        <h2>Rollback Center</h2>
+        <div class="diff-viewer">
+          <div class="diff-side">
+            <h3>Current Version</h3>
+            <pre id="current-content"></pre>
+          </div>
+          <div class="diff-side">
+            <h3>Selected Version</h3>
+            <pre id="selected-content"></pre>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="rollback()">Rollback to Selected Version</button>
+      </div>
+    </main>
+  </div>
+  <script type="module">
+    import { requireAdminAuth } from '/app/assets/js/utils/admin-auth.js';
+    await requireAdminAuth();
+    // Version history and diff logic here
+  </script>
+</body>
+</html>
+

@@ -61,7 +61,7 @@ exports.handler = async (event, context) => {
   // Find handler
   const handler = handlers[path];
   if (!handler) {
-    return sendError(`Endpoint not found: ${path}`, 'ENDPOINT_NOT_FOUND', 404);
+    return sendError(`Endpoint not found: ${path}`, 'CN-7000', 404, { endpoint: path });
   }
 
   // Validate authentication
@@ -75,30 +75,38 @@ exports.handler = async (event, context) => {
       responseTime: Date.now() - startTime,
       ipAddress: ipAddress,
       userAgent: userAgent,
+      errorCode: 'CN-6000',
       errorMessage: authResult.error
     });
-    return sendError(authResult.error, 'UNAUTHORIZED', 401);
+    return sendError(authResult.error, 'CN-6000', 401);
   }
 
   const userId = authResult.user.id;
+  const apiKey = authResult.apiKey?.key || null;
 
-  // Check rate limit
-  const rateLimitResult = await rateLimit(userId, path, 100, 60000); // 100 requests per minute
+  // Check advanced rate limiting (per-key, per-IP, burst)
+  const rateLimitResult = await rateLimit(userId, apiKey, ipAddress, path);
   if (!rateLimitResult.allowed) {
     await logAPIRequest({
       userId: userId,
+      apiKey: apiKey,
       endpoint: path,
       method: method,
       statusCode: 429,
       responseTime: Date.now() - startTime,
       ipAddress: ipAddress,
       userAgent: userAgent,
-      errorMessage: 'Rate limit exceeded'
+      errorCode: 'CN-4000',
+      errorMessage: rateLimitResult.reason || 'Rate limit exceeded'
     });
     return sendError(
-      'Rate limit exceeded. Please try again later.',
-      'RATE_LIMIT_EXCEEDED',
-      429
+      rateLimitResult.reason || 'Rate limit exceeded. Please try again later.',
+      'CN-4000',
+      429,
+      {
+        resetAt: new Date(rateLimitResult.resetAt).toISOString(),
+        remaining: rateLimitResult.remaining
+      }
     );
   }
 
@@ -117,6 +125,7 @@ exports.handler = async (event, context) => {
     // Log successful request
     await logAPIRequest({
       userId: userId,
+      apiKey: apiKey,
       endpoint: path,
       method: method,
       statusCode: result.statusCode || 200,
@@ -133,12 +142,14 @@ exports.handler = async (event, context) => {
     // Log error
     await logAPIRequest({
       userId: userId,
+      apiKey: apiKey,
       endpoint: path,
       method: method,
       statusCode: 500,
       responseTime: responseTime,
       ipAddress: ipAddress,
       userAgent: userAgent,
+      errorCode: 'CN-5000',
       requestBody: method !== 'GET' ? body : null,
       errorMessage: error.message
     });
@@ -146,8 +157,9 @@ exports.handler = async (event, context) => {
     console.error('API Gateway Error:', error);
     return sendError(
       'Internal server error',
-      'INTERNAL_ERROR',
-      500
+      'CN-5000',
+      500,
+      { errorType: error.name, endpoint: path }
     );
   }
 };

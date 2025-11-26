@@ -11,7 +11,7 @@ exports.handler = async (event) => {
     const supabase = getSupabaseClient();
 
     if (!supabase) {
-      return sendError('Database not configured', 'CONFIG_ERROR', 500);
+      return sendError('Database not configured', 'CN-8000', 500);
     }
 
     // Validate input
@@ -21,7 +21,7 @@ exports.handler = async (event) => {
 
     const validation = validateSchema(body, schema);
     if (!validation.valid) {
-      return sendError(validation.errors[0].message, 'VALIDATION_ERROR', 400);
+      return sendError(validation.errors[0].message, 'CN-1000', 400);
     }
 
     const claimId = body.claim_id || `claim-${Date.now()}`;
@@ -150,7 +150,26 @@ exports.handler = async (event) => {
 
   } catch (error) {
     console.error('Checklist Generate API Error:', error);
-    return sendError('Failed to generate checklist', 'INTERNAL_ERROR', 500);
+    
+    try {
+      return sendError('Failed to generate checklist', 'CN-5000', 500, { errorType: error.name });
+    } catch (fallbackError) {
+      return {
+        statusCode: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({
+          success: false,
+          data: null,
+          error: {
+            code: 'CN-9000',
+            message: 'Critical system failure'
+          }
+        })
+      };
+    }
   }
 };
 

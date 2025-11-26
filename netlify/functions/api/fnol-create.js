@@ -12,7 +12,7 @@ exports.handler = async (event) => {
 
     // Validate required fields
     if (!body.policyholder || !body.policy || !body.loss) {
-      return sendError('Missing required fields: policyholder, policy, loss', 'VALIDATION_ERROR', 400);
+      return sendError('Missing required fields: policyholder, policy, loss', 'CN-1000', 400);
     }
 
     // Build FNOL payload
@@ -42,7 +42,12 @@ exports.handler = async (event) => {
 
     if (result.statusCode !== 200) {
       const errorData = JSON.parse(result.body || '{}');
-      return sendError(errorData.error || 'FNOL creation failed', 'FNOL_ERROR', result.statusCode);
+      return sendError(
+        errorData.error || 'FNOL creation failed',
+        'CN-5000',
+        result.statusCode,
+        { originalError: errorData.error }
+      );
     }
 
     const fnolData = JSON.parse(result.body || '{}');
@@ -57,7 +62,33 @@ exports.handler = async (event) => {
 
   } catch (error) {
     console.error('FNOL Create API Error:', error);
-    return sendError('Failed to create FNOL', 'INTERNAL_ERROR', 500);
+    
+    // Wrap in try/catch for resilience
+    try {
+      return sendError(
+        'Failed to create FNOL',
+        'CN-5000',
+        500,
+        { errorType: error.name }
+      );
+    } catch (fallbackError) {
+      // Ultimate fallback
+      return {
+        statusCode: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({
+          success: false,
+          data: null,
+          error: {
+            code: 'CN-9000',
+            message: 'Critical system failure'
+          }
+        })
+      };
+    }
   }
 };
 

@@ -11,7 +11,7 @@ exports.handler = async (event) => {
     const supabase = getSupabaseClient();
 
     if (!supabase) {
-      return sendError('Database not configured', 'CONFIG_ERROR', 500);
+      return sendError('Database not configured', 'CN-8000', 500);
     }
 
     // Parse query params
@@ -36,7 +36,7 @@ exports.handler = async (event) => {
     const { data: alerts, error } = await query;
 
     if (error) {
-      return sendError('Failed to retrieve alerts', 'DATABASE_ERROR', 500);
+      return sendError('Failed to retrieve alerts', 'CN-5001', 500, { databaseError: error.message });
     }
 
     return sendSuccess({
@@ -49,7 +49,26 @@ exports.handler = async (event) => {
 
   } catch (error) {
     console.error('Alerts List API Error:', error);
-    return sendError('Failed to list alerts', 'INTERNAL_ERROR', 500);
+    
+    try {
+      return sendError('Failed to list alerts', 'CN-5000', 500, { errorType: error.name });
+    } catch (fallbackError) {
+      return {
+        statusCode: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({
+          success: false,
+          data: null,
+          error: {
+            code: 'CN-9000',
+            message: 'Critical system failure'
+          }
+        })
+      };
+    }
   }
 };
 

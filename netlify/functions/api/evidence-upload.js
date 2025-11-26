@@ -11,7 +11,7 @@ exports.handler = async (event) => {
     const supabase = getSupabaseClient();
 
     if (!supabase) {
-      return sendError('Database not configured', 'CONFIG_ERROR', 500);
+      return sendError('Database not configured', 'CN-8000', 500);
     }
 
     // Validate input
@@ -25,26 +25,26 @@ exports.handler = async (event) => {
 
     const validation = validateSchema(body, schema);
     if (!validation.valid) {
-      return sendError(validation.errors[0].message, 'VALIDATION_ERROR', 400);
+      return sendError(validation.errors[0].message, 'CN-1000', 400);
     }
 
-    // Save to evidence_items table
+    // Save to evidence_items table (with sanitized values)
     const { data: evidenceItem, error: insertError } = await supabase
       .from('evidence_items')
       .insert({
         user_id: userId,
-        category: body.category || 'other',
-        file_url: body.file_url,
-        file_name: body.file_name,
+        category: sanitizedCategory || 'other',
+        file_url: sanitizedFileUrl,
+        file_name: sanitizedFileName,
         file_size: body.file_size || 0,
         mime_type: body.mime_type || 'application/octet-stream',
-        notes: body.notes || ''
+        notes: body.notes ? sanitizeInput(body.notes, 5000) : ''
       })
       .select()
       .single();
 
     if (insertError) {
-      return sendError('Failed to save evidence', 'DATABASE_ERROR', 500);
+      return sendError('Failed to save evidence', 'CN-5001', 500, { databaseError: insertError.message });
     }
 
     // Auto-categorize if category not provided
@@ -121,7 +121,26 @@ exports.handler = async (event) => {
 
   } catch (error) {
     console.error('Evidence Upload API Error:', error);
-    return sendError('Failed to upload evidence', 'INTERNAL_ERROR', 500);
+    
+    try {
+      return sendError('Failed to upload evidence', 'CN-5000', 500, { errorType: error.name });
+    } catch (fallbackError) {
+      return {
+        statusCode: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({
+          success: false,
+          data: null,
+          error: {
+            code: 'CN-9000',
+            message: 'Critical system failure'
+          }
+        })
+      };
+    }
   }
 };
 

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Prompts - AI Console</title>
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/assets/css/design-system.css">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: #f9fafb;
+      margin: 0;
+      padding: 0;
+    }
+    .admin-container {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 250px;
+      background: #1e40af;
+      color: white;
+      padding: 1.5rem 0;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .sidebar h2 {
+      padding: 0 1.5rem;
+      margin-bottom: 2rem;
+      font-size: 1.25rem;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      padding-bottom: 1rem;
+    }
+    .sidebar nav a {
+      display: block;
+      padding: 0.75rem 1.5rem;
+      color: rgba(255,255,255,0.9);
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+      background: rgba(255,255,255,0.1);
+    }
+    .main-content {
+      margin-left: 250px;
+      flex: 1;
+      padding: 2rem;
+    }
+    .warning-banner {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      border-radius: 0.5rem;
+    }
+    .warning-banner strong {
+      color: #92400e;
+    }
+    .card {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .tool-selector {
+      margin-bottom: 2rem;
+    }
+    .tool-selector select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+    }
+    .editor-container {
+      margin-top: 1.5rem;
+    }
+    .editor {
+      width: 100%;
+      min-height: 400px;
+      padding: 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: vertical;
+    }
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: #1e40af;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #3b82f6;
+    }
+    .btn-secondary {
+      background: #6b7280;
+      color: white;
+    }
+    .btn-secondary:hover {
+      background: #9ca3af;
+    }
+    .version-info {
+      background: #f3f4f6;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <aside class="sidebar">
+      <h2>🔧 Admin Console</h2>
+      <nav>
+        <a href="/app/admin/ai-console/index.html">Dashboard</a>
+        <a href="/app/admin/ai-console/prompts.html" class="active">System Prompts</a>
+        <a href="/app/admin/ai-console/rules.html">Rulesets</a>
+        <a href="/app/admin/ai-console/examples.html">Examples</a>
+        <a href="/app/admin/ai-console/outputs.html">Output Formats</a>
+        <a href="/app/admin/ai-console/versions.html">Version History</a>
+        <a href="/app/admin/ai-console/versions.html#rollback">Rollback Center</a>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="warning-banner">
+        <strong>⚠️ Admin Access Only</strong> - Modifying system prompts affects AI behavior across all tools. All changes are versioned and logged.
+      </div>
+
+      <h1>System Prompts Manager</h1>
+
+      <div class="card">
+        <div class="tool-selector">
+          <label for="tool-select"><strong>Select Tool:</strong></label>
+          <select id="tool-select">
+            <option value="">Loading tools...</option>
+          </select>
+        </div>
+
+        <div class="version-info" id="version-info" style="display: none;">
+          Current Version: <span id="current-version">-</span> | 
+          Last Updated: <span id="last-updated">-</span> | 
+          Updated By: <span id="updated-by">-</span>
+        </div>
+
+        <div class="editor-container">
+          <label for="prompt-editor"><strong>System Prompt:</strong></label>
+          <textarea id="prompt-editor" class="editor" placeholder="Select a tool to load its prompt..."></textarea>
+          <div style="margin-top: 0.5rem; font-size: 0.875rem; color: #6b7280;">
+            Character count: <span id="char-count">0</span> / 10000
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button class="btn btn-primary" id="save-btn">Save & Version</button>
+          <button class="btn btn-secondary" id="version-btn">View Versions</button>
+          <button class="btn btn-secondary" id="rollback-btn">Rollback</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { requireAdminAuth } from '/app/assets/js/utils/admin-auth.js';
+
+    // Check admin auth
+    const auth = await requireAdminAuth();
+    if (!auth.authenticated) {
+      return;
+    }
+
+    const toolSelect = document.getElementById('tool-select');
+    const promptEditor = document.getElementById('prompt-editor');
+    const saveBtn = document.getElementById('save-btn');
+    const versionBtn = document.getElementById('version-btn');
+    const rollbackBtn = document.getElementById('rollback-btn');
+    const charCount = document.getElementById('char-count');
+
+    // Load tools list
+    async function loadTools() {
+      try {
+        const response = await fetch('/.netlify/functions/admin/ai-console/get-prompts');
+        const data = await response.json();
+        
+        if (data.success && data.data.tools) {
+          toolSelect.innerHTML = '<option value="">Select a tool...</option>';
+          data.data.tools.forEach(tool => {
+            const option = document.createElement('option');
+            option.value = tool;
+            option.textContent = tool;
+            toolSelect.appendChild(option);
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load tools:', error);
+      }
+    }
+
+    // Load prompt for selected tool
+    async function loadPrompt(toolName) {
+      try {
+        const response = await fetch(`/.netlify/functions/admin/ai-console/get-prompts?tool=${encodeURIComponent(toolName)}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          promptEditor.value = data.data.prompt || '';
+          charCount.textContent = promptEditor.value.length;
+          
+          if (data.data.version) {
+            document.getElementById('version-info').style.display = 'block';
+            document.getElementById('current-version').textContent = data.data.version;
+            document.getElementById('last-updated').textContent = new Date(data.data.created_at).toLocaleString();
+            document.getElementById('updated-by').textContent = data.data.updated_by_email || 'System';
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load prompt:', error);
+      }
+    }
+
+    // Save prompt
+    async function savePrompt() {
+      const toolName = toolSelect.value;
+      const prompt = promptEditor.value.trim();
+
+      if (!toolName) {
+        alert('Please select a tool');
+        return;
+      }
+
+      if (prompt.length > 10000) {
+        alert('Prompt exceeds maximum length of 10,000 characters');
+        return;
+      }
+
+      if (!prompt) {
+        alert('Prompt cannot be empty');
+        return;
+      }
+
+      try {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+
+        const response = await fetch('/.netlify/functions/admin/ai-console/save-prompt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tool_name: toolName, prompt })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('Prompt saved successfully! Version ' + data.data.version);
+          await loadPrompt(toolName);
+        } else {
+          alert('Failed to save: ' + (data.error?.message || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Failed to save prompt:', error);
+        alert('Failed to save prompt');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save & Version';
+      }
+    }
+
+    // Event listeners
+    toolSelect.addEventListener('change', (e) => {
+      if (e.target.value) {
+        loadPrompt(e.target.value);
+      } else {
+        promptEditor.value = '';
+        charCount.textContent = '0';
+        document.getElementById('version-info').style.display = 'none';
+      }
+    });
+
+    promptEditor.addEventListener('input', () => {
+      charCount.textContent = promptEditor.value.length;
+    });
+
+    saveBtn.addEventListener('click', savePrompt);
+    versionBtn.addEventListener('click', () => {
+      window.location.href = '/app/admin/ai-console/versions.html?type=prompt&tool=' + encodeURIComponent(toolSelect.value);
+    });
+    rollbackBtn.addEventListener('click', () => {
+      window.location.href = '/app/admin/ai-console/versions.html#rollback?type=prompt&tool=' + encodeURIComponent(toolSelect.value);
+    });
+
+    // Initial load
+    loadTools();
+  </script>
+</body>
+</html>
+

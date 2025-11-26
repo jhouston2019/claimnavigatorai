@@ -11,7 +11,7 @@ exports.handler = async (event) => {
     const supabase = getSupabaseClient();
 
     if (!supabase) {
-      return sendError('Database not configured', 'CONFIG_ERROR', 500);
+      return sendError('Database not configured', 'CN-8000', 500);
     }
 
     // Validate input
@@ -21,7 +21,7 @@ exports.handler = async (event) => {
 
     const validation = validateSchema(body, schema);
     if (!validation.valid) {
-      return sendError(validation.errors[0].message, 'VALIDATION_ERROR', 400);
+      return sendError(validation.errors[0].message, 'CN-1000', 400);
     }
 
     // Verify alert belongs to user
@@ -33,7 +33,7 @@ exports.handler = async (event) => {
       .single();
 
     if (fetchError || !alert) {
-      return sendError('Alert not found', 'NOT_FOUND', 404);
+      return sendError('Alert not found', 'CN-7000', 404, { alert_id: body.alert_id });
     }
 
     // Resolve alert
@@ -46,7 +46,7 @@ exports.handler = async (event) => {
       .single();
 
     if (updateError) {
-      return sendError('Failed to resolve alert', 'DATABASE_ERROR', 500);
+      return sendError('Failed to resolve alert', 'CN-5001', 500, { databaseError: updateError.message });
     }
 
     return sendSuccess({
@@ -56,7 +56,26 @@ exports.handler = async (event) => {
 
   } catch (error) {
     console.error('Alerts Resolve API Error:', error);
-    return sendError('Failed to resolve alert', 'INTERNAL_ERROR', 500);
+    
+    try {
+      return sendError('Failed to resolve alert', 'CN-5000', 500, { errorType: error.name });
+    } catch (fallbackError) {
+      return {
+        statusCode: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({
+          success: false,
+          data: null,
+          error: {
+            code: 'CN-9000',
+            message: 'Critical system failure'
+          }
+        })
+      };
+    }
   }
 };
 

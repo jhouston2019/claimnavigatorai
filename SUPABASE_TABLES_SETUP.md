@@ -884,6 +884,316 @@ CREATE POLICY "System can insert API logs"
   WITH CHECK (true);
 ```
 
+### 25. api_rate_limits
+
+Stores rate limit tracking for API keys and IP addresses.
+
+```sql
+CREATE TABLE IF NOT EXISTS api_rate_limits (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  api_key TEXT,
+  ip_address TEXT,
+  window_start TIMESTAMP WITH TIME ZONE NOT NULL,
+  request_count INTEGER DEFAULT 0,
+  blocked_until TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_api_rate_limits_api_key ON api_rate_limits(api_key);
+CREATE INDEX IF NOT EXISTS idx_api_rate_limits_ip_address ON api_rate_limits(ip_address);
+CREATE INDEX IF NOT EXISTS idx_api_rate_limits_window_start ON api_rate_limits(window_start);
+CREATE INDEX IF NOT EXISTS idx_api_rate_limits_blocked_until ON api_rate_limits(blocked_until);
+
+-- RLS Policies
+ALTER TABLE api_rate_limits ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "System can manage rate limits"
+  ON api_rate_limits FOR ALL
+  USING (true)
+  WITH CHECK (true);
+```
+
+### 26. api_event_logs
+
+Stores detailed event logs for observability and monitoring.
+
+```sql
+CREATE TABLE IF NOT EXISTS api_event_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  api_key TEXT,
+  event_type TEXT NOT NULL,
+  endpoint TEXT NOT NULL,
+  status TEXT NOT NULL,
+  error_code TEXT,
+  latency_ms INTEGER,
+  metadata JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_api_event_logs_api_key ON api_event_logs(api_key);
+CREATE INDEX IF NOT EXISTS idx_api_event_logs_endpoint ON api_event_logs(endpoint);
+CREATE INDEX IF NOT EXISTS idx_api_event_logs_event_type ON api_event_logs(event_type);
+CREATE INDEX IF NOT EXISTS idx_api_event_logs_status ON api_event_logs(status);
+CREATE INDEX IF NOT EXISTS idx_api_event_logs_created_at ON api_event_logs(created_at);
+CREATE INDEX IF NOT EXISTS idx_api_event_logs_api_key_created ON api_event_logs(api_key, created_at);
+
+-- RLS Policies
+ALTER TABLE api_event_logs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own event logs"
+  ON api_event_logs FOR SELECT
+  USING (
+    api_key IN (
+      SELECT key FROM api_keys WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "System can insert event logs"
+  ON api_event_logs FOR INSERT
+  WITH CHECK (true);
+```
+
+### 27. ai_admins
+
+Stores admin users with role-based access control for AI console.
+
+```sql
+CREATE TABLE IF NOT EXISTS ai_admins (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  role TEXT NOT NULL CHECK (role IN ('superadmin', 'admin', 'editor')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id)
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_ai_admins_user_id ON ai_admins(user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_admins_email ON ai_admins(email);
+CREATE INDEX IF NOT EXISTS idx_ai_admins_role ON ai_admins(role);
+
+-- RLS Policies
+ALTER TABLE ai_admins ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can view all admins"
+  ON ai_admins FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM ai_admins WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Superadmins can manage admins"
+  ON ai_admins FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1 FROM ai_admins 
+      WHERE user_id = auth.uid() AND role = 'superadmin'
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM ai_admins 
+      WHERE user_id = auth.uid() AND role = 'superadmin'
+    )
+  );
+```
+
+### 28. ai_prompt_versions
+
+Stores versioned prompts for AI tools.
+
+```sql
+CREATE TABLE IF NOT EXISTS ai_prompt_versions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tool_name TEXT NOT NULL,
+  version INTEGER NOT NULL,
+  prompt TEXT NOT NULL,
+  updated_by UUID REFERENCES auth.users(id),
+  diff TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(tool_name, version)
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_ai_prompt_versions_tool_name ON ai_prompt_versions(tool_name);
+CREATE INDEX IF NOT EXISTS idx_ai_prompt_versions_version ON ai_prompt_versions(version);
+CREATE INDEX IF NOT EXISTS idx_ai_prompt_versions_created_at ON ai_prompt_versions(created_at);
+
+-- RLS Policies
+ALTER TABLE ai_prompt_versions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can manage prompt versions"
+  ON ai_prompt_versions FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1 FROM ai_admins WHERE user_id = auth.uid()
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM ai_admins WHERE user_id = auth.uid()
+    )
+  );
+```
+
+### 29. ai_ruleset_versions
+
+Stores versioned rulesets for AI tools.
+
+```sql
+CREATE TABLE IF NOT EXISTS ai_ruleset_versions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ruleset_name TEXT NOT NULL,
+  version INTEGER NOT NULL,
+  rules JSONB NOT NULL,
+  updated_by UUID REFERENCES auth.users(id),
+  diff TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(ruleset_name, version)
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_ai_ruleset_versions_ruleset_name ON ai_ruleset_versions(ruleset_name);
+CREATE INDEX IF NOT EXISTS idx_ai_ruleset_versions_version ON ai_ruleset_versions(version);
+CREATE INDEX IF NOT EXISTS idx_ai_ruleset_versions_created_at ON ai_ruleset_versions(created_at);
+
+-- RLS Policies
+ALTER TABLE ai_ruleset_versions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can manage ruleset versions"
+  ON ai_ruleset_versions FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1 FROM ai_admins WHERE user_id = auth.uid()
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM ai_admins WHERE user_id = auth.uid()
+    )
+  );
+```
+
+### 30. ai_example_versions
+
+Stores versioned few-shot examples for AI tools.
+
+```sql
+CREATE TABLE IF NOT EXISTS ai_example_versions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tool_name TEXT NOT NULL,
+  version INTEGER NOT NULL,
+  examples JSONB NOT NULL,
+  updated_by UUID REFERENCES auth.users(id),
+  diff TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(tool_name, version)
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_ai_example_versions_tool_name ON ai_example_versions(tool_name);
+CREATE INDEX IF NOT EXISTS idx_ai_example_versions_version ON ai_example_versions(version);
+CREATE INDEX IF NOT EXISTS idx_ai_example_versions_created_at ON ai_example_versions(created_at);
+
+-- RLS Policies
+ALTER TABLE ai_example_versions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can manage example versions"
+  ON ai_example_versions FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1 FROM ai_admins WHERE user_id = auth.uid()
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM ai_admins WHERE user_id = auth.uid()
+    )
+  );
+```
+
+### 31. ai_output_format_versions
+
+Stores versioned output format schemas for AI tools.
+
+```sql
+CREATE TABLE IF NOT EXISTS ai_output_format_versions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tool_name TEXT NOT NULL,
+  version INTEGER NOT NULL,
+  output_format JSONB NOT NULL,
+  updated_by UUID REFERENCES auth.users(id),
+  diff TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(tool_name, version)
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_ai_output_format_versions_tool_name ON ai_output_format_versions(tool_name);
+CREATE INDEX IF NOT EXISTS idx_ai_output_format_versions_version ON ai_output_format_versions(version);
+CREATE INDEX IF NOT EXISTS idx_ai_output_format_versions_created_at ON ai_output_format_versions(created_at);
+
+-- RLS Policies
+ALTER TABLE ai_output_format_versions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can manage output format versions"
+  ON ai_output_format_versions FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1 FROM ai_admins WHERE user_id = auth.uid()
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM ai_admins WHERE user_id = auth.uid()
+    )
+  );
+```
+
+### 32. ai_change_log
+
+Global audit log for all AI console changes.
+
+```sql
+CREATE TABLE IF NOT EXISTS ai_change_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  action_type TEXT NOT NULL,
+  tool TEXT,
+  user_id UUID REFERENCES auth.users(id),
+  user_email TEXT,
+  before JSONB,
+  after JSONB,
+  diff TEXT,
+  timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_ai_change_log_action_type ON ai_change_log(action_type);
+CREATE INDEX IF NOT EXISTS idx_ai_change_log_tool ON ai_change_log(tool);
+CREATE INDEX IF NOT EXISTS idx_ai_change_log_user_id ON ai_change_log(user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_change_log_timestamp ON ai_change_log(timestamp);
+
+-- RLS Policies
+ALTER TABLE ai_change_log ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can view change log"
+  ON ai_change_log FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM ai_admins WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "System can insert change log"
+  ON ai_change_log FOR INSERT
+  WITH CHECK (true);
+```
+
 ## Notes
 
 - All tables use UUID primary keys
@@ -893,4 +1203,6 @@ CREATE POLICY "System can insert API logs"
 - JSONB fields allow flexible storage of structured data
 - Indexes improve query performance
 - Compliance Engine audits allow NULL user_id for anonymous usage tracking
+- Admin tables (27-32) require admin role for access
+- Version tables support up to 30 versions per tool (enforced in application logic)
 

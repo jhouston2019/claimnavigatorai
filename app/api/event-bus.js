@@ -134,6 +134,16 @@ export const EventTypes = {
   DEADLINE_DETECTED: 'deadline.detected',
   ALERT_RESOLVED: 'alert.resolved',
   SETTLEMENT_CALCULATED: 'settlement.calculated',
-  POLICY_COMPARED: 'policy.compared'
+  POLICY_COMPARED: 'policy.compared',
+  AI_CONFIG_UPDATED: 'ai-config-updated'
 };
+
+// Handle AI config updates
+if (typeof window !== 'undefined') {
+  window.addEventListener('ai-config-updated', (event) => {
+    // Clear caches when config is updated
+    console.log('AI config updated:', event.detail);
+    // Tools will reload configs on next use
+  });
+}
 
