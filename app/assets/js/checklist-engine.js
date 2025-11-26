@@ -6,11 +6,17 @@
 import { getSupabaseClient, getAuthToken } from './auth.js';
 import { generateChecklistFromContext, groupTasksByTime } from './utils/checklist-generator.js';
 import { getTimelineEvents } from './utils/timeline-autosync.js';
+import { renderComplianceHealthWidget } from './utils/compliance-health-widget.js';
 
 let allTasks = [];
 let savedTasks = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize compliance health widget
+    await renderComplianceHealthWidget('#compliance-health-widget', {
+        showFullButton: false
+    });
+    
     await loadChecklist();
     setupEventListeners();
     

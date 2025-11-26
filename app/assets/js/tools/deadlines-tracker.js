@@ -6,6 +6,7 @@
 import { requireAuth, checkPaymentStatus, getAuthToken, getSupabaseClient } from '../auth.js';
 import { getIntakeData } from '../autofill.js';
 import { applyDeadlines, generateAlerts } from '../utils/compliance-engine-helper.js';
+import { addTimelineEvent } from '../utils/timeline-autosync.js';
 
 // Initialize controller
 document.addEventListener('DOMContentLoaded', async () => {
@@ -83,13 +84,7 @@ async function attachEventListeners() {
   }
   
   // Add Compliance Engine refresh button
-  const complianceRefreshBtn = document.getElementById('compliance-refresh-btn');
-  if (complianceRefreshBtn) {
-    complianceRefreshBtn.addEventListener('click', async () => {
-      await refreshDeadlinesFromCompliance();
-    });
-  }
-  const complianceRefreshBtn = document.getElementById('compliance-refresh-btn');
+  let complianceRefreshBtn = document.getElementById('compliance-refresh-btn');
   if (complianceRefreshBtn) {
     complianceRefreshBtn.addEventListener('click', async () => {
       await refreshDeadlinesFromComplianceEngine();
@@ -285,6 +280,38 @@ async function loadExistingDeadlines() {
 
     // Add timeline events for key deadlines
     await addDeadlineTimelineEvents(deadlines || []);
+}
+
+/**
+ * Add timeline events for deadlines
+ */
+async function addDeadlineTimelineEvents(deadlines) {
+    try {
+        const claimId = localStorage.getItem('claim_id') || `claim-${Date.now()}`;
+        
+        for (const deadline of deadlines) {
+            // Only add critical deadlines or those within 30 days
+            const daysUntil = getDaysUntil(deadline.date);
+            if (daysUntil <= 30 || deadline.priority === 'high') {
+                await addTimelineEvent({
+                    type: deadline.type === 'statutory' ? 'deadline_statutory' : 'deadline_carrier',
+                    date: deadline.date,
+                    source: 'deadlines',
+                    title: deadline.label,
+                    description: deadline.notes || deadline.description || `Deadline: ${deadline.date}`,
+                    metadata: {
+                        deadlineId: deadline.id,
+                        priority: deadline.priority,
+                        source: deadline.source,
+                        daysUntil: daysUntil
+                    },
+                    claimId: claimId
+                });
+            }
+        }
+    } catch (error) {
+        console.warn('Failed to add deadline timeline events:', error);
+    }
 
     // Update display
     if (window.updateDeadlinesDisplay && deadlines) {

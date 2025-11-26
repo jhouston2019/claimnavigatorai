@@ -7,6 +7,7 @@ import { requireAuth, checkPaymentStatus, getAuthToken, getSupabaseClient } from
 import { uploadToStorage, uploadMultipleFiles } from '../storage.js';
 import { getIntakeData } from '../autofill.js';
 import { runViolationCheck, generateAlerts } from '../utils/compliance-engine-helper.js';
+import { addTimelineEvent } from '../utils/timeline-autosync.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -128,6 +129,31 @@ async function handleFileUpload(files) {
     
     // Generate compliance alerts after upload
     await triggerComplianceAlerts();
+}
+
+/**
+ * Add timeline event for evidence upload
+ */
+async function addEvidenceTimelineEvent(files) {
+    try {
+        const claimId = localStorage.getItem('claim_id') || `claim-${Date.now()}`;
+        
+        await addTimelineEvent({
+            type: 'evidence_uploaded',
+            date: new Date().toISOString().split('T')[0],
+            source: 'evidence',
+            title: `Uploaded ${files.length} file${files.length > 1 ? 's' : ''}`,
+            description: `Files: ${files.map(f => f.name).join(', ')}`,
+            metadata: {
+                fileCount: files.length,
+                fileNames: files.map(f => f.name),
+                fileTypes: files.map(f => f.type)
+            },
+            claimId: claimId
+        });
+    } catch (error) {
+        console.warn('Failed to add evidence timeline event:', error);
+    }
 
   } catch (error) {
     console.error('File upload error:', error);

@@ -804,6 +804,86 @@ CREATE POLICY "Users can delete their own checklist tasks"
   USING (auth.uid() = user_id);
 ```
 
+### 23. api_keys
+
+Stores API keys for programmatic access.
+
+```sql
+CREATE TABLE IF NOT EXISTS api_keys (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  key TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  permissions JSONB DEFAULT '{}'::jsonb,
+  rate_limit INTEGER DEFAULT 100,
+  active BOOLEAN DEFAULT true,
+  last_used_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  expires_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_api_keys_user_id ON api_keys(user_id);
+CREATE INDEX IF NOT EXISTS idx_api_keys_key ON api_keys(key);
+CREATE INDEX IF NOT EXISTS idx_api_keys_active ON api_keys(active);
+
+-- RLS Policies
+ALTER TABLE api_keys ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own API keys"
+  ON api_keys FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own API keys"
+  ON api_keys FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own API keys"
+  ON api_keys FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own API keys"
+  ON api_keys FOR DELETE
+  USING (auth.uid() = user_id);
+```
+
+### 24. api_logs
+
+Stores API request logs for monitoring and rate limiting.
+
+```sql
+CREATE TABLE IF NOT EXISTS api_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  endpoint TEXT NOT NULL,
+  method TEXT NOT NULL,
+  status_code INTEGER NOT NULL,
+  response_time_ms INTEGER,
+  ip_address TEXT,
+  user_agent TEXT,
+  request_body JSONB,
+  error_message TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_api_logs_user_id ON api_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_api_logs_endpoint ON api_logs(endpoint);
+CREATE INDEX IF NOT EXISTS idx_api_logs_created_at ON api_logs(created_at);
+CREATE INDEX IF NOT EXISTS idx_api_logs_user_endpoint_created ON api_logs(user_id, endpoint, created_at);
+
+-- RLS Policies
+ALTER TABLE api_logs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own API logs"
+  ON api_logs FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "System can insert API logs"
+  ON api_logs FOR INSERT
+  WITH CHECK (true);
+```
+
 ## Notes
 
 - All tables use UUID primary keys
