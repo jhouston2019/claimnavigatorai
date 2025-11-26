@@ -110,6 +110,14 @@ exports.handler = async (event, context) => {
     );
   }
 
+  // Record API request event
+  const { recordEvent } = require('../lib/monitoring-event-helper');
+  await recordEvent('api.request', 'api-gateway', {
+    endpoint: path,
+    method: method,
+    api_key_id: authResult.apiKey?.id || null
+  });
+
   // Call handler
   try {
     const result = await handler.handler({
@@ -138,6 +146,21 @@ exports.handler = async (event, context) => {
     return result;
   } catch (error) {
     const responseTime = Date.now() - startTime;
+
+    // Log error to system_errors
+    const { logError } = require('../lib/error-logger');
+    await logError(error, 'api-gateway', 'CN-5000', {
+      endpoint: path,
+      method: method,
+      userId: userId || null
+    });
+
+    // Record error event
+    const { recordEvent } = require('../lib/monitoring-event-helper');
+    await recordEvent('api.error', 'api-gateway', {
+      endpoint: path,
+      error_code: 'CN-5000'
+    });
 
     // Log error
     await logAPIRequest({

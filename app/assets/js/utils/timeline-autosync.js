@@ -4,6 +4,7 @@
  */
 
 import { getSupabaseClient, getAuthToken } from '../auth.js';
+import { recordEvent } from './event-recorder.js';
 
 // In-memory deduplication cache (by claim_id + event signature)
 const eventCache = new Map();
@@ -146,6 +147,13 @@ export async function addTimelineEvent(event) {
 
             // Mark as cached
             eventCache.set(signature, data);
+            
+            // Record system event
+            await recordEvent('timeline.event.added', 'timeline-autosync', {
+              event_type: type,
+              claim_id: claimId,
+              source: source
+            });
             
             // Dispatch event
             dispatchTimelineUpdated();

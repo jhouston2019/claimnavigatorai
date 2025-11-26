@@ -105,7 +105,13 @@ exports.handler = async (event) => {
         diff: diff
       });
 
-    // Note: Event dispatch handled by frontend event bus
+    // Record system event
+    const { recordEvent } = require('../../lib/monitoring-event-helper');
+    await recordEvent('ai.config.updated', 'ai-console', {
+      type: 'prompt',
+      tool_name: body.tool_name,
+      version: newVersion
+    });
 
     return sendSuccess({
       version: newVersion,

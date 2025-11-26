@@ -1206,3 +1206,208 @@ CREATE POLICY "System can insert change log"
 - Admin tables (27-32) require admin role for access
 - Version tables support up to 30 versions per tool (enforced in application logic)
 
+### 33. system_errors
+
+Stores system errors for monitoring and debugging.
+
+```sql
+CREATE TABLE IF NOT EXISTS system_errors (
+  id BIGSERIAL PRIMARY KEY,
+  tool_name TEXT,
+  error_code TEXT,
+  error_message TEXT NOT NULL,
+  stack_trace TEXT,
+  context JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_system_errors_tool_name ON system_errors(tool_name);
+CREATE INDEX IF NOT EXISTS idx_system_errors_error_code ON system_errors(error_code);
+CREATE INDEX IF NOT EXISTS idx_system_errors_created_at ON system_errors(created_at);
+
+-- RLS Policies
+ALTER TABLE system_errors ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can view system errors"
+  ON system_errors FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM ai_admins WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "System can insert errors"
+  ON system_errors FOR INSERT
+  WITH CHECK (true);
+```
+
+### 34. system_events
+
+Stores system events for monitoring and analytics.
+
+```sql
+CREATE TABLE IF NOT EXISTS system_events (
+  id BIGSERIAL PRIMARY KEY,
+  event_type TEXT NOT NULL,
+  source TEXT NOT NULL,
+  metadata JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_system_events_event_type ON system_events(event_type);
+CREATE INDEX IF NOT EXISTS idx_system_events_source ON system_events(source);
+CREATE INDEX IF NOT EXISTS idx_system_events_created_at ON system_events(created_at);
+
+-- RLS Policies
+ALTER TABLE system_events ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can view system events"
+  ON system_events FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM ai_admins WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "System can insert events"
+  ON system_events FOR INSERT
+  WITH CHECK (true);
+```
+
+### 35. api_usage_logs
+
+Stores detailed API usage logs with token tracking.
+
+```sql
+CREATE TABLE IF NOT EXISTS api_usage_logs (
+  id BIGSERIAL PRIMARY KEY,
+  api_key_id UUID REFERENCES api_keys(id) ON DELETE SET NULL,
+  endpoint TEXT NOT NULL,
+  status INTEGER NOT NULL,
+  latency_ms INTEGER,
+  input_tokens INTEGER DEFAULT 0,
+  output_tokens INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_api_usage_logs_api_key_id ON api_usage_logs(api_key_id);
+CREATE INDEX IF NOT EXISTS idx_api_usage_logs_endpoint ON api_usage_logs(endpoint);
+CREATE INDEX IF NOT EXISTS idx_api_usage_logs_status ON api_usage_logs(status);
+CREATE INDEX IF NOT EXISTS idx_api_usage_logs_created_at ON api_usage_logs(created_at);
+
+-- RLS Policies
+ALTER TABLE api_usage_logs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own usage logs"
+  ON api_usage_logs FOR SELECT
+  USING (
+    api_key_id IN (
+      SELECT id FROM api_keys WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Admins can view all usage logs"
+  ON api_usage_logs FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM ai_admins WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "System can insert usage logs"
+  ON api_usage_logs FOR INSERT
+  WITH CHECK (true);
+```
+
+### 36. ai_cost_tracking
+
+Tracks AI token usage and costs per tool.
+
+```sql
+CREATE TABLE IF NOT EXISTS ai_cost_tracking (
+  id BIGSERIAL PRIMARY KEY,
+  tool_name TEXT NOT NULL,
+  input_tokens INTEGER DEFAULT 0,
+  output_tokens INTEGER DEFAULT 0,
+  cost NUMERIC(10, 6) DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_ai_cost_tracking_tool_name ON ai_cost_tracking(tool_name);
+CREATE INDEX IF NOT EXISTS idx_ai_cost_tracking_created_at ON ai_cost_tracking(created_at);
+
+-- RLS Policies
+ALTER TABLE ai_cost_tracking ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can view cost tracking"
+  ON ai_cost_tracking FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM ai_admins WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "System can insert cost tracking"
+  ON ai_cost_tracking FOR INSERT
+  WITH CHECK (true);
+```
+
+### 37. rate_limit_logs
+
+Logs rate limit status for monitoring.
+
+```sql
+CREATE TABLE IF NOT EXISTS rate_limit_logs (
+  id BIGSERIAL PRIMARY KEY,
+  api_key_id UUID REFERENCES api_keys(id) ON DELETE SET NULL,
+  remaining INTEGER NOT NULL,
+  limit_value INTEGER NOT NULL,
+  reset_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_rate_limit_logs_api_key_id ON rate_limit_logs(api_key_id);
+CREATE INDEX IF NOT EXISTS idx_rate_limit_logs_created_at ON rate_limit_logs(created_at);
+
+-- RLS Policies
+ALTER TABLE rate_limit_logs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own rate limit logs"
+  ON rate_limit_logs FOR SELECT
+  USING (
+    api_key_id IN (
+      SELECT id FROM api_keys WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Admins can view all rate limit logs"
+  ON rate_limit_logs FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM ai_admins WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "System can insert rate limit logs"
+  ON rate_limit_logs FOR INSERT
+  WITH CHECK (true);
+```
+
+## Notes
+
+- All tables use UUID primary keys
+- Timestamps are automatically managed
+- RLS policies ensure users can only access their own data
+- Carrier profiles, regulatory updates, expert witnesses, settlement history, communication templates, and AI configs/rules/examples are publicly readable (no sensitive user data)
+- JSONB fields allow flexible storage of structured data
+- Indexes improve query performance
+- Compliance Engine audits allow NULL user_id for anonymous usage tracking
+- Admin tables (27-32) require admin role for access
+- Version tables support up to 30 versions per tool (enforced in application logic)
+- Monitoring tables (33-37) require admin role for viewing, system can insert
+
