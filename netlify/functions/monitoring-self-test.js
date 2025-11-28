@@ -2,13 +2,13 @@
  * Self-test endpoint for monitoring system
  */
 
-const { getSupabaseClient, sendSuccess, sendError } = require('./lib/api-utils');
+const apiUtils = require('./lib/api-utils');;
 
 exports.handler = async (event) => {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = apiUtils.getSupabaseClient();
     if (!supabase) {
-      return sendError('Database not configured', 'CN-8000', 500);
+      return apiUtils.sendError('Database not configured', 'CN-8000', 500);
     }
 
     const checks = {
@@ -55,14 +55,14 @@ exports.handler = async (event) => {
     const allTablesOk = Object.values(checks.tables).every(ok => ok);
     const overallStatus = allTablesOk ? 'ok' : 'error';
 
-    return sendSuccess({
+    return apiUtils.sendSuccess({
       status: overallStatus,
       checks: checks,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
     console.error('Monitoring self-test error:', error);
-    return sendError('Self-test failed', 'CN-5000', 500);
+    return apiUtils.sendError('Self-test failed', 'CN-5000', 500);
   }
 };
 

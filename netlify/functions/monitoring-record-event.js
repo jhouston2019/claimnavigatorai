@@ -2,18 +2,18 @@
  * Record system event endpoint
  */
 
-const { getSupabaseClient, sendSuccess, sendError, parseBody } = require('./lib/api-utils');
+const apiUtils = require('./lib/api-utils');;
 
 exports.handler = async (event) => {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = apiUtils.getSupabaseClient();
     if (!supabase) {
-      return sendError('Database not configured', 'CN-8000', 500);
+      return apiUtils.sendError('Database not configured', 'CN-8000', 500);
     }
 
-    const body = parseBody(event.body);
+    const body = apiUtils.parseBody(event.body);
     if (!body.event_type || !body.source) {
-      return sendError('Missing event_type or source', 'CN-1000', 400);
+      return apiUtils.sendError('Missing event_type or source', 'CN-1000', 400);
     }
 
     // Insert event (no auth required - system can insert)
@@ -28,16 +28,16 @@ exports.handler = async (event) => {
       .single();
 
     if (error) {
-      return sendError('Failed to record event', 'CN-5000', 500);
+      return apiUtils.sendError('Failed to record event', 'CN-5000', 500);
     }
 
-    return sendSuccess({
+    return apiUtils.sendSuccess({
       event_id: data.id,
       recorded_at: data.created_at
     });
   } catch (error) {
     console.error('Record event error:', error);
-    return sendError('Failed to record event', 'CN-5000', 500);
+    return apiUtils.sendError('Failed to record event', 'CN-5000', 500);
   }
 };
 

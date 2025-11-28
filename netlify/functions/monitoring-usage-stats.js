@@ -2,7 +2,7 @@
  * Get usage statistics
  */
 
-const { getSupabaseClient, sendSuccess, sendError } = require('./lib/api-utils');
+const apiUtils = require('./lib/api-utils');;
 
 async function checkAdmin(supabase, userId) {
   const { data } = await supabase
@@ -15,20 +15,20 @@ async function checkAdmin(supabase, userId) {
 
 exports.handler = async (event) => {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = apiUtils.getSupabaseClient();
     if (!supabase) {
-      return sendError('Database not configured', 'CN-8000', 500);
+      return apiUtils.sendError('Database not configured', 'CN-8000', 500);
     }
 
     const authHeader = event.headers.authorization || event.headers.Authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return sendError('Unauthorized', 'CN-2000', 401);
+      return apiUtils.sendError('Unauthorized', 'CN-2000', 401);
     }
 
     const token = authHeader.substring(7);
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     if (authError || !user || !(await checkAdmin(supabase, user.id))) {
-      return sendError('Admin access required', 'CN-2001', 403);
+      return apiUtils.sendError('Admin access required', 'CN-2001', 403);
     }
 
     const hours = parseInt(event.queryStringParameters?.hours || '24');
@@ -78,7 +78,7 @@ exports.handler = async (event) => {
       });
     }
 
-    return sendSuccess({
+    return apiUtils.sendSuccess({
       total_requests: totalRequests || 0,
       success_rate: Math.round(successRate * 100) / 100,
       active_api_keys: uniqueKeys.size,
@@ -87,7 +87,7 @@ exports.handler = async (event) => {
     });
   } catch (error) {
     console.error('Usage stats error:', error);
-    return sendError('Failed to fetch usage stats', 'CN-5000', 500);
+    return apiUtils.sendError('Failed to fetch usage stats', 'CN-5000', 500);
   }
 };
 
