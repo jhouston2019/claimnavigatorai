@@ -2,14 +2,31 @@
  * Self-test endpoint for monitoring system
  */
 
-const apiUtils = require('./lib/api-utils');
+const { createClient } = require('@supabase/supabase-js');
+const requireAdmin = require('./_admin-auth');
 
 exports.handler = async (event) => {
+  const auth = requireAdmin(event);
+  if (!auth.authorized) {
+    return {
+      statusCode: 401,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: auth.error
+      })
+    };
+  }
+
   try {
-    const supabase = apiUtils.getSupabaseClient();
-    if (!supabase) {
-      return apiUtils.sendError('Database not configured', 'CN-8000', 500);
-    }
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
 
     const checks = {
       supabase: { status: 'ok', message: 'Connected' },
@@ -55,14 +72,38 @@ exports.handler = async (event) => {
     const allTablesOk = Object.values(checks.tables).every(ok => ok);
     const overallStatus = allTablesOk ? 'ok' : 'error';
 
-    return apiUtils.sendSuccess({
-      status: overallStatus,
-      checks: checks,
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    console.error('Monitoring self-test error:', error);
-    return apiUtils.sendError('Self-test failed', 'CN-5000', 500);
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        success: true,
+        data: {
+          status: overallStatus,
+          checks: checks,
+          timestamp: new Date().toISOString()
+        },
+        error: null
+      })
+    };
+  } catch (err) {
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: {
+          message: 'Self-test failed',
+          code: 'CN-5000',
+          detail: err.message
+        }
+      })
+    };
   }
 };
-

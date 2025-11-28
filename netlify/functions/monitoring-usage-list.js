@@ -2,38 +2,34 @@
  * Get API usage logs
  */
 
-const apiUtils = require('./lib/api-utils');
-
-async function checkAdmin(supabase, userId) {
-  const { data } = await supabase
-    .from('ai_admins')
-    .select('role')
-    .eq('user_id', userId)
-    .single();
-  return !!data;
-}
+const { createClient } = require('@supabase/supabase-js');
+const requireAdmin = require('./_admin-auth');
 
 exports.handler = async (event) => {
+  const auth = requireAdmin(event);
+  if (!auth.authorized) {
+    return {
+      statusCode: 401,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: auth.error
+      })
+    };
+  }
+
   try {
-    const supabase = apiUtils.getSupabaseClient();
-    if (!supabase) {
-      return apiUtils.sendError('Database not configured', 'CN-8000', 500);
-    }
-
-    const authHeader = event.headers.authorization || event.headers.Authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return apiUtils.sendError('Unauthorized', 'CN-2000', 401);
-    }
-
-    const token = authHeader.substring(7);
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !user || !(await checkAdmin(supabase, user.id))) {
-      return apiUtils.sendError('Admin access required', 'CN-2001', 403);
-    }
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
 
     const params = event.queryStringParameters || {};
-    const apiKeyId = params.api_key_id;
-    const endpoint = params.endpoint;
+    const functionName = params.function_name;
     const dateFrom = params.date_from;
     const dateTo = params.date_to;
     const limit = parseInt(params.limit || '50');
@@ -41,15 +37,12 @@ exports.handler = async (event) => {
 
     let query = supabase
       .from('api_usage_logs')
-      .select('*, api_keys:api_key_id(key, name)', { count: 'exact' })
+      .select('*', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
-    if (apiKeyId) {
-      query = query.eq('api_key_id', apiKeyId);
-    }
-    if (endpoint) {
-      query = query.eq('endpoint', endpoint);
+    if (functionName) {
+      query = query.eq('function_name', functionName);
     }
     if (dateFrom) {
       query = query.gte('created_at', dateFrom);
@@ -61,18 +54,56 @@ exports.handler = async (event) => {
     const { data: logs, error, count } = await query;
 
     if (error) {
-      return apiUtils.sendError('Failed to fetch usage logs', 'CN-5000', 500);
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({
+          success: false,
+          data: null,
+          error: {
+            message: 'Failed to fetch usage logs',
+            code: 'CN-5001'
+          }
+        })
+      };
     }
 
-    return apiUtils.sendSuccess({
-      logs: logs || [],
-      total: count || 0,
-      limit,
-      offset
-    });
-  } catch (error) {
-    console.error('Usage list error:', error);
-    return apiUtils.sendError('Failed to fetch usage logs', 'CN-5000', 500);
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        success: true,
+        data: {
+          logs: logs || [],
+          total: count || 0,
+          limit,
+          offset
+        },
+        error: null
+      })
+    };
+  } catch (err) {
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: {
+          message: 'Failed to fetch usage logs',
+          code: 'CN-5000',
+          detail: err.message
+        }
+      })
+    };
   }
 };
-

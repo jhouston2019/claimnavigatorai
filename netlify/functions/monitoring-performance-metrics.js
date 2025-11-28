@@ -2,16 +2,8 @@
  * Get performance metrics (latency, throughput)
  */
 
-const apiUtils = require('./lib/api-utils');
-
-async function checkAdmin(supabase, userId) {
-  const { data } = await supabase
-    .from('ai_admins')
-    .select('role')
-    .eq('user_id', userId)
-    .single();
-  return !!data;
-}
+const { createClient } = require('@supabase/supabase-js');
+const requireAdmin = require('./_admin-auth');
 
 function calculatePercentile(data, percentile) {
   if (!data || data.length === 0) return 0;
@@ -21,43 +13,62 @@ function calculatePercentile(data, percentile) {
 }
 
 exports.handler = async (event) => {
+  const auth = requireAdmin(event);
+  if (!auth.authorized) {
+    return {
+      statusCode: 401,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: auth.error
+      })
+    };
+  }
+
   try {
-    const supabase = apiUtils.getSupabaseClient();
-    if (!supabase) {
-      return apiUtils.sendError('Database not configured', 'CN-8000', 500);
-    }
-
-    const authHeader = event.headers.authorization || event.headers.Authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return apiUtils.sendError('Unauthorized', 'CN-2000', 401);
-    }
-
-    const token = authHeader.substring(7);
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !user || !(await checkAdmin(supabase, user.id))) {
-      return apiUtils.sendError('Admin access required', 'CN-2001', 403);
-    }
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
 
     const hours = parseInt(event.queryStringParameters?.hours || '24');
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
-    const endpoint = event.queryStringParameters?.endpoint;
+    const functionName = event.queryStringParameters?.function_name;
 
     let query = supabase
       .from('api_usage_logs')
-      .select('latency_ms, endpoint, created_at')
+      .select('duration_ms, function_name, created_at')
       .gte('created_at', since);
 
-    if (endpoint) {
-      query = query.eq('endpoint', endpoint);
+    if (functionName) {
+      query = query.eq('function_name', functionName);
     }
 
     const { data: logs, error } = await query;
 
     if (error) {
-      return apiUtils.sendError('Failed to fetch performance metrics', 'CN-5000', 500);
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({
+          success: false,
+          data: null,
+          error: {
+            message: 'Failed to fetch performance metrics',
+            code: 'CN-5001'
+          }
+        })
+      };
     }
 
-    const latencies = (logs || []).map(l => l.latency_ms || 0).filter(l => l > 0);
+    const latencies = (logs || []).map(l => l.duration_ms || 0).filter(l => l > 0);
 
     // Calculate percentiles
     const p50 = calculatePercentile(latencies, 50);
@@ -68,42 +79,66 @@ exports.handler = async (event) => {
     // Calculate throughput (requests per minute)
     const requestsPerMinute = logs ? logs.length / (hours * 60) : 0;
 
-    // Group by endpoint
-    const byEndpoint = {};
+    // Group by function
+    const byFunction = {};
     if (logs) {
       logs.forEach(log => {
-        const ep = log.endpoint || 'unknown';
-        if (!byEndpoint[ep]) {
-          byEndpoint[ep] = { latencies: [], count: 0 };
+        const func = log.function_name || 'unknown';
+        if (!byFunction[func]) {
+          byFunction[func] = { latencies: [], count: 0 };
         }
-        if (log.latency_ms) {
-          byEndpoint[ep].latencies.push(log.latency_ms);
+        if (log.duration_ms) {
+          byFunction[func].latencies.push(log.duration_ms);
         }
-        byEndpoint[ep].count++;
+        byFunction[func].count++;
       });
     }
 
-    const endpointMetrics = Object.entries(byEndpoint).map(([ep, data]) => ({
-      endpoint: ep,
+    const functionMetrics = Object.entries(byFunction).map(([func, data]) => ({
+      function_name: func,
       p50: calculatePercentile(data.latencies, 50),
       p95: calculatePercentile(data.latencies, 95),
       p99: calculatePercentile(data.latencies, 99),
       requests: data.count
     }));
 
-    return apiUtils.sendSuccess({
-      p50_latency: Math.round(p50),
-      p95_latency: Math.round(p95),
-      p99_latency: Math.round(p99),
-      avg_latency: Math.round(avg),
-      throughput_per_minute: Math.round(requestsPerMinute * 100) / 100,
-      total_requests: logs?.length || 0,
-      by_endpoint: endpointMetrics,
-      time_range_hours: hours
-    });
-  } catch (error) {
-    console.error('Performance metrics error:', error);
-    return apiUtils.sendError('Failed to fetch performance metrics', 'CN-5000', 500);
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        success: true,
+        data: {
+          p50_latency: Math.round(p50),
+          p95_latency: Math.round(p95),
+          p99_latency: Math.round(p99),
+          avg_latency: Math.round(avg),
+          throughput_per_minute: Math.round(requestsPerMinute * 100) / 100,
+          total_requests: logs?.length || 0,
+          by_function: functionMetrics,
+          time_range_hours: hours
+        },
+        error: null
+      })
+    };
+  } catch (err) {
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: {
+          message: 'Failed to fetch performance metrics',
+          code: 'CN-5000',
+          detail: err.message
+        }
+      })
+    };
   }
 };
-

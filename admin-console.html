@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Console - ClaimNavigatorAI</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #1e40af;
+      margin-bottom: 2rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .card h2 {
+      color: #1e40af;
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+    }
+    .card h3 {
+      color: #374151;
+      margin-bottom: 0.75rem;
+      font-size: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 0.875rem;
+    }
+    th {
+      background: #f9fafb;
+      font-weight: 600;
+      color: #374151;
+    }
+    .status {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .status.healthy {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .status.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .status.warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .events-stream {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      padding: 1rem;
+      background: #f9fafb;
+    }
+    .event-item {
+      padding: 0.5rem;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 0.875rem;
+    }
+    .event-item:last-child {
+      border-bottom: none;
+    }
+    .event-time {
+      color: #6b7280;
+      font-size: 0.75rem;
+    }
+    .loading {
+      color: #6b7280;
+      font-style: italic;
+    }
+    .error-msg {
+      color: #dc2626;
+      font-size: 0.875rem;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .stat-item {
+      text-align: center;
+      padding: 1rem;
+      background: #f9fafb;
+      border-radius: 4px;
+    }
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e40af;
+    }
+    .stat-label {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Console - Monitoring Dashboard</h1>
+
+    <div class="grid">
+      <!-- Errors Table -->
+      <div class="card">
+        <h2>Errors</h2>
+        <div id="errors-table">
+          <div class="loading">Loading errors...</div>
+        </div>
+      </div>
+
+      <!-- Error Stats -->
+      <div class="card">
+        <h2>Error Statistics</h2>
+        <div id="errors-stats">
+          <div class="loading">Loading stats...</div>
+        </div>
+      </div>
+
+      <!-- Usage List -->
+      <div class="card">
+        <h2>Usage List</h2>
+        <div id="usage-list">
+          <div class="loading">Loading usage...</div>
+        </div>
+      </div>
+
+      <!-- Usage Stats -->
+      <div class="card">
+        <h2>Usage Statistics</h2>
+        <div id="usage-stats">
+          <div class="loading">Loading stats...</div>
+        </div>
+      </div>
+
+      <!-- Cost Tracking -->
+      <div class="card">
+        <h2>Cost Tracking</h2>
+        <div id="cost-list">
+          <div class="loading">Loading costs...</div>
+        </div>
+      </div>
+
+      <!-- Rate Limits -->
+      <div class="card">
+        <h2>Rate Limits</h2>
+        <div id="rate-limit-list">
+          <div class="loading">Loading rate limits...</div>
+        </div>
+      </div>
+
+      <!-- Events Stream -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <h2>Events Stream</h2>
+        <div class="events-stream" id="events-stream">
+          <div class="loading">Loading events...</div>
+        </div>
+      </div>
+
+      <!-- Service Health -->
+      <div class="card">
+        <h2>Service Health</h2>
+        <div id="service-health">
+          <div class="loading">Loading health status...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Get admin email from environment or prompt
+    const ADMIN_EMAIL = prompt('Enter admin email:') || 'admin@example.com';
+
+    async function fetchWithAuth(endpoint) {
+      try {
+        const response = await fetch(`/.netlify/functions/monitoring-${endpoint}`, {
+          headers: {
+            'x-admin-email': ADMIN_EMAIL,
+            'Content-Type': 'application/json'
+          }
+        });
+        return await response.json();
+      } catch (error) {
+        return {
+          success: false,
+          error: { message: error.message, code: 'CN-5000' }
+        };
+      }
+    }
+
+    function formatDate(dateString) {
+      return new Date(dateString).toLocaleString();
+    }
+
+    // Load Errors Table
+    async function loadErrors() {
+      const data = await fetchWithAuth('errors-list?limit=10');
+      const container = document.getElementById('errors-table');
+      if (!data.success) {
+        container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
+        return;
+      }
+      const errors = data.data?.errors || [];
+      if (errors.length === 0) {
+        container.innerHTML = '<p>No errors found</p>';
+        return;
+      }
+      container.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Function</th>
+              <th>Code</th>
+              <th>Message</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${errors.map(err => `
+              <tr>
+                <td>${formatDate(err.created_at)}</td>
+                <td>${err.function_name || 'N/A'}</td>
+                <td>${err.error_code || 'N/A'}</td>
+                <td>${(err.error_message || '').substring(0, 50)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    // Load Error Stats
+    async function loadErrorStats() {
+      const data = await fetchWithAuth('errors-stats?hours=24');
+      const container = document.getElementById('errors-stats');
+      if (!data.success) {
+        container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
+        return;
+      }
+      const stats = data.data || {};
+      container.innerHTML = `
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value">${stats.total_errors || 0}</div>
+            <div class="stat-label">Total Errors</div>
+          </div>
+        </div>
+        <h3 style="margin-top: 1rem;">By Function</h3>
+        <table>
+          <thead>
+            <tr><th>Function</th><th>Count</th></tr>
+          </thead>
+          <tbody>
+            ${Object.entries(stats.by_function || {}).map(([func, count]) => `
+              <tr><td>${func}</td><td>${count}</td></tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    // Load Usage List
+    async function loadUsageList() {
+      const data = await fetchWithAuth('usage-list?limit=10');
+      const container = document.getElementById('usage-list');
+      if (!data.success) {
+        container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
+        return;
+      }
+      const logs = data.data?.logs || [];
+      if (logs.length === 0) {
+        container.innerHTML = '<p>No usage data</p>';
+        return;
+      }
+      container.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Function</th>
+              <th>Duration</th>
+              <th>Success</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${logs.map(log => `
+              <tr>
+                <td>${formatDate(log.created_at)}</td>
+                <td>${log.function_name || 'N/A'}</td>
+                <td>${log.duration_ms || 0}ms</td>
+                <td>${log.success ? '✓' : '✗'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    // Load Usage Stats
+    async function loadUsageStats() {
+      const data = await fetchWithAuth('usage-stats?hours=24');
+      const container = document.getElementById('usage-stats');
+      if (!data.success) {
+        container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
+        return;
+      }
+      const stats = data.data || {};
+      container.innerHTML = `
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value">${stats.total_requests || 0}</div>
+            <div class="stat-label">Total Requests</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">${(stats.success_rate || 0).toFixed(1)}%</div>
+            <div class="stat-label">Success Rate</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Load Cost List
+    async function loadCostList() {
+      const data = await fetchWithAuth('cost-list?limit=10');
+      const container = document.getElementById('cost-list');
+      if (!data.success) {
+        container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
+        return;
+      }
+      const totals = data.data?.totals || {};
+      container.innerHTML = `
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value">$${(totals.total_cost || 0).toFixed(4)}</div>
+            <div class="stat-label">Total Cost</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">${(totals.tokens_in || 0) + (totals.tokens_out || 0)}</div>
+            <div class="stat-label">Total Tokens</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Load Rate Limit List
+    async function loadRateLimitList() {
+      const data = await fetchWithAuth('rate-limit-list?limit=10');
+      const container = document.getElementById('rate-limit-list');
+      if (!data.success) {
+        container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
+        return;
+      }
+      const logs = data.data?.logs || [];
+      if (logs.length === 0) {
+        container.innerHTML = '<p>No rate limit data</p>';
+        return;
+      }
+      container.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>IP</th>
+              <th>Function</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${logs.map(log => `
+              <tr>
+                <td>${formatDate(log.created_at)}</td>
+                <td>${log.ip_address || 'N/A'}</td>
+                <td>${log.function_name || 'N/A'}</td>
+                <td>${log.count || 0}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    // Load Events Stream
+    async function loadEventsStream() {
+      const data = await fetchWithAuth('events-stream?limit=50');
+      const container = document.getElementById('events-stream');
+      if (!data.success) {
+        container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
+        return;
+      }
+      const events = data.data?.events || [];
+      if (events.length === 0) {
+        container.innerHTML = '<p>No events</p>';
+        return;
+      }
+      container.innerHTML = events.map(evt => `
+        <div class="event-item">
+          <div class="event-time">${formatDate(evt.created_at)}</div>
+          <div><strong>${evt.event_type}</strong> from ${evt.source}</div>
+        </div>
+      `).join('');
+    }
+
+    // Load Service Health
+    async function loadServiceHealth() {
+      const data = await fetchWithAuth('service-health');
+      const container = document.getElementById('service-health');
+      if (!data.success) {
+        container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
+        return;
+      }
+      const health = data.data || {};
+      const isHealthy = health.healthy === true;
+      container.innerHTML = `
+        <div class="status ${isHealthy ? 'healthy' : 'error'}">
+          ${isHealthy ? 'HEALTHY' : 'UNHEALTHY'}
+        </div>
+        <p style="margin-top: 1rem;">Supabase: ${health.supabase ? '✓' : '✗'}</p>
+        <p>Timestamp: ${health.timestamp ? formatDate(health.timestamp) : 'N/A'}</p>
+      `;
+    }
+
+    // Load all data
+    async function loadAll() {
+      await Promise.all([
+        loadErrors(),
+        loadErrorStats(),
+        loadUsageList(),
+        loadUsageStats(),
+        loadCostList(),
+        loadRateLimitList(),
+        loadEventsStream(),
+        loadServiceHealth()
+      ]);
+    }
+
+    // Initial load
+    loadAll();
+
+    // Auto-refresh every 30 seconds
+    setInterval(loadAll, 30000);
+  </script>
+</body>
+</html>
+

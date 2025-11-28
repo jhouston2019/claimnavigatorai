@@ -2,34 +2,31 @@
  * Get usage statistics
  */
 
-const apiUtils = require('./lib/api-utils');
-
-async function checkAdmin(supabase, userId) {
-  const { data } = await supabase
-    .from('ai_admins')
-    .select('role')
-    .eq('user_id', userId)
-    .single();
-  return !!data;
-}
+const { createClient } = require('@supabase/supabase-js');
+const requireAdmin = require('./_admin-auth');
 
 exports.handler = async (event) => {
+  const auth = requireAdmin(event);
+  if (!auth.authorized) {
+    return {
+      statusCode: 401,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: auth.error
+      })
+    };
+  }
+
   try {
-    const supabase = apiUtils.getSupabaseClient();
-    if (!supabase) {
-      return apiUtils.sendError('Database not configured', 'CN-8000', 500);
-    }
-
-    const authHeader = event.headers.authorization || event.headers.Authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return apiUtils.sendError('Unauthorized', 'CN-2000', 401);
-    }
-
-    const token = authHeader.substring(7);
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !user || !(await checkAdmin(supabase, user.id))) {
-      return apiUtils.sendError('Admin access required', 'CN-2001', 403);
-    }
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
 
     const hours = parseInt(event.queryStringParameters?.hours || '24');
     const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
@@ -45,49 +42,57 @@ exports.handler = async (event) => {
       .from('api_usage_logs')
       .select('*', { count: 'exact', head: true })
       .gte('created_at', since)
-      .gte('status', 200)
-      .lt('status', 300);
+      .eq('success', true);
 
     const successRate = totalRequests > 0 ? (successCount / totalRequests) * 100 : 0;
 
-    // By endpoint
-    const { data: byEndpoint } = await supabase
+    // By function
+    const { data: byFunction } = await supabase
       .from('api_usage_logs')
-      .select('endpoint')
+      .select('function_name')
       .gte('created_at', since);
 
-    const endpointCounts = {};
-    if (byEndpoint) {
-      byEndpoint.forEach(log => {
-        const ep = log.endpoint || 'unknown';
-        endpointCounts[ep] = (endpointCounts[ep] || 0) + 1;
+    const functionCounts = {};
+    if (byFunction) {
+      byFunction.forEach(log => {
+        const func = log.function_name || 'unknown';
+        functionCounts[func] = (functionCounts[func] || 0) + 1;
       });
     }
 
-    // Active API keys
-    const { data: activeKeys } = await supabase
-      .from('api_usage_logs')
-      .select('api_key_id')
-      .gte('created_at', since)
-      .not('api_key_id', 'is', null);
-
-    const uniqueKeys = new Set();
-    if (activeKeys) {
-      activeKeys.forEach(log => {
-        if (log.api_key_id) uniqueKeys.add(log.api_key_id);
-      });
-    }
-
-    return apiUtils.sendSuccess({
-      total_requests: totalRequests || 0,
-      success_rate: Math.round(successRate * 100) / 100,
-      active_api_keys: uniqueKeys.size,
-      by_endpoint: endpointCounts,
-      time_range_hours: hours
-    });
-  } catch (error) {
-    console.error('Usage stats error:', error);
-    return apiUtils.sendError('Failed to fetch usage stats', 'CN-5000', 500);
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        success: true,
+        data: {
+          total_requests: totalRequests || 0,
+          success_rate: Math.round(successRate * 100) / 100,
+          by_function: functionCounts,
+          time_range_hours: hours
+        },
+        error: null
+      })
+    };
+  } catch (err) {
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: {
+          message: 'Failed to fetch usage stats',
+          code: 'CN-5000',
+          detail: err.message
+        }
+      })
+    };
   }
 };
-
