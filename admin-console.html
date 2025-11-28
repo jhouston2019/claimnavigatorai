@@ -204,14 +204,30 @@
   </div>
 
   <script>
-    // Get admin email from environment or prompt
-    const ADMIN_EMAIL = prompt('Enter admin email:') || 'admin@example.com';
+    // Admin email
+    const ADMIN_EMAIL = 'claimnavigatorai@gmail.com';
 
     async function fetchWithAuth(endpoint) {
       try {
         const response = await fetch(`/.netlify/functions/monitoring-${endpoint}`, {
           headers: {
             'x-admin-email': ADMIN_EMAIL,
+            'Content-Type': 'application/json'
+          }
+        });
+        return await response.json();
+      } catch (error) {
+        return {
+          success: false,
+          error: { message: error.message, code: 'CN-5000' }
+        };
+      }
+    }
+
+    async function fetchWithoutAuth(endpoint) {
+      try {
+        const response = await fetch(`/.netlify/functions/monitoring-${endpoint}`, {
+          headers: {
             'Content-Type': 'application/json'
           }
         });
@@ -438,7 +454,7 @@
 
     // Load Service Health
     async function loadServiceHealth() {
-      const data = await fetchWithAuth('service-health');
+      const data = await fetchWithoutAuth('service-health');
       const container = document.getElementById('service-health');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
