@@ -13,3 +13,30 @@ export async function openaiChat(system, user){
   const content = data?.choices?.[0]?.message?.content || JSON.stringify(data).slice(0,500);
   return { demo:false, content };
 }
+
+/**
+ * Log system event
+ * @param {string} eventType - Type of event
+ * @param {string} source - Source of event
+ * @param {object} payload - Event payload
+ */
+export async function LOG_EVENT(eventType, source, payload = {}) {
+  try {
+    const { createClient } = require('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
+    await supabase
+      .from('system_events')
+      .insert({
+        event_type: eventType,
+        source: source,
+        payload: payload
+      });
+  } catch (error) {
+    // Non-critical - don't break main flow
+    console.warn('Failed to log event:', error);
+  }
+}
