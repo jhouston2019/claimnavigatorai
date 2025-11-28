@@ -2,7 +2,7 @@
  * Get error statistics
  */
 
-const apiUtils = require('./lib/api-utils');;
+const apiUtils = require('./lib/api-utils');
 
 async function checkAdmin(supabase, userId) {
   const { data } = await supabase

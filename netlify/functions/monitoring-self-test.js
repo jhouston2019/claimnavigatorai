@@ -2,7 +2,7 @@
  * Self-test endpoint for monitoring system
  */
 
-const apiUtils = require('./lib/api-utils');;
+const apiUtils = require('./lib/api-utils');
 
 exports.handler = async (event) => {
   try {
