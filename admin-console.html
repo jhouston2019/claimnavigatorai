@@ -206,12 +206,10 @@
   <script>
     const ADMIN_EMAIL = "claimnavigatorai@gmail.com";
 
-    function fetchAdmin(url) {
-      return fetch(url, {
-        headers: {
-          "x-admin-email": ADMIN_EMAIL
-        }
-      }).then(res => res.json());
+    async function fetchAdmin(url) {
+      return fetch(url, { headers: { "x-admin-email": ADMIN_EMAIL } })
+        .then(res => res.json())
+        .catch(() => ({ success: false }));
     }
 
     function formatDate(dateString) {

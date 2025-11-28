@@ -16,8 +16,10 @@ exports.handler = async () => {
     if (error) {
       return {
         statusCode: 200,
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
         body: JSON.stringify({
           success: false,
+          data: null,
           error: {
             message: 'Supabase health check failed',
             detail: error.message,
@@ -29,6 +31,7 @@ exports.handler = async () => {
 
     return {
       statusCode: 200,
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify({
         success: true,
         data: {
@@ -42,8 +45,10 @@ exports.handler = async () => {
   } catch (err) {
     return {
       statusCode: 200,
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify({
         success: false,
+        data: null,
         error: {
           message: 'Unhandled service health error',
           detail: err.message,
