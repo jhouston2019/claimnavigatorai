@@ -1,9 +1,8 @@
-import OpenAI from "openai";
-
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const OpenAI = require('openai');
+const { createClient } = require('@supabase/supabase-js');
 const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
-export async function handler(event) {
+exports.handler = async (event) => {
   // Handle CORS
   if (event.httpMethod === 'OPTIONS') {
     return {
@@ -24,7 +23,11 @@ export async function handler(event) {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ error: 'Method not allowed' })
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-4000', message: 'Method not allowed' }
+      })
     };
   }
 
@@ -36,6 +39,13 @@ export async function handler(event) {
     await LOG_EVENT('ai_request', 'ai-categorize-evidence', { payload: body });
     
     const startTime = Date.now();
+
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     
     const prompt = `
 You are an insurance evidence assistant. Based on filename, file type, and any extracted text content, classify this evidence file into one of these categories and provide relevant tags and summary.
@@ -135,5 +145,5 @@ Focus on insurance claim context. Photos of damage, receipts for expenses, offic
       })
     };
   }
-}
+};
 

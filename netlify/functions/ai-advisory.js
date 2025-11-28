@@ -1,8 +1,8 @@
-import OpenAI from "openai";
-
+const OpenAI = require('openai');
+const { createClient } = require('@supabase/supabase-js');
 const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
-export async function handler(event) {
+exports.handler = async (event) => {
   // Handle CORS preflight requests
   if (event.httpMethod === 'OPTIONS') {
     return {
@@ -24,7 +24,11 @@ export async function handler(event) {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ error: 'Method not allowed' })
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-4000', message: 'Method not allowed' }
+      })
     };
   }
 
@@ -42,11 +46,20 @@ export async function handler(event) {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ error: 'Situation description is required' })
+        body: JSON.stringify({
+          success: false,
+          data: null,
+          error: { code: 'CN-1000', message: 'Situation description is required' }
+        })
       };
     }
 
     const startTime = Date.now();
+
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
 
     const openai = new OpenAI({ 
       apiKey: process.env.OPENAI_API_KEY 
@@ -142,4 +155,4 @@ Situation: ${situation}`;
       })
     };
   }
-}
+};

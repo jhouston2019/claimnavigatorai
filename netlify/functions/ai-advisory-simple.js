@@ -1,7 +1,13 @@
+const { createClient } = require('@supabase/supabase-js');
 const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
 exports.handler = async (event) => {
   try {
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
     const body = JSON.parse(event.body || '{}');
     const situation = body.situation;
     
