@@ -10,6 +10,27 @@
 [[plugins]]
 package = "@netlify/plugin-functions-install-core"
 
+[[redirects]]
+  from = "/admin-console.html"
+  to = "/admin-console.html"
+  status = 200
+  force = true
+  headers = { Access-Control-Allow-Headers = "x-admin-email" }
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/admin-console.html"
+  status = 200
+  force = true
+  headers = { Access-Control-Allow-Headers = "x-admin-email" }
+
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+  headers = { Access-Control-Allow-Headers = "x-admin-email" }
+
 # Admin console redirect
 [[redirects]]
   from = "/admin/console/check-admin"
