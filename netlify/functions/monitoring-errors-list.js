@@ -2,7 +2,7 @@
  * Get error logs with filtering and pagination
  */
 
-const { getSupabaseClient, sendSuccess, sendError } = require('../lib/api-utils');
+const { getSupabaseClient, sendSuccess, sendError } = require('./lib/api-utils');
 
 async function checkAdmin(supabase, userId) {
   const { data } = await supabase

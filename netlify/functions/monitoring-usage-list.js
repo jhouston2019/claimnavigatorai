@@ -2,7 +2,7 @@
  * Get API usage logs
  */
 
-const { getSupabaseClient, sendSuccess, sendError } = require('../lib/api-utils');
+const { getSupabaseClient, sendSuccess, sendError } = require('./lib/api-utils');
 
 async function checkAdmin(supabase, userId) {
   const { data } = await supabase

@@ -2,7 +2,7 @@
  * Self-test endpoint for monitoring system
  */
 
-const { getSupabaseClient, sendSuccess, sendError } = require('../lib/api-utils');
+const { getSupabaseClient, sendSuccess, sendError } = require('./lib/api-utils');
 
 exports.handler = async (event) => {
   try {
