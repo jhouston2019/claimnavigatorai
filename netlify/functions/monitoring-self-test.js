@@ -3,25 +3,8 @@
  */
 
 const { createClient } = require('@supabase/supabase-js');
-const requireAdmin = require('./_admin-auth');
 
 exports.handler = async (event) => {
-  const auth = requireAdmin(event);
-  if (!auth.authorized) {
-    return {
-      statusCode: 401,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({
-        success: false,
-        data: null,
-        error: auth.error
-      })
-    };
-  }
-
   try {
     const supabase = createClient(
       process.env.SUPABASE_URL,
