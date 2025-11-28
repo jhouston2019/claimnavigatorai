@@ -40,3 +40,108 @@ export async function LOG_EVENT(eventType, source, payload = {}) {
     console.warn('Failed to log event:', error);
   }
 }
+
+/**
+ * Log error to system_errors table
+ * @param {string} eventType - Type of error event
+ * @param {object} metadata - Error metadata (function, message, stack, etc.)
+ */
+async function LOG_ERROR(eventType, metadata = {}) {
+  try {
+    const { createClient } = require('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
+    await supabase
+      .from('system_errors')
+      .insert({
+        function_name: metadata.function || 'unknown',
+        error_message: metadata.message || 'Unknown error',
+        error_code: metadata.code || 'CN-5000',
+        metadata: metadata
+      });
+  } catch (error) {
+    console.warn('Failed to log error:', error);
+  }
+}
+
+/**
+ * Log API usage to api_usage_logs table
+ * @param {object} usageData - Usage data (function, duration_ms, input_token_estimate, output_token_estimate)
+ */
+async function LOG_USAGE(usageData = {}) {
+  try {
+    const { createClient } = require('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
+    await supabase
+      .from('api_usage_logs')
+      .insert({
+        function_name: usageData.function || 'unknown',
+        duration_ms: usageData.duration_ms || 0,
+        success: usageData.success !== false,
+        metadata: {
+          input_token_estimate: usageData.input_token_estimate || 0,
+          output_token_estimate: usageData.output_token_estimate || 0
+        }
+      });
+  } catch (error) {
+    console.warn('Failed to log usage:', error);
+  }
+}
+
+/**
+ * Log AI cost to ai_cost_tracking table
+ * @param {object} costData - Cost data (function, estimated_cost_usd, model, tokens_in, tokens_out)
+ */
+async function LOG_COST(costData = {}) {
+  try {
+    const { createClient } = require('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
+    await supabase
+      .from('ai_cost_tracking')
+      .insert({
+        model: costData.model || 'gpt-4o-mini',
+        tokens_in: costData.tokens_in || 0,
+        tokens_out: costData.tokens_out || 0,
+        cost_usd: costData.estimated_cost_usd || 0,
+        metadata: {
+          function: costData.function || 'unknown'
+        }
+      });
+  } catch (error) {
+    console.warn('Failed to log cost:', error);
+  }
+}
+
+// CommonJS exports for require() compatibility
+module.exports = {
+  LOG_EVENT: async (eventType, source, payload = {}) => {
+    try {
+      const { createClient } = require('@supabase/supabase-js');
+      const supabase = createClient(
+        process.env.SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      );
+      await supabase.from('system_events').insert({
+        event_type: eventType,
+        source: source,
+        payload: payload
+      });
+    } catch (error) {
+      console.warn('Failed to log event:', error);
+    }
+  },
+  LOG_ERROR,
+  LOG_USAGE,
+  LOG_COST
+};

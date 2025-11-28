@@ -1,5 +1,7 @@
 import OpenAI from "openai";
 
+const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
+
 export async function handler(event) {
   // Handle CORS preflight requests
   if (event.httpMethod === 'OPTIONS') {
@@ -27,7 +29,11 @@ export async function handler(event) {
   }
 
   try {
-    const { situation } = JSON.parse(event.body);
+    const body = JSON.parse(event.body);
+    const { situation } = body;
+    
+    // Log event
+    await LOG_EVENT('ai_request', 'ai-advisory', { payload: body });
     
     if (!situation || situation.trim().length === 0) {
       return {
@@ -39,6 +45,8 @@ export async function handler(event) {
         body: JSON.stringify({ error: 'Situation description is required' })
       };
     }
+
+    const startTime = Date.now();
 
     const openai = new OpenAI({ 
       apiKey: process.env.OPENAI_API_KEY 
@@ -87,17 +95,39 @@ Situation: ${situation}`;
       };
     }
 
+    const endTime = Date.now();
+    const durationMs = endTime - startTime;
+
+    // Log usage
+    await LOG_USAGE({
+      function: 'ai-advisory',
+      duration_ms: durationMs,
+      input_token_estimate: 0,
+      output_token_estimate: 0,
+      success: true
+    });
+
+    // Log cost
+    await LOG_COST({
+      function: 'ai-advisory',
+      estimated_cost_usd: 0.002
+    });
+
     return {
       statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(parsedResponse)
+      body: JSON.stringify({ success: true, data: parsedResponse, error: null })
     };
 
   } catch (error) {
-    console.error('AI Advisory Error:', error);
+    await LOG_ERROR('ai_error', {
+      function: 'ai-advisory',
+      message: error.message,
+      stack: error.stack
+    });
     
     return {
       statusCode: 500,
@@ -105,9 +135,10 @@ Situation: ${situation}`;
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ 
-        error: 'Failed to process advisory request',
-        details: error.message 
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-5000', message: error.message }
       })
     };
   }

@@ -5,6 +5,7 @@
 
 const { runOpenAI, sanitizeInput, validateRequired } = require('./lib/ai-utils');
 const { createClient } = require('@supabase/supabase-js');
+const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
 exports.handler = async (event) => {
   const headers = {
@@ -70,6 +71,9 @@ exports.handler = async (event) => {
     // Parse request
     const body = JSON.parse(event.body || '{}');
     
+    // Log event
+    await LOG_EVENT('ai_request', 'ai-document-generator', { payload: body });
+    
     const {
       template_type = 'general',
       user_inputs = {},
@@ -81,6 +85,8 @@ exports.handler = async (event) => {
     for (const [key, value] of Object.entries(user_inputs)) {
       sanitizedInputs[key] = sanitizeInput(String(value || ''));
     }
+
+    const startTime = Date.now();
 
     // Build system prompt
     const systemPrompt = `You are a professional document generator specializing in insurance claim documents. Your role is to create accurate, legally appropriate, and professionally formatted documents based on user inputs.
@@ -120,28 +126,54 @@ Return the document as formatted text/HTML that can be displayed and exported.`;
     // Extract subject line if possible
     const subjectLine = extractSubjectLine(documentText, document_type);
 
+    const endTime = Date.now();
+    const durationMs = endTime - startTime;
+
+    const result = {
+      document_text: documentText,
+      html: formatAsHTML(documentText),
+      subject_line: subjectLine,
+      template_type: template_type,
+      document_type: document_type,
+      generated_at: new Date().toISOString()
+    };
+
+    // Log usage
+    await LOG_USAGE({
+      function: 'ai-document-generator',
+      duration_ms: durationMs,
+      input_token_estimate: 0,
+      output_token_estimate: 0,
+      success: true
+    });
+
+    // Log cost
+    await LOG_COST({
+      function: 'ai-document-generator',
+      estimated_cost_usd: 0.002
+    });
+
     return {
       statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        success: true,
-        data: {
-          document_text: documentText,
-          html: formatAsHTML(documentText),
-          subject_line: subjectLine,
-          template_type: template_type,
-          document_type: document_type,
-          generated_at: new Date().toISOString()
-        }
-      })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ success: true, data: result, error: null })
     };
 
   } catch (error) {
-    console.error('AI Document Generator error:', error);
+    await LOG_ERROR('ai_error', {
+      function: 'ai-document-generator',
+      message: error.message,
+      stack: error.stack
+    });
+
     return {
       statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: error.message })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-5000', message: error.message }
+      })
     };
   }
 };

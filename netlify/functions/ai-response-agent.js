@@ -5,6 +5,7 @@
 
 const { runOpenAI, sanitizeInput, validateRequired } = require('./lib/ai-utils');
 const { createClient } = require('@supabase/supabase-js');
+const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
 exports.handler = async (event) => {
   const headers = {
@@ -70,6 +71,9 @@ exports.handler = async (event) => {
     // Parse request
     const body = JSON.parse(event.body || '{}');
     
+    // Log event
+    await LOG_EVENT('ai_request', 'ai-response-agent', { payload: body });
+    
     // Validate required fields
     validateRequired(body, ['denial_letter_text']);
 
@@ -83,6 +87,8 @@ exports.handler = async (event) => {
     // Sanitize inputs
     const sanitizedText = sanitizeInput(denial_letter_text);
     const sanitizedInsurer = sanitizeInput(insurer_name);
+
+    const startTime = Date.now();
 
     // Build prompts
     const systemPrompt = `You are a professional insurance claim advocate specializing in policyholder rights. Your role is to analyze insurer correspondence and draft expert response letters that are:
@@ -145,18 +151,45 @@ Format your response as JSON:
       };
     }
 
+    const endTime = Date.now();
+    const durationMs = endTime - startTime;
+
+    // Log usage
+    await LOG_USAGE({
+      function: 'ai-response-agent',
+      duration_ms: durationMs,
+      input_token_estimate: 0,
+      output_token_estimate: 0,
+      success: true
+    });
+
+    // Log cost
+    await LOG_COST({
+      function: 'ai-response-agent',
+      estimated_cost_usd: 0.002
+    });
+
     return {
       statusCode: 200,
-      headers,
-      body: JSON.stringify(result)
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ success: true, data: result, error: null })
     };
 
   } catch (error) {
-    console.error('AI Response Agent error:', error);
+    await LOG_ERROR('ai_error', {
+      function: 'ai-response-agent',
+      message: error.message,
+      stack: error.stack
+    });
+
     return {
       statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: error.message })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-5000', message: error.message }
+      })
     };
   }
 };

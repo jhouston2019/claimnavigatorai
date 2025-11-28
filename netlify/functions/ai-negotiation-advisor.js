@@ -4,6 +4,7 @@
 
 const { runOpenAI, sanitizeInput } = require('./lib/ai-utils');
 const { createClient } = require('@supabase/supabase-js');
+const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
 exports.handler = async (event) => {
   const headers = {
@@ -65,6 +66,10 @@ exports.handler = async (event) => {
     }
 
     const body = JSON.parse(event.body || '{}');
+    
+    // Log event
+    await LOG_EVENT('ai_request', 'ai-negotiation-advisor', { payload: body });
+    
     const {
       offer_amount = 0,
       valuation = 0,
@@ -76,6 +81,8 @@ exports.handler = async (event) => {
       policy_limits = '',
       context = ''
     } = body;
+
+    const startTime = Date.now();
 
     const systemPrompt = `You are an expert insurance negotiation advisor. Analyze settlement offers and provide strategic negotiation advice.`;
 
@@ -105,27 +112,53 @@ Format as HTML.`;
       max_tokens: 2000
     });
 
+    const endTime = Date.now();
+    const durationMs = endTime - startTime;
+
+    const result = {
+      html: analysis,
+      analysis: analysis,
+      gap: gap,
+      gap_percent: gap_percent,
+      recommended_counter: valuation * 0.95 // 5% negotiation room
+    };
+
+    // Log usage
+    await LOG_USAGE({
+      function: 'ai-negotiation-advisor',
+      duration_ms: durationMs,
+      input_token_estimate: 0,
+      output_token_estimate: 0,
+      success: true
+    });
+
+    // Log cost
+    await LOG_COST({
+      function: 'ai-negotiation-advisor',
+      estimated_cost_usd: 0.002
+    });
+
     return {
       statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        success: true,
-        data: {
-          html: analysis,
-          analysis: analysis,
-          gap: gap,
-          gap_percent: gap_percent,
-          recommended_counter: valuation * 0.95 // 5% negotiation room
-        }
-      })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ success: true, data: result, error: null })
     };
 
   } catch (error) {
-    console.error('AI Negotiation Advisor error:', error);
+    await LOG_ERROR('ai_error', {
+      function: 'ai-negotiation-advisor',
+      message: error.message,
+      stack: error.stack
+    });
+
     return {
       statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: error.message })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-5000', message: error.message }
+      })
     };
   }
 };

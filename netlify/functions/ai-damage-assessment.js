@@ -4,6 +4,7 @@
 
 const { runOpenAI, sanitizeInput } = require('./lib/ai-utils');
 const { createClient } = require('@supabase/supabase-js');
+const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
 exports.handler = async (event) => {
   const headers = {
@@ -65,9 +66,15 @@ exports.handler = async (event) => {
     }
 
     const body = JSON.parse(event.body || '{}');
+    
+    // Log event
+    await LOG_EVENT('ai_request', 'ai-damage-assessment', { payload: body });
+    
     const { damage_description = '', damage_types = [], damage_items = [] } = body;
 
     const systemPrompt = `You are a professional damage assessment expert. Analyze property damage and provide detailed assessments with cost breakdowns.`;
+
+    const startTime = Date.now();
 
     const totalCost = damage_items.reduce((sum, item) => sum + (item.total || 0), 0);
 
@@ -92,26 +99,52 @@ Format as HTML.`;
       max_tokens: 2000
     });
 
+    const endTime = Date.now();
+    const durationMs = endTime - startTime;
+
+    const result = {
+      html: assessment,
+      assessment: assessment,
+      total_cost: totalCost,
+      item_count: damage_items.length
+    };
+
+    // Log usage
+    await LOG_USAGE({
+      function: 'ai-damage-assessment',
+      duration_ms: durationMs,
+      input_token_estimate: 0,
+      output_token_estimate: 0,
+      success: true
+    });
+
+    // Log cost
+    await LOG_COST({
+      function: 'ai-damage-assessment',
+      estimated_cost_usd: 0.002
+    });
+
     return {
       statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        success: true,
-        data: {
-          html: assessment,
-          assessment: assessment,
-          total_cost: totalCost,
-          item_count: damage_items.length
-        }
-      })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ success: true, data: result, error: null })
     };
 
   } catch (error) {
-    console.error('AI Damage Assessment error:', error);
+    await LOG_ERROR('ai_error', {
+      function: 'ai-damage-assessment',
+      message: error.message,
+      stack: error.stack
+    });
+
     return {
       statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: error.message })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-5000', message: error.message }
+      })
     };
   }
 };

@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
 export async function handler(event) {
   // Handle CORS
@@ -28,7 +29,13 @@ export async function handler(event) {
   }
 
   try {
-    const { fileName, fileType, fileSize, ocrText } = JSON.parse(event.body);
+    const body = JSON.parse(event.body);
+    const { fileName, fileType, fileSize, ocrText } = body;
+    
+    // Log event
+    await LOG_EVENT('ai_request', 'ai-categorize-evidence', { payload: body });
+    
+    const startTime = Date.now();
     
     const prompt = `
 You are an insurance evidence assistant. Based on filename, file type, and any extracted text content, classify this evidence file into one of these categories and provide relevant tags and summary.
@@ -81,17 +88,39 @@ Focus on insurance claim context. Photos of damage, receipts for expenses, offic
       };
     }
 
+    const endTime = Date.now();
+    const durationMs = endTime - startTime;
+
+    // Log usage
+    await LOG_USAGE({
+      function: 'ai-categorize-evidence',
+      duration_ms: durationMs,
+      input_token_estimate: 0,
+      output_token_estimate: 0,
+      success: true
+    });
+
+    // Log cost
+    await LOG_COST({
+      function: 'ai-categorize-evidence',
+      estimated_cost_usd: 0.002
+    });
+
     return {
       statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(parsedResult)
+      body: JSON.stringify({ success: true, data: parsedResult, error: null })
     };
 
   } catch (error) {
-    console.error('AI categorization error:', error);
+    await LOG_ERROR('ai_error', {
+      function: 'ai-categorize-evidence',
+      message: error.message,
+      stack: error.stack
+    });
     
     return {
       statusCode: 500,
@@ -99,15 +128,10 @@ Focus on insurance claim context. Photos of damage, receipts for expenses, offic
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ 
-        error: 'AI categorization failed',
-        details: error.message,
-        fallback: {
-          category: "other",
-          tags: ["error"],
-          summary: "Unable to categorize due to processing error",
-          confidence: 0
-        }
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-5000', message: error.message }
       })
     };
   }

@@ -5,6 +5,7 @@
 
 const { runOpenAI, sanitizeInput, validateRequired } = require('./lib/ai-utils');
 const { createClient } = require('@supabase/supabase-js');
+const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
 exports.handler = async (event) => {
   const headers = {
@@ -69,10 +70,16 @@ exports.handler = async (event) => {
 
     // Parse request
     const body = JSON.parse(event.body || '{}');
+    
+    // Log event
+    await LOG_EVENT('ai_request', 'ai-policy-review', { payload: body });
+
     validateRequired(body, ['policy_text']);
 
     const { policy_text, policy_type = '', jurisdiction = '', deductible = '' } = body;
     const sanitizedText = sanitizeInput(policy_text);
+
+    const startTime = Date.now();
 
     const systemPrompt = `You are an expert insurance policy analyst. Analyze policies and provide comprehensive coverage summaries, exclusions, and recommendations.`;
 
@@ -99,26 +106,52 @@ Format as HTML for display.`;
       max_tokens: 2000
     });
 
+    const endTime = Date.now();
+    const durationMs = endTime - startTime;
+
+    const result = {
+      html: analysis,
+      summary: extractSummary(analysis),
+      exclusions: extractExclusions(analysis),
+      recommendations: extractRecommendations(analysis)
+    };
+
+    // Log usage
+    await LOG_USAGE({
+      function: 'ai-policy-review',
+      duration_ms: durationMs,
+      input_token_estimate: 0,
+      output_token_estimate: 0,
+      success: true
+    });
+
+    // Log cost
+    await LOG_COST({
+      function: 'ai-policy-review',
+      estimated_cost_usd: 0.002
+    });
+
     return {
       statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        success: true,
-        data: {
-          html: analysis,
-          summary: extractSummary(analysis),
-          exclusions: extractExclusions(analysis),
-          recommendations: extractRecommendations(analysis)
-        }
-      })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ success: true, data: result, error: null })
     };
 
   } catch (error) {
-    console.error('AI Policy Review error:', error);
+    await LOG_ERROR('ai_error', {
+      function: 'ai-policy-review',
+      message: error.message,
+      stack: error.stack
+    });
+
     return {
       statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: error.message })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-5000', message: error.message }
+      })
     };
   }
 };

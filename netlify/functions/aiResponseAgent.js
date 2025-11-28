@@ -1,5 +1,7 @@
 import OpenAI from "openai";
 
+const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
+
 // Simple multipart form parser for Netlify functions
 async function parseMultipartForm(req) {
   const chunks = [];
@@ -57,6 +59,7 @@ export default async function handler(req, res) {
   try {
     // Handle multipart form data for file uploads
     let mode, claim, letter, document;
+    let bodyData = {};
     
     if (req.headers['content-type'] && req.headers['content-type'].includes('multipart/form-data')) {
       // Parse multipart form data
@@ -65,6 +68,7 @@ export default async function handler(req, res) {
       claim = JSON.parse(formData.claim || '{}');
       letter = formData.letter;
       document = formData.document;
+      bodyData = { mode, claim, hasLetter: !!letter, hasDocument: !!document };
     } else {
       // Handle JSON data
       const body = JSON.parse(req.body);
@@ -72,7 +76,11 @@ export default async function handler(req, res) {
       claim = body.claim;
       letter = body.letter;
       document = body.document;
+      bodyData = { mode, claim, hasLetter: !!letter, hasDocument: !!document };
     }
+
+    // Log event
+    await LOG_EVENT('ai_request', 'aiResponseAgent', { payload: bodyData });
 
     // Validate required fields
     if ((!letter || !letter.trim()) && !document) {
@@ -97,6 +105,8 @@ export default async function handler(req, res) {
       negotiate: "Identify leverage points and propose negotiation counterarguments for the policyholder. Focus on policy language, coverage issues, and settlement opportunities.",
       summary: "Summarize this insurer letter and provide the top three recommended actions for the policyholder."
     };
+
+    const startTime = Date.now();
 
     // Initialize OpenAI client
     const openai = new OpenAI({ 
@@ -222,29 +232,54 @@ Ensure the draftLetter is professionally formatted and ready for use.`;
       model: "gpt-4o-mini"
     };
 
-    return res.status(200).json(cleanedResponse);
+    const endTime = Date.now();
+    const durationMs = endTime - startTime;
+
+    // Log usage
+    await LOG_USAGE({
+      function: 'aiResponseAgent',
+      duration_ms: durationMs,
+      input_token_estimate: 0,
+      output_token_estimate: 0,
+      success: true
+    });
+
+    // Log cost
+    await LOG_COST({
+      function: 'aiResponseAgent',
+      estimated_cost_usd: 0.002
+    });
+
+    return res.status(200).json({ success: true, data: cleanedResponse, error: null });
 
   } catch (error) {
-    console.error("AI Response Error:", error);
+    await LOG_ERROR('ai_error', {
+      function: 'aiResponseAgent',
+      message: error.message,
+      stack: error.stack
+    });
     
     // Handle specific error types
     if (error.code === 'insufficient_quota') {
       return res.status(429).json({
-        error: "AI service quota exceeded",
-        details: "Please try again later or contact support"
+        success: false,
+        data: null,
+        error: { code: 'CN-4001', message: "AI service quota exceeded" }
       });
     }
     
     if (error.code === 'invalid_api_key') {
       return res.status(500).json({
-        error: "AI service configuration error",
-        details: "Service configuration issue"
+        success: false,
+        data: null,
+        error: { code: 'CN-5001', message: "AI service configuration error" }
       });
     }
 
     return res.status(500).json({
-      error: "AI processing failed",
-      details: error.message || "An unexpected error occurred"
+      success: false,
+      data: null,
+      error: { code: 'CN-5000', message: error.message || "AI processing failed" }
     });
   }
 }

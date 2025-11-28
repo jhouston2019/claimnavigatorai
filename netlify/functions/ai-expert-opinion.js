@@ -4,6 +4,7 @@
 
 const { runOpenAI, sanitizeInput } = require('./lib/ai-utils');
 const { createClient } = require('@supabase/supabase-js');
+const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
 exports.handler = async (event) => {
   const headers = {
@@ -65,6 +66,10 @@ exports.handler = async (event) => {
     }
 
     const body = JSON.parse(event.body || '{}');
+    
+    // Log event
+    await LOG_EVENT('ai_request', 'ai-expert-opinion', { payload: body });
+    
     const {
       description = '',
       expertise = '',
@@ -73,6 +78,8 @@ exports.handler = async (event) => {
       requirements = '',
       supporting_documents = []
     } = body;
+
+    const startTime = Date.now();
 
     const systemPrompt = `You are a professional document generator specializing in expert opinion requests. Create formal, professional requests for expert analysis.`;
 
@@ -101,26 +108,52 @@ Format as a formal document.`;
       max_tokens: 2000
     });
 
+    const endTime = Date.now();
+    const durationMs = endTime - startTime;
+
+    const result = {
+      html: document,
+      document: document,
+      expertise: expertise,
+      urgency: urgency
+    };
+
+    // Log usage
+    await LOG_USAGE({
+      function: 'ai-expert-opinion',
+      duration_ms: durationMs,
+      input_token_estimate: 0,
+      output_token_estimate: 0,
+      success: true
+    });
+
+    // Log cost
+    await LOG_COST({
+      function: 'ai-expert-opinion',
+      estimated_cost_usd: 0.002
+    });
+
     return {
       statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        success: true,
-        data: {
-          html: document,
-          document: document,
-          expertise: expertise,
-          urgency: urgency
-        }
-      })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ success: true, data: result, error: null })
     };
 
   } catch (error) {
-    console.error('AI Expert Opinion error:', error);
+    await LOG_ERROR('ai_error', {
+      function: 'ai-expert-opinion',
+      message: error.message,
+      stack: error.stack
+    });
+
     return {
       statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: error.message })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-5000', message: error.message }
+      })
     };
   }
 };

@@ -5,6 +5,7 @@
 
 const { runOpenAI, sanitizeInput, validateRequired } = require('./lib/ai-utils');
 const { createClient } = require('@supabase/supabase-js');
+const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
 exports.handler = async (event) => {
   const headers = {
@@ -69,10 +70,16 @@ exports.handler = async (event) => {
 
     // Parse request
     const body = JSON.parse(event.body || '{}');
+    
+    // Log event
+    await LOG_EVENT('ai_request', 'ai-situational-advisory', { payload: body });
+    
     validateRequired(body, ['situation_description']);
 
     const { situation_description, claim_type = 'general' } = body;
     const sanitizedSituation = sanitizeInput(situation_description);
+
+    const startTime = Date.now();
 
     const systemPrompt = `You are an expert insurance claim advisor. Provide clear, actionable advice for claim situations. Be professional, helpful, and specific.`;
 
@@ -110,21 +117,45 @@ Return JSON:
       };
     }
 
+    const endTime = Date.now();
+    const durationMs = endTime - startTime;
+
+    // Log usage
+    await LOG_USAGE({
+      function: 'ai-situational-advisory',
+      duration_ms: durationMs,
+      input_token_estimate: 0,
+      output_token_estimate: 0,
+      success: true
+    });
+
+    // Log cost
+    await LOG_COST({
+      function: 'ai-situational-advisory',
+      estimated_cost_usd: 0.002
+    });
+
     return {
       statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        success: true,
-        data: result
-      })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ success: true, data: result, error: null })
     };
 
   } catch (error) {
-    console.error('AI Situational Advisory error:', error);
+    await LOG_ERROR('ai_error', {
+      function: 'ai-situational-advisory',
+      message: error.message,
+      stack: error.stack
+    });
+
     return {
       statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: error.message })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-5000', message: error.message }
+      })
     };
   }
 };

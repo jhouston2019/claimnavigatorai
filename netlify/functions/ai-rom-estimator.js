@@ -5,6 +5,7 @@
 
 const { runOpenAI, sanitizeInput, validateRequired } = require('./lib/ai-utils');
 const { createClient } = require('@supabase/supabase-js');
+const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
 exports.handler = async (event) => {
   const headers = {
@@ -70,9 +71,14 @@ exports.handler = async (event) => {
     // Parse request
     const body = JSON.parse(event.body || '{}');
     
+    // Log event
+    await LOG_EVENT('ai_request', 'ai-rom-estimator', { payload: body });
+    
     validateRequired(body, ['category', 'severity', 'square_feet']);
 
     const { category, severity, square_feet } = body;
+
+    const startTime = Date.now();
 
     // Base rates per sq ft by category
     const baseRates = {
@@ -121,30 +127,56 @@ Keep it professional and informative.`;
       max_tokens: 500
     });
 
+    const endTime = Date.now();
+    const durationMs = endTime - startTime;
+
+    const result = {
+      estimate: Math.round(baseEstimate),
+      explanation: explanation,
+      breakdown: {
+        square_feet: square_feet,
+        base_rate: baseRate,
+        severity_multiplier: multiplier,
+        calculation: `$${baseRate} × ${square_feet.toLocaleString()} sq ft × ${multiplier}x = $${Math.round(baseEstimate).toLocaleString()}`
+      }
+    };
+
+    // Log usage
+    await LOG_USAGE({
+      function: 'ai-rom-estimator',
+      duration_ms: durationMs,
+      input_token_estimate: 0,
+      output_token_estimate: 0,
+      success: true
+    });
+
+    // Log cost
+    await LOG_COST({
+      function: 'ai-rom-estimator',
+      estimated_cost_usd: 0.002
+    });
+
     return {
       statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        success: true,
-        data: {
-          estimate: Math.round(baseEstimate),
-          explanation: explanation,
-          breakdown: {
-            square_feet: square_feet,
-            base_rate: baseRate,
-            severity_multiplier: multiplier,
-            calculation: `$${baseRate} × ${square_feet.toLocaleString()} sq ft × ${multiplier}x = $${Math.round(baseEstimate).toLocaleString()}`
-          }
-        }
-      })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ success: true, data: result, error: null })
     };
 
   } catch (error) {
-    console.error('AI ROM Estimator error:', error);
+    await LOG_ERROR('ai_error', {
+      function: 'ai-rom-estimator',
+      message: error.message,
+      stack: error.stack
+    });
+
     return {
       statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: error.message })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-5000', message: error.message }
+      })
     };
   }
 };

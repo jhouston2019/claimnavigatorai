@@ -5,6 +5,7 @@
 
 const { runOpenAI, sanitizeInput, validateRequired } = require('./lib/ai-utils');
 const { createClient } = require('@supabase/supabase-js');
+const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
 exports.handler = async (event) => {
   const headers = {
@@ -70,6 +71,9 @@ exports.handler = async (event) => {
     // Parse request
     const body = JSON.parse(event.body || '{}');
     
+    // Log event
+    await LOG_EVENT('ai_request', 'ai-timeline-analyzer', { payload: body });
+    
     const {
       document_text = '',
       key_dates = {}
@@ -89,6 +93,8 @@ exports.handler = async (event) => {
     for (const [key, value] of Object.entries(key_dates)) {
       if (value) sanitizedDates[key] = sanitizeInput(String(value));
     }
+
+    const startTime = Date.now();
 
     // Build system prompt
     const systemPrompt = `You are an expert insurance claim analyst specializing in deadline identification and timeline analysis. Your role is to:
@@ -153,24 +159,50 @@ Return as JSON array:
       suggestedDeadlines = extractDeadlinesFromText(response);
     }
 
+    const endTime = Date.now();
+    const durationMs = endTime - startTime;
+
+    const result = {
+      suggested_deadlines: suggestedDeadlines,
+      analyzed_at: new Date().toISOString()
+    };
+
+    // Log usage
+    await LOG_USAGE({
+      function: 'ai-timeline-analyzer',
+      duration_ms: durationMs,
+      input_token_estimate: 0,
+      output_token_estimate: 0,
+      success: true
+    });
+
+    // Log cost
+    await LOG_COST({
+      function: 'ai-timeline-analyzer',
+      estimated_cost_usd: 0.002
+    });
+
     return {
       statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        success: true,
-        data: {
-          suggested_deadlines: suggestedDeadlines,
-          analyzed_at: new Date().toISOString()
-        }
-      })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ success: true, data: result, error: null })
     };
 
   } catch (error) {
-    console.error('AI Timeline Analyzer error:', error);
+    await LOG_ERROR('ai_error', {
+      function: 'ai-timeline-analyzer',
+      message: error.message,
+      stack: error.stack
+    });
+
     return {
       statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: error.message })
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-5000', message: error.message }
+      })
     };
   }
 };
