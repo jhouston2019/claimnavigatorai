@@ -204,40 +204,14 @@
   </div>
 
   <script>
-    // Admin email
-    const ADMIN_EMAIL = 'claimnavigatorai@gmail.com';
+    const ADMIN_EMAIL = "claimnavigatorai@gmail.com";
 
-    async function fetchWithAuth(endpoint) {
-      try {
-        const response = await fetch(`/.netlify/functions/monitoring-${endpoint}`, {
-          headers: {
-            'x-admin-email': ADMIN_EMAIL,
-            'Content-Type': 'application/json'
-          }
-        });
-        return await response.json();
-      } catch (error) {
-        return {
-          success: false,
-          error: { message: error.message, code: 'CN-5000' }
-        };
-      }
-    }
-
-    async function fetchWithoutAuth(endpoint) {
-      try {
-        const response = await fetch(`/.netlify/functions/monitoring-${endpoint}`, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        return await response.json();
-      } catch (error) {
-        return {
-          success: false,
-          error: { message: error.message, code: 'CN-5000' }
-        };
-      }
+    function fetchAdmin(url) {
+      return fetch(url, {
+        headers: {
+          "x-admin-email": ADMIN_EMAIL
+        }
+      }).then(res => res.json());
     }
 
     function formatDate(dateString) {
@@ -246,7 +220,7 @@
 
     // Load Errors Table
     async function loadErrors() {
-      const data = await fetchWithAuth('errors-list?limit=10');
+      const data = await fetchAdmin('/.netlify/functions/monitoring-errors-list?limit=10');
       const container = document.getElementById('errors-table');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
@@ -283,7 +257,7 @@
 
     // Load Error Stats
     async function loadErrorStats() {
-      const data = await fetchWithAuth('errors-stats?hours=24');
+      const data = await fetchAdmin('/.netlify/functions/monitoring-errors-stats?hours=24');
       const container = document.getElementById('errors-stats');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
@@ -313,7 +287,7 @@
 
     // Load Usage List
     async function loadUsageList() {
-      const data = await fetchWithAuth('usage-list?limit=10');
+      const data = await fetchAdmin('/.netlify/functions/monitoring-usage-list?limit=10');
       const container = document.getElementById('usage-list');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
@@ -350,7 +324,7 @@
 
     // Load Usage Stats
     async function loadUsageStats() {
-      const data = await fetchWithAuth('usage-stats?hours=24');
+      const data = await fetchAdmin('/.netlify/functions/monitoring-usage-stats?hours=24');
       const container = document.getElementById('usage-stats');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
@@ -373,7 +347,7 @@
 
     // Load Cost List
     async function loadCostList() {
-      const data = await fetchWithAuth('cost-list?limit=10');
+      const data = await fetchAdmin('/.netlify/functions/monitoring-cost-list?limit=10');
       const container = document.getElementById('cost-list');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
@@ -396,7 +370,7 @@
 
     // Load Rate Limit List
     async function loadRateLimitList() {
-      const data = await fetchWithAuth('rate-limit-list?limit=10');
+      const data = await fetchAdmin('/.netlify/functions/monitoring-rate-limit-list?limit=10');
       const container = document.getElementById('rate-limit-list');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
@@ -433,7 +407,7 @@
 
     // Load Events Stream
     async function loadEventsStream() {
-      const data = await fetchWithAuth('events-stream?limit=50');
+      const data = await fetchAdmin('/.netlify/functions/monitoring-events-stream?limit=50');
       const container = document.getElementById('events-stream');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
@@ -454,7 +428,7 @@
 
     // Load Service Health
     async function loadServiceHealth() {
-      const data = await fetchWithoutAuth('service-health');
+      const data = await fetch('/.netlify/functions/monitoring-service-health').then(res => res.json());
       const container = document.getElementById('service-health');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
