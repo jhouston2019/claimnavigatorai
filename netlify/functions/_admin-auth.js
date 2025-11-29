@@ -1,48 +1,32 @@
 /**
- * Admin Authentication Middleware
- * Ensures only the configured admin can access protected monitoring endpoints.
+ * Admin Authentication Middleware (Nuclear Fix)
+ * Ensures admin access without needing browser headers.
  */
 
 const ADMIN_EMAIL = "claimnavigatorai@gmail.com";
 
-module.exports = function requireAdmin(event) {
-  // Netlify always lowercases header keys
+module.exports = function requireAdmin(event, injectedEmail = null) {
   const headers = event.headers || {};
 
-  // Support all reasonable variations to be safe
+  // Accept injected admin email OR header
   const adminHeader =
+    injectedEmail ||
     headers["x-admin-email"] ||
-    headers["X-Admin-Email"] ||
-    headers["X-ADMIN-EMAIL"] ||
     headers["x-admin-email".toLowerCase()];
 
   if (!adminHeader) {
     return {
       authorized: false,
-      error: {
-        code: "CN-2000",
-        message: "Missing admin authentication header"
-      }
+      error: { code: "CN-2000", message: "Missing admin authentication header" }
     };
   }
 
-<<<<<<< HEAD
-  if (adminHeader !== ADMIN_EMAIL) {
+  if (adminHeader.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
     return {
       authorized: false,
-      error: {
-        code: "CN-2001",
-        message: "Unauthorized admin email"
-      }
+      error: { code: "CN-2001", message: "Unauthorized admin email" }
     };
   }
-=======
-  return { authorized: true, error: null };
-};
->>>>>>> 8b00b4d (Fix monitoring system: headers, admin auth, protected routes, dashboard fetch, unified JSON)
 
-  return {
-    authorized: true,
-    error: null
-  };
+  return { authorized: true, error: null };
 };

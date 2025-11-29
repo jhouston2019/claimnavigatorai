@@ -10,9 +10,6 @@
 [[plugins]]
 package = "@netlify/plugin-functions-install-core"
 
-# -----------------------------
-# CORS HEADERS FOR ALL FUNCTIONS (INCLUDING OPTIONS)
-# -----------------------------
 [[headers]]
   for = "/.netlify/functions/*"
   [headers.values]
@@ -20,64 +17,58 @@ package = "@netlify/plugin-functions-install-core"
     Access-Control-Allow-Headers = "Content-Type, Authorization, X-Admin-Email, x-admin-email"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
     Access-Control-Allow-Credentials = "true"
-    Access-Control-Max-Age = "86400"
 
-[[headers]]
-  for = "/.netlify/functions/*"
-  status = 200
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Headers = "Content-Type, Authorization, X-Admin-Email, x-admin-email"
-    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
-    Access-Control-Allow-Credentials = "true"
-    Access-Control-Max-Age = "86400"
-
-# -----------------------------
-# ADMIN CHECK REDIRECT
-# -----------------------------
 [[redirects]]
   from = "/admin/console/check-admin"
   to = "/.netlify/functions/admin-check-admin"
   status = 200
   force = true
 
-# -----------------------------
-# FUNCTION PASSTHROUGH
-# -----------------------------
+[[redirects]]
+  from = "/generate-full-monitoring-data"
+  to = "/.netlify/functions/generate-full-monitoring-data"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/.netlify/functions/*"
   to = "/.netlify/functions/:splat"
   status = 200
   force = true
 
-# -----------------------------
-# STATIC & APP ROUTING
-# -----------------------------
+# keep functions & assets from SPA rewrite
 [[redirects]]
   from = "/app/assets/*"
   to = "/app/assets/:splat"
   status = 200
 
+# Resource Center routing
 [[redirects]]
   from = "/app/resource-center/*"
   to = "/app/resource-center/:splat"
   status = 200
 
+# Document generator routing
 [[redirects]]
   from = "/app/resource-center/document-generator/generate.html"
   to = "/app/resource-center/document-generator/generate.html"
   status = 200
 
+# Advisory routing - specific paths first
 [[redirects]]
   from = "/app/response-center/situational-advisory/*"
   to = "/app/response-center/situational-advisory/index.html"
   status = 200
 
+# API routing
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/gateway"
   status = 200
 
+
+
+# optional SPA fallback for /app (place last)
 [[redirects]]
   from = "/app/*"
   to = "/app/index.html"

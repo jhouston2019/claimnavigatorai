@@ -204,36 +204,13 @@
   </div>
 
   <script>
-    const ADMIN_EMAIL = "claimnavigatorai@gmail.com";
-
-    async function fetchAdmin(url) {
-      try {
-        const response = await fetch(url, {
-          headers: {
-            "x-admin-email": ADMIN_EMAIL,
-            "Content-Type": "application/json"
-          }
-        });
-        return await response.json();
-      } catch (error) {
-        return {
-          success: false,
-          error: {
-            message: error.message || "Failed to fetch",
-            code: "CN-5000"
-          },
-          data: null
-        };
-      }
-    }
-
     function formatDate(dateString) {
       return new Date(dateString).toLocaleString();
     }
 
     // Load Errors Table
     async function loadErrors() {
-      const data = await fetchAdmin('/.netlify/functions/monitoring-errors-list?limit=10');
+      const data = await fetch('/.netlify/functions/monitoring-errors-list?limit=10').then(res => res.json()).catch(() => ({ success: false, error: { message: "Failed to fetch", code: "CN-5000" }, data: null }));
       const container = document.getElementById('errors-table');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
@@ -270,7 +247,7 @@
 
     // Load Error Stats
     async function loadErrorStats() {
-      const data = await fetchAdmin('/.netlify/functions/monitoring-errors-stats?hours=24');
+      const data = await fetch('/.netlify/functions/monitoring-errors-stats?hours=24').then(res => res.json()).catch(() => ({ success: false, error: { message: "Failed to fetch", code: "CN-5000" }, data: null }));
       const container = document.getElementById('errors-stats');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
@@ -300,7 +277,7 @@
 
     // Load Usage List
     async function loadUsageList() {
-      const data = await fetchAdmin('/.netlify/functions/monitoring-usage-list?limit=10');
+      const data = await fetch('/.netlify/functions/monitoring-usage-list?limit=10').then(res => res.json()).catch(() => ({ success: false, error: { message: "Failed to fetch", code: "CN-5000" }, data: null }));
       const container = document.getElementById('usage-list');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
@@ -337,7 +314,7 @@
 
     // Load Usage Stats
     async function loadUsageStats() {
-      const data = await fetchAdmin('/.netlify/functions/monitoring-usage-stats?hours=24');
+      const data = await fetch('/.netlify/functions/monitoring-usage-stats?hours=24').then(res => res.json()).catch(() => ({ success: false, error: { message: "Failed to fetch", code: "CN-5000" }, data: null }));
       const container = document.getElementById('usage-stats');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
@@ -360,7 +337,7 @@
 
     // Load Cost List
     async function loadCostList() {
-      const data = await fetchAdmin('/.netlify/functions/monitoring-cost-list?limit=10');
+      const data = await fetch('/.netlify/functions/monitoring-cost-list?limit=10').then(res => res.json()).catch(() => ({ success: false, error: { message: "Failed to fetch", code: "CN-5000" }, data: null }));
       const container = document.getElementById('cost-list');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
@@ -383,7 +360,7 @@
 
     // Load Rate Limit List
     async function loadRateLimitList() {
-      const data = await fetchAdmin('/.netlify/functions/monitoring-rate-limit-list?limit=10');
+      const data = await fetch('/.netlify/functions/monitoring-rate-limit-list?limit=10').then(res => res.json()).catch(() => ({ success: false, error: { message: "Failed to fetch", code: "CN-5000" }, data: null }));
       const container = document.getElementById('rate-limit-list');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
@@ -420,7 +397,7 @@
 
     // Load Events Stream
     async function loadEventsStream() {
-      const data = await fetchAdmin('/.netlify/functions/monitoring-events-stream?limit=50');
+      const data = await fetch('/.netlify/functions/monitoring-events-stream?limit=50').then(res => res.json()).catch(() => ({ success: false, error: { message: "Failed to fetch", code: "CN-5000" }, data: null }));
       const container = document.getElementById('events-stream');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
@@ -441,7 +418,7 @@
 
     // Load Service Health
     async function loadServiceHealth() {
-      const data = await fetch('/.netlify/functions/monitoring-service-health').then(res => res.json());
+      const data = await fetch('/.netlify/functions/monitoring-service-health').then(res => res.json()).catch(() => ({ success: false, error: { message: "Failed to fetch", code: "CN-5000" }, data: null }));
       const container = document.getElementById('service-health');
       if (!data.success) {
         container.innerHTML = `<div class="error-msg">Error: ${data.error?.message || 'Failed to load'}</div>`;
