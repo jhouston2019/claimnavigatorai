@@ -1,8 +1,9 @@
 module.exports = function requireAdmin(event) {
-  const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
-  const incoming = event.headers['x-admin-email'];
+  const header = event.headers["x-admin-email"] 
+               || event.headers["X-Admin-Email"]
+               || event.headers["X-ADMIN-EMAIL"];
 
-  if (!incoming || incoming !== ADMIN_EMAIL) {
+  if (!header || header !== "claimnavigatorai@gmail.com") {
     return {
       authorized: false,
       error: { message: "Unauthorized", code: "CN-2000" }
