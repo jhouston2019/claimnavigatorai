@@ -207,9 +207,24 @@
     const ADMIN_EMAIL = "claimnavigatorai@gmail.com";
 
     async function fetchAdmin(url) {
-      return fetch(url, { headers: { "x-admin-email": ADMIN_EMAIL } })
-        .then(res => res.json())
-        .catch(() => ({ success: false }));
+      try {
+        const response = await fetch(url, {
+          headers: {
+            "x-admin-email": ADMIN_EMAIL,
+            "Content-Type": "application/json"
+          }
+        });
+        return await response.json();
+      } catch (error) {
+        return {
+          success: false,
+          error: {
+            message: error.message || "Failed to fetch",
+            code: "CN-5000"
+          },
+          data: null
+        };
+      }
     }
 
     function formatDate(dateString) {
