@@ -52,20 +52,34 @@ exports.handler = async () => {
 
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({
         success: true,
-        message: 'Mock monitoring data inserted successfully!'
+        data: {
+          message: 'Mock monitoring data inserted successfully!',
+          timestamp: timestamp
+        },
+        error: null
       })
     };
 
   } catch (error) {
     return {
-      statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
+      statusCode: 200,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({
         success: false,
-        error: error.message
+        data: null,
+        error: {
+          message: error.message || 'Failed to generate mock data',
+          code: 'CN-5000'
+        }
       })
     };
   }

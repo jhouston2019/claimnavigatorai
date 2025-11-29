@@ -26,6 +26,7 @@ module.exports = function requireAdmin(event) {
     };
   }
 
+<<<<<<< HEAD
   if (adminHeader !== ADMIN_EMAIL) {
     return {
       authorized: false,
@@ -35,6 +36,10 @@ module.exports = function requireAdmin(event) {
       }
     };
   }
+=======
+  return { authorized: true, error: null };
+};
+>>>>>>> 8b00b4d (Fix monitoring system: headers, admin auth, protected routes, dashboard fetch, unified JSON)
 
   return {
     authorized: true,
