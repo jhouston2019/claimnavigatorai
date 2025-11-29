@@ -580,21 +580,37 @@ h3.column-title,
 
 /* Center specific tool grids with fewer cards while keeping default card sizing */
 .tool-grid-centered {
-  display: grid !important;
-  gap: 12px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
   justify-content: center !important;
+  gap: 12px !important;
 }
 
-/* Use 2 columns on tablet/desktop so small groups of cards appear centered */
-@media (min-width: 769px) {
-  .tool-grid-centered {
-    grid-template-columns: repeat(2, 1fr) !important;
+/* Match 4-column grid card width on large screens */
+@media (min-width: 1201px) {
+  .tool-grid-centered .tool-card {
+    flex: 0 0 calc((100% - (3 * 12px)) / 4) !important;
   }
 }
 
+/* Match 3-column grid card width on medium screens */
+@media (max-width: 1200px) and (min-width: 769px) {
+  .tool-grid-centered .tool-card {
+    flex: 0 0 calc((100% - (2 * 12px)) / 3) !important;
+  }
+}
+
+/* Match 2-column grid card width on small tablets */
+@media (max-width: 768px) and (min-width: 481px) {
+  .tool-grid-centered .tool-card {
+    flex: 0 0 calc((100% - 12px) / 2) !important;
+  }
+}
+
+/* Single column on mobile */
 @media (max-width: 480px) {
-  .tool-grid-centered {
-    grid-template-columns: 1fr !important;
+  .tool-grid-centered .tool-card {
+    flex: 0 0 100% !important;
   }
 }
 
