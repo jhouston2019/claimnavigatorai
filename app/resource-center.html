@@ -578,36 +578,35 @@ h3.column-title,
   }
 }
 
-/* Center specific tool grids with fewer cards */
+/* Center specific tool grids with fewer cards while keeping default card sizing */
 .tool-grid-centered {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: center !important;
+  display: grid !important;
   gap: 12px !important;
+  justify-content: center !important;
 }
 
-.tool-grid-centered .tool-card {
-  flex: 0 1 calc(25% - 12px) !important;
-  min-width: 250px !important;
-  max-width: 300px !important;
-}
-
-@media (max-width: 1200px) {
-  .tool-grid-centered .tool-card {
-    flex: 0 1 calc(33.333% - 12px) !important;
+/* Use 3 columns on desktop so cards stay same size but visually centered */
+@media (min-width: 1201px) {
+  .tool-grid-centered {
+    grid-template-columns: repeat(3, 1fr) !important;
   }
 }
 
-@media (max-width: 768px) {
-  .tool-grid-centered .tool-card {
-    flex: 0 1 calc(50% - 12px) !important;
+@media (max-width: 1200px) and (min-width: 769px) {
+  .tool-grid-centered {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) and (min-width: 481px) {
+  .tool-grid-centered {
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 }
 
 @media (max-width: 480px) {
-  .tool-grid-centered .tool-card {
-    flex: 0 1 100% !important;
-    max-width: 100% !important;
+  .tool-grid-centered {
+    grid-template-columns: 1fr !important;
   }
 }
 
