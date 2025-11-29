@@ -4,41 +4,81 @@ const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
 exports.handler = async (event) => {
   const headers = {
+    'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Content-Type': 'application/json'
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS'
   };
 
-  // Handle preflight requests
   if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers,
-      body: ''
-    };
+    return { statusCode: 200, headers, body: '' };
   }
 
-  if (event.httpMethod !== "POST") {
+  if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
       headers,
-      body: JSON.stringify({ success: false, data: null, error: { code: 'CN-4000', message: "Method not allowed" } })
+      body: JSON.stringify({ success: false, data: null, error: { code: 'CN-4000', message: 'Method not allowed' } })
     };
   }
 
   try {
+    // Auth validation
+    const authHeader = event.headers.authorization || event.headers.Authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({ success: false, data: null, error: { code: 'CN-2000', message: 'Authorization required' } })
+      };
+    }
+
+    const token = authHeader.split(' ')[1];
     const supabase = createClient(
       process.env.SUPABASE_URL,
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    if (userError || !user) {
+      return {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({ success: false, data: null, error: { code: 'CN-2000', message: 'Invalid token' } })
+      };
+    }
+
+    // Payment validation
+    const { data: payment } = await supabase
+      .from('payments')
+      .select('status')
+      .eq('user_id', user.id)
+      .eq('status', 'completed')
+      .single();
+
+    if (!payment) {
+      return {
+        statusCode: 403,
+        headers,
+        body: JSON.stringify({ success: false, data: null, error: { code: 'CN-3000', message: 'Payment required' } })
+      };
+    }
+
+    // Unified body parsing
+    let body;
+    try {
+      body = JSON.parse(event.body || '{}');
+    } catch (err) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ success: false, data: null, error: { code: 'CN-1000', message: 'Invalid JSON body' } })
+      };
+    }
+
     // Handle multipart form data for file uploads
     let mode, claim, letter, document;
     let bodyData = {};
-    
-    // For Netlify functions, we'll parse from event.body
-    const body = JSON.parse(event.body || '{}');
     mode = body.mode;
     claim = body.claim;
     letter = body.letter;

@@ -2,15 +2,9 @@ const { createClient } = require('@supabase/supabase-js');
 const OpenAI = require('openai');
 const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-exports.handler = async (event, context) => {
-  // CORS headers
+exports.handler = async (event) => {
   const headers = {
+    'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Allow-Methods': 'POST, OPTIONS'
@@ -20,17 +14,68 @@ exports.handler = async (event, context) => {
     return { statusCode: 200, headers, body: '' };
   }
 
-  const user = context.clientContext && context.clientContext.user;
-  if (!user) {
-    return { 
-      statusCode: 401, 
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
       headers,
-      body: JSON.stringify({ error: 'Unauthorized' }) 
+      body: JSON.stringify({ success: false, data: null, error: { code: 'CN-4000', message: 'Method not allowed' } })
     };
   }
 
   try {
-    const body = JSON.parse(event.body || '{}');
+    // Auth validation
+    const authHeader = event.headers.authorization || event.headers.Authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({ success: false, data: null, error: { code: 'CN-2000', message: 'Authorization required' } })
+      };
+    }
+
+    const token = authHeader.split(' ')[1];
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    if (userError || !user) {
+      return {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({ success: false, data: null, error: { code: 'CN-2000', message: 'Invalid token' } })
+      };
+    }
+
+    // Payment validation
+    const { data: payment } = await supabase
+      .from('payments')
+      .select('status')
+      .eq('user_id', user.id)
+      .eq('status', 'completed')
+      .single();
+
+    if (!payment) {
+      return {
+        statusCode: 403,
+        headers,
+        body: JSON.stringify({ success: false, data: null, error: { code: 'CN-3000', message: 'Payment required' } })
+      };
+    }
+
+    // Unified body parsing
+    let body;
+    try {
+      body = JSON.parse(event.body || '{}');
+    } catch (err) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ success: false, data: null, error: { code: 'CN-1000', message: 'Invalid JSON body' } })
+      };
+    }
+
     const { situation, claimType, specificQuestions } = body;
     
     // Log event
@@ -40,11 +85,13 @@ exports.handler = async (event, context) => {
       return { 
         statusCode: 400, 
         headers,
-        body: JSON.stringify({ error: 'Missing situation description' }) 
+        body: JSON.stringify({ success: false, data: null, error: { code: 'CN-1000', message: 'Missing situation description' } })
       };
     }
 
     const startTime = Date.now();
+
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
     // Generate AI advisory response
     const ai = await openai.chat.completions.create({
@@ -96,7 +143,7 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers,
       body: JSON.stringify({ success: true, data: result, error: null })
     };
   } catch (error) {
@@ -108,7 +155,7 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 500,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers,
       body: JSON.stringify({
         success: false,
         data: null,

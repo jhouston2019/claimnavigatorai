@@ -8,6 +8,7 @@ const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
 
 exports.handler = async (event) => {
   const headers = {
+    'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Allow-Methods': 'POST, OPTIONS'
@@ -21,7 +22,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 405,
       headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
+      body: JSON.stringify({ success: false, data: null, error: { code: 'CN-4000', message: 'Method not allowed' } })
     };
   }
 
@@ -31,7 +32,7 @@ exports.handler = async (event) => {
       return {
         statusCode: 401,
         headers,
-        body: JSON.stringify({ error: 'Authorization required' })
+        body: JSON.stringify({ success: false, data: null, error: { code: 'CN-2000', message: 'Authorization required' } })
       };
     }
 
@@ -46,7 +47,7 @@ exports.handler = async (event) => {
       return {
         statusCode: 401,
         headers,
-        body: JSON.stringify({ error: 'Invalid token' })
+        body: JSON.stringify({ success: false, data: null, error: { code: 'CN-2000', message: 'Invalid token' } })
       };
     }
 
@@ -61,11 +62,21 @@ exports.handler = async (event) => {
       return {
         statusCode: 403,
         headers,
-        body: JSON.stringify({ error: 'Payment required' })
+        body: JSON.stringify({ success: false, data: null, error: { code: 'CN-3000', message: 'Payment required' } })
       };
     }
 
-    const body = JSON.parse(event.body || '{}');
+    // Unified body parsing
+    let body;
+    try {
+      body = JSON.parse(event.body || '{}');
+    } catch (err) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ success: false, data: null, error: { code: 'CN-1000', message: 'Invalid JSON body' } })
+      };
+    }
     
     // Log event
     await LOG_EVENT('ai_request', 'ai-negotiation-advisor', { payload: body });
@@ -140,7 +151,7 @@ Format as HTML.`;
 
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers,
       body: JSON.stringify({ success: true, data: result, error: null })
     };
 
@@ -153,7 +164,7 @@ Format as HTML.`;
 
     return {
       statusCode: 500,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers,
       body: JSON.stringify({
         success: false,
         data: null,
