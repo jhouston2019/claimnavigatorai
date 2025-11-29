@@ -293,7 +293,7 @@ a:hover {
       <!-- SECTION 2: Strategy & Knowledge -->
       <div class="content-column">
         <h3 class="column-title">Strategy & Knowledge</h3>
-        <div class="tool-grid">
+        <div class="tool-grid tool-grid-centered">
           <a class="tool-card" href="/app/resource-center/insurance-company-tactics.html">
             <span class="badge">Awareness</span>
             <h4>Insurance Company Tactics</h4>
@@ -409,7 +409,7 @@ a:hover {
       <!-- SECTION 5: Advanced Tools -->
       <div class="content-column">
         <h3 class="column-title">Advanced Tools</h3>
-        <div class="tool-grid">
+        <div class="tool-grid tool-grid-centered">
           <a class="tool-card" href="/app/resource-center/advanced-tools/advanced-tools.html">
             <span class="badge">Advanced</span>
             <h4>Advanced Tools Suite</h4>
@@ -575,6 +575,39 @@ h3.column-title,
 @media (max-width: 480px) {
   .tool-grid {
     grid-template-columns: 1fr !important;
+  }
+}
+
+/* Center specific tool grids with fewer cards */
+.tool-grid-centered {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 12px !important;
+}
+
+.tool-grid-centered .tool-card {
+  flex: 0 1 calc(25% - 12px) !important;
+  min-width: 250px !important;
+  max-width: 300px !important;
+}
+
+@media (max-width: 1200px) {
+  .tool-grid-centered .tool-card {
+    flex: 0 1 calc(33.333% - 12px) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .tool-grid-centered .tool-card {
+    flex: 0 1 calc(50% - 12px) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .tool-grid-centered .tool-card {
+    flex: 0 1 100% !important;
+    max-width: 100% !important;
   }
 }
 
