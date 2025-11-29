@@ -43,7 +43,7 @@ exports.handler = async (event) => {
 
     // Get error counts by function
     const { data: byFunction } = await supabase
-      .from('system_errors')
+      .from('audit_log')
       .select('function_name')
       .gte('created_at', since);
 
@@ -57,7 +57,7 @@ exports.handler = async (event) => {
 
     // Get error counts by code
     const { data: byCode } = await supabase
-      .from('system_errors')
+      .from('audit_log')
       .select('error_code')
       .gte('created_at', since);
 
@@ -71,7 +71,7 @@ exports.handler = async (event) => {
 
     // Total errors
     const { count: totalErrors } = await supabase
-      .from('system_errors')
+      .from('audit_log')
       .select('*', { count: 'exact', head: true })
       .gte('created_at', since);
 

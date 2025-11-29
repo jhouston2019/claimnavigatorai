@@ -47,7 +47,7 @@ exports.handler = async (event) => {
     const offset = parseInt(params.offset || '0');
 
     let query = supabase
-      .from('system_errors')
+      .from('audit_log')
       .select('*', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
