@@ -1,6 +1,7 @@
-import { json, readBody, openaiChat } from './utils-helper.js';
-export default async (req)=> {
-  const body = await readBody(req);
+const { json, readBody, openaiChat } = require('./utils-helper.js');
+
+exports.handler = async (event) => {
+  const body = JSON.parse(event.body || '{}');
   const text = body.inputText || '';
   const lang = body.language || 'en';
   
@@ -37,6 +38,10 @@ Document Type: AI RESPONSE
 `;
   
   const sys = "You are ClaimNavigatorAI. Draft clear, assertive claim communications. Keep output HTML-ready. ALWAYS start your response with the claim information header provided.";
-  const { content } = await openaiChat(sys, `Language: ${lang}\n\nClaim Information Header:\n${claimHeader}\n\nTask:\n${text}`);
-  return json(200, { response: content });
-}
+  const { content } = await openaiChat([{role:'system',content:sys},{role:'user',content:`Language: ${lang}\n\nClaim Information Header:\n${claimHeader}\n\nTask:\n${text}`}]);
+  return {
+    statusCode: 200,
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+    body: JSON.stringify({ success: true, data: { response: content }, error: null })
+  };
+};

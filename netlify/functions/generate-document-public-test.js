@@ -1,4 +1,4 @@
-export const handler = async (event) => {
+exports.handler = async (event) => {
   return {
     statusCode: 200,
     headers: {
@@ -7,7 +7,8 @@ export const handler = async (event) => {
     },
     body: JSON.stringify({
       success: true,
-      message: "generate-document-public function is online and responding.",
+      data: { message: "generate-document-public function is online and responding." },
+      error: null,
     }),
   };
 };

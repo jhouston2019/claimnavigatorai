@@ -1,1 +1,2 @@
-import handler from './generate-response.js'; export default handler;
+const handler = require('./generate-response.js');
+exports.handler = handler.handler || handler.default || handler;

@@ -1,6 +1,6 @@
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+const { PDFDocument, StandardFonts, rgb } = require('pdf-lib');
 
-export async function handler(event) {
+exports.handler = async (event) => {
   // Handle CORS
   if (event.httpMethod === 'OPTIONS') {
     return {
@@ -165,11 +165,12 @@ export async function handler(event) {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ 
-        error: 'PDF generation failed',
-        details: error.message
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-5000', message: error.message || 'PDF generation failed' }
       })
     };
   }
-}
+};
 

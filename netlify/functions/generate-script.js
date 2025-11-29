@@ -1,6 +1,6 @@
-import OpenAI from "openai";
+const OpenAI = require('openai');
 
-export const handler = async (event) => {
+exports.handler = async (event) => {
   try {
     const {
       name,
@@ -63,14 +63,19 @@ and end with a courteous request for timely review or resolution.
 
     return {
       statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ script }),
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({ success: true, data: { script }, error: null }),
     };
   } catch (error) {
     console.error("Error generating negotiation script:", error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Failed to generate negotiation script." }),
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-5000', message: error.message || "Failed to generate negotiation script." }
+      }),
     };
   }
 };

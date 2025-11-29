@@ -1,26 +1,37 @@
-import OpenAI from "openai";
+const OpenAI = require('openai');
 
-export default async function handler(req, res) {
-    // Set CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+exports.handler = async (event) => {
+    const headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Content-Type': 'application/json'
+    };
 
     // Handle preflight requests
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
+    if (event.httpMethod === 'OPTIONS') {
+        return { statusCode: 200, headers, body: '' };
     }
 
     // Only allow POST requests
-    if (req.method !== 'POST') {
-        return res.status(405).json({ ok: false, error: 'Method not allowed' });
+    if (event.httpMethod !== 'POST') {
+        return {
+            statusCode: 405,
+            headers,
+            body: JSON.stringify({ success: false, data: null, error: { code: 'CN-4000', message: 'Method not allowed' } })
+        };
     }
 
     try {
-        const { module, inputs } = req.body;
+        const body = JSON.parse(event.body || '{}');
+        const { module, inputs } = body;
 
         if (!module || !inputs) {
-            return res.status(400).json({ ok: false, error: 'Missing module or inputs' });
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ success: false, data: null, error: { code: 'CN-1000', message: 'Missing module or inputs' } })
+            };
         }
 
         const client = new OpenAI({
@@ -60,16 +71,25 @@ export default async function handler(req, res) {
             </div>
         `;
 
-        return res.status(200).json({ ok: true, html });
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({ success: true, data: { html }, error: null })
+        };
 
     } catch (error) {
         console.error('Error in claim-analysis function:', error);
-        return res.status(500).json({ 
-            ok: false, 
-            error: error.message || 'Internal server error' 
-        });
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({
+                success: false,
+                data: null,
+                error: { code: 'CN-5000', message: error.message || 'Internal server error' }
+            })
+        };
     }
-}
+};
 
 function buildPrompt(module, inputs) {
     switch (module) {

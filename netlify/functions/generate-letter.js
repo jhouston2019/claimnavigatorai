@@ -1,8 +1,8 @@
-import OpenAI from "openai";
-import fs from "fs";
-import path from "path";
+const OpenAI = require('openai');
+const fs = require('fs');
+const path = require('path');
 
-export async function handler(event) {
+exports.handler = async (event) => {
   // Handle CORS preflight requests
   if (event.httpMethod === 'OPTIONS') {
     return {
@@ -61,10 +61,12 @@ export async function handler(event) {
 
     // Load template
     const fname = fileMap[documentType] || `${documentType.replace(/\s+/g, '')}.txt`;
-    const templatePath = path.resolve('assets/templates/letters', fname);
-    
+    // For Netlify functions, templates should be in a data directory or passed in
+    // Since we can't access filesystem easily, use a fallback template
     let template = '';
     try {
+      // Try to load from a relative path (may not work in Netlify)
+      const templatePath = path.join(__dirname, '../../assets/templates/letters', fname);
       template = fs.readFileSync(templatePath, 'utf8');
     } catch (error) {
       console.error('Template not found:', templatePath);
@@ -164,10 +166,14 @@ Return the complete, customized letter text.`;
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ 
-          text: aiText,
-          mode: 'ai',
-          documentType: documentType
+        body: JSON.stringify({
+          success: true,
+          data: {
+            text: aiText,
+            mode: 'ai',
+            documentType: documentType
+          },
+          error: null
         })
       };
     }
@@ -179,10 +185,14 @@ Return the complete, customized letter text.`;
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ 
-        text: filledTemplate,
-        mode: 'standard',
-        documentType: documentType
+      body: JSON.stringify({
+        success: true,
+        data: {
+          text: filledTemplate,
+          mode: 'standard',
+          documentType: documentType
+        },
+        error: null
       })
     };
 
@@ -195,10 +205,11 @@ Return the complete, customized letter text.`;
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ 
-        error: 'Failed to generate letter',
-        details: error.message 
+      body: JSON.stringify({
+        success: false,
+        data: null,
+        error: { code: 'CN-5000', message: error.message || 'Failed to generate letter' }
       })
     };
   }
-}
+};

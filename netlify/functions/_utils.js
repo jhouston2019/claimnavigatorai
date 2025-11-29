@@ -1,7 +1,7 @@
-export const json = (status, data) => new Response(JSON.stringify(data), { status, headers:{'Content-Type':'application/json'}});
-export function readBody(req){return req.json().catch(()=> ({}));}
-export function ensureKey() { return process.env.OPENAI_API_KEY; }
-export async function openaiChat(system, user){
+const json = (status, data) => new Response(JSON.stringify(data), { status, headers:{'Content-Type':'application/json'}});
+function readBody(req){return req.json().catch(()=> ({}));}
+function ensureKey() { return process.env.OPENAI_API_KEY; }
+async function openaiChat(system, user){
   const key=process.env.OPENAI_API_KEY;
   if(!key) return { demo:true, content:`(demo) ${user.slice(0,200)}` };
   const r = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -20,7 +20,7 @@ export async function openaiChat(system, user){
  * @param {string} source - Source of event
  * @param {object} payload - Event payload
  */
-export async function LOG_EVENT(eventType, source, payload = {}) {
+async function LOG_EVENT(eventType, source, payload = {}) {
   try {
     const { createClient } = require('@supabase/supabase-js');
     const supabase = createClient(
@@ -123,8 +123,12 @@ async function LOG_COST(costData = {}) {
   }
 }
 
-// CommonJS exports for require() compatibility
+// CommonJS exports
 module.exports = {
+  json,
+  readBody,
+  ensureKey,
+  openaiChat,
   LOG_EVENT: async (eventType, source, payload = {}) => {
     try {
       const { createClient } = require('@supabase/supabase-js');

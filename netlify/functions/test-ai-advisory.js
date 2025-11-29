@@ -1,4 +1,4 @@
-export default async (event) => {
+exports.handler = async (event) => {
   // CORS headers
   const headers = {
     'Access-Control-Allow-Origin': '*',
