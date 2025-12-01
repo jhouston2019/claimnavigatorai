@@ -266,3 +266,4 @@ window.applyFilters = function() {
     loadLogs();
 };
 
+

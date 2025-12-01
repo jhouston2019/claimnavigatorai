@@ -541,3 +541,4 @@ function updateGlobalAlertBadge() {
 // Export function for use by other modules
 window.updateComplianceAlertBadge = updateGlobalAlertBadge;
 
+

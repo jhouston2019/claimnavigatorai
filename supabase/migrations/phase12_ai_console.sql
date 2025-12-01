@@ -242,3 +242,4 @@ CREATE POLICY "system can insert change log"
 -- Migration complete
 -- All tables created with proper indexes, RLS policies, and constraints
 
+

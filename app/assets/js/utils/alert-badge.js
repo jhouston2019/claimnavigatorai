@@ -130,3 +130,4 @@ if (document.readyState === 'loading') {
 window.initComplianceAlertBadge = initAlertBadge;
 window.updateComplianceAlertBadge = updateAlertBadge;
 
+

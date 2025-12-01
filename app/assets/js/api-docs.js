@@ -9,3 +9,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // For now, just display documentation
 });
 
+

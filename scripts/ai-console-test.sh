@@ -63,3 +63,4 @@ echo "3. Run: bash scripts/ai-console-test.sh"
 echo ""
 echo "Note: Install jq for formatted JSON output: brew install jq (Mac) or apt-get install jq (Linux)"
 
+

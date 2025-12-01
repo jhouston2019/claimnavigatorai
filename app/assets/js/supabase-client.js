@@ -74,3 +74,4 @@ export async function getCurrentUser() {
 export default getSupabaseClient;
 
 
+

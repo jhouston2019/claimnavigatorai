@@ -320,3 +320,4 @@ class ClaimNavigator:
         
         return self._request('checklist/generate', 'POST', params)
 
+

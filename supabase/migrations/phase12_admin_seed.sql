@@ -23,3 +23,4 @@ ON CONFLICT (user_id) DO NOTHING;
 -- INSERT INTO ai_admins (user_id, email, role) VALUES (...);
 -- Or through the Supabase dashboard SQL editor
 
+

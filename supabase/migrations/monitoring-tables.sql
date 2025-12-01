@@ -55,3 +55,4 @@ create index if not exists idx_rate_limit_logs_created_at on rate_limit_logs(cre
 create index if not exists idx_api_usage_logs_created_at on api_usage_logs(created_at);
 create index if not exists idx_ai_cost_tracking_created_at on ai_cost_tracking(created_at);
 
+

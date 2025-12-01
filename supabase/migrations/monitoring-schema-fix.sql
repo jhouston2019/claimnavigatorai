@@ -36,3 +36,4 @@ ALTER TABLE system_events
 ADD COLUMN IF NOT EXISTS created_at timestamptz DEFAULT now();
 
 
+

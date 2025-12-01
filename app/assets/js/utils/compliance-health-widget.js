@@ -263,3 +263,4 @@ if (!document.getElementById('compliance-health-widget-styles')) {
 // Export for global use
 window.renderComplianceHealthWidget = renderComplianceHealthWidget;
 
+
