@@ -1,0 +1,222 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Partner Portal • ClaimNavigatorAI</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+    <script src="/app/assets/js/org.js"></script>
+<style>
+body.partner-portal-page {
+  background: url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+body.partner-portal-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 10, 35, 0.56);
+  z-index: -1;
+}
+
+.partner-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.partner-section {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.partner-section h1 {
+  color: #ffffff !important;
+  margin: 0 0 1rem 0;
+  font-size: 2.5rem;
+}
+
+.partner-section h2 {
+  color: #ffffff !important;
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+}
+
+.partner-section p {
+  color: #dbeafe !important;
+  margin: 0 0 1.5rem 0;
+}
+
+.partner-id-box {
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.partner-id-box code {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  color: #38bdf8 !important;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.partner-account-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  margin-bottom: 8px;
+  color: #ffffff !important;
+}
+
+.partner-account-row span {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.partner-account-row .plan-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+}
+</style>
+</head>
+<body class="resource-center partner-portal-page">
+<header class="header">
+  <div class="bar container">
+    <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
+    <nav class="nav">
+      <a href="/app/index.html">Home</a>
+      <span>></span>
+      <span>Partner Portal</span>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="partner-container">
+    <div class="partner-section">
+      <h1>Partner & Reseller Portal</h1>
+      <p>Manage your referrals, OEM clients, and API usage.</p>
+    </div>
+
+    <div class="partner-section">
+      <h2>Partner ID</h2>
+      <div class="partner-id-box">
+        <code id="partner-id"></code>
+      </div>
+      <p style="font-size: 14px; opacity: 0.8;">Use this ID in your referral links: <code>?partner=YOUR_ID</code></p>
+    </div>
+
+    <div class="partner-section">
+      <h2>Referred Accounts</h2>
+      <div id="partner-accounts"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+const PARTNER_KEY = "cn_partner_id";
+const PARTNER_ACCOUNTS_KEY = "cn_partner_accounts";
+
+function getPartnerId() {
+  let id = localStorage.getItem(PARTNER_KEY);
+  if (!id) {
+    id = "partner_" + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem(PARTNER_KEY, id);
+  }
+  return id;
+}
+
+function getPartnerAccounts() {
+  return JSON.parse(localStorage.getItem(PARTNER_ACCOUNTS_KEY) || "[]");
+}
+
+function addPartnerAccount(orgName, plan) {
+  const accounts = getPartnerAccounts();
+  accounts.push({
+    orgName,
+    plan,
+    created: new Date().toLocaleDateString()
+  });
+  localStorage.setItem(PARTNER_ACCOUNTS_KEY, JSON.stringify(accounts));
+}
+
+function renderPartner() {
+  document.getElementById("partner-id").textContent = getPartnerId();
+  
+  const accounts = getPartnerAccounts();
+  const list = document.getElementById("partner-accounts");
+  
+  if (!accounts.length) {
+    list.innerHTML = "<p style='color: #dbeafe; opacity: 0.7;'>No referred accounts yet. Share your partner link to start earning referrals.</p>";
+    return;
+  }
+  
+  list.innerHTML = accounts.map(a => `
+    <div class="partner-account-row">
+      <span>${a.orgName}</span>
+      <span class="plan-badge">${a.plan}</span>
+      <span style="font-size: 12px; opacity: 0.7;">${a.created}</span>
+    </div>
+  `).join("");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderPartner();
+  
+  // Check if org was created with partner referral
+  if (window.CNOrg) {
+    const org = CNOrg.getOrg();
+    const params = new URLSearchParams(window.location.search);
+    const partnerId = params.get("partner");
+    
+    if (partnerId && org && org.name) {
+      const accounts = getPartnerAccounts();
+      const existing = accounts.find(a => a.orgName === org.name);
+      if (!existing) {
+        addPartnerAccount(org.name, org.plan || "enterprise");
+        renderPartner();
+      }
+    }
+  }
+  
+  if (window.CNAnalytics) {
+    CNAnalytics.log("partner_portal_viewed");
+  }
+});
+</script>
+
+<style id="final-white-text-enforcement">
+body.partner-portal-page,
+body.partner-portal-page * {
+  color: #ffffff !important;
+}
+
+body.partner-portal-page a {
+  color: #dbeafe !important;
+}
+
+body.partner-portal-page a:hover {
+  color: #93c5fd !important;
+}
+</style>
+
+</body></html>
+

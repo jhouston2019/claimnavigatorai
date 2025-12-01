@@ -1,0 +1,192 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Organization Activity • ClaimNavigatorAI</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+    <script src="/app/assets/js/user-tier.js"></script>
+    <script src="/app/assets/js/org.js"></script>
+    <script src="/app/assets/js/analytics.js"></script>
+<style>
+body.enterprise-activity-page {
+  background: url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+body.enterprise-activity-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 10, 35, 0.56);
+  z-index: -1;
+}
+
+.activity-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.activity-header {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.activity-header h1 {
+  color: #ffffff !important;
+  margin: 0 0 0.5rem 0;
+}
+
+.activity-header p {
+  color: #dbeafe !important;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.activity-feed {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  padding: 1.5rem;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.activity-item {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border-left: 3px solid rgba(56, 189, 248, 0.5);
+}
+
+.activity-item strong {
+  color: #38bdf8 !important;
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.activity-item span {
+  color: #dbeafe !important;
+  font-size: 12px;
+  opacity: 0.7;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.activity-item pre {
+  color: #dbeafe !important;
+  font-size: 12px;
+  margin: 8px 0 0 0;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.empty-feed {
+  text-align: center;
+  padding: 3rem;
+  color: #dbeafe !important;
+  opacity: 0.7;
+}
+</style>
+</head>
+<body class="resource-center enterprise-activity-page">
+<header class="header">
+  <div class="bar container">
+    <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
+    <nav class="nav">
+      <a href="/app/index.html">Home</a>
+      <span>></span>
+      <a href="/app/enterprise-dashboard.html">Enterprise Dashboard</a>
+      <span>></span>
+      <span>Activity Feed</span>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="activity-container">
+    <div class="activity-header">
+      <h1>Organization Activity Feed</h1>
+      <p>Recent events and actions across your organization</p>
+    </div>
+    
+    <div class="activity-feed" id="activity-feed">
+      <!-- Activity items will be rendered here -->
+    </div>
+  </div>
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Check if user is enterprise
+  if (window.CNUserTier && !CNUserTier.isEnterprise()) {
+    alert("Activity feed is available for Enterprise tier only.");
+    location.href = "/app/upgrade.html";
+    return;
+  }
+  
+  const events = JSON.parse(localStorage.getItem("cn_events") || "[]");
+  const feedEl = document.getElementById("activity-feed");
+  
+  if (events.length === 0) {
+    feedEl.innerHTML = '<div class="empty-feed">No activity recorded yet. Start using ClaimNavigator to see events here.</div>';
+    return;
+  }
+  
+  // Get last 50 events, reverse to show newest first
+  const recentEvents = events.slice(-50).reverse();
+  
+  const feed = recentEvents.map(e => {
+    const date = new Date(e.ts);
+    const dateStr = date.toLocaleString();
+    
+    return `
+      <div class="activity-item">
+        <strong>${e.event}</strong>
+        <span>${dateStr}</span>
+        <pre>${JSON.stringify(e.data || {}, null, 2)}</pre>
+      </div>
+    `;
+  }).join("");
+  
+  feedEl.innerHTML = feed;
+  
+  if (window.CNAnalytics) {
+    CNAnalytics.log("activity_feed_viewed");
+  }
+});
+</script>
+
+<style id="final-white-text-enforcement">
+body.enterprise-activity-page,
+body.enterprise-activity-page * {
+  color: #ffffff !important;
+}
+
+body.enterprise-activity-page a {
+  color: #dbeafe !important;
+}
+
+body.enterprise-activity-page a:hover {
+  color: #93c5fd !important;
+}
+</style>
+
+</body></html>
+

@@ -1,0 +1,264 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ROI Calculator • ClaimNavigatorAI</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+    <script src="/app/assets/js/analytics.js"></script>
+    <script src="/app/assets/js/demo-mode.js"></script>
+<style>
+body.roi-calculator-page {
+  background: url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+body.roi-calculator-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 10, 35, 0.56);
+  z-index: -1;
+}
+
+.roi-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.roi-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.roi-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 0.5rem 0;
+}
+
+.roi-header p {
+  font-size: 1.125rem;
+  color: #dbeafe !important;
+  margin: 0;
+}
+
+.roi-box {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.roi-box label {
+  display: block;
+  color: #ffffff !important;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 1.125rem;
+}
+
+.roi-box input {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff !important;
+  font-size: 1.125rem;
+  margin-bottom: 1.5rem;
+}
+
+.roi-box input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.roi-box .btn-primary {
+  width: 100%;
+  padding: 0.875rem;
+  font-size: 1.125rem;
+  margin-bottom: 2rem;
+}
+
+.roi-result-box {
+  background: rgba(56, 189, 248, 0.15);
+  border: 2px solid rgba(56, 189, 248, 0.3);
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.roi-result-box h3 {
+  color: #ffffff !important;
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+}
+
+.roi-result-box #roi-result {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #38bdf8 !important;
+  margin: 0;
+}
+
+.roi-breakdown {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem;
+}
+
+.roi-breakdown h4 {
+  color: #ffffff !important;
+  margin: 0 0 1rem 0;
+}
+
+.roi-breakdown ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.roi-breakdown li {
+  color: #dbeafe !important;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.25rem;
+}
+</style>
+</head>
+<body class="resource-center roi-calculator-page">
+<header class="header">
+  <div class="bar container">
+    <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
+    <nav class="nav">
+      <a href="/app/index.html">Home</a>
+      <span>></span>
+      <a href="/app/resource-center.html">Resource Center</a>
+      <span>></span>
+      <span>ROI Calculator</span>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="roi-container">
+    <div class="roi-header">
+      <h1>ROI Calculator</h1>
+      <p>Calculate the potential recovery value using ClaimNavigatorAI</p>
+    </div>
+
+    <div class="roi-box">
+      <label for="claim-value">Estimated Claim Value ($)</label>
+      <input 
+        id="claim-value" 
+        type="number" 
+        placeholder="e.g. 75000"
+        min="0"
+        step="1000"
+      >
+      <button class="btn-primary" onclick="calcROI()">Calculate ROI</button>
+      
+      <div class="roi-result-box" id="roi-result-box" style="display: none;">
+        <h3>Potential Recovery</h3>
+        <p id="roi-result">$0</p>
+      </div>
+      
+      <div class="roi-breakdown" id="roi-breakdown" style="display: none;">
+        <h4>Calculation Breakdown</h4>
+        <ul id="breakdown-list"></ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+function calcROI() {
+  const claimValue = Number(document.getElementById("claim-value").value);
+  
+  if (!claimValue || claimValue <= 0) {
+    alert("Please enter a valid claim value.");
+    return;
+  }
+  
+  // Industry statistics
+  const averageUnderpaymentRate = 0.22; // 22% average underpayment
+  const claimNavigatorLift = 0.65; // 65% recovery rate with ClaimNavigator
+  const averageDelayCost = claimValue * 0.08; // 8% cost of delays
+  
+  // Calculate recovery
+  const underpayment = claimValue * averageUnderpaymentRate;
+  const recovery = underpayment * claimNavigatorLift;
+  const totalValue = recovery - averageDelayCost;
+  
+  // Display result
+  const resultBox = document.getElementById("roi-result-box");
+  const resultEl = document.getElementById("roi-result");
+  const breakdown = document.getElementById("roi-breakdown");
+  const breakdownList = document.getElementById("breakdown-list");
+  
+  resultEl.textContent = `$${Math.round(totalValue).toLocaleString()}`;
+  resultBox.style.display = "block";
+  
+  // Show breakdown
+  breakdownList.innerHTML = `
+    <li><strong>Original Claim Value:</strong> $${claimValue.toLocaleString()}</li>
+    <li><strong>Average Underpayment (22%):</strong> $${Math.round(underpayment).toLocaleString()}</li>
+    <li><strong>ClaimNavigator Recovery Rate (65%):</strong> $${Math.round(recovery).toLocaleString()}</li>
+    <li><strong>Delay Cost Savings (8%):</strong> $${Math.round(averageDelayCost).toLocaleString()}</li>
+    <li><strong>Net Recovery Value:</strong> $${Math.round(totalValue).toLocaleString()}</li>
+  `;
+  breakdown.style.display = "block";
+  
+  // Log to analytics
+  if (window.CNAnalytics) {
+    CNAnalytics.log("roi_calculated", { 
+      claimValue, 
+      recovery: Math.round(totalValue) 
+    });
+  }
+}
+
+// Allow Enter key to calculate
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("claim-value");
+  if (input) {
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        calcROI();
+      }
+    });
+  }
+});
+</script>
+
+<style id="final-white-text-enforcement">
+body.roi-calculator-page,
+body.roi-calculator-page * {
+  color: #ffffff !important;
+}
+
+body.roi-calculator-page a {
+  color: #dbeafe !important;
+}
+
+body.roi-calculator-page a:hover {
+  color: #93c5fd !important;
+}
+</style>
+
+</body></html>
+

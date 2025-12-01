@@ -1,0 +1,2063 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Claim Navigator • Claim Roadmap</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+    <script src="/app/assets/js/analytics.js"></script>
+    <script src="/app/assets/js/activation.js"></script>
+    <script src="/app/assets/js/claim-health.js"></script>
+    <script src="/app/assets/js/user-tier.js"></script>
+    <script src="/app/assets/js/feature-gate.js"></script>
+    <script src="/app/assets/js/demo-mode.js"></script>
+    <script src="/app/assets/js/sample-claims.js"></script>
+    <script src="/app/assets/js/demo-tour.js"></script>
+    <script src="/app/assets/js/upgrade-hooks.js"></script>
+<style>
+/* USE CSS CUSTOM PROPERTIES TO OVERRIDE COLORS */
+:root {
+  --text-color: #ffffff !important;
+  --link-color: #dbeafe !important;
+  --shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
+}
+
+/* FORCE ALL ELEMENTS TO USE CUSTOM PROPERTIES */
+* {
+  color: var(--text-color) !important;
+  text-shadow: var(--shadow) !important;
+}
+
+a {
+  color: var(--link-color) !important;
+}
+
+a:hover {
+  color: #93c5fd !important;
+}
+
+body.resource-center.roadmap-page {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Overlay to make text readable */
+body.resource-center.roadmap-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 10, 35, 0.56);
+  z-index: -1;
+}
+
+/* Main roadmap container */
+.claim-roadmap-main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Hero section */
+.roadmap-hero {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2rem 0;
+}
+
+.roadmap-hero h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 0.5rem 0;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+.roadmap-hero p {
+  font-size: 1.25rem;
+  color: #dbeafe !important;
+  margin: 0;
+}
+
+/* Progress indicator */
+.roadmap-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.progress-ring {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: conic-gradient(
+    from -90deg,
+    #3b82f6 calc(var(--progress, 0) * 1%),
+    rgba(255, 255, 255, 0.1) calc(var(--progress, 0) * 1%)
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), white calc(100% - 4px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), white calc(100% - 4px));
+}
+
+.progress-ring::after {
+  content: attr(data-complete) '%';
+  position: absolute;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff !important;
+  z-index: 1;
+}
+
+.progress-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.progress-label {
+  font-size: 0.875rem;
+  color: #dbeafe !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.progress-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff !important;
+}
+
+.progress-stage {
+  font-size: 1rem;
+  color: #dbeafe !important;
+}
+
+/* Stage rail */
+.stage-rail {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 3rem;
+  padding: 2rem 1rem;
+  position: relative;
+  gap: 1rem;
+}
+
+.stage-rail::before {
+  content: '';
+  position: absolute;
+  top: 40px;
+  left: 5%;
+  right: 5%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 0;
+}
+
+.stage-node {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.stage-node:hover {
+  transform: translateY(-4px);
+}
+
+.stage-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.stage-node.active .stage-circle {
+  border-color: #38bdf8;
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+.stage-node.completed .stage-circle {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  position: relative;
+}
+
+.stage-node.completed .stage-circle::after {
+  content: '✓';
+  color: #38bdf8;
+  font-size: 14px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 700;
+}
+
+.stage-node.pending .stage-circle {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.stage-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff !important;
+  text-align: center;
+}
+
+.stage-subtitle {
+  font-size: 0.875rem;
+  color: #dbeafe !important;
+  text-align: center;
+}
+
+.stage-node.active .stage-title {
+  color: #3b82f6 !important;
+}
+
+/* Stage drawer */
+.stage-drawer {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.stage-drawer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.stage-drawer-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.stage-drawer-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 0.5rem 0;
+}
+
+.stage-drawer-header p {
+  font-size: 1.125rem;
+  color: #dbeafe !important;
+  margin: 0;
+}
+
+.drawer-subcopy {
+  opacity: 0.85;
+  font-size: 15px;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.stage-drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stage-tool-card {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.stage-tool-card:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.stage-tool-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffffff !important;
+  margin: 0;
+}
+
+.stage-tool-card p {
+  font-size: 0.9rem;
+  color: #dbeafe !important;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.tool-cta {
+  font-size: 0.875rem;
+  color: #3b82f6 !important;
+  font-weight: 600;
+  margin-top: auto;
+}
+
+.stage-tool-card:hover .tool-cta {
+  color: #60a5fa !important;
+}
+
+.stage-drawer-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: #ffffff !important;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-outline {
+  background: transparent;
+  color: #ffffff !important;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.drawer-secondary-link {
+  color: #dbeafe !important;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.drawer-secondary-link:hover {
+  color: #93c5fd !important;
+}
+
+/* Roadmap Status Indicator */
+.roadmap-status-indicator {
+  text-align: right;
+  font-size: 14px;
+  opacity: 0.75;
+  margin: 0 20px 10px 0;
+  padding: 0.5rem 0;
+}
+
+/* Fade animations */
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.fade-in {
+  opacity: 1;
+  transition: opacity 0.25s ease;
+}
+
+/* Global Roadmap Context Chip */
+.nav-roadmap-chip {
+  margin-left: auto;
+}
+
+.nav-roadmap-chip a {
+  padding: 6px 12px;
+  font-size: 13px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: #38bdf8 !important;
+  transition: background 0.2s ease;
+  text-decoration: none;
+}
+
+.nav-roadmap-chip a:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* Tier Badge */
+.nav-tier-badge {
+  margin-left: 8px;
+  list-style: none;
+}
+
+.nav-tier-badge span {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  display: inline-block;
+}
+
+.nav-tier-badge span.tier-pro {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+}
+
+.nav-tier-badge span.tier-enterprise {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fbbf24;
+}
+
+/* Resume Modal */
+.resume-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.resume-modal.hidden {
+  display: none;
+}
+
+.resume-modal-content {
+  background: rgba(20, 20, 20, 0.85);
+  padding: 24px 32px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 420px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.resume-modal-content h2,
+.resume-modal-content h3 {
+  color: #ffffff !important;
+  margin: 0 0 1rem 0;
+}
+
+.resume-modal-content p {
+  color: #dbeafe !important;
+  margin: 0 0 1rem 0;
+}
+
+.resume-modal-content strong {
+  color: #38bdf8 !important;
+}
+
+.resume-modal-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* Stage Summary Card */
+.stage-summary-card {
+  margin-top: 30px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 16px 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stage-summary-card h4 {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #ffffff !important;
+}
+
+.stage-summary-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px 0;
+  opacity: 0.9;
+}
+
+.stage-summary-card li {
+  margin: 5px 0;
+  color: #dbeafe !important;
+  font-size: 14px;
+}
+
+.stage-summary-time {
+  opacity: 0.8;
+  font-size: 14px;
+  color: #dbeafe !important;
+  margin: 0;
+}
+
+/* Smart Recommendation */
+.smart-recommendation {
+  margin-top: 20px;
+  background: rgba(56, 189, 248, 0.07);
+  border-left: 3px solid #38bdf8;
+  padding: 14px 16px;
+  border-radius: 8px;
+}
+
+.smart-recommendation h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #ffffff !important;
+}
+
+.smart-recommendation p {
+  margin: 4px 0 0 0;
+  opacity: 0.9;
+  color: #dbeafe !important;
+}
+
+/* Why Stage Matters */
+.why-stage-matters {
+  margin-top: 20px;
+}
+
+.why-trigger {
+  background: none;
+  border: none;
+  color: #38bdf8;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  padding: 0;
+  text-decoration: none;
+}
+
+.why-trigger:hover {
+  text-decoration: underline;
+}
+
+.why-content {
+  opacity: 0.9;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #dbeafe !important;
+  margin-top: 8px;
+}
+
+.why-content.hidden {
+  display: none;
+}
+
+/* Tool Status Icon */
+.tool-status-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.tool-status-complete {
+  color: #38bdf8;
+}
+
+.tool-status-pending {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.stage-tool-card {
+  position: relative;
+}
+
+/* Tool Badges */
+.tool-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  z-index: 10;
+}
+
+.tool-badge-pro {
+  background: rgba(56, 189, 248, 0.18);
+  color: #38bdf8;
+}
+
+.tool-badge-enterprise {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fbbf24;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .stage-rail {
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+  
+  .stage-node {
+    flex: 0 0 calc(33.333% - 1rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .roadmap-hero h1 {
+    font-size: 2rem;
+  }
+  
+  .stage-rail {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .stage-node {
+    flex: 1;
+    width: 100%;
+  }
+  
+  .stage-rail::before {
+    display: none;
+  }
+  
+  .stage-drawer-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stage-drawer-footer {
+    flex-direction: column;
+  }
+}
+
+/* Navigation dropdown text color - dark for Resource Center */
+.nav-dropdown-content {
+  color: #000000 !important;
+  background: #ffffff !important;
+  font-family: 'Arial Black', Arial, sans-serif !important;
+}
+
+.nav-dropdown-toggle {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 3 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.3 !important;
+  max-height: 3.9em !important;
+  word-wrap: break-word !important;
+  white-space: normal !important;
+  text-align: center !important;
+  font-size: 12px !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.nav-dropdown-content a,
+.nav-dropdown-content h4,
+.nav-dropdown-content p,
+.nav-dropdown-content * {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+  font-family: 'Arial Black', Arial, sans-serif !important;
+}
+
+.nav-dropdown-content .scenario-link {
+  color: #1e3a8a !important;
+  -webkit-text-fill-color: #1e3a8a !important;
+}
+
+.nav-dropdown-content .scenario-link:hover {
+  color: #1e40af !important;
+  -webkit-text-fill-color: #1e40af !important;
+}
+
+.nav-dropdown-content .nav-link {
+  color: #1e40af !important;
+  -webkit-text-fill-color: #1e40af !important;
+}
+</style>
+</head>
+<body class="resource-center roadmap-page">
+<header class="header">
+  <div class="bar container">
+    <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
+    <nav class="nav">
+      <a href="/app/index.html">Home</a>
+      
+      <!-- Claim Navigator Agent Dropdown -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('cn-agent')">
+          Claim Navigator Agent
+        </button>
+        <div class="nav-dropdown-content" id="cn-agent">
+          <a href="/app/cn-agent.html">CN Agent Dashboard</a>
+          <a href="/app/cn-agent.html#draft-email">Draft Email</a>
+          <a href="/app/cn-agent.html#send-email">Send Email</a>
+          <a href="/app/cn-agent.html#create-alert">Create Alert</a>
+          <a href="/app/cn-agent.html#detect-deadlines">Detect Deadlines</a>
+          <a href="/app/cn-agent.html#detect-payments">Detect Payments</a>
+          <a href="/app/cn-agent.html#detect-invoices">Detect Invoices</a>
+          <a href="/app/cn-agent.html#update-statement">Update Statement of Loss</a>
+          <a href="/app/cn-agent.html#update-deadlines">Update Deadlines</a>
+        </div>
+      </div>
+      
+      <!-- How to Use Dropdown -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('how-to-use')">
+          How to Use
+        </button>
+        <div class="nav-dropdown-content" id="how-to-use">
+          <div class="how-to-steps">
+            <div class="step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h4>Describe Your Situation</h4>
+                <p>Use the search bar or Situational Advisory to get started.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h4>Generate Documents</h4>
+                <p>Create letters, forms, and evidence with AI assistance.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h4>Analyze & Compare</h4>
+                <p>Review policies, compare estimates, and assess damage.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-number">4</div>
+              <div class="step-content">
+                <h4>Track Progress</h4>
+                <p>Use Trackers & Timeline to monitor your claim journey.</p>
+              </div>
+            </div>
+          </div>
+          <a href="/app/how-to-use.html" class="nav-link">View Detailed Guide</a>
+        </div>
+      </div>
+
+      <!-- Quick Start Dropdown -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('quick-start')">
+          Quick Start
+        </button>
+        <div class="nav-dropdown-content" id="quick-start">
+          <div class="quick-start-scenarios">
+            <div class="scenario">
+              <h4>My claim was just denied</h4>
+              <div class="scenario-links">
+                <a href="/app/ai-response-agent.html" class="scenario-link">AI Response</a>
+                <a href="/app/negotiation-tools.html" class="scenario-link">Negotiation</a>
+                <a href="/app/document-generator-v2/document-generator.html" class="scenario-link">Appeal</a>
+              </div>
+            </div>
+            <div class="scenario">
+              <h4>I got a lowball offer</h4>
+              <div class="scenario-links">
+                <a href="/app/claim-analysis.html" class="scenario-link">Damage</a>
+                <a href="/app/claim-analysis.html" class="scenario-link">Policy</a>
+                <a href="/app/negotiation-tools.html" class="scenario-link">Counter</a>
+              </div>
+            </div>
+            <div class="scenario">
+              <h4>Filing for the first time</h4>
+              <div class="scenario-links">
+                <a href="/app/claim-playbook.html" class="scenario-link">Playbook</a>
+                <a href="/app/resource-center/claim-timeline.html" class="scenario-link">Timeline</a>
+                <a href="/app/document-generator-v2/document-generator.html" class="scenario-link">Notice</a>
+              </div>
+            </div>
+            <div class="scenario">
+              <h4>Stuck - No Response</h4>
+              <div class="scenario-links">
+                <a href="/app/state-rights.html" class="scenario-link">Rights</a>
+                <a href="/app/document-generator-v2/document-generator.html" class="scenario-link">Complaint</a>
+                <a href="/app/trackers.html" class="scenario-link">Track</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Strategy & Guidance Dropdown -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('strategy')">
+          Strategy & Guidance
+        </button>
+        <div class="nav-dropdown-content" id="strategy">
+          <a href="/app/claim-playbook.html">Claim Playbook</a>
+          <a href="/app/resource-center/claim-timeline.html">Claim Timeline & Sequence Guide</a>
+          <a href="/app/resource-center/insurance-company-tactics.html">Insurance Company Tactics</a>
+          <a href="/app/maximize-claim.html">Maximize Your Claim</a>
+          <a href="/app/state-rights.html">State Rights & Deadlines</a>
+        </div>
+      </div>
+
+      <!-- Core Claim Tools Dropdown -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('core-tools')">
+          Core Claim Tools
+        </button>
+        <div class="nav-dropdown-content" id="core-tools">
+          <a href="/app/resource-center/fnol-wizard.html">FNOL Auto-File Wizard</a>
+          <a href="/app/document-library/">Claim Document Library</a>
+          <a href="/app/resource-center/ai-response-agent.html">AI Response Agent</a>
+          <a href="/app/cn-agent.html">ClaimNavigator Agent (AI Copilot)</a>
+          <a href="/app/statement-of-loss.html">Statement of Loss</a>
+          <a href="/app/deadlines.html">Deadlines</a>
+          <a href="/app/resource-center/compliance-engine.html">Compliance Engine</a>
+          <a href="/app/resource-center/checklist-engine.html">Checklist Engine</a>
+          <a href="/app/api-docs.html">API Layer</a>
+          <a href="/app/claim-journal.html">Claim Journal</a>
+          <a href="/app/authority-hub.html">Authority Guides</a>
+          <a href="/app/rom-tool.html">ROM Estimator</a>
+          <a href="/app/claim-stage-tracker.html">Claim Stage Tracker</a>
+          <a href="/app/knowledge-center.html">Knowledge Center</a>
+          <a href="/app/claim-analysis.html">Claim Analysis Tools</a>
+          <a href="/app/resource-center/advanced-tools/advanced-tools.html">Advanced Tools Suite</a>
+          <a href="/app/situational-advisory.html">Situational Advisory</a>
+          <a href="/app/negotiation-tools.html">Negotiation Scripts & Escalation</a>
+          <a href="/app/documentation-guides.html">Claim Documentation Guides</a>
+          <a href="/app/evidence-organizer.html">Evidence Organizer</a>
+          <a href="/app/recommended-resources.html">Recommended Resources</a>
+          <a href="/app/insurer-directory.html">Insurer Directory</a>
+          <a href="/app/document-generator-v2/document-generator.html">Document Generator</a>
+        </div>
+      </div>
+
+      <!-- Document Generator Dropdown -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('documents')">
+          Document Generator
+        </button>
+        <div class="nav-dropdown-content" id="documents">
+          <a href="/app/document-generator-v2/document-generator.html">All Documents (61+)</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=proof-of-loss">Proof of Loss</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=demand-letter">Demand Letter</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=appeal-letter">Appeal Letter</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=damage-assessment">Damage Assessment</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=business-interruption-claim">Business Interruption</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=evidence-log">Evidence Log</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=expense-reimbursement">Expense Reimbursement</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=appraisal-request">Appraisal Request</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=regulatory-complaint">Regulatory Complaint</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=settlement-offer">Settlement Offer</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=notice-of-claim">Notice of Claim</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=coverage-clarification">Coverage Clarification</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=delay-complaint">Delay Complaint</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=photograph-log">Photograph Log</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=repair-replace-analysis">Repair vs Replace Analysis</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=out-of-pocket-log">Out-of-Pocket Expenses</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=rom-estimate">ROM Estimate</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=comparative-estimates">Comparative Estimates</a>
+          <a href="/app/document-generator-v2/forms/form-template.html?id=document-index">Document Index</a>
+        </div>
+      </div>
+
+      <!-- Claim Analysis Tools Dropdown -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('analysis')">
+          Claim Analysis Tools
+        </button>
+        <div class="nav-dropdown-content" id="analysis">
+          <a href="/app/claim-analysis.html">Policy Review & Coverage Analysis</a>
+          <a href="/app/claim-analysis.html">Damage Assessment Calculator</a>
+          <a href="/app/maximize-claim.html">Financial Impact Calculator</a>
+          <a href="/app/claim-analysis.html">Estimate Review & Comparison</a>
+          <a href="/app/claim-analysis.html">Business Interruption Calculator</a>
+          <a href="/app/negotiation-tools.html">Settlement Analysis & Negotiation</a>
+          <a href="/app/resource-center/advanced-tools/advanced-tools.html">Advanced Tools Suite</a>
+        </div>
+      </div>
+      <!-- Global Roadmap Context Chip -->
+      <div class="nav-roadmap-chip">
+        <a id="nav-roadmap-chip-link" href="/app/resource-center/claim-roadmap.html">Roadmap: Stage 1</a>
+      </div>
+      <!-- Developer / API Links -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('developer')">
+          Developer
+        </button>
+        <div class="nav-dropdown-content" id="developer">
+          <a href="/app/developer.html">Developer Portal</a>
+          <a href="/app/api-marketplace.html">API Marketplace</a>
+          <a href="/app/api-pricing.html">API Pricing</a>
+          <a href="/app/api-sandbox.html">API Sandbox</a>
+          <a href="/app/api-usage.html">Usage & Billing</a>
+        </div>
+      </div>
+      <!-- Tier Badge -->
+      <li class="nav-tier-badge">
+        <span id="nav-tier-label">Free</span>
+      </li>
+        <li class="nav-org-badge">
+          <span id="nav-org-label"></span>
+        </li>
+    </nav>
+  </div>
+</header>
+
+<!-- Roadmap Status Indicator -->
+<div class="roadmap-status-indicator">
+  <span id="roadmap-status-stage">Stage 1 · Start Your Claim</span>
+</div>
+
+<main class="container claim-roadmap-main">
+  <section class="roadmap-hero">
+    <h1 class="page-title">Claim Roadmap</h1>
+    <p class="page-subtitle">Follow each stage to move your claim from chaos to paid.</p>
+  </section>
+
+  <!-- Global progress indicator -->
+  <section class="roadmap-progress">
+    <div class="progress-ring" data-complete="0"></div>
+    <div class="progress-copy">
+      <span class="progress-label">Overall Progress</span>
+      <span class="progress-value" id="roadmap-progress-percent">0% complete</span>
+      <span class="progress-stage" id="roadmap-current-stage-label">Stage 1 of 6 · Start Your Claim</span>
+    </div>
+  </section>
+
+  <!-- Stage rail -->
+  <section class="stage-rail">
+    <div class="stage-node active" data-stage="1">
+      <div class="stage-circle"></div>
+      <div class="stage-title">Start</div>
+      <div class="stage-subtitle">Get oriented</div>
+    </div>
+    <div class="stage-node" data-stage="2">
+      <div class="stage-circle"></div>
+      <div class="stage-title">Document</div>
+      <div class="stage-subtitle">Damage & evidence</div>
+    </div>
+    <div class="stage-node" data-stage="3">
+      <div class="stage-circle"></div>
+      <div class="stage-title">Analyze</div>
+      <div class="stage-subtitle">Policy & estimates</div>
+    </div>
+    <div class="stage-node" data-stage="4">
+      <div class="stage-circle"></div>
+      <div class="stage-title">Submit</div>
+      <div class="stage-subtitle">Send & respond</div>
+    </div>
+    <div class="stage-node" data-stage="5">
+      <div class="stage-circle"></div>
+      <div class="stage-title">Negotiate</div>
+      <div class="stage-subtitle">Offers & counters</div>
+    </div>
+    <div class="stage-node" data-stage="6">
+      <div class="stage-circle"></div>
+      <div class="stage-title">Resolve</div>
+      <div class="stage-subtitle">Settle or escalate</div>
+    </div>
+  </section>
+
+  <!-- Active stage drawer -->
+  <section class="stage-drawer" id="stage-drawer">
+    <!-- JS will inject the drawer content for the active stage -->
+  </section>
+  
+  <!-- Demo Controls -->
+  <div class="demo-controls" id="demo-controls" style="display: none;">
+    <div class="sample-claim-load">
+      <label for="sample-claim-select">Load Sample Claim:</label>
+      <select id="sample-claim-select">
+        <option value="fire">Fire Loss – Kitchen</option>
+        <option value="water">Water Damage – Burst Pipe</option>
+        <option value="hurricane">Hurricane Loss – Roof & Interior</option>
+      </select>
+      <button class="btn-outline" id="btn-sample-claim">Load Sample Claim</button>
+    </div>
+    <div class="demo-buttons">
+      <button class="btn-primary" onclick="startDemoTour()">Start Guided Demo</button>
+      <button class="btn-outline" id="exec-summary-btn">Executive Summary</button>
+      <button class="btn-outline" id="market-btn">Market Size</button>
+      <button class="btn-outline" id="demo-reset">Reset Demo State</button>
+    </div>
+  </div>
+</main>
+
+<!-- Demo Toggle Button -->
+<div id="demo-toggle" class="demo-toggle">Demo Mode</div>
+
+<!-- Guided Demo Tour Overlay -->
+<div id="demo-tour-overlay" class="demo-tour hidden">
+  <div class="demo-tour-box">
+    <h3 id="demo-tour-title"></h3>
+    <p id="demo-tour-text"></p>
+    <button id="demo-tour-next" class="btn-primary">Next</button>
+  </div>
+</div>
+
+<!-- Executive Summary Panel -->
+<div id="exec-summary" class="exec-summary hidden"></div>
+
+<!-- Market Size Overlay -->
+<div id="market-size" class="market-size hidden">
+  <h3>Market Size</h3>
+  <ul>
+    <li>3.5M property claims annually</li>
+    <li>$55B underpaid or delayed</li>
+    <li>Average recovery uplift: 22%+</li>
+  </ul>
+</div>
+
+<!-- Upgrade Offer Modal -->
+<div id="upgrade-offer-modal" class="resume-modal hidden">
+  <div class="resume-modal-content">
+    <h3 id="upgrade-offer-title">Upgrade to Pro</h3>
+    <p id="upgrade-offer-desc">Unlock more tools.</p>
+    <div class="resume-modal-actions">
+      <a href="/app/pricing.html" class="btn-primary">See Plans</a>
+      <button class="btn-outline" onclick="if(window.CNUpgrade) CNUpgrade.hide();">Not Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Social Proof -->
+<div id="social-proof" class="social-proof"></div>
+
+<!-- Resume Modal -->
+<div id="resume-modal" class="resume-modal hidden">
+  <div class="resume-modal-content">
+    <h3>Continue Your Claim</h3>
+    <p>You last worked on <strong id="resume-modal-stage"></strong>.</p>
+    <div class="resume-modal-actions">
+      <a id="resume-modal-btn" class="btn-primary">Resume Stage</a>
+      <button id="resume-modal-close" class="btn-outline">Start Over</button>
+    </div>
+  </div>
+</div>
+
+<!-- Completion Modal -->
+<div id="completion-modal" class="resume-modal hidden">
+  <div class="resume-modal-content">
+    <h2>🎉 You Completed The Claim Roadmap!</h2>
+    <p>Your claim is now documented, analyzed, defended, and ready for resolution.</p>
+    <div class="resume-modal-actions">
+      <a href="/app/resource-center.html" class="btn-primary">Explore More Tools</a>
+      <a href="/app/resource-center.html" class="btn-outline">Download Claim Summary</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Navigation dropdown toggle function
+  function toggleNavDropdown(id) {
+    const dropdown = document.getElementById(id);
+    if (dropdown.style.display === 'block') {
+      dropdown.style.display = 'none';
+    } else {
+      // Close all other dropdowns
+      document.querySelectorAll('.nav-dropdown-content').forEach(d => {
+        d.style.display = 'none';
+      });
+      
+      // Open this dropdown
+      dropdown.style.display = 'block';
+    }
+  }
+
+  // Roadmap Stages Configuration
+  const ROADMAP_STAGES = [
+    {
+      id: 1,
+      title: "Start Your Claim",
+      subtitle: "Get oriented & protected",
+      description: "Verify coverage, understand your rights, and start correctly.",
+      microcopy: "Start your claim the right way. Missing early steps causes 80% of claim delays.",
+      tools: [
+        {
+          label: "FNOL Auto-File Wizard",
+          description: "File your First Notice of Loss in 5 guided steps.",
+          href: "/app/resource-center/fnol-wizard.html?stage=1"
+        },
+        {
+          label: "Quick Start Guide",
+          description: "If you're denied, lowballed, or filing for the first time.",
+          href: "/app/quick-start.html?stage=1"
+        },
+        {
+          label: "Claim Playbook",
+          description: "The high-level strategy for managing your claim.",
+          href: "/app/claim-playbook.html?stage=1"
+        },
+        {
+          label: "Claim Timeline & Sequence Guide",
+          description: "See the ideal order to move through your claim.",
+          href: "/app/resource-center/claim-timeline.html?stage=1"
+        },
+        {
+          label: "State Rights & Deadlines",
+          description: "Know your legal rights and critical deadlines.",
+          href: "/app/state-rights.html?stage=1"
+        }
+      ]
+    },
+    {
+      id: 2,
+      title: "Document Damage",
+      subtitle: "Make your loss undeniable",
+      description: "Build a complete record of damage, evidence, and events.",
+      microcopy: "Capture evidence correctly. Photos + notes = claim leverage.",
+      tools: [
+        {
+          label: "Evidence Organizer",
+          description: "Sort photos, receipts, and files into insurer-ready categories.",
+          href: "/app/evidence-organizer.html?stage=2"
+        },
+        {
+          label: "Document Generator",
+          description: "Create logs, notices, and documentation forms.",
+          href: "/app/document-generator-v2/document-generator.html?stage=2"
+        },
+        {
+          label: "Claim Journal",
+          description: "Track calls, promises, and claim events.",
+          href: "/app/claim-journal.html?stage=2"
+        },
+        {
+          label: "Checklist Engine",
+          description: "Auto-generate tasks and documentation to stay ahead.",
+          href: "/app/resource-center/checklist-engine.html?stage=2"
+        }
+      ]
+    },
+    {
+      id: 3,
+      title: "Analyze & Compare",
+      subtitle: "Know the real claim value",
+      description: "Review policy, inspect estimates, and calculate what's owed.",
+      microcopy: "Know the real value of your loss before they tell you theirs.",
+      tools: [
+        {
+          label: "Claim Analysis Tools",
+          description: "Policy review, damage assessment, and settlement analysis.",
+          href: "/app/claim-analysis.html?stage=3"
+        },
+        {
+          label: "Contractor Estimate Interpreter",
+          description: "Break down contractor estimates and uncover missing scope.",
+          href: "/app/resource-center/contractor-estimate-interpreter.html?stage=3"
+        },
+        {
+          label: "ROM Estimator",
+          description: "Get a range-of-magnitude estimate for your loss.",
+          href: "/app/rom-tool.html?stage=3"
+        },
+        {
+          label: "Maximize Your Claim",
+          description: "Strategies to capture full, fair value.",
+          href: "/app/maximize-claim.html?stage=3"
+        },
+        {
+          label: "Authority Guides",
+          description: "Deeper state-specific rules and standards.",
+          href: "/app/authority-hub.html?stage=3"
+        }
+      ]
+    },
+    {
+      id: 4,
+      title: "Submit & Respond",
+      subtitle: "Send & reply like a pro",
+      description: "Submit a clean claim package and respond to insurer letters with strength.",
+      microcopy: "Respond with precision. The exact words in your letters matter.",
+      tools: [
+        {
+          label: "Document Generator",
+          description: "Generate notices, submission letters, and forms.",
+          href: "/app/document-generator-v2/document-generator.html?stage=4"
+        },
+        {
+          label: "AI Response Agent",
+          description: "Draft responses to insurer communications.",
+          href: "/app/resource-center/ai-response-agent.html?stage=4"
+        },
+        {
+          label: "Deadlines",
+          description: "Track critical claim deadlines with AI detection.",
+          href: "/app/deadlines.html?stage=4"
+        },
+        {
+          label: "Compliance Engine",
+          description: "Detect regulatory violations and build escalation-ready packages.",
+          href: "/app/resource-center/compliance-engine.html?stage=4"
+        },
+        {
+          label: "Insurer Directory",
+          description: "Find the correct contact details for your carrier.",
+          href: "/app/insurer-directory.html?stage=4"
+        }
+      ]
+    },
+    {
+      id: 5,
+      title: "Negotiate",
+      subtitle: "Push back with leverage",
+      description: "Counter lowball offers with evidence, scripts, and analysis.",
+      microcopy: "Negotiate confidently with evidence insurers cannot ignore.",
+      tools: [
+        {
+          label: "Negotiation Scripts & Escalation",
+          description: "Use professional scripts to negotiate effectively.",
+          href: "/app/negotiation-tools.html?stage=5"
+        },
+        {
+          label: "Settlement Analysis",
+          description: "Run scenarios through Claim Analysis Tools.",
+          href: "/app/claim-analysis.html?stage=5"
+        },
+        {
+          label: "AI Response Agent",
+          description: "Draft counter-offers and rebuttal letters.",
+          href: "/app/resource-center/ai-response-agent.html?stage=5"
+        },
+        {
+          label: "Claim Stage Tracker",
+          description: "See exactly where your claim sits in the process.",
+          href: "/app/claim-stage-tracker.html?stage=5"
+        }
+      ]
+    },
+    {
+      id: 6,
+      title: "Resolve or Escalate",
+      subtitle: "End it the right way",
+      description: "Either close your claim properly or escalate with the right tools.",
+      microcopy: "End your claim properly or escalate with authority.",
+      tools: [
+        {
+          label: "Advanced Tools Suite",
+          description: "Professional-grade valuation, compliance, and legal-strategy tools.",
+          href: "/app/resource-center/advanced-tools/advanced-tools.html?stage=6"
+        },
+        {
+          label: "Regulatory Complaint Tools",
+          description: "Generate Department of Insurance and regulatory complaints.",
+          href: "/app/document-generator-v2/document-generator.html?id=regulatory-complaint&stage=6"
+        },
+        {
+          label: "State Insurance Department Directory",
+          description: "Contact information for all 50 state insurance departments.",
+          href: "/app/resource-center/state-insurance-departments.html?stage=6"
+        },
+        {
+          label: "Recommended Resources",
+          description: "Find professionals and services if you need extra help.",
+          href: "/app/recommended-resources.html?stage=6"
+        }
+      ]
+    }
+  ];
+
+  // Roadmap State Management
+  const STORAGE_KEY = 'claimRoadmapProgress';
+  const TOOL_STATUS_KEY = 'roadmapToolStatus';
+  
+  // Tool Status Management
+  function getToolStatus() {
+    return JSON.parse(localStorage.getItem(TOOL_STATUS_KEY) || "{}");
+  }
+  
+  function setToolStatus(status) {
+    localStorage.setItem(TOOL_STATUS_KEY, JSON.stringify(status));
+  }
+  
+  function markToolVisited(toolHref) {
+    const status = getToolStatus();
+    status[toolHref] = true;
+    setToolStatus(status);
+    // Update the icon immediately if drawer is still open
+    const card = document.querySelector(`.stage-tool-card[href="${toolHref}"]`);
+    if (card) {
+      const icon = card.querySelector(".tool-status-icon");
+      if (icon) {
+        icon.textContent = "✔";
+        icon.classList.remove("tool-status-pending");
+        icon.classList.add("tool-status-complete");
+      }
+    }
+  }
+  
+  // Make function globally accessible
+  window.markToolVisited = markToolVisited;
+  
+  // Smart Recommendations
+  const SMART_RECS = {
+    1: "Start by verifying coverage and deadlines — they determine everything that follows.",
+    2: "Upload at least 12 photos. More evidence means faster payouts.",
+    3: "Run the estimate interpreter before accepting ANY insurer estimate.",
+    4: "Respond to insurer letters within 48 hours for maximum leverage.",
+    5: "Use negotiation scripts AFTER running Settlement Analysis.",
+    6: "If the insurer refuses to budge, file a regulatory complaint within 7 days."
+  };
+  
+  // Why Stage Matters
+  const WHY_TEXT = {
+    1: "Most claim delays happen in the first 48 hours because homeowners miss key early steps.",
+    2: "Insurers pay on evidence, not statements — documentation strength determines settlement strength.",
+    3: "Understanding true value prevents you from accepting lowball offers.",
+    4: "Using the correct language in responses can unlock 30–40% faster results.",
+    5: "Negotiation leverage comes from evidence, analysis, and correct regulatory positioning.",
+    6: "Resolving or escalating correctly prevents months of delay and protects your payout."
+  };
+  
+  function buildStageSummary(stage) {
+    const list = document.getElementById("stage-summary-list");
+    const timeEl = document.getElementById("stage-summary-time");
+    if (!list || !timeEl) return;
+    
+    const status = getToolStatus();
+    list.innerHTML = "";
+    
+    stage.tools.forEach(t => {
+      const completed = status[t.href] ? "✔ Completed" : "○ Not Started";
+      const li = document.createElement("li");
+      li.textContent = `${t.label}: ${completed}`;
+      list.appendChild(li);
+    });
+    
+    // Estimated time: 2 minutes per tool
+    timeEl.textContent = `${stage.tools.length * 2} minutes`;
+  }
+  
+  function loadSmartRecommendation(stageId) {
+    const el = document.getElementById("smart-rec-text");
+    if (el) {
+      el.textContent = SMART_RECS[stageId] || "";
+    }
+  }
+  
+  function loadWhySection(stageId) {
+    const content = document.getElementById("why-content");
+    if (content) {
+      content.textContent = WHY_TEXT[stageId] || "";
+    }
+  }
+
+  function getRoadmapState() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch (e) {
+        console.error('Error parsing roadmap state:', e);
+      }
+    }
+    return {
+      completedStageIds: [],
+      currentStageId: 1
+    };
+  }
+
+  function saveRoadmapState(state) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function updateProgress(state) {
+    const completedCount = state.completedStageIds.length;
+    const percent = Math.round((completedCount / 6) * 100);
+    
+    // Update progress ring
+    const progressRing = document.querySelector('.progress-ring');
+    if (progressRing) {
+      progressRing.setAttribute('data-complete', percent);
+      progressRing.style.setProperty('--progress', percent);
+    }
+    
+    // Update progress text
+    const progressPercent = document.getElementById('roadmap-progress-percent');
+    if (progressPercent) {
+      progressPercent.textContent = `${percent}% complete`;
+    }
+    
+    // Update current stage label
+    const currentStage = ROADMAP_STAGES.find(s => s.id === state.currentStageId);
+    const currentStageLabel = document.getElementById('roadmap-current-stage-label');
+    if (currentStageLabel && currentStage) {
+      currentStageLabel.textContent = `Stage ${currentStage.id} of 6 · ${currentStage.title}`;
+    }
+    
+    // Update status indicator
+    const statusIndicator = document.getElementById('roadmap-status-stage');
+    if (statusIndicator && currentStage) {
+      statusIndicator.textContent = `Stage ${currentStage.id} · ${currentStage.title}`;
+    }
+    
+    // Update global roadmap chip
+    localStorage.setItem("globalRoadmapStageName", currentStage.title);
+    const chipLink = document.getElementById('nav-roadmap-chip-link');
+    if (chipLink && currentStage) {
+      chipLink.textContent = `Roadmap: ${currentStage.title}`;
+    }
+  }
+  
+  function smoothScrollToDrawer() {
+    const drawer = document.getElementById("stage-drawer");
+    if (drawer) {
+      drawer.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  function renderDrawer(stageId, skipAnimation = false) {
+    const stage = ROADMAP_STAGES.find(s => s.id === stageId);
+    if (!stage) return;
+    
+    const drawer = document.getElementById('stage-drawer');
+    if (!drawer) return;
+    
+    const toolsHtml = stage.tools.map(tool => {
+      // Determine activation milestone based on tool
+      let activationKey = null;
+      if (tool.href.includes("evidence-organizer")) activationKey = "evidence_organizer_opened";
+      else if (tool.href.includes("document-generator")) activationKey = "first_doc_generated";
+      else if (tool.href.includes("ai-response-agent")) activationKey = "ai_agent_used";
+      else if (tool.href.includes("rom-tool")) activationKey = "rom_run";
+      else if (tool.href.includes("negotiation-tools")) activationKey = "negotiation_script_opened";
+      else if (tool.href.includes("compliance-engine")) activationKey = "compliance_engine_opened";
+      else if (tool.href.includes("claim-journal")) activationKey = "claim_journal_entry";
+      
+      const onClick = activationKey 
+        ? `window.markToolVisited('${tool.href.replace(/'/g, "\\'")}'); if(window.markActivation) window.markActivation('${activationKey}');`
+        : `window.markToolVisited('${tool.href.replace(/'/g, "\\'")}');`;
+      
+      // Determine tier requirement
+      let tierRequired = null;
+      if (tool.href.includes("compliance-engine") || tool.href.includes("advanced-tools")) {
+        tierRequired = "pro";
+      }
+      if (tool.href.includes("enterprise-dashboard")) {
+        tierRequired = "enterprise";
+      }
+      
+      const tierAttr = tierRequired ? `data-tier-required="${tierRequired}"` : "";
+      const tierBadge = tierRequired === "pro" 
+        ? '<div class="tool-badge tool-badge-pro">Pro</div>'
+        : tierRequired === "enterprise"
+        ? '<div class="tool-badge tool-badge-enterprise">Enterprise</div>'
+        : '';
+      
+      return `
+      <a class="stage-tool-card" href="${tool.href}" onclick="${onClick}" ${tierAttr}>
+        ${tierBadge}
+        <div class="tool-status-icon"></div>
+        <h3>${tool.label}</h3>
+        <p>${tool.description}</p>
+        <span class="tool-cta">Open tool →</span>
+      </a>
+    `;
+    }).join('');
+    
+    const newDrawerHTML = `
+      <div class="stage-drawer-inner">
+        <div class="stage-drawer-header">
+          <h2>Stage ${stage.id} · ${stage.title}</h2>
+          <p class="drawer-subcopy">${stage.microcopy || stage.description}</p>
+        </div>
+        <div class="stage-drawer-grid">
+          ${toolsHtml}
+        </div>
+        <div class="stage-summary-card">
+          <h4>Stage Summary</h4>
+          <ul id="stage-summary-list"></ul>
+          <p class="stage-summary-time">Estimated time: <span id="stage-summary-time"></span></p>
+        </div>
+        <div class="smart-recommendation">
+          <h4>AI Recommends</h4>
+          <p id="smart-rec-text"></p>
+        </div>
+        <div class="why-stage-matters">
+          <button id="why-trigger" class="why-trigger">Why this stage matters ▼</button>
+          <div id="why-content" class="why-content hidden"></div>
+        </div>
+        <div class="claim-health-box">
+          Claim Health Score: <span id="claim-health-value"></span>%
+          <span id="claim-health-level" style="margin-left: 8px; font-size: 13px; opacity: 0.8;"></span>
+        </div>
+        <div class="stage-drawer-footer">
+          ${stageId < 6 ? `<button class="btn-primary" id="next-stage-btn">Next Stage</button>` : ''}
+          <button class="btn-outline" id="complete-stage-btn">Mark Stage Complete</button>
+          <a class="drawer-secondary-link" href="/app/resource-center.html?stage=${stageId}">View all tools</a>
+        </div>
+      </div>
+    `;
+    
+    // Fade animation
+    if (!skipAnimation) {
+      drawer.classList.add("fade-out");
+      setTimeout(() => {
+        drawer.innerHTML = newDrawerHTML;
+        drawer.classList.remove("fade-out");
+        drawer.classList.add("fade-in");
+        setTimeout(() => {
+          drawer.classList.remove("fade-in");
+          smoothScrollToDrawer();
+        }, 250);
+        attachDrawerListeners(stageId);
+        updateDrawerContent(stage);
+      }, 200);
+    } else {
+      drawer.innerHTML = newDrawerHTML;
+      attachDrawerListeners(stageId);
+      updateDrawerContent(stage);
+    }
+  }
+  
+  function updateDrawerContent(stage) {
+    // Update tool status icons
+    const toolStatus = getToolStatus();
+    document.querySelectorAll(".stage-tool-card").forEach(card => {
+      const href = card.getAttribute("href");
+      const icon = card.querySelector(".tool-status-icon");
+      
+      if (icon) {
+        if (toolStatus[href]) {
+          icon.textContent = "✔";
+          icon.classList.add("tool-status-complete");
+        } else {
+          icon.textContent = "○";
+          icon.classList.add("tool-status-pending");
+        }
+      }
+    });
+    
+    // Build stage summary
+    buildStageSummary(stage);
+    
+    // Load smart recommendation
+    loadSmartRecommendation(stage.id);
+    
+    // Load why section
+    loadWhySection(stage.id);
+    
+    // Setup why toggle
+    const whyTrigger = document.getElementById("why-trigger");
+    if (whyTrigger) {
+      whyTrigger.addEventListener("click", () => {
+        const content = document.getElementById("why-content");
+        if (content) {
+          content.classList.toggle("hidden");
+          whyTrigger.textContent = content.classList.contains("hidden") 
+            ? "Why this stage matters ▼" 
+            : "Why this stage matters ▲";
+        }
+      });
+    }
+    
+    // Update claim health score
+    const healthScore = computeClaimHealth();
+    const healthValue = document.getElementById("claim-health-value");
+    const healthLevel = document.getElementById("claim-health-level");
+    if (healthValue) {
+      healthValue.textContent = healthScore;
+    }
+    if (healthLevel) {
+      const level = getClaimHealthLevel(healthScore);
+      healthLevel.textContent = `(${level.level})`;
+      healthLevel.style.color = level.color;
+    }
+    
+    // Check for lowball/denial detection
+    if (localStorage.getItem("cn_lowball_detected")) {
+      const drawer = document.getElementById("stage-drawer");
+      if (drawer) {
+        const drawerInner = drawer.querySelector(".stage-drawer-inner");
+        if (drawerInner) {
+          const alertCard = document.createElement("div");
+          alertCard.className = "alert-card";
+          alertCard.innerHTML = `
+            <h4>We detected a lowball or denial.</h4>
+            <p>Use these tools to respond strategically:</p>
+            <ul>
+              <li><a href="/app/negotiation-tools.html?stage=5">Negotiation Scripts</a></li>
+              <li><a href="/app/resource-center/ai-response-agent.html?stage=5">AI Response Agent</a></li>
+              <li><a href="/app/resource-center/compliance-engine.html?stage=5">Compliance Engine</a></li>
+            </ul>
+          `;
+          drawerInner.insertBefore(alertCard, drawerInner.querySelector(".stage-drawer-footer"));
+          
+          // Phase 8: Upgrade trigger for lowball detection
+          if (window.CNUserTier && CNUserTier.isFree() && window.CNUpgrade) {
+            setTimeout(() => {
+              CNUpgrade.show("lowball_detected");
+            }, 1000);
+          }
+        }
+      }
+    }
+    
+    // Add PRO upsell for Stage 6
+    if (stage.id === 6) {
+      if (window.CNAnalytics) {
+        CNAnalytics.log("pro_upsell_impression", { stage: 6 });
+      }
+      
+      const drawer = document.getElementById("stage-drawer");
+      if (drawer) {
+        const drawerInner = drawer.querySelector(".stage-drawer-inner");
+        if (drawerInner) {
+          const proUpsell = document.createElement("div");
+          proUpsell.className = "pro-upsell-box";
+          proUpsell.innerHTML = `
+            <h3>Unlock Professional Tools</h3>
+            <p>The Compliance Engine and Legal Strategy Suite are Pro-only tools.</p>
+            <a class="btn-primary" href="/app/upgrade.html">Upgrade to Pro</a>
+          `;
+          drawerInner.insertBefore(proUpsell, drawerInner.querySelector(".stage-drawer-footer"));
+        }
+      }
+    }
+    
+    // Check for upgrade suggestion if health score is low
+    const currentStageId = stage.id;
+    if (currentStageId >= 3 && healthScore < 50) {
+      const drawer = document.getElementById("stage-drawer");
+      if (drawer) {
+        const drawerInner = drawer.querySelector(".stage-drawer-inner");
+        if (drawerInner && !drawerInner.querySelector(".pro-upsell-box")) {
+          const upgradeSuggestion = document.createElement("div");
+          upgradeSuggestion.className = "pro-upsell-box";
+          upgradeSuggestion.innerHTML = `
+            <h3>Improve Your Claim Value</h3>
+            <p>Pro features help complete critical documentation steps faster.</p>
+            <a class="btn-primary" href="/app/upgrade.html">Upgrade Now</a>
+          `;
+          drawerInner.insertBefore(upgradeSuggestion, drawerInner.querySelector(".stage-drawer-footer"));
+        }
+      }
+    }
+  }
+  
+  function attachDrawerListeners(stageId) {
+    // Attach event listeners
+    const nextStageBtn = document.getElementById('next-stage-btn');
+    if (nextStageBtn) {
+      nextStageBtn.addEventListener('click', () => {
+        const state = getRoadmapState();
+        if (state.currentStageId < 6) {
+          state.currentStageId = state.currentStageId + 1;
+          saveRoadmapState(state);
+          switchStage(state.currentStageId);
+        }
+      });
+    }
+    
+    const completeStageBtn = document.getElementById('complete-stage-btn');
+    if (completeStageBtn) {
+      completeStageBtn.addEventListener('click', () => {
+        const state = getRoadmapState();
+        if (!state.completedStageIds.includes(stageId)) {
+          state.completedStageIds.push(stageId);
+          saveRoadmapState(state);
+          updateStageNodes(state);
+          updateProgress(state);
+          
+          // Confetti animation
+          if (typeof confetti !== 'undefined') {
+            confetti({
+              particleCount: 60,
+              spread: 45,
+              origin: { y: 0.6 }
+            });
+          }
+          
+          // Mark activation milestone
+          if (window.markActivation) {
+            markActivation(`stage_${stageId}_complete`);
+            
+            // Check for stage completion milestones
+            if (stageId === 3) {
+              markActivation("completed_3_stages");
+            }
+            if (stageId === 6) {
+              markActivation("full_activation");
+            }
+          }
+          
+          // Auto-advance to next stage
+          if (stageId < 6) {
+            setTimeout(() => {
+              switchStage(stageId + 1);
+            }, 500);
+          } else {
+            // Show completion modal for stage 6
+            setTimeout(() => {
+              document.getElementById("completion-modal").classList.remove("hidden");
+              if (typeof confetti !== 'undefined') {
+                confetti({ particleCount: 120, spread: 60 });
+              }
+            }, 700);
+          }
+        }
+      });
+    }
+  }
+
+  function switchStage(stageId) {
+    const state = getRoadmapState();
+    state.currentStageId = stageId;
+    saveRoadmapState(state);
+    
+    // Update active node
+    updateStageNodes(state);
+    
+    // Render drawer with animation
+    renderDrawer(stageId);
+    updateProgress(state);
+  }
+
+  function updateStageNodes(state) {
+    document.querySelectorAll('.stage-node').forEach(node => {
+      const nodeStageId = parseInt(node.getAttribute('data-stage'));
+      node.classList.remove('active', 'completed', 'pending');
+      
+      if (state.completedStageIds.includes(nodeStageId)) {
+        node.classList.add('completed');
+      } else if (nodeStageId === state.currentStageId) {
+        node.classList.add('active');
+      } else {
+        node.classList.add('pending');
+      }
+    });
+  }
+
+  // Resume Modal Logic
+  function initResumeModal() {
+    const state = getRoadmapState();
+    const lastStage = state.currentStageId;
+    const lastStageName = localStorage.getItem("globalRoadmapStageName");
+    const modal = document.getElementById("resume-modal");
+    
+    // Only show if user has progress and hasn't dismissed
+    if (lastStage && lastStage > 1 && lastStageName && !localStorage.getItem("dismissedResumeModal") && modal) {
+      const stageEl = document.getElementById("resume-modal-stage");
+      const btn = document.getElementById("resume-modal-btn");
+      
+      if (stageEl) {
+        stageEl.textContent = lastStageName;
+      }
+      if (btn) {
+        btn.href = `/app/resource-center/claim-roadmap.html?stage=${lastStage}`;
+      }
+      modal.classList.remove("hidden");
+    }
+    
+    const closeBtn = document.getElementById("resume-modal-close");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => {
+        if (modal) {
+          modal.classList.add("hidden");
+          localStorage.setItem("dismissedResumeModal", "1");
+        }
+      });
+    }
+  }
+  
+  // Magic Moment Autoplay
+  function autoDemo() {
+    if (!window.CNDemo || !CNDemo.isDemoMode()) return;
+    
+    setTimeout(() => {
+      const stage2 = document.querySelector(".stage-node[data-stage='2']");
+      if (stage2) stage2.click();
+    }, 1200);
+    
+    setTimeout(() => {
+      const stage3 = document.querySelector(".stage-node[data-stage='3']");
+      if (stage3) stage3.click();
+    }, 2500);
+    
+    setTimeout(() => {
+      const agentLink = document.querySelector("a[href*='ai-response-agent']");
+      if (agentLink) {
+        agentLink.classList.add("pulse");
+        setTimeout(() => agentLink.classList.remove("pulse"), 2000);
+      }
+    }, 4200);
+  }
+  
+  // Demo Toggle Button
+  function initDemoToggle() {
+    const dt = document.getElementById("demo-toggle");
+    if (!dt) return;
+    
+    if (window.CNDemo && CNDemo.isDemoMode()) {
+      dt.classList.add("active");
+      // Show demo controls
+      const demoControls = document.getElementById("demo-controls");
+      if (demoControls) {
+        demoControls.style.display = "block";
+      }
+    }
+    
+    dt.addEventListener("click", () => {
+      if (window.CNDemo) {
+        if (CNDemo.isDemoMode()) {
+          CNDemo.disableDemoMode();
+          dt.classList.remove("active");
+          const demoControls = document.getElementById("demo-controls");
+          if (demoControls) {
+            demoControls.style.display = "none";
+          }
+          alert("Demo Mode Disabled");
+        } else {
+          CNDemo.enableDemoMode();
+          dt.classList.add("active");
+          const demoControls = document.getElementById("demo-controls");
+          if (demoControls) {
+            demoControls.style.display = "block";
+          }
+          alert("Demo Mode Enabled");
+        }
+        location.reload();
+      }
+    });
+  }
+  
+  // Sample Claim Loader
+  function initSampleClaimLoader() {
+    const btn = document.getElementById("btn-sample-claim");
+    if (!btn) return;
+    
+    btn.addEventListener("click", () => {
+      const select = document.getElementById("sample-claim-select");
+      const sampleKey = select ? select.value : "fire";
+      if (window.loadSampleClaim) {
+        loadSampleClaim(sampleKey);
+      }
+    });
+  }
+  
+  // Executive Summary Panel
+  function initExecutiveSummary() {
+    const btn = document.getElementById("exec-summary-btn");
+    const box = document.getElementById("exec-summary");
+    
+    if (!btn || !box) return;
+    
+    btn.addEventListener("click", () => {
+      box.classList.toggle("hidden");
+      
+      if (!box.classList.contains("hidden")) {
+        const activation = window.getActivation ? getActivation() : JSON.parse(localStorage.getItem("cn_activation") || "{}");
+        const health = window.computeClaimHealth ? computeClaimHealth() : 0;
+        const completedStages = Object.keys(activation).filter(k => k.includes("stage") && k.includes("complete")).length;
+        
+        box.innerHTML = `
+          <h2>Executive Summary</h2>
+          <p><strong>Claim Health:</strong> ${health}%</p>
+          <p><strong>Stages Completed:</strong> ${completedStages}/6</p>
+          <h3>Key Features:</h3>
+          <ul>
+            <li>AI Response Agent - Drafts professional responses instantly</li>
+            <li>Evidence Organizer - Auto-categorizes and timestamps uploads</li>
+            <li>Compliance Engine - Detects regulatory violations</li>
+            <li>Negotiation Playbook - Professional scripts for counter-offers</li>
+            <li>Document Generator - 61+ professional claim documents</li>
+            <li>Claim Health Score - Real-time progress tracking</li>
+          </ul>
+          <h3>Magic Differentiators:</h3>
+          <ul>
+            <li>Guided 6-stage roadmap prevents missed steps</li>
+            <li>AI-powered analysis reduces claim delays by 40%</li>
+            <li>Automated compliance detection prevents denials</li>
+            <li>Evidence organization increases settlement value by 22%</li>
+          </ul>
+        `;
+      }
+    });
+  }
+  
+  // Market Size Overlay
+  function initMarketSize() {
+    const btn = document.getElementById("market-btn");
+    const overlay = document.getElementById("market-size");
+    
+    if (!btn || !overlay) return;
+    
+    btn.addEventListener("click", () => {
+      overlay.classList.toggle("hidden");
+    });
+  }
+  
+  // Reset Demo State
+  function initResetDemo() {
+    const btn = document.getElementById("demo-reset");
+    if (!btn) return;
+    
+    btn.addEventListener("click", () => {
+      if (confirm("Are you sure you want to reset all demo state? This will clear all localStorage data.")) {
+        localStorage.clear();
+        alert("Demo state reset. Reloading page...");
+        location.reload();
+      }
+    });
+  }
+  
+  // Initialize
+  document.addEventListener('DOMContentLoaded', function() {
+    const state = getRoadmapState();
+    
+    // Set up stage node click handlers
+    document.querySelectorAll('.stage-node').forEach(node => {
+      node.addEventListener('click', () => {
+        const stageId = parseInt(node.getAttribute('data-stage'));
+        switchStage(stageId);
+      });
+    });
+    
+    // Check for stage query parameter
+    const params = new URLSearchParams(window.location.search);
+    const stageParam = params.get('stage');
+    if (stageParam) {
+      const stageId = parseInt(stageParam);
+      if (stageId >= 1 && stageId <= 6) {
+        state.currentStageId = stageId;
+        saveRoadmapState(state);
+      }
+    }
+    
+    // Initialize UI
+    updateStageNodes(state);
+    renderDrawer(state.currentStageId, true); // Skip animation on initial load
+    updateProgress(state);
+    
+    // Initialize resume modal
+    initResumeModal();
+    
+    // Update global chip on load
+    const savedStageName = localStorage.getItem("globalRoadmapStageName");
+    const chipLink = document.getElementById('nav-roadmap-chip-link');
+    if (savedStageName && chipLink) {
+      chipLink.textContent = `Roadmap: ${savedStageName}`;
+    }
+    
+    // Initialize demo features
+    initDemoToggle();
+    initSampleClaimLoader();
+    initExecutiveSummary();
+    initMarketSize();
+    initResetDemo();
+    
+    // Auto-demo if in demo mode
+    autoDemo();
+  });
+</script>
+
+<!-- Confetti Library -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<!-- Global Scripts -->
+<script src="/app/assets/js/global.js"></script>
+
+<style id="final-white-text-enforcement">
+/* 🔥 FINAL WHITE TEXT ENFORCEMENT — NO OVERRIDES POSSIBLE */
+
+/* Add dark overlay to background */
+body.resource-center.roadmap-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.89) !important;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Reset and enforce white for all elements and pseudo elements */
+html, body.resource-center.roadmap-page, 
+body.resource-center.roadmap-page :is(*, *::before, *::after) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Keep links readable but consistent */
+body.resource-center.roadmap-page a,
+body.resource-center.roadmap-page a * {
+  color: #dbeafe !important;
+}
+
+body.resource-center.roadmap-page a:hover,
+body.resource-center.roadmap-page a:focus {
+  color: #93c5fd !important;
+}
+
+/* FINAL OVERRIDE: Force dropdown text to black */
+body.resource-center.roadmap-page .nav-dropdown-content,
+body.resource-center.roadmap-page .nav-dropdown-content * {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+  font-family: 'Arial Black', Arial, sans-serif !important;
+}
+
+body.resource-center.roadmap-page .nav-dropdown-content .scenario-link,
+body.resource-center.roadmap-page .nav-dropdown-content .nav-link {
+  color: #1e3a8a !important;
+  -webkit-text-fill-color: #1e3a8a !important;
+}
+</style>
+
+</body></html>
+

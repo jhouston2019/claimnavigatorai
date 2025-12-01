@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tier Switcher - ClaimNavigatorAI</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      color: #dbeafe;
+      margin-bottom: 1.5rem;
+    }
+    .tier-switcher-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .tier-switcher-buttons button {
+      flex: 1;
+      padding: 1rem;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .tier-switcher-buttons button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    .tier-switcher-buttons button[data-tier="free"]:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    .tier-switcher-buttons button[data-tier="pro"]:hover {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+    }
+    .tier-switcher-buttons button[data-tier="enterprise"]:hover {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+    }
+    #tier-current {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: #38bdf8;
+    }
+    .info-box {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-top: 2rem;
+    }
+    .info-box h3 {
+      margin-top: 0;
+      color: #ffffff;
+    }
+    .info-box ul {
+      margin: 0.5rem 0;
+      padding-left: 1.5rem;
+    }
+    .info-box li {
+      color: #dbeafe;
+      margin: 0.5rem 0;
+    }
+  </style>
+  <script src="/app/assets/js/user-tier.js"></script>
+</head>
+<body>
+  <h1>Tier Switcher (Local Only)</h1>
+  <p>Select which tier to simulate on this device. This is for development and demo purposes only.</p>
+  
+  <div class="tier-switcher-buttons">
+    <button data-tier="free">Free</button>
+    <button data-tier="pro">Pro</button>
+    <button data-tier="enterprise">Enterprise</button>
+  </div>
+  
+  <p>Current tier: <span id="tier-current"></span></p>
+  
+  <div class="info-box">
+    <h3>What This Does</h3>
+    <ul>
+      <li>Sets your tier in localStorage (this browser only)</li>
+      <li>Updates the tier badge in navigation</li>
+      <li>Enables/disables Pro and Enterprise features</li>
+      <li>Reload any page to see tier changes take effect</li>
+    </ul>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const current = document.getElementById("tier-current");
+      
+      const updateDisplay = () => {
+        if (window.CNUserTier) {
+          current.textContent = CNUserTier.getUserTier();
+        } else {
+          current.textContent = "Loading...";
+        }
+      };
+      
+      updateDisplay();
+      
+      document.querySelectorAll(".tier-switcher-buttons button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const tier = btn.getAttribute("data-tier");
+          if (window.CNUserTier) {
+            CNUserTier.setUserTier(tier);
+            updateDisplay();
+            alert("Tier set to " + tier + ". Reload any page to see changes.");
+          } else {
+            alert("Tier system not loaded. Please refresh the page.");
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+

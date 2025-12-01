@@ -1,90 +1,109 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Payment Successful • ClaimNavigatorAI</title>
-  <link rel="stylesheet" href="/app/assets/css/style.css">
-  <link rel="stylesheet" href="/app/assets/css/design-system.css">
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-      background: #f9fafb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-    }
-    .success-container {
-      background: white;
-      padding: 3rem;
-      border-radius: 0.75rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      max-width: 500px;
-      width: 100%;
-      text-align: center;
-    }
-    .success-icon {
-      width: 64px;
-      height: 64px;
-      background: #10b981;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1.5rem;
-      color: white;
-      font-size: 2rem;
-    }
-    h1 {
-      color: #1e40af;
-      margin-bottom: 1rem;
-    }
-    p {
-      color: #6b7280;
-      margin-bottom: 2rem;
-    }
-    .btn {
-      display: inline-block;
-      padding: 0.75rem 2rem;
-      background: #1e40af;
-      color: white;
-      text-decoration: none;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      transition: background 0.2s;
-    }
-    .btn:hover {
-      background: #3b82f6;
-    }
-  </style>
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Upgrade Successful • ClaimNavigatorAI</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+    <script src="/app/assets/js/analytics.js"></script>
+    <script src="/app/assets/js/user-tier.js"></script>
+<style>
+body.checkout-success-page {
+  background: url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+body.checkout-success-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 10, 35, 0.56);
+  z-index: -1;
+}
+
+.success-container {
+  max-width: 600px;
+  margin: 4rem auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.success-box {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  padding: 3rem 2rem;
+}
+
+.success-box h1 {
+  color: #ffffff !important;
+  margin: 0 0 1rem 0;
+  font-size: 2.5rem;
+}
+
+.success-box p {
+  color: #dbeafe !important;
+  margin: 1rem 0;
+  font-size: 1.125rem;
+}
+
+.success-box .btn-primary {
+  margin-top: 2rem;
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+}
+</style>
 </head>
-<body>
-  <div class="success-container">
-    <div class="success-icon">✓</div>
-    <h1>Payment Successful!</h1>
-    <p>Thank you for your purchase. You now have full access to ClaimNavigatorAI.</p>
-    <a href="/app/dashboard.html" class="btn">Go to Dashboard</a>
+<body class="resource-center checkout-success-page">
+<header class="header">
+  <div class="bar container">
+    <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
+    <nav class="nav">
+      <a href="/app/index.html">Home</a>
+    </nav>
   </div>
+</header>
 
-  <script type="module">
-    // Verify payment and redirect after a moment
-    const urlParams = new URLSearchParams(window.location.search);
-    const sessionId = urlParams.get('session_id');
-    
-    if (sessionId) {
-      console.log('Payment session:', sessionId);
-      // Payment is verified via webhook, user can proceed
-    }
-    
-    // Auto-redirect after 5 seconds
-    setTimeout(() => {
-      window.location.href = '/app/dashboard.html';
-    }, 5000);
-  </script>
-</body>
-</html>
+<main class="container">
+  <div class="success-container">
+    <div class="success-box">
+      <h1>🎉 You're Upgraded!</h1>
+      <p>Your account now has full access to all Pro features.</p>
+      <p>Start using advanced tools, compliance features, and AI-powered assistance right away.</p>
+      <button onclick="location.href='/app/resource-center/claim-roadmap.html'" class="btn-primary">Continue to Roadmap</button>
+    </div>
+  </div>
+</main>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Log upgrade success
+  if (window.CNAnalytics) {
+    CNAnalytics.log("upgrade_success");
+  }
+  
+  // Clear abandoned checkout flag
+  localStorage.removeItem("checkout_abandoned");
+  localStorage.removeItem("checkout_abandoned_tier");
+});
+</script>
 
+<style id="final-white-text-enforcement">
+body.checkout-success-page,
+body.checkout-success-page * {
+  color: #ffffff !important;
+}
 
+body.checkout-success-page a {
+  color: #dbeafe !important;
+}
+
+body.checkout-success-page a:hover {
+  color: #93c5fd !important;
+}
+</style>
+
+</body></html>

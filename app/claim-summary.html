@@ -1,0 +1,398 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Claim Summary • ClaimNavigatorAI</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+    <script src="/app/assets/js/analytics.js"></script>
+    <script src="/app/assets/js/activation.js"></script>
+    <script src="/app/assets/js/claim-health.js"></script>
+<style>
+body.claim-summary-page {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+body.claim-summary-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 10, 35, 0.56);
+  z-index: -1;
+}
+
+.summary-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.summary-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.summary-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 0.5rem 0;
+}
+
+.summary-header p {
+  font-size: 1.125rem;
+  color: #dbeafe !important;
+  margin: 0;
+}
+
+.summary-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff !important;
+  margin: 0 0 1rem 0;
+}
+
+.summary-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffffff !important;
+  margin: 1.5rem 0 0.75rem 0;
+}
+
+.summary-card p,
+.summary-card li {
+  color: #dbeafe !important;
+  line-height: 1.6;
+}
+
+.summary-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.summary-card li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.summary-card li:last-child {
+  border-bottom: none;
+}
+
+.health-score-display {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #38bdf8 !important;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.health-level {
+  text-align: center;
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.download-section {
+  text-align: center;
+  margin-top: 3rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: #ffffff !important;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.upgrade-notice {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 0.5rem;
+  color: #dbeafe !important;
+}
+
+.upgrade-notice a {
+  color: #38bdf8 !important;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.upgrade-notice a:hover {
+  text-decoration: underline;
+}
+</style>
+</head>
+<body class="resource-center claim-summary-page">
+<header class="header">
+  <div class="bar container">
+    <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
+    <nav class="nav">
+      <a href="/app/index.html">Home</a>
+      <span>></span>
+      <a href="/app/resource-center.html">Resource Center</a>
+      <span>></span>
+      <span>Claim Summary</span>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="summary-container">
+    <div class="summary-header">
+      <h1>Your Claim Summary</h1>
+      <p>Complete overview of your claim progress and health</p>
+    </div>
+
+    <div class="summary-card">
+      <h2>Claim Health Score</h2>
+      <div class="health-score-display" id="health-score">0</div>
+      <div class="health-level" id="health-level">Calculating...</div>
+    </div>
+
+    <div class="summary-card">
+      <h2>Activation Milestones</h2>
+      <div id="activation-list">
+        <p>Loading milestones...</p>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <h2>Completed Stages</h2>
+      <div id="stages-list">
+        <p>Loading stages...</p>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <h2>Tools Used</h2>
+      <div id="tools-list">
+        <p>Loading tools...</p>
+      </div>
+    </div>
+
+    <div class="download-section">
+      <h2 style="color: #ffffff !important; margin-bottom: 1rem;">Download Your Claim Summary</h2>
+      <p style="color: #dbeafe !important; margin-bottom: 1.5rem;">Get a complete PDF summary of your claim progress and documentation.</p>
+      <button id="download-summary" class="btn-primary">Download Claim Summary PDF</button>
+      <div id="upgrade-notice" class="upgrade-notice" style="display: none;">
+        <p>PDF downloads are available for Pro members. <a href="/app/upgrade.html?source=summary">Upgrade to Pro</a> to unlock this feature.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  // Load summary data
+  document.addEventListener("DOMContentLoaded", () => {
+    const health = computeClaimHealth();
+    const level = getClaimHealthLevel(health);
+    const activation = getActivation();
+    
+    // Update health score
+    document.getElementById("health-score").textContent = health;
+    document.getElementById("health-level").textContent = level.level;
+    document.getElementById("health-level").style.color = level.color;
+    
+    // Update activation milestones
+    const milestones = [
+      { key: "stage_1_complete", label: "Stage 1 Completed" },
+      { key: "evidence_organizer_opened", label: "Evidence Organizer Opened" },
+      { key: "first_doc_generated", label: "First Document Generated" },
+      { key: "ai_agent_used", label: "AI Response Agent Used" },
+      { key: "rom_run", label: "ROM Estimator Run" },
+      { key: "negotiation_script_opened", label: "Negotiation Scripts Opened" },
+      { key: "compliance_engine_opened", label: "Compliance Engine Opened" },
+      { key: "claim_journal_entry", label: "Claim Journal Entry Created" },
+      { key: "completed_3_stages", label: "Completed 3 Stages" },
+      { key: "full_activation", label: "Full Activation (All 6 Stages)" }
+    ];
+    
+    const activationList = document.getElementById("activation-list");
+    activationList.innerHTML = "<ul>";
+    milestones.forEach(m => {
+      const completed = activation[m.key];
+      const date = completed ? new Date(completed).toLocaleDateString() : null;
+      activationList.innerHTML += `
+        <li>
+          ${completed ? "✔" : "○"} ${m.label}
+          ${date ? ` <span style="opacity: 0.7; font-size: 0.9rem;">(${date})</span>` : ""}
+        </li>
+      `;
+    });
+    activationList.innerHTML += "</ul>";
+    
+    // Update completed stages
+    const stagesList = document.getElementById("stages-list");
+    stagesList.innerHTML = "<ul>";
+    for (let i = 1; i <= 6; i++) {
+      const completed = activation[`stage_${i}_complete`];
+      const date = completed ? new Date(completed).toLocaleDateString() : null;
+      const stageNames = [
+        "Start Your Claim",
+        "Document Damage",
+        "Analyze & Compare",
+        "Submit & Respond",
+        "Negotiate",
+        "Resolve or Escalate"
+      ];
+      stagesList.innerHTML += `
+        <li>
+          ${completed ? "✔" : "○"} Stage ${i}: ${stageNames[i-1]}
+          ${date ? ` <span style="opacity: 0.7; font-size: 0.9rem;">(${date})</span>` : ""}
+        </li>
+      `;
+    }
+    stagesList.innerHTML += "</ul>";
+    
+    // Update tools used
+    const toolsList = document.getElementById("tools-list");
+    const toolMap = {
+      "evidence_organizer_opened": "Evidence Organizer",
+      "first_doc_generated": "Document Generator",
+      "ai_agent_used": "AI Response Agent",
+      "rom_run": "ROM Estimator",
+      "negotiation_script_opened": "Negotiation Scripts",
+      "compliance_engine_opened": "Compliance Engine",
+      "claim_journal_entry": "Claim Journal"
+    };
+    
+    toolsList.innerHTML = "<ul>";
+    Object.keys(toolMap).forEach(key => {
+      if (activation[key]) {
+        const date = new Date(activation[key]).toLocaleDateString();
+        toolsList.innerHTML += `
+          <li>
+            ✔ ${toolMap[key]} <span style="opacity: 0.7; font-size: 0.9rem;">(${date})</span>
+          </li>
+        `;
+      }
+    });
+    if (Object.keys(toolMap).filter(k => activation[k]).length === 0) {
+      toolsList.innerHTML = "<p>No tools used yet.</p>";
+    } else {
+      toolsList.innerHTML += "</ul>";
+    }
+    
+    // Download button handler
+    document.getElementById("download-summary").addEventListener("click", () => {
+      if (window.CNAnalytics) {
+        CNAnalytics.log("claim_summary_download_attempt", { health });
+      }
+      
+      // Check if user is Pro
+      const isProUser = localStorage.getItem("isProUser") === "true";
+      
+      if (!isProUser) {
+        // Show upgrade notice
+        document.getElementById("upgrade-notice").style.display = "block";
+        // Redirect to upgrade page
+        setTimeout(() => {
+          window.location.href = "/app/upgrade.html?source=summary";
+        }, 2000);
+        return;
+      }
+      
+      // Save summary data
+      const summary = {
+        health,
+        activation,
+        completedStages: Object.keys(activation).filter(k => k.includes("stage") && k.includes("complete")),
+        timestamp: Date.now(),
+        generatedAt: new Date().toISOString()
+      };
+      
+      localStorage.setItem("cn_claim_summary", JSON.stringify(summary));
+      
+      if (window.CNAnalytics) {
+        CNAnalytics.log("claim_summary_downloaded", { health });
+      }
+      
+      // Trigger print dialog (temporary PDF solution)
+      window.print();
+    });
+  });
+</script>
+
+<style id="final-white-text-enforcement">
+body.claim-summary-page,
+body.claim-summary-page * {
+  color: #ffffff !important;
+}
+
+body.claim-summary-page a {
+  color: #dbeafe !important;
+}
+
+body.claim-summary-page a:hover {
+  color: #93c5fd !important;
+}
+
+@media print {
+  body.claim-summary-page {
+    background: white;
+  }
+  
+  .summary-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    color: #111827 !important;
+  }
+  
+  .summary-card h2,
+  .summary-card h3 {
+    color: #111827 !important;
+  }
+  
+  .summary-card p,
+  .summary-card li {
+    color: #374151 !important;
+  }
+  
+  .download-section {
+    display: none;
+  }
+}
+</style>
+
+</body></html>
+

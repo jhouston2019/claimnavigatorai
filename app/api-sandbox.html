@@ -1,0 +1,314 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>API Sandbox • ClaimNavigatorAI</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+    <script src="/app/assets/js/api-keys.js"></script>
+<style>
+body.api-sandbox-page {
+  background: url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+body.api-sandbox-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 10, 35, 0.56);
+  z-index: -1;
+}
+
+.sandbox-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.sandbox-section {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.sandbox-section h1 {
+  color: #ffffff !important;
+  margin: 0 0 1rem 0;
+  font-size: 2.5rem;
+}
+
+.sandbox-section h3 {
+  color: #ffffff !important;
+  margin: 1.5rem 0 0.5rem 0;
+  font-size: 1.25rem;
+}
+
+.sandbox-section p {
+  color: #dbeafe !important;
+  margin: 0 0 1.5rem 0;
+}
+
+.sandbox-section label {
+  display: block;
+  color: #dbeafe !important;
+  margin: 1rem 0 0.5rem 0;
+  font-weight: 600;
+}
+
+.sandbox-section select,
+.sandbox-section textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff !important;
+  font-size: 1rem;
+  font-family: 'Courier New', monospace;
+  margin-bottom: 1rem;
+}
+
+.sandbox-section textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.sandbox-section select option {
+  background: #1e3a8a;
+  color: #ffffff;
+}
+
+.sandbox-response {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1.5rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.sandbox-response pre {
+  color: #dbeafe !important;
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+</style>
+</head>
+<body class="resource-center api-sandbox-page">
+<header class="header">
+  <div class="bar container">
+    <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
+    <nav class="nav">
+      <a href="/app/index.html">Home</a>
+      <span>></span>
+      <a href="/app/developer.html">Developer Portal</a>
+      <span>></span>
+      <span>API Sandbox</span>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="sandbox-container">
+    <div class="sandbox-section">
+      <h1>API Sandbox</h1>
+      <p>Test ClaimNavigator APIs in-browser (simulated).</p>
+      
+      <label>API Endpoint</label>
+      <select id="sandbox-api">
+        <option value="roadmap">Claim Roadmap API</option>
+        <option value="compliance">Compliance Engine API</option>
+        <option value="ai_agent">AI Response Agent API</option>
+        <option value="evidence">Evidence Organizer API</option>
+        <option value="health">Claim Health Score API</option>
+      </select>
+      
+      <label>Request Payload (JSON)</label>
+      <textarea id="sandbox-payload" rows="8">{
+  "claim_type": "fire",
+  "stage": 3,
+  "jurisdiction": "CA"
+}</textarea>
+      
+      <button id="sandbox-run" class="btn-primary">Run API Call</button>
+      
+      <h3>Response</h3>
+      <div class="sandbox-response">
+        <pre id="sandbox-response">Click "Run API Call" to see the response...</pre>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const runBtn = document.getElementById("sandbox-run");
+  const apiSelect = document.getElementById("sandbox-api");
+  const payloadTextarea = document.getElementById("sandbox-payload");
+  const responsePre = document.getElementById("sandbox-response");
+  
+  runBtn.addEventListener("click", () => {
+    const api = apiSelect.value;
+    const payloadText = payloadTextarea.value.trim();
+    
+    // Validate JSON
+    let payload;
+    try {
+      payload = JSON.parse(payloadText);
+    } catch (e) {
+      responsePre.textContent = `Error: Invalid JSON payload.\n\n${e.message}`;
+      responsePre.style.color = "#ef4444";
+      return;
+    }
+    
+    responsePre.style.color = "#dbeafe";
+    responsePre.textContent = "Processing...";
+    
+    // Simulate API call delay
+    setTimeout(() => {
+      if (!window.CNApi) {
+        responsePre.textContent = "Error: API module not loaded.";
+        responsePre.style.color = "#ef4444";
+        return;
+      }
+      
+      // Record the API call
+      CNApi.recordApiCall(api, "dev");
+      
+      // Generate mock response based on API
+      let response;
+      if (api === "roadmap") {
+        response = {
+          status: "ok",
+          stages: 6,
+          current_stage: {
+            id: payload.stage || 3,
+            title: "Analyze & Compare",
+            tools: [
+              { name: "Claim Analysis Tools", href: "/app/claim-analysis.html" },
+              { name: "ROM Estimator", href: "/app/rom-tool.html" }
+            ]
+          },
+          message: "Roadmap data retrieved successfully."
+        };
+      } else if (api === "compliance") {
+        response = {
+          status: "ok",
+          letters: 3,
+          risk_flags: ["deadline", "documentation"],
+          jurisdiction: payload.jurisdiction || "CA",
+          compliance_score: 78,
+          recommendations: [
+            "File regulatory complaint within 7 days",
+            "Request formal appraisal process"
+          ]
+        };
+      } else if (api === "ai_agent") {
+        response = {
+          status: "ok",
+          draft: "This is a sample AI-generated response to your insurer's communication. It addresses the key points raised and maintains a professional tone while asserting your rights under the policy.",
+          tone: "professional",
+          word_count: 145,
+          compliance_checked: true
+        };
+      } else if (api === "evidence") {
+        response = {
+          status: "ok",
+          categorized: 12,
+          categories: {
+            "photos": 8,
+            "receipts": 3,
+            "correspondence": 1
+          },
+          metadata_extracted: true,
+          organization_score: 92
+        };
+      } else if (api === "health") {
+        response = {
+          status: "ok",
+          health_score: 78,
+          level: "good",
+          completed_stages: payload.stage || 3,
+          milestones: [
+            "Stage 1 completed",
+            "Evidence organized",
+            "First document generated"
+          ],
+          recommendations: [
+            "Complete Stage 4 to improve score",
+            "Use AI Response Agent for faster responses"
+          ]
+        };
+      }
+      
+      responsePre.textContent = JSON.stringify(response, null, 2);
+      
+      if (window.CNAnalytics) {
+        CNAnalytics.log("api_sandbox_call", { api, payload });
+      }
+    }, 500);
+  });
+  
+  // Update payload example when API changes
+  apiSelect.addEventListener("change", () => {
+    const api = apiSelect.value;
+    const examples = {
+      roadmap: `{
+  "claim_type": "fire",
+  "stage": 3,
+  "jurisdiction": "CA"
+}`,
+      compliance: `{
+  "claim_type": "water",
+  "jurisdiction": "FL",
+  "deadline_concerns": true
+}`,
+      ai_agent: `{
+  "insurer_message": "We are denying your claim due to...",
+  "claim_type": "fire",
+  "tone": "professional"
+}`,
+      evidence: `{
+  "files": ["photo1.jpg", "receipt.pdf"],
+  "claim_type": "hurricane"
+}`,
+      health: `{
+  "claim_type": "fire",
+  "stage": 3,
+  "completed_milestones": ["stage_1", "evidence_organized"]
+}`
+    };
+    
+    if (examples[api]) {
+      payloadTextarea.value = examples[api];
+    }
+  });
+});
+</script>
+
+<style id="final-white-text-enforcement">
+body.api-sandbox-page,
+body.api-sandbox-page * {
+  color: #ffffff !important;
+}
+
+body.api-sandbox-page a {
+  color: #dbeafe !important;
+}
+
+body.api-sandbox-page a:hover {
+  color: #93c5fd !important;
+}
+</style>
+
+</body></html>
+

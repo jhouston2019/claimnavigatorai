@@ -4,6 +4,11 @@
     <link rel="stylesheet" href="/app/assets/css/style.css">
     <link rel="stylesheet" href="/app/assets/css/design-system.css">
     <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+    <script src="/app/assets/js/user-tier.js"></script>
+    <script src="/app/assets/js/feature-gate.js"></script>
+    <script src="/app/assets/js/demo-mode.js"></script>
+    <script src="/app/assets/js/upgrade-hooks.js"></script>
+    <script src="/app/assets/js/org.js"></script>
 <style>
 /* USE CSS CUSTOM PROPERTIES TO OVERRIDE COLORS */
 :root {
@@ -238,6 +243,27 @@ a:hover {
           <a href="/app/resource-center/advanced-tools/advanced-tools.html">Advanced Tools Suite</a>
         </div>
       </div>
+      <!-- Global Roadmap Context Chip -->
+      <div class="nav-roadmap-chip">
+        <a id="nav-roadmap-chip-link" href="/app/resource-center/claim-roadmap.html">Roadmap: Stage 1</a>
+      </div>
+      <!-- Developer / API Links -->
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('developer')">
+          Developer
+        </button>
+        <div class="nav-dropdown-content" id="developer">
+          <a href="/app/developer.html">Developer Portal</a>
+          <a href="/app/api-marketplace.html">API Marketplace</a>
+          <a href="/app/api-pricing.html">API Pricing</a>
+          <a href="/app/api-sandbox.html">API Sandbox</a>
+          <a href="/app/api-usage.html">Usage & Billing</a>
+        </div>
+      </div>
+      <!-- Tier Badge -->
+      <li class="nav-tier-badge">
+        <span id="nav-tier-label">Free</span>
+      </li>
     </nav>
   </div>
 </header>
@@ -248,12 +274,26 @@ a:hover {
       <!-- Centered Tagline -->
       <div class="hero-section">
         <h1 class="main-title">Your AI-Powered Resource Center</h1>
+        <p class="hero-subtitle">Overwhelmed? Start with the step-by-step Claim Roadmap instead of browsing tools.</p>
+        <div class="hero-roadmap-cta">
+          <a href="/app/resource-center/claim-roadmap.html" class="btn btn-primary">Open Claim Roadmap</a>
+        </div>
+        <div class="hero-roadmap-cta-secondary" id="return-last-stage" style="display:none;">
+          <a class="btn btn-secondary" id="return-last-stage-btn">Return to Where You Left Off</a>
+        </div>
         
         <!-- Search Bar -->
         <div class="search-container">
           <input id="smart-search" placeholder="Search tools or describe your situation..." class="main-search"/>
           <button class="btn btn-primary search-btn" id="search-go">Search</button>
         </div>
+      </div>
+      
+      <!-- Context Pill -->
+      <div class="context-pill">
+        <span class="context-label">Mode:</span>
+        <span class="context-value">Resource Library</span>
+        <a href="/app/resource-center/claim-roadmap.html" class="context-link">Switch to Guided Roadmap</a>
       </div>
 
     <!-- Resource Center Sections -->
@@ -414,7 +454,8 @@ a:hover {
       <div class="content-column">
         <h3 class="column-title">Advanced Tools</h3>
         <div class="tool-grid tool-grid-centered">
-          <a class="tool-card" href="/app/resource-center/advanced-tools/advanced-tools.html">
+          <a class="tool-card" href="/app/resource-center/advanced-tools/advanced-tools.html" data-tier-required="pro">
+            <div class="tool-badge tool-badge-pro">Pro</div>
             <span class="badge">Advanced</span>
             <h4>Advanced Tools Suite</h4>
             <p>Professional-grade analysis, valuation, compliance, and legal-strategy tools</p>
@@ -465,6 +506,123 @@ a:hover {
       dropdown.style.display = 'block';
     }
   }
+
+  // Stage highlighting from roadmap
+  (function() {
+    const params = new URLSearchParams(window.location.search);
+    const stage = params.get('stage'); // "1".."6"
+
+    if (!stage) return;
+
+    // mapping from stage id to href patterns or data attributes
+    const stageToolSelectors = {
+      "1": [
+        '/fnol-wizard.html',
+        '/quick-start.html',
+        '/claim-playbook.html',
+        '/claim-timeline.html',
+        '/state-rights.html'
+      ],
+      "2": [
+        '/evidence-organizer.html',
+        '/document-generator',
+        '/claim-journal.html',
+        '/checklist-engine.html'
+      ],
+      "3": [
+        '/claim-analysis.html',
+        '/contractor-estimate-interpreter.html',
+        '/rom-tool.html',
+        '/maximize-claim.html',
+        '/authority-hub.html'
+      ],
+      "4": [
+        '/ai-response-agent.html',
+        '/deadlines.html',
+        '/insurer-directory.html',
+        '/compliance-engine.html'
+      ],
+      "5": [
+        '/negotiation-tools.html',
+        '/claim-stage-tracker.html'
+      ],
+      "6": [
+        '/advanced-tools/advanced-tools.html',
+        '/regulatory-complaint',
+        '/state-insurance-departments.html',
+        '/recommended-resources.html'
+      ]
+    };
+
+    const links = document.querySelectorAll('.tool-card');
+
+    const matchesStage = stageToolSelectors[stage];
+    if (!matchesStage) return;
+
+    links.forEach(card => {
+      const href = card.getAttribute('href');
+      if (!href) return;
+      const isStageTool = matchesStage.some(fragment => href.includes(fragment));
+      if (isStageTool) {
+        card.classList.add('stage-highlight');
+      } else {
+        card.classList.add('stage-dimmed');
+      }
+    });
+  })();
+  
+  // Return to last stage button
+  (function() {
+    const stored = localStorage.getItem('claimRoadmapProgress');
+    if (stored) {
+      try {
+        const state = JSON.parse(stored);
+        if (state.currentStageId) {
+          const btn = document.getElementById('return-last-stage-btn');
+          if (btn) {
+            btn.href = `/app/resource-center/claim-roadmap.html?stage=${state.currentStageId}`;
+            document.getElementById('return-last-stage').style.display = 'block';
+          }
+        }
+      } catch (e) {
+        console.error('Error parsing roadmap state:', e);
+      }
+    }
+  })();
+  
+  // Update global roadmap chip
+  (function() {
+    const savedStageName = localStorage.getItem("globalRoadmapStageName");
+    const chipLink = document.getElementById("nav-roadmap-chip-link");
+    if (savedStageName && chipLink) {
+      chipLink.textContent = `Roadmap: ${savedStageName}`;
+    }
+  })();
+  
+  // Demo Toggle Button
+  (function() {
+    const dt = document.getElementById("demo-toggle");
+    if (!dt) return;
+    
+    if (window.CNDemo && CNDemo.isDemoMode()) {
+      dt.classList.add("active");
+    }
+    
+    dt.addEventListener("click", () => {
+      if (window.CNDemo) {
+        if (CNDemo.isDemoMode()) {
+          CNDemo.disableDemoMode();
+          dt.classList.remove("active");
+          alert("Demo Mode Disabled");
+        } else {
+          CNDemo.enableDemoMode();
+          dt.classList.add("active");
+          alert("Demo Mode Enabled");
+        }
+        location.reload();
+      }
+    });
+  })();
 </script>
 
 <style>
@@ -704,6 +862,182 @@ a.tool-card h4 {
   font-size: 2.5rem;
   color: #ffffff;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+/* Hero subtitle and CTA */
+.hero-subtitle {
+  font-size: 1.125rem;
+  color: #dbeafe !important;
+  margin: 1rem 0 1.5rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.hero-roadmap-cta {
+  margin-bottom: 2rem;
+}
+
+.hero-roadmap-cta .btn {
+  font-size: 1.125rem;
+  padding: 0.875rem 2rem;
+}
+
+/* Context pill */
+.context-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+  margin: 1.5rem auto 2rem;
+  max-width: fit-content;
+  font-size: 0.875rem;
+}
+
+.context-label {
+  color: #dbeafe !important;
+  font-weight: 500;
+}
+
+.context-value {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.context-link {
+  color: #3b82f6 !important;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.context-link:hover {
+  color: #60a5fa !important;
+  text-decoration: underline;
+}
+
+/* Stage highlighting */
+.stage-highlight {
+  border: 2px solid #38bdf8 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3) !important;
+}
+
+.stage-dimmed {
+  opacity: 0.45;
+  filter: grayscale(35%);
+  pointer-events: none;
+}
+
+/* Global Roadmap Context Chip */
+.nav-roadmap-chip {
+  margin-left: auto;
+}
+
+.nav-roadmap-chip a {
+  padding: 6px 12px;
+  font-size: 13px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: #38bdf8 !important;
+  transition: background 0.2s ease;
+  text-decoration: none;
+}
+
+.nav-roadmap-chip a:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* Tier Badge */
+.nav-tier-badge {
+  margin-left: 8px;
+  list-style: none;
+}
+
+.nav-tier-badge span {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  display: inline-block;
+}
+
+.nav-tier-badge span.tier-pro {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+}
+
+.nav-tier-badge span.tier-enterprise {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fbbf24;
+}
+
+/* Tool Badges */
+.tool-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  z-index: 10;
+}
+
+.tool-badge-pro {
+  background: rgba(56, 189, 248, 0.18);
+  color: #38bdf8;
+}
+
+.tool-badge-enterprise {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fbbf24;
+}
+
+.tool-card {
+  position: relative;
+}
+
+/* Demo Toggle Button */
+.demo-toggle {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  padding: 10px 16px;
+  background: rgba(56, 189, 248, 0.25);
+  backdrop-filter: blur(6px);
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 9999;
+  font-size: 13px;
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  transition: all 0.3s ease;
+}
+
+.demo-toggle:hover {
+  background: rgba(56, 189, 248, 0.35);
+  transform: translateY(-2px);
+}
+
+.demo-toggle.active {
+  background: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+}
+
+/* Screenshot Mode */
+.screenshot-mode #demo-toggle,
+.screenshot-mode .nav-roadmap-chip,
+.screenshot-mode .nav-tier-badge {
+  display: none !important;
 }
 
 /* Search section */

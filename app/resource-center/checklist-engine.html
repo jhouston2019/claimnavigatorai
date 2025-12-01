@@ -338,6 +338,12 @@
         </div>
     </header>
 
+    <!-- Roadmap Breadcrumb -->
+    <div class="roadmap-breadcrumb" style="max-width: 1200px; margin: 1rem auto 0; padding: 0 1rem;">
+      <a href="/app/resource-center/claim-roadmap.html">← Back to Claim Roadmap</a>
+      <span class="roadmap-stage-label"></span>
+    </div>
+
     <!-- Main Content -->
     <main class="main-container">
         <!-- Header -->
@@ -440,6 +446,23 @@
 
     <script type="module" src="/app/assets/js/checklist-engine.js"></script>
     <script src="/app/assets/js/utils/pdf-export.js"></script>
+    <script>
+      // Roadmap stage label
+      const params = new URLSearchParams(window.location.search);
+      const stage = params.get('stage');
+      const labelMap = {
+        "1": "Stage 1 · Start Your Claim",
+        "2": "Stage 2 · Document Damage",
+        "3": "Stage 3 · Analyze & Compare",
+        "4": "Stage 4 · Submit & Respond",
+        "5": "Stage 5 · Negotiate",
+        "6": "Stage 6 · Resolve or Escalate"
+      };
+      const labelEl = document.querySelector(".roadmap-stage-label");
+      if (labelEl) {
+        labelEl.textContent = labelMap[stage] || "";
+      }
+    </script>
 </body>
 </html>
 

@@ -1,0 +1,192 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Checkout • ClaimNavigatorAI</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+    <script src="/app/assets/js/analytics.js"></script>
+    <script src="/app/assets/js/user-tier.js"></script>
+<style>
+body.checkout-page {
+  background: url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+body.checkout-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 10, 35, 0.56);
+  z-index: -1;
+}
+
+.checkout-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.checkout-box {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+}
+
+.checkout-box h1 {
+  color: #ffffff !important;
+  margin: 0 0 1rem 0;
+  font-size: 2rem;
+}
+
+.checkout-box p {
+  color: #dbeafe !important;
+  margin: 0.5rem 0;
+}
+
+.checkout-tier {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #38bdf8 !important;
+  margin: 1rem 0;
+}
+
+.checkout-box .btn-primary {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.125rem;
+  margin-top: 1.5rem;
+}
+
+.checkout-steps {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem;
+}
+
+.checkout-steps h3 {
+  color: #ffffff !important;
+  margin: 0 0 1rem 0;
+}
+
+.checkout-steps ol {
+  color: #dbeafe !important;
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.checkout-steps li {
+  margin: 0.5rem 0;
+}
+</style>
+</head>
+<body class="resource-center checkout-page">
+<header class="header">
+  <div class="bar container">
+    <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
+    <nav class="nav">
+      <a href="/app/index.html">Home</a>
+      <span>></span>
+      <a href="/app/pricing.html">Pricing</a>
+      <span>></span>
+      <span>Checkout</span>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="checkout-container">
+    <div class="checkout-box">
+      <h1>Secure Checkout</h1>
+      <p id="checkout-tier">Loading...</p>
+      <p>Complete your purchase to unlock full access.</p>
+      
+      <div class="checkout-steps">
+        <h3>Purchase Steps:</h3>
+        <ol>
+          <li>Click "Complete Purchase" below</li>
+          <li>Your account will be upgraded instantly</li>
+          <li>Start using Pro features immediately</li>
+        </ol>
+      </div>
+      
+      <button class="btn-primary" id="checkout-complete">Complete Purchase</button>
+    </div>
+  </div>
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const tier = new URLSearchParams(location.search).get("tier");
+  if (!tier) {
+    alert("No tier specified. Redirecting to pricing...");
+    location.href = "/app/pricing.html";
+    return;
+  }
+
+  // Log checkout started
+  if (window.CNAnalytics) {
+    CNAnalytics.log("checkout_started", { tier });
+  }
+
+  // Display tier
+  const tierEl = document.getElementById("checkout-tier");
+  if (tierEl) {
+    if (tier === "pro") {
+      tierEl.textContent = "Pro – $197/year";
+    } else if (tier === "enterprise") {
+      tierEl.textContent = "Enterprise – Custom Pricing";
+    } else {
+      tierEl.textContent = tier.charAt(0).toUpperCase() + tier.slice(1);
+    }
+  }
+
+  // Complete purchase handler
+  const completeBtn = document.getElementById("checkout-complete");
+  if (completeBtn) {
+    completeBtn.addEventListener("click", () => {
+      if (window.CNUserTier) {
+        CNUserTier.setUserTier(tier);
+      }
+      
+      if (window.CNAnalytics) {
+        CNAnalytics.log("checkout_completed", { tier });
+      }
+      
+      location.href = "/app/checkout-success.html";
+    });
+  }
+  
+  // Abandoned checkout recovery
+  window.addEventListener("beforeunload", () => {
+    if (window.CNAnalytics) {
+      CNAnalytics.log("checkout_abandoned", { tier });
+    }
+    localStorage.setItem("checkout_abandoned", "1");
+    localStorage.setItem("checkout_abandoned_tier", tier);
+  });
+});
+</script>
+
+<style id="final-white-text-enforcement">
+body.checkout-page,
+body.checkout-page * {
+  color: #ffffff !important;
+}
+
+body.checkout-page a {
+  color: #dbeafe !important;
+}
+
+body.checkout-page a:hover {
+  color: #93c5fd !important;
+}
+</style>
+
+</body></html>
+

@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="/app/assets/css/style.css">
   <link rel="stylesheet" href="/app/assets/css/design-system.css">
   <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <script src="/app/assets/js/analytics.js"></script>
+  <script src="/app/assets/js/activation.js"></script>
   <style>
     body.journal-page {
       background: 
@@ -251,6 +253,12 @@
     </div>
   </header>
 
+  <!-- Roadmap Breadcrumb -->
+  <div class="roadmap-breadcrumb" style="max-width: 1000px; margin: 1rem auto 0;">
+    <a href="/app/resource-center/claim-roadmap.html">← Back to Claim Roadmap</a>
+    <span class="roadmap-stage-label"></span>
+  </div>
+
   <main class="container">
     <div class="journal-container">
       <div class="journal-header">
@@ -372,6 +380,11 @@
 
         closeModal();
         refresh();
+        
+        // Mark activation milestone
+        if (window.markActivation) {
+          markActivation("claim_journal_entry");
+        }
       } catch (error) {
         alert('Error adding entry: ' + error.message);
       }
@@ -383,6 +396,24 @@
 
     // Initial load
     refresh();
+  </script>
+  
+  <script>
+    // Roadmap stage label
+    const params = new URLSearchParams(window.location.search);
+    const stage = params.get('stage');
+    const labelMap = {
+      "1": "Stage 1 · Start Your Claim",
+      "2": "Stage 2 · Document Damage",
+      "3": "Stage 3 · Analyze & Compare",
+      "4": "Stage 4 · Submit & Respond",
+      "5": "Stage 5 · Negotiate",
+      "6": "Stage 6 · Resolve or Escalate"
+    };
+    const labelEl = document.querySelector(".roadmap-stage-label");
+    if (labelEl) {
+      labelEl.textContent = labelMap[stage] || "";
+    }
   </script>
     <script type="module" src="/app/assets/js/tools/claim-journal.js"></script>
 </body>

@@ -1,0 +1,280 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Organization Claims • ClaimNavigatorAI</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+    <script src="/app/assets/js/user-tier.js"></script>
+    <script src="/app/assets/js/org.js"></script>
+    <script src="/app/assets/js/claim-health.js"></script>
+<style>
+body.enterprise-claims-page {
+  background: url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+body.enterprise-claims-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 10, 35, 0.56);
+  z-index: -1;
+}
+
+.claims-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.claims-header {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.claims-header h1 {
+  color: #ffffff !important;
+  margin: 0;
+}
+
+.claims-list {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  min-height: 200px;
+}
+
+.claim-row {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border-left: 3px solid rgba(56, 189, 248, 0.5);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.claim-row:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.claim-row:last-child {
+  margin-bottom: 0;
+}
+
+.claim-row h3 {
+  color: #ffffff !important;
+  margin: 0 0 8px 0;
+  font-size: 1.25rem;
+}
+
+.claim-row p {
+  color: #dbeafe !important;
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.claim-meta {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.claim-meta span {
+  color: #dbeafe !important;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.health-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.health-badge.excellent {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.health-badge.good {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+.health-badge.fair {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.health-badge.poor {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.empty-claims {
+  text-align: center;
+  padding: 3rem;
+  color: #dbeafe !important;
+  opacity: 0.7;
+}
+</style>
+</head>
+<body class="resource-center enterprise-claims-page">
+<header class="header">
+  <div class="bar container">
+    <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
+    <nav class="nav">
+      <a href="/app/index.html">Home</a>
+      <span>></span>
+      <a href="/app/enterprise-dashboard.html">Enterprise Dashboard</a>
+      <span>></span>
+      <span>Claims Workspace</span>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="claims-container">
+    <div class="claims-header">
+      <h1>Organization Claims Workspace</h1>
+      <button id="create-claim" class="btn-primary">Add Claim to Workspace</button>
+    </div>
+    
+    <div class="claims-list" id="claims-list">
+      <!-- Claims will be rendered here -->
+    </div>
+  </div>
+</main>
+
+<script>
+function getHealthLevel(health) {
+  if (health >= 80) return { level: "excellent", label: "Excellent" };
+  if (health >= 60) return { level: "good", label: "Good" };
+  if (health >= 40) return { level: "fair", label: "Fair" };
+  return { level: "poor", label: "Needs Improvement" };
+}
+
+function getStageName(stage) {
+  const stages = {
+    1: "Start Your Claim",
+    2: "Document Damage",
+    3: "Analyze & Compare",
+    4: "Submit & Respond",
+    5: "Negotiate",
+    6: "Resolve or Escalate"
+  };
+  return stages[stage] || `Stage ${stage}`;
+}
+
+function renderClaims() {
+  if (!window.CNOrg) {
+    document.getElementById("claims-list").innerHTML = "<p>Organization module not loaded.</p>";
+    return;
+  }
+  
+  const claims = CNOrg.getOrgClaims();
+  const listEl = document.getElementById("claims-list");
+  
+  if (claims.length === 0) {
+    listEl.innerHTML = '<div class="empty-claims">No claims in workspace yet. Add your first claim to get started.</div>';
+    return;
+  }
+  
+  listEl.innerHTML = claims.map(c => {
+    const healthLevel = getHealthLevel(c.health || 0);
+    const stageName = getStageName(c.stage || 1);
+    
+    return `
+      <div class="claim-row">
+        <h3>${c.title || "Untitled Claim"}</h3>
+        <div class="claim-meta">
+          <span>Stage: ${stageName}</span>
+          <span>
+            Health: ${c.health || 0}%
+            <span class="health-badge ${healthLevel.level}">${healthLevel.label}</span>
+          </span>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Check if user is enterprise
+  if (window.CNUserTier && !CNUserTier.isEnterprise()) {
+    alert("Claims workspace is available for Enterprise tier only.");
+    location.href = "/app/upgrade.html";
+    return;
+  }
+  
+  renderClaims();
+  
+  const createBtn = document.getElementById("create-claim");
+  
+  createBtn.addEventListener("click", () => {
+    const title = prompt("Enter claim title:");
+    if (!title || !title.trim()) {
+      return;
+    }
+    
+    if (!window.CNOrg) {
+      alert("Organization module not loaded.");
+      return;
+    }
+    
+    const health = window.computeClaimHealth ? computeClaimHealth() : 0;
+    const roadmapState = JSON.parse(localStorage.getItem("claimRoadmapProgress") || "{}");
+    const stage = roadmapState.currentStageId || 1;
+    
+    CNOrg.addOrgClaim({
+      title: title.trim(),
+      health,
+      stage
+    });
+    
+    renderClaims();
+    
+    if (window.CNAnalytics) {
+      CNAnalytics.log("org_claim_added", { title: title.trim(), health, stage });
+    }
+  });
+});
+</script>
+
+<style id="final-white-text-enforcement">
+body.enterprise-claims-page,
+body.enterprise-claims-page * {
+  color: #ffffff !important;
+}
+
+body.enterprise-claims-page a {
+  color: #dbeafe !important;
+}
+
+body.enterprise-claims-page a:hover {
+  color: #93c5fd !important;
+}
+</style>
+
+</body></html>
+

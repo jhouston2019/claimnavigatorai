@@ -6,6 +6,9 @@
     <title>AI Claim Response Assistant - ClaimNavigatorAI</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="/app/assets/js/analytics.js"></script>
+    <script src="/app/assets/js/activation.js"></script>
+    <script src="/app/assets/js/global.js"></script>
     <style>
         :root{
             --navy:#0f172a;
@@ -1135,6 +1138,21 @@
             if (!letter && !uploadedFile) {
                 alert('Please upload a document or paste the insurer letter for analysis.');
                 return;
+            }
+            
+            // Lowball/Denial Detection
+            if (letter && window.detectLowballOrDenial) {
+                if (detectLowballOrDenial(letter)) {
+                    localStorage.setItem("cn_lowball_detected", "1");
+                    if (window.CNAnalytics) {
+                        CNAnalytics.log("event_lowball_detected", { source: "ai_response_agent" });
+                    }
+                }
+            }
+            
+            // Mark activation
+            if (window.markActivation) {
+                markActivation("ai_agent_used");
             }
 
             // Show loading state

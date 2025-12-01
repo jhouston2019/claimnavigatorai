@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="/app/assets/css/style.css">
   <link rel="stylesheet" href="/app/assets/css/design-system.css">
   <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <script src="/app/assets/js/analytics.js"></script>
+  <script src="/app/assets/js/activation.js"></script>
   <style>
     body.rom-page {
       background: 
@@ -287,6 +289,11 @@ document.getElementById('romForm').addEventListener('submit', async (e) => {
     if (data.status === 'success' && data.estimate) {
       loading.style.display = 'none';
       results.style.display = 'block';
+      
+      // Mark activation milestone
+      if (window.markActivation) {
+        markActivation("rom_run");
+      }
       
       document.getElementById('estimateAmount').textContent = `$${data.estimate.toLocaleString()}`;
       document.getElementById('explanation').textContent = data.explanation || 'Estimate calculated successfully.';

@@ -1,0 +1,190 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>White-Label Preview • ClaimNavigatorAI</title>
+    <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/assets/css/design-system.css">
+    <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+<style>
+body.white-label-page {
+  background: url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+body.white-label-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 10, 35, 0.56);
+  z-index: -1;
+}
+
+.wl-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.wl-section {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.wl-section h1 {
+  color: #ffffff !important;
+  margin: 0 0 1rem 0;
+  font-size: 2.5rem;
+}
+
+.wl-section label {
+  display: block;
+  color: #dbeafe !important;
+  margin: 1rem 0 0.5rem 0;
+  font-weight: 600;
+}
+
+.wl-section input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff !important;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.wl-section input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.wl-preview {
+  margin-top: 2rem;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 2px solid #38bdf8;
+  background: rgba(15, 23, 42, 0.9);
+  text-align: center;
+}
+
+.wl-preview h2 {
+  color: #ffffff !important;
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+}
+
+.wl-preview p {
+  color: #dbeafe !important;
+  margin: 0 0 1.5rem 0;
+  opacity: 0.8;
+  font-size: 14px;
+}
+
+.wl-preview button {
+  padding: 0.75rem 2rem;
+  background: #38bdf8;
+  border: none;
+  border-radius: 6px;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+}
+</style>
+</head>
+<body class="resource-center white-label-page">
+<header class="header">
+  <div class="bar container">
+    <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
+    <nav class="nav">
+      <a href="/app/index.html">Home</a>
+      <span>></span>
+      <a href="/app/api-marketplace.html">API Marketplace</a>
+      <span>></span>
+      <span>White-Label Preview</span>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="wl-container">
+    <div class="wl-section">
+      <h1>White-Label Preview</h1>
+      <p style="color: #dbeafe !important; margin-bottom: 2rem;">See how Claim Navigator can appear under your brand.</p>
+      
+      <label>Brand Name</label>
+      <input id="wl-name" type="text" placeholder="e.g. Apex Claims OS">
+      
+      <label>Primary Color (hex)</label>
+      <input id="wl-color" type="text" placeholder="#38bdf8" value="#38bdf8">
+      
+      <button id="wl-apply" class="btn-primary">Apply Branding</button>
+    </div>
+
+    <div class="wl-section">
+      <h2 style="color: #ffffff !important; margin-bottom: 1rem;">Preview</h2>
+      <section id="wl-preview" class="wl-preview">
+        <h2 id="wl-preview-name">Your Brand Here</h2>
+        <p>Powered by ClaimNavigator AI</p>
+        <button>Start Guided Claim</button>
+      </section>
+    </div>
+  </div>
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const applyBtn = document.getElementById("wl-apply");
+  const nameInput = document.getElementById("wl-name");
+  const colorInput = document.getElementById("wl-color");
+  const preview = document.getElementById("wl-preview");
+  const previewName = document.getElementById("wl-preview-name");
+  const previewButton = preview.querySelector("button");
+  
+  applyBtn.addEventListener("click", () => {
+    const name = nameInput.value.trim() || "Your Brand Here";
+    const color = colorInput.value.trim() || "#38bdf8";
+    
+    // Validate hex color
+    if (!/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color)) {
+      alert("Please enter a valid hex color (e.g., #38bdf8)");
+      return;
+    }
+    
+    previewName.textContent = name;
+    preview.style.borderColor = color;
+    previewButton.style.background = color;
+    
+    if (window.CNAnalytics) {
+      CNAnalytics.log("white_label_preview", { brandName: name, color });
+    }
+  });
+  
+  // Apply default on load
+  applyBtn.click();
+});
+</script>
+
+<style id="final-white-text-enforcement">
+body.white-label-page,
+body.white-label-page * {
+  color: #ffffff !important;
+}
+
+body.white-label-page a {
+  color: #dbeafe !important;
+}
+
+body.white-label-page a:hover {
+  color: #93c5fd !important;
+}
+</style>
+
+</body></html>
+
