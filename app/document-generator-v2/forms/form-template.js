@@ -2,14 +2,19 @@
 let currentDocument = null;
 let formData = {};
 
-// Load claim profile and document watermark module
+// Load claim profile, document watermark, and spacing fix modules
 if (typeof window !== 'undefined') {
   // Load claim profile module
   const claimProfileScript = document.createElement('script');
   claimProfileScript.src = '/app/assets/js/claim-profile.js';
   document.head.appendChild(claimProfileScript);
   
-  // Load document watermark module
+  // Load document spacing fix module
+  const spacingScript = document.createElement('script');
+  spacingScript.src = '/app/assets/js/document-spacing-fix.js';
+  document.head.appendChild(spacingScript);
+  
+  // Load document watermark module (after spacing fix)
   const watermarkScript = document.createElement('script');
   watermarkScript.src = '/app/assets/js/document-watermark.js';
   document.head.appendChild(watermarkScript);
@@ -267,10 +272,21 @@ async function handleFormSubmit(event) {
 async function showSuccess(result, formData = {}) {
     const resultContainer = document.getElementById('resultContainer');
     
+    // Get the document content and wrap it with watermark if available
+    let documentContent = '';
+    if (result.html || result.content) {
+        const rawContent = result.html || result.content;
+        // Clean up spacing (replace double <br><br> with <p></p>)
+        const cleanedContent = rawContent.replace(/<br\s*\/?>\s*<br\s*\/?>/gi, '</p><p>');
+        // Wrap with header/footer watermark if buildDocShell is available
+        documentContent = (window.buildDocShell) ? window.buildDocShell(cleanedContent) : cleanedContent;
+    }
+    
     const html = `
         <div class="success">
             <h3>Document Generated Successfully!</h3>
             <p>Your ${currentDocument.title} has been generated and is ready for download.</p>
+            ${documentContent ? `<div class="cn-doc-page">${documentContent}</div>` : ''}
             <a href="data:${result.mimeType};base64,${result.contentBase64}" 
                download="${result.filename}" 
                class="download-link">

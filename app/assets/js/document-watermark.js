@@ -4,9 +4,15 @@
  */
 
 function buildDocShell(bodyHtml) {
+  // Fix spacing issues first
+  let cleanedBody = bodyHtml;
+  if (window.fixDocumentSpacing) {
+    cleanedBody = fixDocumentSpacing(bodyHtml);
+  }
+  
   if (!window.CNClaimProfile) {
     console.warn("CNClaimProfile not available, rendering without header/footer");
-    return bodyHtml;
+    return cleanedBody;
   }
 
   const profile = CNClaimProfile.getClaimProfile() || {};
@@ -23,33 +29,34 @@ function buildDocShell(bodyHtml) {
 
   const header = `
     <div class="cn-doc-header">
-      <div class="cn-doc-header-line">
-        <div>
-          <strong>${claimantName || "Claimant"}</strong><br>
-          ${address ? address + "<br>" : ""}
+      <div>
+        <div><strong style="font-size:15px;">${claimantName || "Claimant"}</strong></div>
+        <div style="font-size:13px;">
+          ${address ? `${address}<br>` : ""}
           ${cityStateZip || ""}
         </div>
-        <div style="text-align:right;">
-          <strong>Claim #:</strong> ${claimNumber}<br>
-          <strong>Carrier:</strong> ${carrier}<br>
-          <strong>Date of Loss:</strong> ${lossDate}
-        </div>
+      </div>
+      <div class="cn-doc-header-meta">
+        <div><strong>Claim #:</strong> ${claimNumber}</div>
+        <div><strong>Carrier:</strong> ${carrier}</div>
+        <div><strong>Date of Loss:</strong> ${lossDate}</div>
       </div>
     </div>
   `;
 
   const footer = `
     <div class="cn-doc-footer">
-      ClaimNavigator AI • Professional Claim Tools • Generated for ${claimantName || "Claimant"} • Claim # ${claimNumber}<br>
-      © ${new Date().getFullYear()} Claim Navigator AI – Powered by Axis Strategic Holdings. All rights reserved.
+      <div style="margin-bottom:4px;">Claim Navigator AI — Professional Claim Tools</div>
+      <div>Generated for ${claimantName || "Claimant"} • Claim # ${claimNumber}</div>
+      <div style="margin-top:4px; font-size:10px;">© ${new Date().getFullYear()} Claim Navigator AI — All Rights Reserved</div>
     </div>
   `;
 
   return `
-    <div class="cn-doc-watermark-bg">
+    <div class="cn-doc-page cn-doc-watermark-bg">
       <div class="cn-doc-content">
         ${header}
-        ${bodyHtml}
+        ${cleanedBody}
         ${footer}
       </div>
     </div>

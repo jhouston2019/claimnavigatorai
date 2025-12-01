@@ -187,7 +187,7 @@ function displayResults(result, documentType) {
       const rawHtml = result.html || result.document_text || result.content || 'Document generated successfully';
       // Wrap with header/footer watermark if buildDocShell is available
       const wrappedHtml = (window.buildDocShell) ? window.buildDocShell(rawHtml) : rawHtml;
-      content.innerHTML = wrappedHtml;
+      content.innerHTML = `<div class="cn-doc-page">${wrappedHtml}</div>`;
       container.appendChild(content);
       
       // Add save button
@@ -202,7 +202,7 @@ function displayResults(result, documentType) {
     const rawHtml = result.html || result.document_text || result.content || 'Document generated successfully';
     // Wrap with header/footer watermark if buildDocShell is available
     const wrappedHtml = (window.buildDocShell) ? window.buildDocShell(rawHtml) : rawHtml;
-    content.innerHTML = wrappedHtml;
+    content.innerHTML = `<div class="cn-doc-page">${wrappedHtml}</div>`;
   }
   
   if (previewContainer.style) {
