@@ -294,6 +294,7 @@ a:hover {
         <span class="context-label">Mode:</span>
         <span class="context-value">Resource Library</span>
         <a href="/app/resource-center/claim-roadmap.html" class="context-link">Switch to Guided Roadmap</a>
+        <a href="/app/onboarding/index.html" class="context-link" style="margin-left: 12px;">Edit Claim Setup</a>
       </div>
 
     <!-- Resource Center Sections -->
@@ -1310,4 +1311,13 @@ body.resource-center .nav-dropdown-toggle {
 }
 </style>
 
+<script src="/app/assets/js/claim-profile.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // If no claim profile yet → send to onboarding
+    if (!CNClaimProfile.hasClaimProfile()) {
+      window.location.href = "/app/onboarding/index.html";
+    }
+  });
+</script>
 </body></html>

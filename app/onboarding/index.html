@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Setup – Claim Navigator AI</title>
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/assets/css/design-system.css">
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body {
+      background: url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: -1;
+    }
+
+    .onboarding-container {
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 32px;
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .onboarding-steps {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .onboarding-step-pill {
+      flex: 1;
+      text-align: center;
+      padding: 8px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid rgba(148,163,184,0.4);
+      opacity: 0.6;
+      transition: all 0.2s ease;
+    }
+
+    .onboarding-step-pill.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      opacity: 1;
+      color: var(--accent);
+    }
+
+    .onboarding-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 32px;
+      gap: 12px;
+    }
+
+    .onboarding-field-group {
+      margin-bottom: 20px;
+    }
+
+    .onboarding-field-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+    }
+
+    .onboarding-field-group input,
+    .onboarding-field-group select,
+    .onboarding-field-group textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.9);
+      color: var(--text-primary);
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .onboarding-field-group input:focus,
+    .onboarding-field-group select:focus,
+    .onboarding-field-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .onboarding-field-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .onboarding-step {
+      animation: fade-in 0.3s ease;
+    }
+
+    .onboarding-field-group label input[type="checkbox"] {
+      width: auto;
+      margin-right: 8px;
+    }
+
+    .onboarding-field-group label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <main class="onboarding-container">
+    <h1 class="page-title">Set Up Your Claim</h1>
+    <p class="text-muted" style="margin-bottom: 24px;">This takes about 2–3 minutes and helps Claim Navigator tailor every tool and document to your situation.</p>
+
+    <div class="onboarding-steps">
+      <div class="onboarding-step-pill active" data-step-pill="1">1. You</div>
+      <div class="onboarding-step-pill" data-step-pill="2">2. Claim</div>
+      <div class="onboarding-step-pill" data-step-pill="3">3. Damage & Status</div>
+      <div class="onboarding-step-pill" data-step-pill="4">4. Goals</div>
+    </div>
+
+    <form id="onboarding-form">
+      <!-- STEP 1 – CLAIMANT INFO -->
+      <section class="onboarding-step" data-step="1">
+        <div class="onboarding-field-group">
+          <label for="claimant-name">Your Name</label>
+          <input id="claimant-name" name="claimantName" placeholder="Full name" required>
+        </div>
+        <div class="onboarding-field-group">
+          <label for="claimant-email">Email</label>
+          <input id="claimant-email" name="claimantEmail" type="email" placeholder="you@example.com" required>
+        </div>
+        <div class="onboarding-field-group">
+          <label for="property-address">Property Address</label>
+          <input id="property-address" name="propertyAddress" placeholder="123 Main St" required>
+        </div>
+        <div class="onboarding-field-group">
+          <label for="property-city">City</label>
+          <input id="property-city" name="propertyCity" placeholder="City" required>
+        </div>
+        <div class="onboarding-field-group">
+          <label for="property-state">State</label>
+          <input id="property-state" name="propertyState" placeholder="e.g. FL, TX, CA" maxlength="2" required>
+        </div>
+        <div class="onboarding-field-group">
+          <label for="property-zip">ZIP</label>
+          <input id="property-zip" name="propertyZip" placeholder="ZIP code" required>
+        </div>
+      </section>
+
+      <!-- STEP 2 – CLAIM BASICS -->
+      <section class="onboarding-step" data-step="2" style="display:none;">
+        <div class="onboarding-field-group">
+          <label for="claim-type">Claim Type</label>
+          <select id="claim-type" name="claimType" required>
+            <option value="">Select...</option>
+            <option value="fire">Fire</option>
+            <option value="water">Water / Pipe Burst</option>
+            <option value="wind_hail">Wind / Hail / Hurricane</option>
+            <option value="mold">Mold</option>
+            <option value="theft">Theft / Vandalism</option>
+            <option value="other">Other Property Loss</option>
+          </select>
+        </div>
+        <div class="onboarding-field-group">
+          <label for="loss-date">Date of Loss</label>
+          <input id="loss-date" name="lossDate" type="date" required>
+        </div>
+        <div class="onboarding-field-group">
+          <label for="insurance-carrier">Insurance Carrier</label>
+          <input id="insurance-carrier" name="carrier" placeholder="Carrier name" required>
+        </div>
+        <div class="onboarding-field-group">
+          <label for="policy-number">Policy # (optional)</label>
+          <input id="policy-number" name="policyNumber" placeholder="Policy number">
+        </div>
+        <div class="onboarding-field-group">
+          <label for="claim-number">Claim # (if assigned)</label>
+          <input id="claim-number" name="claimNumber" placeholder="Claim number">
+        </div>
+      </section>
+
+      <!-- STEP 3 – DAMAGE & STATUS -->
+      <section class="onboarding-step" data-step="3" style="display:none;">
+        <div class="onboarding-field-group">
+          <label for="rooms-affected">Rooms/Areas Affected</label>
+          <input id="rooms-affected" name="roomsAffected" placeholder="Kitchen, living room, roof, etc.">
+        </div>
+        <div class="onboarding-field-group">
+          <label for="structure-impacted">Structure Damage?</label>
+          <select id="structure-impacted" name="structureImpacted">
+            <option value="">Select...</option>
+            <option value="yes">Yes – structure is damaged</option>
+            <option value="no">No structural damage</option>
+          </select>
+        </div>
+        <div class="onboarding-field-group">
+          <label for="contents-impacted">Contents/Personal Property Damage?</label>
+          <select id="contents-impacted" name="contentsImpacted">
+            <option value="">Select...</option>
+            <option value="yes">Yes – contents damaged</option>
+            <option value="no">No contents damage</option>
+          </select>
+        </div>
+        <div class="onboarding-field-group">
+          <label for="claim-status">Claim Status</label>
+          <select id="claim-status" name="claimStatus">
+            <option value="">Select...</option>
+            <option value="not_filed">Not filed yet</option>
+            <option value="filed_no_adjuster">Filed – no adjuster assigned</option>
+            <option value="adjuster_assigned">Adjuster assigned / inspection pending</option>
+            <option value="estimate_received">Estimate received</option>
+            <option value="lowball_offer">Lowball offer received</option>
+            <option value="denied">Claim denied</option>
+          </select>
+        </div>
+        <div class="onboarding-field-group">
+          <label for="loss-description">Brief description of what happened</label>
+          <textarea id="loss-description" name="lossDescription" rows="3" placeholder="Describe what happened in 2–3 sentences."></textarea>
+          <div class="onboarding-field-hint">This helps AI draft more accurate responses and documents.</div>
+        </div>
+      </section>
+
+      <!-- STEP 4 – GOALS & CONFIRM -->
+      <section class="onboarding-step" data-step="4" style="display:none;">
+        <div class="onboarding-field-group">
+          <label>What are your main goals?</label>
+          <div>
+            <label><input type="checkbox" name="goal" value="maximize_payout"> Maximize payout</label><br>
+            <label><input type="checkbox" name="goal" value="speed_resolution"> Faster resolution</label><br>
+            <label><input type="checkbox" name="goal" value="fight_lowball"> Fight lowball / denial</label><br>
+            <label><input type="checkbox" name="goal" value="stay_compliant"> Stay compliant with deadlines</label><br>
+            <label><input type="checkbox" name="goal" value="stay_organized"> Stay organized / reduce stress</label>
+          </div>
+        </div>
+        <div class="onboarding-field-group">
+          <label for="involvement-level">How hands-on do you want to be?</label>
+          <select id="involvement-level" name="involvementLevel">
+            <option value="">Select...</option>
+            <option value="diy">DIY – I want to do most myself</option>
+            <option value="guided">Guided – I'll do it with help</option>
+            <option value="hands_off">Hands-off – I'd prefer to hand this off</option>
+          </select>
+        </div>
+        <p class="text-muted" style="margin-top: 24px;">When you finish, Claim Navigator will personalize your roadmap, documents, and AI responses using this information.</p>
+      </section>
+
+      <div class="onboarding-actions">
+        <button type="button" id="onboarding-back" class="btn-outline" style="visibility: hidden;">Back</button>
+        <button type="button" id="onboarding-next" class="btn-primary">Next</button>
+      </div>
+    </form>
+  </main>
+
+  <script src="/app/assets/js/claim-profile.js"></script>
+  <script>
+    (function() {
+      const steps = Array.from(document.querySelectorAll(".onboarding-step"));
+      const pills = Array.from(document.querySelectorAll("[data-step-pill]"));
+      const nextBtn = document.getElementById("onboarding-next");
+      const backBtn = document.getElementById("onboarding-back");
+      const form = document.getElementById("onboarding-form");
+      let currentStep = 1;
+
+      function setStep(step) {
+        currentStep = step;
+        steps.forEach(s => s.style.display = s.dataset.step == step ? "block" : "none");
+        pills.forEach(p => p.classList.toggle("active", p.dataset.stepPill == step));
+        backBtn.style.visibility = step === 1 ? "hidden" : "visible";
+        nextBtn.textContent = step === 4 ? "Finish & Go to Roadmap" : "Next";
+      }
+
+      function validateStep(step) {
+        const stepEl = document.querySelector(`.onboarding-step[data-step="${step}"]`);
+        const requiredFields = stepEl.querySelectorAll("[required]");
+        let isValid = true;
+
+        requiredFields.forEach(field => {
+          if (!field.value.trim()) {
+            isValid = false;
+            field.style.borderColor = "#ef4444";
+          } else {
+            field.style.borderColor = "";
+          }
+        });
+
+        return isValid;
+      }
+
+      function collectProfileFromForm() {
+        const profile = CNClaimProfile.getClaimProfile() || {};
+        const formData = new FormData(form);
+
+        const goals = formData.getAll("goal");
+
+        const newProfile = {
+          claimant: {
+            name: formData.get("claimantName") || "",
+            email: formData.get("claimantEmail") || "",
+            address: formData.get("propertyAddress") || "",
+            city: formData.get("propertyCity") || "",
+            state: formData.get("propertyState") || "",
+            zip: formData.get("propertyZip") || "",
+          },
+          claim: {
+            claimType: formData.get("claimType") || "",
+            lossDate: formData.get("lossDate") || "",
+            carrier: formData.get("carrier") || "",
+            policyNumber: formData.get("policyNumber") || "",
+            claimNumber: formData.get("claimNumber") || ""
+          },
+          property: {
+            address: formData.get("propertyAddress") || "",
+            city: formData.get("propertyCity") || "",
+            state: formData.get("propertyState") || "",
+            zip: formData.get("propertyZip") || ""
+          },
+          damage: {
+            roomsAffected: formData.get("roomsAffected") || "",
+            structureImpacted: formData.get("structureImpacted") || "",
+            contentsImpacted: formData.get("contentsImpacted") || "",
+            description: formData.get("lossDescription") || ""
+          },
+          status: {
+            claimStatus: formData.get("claimStatus") || ""
+          },
+          goals,
+          preferences: {
+            involvementLevel: formData.get("involvementLevel") || ""
+          },
+          completedAt: new Date().toISOString()
+        };
+
+        CNClaimProfile.saveClaimProfile({ ...profile, ...newProfile });
+        return newProfile;
+      }
+
+      nextBtn.addEventListener("click", () => {
+        if (!validateStep(currentStep)) {
+          alert("Please fill in all required fields.");
+          return;
+        }
+
+        if (currentStep < 4) {
+          setStep(currentStep + 1);
+        } else {
+          collectProfileFromForm();
+          if (window.CNAnalytics) {
+            CNAnalytics.log("onboarding_completed");
+          }
+          window.location.href = "/app/resource-center/claim-roadmap.html";
+        }
+      });
+
+      backBtn.addEventListener("click", () => {
+        if (currentStep > 1) setStep(currentStep - 1);
+      });
+
+      // Pre-fill from existing profile, if any
+      document.addEventListener("DOMContentLoaded", () => {
+        const existing = CNClaimProfile.getClaimProfile();
+        if (existing && existing.claimant) {
+          if (form.elements["claimantName"]) form.elements["claimantName"].value = existing.claimant.name || "";
+          if (form.elements["claimantEmail"]) form.elements["claimantEmail"].value = existing.claimant.email || "";
+          if (form.elements["propertyAddress"]) form.elements["propertyAddress"].value = (existing.claimant.address || existing.property?.address || "");
+          if (form.elements["propertyCity"]) form.elements["propertyCity"].value = (existing.claimant.city || existing.property?.city || "");
+          if (form.elements["propertyState"]) form.elements["propertyState"].value = (existing.claimant.state || existing.property?.state || "");
+          if (form.elements["propertyZip"]) form.elements["propertyZip"].value = (existing.claimant.zip || existing.property?.zip || "");
+        }
+        if (existing && existing.claim) {
+          if (form.elements["claimType"]) form.elements["claimType"].value = existing.claim.claimType || "";
+          if (form.elements["lossDate"]) form.elements["lossDate"].value = existing.claim.lossDate || "";
+          if (form.elements["carrier"]) form.elements["carrier"].value = existing.claim.carrier || "";
+          if (form.elements["policyNumber"]) form.elements["policyNumber"].value = existing.claim.policyNumber || "";
+          if (form.elements["claimNumber"]) form.elements["claimNumber"].value = existing.claim.claimNumber || "";
+        }
+        if (existing && existing.damage) {
+          if (form.elements["roomsAffected"]) form.elements["roomsAffected"].value = existing.damage.roomsAffected || "";
+          if (form.elements["structureImpacted"]) form.elements["structureImpacted"].value = existing.damage.structureImpacted || "";
+          if (form.elements["contentsImpacted"]) form.elements["contentsImpacted"].value = existing.damage.contentsImpacted || "";
+          if (form.elements["lossDescription"]) form.elements["lossDescription"].value = existing.damage.description || "";
+        }
+        if (existing && existing.status) {
+          if (form.elements["claimStatus"]) form.elements["claimStatus"].value = existing.status.claimStatus || "";
+        }
+        if (existing && existing.preferences) {
+          if (form.elements["involvementLevel"]) form.elements["involvementLevel"].value = existing.preferences.involvementLevel || "";
+        }
+        if (existing && existing.goals) {
+          existing.goals.forEach(goal => {
+            const checkbox = form.querySelector(`input[type="checkbox"][value="${goal}"]`);
+            if (checkbox) checkbox.checked = true;
+          });
+        }
+
+        setStep(1);
+      });
+    })();
+  </script>
+</body>
+</html>
+

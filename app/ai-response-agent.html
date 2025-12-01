@@ -1169,7 +1169,10 @@
                 // Prepare form data for file upload
                 const formData = new FormData();
                 formData.append('mode', mode);
-                formData.append('claim', JSON.stringify(userData || {}));
+                // Include claim profile if available
+                const claimProfile = (window.CNClaimProfile) ? CNClaimProfile.getClaimProfile() || {} : {};
+                const claimData = { ...(userData || {}), claimProfile };
+                formData.append('claim', JSON.stringify(claimData));
                 formData.append('letter', letter);
                 
                 if (uploadedFile) {
@@ -1356,6 +1359,7 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', initializeApp);
     </script>
+    <script src="/app/assets/js/claim-profile.js"></script>
     <script type="module" src="/app/assets/js/tools/ai-response-agent.js"></script>
 </body>
 </html>

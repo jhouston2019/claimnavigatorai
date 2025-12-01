@@ -2,6 +2,19 @@
 let currentDocument = null;
 let formData = {};
 
+// Load claim profile and document watermark module
+if (typeof window !== 'undefined') {
+  // Load claim profile module
+  const claimProfileScript = document.createElement('script');
+  claimProfileScript.src = '/app/assets/js/claim-profile.js';
+  document.head.appendChild(claimProfileScript);
+  
+  // Load document watermark module
+  const watermarkScript = document.createElement('script');
+  watermarkScript.src = '/app/assets/js/document-watermark.js';
+  document.head.appendChild(watermarkScript);
+}
+
 // Initialize form when page loads
 document.addEventListener('DOMContentLoaded', async function() {
     try {

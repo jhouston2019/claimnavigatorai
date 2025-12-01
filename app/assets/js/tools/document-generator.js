@@ -184,7 +184,10 @@ function displayResults(result, documentType) {
       
       const content = document.createElement('div');
       content.id = 'previewContent';
-      content.innerHTML = result.html || result.document_text || result.content || 'Document generated successfully';
+      const rawHtml = result.html || result.document_text || result.content || 'Document generated successfully';
+      // Wrap with header/footer watermark if buildDocShell is available
+      const wrappedHtml = (window.buildDocShell) ? window.buildDocShell(rawHtml) : rawHtml;
+      content.innerHTML = wrappedHtml;
       container.appendChild(content);
       
       // Add save button
@@ -196,7 +199,10 @@ function displayResults(result, documentType) {
   // Update existing preview
   const content = previewContainer.querySelector('#previewContent') || previewContainer;
   if (content) {
-    content.innerHTML = result.html || result.document_text || result.content || 'Document generated successfully';
+    const rawHtml = result.html || result.document_text || result.content || 'Document generated successfully';
+    // Wrap with header/footer watermark if buildDocShell is available
+    const wrappedHtml = (window.buildDocShell) ? window.buildDocShell(rawHtml) : rawHtml;
+    content.innerHTML = wrappedHtml;
   }
   
   if (previewContainer.style) {
