@@ -1740,6 +1740,11 @@ body.resource-center.roadmap-page::before {
             }
           }
           
+          // Log timeline event
+          if (window.CNTimeline) {
+            window.CNTimeline.log("stage_complete", { stage: stageId });
+          }
+          
           // Trigger real-time Claim Health recalculation
           if (window.CNHealthHooks) {
             window.CNHealthHooks.trigger();

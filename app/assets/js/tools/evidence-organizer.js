@@ -120,11 +120,29 @@ async function handleFileUpload(files) {
         }
       }
       
-      // Increment evidence photo count
+      // Increment evidence photo count and store evidence item
       if (evidenceItem) {
         const photoKey = "cn_evidence_photo_count";
         const currentCount = parseInt(localStorage.getItem(photoKey) || "0", 10);
         localStorage.setItem(photoKey, String(currentCount + 1));
+        
+        // Store evidence item in list for portfolio
+        let evidenceList = JSON.parse(localStorage.getItem("cn_evidence_list") || "[]");
+        evidenceList.push({
+          id: evidenceItem.id || Date.now(),
+          url: uploadResult.url || evidenceItem.file_url,
+          category: evidenceItem.category || 'other',
+          timestamp: Date.now()
+        });
+        localStorage.setItem("cn_evidence_list", JSON.stringify(evidenceList));
+        
+        // Log timeline event using CNTimeline
+        if (window.CNTimeline) {
+          window.CNTimeline.log("evidence_upload", { 
+            category: evidenceItem.category || 'other',
+            fileName: file.name
+          });
+        }
         
         // Trigger real-time Claim Health recalculation
         if (window.CNHealthHooks) {

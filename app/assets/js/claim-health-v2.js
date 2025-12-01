@@ -79,7 +79,24 @@
     // ---- SCORE FLOOR & SAVE ----
     if (score < 0) score = 0;
 
-    const health = { score, flags, timestamp: Date.now() };
+    // Calculate category subscores
+    const subscores = {
+      documentation: 100 - (docCount === 0 ? 15 : 0),
+      evidence: 100 - (photoCount === 0 ? 20 : photoCount < 5 ? 10 : 0),
+      compliance: 100 - (status.claimStatus === "denied" ? 20 : 0),
+      financials: 100, // placeholder until estimate integration
+      negotiation: 100 - (status.claimStatus === "lowball_offer" ? 15 : 0),
+      completeness: 100 - [
+        !profile.claimant?.name,
+        !profile.claim?.claimType,
+        !profile.claim?.lossDate,
+        !profile.claim?.carrier,
+        !damage.description,
+        !damage.roomsAffected
+      ].filter(Boolean).length * 5
+    };
+
+    const health = { score, flags, subscores, timestamp: Date.now() };
     localStorage.setItem(HEALTH_KEY, JSON.stringify(health));
     return health;
   }

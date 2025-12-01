@@ -195,6 +195,20 @@ function displayResults(result, documentType) {
       const docCount = parseInt(localStorage.getItem(docKey) || "0", 10);
       localStorage.setItem(docKey, String(docCount + 1));
       
+      // Store document in list for portfolio
+      let docList = JSON.parse(localStorage.getItem("cn_document_list") || "[]");
+      docList.push({
+        id: Date.now(),
+        title: documentType || "Generated Document",
+        timestamp: Date.now()
+      });
+      localStorage.setItem("cn_document_list", JSON.stringify(docList));
+      
+      // Log timeline event
+      if (window.CNTimeline) {
+        window.CNTimeline.log("document_generated", { template: documentType || "Generated Document" });
+      }
+      
       // Trigger real-time Claim Health recalculation
       if (window.CNHealthHooks) {
         window.CNHealthHooks.trigger();
@@ -218,6 +232,20 @@ function displayResults(result, documentType) {
     const docKey = "cn_docs_generated";
     const docCount = parseInt(localStorage.getItem(docKey) || "0", 10);
     localStorage.setItem(docKey, String(docCount + 1));
+    
+    // Store document in list for portfolio
+    let docList = JSON.parse(localStorage.getItem("cn_document_list") || "[]");
+    docList.push({
+      id: Date.now(),
+      title: documentType || "Generated Document",
+      timestamp: Date.now()
+    });
+    localStorage.setItem("cn_document_list", JSON.stringify(docList));
+    
+    // Log timeline event
+    if (window.CNTimeline) {
+      window.CNTimeline.log("document_generated", { template: documentType || "Generated Document" });
+    }
     
     // Trigger real-time Claim Health recalculation
     if (window.CNHealthHooks) {

@@ -18,6 +18,11 @@ function getClaimProfile() {
 function saveClaimProfile(profile) {
   localStorage.setItem(CLAIM_PROFILE_KEY, JSON.stringify(profile));
   
+  // Log timeline event
+  if (window.CNTimeline) {
+    window.CNTimeline.log("claim_profile_update", {});
+  }
+  
   // Trigger real-time Claim Health recalculation
   if (window.CNHealthHooks) {
     window.CNHealthHooks.trigger();
