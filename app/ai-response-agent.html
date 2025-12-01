@@ -1147,6 +1147,11 @@
                     if (window.CNAnalytics) {
                         CNAnalytics.log("event_lowball_detected", { source: "ai_response_agent" });
                     }
+                    
+                    // Trigger real-time Claim Health recalculation
+                    if (window.CNHealthHooks) {
+                        window.CNHealthHooks.trigger();
+                    }
                 }
             }
             
@@ -1360,6 +1365,7 @@
         document.addEventListener('DOMContentLoaded', initializeApp);
     </script>
     <script src="/app/assets/js/claim-profile.js"></script>
+    <script src="/app/assets/js/health-hooks.js"></script>
     <script type="module" src="/app/assets/js/tools/ai-response-agent.js"></script>
 </body>
 </html>

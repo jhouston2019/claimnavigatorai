@@ -280,6 +280,16 @@ async function showSuccess(result, formData = {}) {
         const cleanedContent = rawContent.replace(/<br\s*\/?>\s*<br\s*\/?>/gi, '</p><p>');
         // Wrap with header/footer watermark if buildDocShell is available
         documentContent = (window.buildDocShell) ? window.buildDocShell(cleanedContent) : cleanedContent;
+        
+        // Increment generated documents count
+        const docKey = "cn_docs_generated";
+        const docCount = parseInt(localStorage.getItem(docKey) || "0", 10);
+        localStorage.setItem(docKey, String(docCount + 1));
+        
+        // Trigger real-time Claim Health recalculation
+        if (window.CNHealthHooks) {
+          window.CNHealthHooks.trigger();
+        }
     }
     
     const html = `

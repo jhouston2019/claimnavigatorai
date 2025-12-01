@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Portfolio - ClaimNavigatorAI</title>
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body {
+      background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('/assets/images/backgrounds/Damage1.jpg') center/cover no-repeat;
+      min-height: 100vh;
+      padding: 40px 20px;
+      color: #ffffff;
+    }
+    
+    #portfolio-container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      color: #ffffff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    #portfolio-container h1 {
+      color: #ffffff !important;
+      margin-top: 0;
+    }
+    
+    #portfolio-container p {
+      color: #dbeafe !important;
+    }
+    
+    #generate-portfolio-btn {
+      margin-top: 20px;
+      padding: 12px 20px;
+      font-size: 18px;
+      background: #38bdf8;
+      border-radius: 8px;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    #generate-portfolio-btn:hover {
+      background: #0ea5e9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(56,189,248,0.4);
+    }
+    
+    #portfolio-preview {
+      margin-top: 40px;
+      background: white;
+      color: #000;
+      padding: 40px;
+      border-radius: 8px;
+      min-height: 400px;
+    }
+    
+    #portfolio-preview h1,
+    #portfolio-preview h2 {
+      color: #111;
+    }
+    
+    #portfolio-preview p {
+      color: #333;
+    }
+    
+    @media print {
+      body {
+        background: white;
+        color: #000;
+      }
+      
+      #portfolio-container {
+        background: white;
+        border: none;
+      }
+      
+      #generate-portfolio-btn {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="portfolio-container">
+    <h1>Claim Summary / Portfolio</h1>
+    <p>Generate a full insurer-ready PDF containing your claim details, evidence, documents, and compliance status.</p>
+
+    <button id="generate-portfolio-btn">Generate Claim Portfolio PDF</button>
+
+    <div id="portfolio-preview" style="margin-top:40px; display: none;"></div>
+  </div>
+
+  <script src="/app/assets/js/claim-profile.js"></script>
+  <script src="/app/assets/js/document-watermark.js"></script>
+  <script src="/app/assets/js/claim-health-v2.js"></script>
+
+  <script>
+    document.getElementById("generate-portfolio-btn").onclick = () => {
+      const profile = CNClaimProfile.getClaimProfile();
+      const health = CNHealth.compute();
+
+      const html = `
+        <h1 style="margin-top:0;">Claim Summary Portfolio</h1>
+
+        <h2>Claimant Information</h2>
+        <p><strong>${profile.claimant?.name || "N/A"}</strong><br>
+        ${profile.claimant?.address || profile.property?.address || ""}<br>
+        ${[profile.property?.city || profile.claimant?.city, profile.property?.state || profile.claimant?.state, profile.property?.zip || profile.claimant?.zip].filter(Boolean).join(", ")}</p>
+
+        <h2>Claim Overview</h2>
+        <p><strong>Claim Type:</strong> ${profile.claim?.claimType || "N/A"}</p>
+        <p><strong>Carrier:</strong> ${profile.claim?.carrier || "N/A"}</p>
+        <p><strong>Claim #:</strong> ${profile.claim?.claimNumber || "N/A"}</p>
+        <p><strong>Date of Loss:</strong> ${profile.claim?.lossDate || "N/A"}</p>
+        <p><strong>Status:</strong> ${profile.status?.claimStatus || "Active"}</p>
+
+        <h2>Loss Description</h2>
+        <p>${profile.damage?.description || "No description provided."}</p>
+
+        <h2>Damage Summary</h2>
+        <p><strong>Rooms Affected:</strong> ${profile.damage?.roomsAffected || "N/A"}</p>
+        <p><strong>Structure Impacted:</strong> ${profile.damage?.structureImpacted || "N/A"}</p>
+        <p><strong>Contents Impacted:</strong> ${profile.damage?.contentsImpacted || "N/A"}</p>
+
+        <h2>Claim Health Score</h2>
+        <p><strong>Overall Score: ${health.score || 0}</strong></p>
+        ${health.flags && health.flags.length > 0 ? `<ul>${health.flags.map(f => `<li>${f}</li>`).join("")}</ul>` : "<p>No issues detected.</p>"}
+
+        <h2>Document List</h2>
+        <p>Total Generated: ${localStorage.getItem("cn_docs_generated") || 0}</p>
+
+        <h2>Evidence Summary</h2>
+        <p>Total Photos: ${localStorage.getItem("cn_evidence_photo_count") || 0}</p>
+      `;
+
+      const finalHtml = buildDocShell(html);
+      const previewEl = document.getElementById("portfolio-preview");
+      previewEl.innerHTML = finalHtml;
+      previewEl.style.display = "block";
+
+      // Scroll to preview
+      previewEl.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      // User can save via browser PDF print dialog
+      setTimeout(() => {
+        window.print();
+      }, 500);
+    };
+  </script>
+</body>
+</html>
+

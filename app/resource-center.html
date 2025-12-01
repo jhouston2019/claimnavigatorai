@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="/app/assets/css/style.css">
     <link rel="stylesheet" href="/app/assets/css/design-system.css">
     <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+    <link rel="stylesheet" href="/app/assets/css/guided-tour.css">
     <script src="/app/assets/js/user-tier.js"></script>
     <script src="/app/assets/js/feature-gate.js"></script>
     <script src="/app/assets/js/demo-mode.js"></script>
@@ -276,7 +277,7 @@ a:hover {
         <h1 class="main-title">Your AI-Powered Resource Center</h1>
         <p class="hero-subtitle">Overwhelmed? Start with the step-by-step Claim Roadmap instead of browsing tools.</p>
         <div class="hero-roadmap-cta">
-          <a href="/app/resource-center/claim-roadmap.html" class="btn btn-primary">Open Claim Roadmap</a>
+          <a href="/app/resource-center/claim-roadmap.html" id="roadmap-entry" class="btn btn-primary">Open Claim Roadmap</a>
         </div>
         <div class="hero-roadmap-cta-secondary" id="return-last-stage" style="display:none;">
           <a class="btn btn-secondary" id="return-last-stage-btn">Return to Where You Left Off</a>
@@ -296,9 +297,30 @@ a:hover {
         <a href="/app/resource-center/claim-roadmap.html" class="context-link">Switch to Guided Roadmap</a>
         <a href="/app/onboarding/index.html" class="context-link" style="margin-left: 12px;">Edit Claim Setup</a>
       </div>
+      
+      <!-- Claim Health Score Box -->
+      <div id="claim-health-box" class="glasscard" style="margin-bottom:20px; max-width: 600px; margin-left: auto; margin-right: auto; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 20px;">
+        <h3 style="margin-top: 0; color: #ffffff !important;">Claim Health Score</h3>
+        <div id="claim-health-score" style="font-size:32px; font-weight:900; color: #38bdf8 !important; margin: 10px 0;"></div>
+        <ul id="claim-health-flags" style="list-style: none; padding: 0; margin: 10px 0 0 0; color: #dbeafe !important;"></ul>
+      </div>
+      
+      <!-- Claim Portfolio Entry Point -->
+      <div id="claim-portfolio-entry" class="glasscard" style="padding:20px; margin-top:20px; margin-bottom:20px; max-width: 600px; margin-left: auto; margin-right: auto; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px;">
+        <h3 style="margin-top: 0; color: #ffffff !important;">Claim Summary Packet</h3>
+        <p style="color: #dbeafe !important; margin-bottom: 15px;">
+          Generate a full insurer-ready PDF packet containing your claim information,
+          damage summary, evidence overview, documents generated, and your Claim Health Score.
+        </p>
+        <button class="btn-primary" 
+                onclick="location.href='/app/claim-portfolio/index.html'"
+                style="margin-top:10px; padding: 12px 24px; font-size: 16px; background: #38bdf8; color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;">
+          Generate Claim Portfolio PDF
+        </button>
+      </div>
 
     <!-- Resource Center Sections -->
-    <div class="content-columns">
+    <div class="content-columns" id="resource-center-grid">
       <!-- SECTION 1: Start Here -->
       <div class="content-column">
         <h3 class="column-title">Start Here</h3>
@@ -361,12 +383,12 @@ a:hover {
       <div class="content-column">
         <h3 class="column-title">Core Claim Tools</h3>
         <div class="tool-grid">
-          <a class="tool-card" href="/app/document-generator-v2/document-generator.html">
+          <a class="tool-card" href="/app/document-generator-v2/document-generator.html" id="document-generator-entry">
             <span class="badge">AI</span>
             <h4>Document Generator</h4>
             <p>Generate 61+ professional insurance claim documents with AI assistance</p>
           </a>
-          <a class="tool-card" href="/app/resource-center/ai-response-agent.html">
+          <a class="tool-card" href="/app/resource-center/ai-response-agent.html" id="ai-response-agent-entry">
             <span class="badge">AI</span>
             <h4>AI Response Agent</h4>
             <p>Get AI-powered responses to insurer communications</p>
@@ -416,7 +438,7 @@ a:hover {
             <h4>Claim Journal</h4>
             <p>Track claim events, calls, submissions, and progress timeline</p>
           </a>
-          <a class="tool-card" href="/app/evidence-organizer.html">
+          <a class="tool-card" href="/app/evidence-organizer.html" id="evidence-organizer-entry">
             <span class="badge">AI</span>
             <h4>Evidence Organizer</h4>
             <p>AI-powered evidence categorization and management</p>
@@ -1312,12 +1334,70 @@ body.resource-center .nav-dropdown-toggle {
 </style>
 
 <script src="/app/assets/js/claim-profile.js"></script>
+<script src="/app/assets/js/claim-health-v2.js"></script>
+<script src="/app/assets/js/health-hooks.js"></script>
+<script src="/app/assets/js/guided-tour.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     // If no claim profile yet → send to onboarding
     if (!CNClaimProfile.hasClaimProfile()) {
       window.location.href = "/app/onboarding/index.html";
     }
+    
+    // Display Claim Health Score
+    if (window.CNHealth) {
+      const health = CNHealth.compute();
+      const scoreEl = document.getElementById("claim-health-score");
+      const flagsEl = document.getElementById("claim-health-flags");
+      
+      if (scoreEl) {
+        scoreEl.textContent = health.score || 0;
+      }
+      
+      if (flagsEl && health.flags && health.flags.length > 0) {
+        flagsEl.innerHTML = "";
+        health.flags.forEach(f => {
+          const li = document.createElement("li");
+          li.textContent = f;
+          li.style.marginBottom = "8px";
+          li.style.fontSize = "14px";
+          flagsEl.appendChild(li);
+        });
+      }
+    }
+    
+    // Start guided tour only if claim profile exists and tour not completed
+    if (CNClaimProfile.hasClaimProfile() && !localStorage.getItem("cn_guided_tour_complete")) {
+      setTimeout(() => {
+        if (window.startClaimNavigatorTour) {
+          startClaimNavigatorTour();
+        }
+      }, 600);
+    }
+    
+    // Listen for real-time health updates
+    document.addEventListener("claimHealthUpdated", (e) => {
+      const health = e.detail;
+      const scoreEl = document.getElementById("claim-health-score");
+      const flagsEl = document.getElementById("claim-health-flags");
+      
+      if (scoreEl) {
+        scoreEl.textContent = health.score || 0;
+      }
+      
+      if (flagsEl) {
+        flagsEl.innerHTML = "";
+        if (health.flags && health.flags.length > 0) {
+          health.flags.forEach(f => {
+            const li = document.createElement("li");
+            li.textContent = f;
+            li.style.marginBottom = "8px";
+            li.style.fontSize = "14px";
+            flagsEl.appendChild(li);
+          });
+        }
+      }
+    });
   });
 </script>
 </body></html>

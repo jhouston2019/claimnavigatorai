@@ -119,6 +119,18 @@ async function handleFileUpload(files) {
           // Don't block upload if compliance check fails
         }
       }
+      
+      // Increment evidence photo count
+      if (evidenceItem) {
+        const photoKey = "cn_evidence_photo_count";
+        const currentCount = parseInt(localStorage.getItem(photoKey) || "0", 10);
+        localStorage.setItem(photoKey, String(currentCount + 1));
+        
+        // Trigger real-time Claim Health recalculation
+        if (window.CNHealthHooks) {
+          window.CNHealthHooks.trigger();
+        }
+      }
     }
 
     // Reload evidence

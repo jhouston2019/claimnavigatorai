@@ -1699,6 +1699,11 @@ body.resource-center.roadmap-page::before {
           state.currentStageId = state.currentStageId + 1;
           saveRoadmapState(state);
           switchStage(state.currentStageId);
+          
+          // Trigger real-time Claim Health recalculation
+          if (window.CNHealthHooks) {
+            window.CNHealthHooks.trigger();
+          }
         }
       });
     }
@@ -1733,6 +1738,11 @@ body.resource-center.roadmap-page::before {
             if (stageId === 6) {
               markActivation("full_activation");
             }
+          }
+          
+          // Trigger real-time Claim Health recalculation
+          if (window.CNHealthHooks) {
+            window.CNHealthHooks.trigger();
           }
           
           // Auto-advance to next stage

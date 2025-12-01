@@ -190,6 +190,16 @@ function displayResults(result, documentType) {
       content.innerHTML = `<div class="cn-doc-page">${wrappedHtml}</div>`;
       container.appendChild(content);
       
+      // Increment generated documents count
+      const docKey = "cn_docs_generated";
+      const docCount = parseInt(localStorage.getItem(docKey) || "0", 10);
+      localStorage.setItem(docKey, String(docCount + 1));
+      
+      // Trigger real-time Claim Health recalculation
+      if (window.CNHealthHooks) {
+        window.CNHealthHooks.trigger();
+      }
+      
       // Add save button
       showSaveButton(result, documentType);
     }
@@ -203,6 +213,16 @@ function displayResults(result, documentType) {
     // Wrap with header/footer watermark if buildDocShell is available
     const wrappedHtml = (window.buildDocShell) ? window.buildDocShell(rawHtml) : rawHtml;
     content.innerHTML = `<div class="cn-doc-page">${wrappedHtml}</div>`;
+    
+    // Increment generated documents count
+    const docKey = "cn_docs_generated";
+    const docCount = parseInt(localStorage.getItem(docKey) || "0", 10);
+    localStorage.setItem(docKey, String(docCount + 1));
+    
+    // Trigger real-time Claim Health recalculation
+    if (window.CNHealthHooks) {
+      window.CNHealthHooks.trigger();
+    }
   }
   
   if (previewContainer.style) {

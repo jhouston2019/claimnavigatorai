@@ -268,6 +268,7 @@
   </main>
 
   <script src="/app/assets/js/claim-profile.js"></script>
+  <script src="/app/assets/js/health-hooks.js"></script>
   <script>
     (function() {
       const steps = Array.from(document.querySelectorAll(".onboarding-step"));
@@ -347,6 +348,11 @@
         };
 
         CNClaimProfile.saveClaimProfile({ ...profile, ...newProfile });
+        
+        // Trigger real-time Claim Health recalculation
+        if (window.CNHealthHooks) {
+          window.CNHealthHooks.trigger();
+        }
         return newProfile;
       }
 
