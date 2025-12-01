@@ -46,9 +46,12 @@ function buildDocShell(bodyHtml) {
 
   const footer = `
     <div class="cn-doc-footer">
-      <div style="margin-bottom:4px;">Claim Navigator AI — Professional Claim Tools</div>
-      <div>Generated for ${claimantName || "Claimant"} • Claim # ${claimNumber}</div>
-      <div style="margin-top:4px; font-size:10px;">© ${new Date().getFullYear()} Claim Navigator AI — All Rights Reserved</div>
+      <div style="margin-bottom:2px;">Claim Navigator AI — Professional Claim Tools</div>
+      <div>Generated for ${claimantName || "Claimant"} • Claim # ${claimNumber || "N/A"}</div>
+      <div style="margin-top:4px; font-size:10px;">
+        Informational use only. Claim Navigator AI is not a law firm or public adjuster and does not provide legal advice.
+        Review all content before sending to your insurer. © ${new Date().getFullYear()} Claim Navigator AI.
+      </div>
     </div>
   `;
 

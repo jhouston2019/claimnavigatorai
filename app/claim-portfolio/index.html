@@ -199,15 +199,26 @@
   </style>
 </head>
 <body>
-  <div id="portfolio-container">
+    <div id="portfolio-container">
+    <div id="portfolio-content-wrapper">
     <h1>Claim Summary / Portfolio</h1>
     <p>Generate a full insurer-ready PDF containing your claim details, evidence, documents, and compliance status.</p>
+    
+    <p style="font-size:12px; color:#9ca3af; margin-top:10px;">
+      This portfolio is a structured summary of your claim activity and documentation.
+      It is not legal advice and does not guarantee any claim outcome. Insurers may request additional information.
+    </p>
 
     <button id="generate-portfolio-btn">Generate Claim Portfolio PDF</button>
 
     <div id="portfolio-preview" style="margin-top:40px; display: none;"></div>
+    </div> <!-- End portfolio-content-wrapper -->
   </div>
 
+  <script src="/app/assets/js/error-logging.js"></script>
+  <script src="/app/assets/js/toasts.js"></script>
+  <script src="/app/assets/js/loading.js"></script>
+  <script src="/app/assets/js/compliance-banner.js"></script>
   <script src="/app/assets/js/claim-profile.js"></script>
   <script src="/app/assets/js/document-watermark.js"></script>
   <script src="/app/assets/js/claim-health-v2.js"></script>
@@ -247,6 +258,16 @@
     }
 
     document.getElementById("generate-portfolio-btn").onclick = async () => {
+      const btn = document.getElementById("generate-portfolio-btn");
+      const originalText = btn.textContent;
+      
+      try {
+        btn.disabled = true;
+        btn.textContent = "Generating...";
+        
+        if (window.CNLoading) {
+          window.CNLoading.show("Generating portfolio...");
+        }
       const profile = CNClaimProfile.getClaimProfile();
       const health = CNHealth.compute();
 
@@ -438,6 +459,26 @@
       setTimeout(() => {
         window.print();
       }, 500);
+      
+      if (window.CNToast) {
+        window.CNToast.success("Portfolio generated successfully!");
+      }
+      } catch (error) {
+        console.error("CNError (Portfolio):", error);
+        if (window.CNModalError) {
+          window.CNModalError.show("Portfolio Generation Error", "The portfolio could not be generated. Please try again.", error.toString());
+        } else if (window.CNToast) {
+          window.CNToast.error("Failed to generate portfolio. Please try again.");
+        }
+      } finally {
+        if (window.CNLoading) {
+          window.CNLoading.hide();
+        }
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = originalText;
+        }
+      }
     };
   </script>
 </body>

@@ -47,8 +47,18 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Render the form
         renderForm();
         
+        // Add nudge if profile is incomplete
+        setTimeout(() => {
+            if (window.CNClaimProfile && window.CNToast) {
+                const profile = window.CNClaimProfile.getClaimProfile();
+                if (!profile.claimant?.name || !profile.claim?.claimType) {
+                    window.CNToast.info("Complete your claim profile for better document generation.");
+                }
+            }
+        }, 2000);
+        
     } catch (error) {
-        console.error('Error initializing form:', error);
+        console.error('CNError (Form Init):', error);
         showError('Failed to load form. Please try again.');
     }
 });
@@ -217,11 +227,26 @@ async function handleFormSubmit(event) {
     
     const submitBtn = document.getElementById('submitBtn');
     const resultContainer = document.getElementById('resultContainer');
+    const originalText = submitBtn ? submitBtn.textContent : 'Generate Document';
     
     try {
         // Disable submit button and show loading
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Generating Document...';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Generating Document...';
+        }
+        
+        if (window.CNLoading) {
+            window.CNLoading.show("Generating document...");
+        }
+        
+        // Nudge if description is missing
+        if (window.CNClaimProfile && window.CNToast) {
+            const profile = window.CNClaimProfile.getClaimProfile();
+            if (!profile.damage?.description) {
+                window.CNToast.info("Add a description to improve analysis.");
+            }
+        }
         
         // Collect form data
         const formData = new FormData(event.target);
@@ -259,12 +284,22 @@ async function handleFormSubmit(event) {
         }
         
     } catch (error) {
-        console.error('Error generating document:', error);
-        showError('Failed to generate document: ' + error.message);
+        console.error('CNError (Document Generation):', error);
+        if (window.CNModalError) {
+            window.CNModalError.show("Document Generation Error", "The document could not be generated. Please try again.", error.message);
+        } else if (window.CNToast) {
+            window.CNToast.error('Failed to generate document: ' + error.message);
+        } else {
+            showError('Failed to generate document: ' + error.message);
+        }
     } finally {
-        // Re-enable submit button
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Generate Document';
+        if (window.CNLoading) {
+            window.CNLoading.hide();
+        }
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
     }
 }
 
@@ -281,19 +316,38 @@ async function showSuccess(result, formData = {}) {
         // Wrap with header/footer watermark if buildDocShell is available
         documentContent = (window.buildDocShell) ? window.buildDocShell(cleanedContent) : cleanedContent;
         
-        // Increment generated documents count
-        const docKey = "cn_docs_generated";
-        const docCount = parseInt(localStorage.getItem(docKey) || "0", 10);
-        localStorage.setItem(docKey, String(docCount + 1));
+        // Increment generated documents count and store document
+        let docList = [];
+        let docCount = 0;
         
-        // Store document in list for portfolio
-        let docList = JSON.parse(localStorage.getItem("cn_document_list") || "[]");
+        // Try storage-v2 first
+        if (window.CNStorage) {
+          const docData = window.CNStorage.getSection("documents") || { list: [], count: 0 };
+          docList = docData.list || [];
+          docCount = docData.count || 0;
+        } else {
+          // Fallback to old localStorage
+          const docKey = "cn_docs_generated";
+          docCount = parseInt(localStorage.getItem(docKey) || "0", 10);
+          docList = JSON.parse(localStorage.getItem("cn_document_list") || "[]");
+        }
+        
+        // Add new document
         const docTitle = (currentDocument && currentDocument.title) ? currentDocument.title : "Claim Document";
         docList.push({
           id: Date.now(),
           title: docTitle,
           timestamp: Date.now()
         });
+        docCount++;
+        
+        // Save to storage-v2
+        if (window.CNStorage) {
+          window.CNStorage.setSection("documents", { list: docList, count: docCount });
+        }
+        
+        // Also save to old keys for backward compatibility
+        localStorage.setItem("cn_docs_generated", String(docCount));
         localStorage.setItem("cn_document_list", JSON.stringify(docList));
         
         // Log timeline event
@@ -304,6 +358,10 @@ async function showSuccess(result, formData = {}) {
         // Trigger real-time Claim Health recalculation
         if (window.CNHealthHooks) {
           window.CNHealthHooks.trigger();
+        }
+        
+        if (window.CNToast) {
+          window.CNToast.success("Document generated successfully!");
         }
     }
     

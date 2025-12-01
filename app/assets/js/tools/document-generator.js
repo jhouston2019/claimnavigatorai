@@ -95,6 +95,10 @@ async function handleFormSubmit(e) {
       submitBtn.disabled = true;
       submitBtn.textContent = 'Generating...';
     }
+    
+    if (window.CNLoading) {
+      window.CNLoading.show("Generating document...");
+    }
 
     // Get form data
     const form = e.target;
@@ -149,11 +153,24 @@ async function handleFormSubmit(e) {
 
     // Show save button
     showSaveButton(result, documentType);
+    
+    if (window.CNToast) {
+      window.CNToast.success("Document generated successfully!");
+    }
 
   } catch (error) {
-    console.error('Form submit error:', error);
-    alert(`Error: ${error.message}`);
+    console.error('CNError (Document Generator):', error);
+    if (window.CNModalError) {
+      window.CNModalError.show("Document Generation Error", "The document could not be generated. Please try again.", error.message);
+    } else if (window.CNToast) {
+      window.CNToast.error(`Error: ${error.message}`);
+    } else {
+      alert(`Error: ${error.message}`);
+    }
   } finally {
+    if (window.CNLoading) {
+      window.CNLoading.hide();
+    }
     if (submitBtn) {
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
@@ -190,18 +207,37 @@ function displayResults(result, documentType) {
       content.innerHTML = `<div class="cn-doc-page">${wrappedHtml}</div>`;
       container.appendChild(content);
       
-      // Increment generated documents count
-      const docKey = "cn_docs_generated";
-      const docCount = parseInt(localStorage.getItem(docKey) || "0", 10);
-      localStorage.setItem(docKey, String(docCount + 1));
+      // Increment generated documents count and store document
+      let docList = [];
+      let docCount = 0;
       
-      // Store document in list for portfolio
-      let docList = JSON.parse(localStorage.getItem("cn_document_list") || "[]");
+      // Try storage-v2 first
+      if (window.CNStorage) {
+        const docData = window.CNStorage.getSection("documents") || { list: [], count: 0 };
+        docList = docData.list || [];
+        docCount = docData.count || 0;
+      } else {
+        // Fallback to old localStorage
+        const docKey = "cn_docs_generated";
+        docCount = parseInt(localStorage.getItem(docKey) || "0", 10);
+        docList = JSON.parse(localStorage.getItem("cn_document_list") || "[]");
+      }
+      
+      // Add new document
       docList.push({
         id: Date.now(),
         title: documentType || "Generated Document",
         timestamp: Date.now()
       });
+      docCount++;
+      
+      // Save to storage-v2
+      if (window.CNStorage) {
+        window.CNStorage.setSection("documents", { list: docList, count: docCount });
+      }
+      
+      // Also save to old keys for backward compatibility
+      localStorage.setItem("cn_docs_generated", String(docCount));
       localStorage.setItem("cn_document_list", JSON.stringify(docList));
       
       // Log timeline event

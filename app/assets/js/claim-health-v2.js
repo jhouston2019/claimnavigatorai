@@ -12,6 +12,10 @@
     const damage = profile.damage || {};
     const goals = profile.goals || [];
 
+    // Get previous score to calculate delta
+    const previousHealth = getHealth();
+    const previousScore = previousHealth.score || 0;
+
     let score = 100;
     let flags = [];
 
@@ -96,13 +100,32 @@
       ].filter(Boolean).length * 5
     };
 
-    const health = { score, flags, subscores, timestamp: Date.now() };
+    // Calculate delta
+    const delta = score - previousScore;
+
+    const health = { score, flags, subscores, delta, timestamp: Date.now() };
+    
+    // Save to storage-v2
+    if (window.CNStorage) {
+      window.CNStorage.setSection("health", { lastScore: score, lastHealth: health });
+    }
+    
+    // Also save to old key for backward compatibility
     localStorage.setItem(HEALTH_KEY, JSON.stringify(health));
     return health;
   }
 
   function getHealth() {
     try {
+      // Try storage-v2 first
+      if (window.CNStorage) {
+        const healthData = window.CNStorage.getSection("health");
+        if (healthData && healthData.lastHealth) {
+          return healthData.lastHealth;
+        }
+      }
+      
+      // Fallback to old localStorage
       return JSON.parse(localStorage.getItem(HEALTH_KEY) || "{}");
     } catch {
       return {};

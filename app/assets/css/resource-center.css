@@ -153,3 +153,200 @@ body.resource-center-page a {
   opacity: 0.45;
   filter: grayscale(35%);
 }
+
+/* ================================
+   MEGA BUILD C - COMPLIANCE BANNER
+=============================== */
+.cn-compliance-banner {
+  position: relative;
+  background: rgba(15,23,42,0.96);
+  color: #e5e7eb;
+  font-size: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin: 8px 0 16px 0;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.cn-compliance-banner strong {
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+.cn-compliance-banner button {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.cn-compliance-banner button:hover {
+  color: #f9fafb;
+  background: rgba(255,255,255,0.1);
+}
+
+/* Hide banner when printing */
+@media print {
+  .cn-compliance-banner {
+    display: none !important;
+  }
+}
+
+/* ================================
+   MEGA BUILD A - UI POLISH
+   Responsive & Mobile Adjustments
+=============================== */
+
+/* Mobile & Tablet Responsive */
+@media (max-width: 768px) {
+  .glasscard {
+    padding: 16px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .tool-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .tool-card {
+    padding: 16px !important;
+  }
+
+  #claim-health-box,
+  #claim-portfolio-entry {
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  #portfolio-preview {
+    padding: 20px !important;
+  }
+
+  .cn-doc-page {
+    padding: 20px !important;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+}
+
+/* Prevent horizontal overflow */
+.container,
+.main-content,
+.content-columns {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Consistent padding */
+.glasscard,
+.tool-card {
+  padding: 18px 20px;
+}
+
+/* Cleaner section spacing */
+.content-column {
+  margin-bottom: 24px;
+}
+
+.column-title {
+  margin-bottom: 16px;
+}
+
+/* Roadmap responsive */
+@media (max-width: 768px) {
+  .stage-rail {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .stage-node {
+    min-width: 80px;
+  }
+}
+
+/* AI Response Agent input scaling */
+textarea,
+input[type="text"],
+input[type="email"] {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Portfolio preview container */
+#portfolio-preview {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Button disabled state */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed !important;
+}
+
+/* ================================
+   MEGA BUILD C - PRINT/PDF POLISH
+=============================== */
+@page {
+  size: auto;
+  margin: 20mm;
+}
+
+/* Ensure headers and footers don't clip */
+.cn-doc-page {
+  page-break-inside: avoid;
+}
+
+/* Force page breaks where class is used */
+.page-break {
+  page-break-before: always;
+  break-before: page;
+}
+
+/* Avoid breaking headings from their content */
+.cn-doc-content h1,
+.cn-doc-content h2,
+.cn-doc-content h3 {
+  page-break-after: avoid;
+}
+
+/* Print-safe colors (avoid full-black backgrounds) */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  
+  .cn-doc-page {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .cn-compliance-banner {
+    display: none !important;
+  }
+  
+  /* Hide UI elements when printing */
+  button,
+  .btn,
+  .roadmap-controls,
+  .roadmap-buttons,
+  .roadmap-actions {
+    display: none !important;
+  }
+}

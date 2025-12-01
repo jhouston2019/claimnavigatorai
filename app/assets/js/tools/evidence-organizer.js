@@ -67,6 +67,10 @@ async function attachEventListeners() {
 
 async function handleFileUpload(files) {
   try {
+    if (window.CNLoading) {
+      window.CNLoading.show(`Uploading ${files.length} file${files.length > 1 ? 's' : ''}...`);
+    }
+    
     const client = await getSupabaseClient();
     const { data: { user } } = await client.auth.getUser();
     if (!user) throw new Error('User not authenticated');
@@ -122,18 +126,37 @@ async function handleFileUpload(files) {
       
       // Increment evidence photo count and store evidence item
       if (evidenceItem) {
-        const photoKey = "cn_evidence_photo_count";
-        const currentCount = parseInt(localStorage.getItem(photoKey) || "0", 10);
-        localStorage.setItem(photoKey, String(currentCount + 1));
+        let evidenceList = [];
+        let currentCount = 0;
         
-        // Store evidence item in list for portfolio
-        let evidenceList = JSON.parse(localStorage.getItem("cn_evidence_list") || "[]");
+        // Try storage-v2 first
+        if (window.CNStorage) {
+          const evidenceData = window.CNStorage.getSection("evidence") || { list: [], count: 0 };
+          evidenceList = evidenceData.list || [];
+          currentCount = evidenceData.count || 0;
+        } else {
+          // Fallback to old localStorage
+          const photoKey = "cn_evidence_photo_count";
+          currentCount = parseInt(localStorage.getItem(photoKey) || "0", 10);
+          evidenceList = JSON.parse(localStorage.getItem("cn_evidence_list") || "[]");
+        }
+        
+        // Add new evidence item
         evidenceList.push({
           id: evidenceItem.id || Date.now(),
           url: uploadResult.url || evidenceItem.file_url,
           category: evidenceItem.category || 'other',
           timestamp: Date.now()
         });
+        currentCount++;
+        
+        // Save to storage-v2
+        if (window.CNStorage) {
+          window.CNStorage.setSection("evidence", { list: evidenceList, count: currentCount });
+        }
+        
+        // Also save to old keys for backward compatibility
+        localStorage.setItem("cn_evidence_photo_count", String(currentCount));
         localStorage.setItem("cn_evidence_list", JSON.stringify(evidenceList));
         
         // Log timeline event using CNTimeline
@@ -185,9 +208,22 @@ async function addEvidenceTimelineEvent(files) {
         console.warn('Failed to add evidence timeline event:', error);
     }
 
+    if (window.CNToast) {
+      window.CNToast.success(`Successfully uploaded ${files.length} file${files.length > 1 ? 's' : ''}.`);
+    }
   } catch (error) {
-    console.error('File upload error:', error);
-    alert(`Error uploading file: ${error.message}`);
+    console.error('CNError (Evidence Upload):', error);
+    if (window.CNModalError) {
+      window.CNModalError.show("Upload Error", "Failed to upload evidence file. Please try again.", error.message);
+    } else if (window.CNToast) {
+      window.CNToast.error(`Error uploading file: ${error.message}`);
+    } else {
+      alert(`Error uploading file: ${error.message}`);
+    }
+  } finally {
+    if (window.CNLoading) {
+      window.CNLoading.hide();
+    }
   }
 }
 

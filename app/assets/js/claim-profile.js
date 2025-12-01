@@ -8,24 +8,55 @@ const CLAIM_PROFILE_KEY = "cn_claim_profile";
 
 function getClaimProfile() {
   try {
-    return JSON.parse(localStorage.getItem(CLAIM_PROFILE_KEY) || "{}");
+    // Try storage-v2 first
+    if (window.CNStorage) {
+      const profile = window.CNStorage.getSection("profile");
+      if (profile && Object.keys(profile).length > 0) {
+        return profile;
+      }
+    }
+    
+    // Fallback to old localStorage
+    const oldProfile = JSON.parse(localStorage.getItem(CLAIM_PROFILE_KEY) || "{}");
+    if (oldProfile && Object.keys(oldProfile).length > 0) {
+      // Migrate to storage-v2
+      if (window.CNStorage) {
+        window.CNStorage.setSection("profile", oldProfile);
+      }
+      return oldProfile;
+    }
+    
+    return {};
   } catch (e) {
-    console.error("Error parsing claim profile:", e);
+    console.error("CNError (Get Claim Profile):", e);
     return {};
   }
 }
 
 function saveClaimProfile(profile) {
-  localStorage.setItem(CLAIM_PROFILE_KEY, JSON.stringify(profile));
-  
-  // Log timeline event
-  if (window.CNTimeline) {
-    window.CNTimeline.log("claim_profile_update", {});
-  }
-  
-  // Trigger real-time Claim Health recalculation
-  if (window.CNHealthHooks) {
-    window.CNHealthHooks.trigger();
+  try {
+    // Save to storage-v2
+    if (window.CNStorage) {
+      window.CNStorage.setSection("profile", profile);
+    }
+    
+    // Also save to old key for backward compatibility
+    localStorage.setItem(CLAIM_PROFILE_KEY, JSON.stringify(profile));
+    
+    // Log timeline event
+    if (window.CNTimeline) {
+      window.CNTimeline.log("claim_profile_update", {});
+    }
+    
+    // Trigger real-time Claim Health recalculation
+    if (window.CNHealthHooks) {
+      window.CNHealthHooks.trigger();
+    }
+  } catch (e) {
+    console.error("CNError (Save Claim Profile):", e);
+    if (window.CNToast) {
+      window.CNToast.error("Failed to save claim profile.");
+    }
   }
 }
 

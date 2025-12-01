@@ -9,6 +9,7 @@
     <script src="/app/assets/js/analytics.js"></script>
     <script src="/app/assets/js/activation.js"></script>
     <script src="/app/assets/js/global.js"></script>
+    <script src="/app/assets/js/compliance-banner.js"></script>
     <style>
         :root{
             --navy:#0f172a;
@@ -850,9 +851,14 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div id="ai-response-content-wrapper">
         <!-- Title Section -->
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold mb-4">AI Claim Response Assistant</h1>
+            <p style="font-size:12px; color:#9ca3af; margin-bottom:12px;">
+              Responses generated here are informational and should be reviewed and adapted to your specific situation.
+              They are not legal advice. For legal questions or representation, consult a licensed attorney or public adjuster.
+            </p>
             <p class="text-xl max-w-3xl mx-auto">
                 Analyze insurer correspondence, generate professional replies, and receive expert recommendations instantly.
             </p>
@@ -1367,10 +1373,17 @@
         insurerLetter.addEventListener('input', autoSave);
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', initializeApp);
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            // Render compliance banner
+            if (window.CNCompliance) {
+                CNCompliance.renderBanner("ai-response-content-wrapper");
+            }
+        });
     </script>
     <script src="/app/assets/js/claim-profile.js"></script>
     <script src="/app/assets/js/health-hooks.js"></script>
     <script type="module" src="/app/assets/js/tools/ai-response-agent.js"></script>
+        </div> <!-- End ai-response-content-wrapper -->
 </body>
 </html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug Console - ClaimNavigatorAI</title>
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 20px;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .debug-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .debug-header {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #38bdf8;
+    }
+    
+    .debug-header h1 {
+      color: #38bdf8;
+      margin: 0 0 10px 0;
+    }
+    
+    .debug-header a {
+      color: #93c5fd;
+      text-decoration: none;
+    }
+    
+    .debug-section {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .debug-section h2 {
+      color: #38bdf8;
+      margin-top: 0;
+      font-size: 18px;
+    }
+    
+    .debug-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .debug-btn {
+      background: rgba(56,189,248,0.2);
+      color: #93c5fd;
+      border: 1px solid rgba(56,189,248,0.4);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    
+    .debug-btn:hover {
+      background: rgba(56,189,248,0.3);
+    }
+    
+    .debug-btn-danger {
+      background: rgba(239,68,68,0.2);
+      color: #fca5a5;
+      border-color: rgba(239,68,68,0.4);
+    }
+    
+    .debug-output {
+      background: #1e293b;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 15px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-size: 12px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .debug-log {
+      background: #1e293b;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    
+    .log-entry {
+      margin-bottom: 8px;
+      padding: 8px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 4px;
+    }
+    
+    .log-entry.error {
+      border-left: 3px solid #ef4444;
+    }
+    
+    .log-entry.warn {
+      border-left: 3px solid #f59e0b;
+    }
+    
+    .log-entry.info {
+      border-left: 3px solid #3b82f6;
+    }
+    
+    .storage-keys {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .storage-key {
+      background: rgba(0,0,0,0.3);
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="debug-container">
+    <div class="debug-header">
+      <h1>🔧 ClaimNavigatorAI Debug Console</h1>
+      <p>Internal developer tools for storage inspection and debugging</p>
+      <a href="/app/resource-center.html">← Back to Resource Center</a>
+    </div>
+
+    <div class="debug-section">
+      <h2>Storage Structure</h2>
+      <div class="debug-buttons">
+        <button class="debug-btn" onclick="displayStorage()">Refresh Storage View</button>
+        <button class="debug-btn" onclick="validateStorage()">Validate Storage</button>
+        <button class="debug-btn" onclick="reindexStorage()">Reindex Storage</button>
+      </div>
+      <div id="storage-output" class="debug-output">Click "Refresh Storage View" to load...</div>
+    </div>
+
+    <div class="debug-section">
+      <h2>Backup Management</h2>
+      <div class="debug-buttons">
+        <button class="debug-btn" onclick="forceBackup()">Force Backup</button>
+        <button class="debug-btn" onclick="listBackups()">List Backups</button>
+        <button class="debug-btn debug-btn-danger" onclick="clearBackups()">Clear All Backups</button>
+      </div>
+      <div id="backup-output" class="debug-output"></div>
+    </div>
+
+    <div class="debug-section">
+      <h2>Snapshots</h2>
+      <div class="debug-buttons">
+        <button class="debug-btn" onclick="listSnapshots()">List Snapshots</button>
+        <button class="debug-btn" onclick="exportSnapshot()">Export Current Snapshot</button>
+      </div>
+      <div id="snapshot-output" class="debug-output"></div>
+    </div>
+
+    <div class="debug-section">
+      <h2>Storage Keys</h2>
+      <div class="debug-buttons">
+        <button class="debug-btn" onclick="showAllKeys()">Show All localStorage Keys</button>
+        <button class="debug-btn debug-btn-danger" onclick="removeCorruptedKeys()">Remove Corrupted Keys</button>
+      </div>
+      <div id="keys-output" class="storage-keys"></div>
+    </div>
+
+    <div class="debug-section">
+      <h2>Error Log</h2>
+      <div id="error-log" class="debug-log">
+        <div class="log-entry info">No errors logged yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app/assets/js/storage-v2.js"></script>
+  <script src="/app/assets/js/toasts.js"></script>
+  <script>
+    // Initialize error log display
+    function loadErrorLog() {
+      const log = JSON.parse(localStorage.getItem('cn_error_log') || '[]');
+      const container = document.getElementById('error-log');
+      
+      if (log.length === 0) {
+        container.innerHTML = '<div class="log-entry info">No errors logged yet.</div>';
+        return;
+      }
+      
+      container.innerHTML = log.slice(-20).reverse().map(entry => {
+        const level = entry.message?.toLowerCase().includes('error') ? 'error' : 
+                     entry.message?.toLowerCase().includes('warn') ? 'warn' : 'info';
+        return `
+          <div class="log-entry ${level}">
+            <strong>${new Date(entry.timestamp).toLocaleString()}</strong><br>
+            ${entry.message || 'Unknown error'}<br>
+            ${entry.source ? `Source: ${entry.source}` : ''}
+            ${entry.line ? `Line: ${entry.line}` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Display storage structure
+    function displayStorage() {
+      if (!window.CNStorage) {
+        document.getElementById('storage-output').textContent = 'CNStorage not available.';
+        return;
+      }
+      
+      try {
+        const data = window.CNStorage.load();
+        document.getElementById('storage-output').textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        document.getElementById('storage-output').textContent = `Error: ${error.message}`;
+      }
+    }
+
+    // Validate storage
+    function validateStorage() {
+      if (!window.CNStorage) return;
+      
+      const isValid = window.CNStorage.validate();
+      const output = document.getElementById('storage-output');
+      
+      if (isValid) {
+        output.textContent = '✓ Storage structure is valid.';
+        if (window.CNToast) {
+          window.CNToast.success('Storage is valid.');
+        }
+      } else {
+        output.textContent = '✗ Storage structure is invalid.';
+        if (window.CNToast) {
+          window.CNToast.error('Storage structure is invalid.');
+        }
+      }
+    }
+
+    // Reindex storage
+    function reindexStorage() {
+      if (!window.CNStorage) return;
+      
+      try {
+        const repaired = window.CNStorage.reindex();
+        document.getElementById('storage-output').textContent = 'Storage reindexed:\n' + JSON.stringify(repaired, null, 2);
+        if (window.CNToast) {
+          window.CNToast.success('Storage reindexed successfully.');
+        }
+      } catch (error) {
+        document.getElementById('storage-output').textContent = `Error: ${error.message}`;
+        if (window.CNToast) {
+          window.CNToast.error('Reindex failed.');
+        }
+      }
+    }
+
+    // Force backup
+    function forceBackup() {
+      if (!window.CNStorage) return;
+      
+      if (window.CNStorage.backup('manual')) {
+        if (window.CNToast) {
+          window.CNToast.success('Backup created.');
+        }
+        listBackups();
+      }
+    }
+
+    // List backups
+    function listBackups() {
+      if (!window.CNStorage) return;
+      
+      const backups = window.CNStorage.listBackups();
+      const output = document.getElementById('backup-output');
+      
+      if (backups.length === 0) {
+        output.textContent = 'No backups available.';
+        return;
+      }
+      
+      output.textContent = backups.map(b => {
+        return `${new Date(b.timestamp).toLocaleString()} - ${b.reason} (ID: ${b.id})`;
+      }).join('\n');
+    }
+
+    // Clear backups
+    function clearBackups() {
+      if (!confirm('Are you sure you want to clear all backups?')) return;
+      
+      localStorage.removeItem('cn_storage_backups');
+      document.getElementById('backup-output').textContent = 'All backups cleared.';
+      if (window.CNToast) {
+        window.CNToast.success('Backups cleared.');
+      }
+    }
+
+    // List snapshots
+    function listSnapshots() {
+      if (!window.CNStorage) return;
+      
+      const snapshots = window.CNStorage.listSnapshots();
+      const output = document.getElementById('snapshot-output');
+      
+      if (snapshots.length === 0) {
+        output.textContent = 'No snapshots available.';
+        return;
+      }
+      
+      output.textContent = snapshots.map(s => {
+        return `${s.label} - ${new Date(s.timestamp).toLocaleString()} (ID: ${s.id})`;
+      }).join('\n');
+    }
+
+    // Export snapshot
+    function exportSnapshot() {
+      if (!window.CNStorage) return;
+      
+      const data = window.CNStorage.load();
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `claim-navigator-debug-export-${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      if (window.CNToast) {
+        window.CNToast.success('Snapshot exported.');
+      }
+    }
+
+    // Show all keys
+    function showAllKeys() {
+      const keys = Object.keys(localStorage);
+      const container = document.getElementById('keys-output');
+      
+      container.innerHTML = keys.map(key => {
+        let value = localStorage.getItem(key);
+        try {
+          const parsed = JSON.parse(value);
+          value = JSON.stringify(parsed).substring(0, 100) + (JSON.stringify(parsed).length > 100 ? '...' : '');
+        } catch {
+          value = value.substring(0, 100) + (value.length > 100 ? '...' : '');
+        }
+        
+        return `
+          <div class="storage-key">
+            <strong>${key}</strong><br>
+            <span style="opacity: 0.7;">${value}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Remove corrupted keys
+    function removeCorruptedKeys() {
+      if (!confirm('This will attempt to remove corrupted keys. Continue?')) return;
+      
+      const keys = Object.keys(localStorage);
+      let removed = 0;
+      
+      keys.forEach(key => {
+        try {
+          const value = localStorage.getItem(key);
+          if (value) {
+            JSON.parse(value);
+          }
+        } catch {
+          localStorage.removeItem(key);
+          removed++;
+        }
+      });
+      
+      if (window.CNToast) {
+        window.CNToast.success(`Removed ${removed} corrupted keys.`);
+      }
+      
+      showAllKeys();
+    }
+
+    // Keyboard shortcut
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+        // Already on debug page
+      }
+    });
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', function() {
+      displayStorage();
+      loadErrorLog();
+      listBackups();
+      listSnapshots();
+    });
+  </script>
+</body>
+</html>
+
