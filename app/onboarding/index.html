@@ -269,14 +269,16 @@
 
   <script src="/app/assets/js/supabase-client.js"></script>
   <script src="/app/assets/js/auth-session.js"></script>
+  <script src="/app/assets/js/paywall-enforcement.js"></script>
   <script src="/app/assets/js/claim-profile.js"></script>
   <script src="/app/assets/js/health-hooks.js"></script>
   <script src="/app/assets/js/claim-timeline.js"></script>
   <script>
-    // Require authentication
+    // Require authentication and check paywall
     (async () => {
       const isAuthenticated = await window.CNAuth?.requireAuth(true);
       if (!isAuthenticated) return;
+      await window.checkPaywall?.();
     })();
   </script>
   <script>
