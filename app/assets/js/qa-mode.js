@@ -12,7 +12,10 @@
     // Check if QA mode is already active
     if (localStorage.getItem(QA_KEY) === 'true') {
       qaModeActive = true;
+      window.CN_QA_MODE = true; // Set global flag for contrast debug
       showQAPanel();
+    } else {
+      window.CN_QA_MODE = false;
     }
 
     // Listen for keyboard shortcut
@@ -27,14 +30,23 @@
   function toggleQAMode() {
     qaModeActive = !qaModeActive;
     localStorage.setItem(QA_KEY, qaModeActive ? 'true' : 'false');
+    window.CN_QA_MODE = qaModeActive; // Set global flag for contrast debug
     
     if (qaModeActive) {
       showQAPanel();
+      // Trigger contrast scan if available
+      if (window.CNContrastDebug) {
+        setTimeout(() => window.CNContrastDebug.scan(), 100);
+      }
       if (window.CNToast) {
         window.CNToast.info('QA Mode Enabled');
       }
     } else {
       hideQAPanel();
+      // Clear contrast indicators
+      if (window.CNContrastDebug) {
+        window.CNContrastDebug.clear();
+      }
       if (window.CNToast) {
         window.CNToast.info('QA Mode Disabled');
       }
