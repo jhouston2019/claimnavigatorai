@@ -11,44 +11,10 @@
     <script src="/app/assets/js/upgrade-hooks.js"></script>
     <script src="/app/assets/js/org.js"></script>
 <style>
-/* USE CSS CUSTOM PROPERTIES TO OVERRIDE COLORS */
-:root {
-  --text-color: #ffffff !important;
-  --link-color: #dbeafe !important;
-  --shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
-}
-
-/* FORCE ALL ELEMENTS TO USE CUSTOM PROPERTIES */
-* {
-  color: var(--text-color) !important;
-  text-shadow: var(--shadow) !important;
-}
-
-a {
-  color: var(--link-color) !important;
-}
-
-a:hover {
-  color: #93c5fd !important;
-}
-
 /* Pulse animation for health score */
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.1); }
-}
-
-/* Remove light gray box from hero section */
-.hero-section {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 40px 0 !important;
-  text-align: center !important;
-}
-
-.main-content {
-  background: transparent !important;
 }
 </style>
 </head>
@@ -308,30 +274,30 @@ a:hover {
       <div id="main-content-wrapper">
       
       <!-- Claim Health Score Box -->
-      <div id="claim-health-box" class="glasscard" style="margin-bottom:20px; max-width: 600px; margin-left: auto; margin-right: auto; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 20px;">
-        <h3 style="margin-top: 0; color: #ffffff !important;">Claim Health Score</h3>
-        <div id="claim-health-score" style="font-size:32px; font-weight:900; color: #38bdf8 !important; margin: 10px 0; transition: all 0.3s ease;"></div>
-        <ul id="claim-health-flags" style="list-style: none; padding: 0; margin: 10px 0 0 0; color: #dbeafe !important;"></ul>
-        <p id="claim-health-state-note" style="font-size:12px;color:#9ca3af; margin-top: 12px; display: none;"></p>
+      <div id="claim-health-box" class="glasscard">
+        <h3>Claim Health Score</h3>
+        <div id="claim-health-score"></div>
+        <ul id="claim-health-flags"></ul>
+        <p id="claim-health-state-note" style="display: none;"></p>
       </div>
       
       <!-- Data Management Panel -->
-      <div class="glasscard" style="margin-bottom:20px; max-width: 600px; margin-left: auto; margin-right: auto; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px;">
-        <h4 style="margin-top: 0; margin-bottom: 12px; color: #ffffff !important; font-size: 14px; opacity: 0.9;">Data Management</h4>
+      <div class="glasscard" style="max-width: 600px; margin-left: auto; margin-right: auto;">
+        <h4 style="margin-top: 0; margin-bottom: 12px; font-size: 14px; font-weight: 500; color: #374151;">Data Management</h4>
         <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
-          <button onclick="window.CNStorage && window.CNStorage.exportAsJson()" style="background: rgba(56,189,248,0.2); color: #93c5fd; border: 1px solid rgba(56,189,248,0.4); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s;">
+          <button onclick="window.CNStorage && window.CNStorage.exportAsJson()" style="background: #eef2f7; color: #374151; border: 1px solid #e5e7eb; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.12s ease;">
             Export Claim Data
           </button>
-          <button onclick="document.getElementById('cn-import-input').click()" style="background: rgba(56,189,248,0.2); color: #93c5fd; border: 1px solid rgba(56,189,248,0.4); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s;">
+          <button onclick="document.getElementById('cn-import-input').click()" style="background: #eef2f7; color: #374151; border: 1px solid #e5e7eb; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.12s ease;">
             Import Claim Data
           </button>
-          <button onclick="handleCreateSnapshot()" style="background: rgba(34,197,94,0.2); color: #86efac; border: 1px solid rgba(34,197,94,0.4); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s;">
+          <button onclick="handleCreateSnapshot()" style="background: #eef2f7; color: #374151; border: 1px solid #e5e7eb; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.12s ease;">
             Create Snapshot
           </button>
-          <button onclick="handleShowSnapshots()" style="background: rgba(251,191,36,0.2); color: #fde047; border: 1px solid rgba(251,191,36,0.4); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s;">
+          <button onclick="handleShowSnapshots()" style="background: #eef2f7; color: #374151; border: 1px solid #e5e7eb; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.12s ease;">
             Restore Snapshot
           </button>
-          <button onclick="window.CNReset && window.CNReset.show()" style="background: rgba(239,68,68,0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s;">
+          <button onclick="window.CNReset && window.CNReset.show()" style="background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.12s ease;">
             Clear My Claim
           </button>
         </div>
@@ -339,15 +305,14 @@ a:hover {
       </div>
       
       <!-- Claim Portfolio Entry Point -->
-      <div id="claim-portfolio-entry" class="glasscard" style="padding:20px; margin-top:20px; margin-bottom:20px; max-width: 600px; margin-left: auto; margin-right: auto; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px;">
-        <h3 style="margin-top: 0; color: #ffffff !important;">Claim Summary Packet</h3>
-        <p style="color: #dbeafe !important; margin-bottom: 15px;">
+      <div id="claim-portfolio-entry" class="glasscard" style="max-width: 600px; margin-left: auto; margin-right: auto;">
+        <h3>Claim Summary Packet</h3>
+        <p style="margin-bottom: 15px;">
           Generate a full insurer-ready PDF packet containing your claim information,
           damage summary, evidence overview, documents generated, and your Claim Health Score.
         </p>
         <button class="btn-primary" 
-                onclick="location.href='/app/claim-portfolio/index.html'"
-                style="margin-top:10px; padding: 12px 24px; font-size: 16px; background: #38bdf8; color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;">
+                onclick="location.href='/app/claim-portfolio/index.html'">
           Generate Claim Portfolio PDF
         </button>
       </div>
@@ -367,8 +332,8 @@ a:hover {
         </div>
         <!-- Row 2: Four cards on one line -->
         <div class="tool-grid">
-          <a class="tool-card" href="/app/resource-center/fnol-wizard.html" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); border: 2px solid #60a5fa;">
-            <span class="badge" style="background: rgba(255, 255, 255, 0.3);">Start Here</span>
+          <a class="tool-card" href="/app/resource-center/fnol-wizard.html">
+            <span class="badge">Start Here</span>
             <h4>FNOL Auto-File Wizard</h4>
             <p>Start Your Claim → Complete FNOL in 5 steps → Auto-file to carrier → Integrated with all tools</p>
           </a>
@@ -523,23 +488,19 @@ a:hover {
           </a>
         </div>
         <!-- CN Agent Dedicated Section -->
-        <div class="cn-agent-section" style="margin-top: 2.5rem; margin-bottom: 2.5rem; padding: 1.5rem; background: rgba(59, 130, 246, 0.15); border: 2px solid rgba(59, 130, 246, 0.3); border-radius: 1rem; backdrop-filter: blur(8px); text-align: center;">
-          <div style="margin-bottom: 1rem;">
-            <h4 style="margin: 0 0 0.25rem 0; font-size: 1.5rem; font-weight: 700; color: #ffffff !important; text-align: center;">ClaimNavigator Agent</h4>
-            <p style="margin: 0; color: #dbeafe !important; font-size: 0.95rem; text-align: center;">Your AI Copilot for Claims Automation</p>
-          </div>
-          <p style="margin: 0 0 1rem 0; color: #ffffff !important; line-height: 1.6; text-align: center;">
+        <div class="cn-agent-section">
+          <h4>ClaimNavigator Agent</h4>
+          <p style="font-size: 14px; color: #6b7280; margin-bottom: 12px;">Your AI Copilot for Claims Automation</p>
+          <p>
             Automate email drafting, send communications, create alerts, detect deadlines and payments, 
             and sync your Statement of Loss and Deadline Tracker automatically.
           </p>
-          <p style="margin: 0 0 1rem 0; color: #dbeafe !important; font-size: 0.85rem; text-align: center;">
+          <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">
             Email Automation • Deadline Tracking • Statement of Loss • Auto Alerts
           </p>
-          <div style="text-align: center;">
-            <a href="/app/cn-agent.html" class="btn btn-primary" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; text-decoration: none; font-weight: 600; display: inline-block;">
-              Open CN Agent
-            </a>
-          </div>
+          <a href="/app/cn-agent.html" class="btn-primary">
+            Open CN Agent
+          </a>
         </div>
       </div>
     </div>
@@ -691,447 +652,6 @@ a:hover {
   white-space: nowrap !important;
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', sans-serif;
-  background: url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
-  background-size: cover;
-}
-
-/* Overlay to make text readable */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 10, 35, 0.56);
-  z-index: -1;
-}
-
-/* Remove box backgrounds for a transparent layout */
-.content-columns {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.content-column {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
-
-/* Section titles */
-.column-title {
-  color: #ffffff !important;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
-  font-weight: 700;
-  font-size: 2.5rem !important;
-}
-
-/* Force override for all possible selectors */
-h3.column-title,
-.content-column h3,
-.content-column .column-title {
-  color: #ffffff !important;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.6) !important;
-  font-weight: 700 !important;
-  font-size: 2.5rem !important;
-}
-
-/* CN Agent Dedicated Section Styles */
-.cn-agent-section {
-  transition: all 0.3s ease;
-  margin-bottom: 2.5rem;
-  padding: 1.5rem;
-  background: rgba(59, 130, 246, 0.15);
-  border: 2px solid rgba(59, 130, 246, 0.3);
-  border-radius: 1rem;
-  backdrop-filter: blur(8px);
-}
-
-.cn-agent-section:hover {
-  background: rgba(59, 130, 246, 0.2) !important;
-  border-color: rgba(59, 130, 246, 0.5) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
-}
-
-.cn-agent-section .btn-primary {
-  transition: all 0.2s ease;
-}
-
-.cn-agent-section .btn-primary:hover {
-  background: #2563eb !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-}
-
-/* Tool grid spacing - 4 cards per row */
-.tool-grid {
-  gap: 12px !important;
-  grid-template-columns: repeat(4, 1fr) !important;
-}
-
-@media (max-width: 1200px) {
-  .tool-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
-  }
-}
-
-@media (max-width: 768px) {
-  .tool-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .tool-grid {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-/* Center specific tool grids with fewer cards while keeping default card sizing */
-.tool-grid-centered {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: center !important;
-  gap: 12px !important;
-}
-
-/* Match 4-column grid card width on large screens */
-@media (min-width: 1201px) {
-  .tool-grid-centered .tool-card {
-    flex: 0 0 calc((100% - (3 * 12px)) / 4) !important;
-  }
-}
-
-/* Match 3-column grid card width on medium screens */
-@media (max-width: 1200px) and (min-width: 769px) {
-  .tool-grid-centered .tool-card {
-    flex: 0 0 calc((100% - (2 * 12px)) / 3) !important;
-  }
-}
-
-/* Match 2-column grid card width on small tablets */
-@media (max-width: 768px) and (min-width: 481px) {
-  .tool-grid-centered .tool-card {
-    flex: 0 0 calc((100% - 12px) / 2) !important;
-  }
-}
-
-/* Single column on mobile */
-@media (max-width: 480px) {
-  .tool-grid-centered .tool-card {
-    flex: 0 0 100% !important;
-  }
-}
-
-  /* Tool cards with white translucent design */
-  .tool-card {
-    background: rgba(255, 255, 255, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 1rem;
-    transition: all 0.25s ease;
-    padding: 0.75rem;
-    text-decoration: none;
-    color: #fff;
-    height: 160px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 0.15rem;
-  }
-
-  .tool-card:hover {
-    background: rgba(255, 255, 255, 0.35);
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-3px);
-  }
-
-/* Card text styling */
-.tool-card h4 {
-  color: #ffffff !important;
-  font-weight: 700 !important;
-  font-size: 1.5rem !important;
-  margin: 0;
-  line-height: 1.3;
-  margin-bottom: 0.25rem;
-  text-shadow: none !important;
-}
-
-/* Force override for tool card titles */
-.tool-card h4,
-.tool-card .card-title,
-a.tool-card h4 {
-  color: #ffffff !important;
-  font-weight: 700 !important;
-  font-size: 1.5rem !important;
-  text-shadow: none !important;
-}
-
-.tool-card p {
-  color: #dbeafe;
-  font-size: 0.8rem;
-  margin: 0;
-  line-height: 1.4;
-  margin-top: 0.25rem;
-  text-shadow: none !important;
-}
-
-/* Remove text shadows and force normal font-weight on all tool card text */
-.tool-card * {
-  text-shadow: none !important;
-  font-weight: 400 !important;
-}
-
-
-.tool-card p strong,
-.tool-card strong {
-  font-weight: 400 !important;
-  font-size: 0.75rem;
-}
-
-/* Badge styles */
-.badge {
-  background: #3b82f6;
-  color: white;
-  padding: 0.125rem 0.5rem;
-  border-radius: 9999px;
-  font-size: 0.65rem;
-  font-weight: 400;
-  margin-bottom: 0.25rem;
-  display: inline-block;
-  line-height: 1.2;
-}
-
-/* Hero title */
-.main-title {
-  font-size: 2.5rem;
-  color: #ffffff;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
-}
-
-/* Hero subtitle and CTA */
-.hero-subtitle {
-  font-size: 1.125rem;
-  color: #dbeafe !important;
-  margin: 1rem 0 1.5rem 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
-}
-
-.hero-roadmap-cta {
-  margin-bottom: 2rem;
-}
-
-.hero-roadmap-cta .btn {
-  font-size: 1.125rem;
-  padding: 0.875rem 2rem;
-}
-
-/* Context pill */
-.context-pill {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 9999px;
-  backdrop-filter: blur(8px);
-  margin: 1.5rem auto 2rem;
-  max-width: fit-content;
-  font-size: 0.875rem;
-}
-
-.context-label {
-  color: #dbeafe !important;
-  font-weight: 500;
-}
-
-.context-value {
-  color: #ffffff !important;
-  font-weight: 600;
-}
-
-.context-link {
-  color: #3b82f6 !important;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.context-link:hover {
-  color: #60a5fa !important;
-  text-decoration: underline;
-}
-
-/* Stage highlighting */
-.stage-highlight {
-  border: 2px solid #38bdf8 !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3) !important;
-}
-
-.stage-dimmed {
-  opacity: 0.45;
-  filter: grayscale(35%);
-  pointer-events: none;
-}
-
-/* Global Roadmap Context Chip */
-.nav-roadmap-chip {
-  margin-left: auto;
-}
-
-.nav-roadmap-chip a {
-  padding: 6px 12px;
-  font-size: 13px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
-  color: #38bdf8 !important;
-  transition: background 0.2s ease;
-  text-decoration: none;
-}
-
-.nav-roadmap-chip a:hover {
-  background: rgba(255, 255, 255, 0.16);
-}
-
-/* Tier Badge */
-.nav-tier-badge {
-  margin-left: 8px;
-  list-style: none;
-}
-
-.nav-tier-badge span {
-  padding: 4px 8px;
-  border-radius: 999px;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.9);
-  display: inline-block;
-}
-
-.nav-tier-badge span.tier-pro {
-  background: rgba(56, 189, 248, 0.15);
-  color: #38bdf8;
-}
-
-.nav-tier-badge span.tier-enterprise {
-  background: rgba(251, 191, 36, 0.18);
-  color: #fbbf24;
-}
-
-/* Tool Badges */
-.tool-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-weight: 600;
-  z-index: 10;
-}
-
-.tool-badge-pro {
-  background: rgba(56, 189, 248, 0.18);
-  color: #38bdf8;
-}
-
-.tool-badge-enterprise {
-  background: rgba(251, 191, 36, 0.18);
-  color: #fbbf24;
-}
-
-.tool-card {
-  position: relative;
-}
-
-/* Demo Toggle Button */
-.demo-toggle {
-  position: fixed;
-  bottom: 22px;
-  right: 22px;
-  padding: 10px 16px;
-  background: rgba(56, 189, 248, 0.25);
-  backdrop-filter: blur(6px);
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 9999;
-  font-size: 13px;
-  color: #38bdf8;
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  transition: all 0.3s ease;
-}
-
-.demo-toggle:hover {
-  background: rgba(56, 189, 248, 0.35);
-  transform: translateY(-2px);
-}
-
-.demo-toggle.active {
-  background: rgba(56, 189, 248, 0.45);
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
-}
-
-/* Screenshot Mode */
-.screenshot-mode #demo-toggle,
-.screenshot-mode .nav-roadmap-chip,
-.screenshot-mode .nav-tier-badge {
-  display: none !important;
-}
-
-/* Search section */
-.search-container {
-  display: flex;
-  max-width: 350px;
-  margin: 0 auto;
-  gap: 0.5rem;
-}
-
-.main-search {
-  flex: 1;
-  padding: 0.5rem 0.75rem;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-}
-
-.main-search::placeholder {
-  color: rgba(255,255,255,0.7);
-}
-
-.search-btn {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.75rem 1rem;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.search-btn:hover {
-  background: #2563eb;
-}
-
 /* Navigation dropdown text color - dark for Resource Center */
 .nav-dropdown-content {
   color: #000000 !important;
@@ -1177,7 +697,6 @@ a.tool-card h4 {
   -webkit-text-fill-color: #000000 !important;
 }
 
-/* Ensure scenario h4 titles are darker blue, overriding parent container */
 .nav-dropdown-content .quick-start-scenarios .scenario h4,
 .nav-dropdown-content .quick-start-scenarios h4 {
   color: #0f172a !important;
@@ -1198,7 +717,6 @@ a.tool-card h4 {
   color: #1e40af !important;
   -webkit-text-fill-color: #1e40af !important;
 }
-
 </style>
 
 <script type="module" src="/app/assets/js/validation-utils.js"></script>
@@ -1208,163 +726,6 @@ a.tool-card h4 {
 <script type="module" src="/app/assets/js/window-bridge.js"></script>
 <script type="module" src="/app/assets/js/diagnostics.js"></script>
 
-<style id="final-text-override">
-  /* FINAL, LAST-IN-CASCADE TEXT OVERRIDE */
-  body.resource-center,
-  body.resource-center :where(*, *::before, *::after) {
-    color: #ffffff !important;   /* Force all text and pseudo-elements to white */
-  }
-
-  /* Optional: keep links slightly blue for contrast */
-  body.resource-center a {
-    color: #dbeafe !important;
-  }
-
-</style>
-
-<style id="final-white-text-enforcement">
-/* 🔥 FINAL WHITE TEXT ENFORCEMENT — NO OVERRIDES POSSIBLE */
-
-/* Add dark overlay to background - override the white overlay */
-body.resource-center::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.89) !important;
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* Override the white overlay from style.css */
-body.resource-center {
-  background: 
-    linear-gradient(rgba(0, 0, 0, 0.89), rgba(0, 0, 0, 0.89)),
-    url('/assets/images/backgrounds/Damage1.jpg') !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-attachment: fixed !important;
-  background-repeat: no-repeat !important;
-}
-
-/* Reset and enforce white for all elements and pseudo elements */
-html, body.resource-center, 
-body.resource-center :is(*, *::before, *::after) {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-/* Keep links readable but consistent */
-body.resource-center a,
-body.resource-center a * {
-  color: #dbeafe !important;
-}
-
-body.resource-center a:hover,
-body.resource-center a:focus {
-  color: #93c5fd !important;
-}
-
-/* Handle Tailwind and inline class-based color utilities */
-body.resource-center [class*="text-"],
-body.resource-center [class*="text-gray"],
-body.resource-center [class*="text-black"],
-body.resource-center [class*="text-slate"],
-body.resource-center [class*="text-neutral"],
-body.resource-center [class*="text-zinc"],
-body.resource-center [class*="text-stone"],
-body.resource-center [class*="text-amber"],
-body.resource-center [class*="text-rose"] {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-/* Form inputs, placeholders, and buttons */
-body.resource-center input,
-body.resource-center textarea,
-body.resource-center select,
-body.resource-center button {
-  color: #ffffff !important;
-  background-color: rgba(255,255,255,0.1) !important;
-  border-color: rgba(255,255,255,0.3) !important;
-}
-
-body.resource-center input::placeholder,
-body.resource-center textarea::placeholder {
-  color: rgba(255,255,255,0.7) !important;
-}
-
-/* Fix shadow DOMs or injected Tailwind scopes */
-body.resource-center *:not(svg):not(path) {
-  filter: brightness(1.1) contrast(1.05);
-}
-
-/* Absolute last layer to override inline or JS-injected styles */
-body.resource-center *[style] {
-  color: #ffffff !important;
-  -webkit-text-fill-color: #ffffff !important;
-}
-
-/* FINAL OVERRIDE: Force dropdown text to black - must come after all other styles */
-body.resource-center .nav-dropdown-content,
-body.resource-center .nav-dropdown-content *,
-body.resource-center .nav-dropdown-content a,
-body.resource-center .nav-dropdown-content h4,
-body.resource-center .nav-dropdown-content p,
-body.resource-center .nav-dropdown-content .step,
-body.resource-center .nav-dropdown-content .step-content,
-body.resource-center .nav-dropdown-content .step-number,
-body.resource-center .nav-dropdown-content .scenario,
-body.resource-center .nav-dropdown-content .scenario h4 {
-  color: #0f172a !important;
-  -webkit-text-fill-color: #0f172a !important;
-  font-family: 'Arial Black', Arial, sans-serif !important;
-}
-
-body.resource-center .nav-dropdown-content .scenario-links,
-body.resource-center .nav-dropdown-content .how-to-steps,
-body.resource-center .nav-dropdown-content .quick-start-scenarios {
-  color: #000000 !important;
-  -webkit-text-fill-color: #000000 !important;
-}
-
-/* Ensure scenario h4 titles are darker blue, overriding parent container */
-body.resource-center .nav-dropdown-content .quick-start-scenarios .scenario h4,
-body.resource-center .nav-dropdown-content .quick-start-scenarios h4 {
-  color: #0f172a !important;
-  -webkit-text-fill-color: #0f172a !important;
-}
-
-body.resource-center .nav-dropdown-content .scenario-link,
-body.resource-center .nav-dropdown-content .nav-link {
-  color: #1e3a8a !important;
-  -webkit-text-fill-color: #1e3a8a !important;
-}
-
-body.resource-center .nav-dropdown-content .scenario-link:hover {
-  color: #1e40af !important;
-  -webkit-text-fill-color: #1e40af !important;
-}
-
-/* Limit navigation bar button text to three lines and center - final override */
-body.resource-center .nav-dropdown-toggle {
-  display: -webkit-box !important;
-  -webkit-line-clamp: 3 !important;
-  -webkit-box-orient: vertical !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  line-height: 1.3 !important;
-  max-height: 3.9em !important;
-  word-wrap: break-word !important;
-  white-space: normal !important;
-  text-align: center !important;
-  font-size: 12px !important;
-  justify-content: center !important;
-  align-items: center !important;
-}
-</style>
 
 <script src="/app/assets/js/supabase-client.js"></script>
 <script src="/app/assets/js/auth-session.js"></script>

@@ -1,17 +1,31 @@
-body.resource-center-page {
-  /* Font and text settings */
+/* ================================
+   GLOBAL DESIGN SYSTEM
+   Modern, minimal, clean design
+=============================== */
+
+/* Resource Center Page Styles */
+body.resource-center {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-  font-size: 16px;
-  font-weight: 500;
-  color: #111827;
-  background-color: #ffffff;
+  background: #f8f9fb !important;
+  color: #1f2937;
+  margin: 0;
+  padding: 0;
+}
+
+body.resource-center-page {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: #4b5563;
+  background-color: #f8f9fb;
 }
 
 body.resource-center-page h1, 
 body.resource-center-page h2, 
 body.resource-center-page h3 {
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.4;
+  color: #1f2937;
 }
 
 body.resource-center-page p, 
@@ -20,7 +34,7 @@ body.resource-center-page textarea,
 body.resource-center-page input, 
 body.resource-center-page button, 
 body.resource-center-page a {
-  font-weight: 500;
+  font-weight: 400;
 }
 
 /* ================================
@@ -269,78 +283,189 @@ body.resource-center-page a {
   overflow-x: hidden;
 }
 
-/* Consistent padding */
-.glasscard,
-.tool-card {
-  padding: 18px 20px;
+/* ================================
+   RESOURCE CENTER LAYOUT
+=============================== */
+
+/* Main container */
+body.resource-center .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 32px;
 }
 
-/* Cleaner section spacing */
-.content-column {
-  margin-bottom: 32px;
+body.resource-center .main-content {
+  background: transparent;
+  padding: 0;
 }
 
-.column-title {
-  margin-bottom: 20px;
-  font-size: 24px;
-  font-weight: 700;
-  color: #ffffff !important;
-  padding-bottom: 12px;
-  border-bottom: 2px solid rgba(56,189,248,0.3);
+/* Hero Section */
+body.resource-center .hero-section {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0 0 40px 0;
+  text-align: left;
 }
 
-/* Tool Grid Improvements */
-.tool-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-  margin-bottom: 24px;
+body.resource-center .main-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+  text-shadow: none;
 }
 
-.tool-grid-centered {
-  justify-items: center;
+body.resource-center .hero-subtitle {
+  font-size: 15px;
+  color: #4b5563;
+  margin: 0 0 24px 0;
+  text-shadow: none;
 }
 
-/* Tool Card Normalization */
-.tool-card {
+/* Context Pill - Minimal Design */
+body.resource-center .context-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  background: #eef2f7;
+  border: none;
+  border-radius: 999px;
+  margin: 0 0 40px 0;
+  max-width: fit-content;
+  font-size: 14px;
+  backdrop-filter: none;
+}
+
+body.resource-center .context-label {
+  color: #374151;
+  font-weight: 500;
+}
+
+body.resource-center .context-value {
+  color: #374151;
+  font-weight: 500;
+}
+
+body.resource-center .context-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.12s ease;
+}
+
+body.resource-center .context-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* Section Titles */
+body.resource-center .column-title {
+  font-size: 20px;
+  font-weight: 500;
+  color: #374151;
+  margin: 0 0 24px 0;
+  padding: 0;
+  border: none;
+  text-shadow: none;
+}
+
+/* Content Columns */
+body.resource-center .content-columns {
   display: flex;
   flex-direction: column;
-  min-height: 160px;
-  padding: 20px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  gap: 40px;
+  margin-top: 0;
+}
+
+body.resource-center .content-column {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Tool Grid - Responsive */
+body.resource-center .tool-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 1024px) {
+  body.resource-center .tool-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  body.resource-center .tool-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+body.resource-center .tool-grid-centered {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  justify-items: stretch;
+}
+
+@media (max-width: 1024px) {
+  body.resource-center .tool-grid-centered {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  body.resource-center .tool-grid-centered {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tool Cards - Minimal Design */
+body.resource-center .tool-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
+  padding: 20px 24px;
   text-decoration: none;
-  color: #ffffff;
-  transition: all 0.3s ease;
+  color: #1f2937;
+  transition: box-shadow 0.12s ease, border-color 0.12s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   position: relative;
-  overflow: hidden;
+  min-height: auto;
 }
 
-.tool-card:hover {
-  transform: translateY(-4px);
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(56,189,248,0.4);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+body.resource-center .tool-card:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  border-color: #d1d5db;
+  transform: none;
 }
 
-.tool-card h4 {
-  margin: 0 0 8px 0;
-  font-size: 18px;
+body.resource-center .tool-card h4 {
+  font-size: 16px;
   font-weight: 600;
-  color: #ffffff;
-  line-height: 1.3;
-}
-
-.tool-card p {
+  color: #1f2937;
   margin: 0;
-  font-size: 14px;
-  color: #dbeafe;
-  line-height: 1.5;
-  flex: 1;
+  line-height: 1.4;
+  text-shadow: none;
 }
 
-.tool-card .badge {
+body.resource-center .tool-card p {
+  font-size: 15px;
+  color: #4b5563;
+  margin: 0;
+  line-height: 1.5;
+  text-shadow: none;
+}
+
+body.resource-center .tool-card .badge {
   display: inline-block;
   padding: 4px 10px;
   border-radius: 999px;
@@ -348,28 +473,775 @@ body.resource-center-page a {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 12px;
-  background: rgba(56,189,248,0.2);
-  color: #38bdf8;
+  margin-bottom: 8px;
+  background: #eef2f7;
+  color: #374151;
 }
 
-/* Content Columns Layout */
-.content-columns {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+/* Stage Highlighting */
+body.resource-center .stage-highlight {
+  border-color: #2563eb !important;
+  background: #eff6ff !important;
+}
+
+body.resource-center .stage-dimmed {
+  opacity: 0.40;
+  filter: none;
+  pointer-events: auto;
+}
+
+/* Glass Cards - Convert to Minimal */
+body.resource-center .glasscard {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  backdrop-filter: none;
+}
+
+/* Claim Health Box */
+body.resource-center #claim-health-box {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px 24px;
+  max-width: 600px;
+  margin: 0 auto 20px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+body.resource-center #claim-health-box h3 {
+  margin-top: 0;
+  color: #1f2937;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+body.resource-center #claim-health-score {
+  font-size: 32px;
+  font-weight: 600;
+  color: #2563eb;
+  margin: 10px 0;
+}
+
+body.resource-center #claim-health-flags {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0 0;
+  color: #4b5563;
+}
+
+body.resource-center #claim-health-state-note {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 12px;
+}
+
+/* Data Management Panel */
+body.resource-center #claim-portfolio-entry,
+body.resource-center .glasscard[style*="data-management"] {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px 24px;
+  max-width: 600px;
+  margin: 20px auto;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+body.resource-center #claim-portfolio-entry h3 {
+  margin-top: 0;
+  color: #1f2937;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+body.resource-center #claim-portfolio-entry p {
+  color: #4b5563;
+  margin-bottom: 15px;
+}
+
+/* CN Agent Section */
+body.resource-center .cn-agent-section {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 40px 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  text-align: left;
+  backdrop-filter: none;
+}
+
+body.resource-center .cn-agent-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+body.resource-center .cn-agent-section p {
+  color: #4b5563;
+  margin: 0 0 16px 0;
+}
+
+body.resource-center .cn-agent-section .btn-primary {
+  background: #2563eb;
+  color: white;
+  padding: 14px 28px;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.12s ease;
+}
+
+body.resource-center .cn-agent-section .btn-primary:hover {
+  background: #1d4ed8;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Search Container */
+body.resource-center .search-container {
+  display: flex;
+  max-width: 100%;
+  margin: 0;
+  gap: 8px;
+}
+
+body.resource-center .main-search {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #ffffff;
+  color: #1f2937;
+}
+
+body.resource-center .main-search::placeholder {
+  color: #9ca3af;
+}
+
+body.resource-center .search-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+body.resource-center .search-btn:hover {
+  background: #1d4ed8;
+}
+
+/* Buttons */
+body.resource-center .btn-primary {
+  background: #2563eb;
+  color: white;
+  padding: 14px 28px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.12s ease;
+}
+
+body.resource-center .btn-primary:hover {
+  background: #1d4ed8;
+  transform: none;
+  box-shadow: none;
+}
+
+body.resource-center .btn-secondary {
+  background: #ffffff;
+  color: #374151;
+  padding: 14px 28px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: border-color 0.12s ease;
+}
+
+body.resource-center .btn-secondary:hover {
+  border-color: #d1d5db;
+}
+
+/* ================================
+   CLAIM ROADMAP STYLES
+=============================== */
+
+/* Roadmap Page Background */
+body.resource-center.roadmap-page {
+  background: #ffffff !important;
+  color: #1f2937;
+  margin: 0;
+  padding: 0;
+}
+
+body.resource-center.roadmap-page::before {
+  display: none;
+}
+
+/* Roadmap Main Container */
+body.resource-center.roadmap-page .claim-roadmap-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 32px;
+}
+
+/* Hero Section */
+body.resource-center.roadmap-page .roadmap-hero {
+  text-align: left;
+  margin-bottom: 40px;
+  padding: 0;
+}
+
+body.resource-center.roadmap-page .roadmap-hero h1 {
+  font-size: 32px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+  text-shadow: none;
+}
+
+body.resource-center.roadmap-page .roadmap-hero p {
+  font-size: 15px;
+  color: #4b5563;
+  margin: 0;
+  text-shadow: none;
+}
+
+/* Progress Indicator */
+body.resource-center.roadmap-page .roadmap-progress {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 40px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  backdrop-filter: none;
+}
+
+body.resource-center.roadmap-page .progress-ring {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid #e5e7eb;
+  background: #f8f9fb;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.resource-center.roadmap-page .progress-ring::after {
+  content: attr(data-complete) '%';
+  position: absolute;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  z-index: 1;
+}
+
+body.resource-center.roadmap-page .progress-label {
+  font-size: 14px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+body.resource-center.roadmap-page .progress-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+body.resource-center.roadmap-page .progress-stage {
+  font-size: 15px;
+  color: #4b5563;
+}
+
+/* Stage Rail */
+body.resource-center.roadmap-page .stage-rail {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+  padding: 0;
+  position: relative;
   gap: 32px;
-  margin-top: 32px;
 }
 
-/* Roadmap responsive */
+body.resource-center.roadmap-page .stage-rail::before {
+  display: none;
+}
+
+body.resource-center.roadmap-page .stage-node {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: opacity 0.12s ease;
+  position: relative;
+  z-index: 1;
+}
+
+body.resource-center.roadmap-page .stage-node:hover {
+  transform: none;
+  opacity: 0.8;
+}
+
+/* Stage Circle */
+body.resource-center.roadmap-page .stage-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #1f2937;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s ease;
+  position: relative;
+  border: none;
+  font-size: 16px;
+}
+
+body.resource-center.roadmap-page .stage-node.active .stage-circle {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.15);
+}
+
+body.resource-center.roadmap-page .stage-node.completed .stage-circle {
+  background: #10b981;
+  color: #ffffff;
+}
+
+body.resource-center.roadmap-page .stage-node.completed .stage-circle {
+  position: relative;
+}
+
+body.resource-center.roadmap-page .stage-node.completed .stage-circle::after {
+  content: '✓';
+  color: #ffffff;
+  font-size: 18px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 700;
+}
+
+body.resource-center.roadmap-page .stage-node.completed .stage-circle {
+  color: transparent;
+}
+
+body.resource-center.roadmap-page .stage-node.pending .stage-circle {
+  background: #e5e7eb;
+  color: #9ca3af;
+}
+
+body.resource-center.roadmap-page .stage-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+  text-shadow: none;
+}
+
+body.resource-center.roadmap-page .stage-subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+  text-shadow: none;
+}
+
+body.resource-center.roadmap-page .stage-node.active .stage-title {
+  color: #1f2937;
+}
+
+/* Stage Drawer */
+body.resource-center.roadmap-page .stage-drawer {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 32px;
+  margin-top: 8px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+  backdrop-filter: none;
+}
+
+body.resource-center.roadmap-page .stage-drawer-inner {
+  max-width: 100%;
+  margin: 0;
+}
+
+body.resource-center.roadmap-page .stage-drawer-header {
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+body.resource-center.roadmap-page .stage-drawer-header h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+  text-shadow: none;
+}
+
+body.resource-center.roadmap-page .stage-drawer-header p {
+  font-size: 18px;
+  font-weight: 500;
+  color: #374151;
+  margin: 0;
+  text-shadow: none;
+}
+
+body.resource-center.roadmap-page .drawer-subcopy {
+  opacity: 1;
+  font-size: 15px;
+  color: #4b5563;
+  margin-bottom: 24px;
+  font-style: normal;
+}
+
+/* Stage Tool Cards */
+body.resource-center.roadmap-page .stage-drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+body.resource-center.roadmap-page .stage-tool-card {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  text-decoration: none;
+  transition: box-shadow 0.12s ease, border-color 0.12s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+body.resource-center.roadmap-page .stage-tool-card:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  border-color: #d1d5db;
+  transform: none;
+  background: #ffffff;
+}
+
+body.resource-center.roadmap-page .stage-tool-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  text-shadow: none;
+}
+
+body.resource-center.roadmap-page .stage-tool-card p {
+  font-size: 15px;
+  color: #4b5563;
+  margin: 0;
+  line-height: 1.5;
+  text-shadow: none;
+}
+
+body.resource-center.roadmap-page .tool-cta {
+  font-size: 14px;
+  color: #2563eb;
+  font-weight: 600;
+  margin-top: auto;
+  text-shadow: none;
+}
+
+body.resource-center.roadmap-page .stage-tool-card:hover .tool-cta {
+  color: #1d4ed8;
+}
+
+/* Stage Drawer Footer */
+body.resource-center.roadmap-page .stage-drawer-footer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+body.resource-center.roadmap-page .btn-primary {
+  background: #2563eb;
+  color: white;
+  padding: 14px 28px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.12s ease;
+  margin-top: 0;
+}
+
+body.resource-center.roadmap-page .btn-primary:hover {
+  background: #1d4ed8;
+  transform: none;
+  box-shadow: none;
+}
+
+body.resource-center.roadmap-page .btn-outline {
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 14px 28px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.12s ease;
+}
+
+body.resource-center.roadmap-page .btn-outline:hover {
+  border-color: #d1d5db;
+  background: #ffffff;
+}
+
+body.resource-center.roadmap-page .drawer-secondary-link {
+  color: #4b5563;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.12s ease;
+}
+
+body.resource-center.roadmap-page .drawer-secondary-link:hover {
+  color: #2563eb;
+}
+
+/* Stage Summary Card */
+body.resource-center.roadmap-page .stage-summary-card {
+  margin-top: 32px;
+  background: #f8fafc;
+  padding: 20px 24px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+body.resource-center.roadmap-page .stage-summary-card h4 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+body.resource-center.roadmap-page .stage-summary-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px 0;
+}
+
+body.resource-center.roadmap-page .stage-summary-card li {
+  margin: 8px 0;
+  color: #4b5563;
+  font-size: 14px;
+}
+
+body.resource-center.roadmap-page .stage-summary-time {
+  opacity: 1;
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Smart Recommendation */
+body.resource-center.roadmap-page .smart-recommendation {
+  margin-top: 24px;
+  background: #eff6ff;
+  border-left: 3px solid #2563eb;
+  padding: 16px 20px;
+  border-radius: 8px;
+}
+
+body.resource-center.roadmap-page .smart-recommendation h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+body.resource-center.roadmap-page .smart-recommendation p {
+  margin: 0;
+  color: #4b5563;
+  font-size: 15px;
+}
+
+/* Why Stage Matters */
+body.resource-center.roadmap-page .why-stage-matters {
+  margin-top: 24px;
+}
+
+body.resource-center.roadmap-page .why-trigger {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  padding: 0;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+body.resource-center.roadmap-page .why-trigger:hover {
+  text-decoration: underline;
+}
+
+body.resource-center.roadmap-page .why-content {
+  opacity: 1;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #4b5563;
+  margin-top: 8px;
+}
+
+body.resource-center.roadmap-page .why-content.hidden {
+  display: none;
+}
+
+/* Tool Status Icon */
+body.resource-center.roadmap-page .tool-status-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 14px;
+  opacity: 1;
+}
+
+body.resource-center.roadmap-page .tool-status-complete {
+  color: #10b981;
+}
+
+body.resource-center.roadmap-page .tool-status-pending {
+  color: #9ca3af;
+}
+
+/* Tool Badges */
+body.resource-center.roadmap-page .tool-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  z-index: 10;
+  background: #eef2f7;
+  color: #374151;
+}
+
+body.resource-center.roadmap-page .tool-badge-pro {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+body.resource-center.roadmap-page .tool-badge-enterprise {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* Roadmap Status Indicator */
+body.resource-center.roadmap-page .roadmap-status-indicator {
+  text-align: right;
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 32px 16px 0;
+  padding: 0;
+}
+
+/* Roadmap Responsive */
 @media (max-width: 768px) {
-  .stage-rail {
+  body.resource-center.roadmap-page .stage-rail {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    gap: 24px;
+    padding-bottom: 8px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
-  .stage-node {
+  body.resource-center.roadmap-page .stage-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.resource-center.roadmap-page .stage-node {
     min-width: 80px;
+    flex: 0 0 auto;
+  }
+
+  body.resource-center.roadmap-page .stage-drawer {
+    padding: 20px;
+  }
+
+  body.resource-center.roadmap-page .stage-drawer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.resource-center.roadmap-page .claim-roadmap-main {
+    padding: 32px 20px;
+  }
+
+  body.resource-center.roadmap-page .roadmap-progress {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* Resource Center Mobile Responsive */
+@media (max-width: 768px) {
+  body.resource-center .container {
+    padding: 32px 20px;
+  }
+
+  body.resource-center .main-title {
+    font-size: 28px;
+  }
+
+  body.resource-center .tool-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  body.resource-center .tool-grid-centered {
+    grid-template-columns: 1fr;
+  }
+
+  body.resource-center .content-columns {
+    gap: 32px;
   }
 }
 
