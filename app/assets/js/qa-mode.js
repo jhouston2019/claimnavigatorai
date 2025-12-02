@@ -114,13 +114,25 @@
       </div>
       
       <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1);">
-        <button id="cn-qa-test-pdf" style="width: 100%; padding: 8px; background: #38bdf8; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 8px;">
+        <button id="cn-qa-test-pdf" style="width: 100%; padding: 8px; background: #38bdf8; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 8px; font-size: 12px;">
           Test PDF Render
         </button>
-        <button id="cn-qa-test-health" style="width: 100%; padding: 8px; background: #38bdf8; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 8px;">
+        <button id="cn-qa-test-ai" style="width: 100%; padding: 8px; background: #38bdf8; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 8px; font-size: 12px;">
+          Test AI Output
+        </button>
+        <button id="cn-qa-test-roadmap" style="width: 100%; padding: 8px; background: #38bdf8; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 8px; font-size: 12px;">
+          Test Roadmap
+        </button>
+        <button id="cn-qa-test-state" style="width: 100%; padding: 8px; background: #38bdf8; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 8px; font-size: 12px;">
+          Test State Module
+        </button>
+        <button id="cn-qa-test-health" style="width: 100%; padding: 8px; background: #38bdf8; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 8px; font-size: 12px;">
           Recalc Health
         </button>
-        <button id="cn-qa-disable" style="width: 100%; padding: 8px; background: rgba(239,68,68,0.8); color: #fff; border: none; border-radius: 6px; cursor: pointer;">
+        <button id="cn-qa-console" style="width: 100%; padding: 8px; background: #38bdf8; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 8px; font-size: 12px;">
+          Show Console Logs
+        </button>
+        <button id="cn-qa-disable" style="width: 100%; padding: 8px; background: rgba(239,68,68,0.8); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">
           Disable QA Mode
         </button>
       </div>
@@ -163,7 +175,53 @@
         if (window.CNToast) {
           window.CNToast.success(`Health recalculated: ${health.score}`);
         }
+        // Refresh panel
+        setTimeout(() => showQAPanel(), 500);
       }
+    });
+
+    document.getElementById('cn-qa-test-ai').addEventListener('click', () => {
+      window.open('/app/resource-center/ai-response-agent.html', '_blank');
+      if (window.CNToast) {
+        window.CNToast.info('AI Response Agent opened in new tab');
+      }
+    });
+
+    document.getElementById('cn-qa-test-roadmap').addEventListener('click', () => {
+      window.open('/app/resource-center/claim-roadmap.html', '_blank');
+      if (window.CNToast) {
+        window.CNToast.info('Claim Roadmap opened in new tab');
+      }
+    });
+
+    document.getElementById('cn-qa-test-state').addEventListener('click', () => {
+      const profile = window.CNClaimProfile?.getClaimProfile() || {};
+      const stateCode = window.CNClaimProfile?.getClaimStateCode(profile);
+      const stateModule = window.CNStateModules?.get(stateCode);
+      if (stateModule) {
+        alert(`State Module: ${stateModule.name} (${stateModule.code})\n\nDeadlines:\n- Proof of Loss: ${stateModule.deadlines.proofOfLossDays} days\n- Insurer Ack: ${stateModule.deadlines.insurerAckDays} days\n- Decision: ${stateModule.deadlines.insurerDecisionDays} days\n\nStatutes: ${stateModule.regulations.statutes?.length || 0}`);
+      } else {
+        alert('No state module found');
+      }
+    });
+
+    document.getElementById('cn-qa-console').addEventListener('click', () => {
+      const consoleLogs = window.CNErrorLog?.getLogs() || [];
+      const logsText = consoleLogs.slice(-20).map(log => 
+        `[${new Date(log.timestamp).toLocaleString()}] ${log.message}`
+      ).join('\n');
+      
+      const win = window.open('', '_blank');
+      win.document.write(`
+        <html>
+          <head><title>CN Console Logs</title></head>
+          <body style="font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff;">
+            <h2>Claim Navigator Console Logs (Last 20)</h2>
+            <pre style="background: #2a2a2a; padding: 15px; border-radius: 4px; overflow-x: auto;">${logsText || 'No logs available'}</pre>
+          </body>
+        </html>
+      `);
+      win.document.close();
     });
   }
 

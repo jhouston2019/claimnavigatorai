@@ -100,34 +100,18 @@
       ].filter(Boolean).length * 5
     };
 
-    // State-aware deadline risk assessment
+    // State-aware deadline risk assessment and compliance flags
     let stateModule = null;
     if (window.CNStateModules && window.CNClaimProfile) {
       const stateCode = window.CNClaimProfile.getClaimStateCode(profile);
       stateModule = window.CNStateModules.get(stateCode);
       
-      if (stateModule && profile.claim?.lossDate) {
-        try {
-          const loss = new Date(profile.claim.lossDate);
-          const now = new Date();
-          const diffDays = (now - loss) / (1000 * 60 * 60 * 24);
-          const deadlines = stateModule.deadlines;
-          
-          // Check proof of loss timing
-          if (diffDays > deadlines.proofOfLossDays) {
-            // Check if proof of loss appears incomplete
-            const hasProofOfLoss = docCount > 0 || profile.docs?.proofOfLossSubmitted;
-            if (!hasProofOfLoss) {
-              score = Math.max(0, score - 10);
-              flags.push(
-                `Proof of Loss timing risk: loss occurred more than ${deadlines.proofOfLossDays} days ago and proof of loss may be incomplete.`
-              );
-            }
-          }
-        } catch (e) {
-          console.warn('CNError (State Deadline Check):', e);
-        }
-      }
+      // Generate compliance flags
+      const complianceFlags = generateComplianceFlags(profile, stateModule, photoCount, docCount);
+      complianceFlags.forEach(flag => {
+        flags.push(flag.message);
+        score = Math.max(0, score - flag.penalty);
+      });
     }
 
     // Calculate delta
@@ -150,6 +134,141 @@
     // Also save to old key for backward compatibility
     localStorage.setItem(HEALTH_KEY, JSON.stringify(health));
     return health;
+  }
+
+  /**
+   * Generate Compliance Flags
+   * Phase Finalization - Auto-flag violations and timing risks
+   */
+  function generateComplianceFlags(profile, stateModule, photoCount, docCount) {
+    const complianceFlags = [];
+    if (!stateModule) return complianceFlags;
+
+    const deadlines = stateModule.deadlines;
+    const status = profile.status || {};
+    const damage = profile.damage || {};
+    const timeline = window.CNTimeline ? JSON.parse(localStorage.getItem("cn_claim_timeline") || "[]") : [];
+
+    try {
+      // Check insurer acknowledgment timing
+      const commEvents = timeline.filter(e => e.action === "insurer_communication" || e.action === "ai_response");
+      if (commEvents.length > 0 && profile.claim?.lossDate) {
+        const loss = new Date(profile.claim.lossDate);
+        const firstComm = commEvents[0];
+        const commDate = new Date(firstComm.ts || firstComm.meta?.date || loss);
+        const daysToAck = (commDate - loss) / (1000 * 60 * 60 * 24);
+        
+        if (daysToAck > deadlines.insurerAckDays) {
+          complianceFlags.push({
+            message: `Insurer acknowledgment timing concern: communication logged ${Math.round(daysToAck)} days after loss, beyond typical ${deadlines.insurerAckDays}-day expectation.`,
+            penalty: 5
+          });
+        }
+      }
+
+      // Check decision deadline
+      if (profile.claim?.lossDate) {
+        const loss = new Date(profile.claim.lossDate);
+        const now = new Date();
+        const diffDays = (now - loss) / (1000 * 60 * 60 * 24);
+        
+        if (diffDays > deadlines.insurerDecisionDays) {
+          const hasClosure = status.claimStatus === "closed" || status.claimStatus === "settled";
+          if (!hasClosure) {
+            complianceFlags.push({
+              message: `Decision deadline timing risk: loss occurred ${Math.round(diffDays)} days ago, beyond typical ${deadlines.insurerDecisionDays}-day decision expectation.`,
+              penalty: 8
+            });
+          }
+        }
+      }
+
+      // Check payment delay risk
+      const settledEvents = timeline.filter(e => 
+        e.action === "settlement_agreed" || 
+        e.meta?.status === "settled" ||
+        status.claimStatus === "settled"
+      );
+      const paymentEvents = timeline.filter(e => 
+        e.action === "payment_received" || 
+        e.meta?.payment === true
+      );
+      
+      if (settledEvents.length > 0 && paymentEvents.length === 0) {
+        const settledDate = new Date(settledEvents[0].ts || Date.now());
+        const now = new Date();
+        const daysSinceSettlement = (now - settledDate) / (1000 * 60 * 60 * 24);
+        
+        if (daysSinceSettlement > deadlines.paymentAfterAgreementDays) {
+          complianceFlags.push({
+            message: `Payment delay risk: settlement agreed ${Math.round(daysSinceSettlement)} days ago, beyond typical ${deadlines.paymentAfterAgreementDays}-day payment expectation.`,
+            penalty: 7
+          });
+        }
+      }
+
+      // State-specific escalation suggestions
+      if (stateModule.code === "FL" && (status.claimStatus === "lowball_offer" || status.claimStatus === "underpaid")) {
+        complianceFlags.push({
+          message: `Florida-specific escalation pathway: Consider DFS mediation if claim remains underpaid after negotiation.`,
+          penalty: 0 // Informational only
+        });
+      }
+
+      if (stateModule.code === "TX") {
+        const hasDelays = timeline.some(e => {
+          const eventDate = new Date(e.ts || Date.now());
+          const loss = profile.claim?.lossDate ? new Date(profile.claim.lossDate) : null;
+          if (!loss) return false;
+          const daysSince = (eventDate - loss) / (1000 * 60 * 60 * 24);
+          return daysSince > deadlines.insurerDecisionDays;
+        });
+        
+        if (hasDelays) {
+          complianceFlags.push({
+            message: `Texas Prompt Payment expectations: Monitor insurer response times relative to Texas Prompt Payment of Claims statutes.`,
+            penalty: 0 // Informational only
+          });
+        }
+      }
+
+      // Missing mandatory actions
+      if (!damage.description) {
+        complianceFlags.push({
+          message: "Missing mandatory action: Incident description required.",
+          penalty: 0 // Already penalized above
+        });
+      }
+
+      if (photoCount === 0) {
+        complianceFlags.push({
+          message: "Missing mandatory action: Evidence photos required.",
+          penalty: 0 // Already penalized above
+        });
+      }
+
+      if (docCount === 0) {
+        complianceFlags.push({
+          message: "Missing mandatory action: Key documents not generated.",
+          penalty: 0 // Already penalized above
+        });
+      }
+
+      // Roadmap milestone check
+      const roadmapState = JSON.parse(localStorage.getItem("claimRoadmapProgress") || "{}");
+      const completedStages = roadmapState.completedStageIds || [];
+      if (completedStages.length === 0) {
+        complianceFlags.push({
+          message: "Missing milestone: No roadmap stages completed.",
+          penalty: 5
+        });
+      }
+
+    } catch (e) {
+      console.warn('CNError (Compliance Flags):', e);
+    }
+
+    return complianceFlags;
   }
 
   function getHealth() {
