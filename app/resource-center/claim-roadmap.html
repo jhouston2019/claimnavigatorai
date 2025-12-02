@@ -4,15 +4,27 @@
     <link rel="stylesheet" href="/app/assets/css/style.css">
     <link rel="stylesheet" href="/app/assets/css/design-system.css">
     <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+    <script src="/app/assets/js/supabase-client.js"></script>
+    <script src="/app/assets/js/auth-session.js"></script>
     <script src="/app/assets/js/analytics.js"></script>
     <script src="/app/assets/js/activation.js"></script>
     <script src="/app/assets/js/claim-health.js"></script>
+    <script src="/app/assets/js/claim-profile.js"></script>
+    <script src="/app/assets/js/state-modules.js"></script>
     <script src="/app/assets/js/user-tier.js"></script>
     <script src="/app/assets/js/feature-gate.js"></script>
     <script src="/app/assets/js/demo-mode.js"></script>
     <script src="/app/assets/js/sample-claims.js"></script>
     <script src="/app/assets/js/demo-tour.js"></script>
     <script src="/app/assets/js/upgrade-hooks.js"></script>
+    <script src="/app/assets/js/compliance-banner.js"></script>
+    <script>
+      // Require authentication
+      (async () => {
+        const isAuthenticated = await window.CNAuth?.requireAuth(true);
+        if (!isAuthenticated) return;
+      })();
+    </script>
 <style>
 /* USE CSS CUSTOM PROPERTIES TO OVERRIDE COLORS */
 :root {
@@ -1412,6 +1424,42 @@ body.resource-center.roadmap-page::before {
       content.textContent = WHY_TEXT[stageId] || "";
     }
   }
+  
+  function renderStateSpecificTips(stageNumber) {
+    const container = document.getElementById("state-specific-tips-container");
+    if (!container) return;
+    
+    try {
+      if (!window.CNClaimProfile || !window.CNStateModules) {
+        container.innerHTML = "";
+        return;
+      }
+      
+      const profile = window.CNClaimProfile.getClaimProfile();
+      const stateCode = window.CNClaimProfile.getClaimStateCode(profile);
+      const stateModule = window.CNStateModules.get(stateCode);
+      
+      const tips = stateModule.roadmap?.specialSteps || [];
+      
+      // Only show tips for stages 4-6 (negotiation/escalation stages)
+      if (tips.length > 0 && stageNumber >= 4) {
+        container.innerHTML = `
+          <div class="roadmap-state-tips">
+            <h4>State-specific considerations (${stateModule.name})</h4>
+            <ul>
+              ${tips.map(t => `<li>${t}</li>`).join("")}
+            </ul>
+            <p style="font-size:11px;color:#9ca3af;margin-top:8px;">These are general informational notes, not legal advice.</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = "";
+      }
+    } catch (error) {
+      console.error('CNError (State Tips):', error);
+      container.innerHTML = "";
+    }
+  }
 
   function getRoadmapState() {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -1548,6 +1596,7 @@ body.resource-center.roadmap-page::before {
           <button id="why-trigger" class="why-trigger">Why this stage matters ▼</button>
           <div id="why-content" class="why-content hidden"></div>
         </div>
+        <div id="state-specific-tips-container"></div>
         <div class="claim-health-box">
           Claim Health Score: <span id="claim-health-value"></span>%
           <span id="claim-health-level" style="margin-left: 8px; font-size: 13px; opacity: 0.8;"></span>
@@ -1607,6 +1656,9 @@ body.resource-center.roadmap-page::before {
     
     // Load why section
     loadWhySection(stage.id);
+    
+    // Load state-specific tips
+    renderStateSpecificTips(stage.id);
     
     // Setup why toggle
     const whyTrigger = document.getElementById("why-trigger");

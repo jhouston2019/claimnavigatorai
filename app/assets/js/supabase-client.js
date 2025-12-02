@@ -1,77 +1,53 @@
 /**
- * Unified Supabase Client for ClaimNavigatorAI
- * Provides singleton Supabase client instance
+ * Supabase Client
+ * Phase 17 - Auth + Account Layer
  */
 
+// Environment-safe configuration
+// These will be replaced by build process or environment variables
+const SUPABASE_URL = window.SUPABASE_URL || import.meta.env?.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
+const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || import.meta.env?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+
+// Dynamic import for Supabase
 let supabaseClient = null;
 
-/**
- * Initialize Supabase client
- * Uses environment variables injected by Netlify or hardcoded for development
- */
-export async function getSupabaseClient() {
+async function getSupabaseClient() {
   if (supabaseClient) {
     return supabaseClient;
   }
 
-  // Try to get from window (injected by Netlify)
-  const supabaseUrl = window.__SUPABASE_URL || '{{ SUPABASE_URL }}';
-  const supabaseAnonKey = window.__SUPABASE_ANON_KEY || '{{ SUPABASE_ANON_KEY }}';
-
-  if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('{{') || supabaseAnonKey.includes('{{')) {
-    console.warn('Supabase not configured. Loading from CDN...');
+  try {
+    // Use CDN import for browser compatibility
+    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
     
-    // Load Supabase from CDN if not already loaded
-    if (!window.supabase) {
-      await new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-        script.type = 'module';
-        script.onload = resolve;
-        script.onerror = reject;
-        document.head.appendChild(script);
-      });
-    }
-
-    // Use createClient from CDN
-    const { createClient } = window.supabase || await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-    supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
-  } else {
-    // Use ES module import if available
-    try {
-      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-      supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
-    } catch (error) {
-      console.error('Failed to load Supabase:', error);
-      throw new Error('Supabase client initialization failed');
-    }
+    supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    return supabaseClient;
+  } catch (error) {
+    console.error('CNError (Supabase Init):', error);
+    // Fallback: return a mock client for development
+    return {
+      auth: {
+        getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+        signInWithPassword: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
+        signUp: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
+        signOut: () => Promise.resolve({ error: null }),
+        resetPasswordForEmail: () => Promise.resolve({ error: null }),
+        updateUser: () => Promise.resolve({ data: null, error: null }),
+        onAuthStateChange: () => ({ data: { subscription: null }, unsubscribe: () => {} })
+      },
+      from: () => ({
+        select: () => ({ eq: () => ({ single: () => Promise.resolve({ data: null, error: null }) }) }),
+        insert: () => ({ select: () => Promise.resolve({ data: null, error: null }) }),
+        update: () => ({ eq: () => Promise.resolve({ data: null, error: null }) })
+      })
+    };
   }
-
-  return supabaseClient;
 }
 
-/**
- * Get current session
- */
-export async function getSession() {
-  const client = await getSupabaseClient();
-  const { data: { session }, error } = await client.auth.getSession();
-  if (error) {
-    console.error('Session error:', error);
-    return null;
-  }
-  return session;
-}
+// Export for use in other modules
+window.getSupabaseClient = getSupabaseClient;
 
-/**
- * Get current user
- */
-export async function getCurrentUser() {
-  const session = await getSession();
-  return session?.user || null;
-}
-
-export default getSupabaseClient;
-
-
-
+// Initialize on load
+getSupabaseClient().then(client => {
+  window.supabase = client;
+});

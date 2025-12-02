@@ -6,10 +6,19 @@
     <title>AI Claim Response Assistant - ClaimNavigatorAI</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="/app/assets/js/supabase-client.js"></script>
+    <script src="/app/assets/js/auth-session.js"></script>
     <script src="/app/assets/js/analytics.js"></script>
     <script src="/app/assets/js/activation.js"></script>
     <script src="/app/assets/js/global.js"></script>
     <script src="/app/assets/js/compliance-banner.js"></script>
+    <script>
+      // Require authentication
+      (async () => {
+        const isAuthenticated = await window.CNAuth?.requireAuth(true);
+        if (!isAuthenticated) return;
+      })();
+    </script>
     <style>
         :root{
             --navy:#0f172a;
@@ -1187,7 +1196,24 @@
                 formData.append('mode', mode);
                 // Include claim profile if available
                 const claimProfile = (window.CNClaimProfile) ? CNClaimProfile.getClaimProfile() || {} : {};
-                const claimData = { ...(userData || {}), claimProfile };
+                
+                // Add state module information for state-aware AI prompts
+                let stateInfo = null;
+                if (window.CNClaimProfile && window.CNStateModules) {
+                  const stateCode = window.CNClaimProfile.getClaimStateCode(claimProfile);
+                  const stateModule = window.CNStateModules.get(stateCode);
+                  stateInfo = {
+                    code: stateModule.code,
+                    name: stateModule.name,
+                    statutes: stateModule.regulations.statutes || []
+                  };
+                }
+                
+                const claimData = { 
+                  ...(userData || {}), 
+                  claimProfile,
+                  stateInfo: stateInfo
+                };
                 formData.append('claim', JSON.stringify(claimData));
                 formData.append('letter', letter);
                 
@@ -1382,6 +1408,7 @@
         });
     </script>
     <script src="/app/assets/js/claim-profile.js"></script>
+    <script src="/app/assets/js/state-modules.js"></script>
     <script src="/app/assets/js/health-hooks.js"></script>
     <script type="module" src="/app/assets/js/tools/ai-response-agent.js"></script>
         </div> <!-- End ai-response-content-wrapper -->

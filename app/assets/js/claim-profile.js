@@ -72,10 +72,21 @@ function hasClaimProfile() {
   return !!(profile && profile.claim && profile.claim.lossDate && profile.claim.claimType);
 }
 
+function getClaimStateCode(profile) {
+  const p = profile || getClaimProfile();
+  return (
+    p?.property?.state ||
+    p?.claimant?.state ||
+    p?.claim?.state ||
+    "DEFAULT"
+  );
+}
+
 window.CNClaimProfile = {
   getClaimProfile,
   saveClaimProfile,
   updateClaimProfile,
-  hasClaimProfile
+  hasClaimProfile,
+  getClaimStateCode
 };
 

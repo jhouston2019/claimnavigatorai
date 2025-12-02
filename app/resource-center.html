@@ -312,6 +312,7 @@ a:hover {
         <h3 style="margin-top: 0; color: #ffffff !important;">Claim Health Score</h3>
         <div id="claim-health-score" style="font-size:32px; font-weight:900; color: #38bdf8 !important; margin: 10px 0; transition: all 0.3s ease;"></div>
         <ul id="claim-health-flags" style="list-style: none; padding: 0; margin: 10px 0 0 0; color: #dbeafe !important;"></ul>
+        <p id="claim-health-state-note" style="font-size:12px;color:#9ca3af; margin-top: 12px; display: none;"></p>
       </div>
       
       <!-- Data Management Panel -->
@@ -1365,10 +1366,13 @@ body.resource-center .nav-dropdown-toggle {
 }
 </style>
 
+<script src="/app/assets/js/supabase-client.js"></script>
+<script src="/app/assets/js/auth-session.js"></script>
 <script src="/app/assets/js/error-logging.js"></script>
 <script src="/app/assets/js/toasts.js"></script>
 <script src="/app/assets/js/loading.js"></script>
 <script src="/app/assets/js/storage-v2.js"></script>
+<script src="/app/assets/js/compliance-banner.js"></script>
 <script src="/app/assets/js/claim-profile.js"></script>
 <script src="/app/assets/js/claim-health-v2.js"></script>
 <script src="/app/assets/js/health-hooks.js"></script>
@@ -1376,7 +1380,17 @@ body.resource-center .nav-dropdown-toggle {
 <script src="/app/assets/js/claim-reset.js"></script>
 <script src="/app/assets/js/guided-tour.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
+  // Require authentication
+  (async () => {
+    const isAuthenticated = await window.CNAuth?.requireAuth(true);
+    if (!isAuthenticated) return; // Redirect will happen in requireAuth
+  })();
+  
+  document.addEventListener("DOMContentLoaded", async () => {
+    // Ensure user is authenticated
+    const isAuthenticated = await window.CNAuth?.requireAuth(true);
+    if (!isAuthenticated) return;
+    
     // Render compliance banner
     if (window.CNCompliance) {
       CNCompliance.renderBanner("main-content-wrapper");
@@ -1392,6 +1406,7 @@ body.resource-center .nav-dropdown-toggle {
       const health = CNHealth.compute();
       const scoreEl = document.getElementById("claim-health-score");
       const flagsEl = document.getElementById("claim-health-flags");
+      const stateNoteEl = document.getElementById("claim-health-state-note");
       
       if (scoreEl) {
         scoreEl.textContent = health.score || 0;
@@ -1406,6 +1421,12 @@ body.resource-center .nav-dropdown-toggle {
           li.style.fontSize = "14px";
           flagsEl.appendChild(li);
         });
+      }
+      
+      // Show state-specific note
+      if (stateNoteEl && health.stateName) {
+        stateNoteEl.textContent = `Health insights reflect general timing and documentation expectations for ${health.stateName}.`;
+        stateNoteEl.style.display = "block";
       }
     }
     

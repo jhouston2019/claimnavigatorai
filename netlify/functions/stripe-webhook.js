@@ -1,94 +1,110 @@
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+/**
+ * Netlify Function: Stripe Webhook Handler
+ * Phase 18 - Stripe Paywall
+ */
 
-exports.handler = async (event) => {
-  const sig = event.headers["stripe-signature"];
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+exports.handler = async (event, context) => {
+  const sig = event.headers['stripe-signature'];
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  let stripeEvent;
+
   try {
-    const evt = stripe.webhooks.constructEvent(
-      event.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
+    stripeEvent = stripe.webhooks.constructEvent(event.body, sig, webhookSecret);
+  } catch (err) {
+    console.error('Webhook signature verification failed:', err.message);
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: `Webhook Error: ${err.message}` })
+    };
+  }
 
-    if (evt.type === "checkout.session.completed") {
-      const session = evt.data.object;
-      const email = session.customer_details?.email;
-      const sessionId = session.id;
-      const amountPaid = session.amount_total; // in cents
+  // Handle the event
+  if (stripeEvent.type === 'checkout.session.completed') {
+    const session = stripeEvent.data.object;
+    const userId = session.metadata?.user_id;
+    const sessionId = session.id;
 
-      if (email) {
-        console.log("✅ Stripe checkout complete for:", email);
-
-        // Get or create user in Supabase
-        let userId = null;
-        try {
-          // Check if user exists
-          const userResp = await fetch(
-            `${process.env.SUPABASE_URL}/auth/v1/users?email=eq.${encodeURIComponent(email)}`,
-            {
-              headers: {
-                apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
-                Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
-              }
-            }
-          );
-          const users = await userResp.json();
-          
-          if (users && users.length > 0) {
-            userId = users[0].id;
-          } else {
-            // Create user via Supabase Auth
-            const createResp = await fetch(`${process.env.SUPABASE_URL}/auth/v1/admin/users`, {
-              method: "POST",
-              headers: {
-                apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
-                Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ 
-                email,
-                email_confirm: true,
-                user_metadata: { source: 'stripe_checkout' }
-              }),
-            });
-            const newUser = await createResp.json();
-            userId = newUser.id;
-            console.log("✅ Created new user:", userId);
-          }
-        } catch (userError) {
-          console.error("❌ Error getting/creating user:", userError);
-        }
-
-        // Record payment in payments table
-        if (userId) {
-          try {
-            await fetch(`${process.env.SUPABASE_URL}/rest/v1/payments`, {
-              method: 'POST',
-              headers: {
-                apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
-                Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
-                'Content-Type': 'application/json',
-                Prefer: 'return=minimal'
-              },
-              body: JSON.stringify({
-                user_id: userId,
-                stripe_checkout_session_id: sessionId,
-                stripe_customer_id: session.customer,
-                status: 'completed',
-                plan: session.metadata?.product || 'claim_navigator_toolkit',
-                amount_paid: amountPaid
-              })
-            });
-            console.log("✅ Payment recorded for user:", userId);
-          } catch (paymentError) {
-            console.error("❌ Error recording payment:", paymentError);
-          }
-        }
-      }
+    if (!userId) {
+      console.error('No user_id in session metadata');
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Missing user_id' })
+      };
     }
 
-    return { statusCode: 200, body: "ok" };
-  } catch (err) {
-    console.error("❌ Stripe webhook error:", err.message);
-    return { statusCode: 400, body: `Webhook Error: ${err.message}` };
+    try {
+      // Import Supabase client
+      const { createClient } = require('@supabase/supabase-js');
+      const supabase = createClient(
+        process.env.SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      );
+
+      // Check if claim already exists for this session
+      const { data: existingClaim } = await supabase
+        .from('claims')
+        .select('id')
+        .eq('unlocked_via_stripe_session_id', sessionId)
+        .single();
+
+      if (existingClaim) {
+        // Already processed
+        return {
+          statusCode: 200,
+          body: JSON.stringify({ received: true, message: 'Already processed' })
+        };
+      }
+
+      // Create new claim
+      const { data: newClaim, error: claimError } = await supabase
+        .from('claims')
+        .insert({
+          user_id: userId,
+          unlocked_via_stripe_session_id: sessionId,
+          status: 'active',
+          claim_data: {}
+        })
+        .select()
+        .single();
+
+      if (claimError) {
+        console.error('Error creating claim:', claimError);
+        throw claimError;
+      }
+
+      // Update user metadata
+      const { error: updateError } = await supabase
+        .from('users_metadata')
+        .update({
+          active_claim_id: newClaim.id,
+          total_claims_created: supabase.raw('total_claims_created + 1')
+        })
+        .eq('user_id', userId);
+
+      if (updateError) {
+        console.error('Error updating user metadata:', updateError);
+        // Don't fail the webhook if this fails
+      }
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ received: true, claim_id: newClaim.id })
+      };
+
+    } catch (error) {
+      console.error('Error processing webhook:', error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Failed to process webhook' })
+      };
+    }
   }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ received: true })
+  };
 };

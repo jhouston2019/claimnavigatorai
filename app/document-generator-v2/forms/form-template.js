@@ -9,6 +9,11 @@ if (typeof window !== 'undefined') {
   claimProfileScript.src = '/app/assets/js/claim-profile.js';
   document.head.appendChild(claimProfileScript);
   
+  // Load state modules
+  const stateModulesScript = document.createElement('script');
+  stateModulesScript.src = '/app/assets/js/state-modules.js';
+  document.head.appendChild(stateModulesScript);
+  
   // Load document spacing fix module
   const spacingScript = document.createElement('script');
   spacingScript.src = '/app/assets/js/document-spacing-fix.js';
@@ -252,6 +257,23 @@ async function handleFormSubmit(event) {
         const formData = new FormData(event.target);
         const data = Object.fromEntries(formData.entries());
         
+        // Get state module for state-aware document generation
+        let stateInfo = null;
+        if (window.CNClaimProfile && window.CNStateModules) {
+          const profile = window.CNClaimProfile.getClaimProfile();
+          const stateCode = window.CNClaimProfile.getClaimStateCode(profile);
+          const stateModule = window.CNStateModules.get(stateCode);
+          stateInfo = {
+            code: stateModule.code,
+            name: stateModule.name,
+            regulations: {
+              statutes: stateModule.regulations.statutes || [],
+              complaintBody: stateModule.regulations.complaintBody || "",
+              complaintURL: stateModule.regulations.complaintURL || ""
+            }
+          };
+        }
+        
         // Add document metadata
         const requestData = {
             documentId: currentDocument.id,
@@ -259,6 +281,7 @@ async function handleFormSubmit(event) {
             outputType: currentDocument.outputType,
             layoutType: currentDocument.layoutType,
             formData: data,
+            stateInfo: stateInfo,
             timestamp: new Date().toISOString()
         };
         

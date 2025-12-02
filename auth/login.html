@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Claim Navigator AI</title>
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body {
+      background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
+                  url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .auth-container {
+      max-width: 420px;
+      width: 100%;
+      background: rgba(15,23,42,0.95);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    
+    .auth-container h1 {
+      color: #ffffff;
+      margin: 0 0 8px 0;
+      font-size: 28px;
+      text-align: center;
+    }
+    
+    .auth-container p {
+      color: #9ca3af;
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+    
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .auth-form label {
+      color: #e5e7eb;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .auth-form input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      color: #ffffff;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    
+    .auth-form input:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56,189,248,0.1);
+    }
+    
+    .auth-form button {
+      padding: 12px;
+      background: #38bdf8;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+    
+    .auth-form button:hover {
+      background: #0ea5e9;
+      transform: translateY(-1px);
+    }
+    
+    .auth-form button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .auth-links {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+    }
+    
+    .auth-links a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+    
+    .auth-links a:hover {
+      text-decoration: underline;
+    }
+    
+    .error-message {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #fca5a5;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+    }
+    
+    .error-message.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <h1>Welcome Back</h1>
+    <p>Sign in to access your claim tools</p>
+    
+    <div id="error-message" class="error-message"></div>
+    
+    <form id="login-form" class="auth-form">
+      <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required autocomplete="email">
+      </div>
+      
+      <div>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password">
+      </div>
+      
+      <button type="submit" id="submit-btn">Sign In</button>
+    </form>
+    
+    <div class="auth-links">
+      <a href="/auth/reset.html">Forgot password?</a> | 
+      <a href="/auth/signup.html">Create account</a> | 
+      <a href="/marketing/index.html">Back to home</a>
+    </div>
+  </div>
+
+  <script src="/app/assets/js/supabase-client.js"></script>
+  <script src="/app/assets/js/toasts.js"></script>
+  <script src="/app/assets/js/loading.js"></script>
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submit-btn');
+      const errorMsg = document.getElementById('error-message');
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing in...';
+      errorMsg.classList.remove('show');
+      
+      if (window.CNLoading) {
+        window.CNLoading.show('Signing in...');
+      }
+      
+      try {
+        const supabase = await window.getSupabaseClient();
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+        
+        if (error) throw error;
+        
+        if (window.CNToast) {
+          window.CNToast.success('Signed in successfully!');
+        }
+        
+        // Redirect
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirect = urlParams.get('redirect') || '/app/dashboard.html';
+        setTimeout(() => {
+          window.location.href = redirect;
+        }, 500);
+        
+      } catch (error) {
+        console.error('CNError (Login):', error);
+        errorMsg.textContent = error.message || 'Failed to sign in. Please check your credentials.';
+        errorMsg.classList.add('show');
+        
+        if (window.CNToast) {
+          window.CNToast.error(error.message || 'Login failed');
+        }
+      } finally {
+        if (window.CNLoading) {
+          window.CNLoading.hide();
+        }
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign In';
+      }
+    });
+  </script>
+</body>
+</html>
+

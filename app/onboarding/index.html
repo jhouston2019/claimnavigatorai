@@ -267,9 +267,18 @@
     </form>
   </main>
 
+  <script src="/app/assets/js/supabase-client.js"></script>
+  <script src="/app/assets/js/auth-session.js"></script>
   <script src="/app/assets/js/claim-profile.js"></script>
   <script src="/app/assets/js/health-hooks.js"></script>
   <script src="/app/assets/js/claim-timeline.js"></script>
+  <script>
+    // Require authentication
+    (async () => {
+      const isAuthenticated = await window.CNAuth?.requireAuth(true);
+      if (!isAuthenticated) return;
+    })();
+  </script>
   <script>
     (function() {
       const steps = Array.from(document.querySelectorAll(".onboarding-step"));

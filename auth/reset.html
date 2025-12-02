@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset Password - Claim Navigator AI</title>
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body {
+      background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
+                  url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .auth-container {
+      max-width: 420px;
+      width: 100%;
+      background: rgba(15,23,42,0.95);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    
+    .auth-container h1 {
+      color: #ffffff;
+      margin: 0 0 8px 0;
+      font-size: 28px;
+      text-align: center;
+    }
+    
+    .auth-container p {
+      color: #9ca3af;
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+    
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .auth-form label {
+      color: #e5e7eb;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .auth-form input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      color: #ffffff;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    
+    .auth-form input:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56,189,248,0.1);
+    }
+    
+    .auth-form button {
+      padding: 12px;
+      background: #38bdf8;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+    
+    .auth-form button:hover {
+      background: #0ea5e9;
+      transform: translateY(-1px);
+    }
+    
+    .auth-form button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .auth-links {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+    }
+    
+    .auth-links a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+    
+    .auth-links a:hover {
+      text-decoration: underline;
+    }
+    
+    .error-message {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #fca5a5;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+    }
+    
+    .error-message.show {
+      display: block;
+    }
+    
+    .success-message {
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: #86efac;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+    }
+    
+    .success-message.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <h1>Reset Password</h1>
+    <p>Enter your email to receive a password reset link</p>
+    
+    <div id="error-message" class="error-message"></div>
+    <div id="success-message" class="success-message"></div>
+    
+    <form id="reset-form" class="auth-form">
+      <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required autocomplete="email">
+      </div>
+      
+      <button type="submit" id="submit-btn">Send Reset Link</button>
+    </form>
+    
+    <div class="auth-links">
+      <a href="/auth/login.html">Back to login</a> | 
+      <a href="/marketing/index.html">Back to home</a>
+    </div>
+  </div>
+
+  <script src="/app/assets/js/supabase-client.js"></script>
+  <script src="/app/assets/js/toasts.js"></script>
+  <script src="/app/assets/js/loading.js"></script>
+  <script>
+    document.getElementById('reset-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submit-btn');
+      const errorMsg = document.getElementById('error-message');
+      const successMsg = document.getElementById('success-message');
+      const email = document.getElementById('email').value;
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+      errorMsg.classList.remove('show');
+      successMsg.classList.remove('show');
+      
+      if (window.CNLoading) {
+        window.CNLoading.show('Sending reset link...');
+      }
+      
+      try {
+        const supabase = await window.getSupabaseClient();
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth/new-password.html`
+        });
+        
+        if (error) throw error;
+        
+        successMsg.textContent = 'Password reset link sent! Check your email.';
+        successMsg.classList.add('show');
+        
+        if (window.CNToast) {
+          window.CNToast.success('Reset link sent to your email');
+        }
+        
+      } catch (error) {
+        console.error('CNError (Reset Password):', error);
+        errorMsg.textContent = error.message || 'Failed to send reset link. Please try again.';
+        errorMsg.classList.add('show');
+        
+        if (window.CNToast) {
+          window.CNToast.error(error.message || 'Failed to send reset link');
+        }
+      } finally {
+        if (window.CNLoading) {
+          window.CNLoading.hide();
+        }
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Reset Link';
+      }
+    });
+  </script>
+</body>
+</html>
+

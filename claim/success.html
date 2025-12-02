@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Unlocked! - Claim Navigator AI</title>
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body {
+      background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
+                  url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .success-container {
+      max-width: 600px;
+      width: 100%;
+      background: rgba(15,23,42,0.95);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    
+    .success-container h1 {
+      color: #22c55e;
+      font-size: 36px;
+      margin: 0 0 16px 0;
+    }
+    
+    .success-container p {
+      color: #e5e7eb;
+      font-size: 16px;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    
+    .success-container .btn-primary {
+      display: inline-block;
+      padding: 14px 28px;
+      background: #38bdf8;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .success-container .btn-primary:hover {
+      background: #0ea5e9;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="success-container">
+    <h1>✅ Your Claim is Unlocked!</h1>
+    <p>
+      Payment successful! You now have access to the complete Claim Navigator AI toolkit.
+      Let's get started by setting up your claim details.
+    </p>
+    <a href="/app/onboarding/index.html" class="btn-primary">Start Claim Setup</a>
+  </div>
+
+  <script src="/app/assets/js/supabase-client.js"></script>
+  <script src="/app/assets/js/auth-session.js"></script>
+  <script src="/app/assets/js/toasts.js"></script>
+  <script src="/app/assets/js/loading.js"></script>
+  <script>
+    (async () => {
+      // Require authentication
+      const isAuthenticated = await window.CNAuth?.requireAuth(true);
+      if (!isAuthenticated) return;
+
+      // Get session ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get('session_id');
+
+      if (sessionId) {
+        try {
+          // Verify session with backend
+          const response = await fetch(`/.netlify/functions/verify-checkout-session?session_id=${sessionId}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.verified) {
+              if (window.CNToast) {
+                window.CNToast.success('Payment verified!');
+              }
+            }
+          }
+        } catch (error) {
+          console.error('CNError (Verify Session):', error);
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
+

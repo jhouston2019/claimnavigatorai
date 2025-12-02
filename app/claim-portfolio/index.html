@@ -215,6 +215,8 @@
     </div> <!-- End portfolio-content-wrapper -->
   </div>
 
+  <script src="/app/assets/js/supabase-client.js"></script>
+  <script src="/app/assets/js/auth-session.js"></script>
   <script src="/app/assets/js/error-logging.js"></script>
   <script src="/app/assets/js/toasts.js"></script>
   <script src="/app/assets/js/loading.js"></script>
@@ -223,6 +225,13 @@
   <script src="/app/assets/js/document-watermark.js"></script>
   <script src="/app/assets/js/claim-health-v2.js"></script>
   <script src="/app/assets/js/claim-timeline.js"></script>
+  <script>
+    // Require authentication
+    (async () => {
+      const isAuthenticated = await window.CNAuth?.requireAuth(true);
+      if (!isAuthenticated) return;
+    })();
+  </script>
 
   <script>
     // Generate AI Claim Narrative

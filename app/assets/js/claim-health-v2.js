@@ -100,10 +100,47 @@
       ].filter(Boolean).length * 5
     };
 
+    // State-aware deadline risk assessment
+    let stateModule = null;
+    if (window.CNStateModules && window.CNClaimProfile) {
+      const stateCode = window.CNClaimProfile.getClaimStateCode(profile);
+      stateModule = window.CNStateModules.get(stateCode);
+      
+      if (stateModule && profile.claim?.lossDate) {
+        try {
+          const loss = new Date(profile.claim.lossDate);
+          const now = new Date();
+          const diffDays = (now - loss) / (1000 * 60 * 60 * 24);
+          const deadlines = stateModule.deadlines;
+          
+          // Check proof of loss timing
+          if (diffDays > deadlines.proofOfLossDays) {
+            // Check if proof of loss appears incomplete
+            const hasProofOfLoss = docCount > 0 || profile.docs?.proofOfLossSubmitted;
+            if (!hasProofOfLoss) {
+              score = Math.max(0, score - 10);
+              flags.push(
+                `Proof of Loss timing risk: loss occurred more than ${deadlines.proofOfLossDays} days ago and proof of loss may be incomplete.`
+              );
+            }
+          }
+        } catch (e) {
+          console.warn('CNError (State Deadline Check):', e);
+        }
+      }
+    }
+
     // Calculate delta
     const delta = score - previousScore;
 
-    const health = { score, flags, subscores, delta, timestamp: Date.now() };
+    const health = { 
+      score, 
+      flags, 
+      subscores, 
+      delta, 
+      timestamp: Date.now(),
+      stateName: stateModule ? stateModule.name : null
+    };
     
     // Save to storage-v2
     if (window.CNStorage) {

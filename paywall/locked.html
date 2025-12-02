@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unlock Your Claim - Claim Navigator AI</title>
+  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
+  <style>
+    body {
+      background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
+                  url('/assets/images/backgrounds/Damage1.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .paywall-container {
+      max-width: 600px;
+      width: 100%;
+      background: rgba(15,23,42,0.95);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    
+    .paywall-container h1 {
+      color: #ffffff;
+      font-size: 32px;
+      margin: 0 0 16px 0;
+    }
+    
+    .paywall-container p {
+      color: #e5e7eb;
+      font-size: 16px;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    
+    .paywall-container .btn-primary {
+      display: inline-block;
+      padding: 14px 28px;
+      background: #38bdf8;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .paywall-container .btn-primary:hover {
+      background: #0ea5e9;
+      transform: translateY(-2px);
+    }
+    
+    .features-list {
+      text-align: left;
+      margin: 24px 0;
+      color: #dbeafe;
+    }
+    
+    .features-list li {
+      margin: 8px 0;
+      padding-left: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="paywall-container">
+    <h1>🔒 Unlock Your Claim</h1>
+    <p>
+      To access Claim Navigator AI tools, you need to unlock a claim slot.
+      One purchase gives you complete access to all professional claim management tools.
+    </p>
+    
+    <ul class="features-list">
+      <li>✅ Document Generator (60+ templates)</li>
+      <li>✅ AI Response Agent</li>
+      <li>✅ Evidence Organizer</li>
+      <li>✅ Claim Health Engine</li>
+      <li>✅ Claim Portfolio Generator</li>
+      <li>✅ Complete Claim Roadmap</li>
+    </ul>
+    
+    <button onclick="window.launchClaimCheckout()" class="btn-primary">Unlock Claim - $99</button>
+    
+    <p style="margin-top: 24px; font-size: 14px; color: #9ca3af;">
+      <a href="/marketing/pricing.html" style="color: #38bdf8;">Learn more about pricing</a> | 
+      <a href="/app/dashboard.html" style="color: #38bdf8;">Go to Dashboard</a>
+    </p>
+  </div>
+
+  <script src="/app/assets/js/supabase-client.js"></script>
+  <script src="/app/assets/js/auth-session.js"></script>
+  <script src="/app/assets/js/stripe-checkout.js"></script>
+  <script>
+    // Require authentication
+    (async () => {
+      const isAuthenticated = await window.CNAuth?.requireAuth(true);
+      if (!isAuthenticated) return;
+    })();
+  </script>
+</body>
+</html>
+
