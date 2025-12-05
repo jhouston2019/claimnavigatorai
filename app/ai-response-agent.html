@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Claim Response Assistant - ClaimNavigatorAI</title>
+    <title>AI Response Agent - ClaimNavigatorAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/app/css/design-system.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="/app/assets/js/supabase-client.js"></script>
@@ -21,971 +25,269 @@
         await window.checkPaywall?.();
       })();
     </script>
-    <style>
-        :root{
-            --navy:#0f172a;
-            --primary:#1e40af;
-            --primary-600:#1e3a8a;
-            --accent:#3b82f6;
-            --text:#111827;
-            --muted:#6b7280;
-            --border:#e5e7eb;
-            --panel:#f8fafc;
-            --success:#10b981;
-            --warn:#f59e0b;
-            --error:#ef4444;
-            --glass-bg: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.18);
-            --glass-hover: rgba(255, 255, 255, 0.15);
-        }
-        
-        *{box-sizing:border-box}
-        
-        body{
-            margin:0;
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-            color:#ffffff !important;
-            background: linear-gradient(rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.88)), 
-                        url('../../assets/images/backgrounds/paperwork6.jpeg') no-repeat center center fixed;
-            background-size: cover;
-            line-height:1.6;
-            min-height: 100vh;
-        }
-        
-        /* Ensure all text is readable on dark background */
-        body, body * {
-            color: #ffffff !important;
-        }
-        
-        body a {
-            color: #93c5fd !important;
-            transition: color 0.2s ease;
-        }
-        
-        body a:hover {
-            color: #60a5fa !important;
-        }
-        
-        /* Modern Card Design */
-        .card {
-            background: var(--glass-bg) !important;
-            backdrop-filter: blur(16px) saturate(180%) !important;
-            -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-            border: 1px solid var(--glass-border) !important;
-            border-radius: 1.5rem !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 
-                        0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
-        }
-        
-        .card:hover {
-            background: var(--glass-hover) !important;
-            border-color: rgba(59, 130, 246, 0.4) !important;
-            transform: translateY(-4px) !important;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 
-                        0 0 0 1px rgba(59, 130, 246, 0.2) inset !important;
-        }
-        
-        .text-gray-900, .text-gray-700 {
-            color: #ffffff !important;
-        }
-        
-        /* Header Styles */
-        .header{
-            position:sticky;
-            top:0;
-            z-index:1000;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(12px);
-            color:#fff;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .header .bar{
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            padding:14px 16px;
-        }
-        
-        .header .bar.container{
-            max-width:1200px;
-            margin:0 auto;
-        }
-        
-        .brand{
-            display:flex;
-            align-items:center;
-            gap:12px;
-            font-weight:800;
-            font-size:1.25rem;
-            color: #ffffff;
-        }
-        
-        .nav a{
-            color:#c9d4ff;
-            text-decoration:none;
-            padding:.625rem 1rem;
-            border-radius:.625rem;
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-        
-        .nav a:hover{
-            background:rgba(59, 130, 246, 0.2);
-            color: #93c5fd;
-        }
-        
-        /* Main Content Container */
-        main {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem;
-        }
-        
-        /* Title Section */
-        .text-center {
-            margin-bottom: 3rem;
-        }
-        
-        .text-center h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ffffff 0%, #dbeafe 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 1rem;
-            letter-spacing: -0.02em;
-        }
-        
-        .text-center p {
-            font-size: 1.25rem;
-            color: #cbd5e1 !important;
-            max-width: 42rem;
-            margin: 0 auto;
-            line-height: 1.7;
-        }
-        
-        /* Grid Layout */
-        .grid {
-            display: grid;
-            gap: 2rem;
-        }
-        
-        @media (min-width: 1024px) {
-            .lg\:grid-cols-2 {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        /* Card Padding */
-        .p-6 {
-            padding: 2rem;
-        }
-        
-        /* Section Headers */
-        h2.text-2xl {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            color: #ffffff !important;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        h2.text-2xl::before {
-            content: '';
-            width: 4px;
-            height: 1.75rem;
-            background: linear-gradient(180deg, #3b82f6 0%, #60a5fa 100%);
-            border-radius: 2px;
-        }
-        
-        /* User Info Display */
-        #userInfoDisplay {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(96, 165, 250, 0.1) 100%) !important;
-            border: 1px solid rgba(59, 130, 246, 0.3) !important;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            backdrop-filter: blur(8px);
-        }
-        
-        #userInfoDisplay h3 {
-            font-size: 1.125rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #ffffff !important;
-        }
-        
-        #userInfoContent .grid {
-            display: grid;
-            gap: 0.75rem;
-        }
-        
-        #userInfoContent .grid > div {
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 0.5rem;
-            border-left: 2px solid rgba(59, 130, 246, 0.4);
-        }
-        
-        #userInfoContent strong {
-            color: #93c5fd !important;
-            font-weight: 600;
-        }
-        
-        /* Form Elements */
-        label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #e2e8f0 !important;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        select, textarea, input[type="text"] {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 0.75rem;
-            background: rgba(255, 255, 255, 0.05);
-            color: #ffffff !important;
-            font-size: 0.9375rem;
-            transition: all 0.2s ease;
-            font-family: inherit;
-        }
-        
-        select:focus, textarea:focus, input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        
-        select option {
-            background: #1e293b;
-            color: #ffffff;
-        }
-        
-        textarea {
-            resize: vertical;
-            min-height: 120px;
-            font-family: inherit;
-        }
-        
-        /* Upload Area */
-        .border-2 {
-            border-width: 2px;
-        }
-        
-        .border-dashed {
-            border-style: dashed;
-        }
-        
-        #uploadArea {
-            padding: 3rem 2rem;
-            border-radius: 1rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            background: rgba(59, 130, 246, 0.05);
-            border: 2px dashed rgba(59, 130, 246, 0.3);
-        }
-        
-        #uploadArea:hover {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: rgba(59, 130, 246, 0.5);
-            transform: scale(1.01);
-        }
-        
-        #uploadArea .text-4xl {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-        }
-        
-        /* Buttons */
-        button {
-            font-weight: 600;
-            border-radius: 0.75rem;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            font-family: inherit;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-        
-        #analyzeBtn {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-            padding: 1rem 2rem;
-            border: none;
-            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
-        }
-        
-        #analyzeBtn:hover:not(:disabled) {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
-        }
-        
-        #analyzeBtn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        #exportBtn, #clearBtn {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            padding: 1rem 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        #exportBtn:hover, #clearBtn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-        
-        .flex {
-            display: flex;
-        }
-        
-        .flex-col {
-            flex-direction: column;
-        }
-        
-        .gap-3 {
-            gap: 0.75rem;
-        }
-        
-        @media (min-width: 640px) {
-            .sm\:flex-row {
-                flex-direction: row;
-            }
-        }
-        
-        /* Output Area */
-        #aiOutput {
-            background: rgba(15, 23, 42, 0.4) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            border-radius: 1rem;
-            padding: 2rem;
-            min-height: 400px;
-            backdrop-filter: blur(8px);
-        }
-        
-        #placeholder {
-            color: #94a3b8 !important;
-            text-align: center;
-            padding: 3rem 1rem;
-        }
-        
-        #placeholder .text-4xl {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            opacity: 0.6;
-        }
-        
-        #loadingIndicator {
-            text-align: center;
-            padding: 3rem 1rem;
-        }
-        
-        .animate-spin {
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        .rounded-full {
-            border-radius: 9999px;
-        }
-        
-        .h-8 {
-            height: 2rem;
-        }
-        
-        .w-8 {
-            width: 2rem;
-        }
-        
-        .border-b-2 {
-            border-bottom-width: 2px;
-        }
-        
-        .border-blue-600 {
-            border-color: #2563eb;
-        }
-        
-        /* AI Response Display */
-        #aiResponse {
-            color: #ffffff !important;
-        }
-        
-        #aiResponse h4 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #ffffff !important;
-        }
-        
-        #aiResponse .text-gray-800 {
-            color: #e2e8f0 !important;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            border-left: 4px solid #3b82f6;
-            line-height: 1.8;
-            white-space: pre-wrap;
-        }
-        
-        /* Insights and Suggestions */
-        #aiInsights, #aiSuggestions {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-        }
-        
-        #aiInsights h3, #aiSuggestions h3 {
-            font-size: 1.125rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: #ffffff !important;
-        }
-        
-        #issuesList, #suggestionsList {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        #issuesList li, #suggestionsList li {
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 0.5rem;
-            border-left: 3px solid;
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-        }
-        
-        #issuesList li {
-            border-left-color: #ef4444;
-        }
-        
-        #suggestionsList li {
-            border-left-color: #10b981;
-        }
-        
-        /* Footer Note */
-        .bg-yellow-50 {
-            background: rgba(251, 191, 36, 0.15) !important;
-            border: 1px solid rgba(251, 191, 36, 0.3) !important;
-            border-radius: 0.75rem;
-            padding: 1rem;
-            margin-top: 1.5rem;
-        }
-        
-        .text-yellow-800 {
-            color: #fbbf24 !important;
-            font-size: 0.875rem;
-        }
-        
-        /* File Info Display */
-        #fileInfo {
-            background: rgba(16, 185, 129, 0.15) !important;
-            border: 1px solid rgba(16, 185, 129, 0.3) !important;
-            border-radius: 0.75rem;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .text-green-600 {
-            color: #10b981 !important;
-        }
-        
-        .text-green-800 {
-            color: #10b981 !important;
-        }
-        
-        .text-red-600 {
-            color: #ef4444 !important;
-        }
-        
-        .text-red-600:hover {
-            color: #dc2626 !important;
-        }
-        
-        /* Animations */
-        .typing-animation {
-            overflow: hidden;
-            border-right: 2px solid #3b82f6;
-            white-space: nowrap;
-            animation: typing 2s steps(40, end), blink-caret 0.75s step-end infinite;
-        }
-        
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-        
-        @keyframes blink-caret {
-            from, to { border-color: transparent; }
-            50% { border-color: #3b82f6; }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            main {
-                padding: 1.5rem 1rem;
-            }
-            
-            .text-center h1 {
-                font-size: 2rem;
-            }
-            
-            .text-center p {
-                font-size: 1rem;
-            }
-            
-            .p-6 {
-                padding: 1.5rem;
-            }
-            
-            h2.text-2xl {
-                font-size: 1.5rem;
-            }
-        }
-        
-        /* Hidden utility */
-        .hidden {
-            display: none !important;
-        }
-        
-        /* Grid utilities */
-        .grid-cols-1 {
-            grid-template-columns: repeat(1, minmax(0, 1fr));
-        }
-        
-        .mb-4 {
-            margin-bottom: 1rem;
-        }
-        
-        .mb-6 {
-            margin-bottom: 1.5rem;
-        }
-        
-        .mb-3 {
-            margin-bottom: 0.75rem;
-        }
-        
-        .mb-2 {
-            margin-bottom: 0.5rem;
-        }
-        
-        .mt-6 {
-            margin-top: 1.5rem;
-        }
-        
-        .mt-3 {
-            margin-top: 0.75rem;
-        }
-        
-        .max-w-3xl {
-            max-width: 48rem;
-        }
-        
-        .mx-auto {
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        .text-xl {
-            font-size: 1.25rem;
-        }
-        
-        .text-4xl {
-            font-size: 2.25rem;
-        }
-        
-        .text-2xl {
-            font-size: 1.5rem;
-        }
-        
-        .text-lg {
-            font-size: 1.125rem;
-        }
-        
-        .text-sm {
-            font-size: 0.875rem;
-        }
-        
-        .font-bold {
-            font-weight: 700;
-        }
-        
-        .font-semibold {
-            font-weight: 600;
-        }
-        
-        .font-medium {
-            font-weight: 500;
-        }
-        
-        .py-8 {
-            padding-top: 2rem;
-            padding-bottom: 2rem;
-        }
-        
-        .px-4 {
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-        
-        @media (min-width: 640px) {
-            .sm\:px-6 {
-                padding-left: 1.5rem;
-                padding-right: 1.5rem;
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            .lg\:px-8 {
-                padding-left: 2rem;
-                padding-right: 2rem;
-            }
-        }
-        
-        .min-h-64 {
-            min-height: 16rem;
-        }
-        
-        .space-y-2 > * + * {
-            margin-top: 0.5rem;
-        }
-        
-        .items-center {
-            align-items: center;
-        }
-        
-        .justify-center {
-            justify-content: center;
-        }
-        
-        .justify-between {
-            justify-content: space-between;
-        }
-        
-        .flex-1 {
-            flex: 1 1 0%;
-        }
-        
-        .items-start {
-            align-items: flex-start;
-        }
-        
-        .mr-2 {
-            margin-right: 0.5rem;
-        }
-        
-        .italic {
-            font-style: italic;
-        }
-        
-        .whitespace-pre-wrap {
-            white-space: pre-wrap;
-        }
-        
-        .border-l-4 {
-            border-left-width: 4px;
-        }
-        
-        .border-blue-500 {
-            border-color: #3b82f6;
-        }
-        
-        .bg-white {
-            background-color: #ffffff;
-        }
-        
-        .bg-gray-50 {
-            background-color: #f9fafb;
-        }
-        
-        .bg-blue-50 {
-            background-color: #eff6ff;
-        }
-        
-        .bg-green-50 {
-            background-color: #f0fdf4;
-        }
-        
-        .bg-red-50 {
-            background-color: #fef2f2;
-        }
-        
-        .border {
-            border-width: 1px;
-        }
-        
-        .border-gray-200 {
-            border-color: #e5e7eb;
-        }
-        
-        .border-blue-200 {
-            border-color: #bfdbfe;
-        }
-        
-        .border-green-200 {
-            border-color: #bbf7d0;
-        }
-        
-        .border-yellow-200 {
-            border-color: #fde68a;
-        }
-        
-        .rounded-lg {
-            border-radius: 0.5rem;
-        }
-        
-        .rounded-md {
-            border-radius: 0.375rem;
-        }
-        
-        .cursor-pointer {
-            cursor: pointer;
-        }
-        
-        .text-gray-600 {
-            color: #4b5563;
-        }
-        
-        .text-blue-900 {
-            color: #1e3a8a;
-        }
-        
-        .text-blue-600 {
-            color: #2563eb;
-        }
-        
-        .text-blue-800 {
-            color: #1e40af;
-        }
-        
-        .underline {
-            text-decoration: underline;
-        }
-        
-        .hover\:text-blue-800:hover {
-            color: #1e40af;
-        }
-        
-        .transition-colors {
-            transition-property: color, background-color, border-color;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 150ms;
-        }
-        
-        .transition {
-            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 150ms;
-        }
-        
-        .duration-200 {
-            transition-duration: 200ms;
-        }
-        
-        .focus\:outline-none:focus {
-            outline: 2px solid transparent;
-            outline-offset: 2px;
-        }
-        
-        .focus\:ring-2:focus {
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-        }
-        
-        .focus\:ring-blue-500:focus {
-            --tw-ring-color: #3b82f6;
-        }
-        
-        .focus\:border-transparent:focus {
-            border-color: transparent;
-        }
-        
-        .hover\:border-blue-400:hover {
-            border-color: #60a5fa;
-        }
-    </style>
 </head>
-<body class=" min-h-screen">
-    <!-- Header -->
-    <header class="header">
-        <div class="bar container">
-            <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
-            <nav class="nav">
-                <a href="/app/index.html">Home</a>
-                <span class="nav-separator">></span>
-                <span class="nav-current">AI Claim Response Assistant</span>
-                <span class="nav-separator">></span>
-                <a href="/app/resource-center.html">Resource Center</a>
-            </nav>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div id="ai-response-content-wrapper">
-        <!-- Title Section -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold mb-4">AI Claim Response Assistant</h1>
-            <p style="font-size:12px; color:#9ca3af; margin-bottom:12px;">
-              Responses generated here are informational and should be reviewed and adapted to your specific situation.
-              They are not legal advice. For legal questions or representation, consult a licensed attorney or public adjuster.
-            </p>
-            <p class="text-xl max-w-3xl mx-auto">
-                Analyze insurer correspondence, generate professional replies, and receive expert recommendations instantly.
-            </p>
-        </div>
-
-        <!-- Main Grid Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Left Column - Input Panel -->
-            <div class="card p-6">
-                <h2 class="text-2xl font-semibold mb-6">AI Response & Analysis</h2>
-                
-                <!-- Auto-populated User Information Display -->
-                <div id="userInfoDisplay" class="mb-6">
-                    <h3 class="text-lg font-semibold mb-3">📋 Your Information</h3>
-                    <div id="userInfoContent" class="text-sm">
-                        <p class="italic">Loading your information from intake forms...</p>
+<body class="ai-agent-page">
+    <div id="ai-response-content-wrapper">
+        <header class="ai-agent-hero">
+            <div class="ai-agent-container">
+                <div class="ai-agent-hero-content">
+                    <p class="ai-agent-eyebrow">Core Tool</p>
+                    <h1 class="ai-agent-hero-title">AI Response Agent</h1>
+                    <p class="ai-agent-hero-subtitle">Upload insurer correspondence and generate the correct response instantly.</p>
+                    <div class="ai-agent-hero-actions">
+                        <a class="ai-agent-btn-primary" href="#ai-step-1">Start New Analysis</a>
+                        <a class="ai-agent-btn-secondary" href="/app/resource-center.html">View Resources</a>
                     </div>
+                    <p class="ai-agent-hero-note">Responses are informational and must be reviewed for your specific claim.</p>
                 </div>
+            </div>
+        </header>
 
-                <!-- Response Mode Selection -->
-                <div class="mt-6">
-                    <label for="responseMode" class="block text-sm font-medium  mb-2">Response Mode</label>
-                    <select id="responseMode" class="w-full px-3 py-2 border  rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="reply">Standard Reply</option>
-                        <option value="appeal">Professional Appeal</option>
-                        <option value="clarify">Policy Clarification</option>
-                        <option value="negotiate">Negotiation Strategy</option>
-                        <option value="summary">Summary & Guidance</option>
-                    </select>
-                </div>
-
-                <!-- Document Upload Section -->
-                <div class="mt-6">
-                    <label class="block text-sm font-medium  mb-2">Upload Insurer Document</label>
-                    <div class="border-2 border-dashed  rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
-                        <input type="file" id="documentUpload" accept=".pdf,.doc,.docx,.txt" class="hidden">
-                        <div id="uploadArea" class="cursor-pointer">
-                            <div class="text-4xl mb-2">📄</div>
-                            <p class=" mb-2">Click to upload or drag and drop</p>
-                            <p class="text-sm ">PDF, DOC, DOCX, or TXT files</p>
-                        </div>
-                        <div id="fileInfo" class="hidden mt-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <span class="text-green-600 mr-2">✅</span>
-                                    <span id="fileName" class="text-sm font-medium text-green-800"></span>
+        <main class="ai-agent-main">
+            <div class="ai-agent-container">
+                <section class="ai-agent-section" id="ai-step-1">
+                    <div class="ai-agent-section-header">
+                        <p class="ai-agent-step-label">Step 1</p>
+                        <h2 class="ai-agent-section-title">Upload Insurer Letter</h2>
+                        <p class="ai-agent-section-subtitle">Attach correspondence to kick off the analysis. Drag-and-drop or browse for a file.</p>
+                    </div>
+                    <div class="ai-agent-card">
+                        <div class="ai-agent-upload-card">
+                            <input type="file" id="documentUpload" accept=".pdf,.doc,.docx,.txt" class="ai-agent-file-input">
+                            <div id="uploadArea" class="ai-agent-upload-area">
+                                <div class="ai-agent-upload-icon">📄</div>
+                                <div>
+                                    <p class="ai-agent-upload-title">Drag & drop your insurer letter</p>
+                                    <p class="ai-agent-upload-meta">PDF, DOC, DOCX, or TXT files supported</p>
                                 </div>
-                                <button id="removeFile" class="text-red-600 text-sm">Remove</button>
+                            </div>
+                            <div id="fileInfo" class="ai-agent-file-info hidden">
+                                <div class="ai-agent-file-row">
+                                    <span class="ai-agent-file-status">✅</span>
+                                    <span id="fileName" class="ai-agent-file-name"></span>
+                                    <button id="removeFile" class="ai-agent-link-button" type="button">Remove</button>
+                                </div>
+                            </div>
+                            <p class="ai-agent-helper">Optional: paste the text instead in Step 2 if you cannot upload the file.</p>
+                            <div class="ai-agent-validation">Validation messages will appear here.</div>
+                        </div>
+                        <div id="userInfoDisplay" class="ai-agent-inline-card">
+                            <div class="ai-agent-inline-card-header">
+                                <p class="ai-agent-step-label muted">Claim Profile</p>
+                                <span class="ai-agent-chip">Auto-loaded</span>
+                            </div>
+                            <div id="userInfoContent" class="ai-agent-info-grid">
+                                <p class="ai-agent-helper">Loading your information from intake forms...</p>
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Text Input Alternative -->
-                <div class="mt-6">
-                    <label for="insurerLetter" class="block text-sm font-medium  mb-2">Or Paste Insurer Letter Text</label>
-                    <textarea id="insurerLetter" rows="6" placeholder="Paste the insurer's correspondence here as an alternative to file upload..." class="w-full px-3 py-2 border  rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-                </div>
+                <section class="ai-agent-section" id="ai-step-2">
+                    <div class="ai-agent-section-header">
+                        <p class="ai-agent-step-label">Step 2</p>
+                        <h2 class="ai-agent-section-title">Describe Your Situation</h2>
+                        <p class="ai-agent-section-subtitle">Share context to help the AI tailor its analysis and response.</p>
+                    </div>
+                    <div class="ai-agent-card ai-agent-stack">
+                        <div class="ai-agent-field">
+                            <label for="insurerLetter">Insurer correspondence</label>
+                            <textarea id="insurerLetter" rows="6" class="ai-agent-input" placeholder="Paste the insurer correspondence or key excerpts here..."></textarea>
+                        </div>
+                        <div class="ai-agent-guides">
+                            <p class="ai-agent-guides-title">Guiding prompts</p>
+                            <ul class="ai-agent-guides-list">
+                                <li>What was the insurer decision or request?</li>
+                                <li>Key deadlines or response windows noted?</li>
+                                <li>Coverage details or damages in dispute?</li>
+                            </ul>
+                        </div>
+                        <div class="ai-agent-field">
+                            <label for="responseMode">Response style</label>
+                            <select id="responseMode" class="ai-agent-input">
+                                <option value="reply">Standard Reply</option>
+                                <option value="appeal">Professional Appeal</option>
+                                <option value="clarify">Policy Clarification</option>
+                                <option value="negotiate">Negotiation Strategy</option>
+                                <option value="summary">Summary & Guidance</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
 
-                <!-- Action Buttons -->
-                <div class="mt-6 flex flex-col sm:flex-row gap-3">
-                    <button id="analyzeBtn" class="flex-1 bg-blue-600 hover:bg-blue-700  font-medium py-3 px-6 rounded-md transition duration-200 flex items-center justify-center">
-                        <span id="analyzeText">⚡ Analyze & Draft Reply</span>
-                        <span id="analyzingText" class="hidden">Analyzing...</span>
-                    </button>
-                    <button id="exportBtn" class=" hover:  font-medium py-3 px-6 rounded-md transition duration-200 flex items-center justify-center">
-                        📄 Export PDF
-                    </button>
-                    <button id="clearBtn" class=" hover:  font-medium py-3 px-6 rounded-md transition duration-200 flex items-center justify-center">
-                        🔄 Clear Fields
-                    </button>
-                </div>
+                <section class="ai-agent-section" id="ai-step-3">
+                    <div class="ai-agent-section-header">
+                        <p class="ai-agent-step-label">Step 3</p>
+                        <h2 class="ai-agent-section-title">AI Analysis Engine</h2>
+                        <p class="ai-agent-section-subtitle">Coverage interpretation, claim posture, and adjuster behavior insights.</p>
+                    </div>
+                    <div class="ai-agent-card ai-agent-grid ai-agent-grid-three">
+                        <div class="ai-agent-subcard">
+                            <h3>Coverage Interpretation</h3>
+                            <p class="ai-agent-helper">How your policy language applies to this letter.</p>
+                            <div class="ai-agent-pill-list">
+                                <span class="ai-agent-pill">Exclusions review</span>
+                                <span class="ai-agent-pill">Limits & sub-limits</span>
+                                <span class="ai-agent-pill">Deductible impact</span>
+                            </div>
+                        </div>
+                        <div class="ai-agent-subcard">
+                            <h3>Claim Posture</h3>
+                            <p class="ai-agent-helper">AI posture on liability, valuation, and next best move.</p>
+                            <ul class="ai-agent-bullet-list">
+                                <li>Position: Pending determination</li>
+                                <li>Confidence: Awaiting analysis</li>
+                                <li>Negotiation leverage: In review</li>
+                            </ul>
+                        </div>
+                        <div class="ai-agent-subcard">
+                            <h3>Risk Flags & Adjuster Signals</h3>
+                            <p class="ai-agent-helper">Identify tactics, delays, and statutory triggers.</p>
+                            <ul class="ai-agent-bullet-list">
+                                <li>Response timelines</li>
+                                <li>Documentation gaps</li>
+                                <li>Behavioral indicators</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="ai-agent-section" id="ai-step-4">
+                    <div class="ai-agent-section-header">
+                        <p class="ai-agent-step-label">Step 4</p>
+                        <h2 class="ai-agent-section-title">Recommended Responses</h2>
+                        <p class="ai-agent-section-subtitle">Immediate actions and tailored reply options based on your inputs.</p>
+                    </div>
+                    <div class="ai-agent-card ai-agent-stack">
+                        <div class="ai-agent-divided">
+                            <div>
+                                <p class="ai-agent-divided-title">Key actions</p>
+                                <ul class="ai-agent-divided-list">
+                                    <li>Confirm coverage references cited by the adjuster.</li>
+                                    <li>List evidence that supports your loss facts.</li>
+                                    <li>Note any statutory response deadlines.</li>
+                                    <li>Clarify outstanding requests or documentation.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="ai-agent-divided-title">Response focus</p>
+                                <ul class="ai-agent-divided-list">
+                                    <li>Address each insurer assertion with facts.</li>
+                                    <li>Restate policy language that favors the claim.</li>
+                                    <li>Set expectations for follow-up and timelines.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="ai-agent-actions">
+                            <button id="analyzeBtn" type="button" class="ai-agent-btn-primary ai-agent-btn-lg">
+                                <span id="analyzeText">Generate Full Response Letter</span>
+                                <span id="analyzingText" class="hidden">Analyzing...</span>
+                            </button>
+                            <button id="clearBtn" type="button" class="ai-agent-btn-secondary ai-agent-btn-lg">Clear Fields</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="ai-agent-section" id="ai-step-5">
+                    <div class="ai-agent-section-header">
+                        <p class="ai-agent-step-label">Step 5</p>
+                        <h2 class="ai-agent-section-title">Draft Email Response</h2>
+                        <p class="ai-agent-section-subtitle">Review, copy, and export the AI-generated correspondence.</p>
+                    </div>
+                    <div class="ai-agent-card ai-agent-stack">
+                        <div id="aiOutput" class="ai-agent-output">
+                            <div id="placeholder" class="ai-agent-placeholder">
+                                <div class="ai-agent-placeholder-icon">🤖</div>
+                                <p>Click “Generate Full Response Letter” to produce your draft email.</p>
+                            </div>
+                            <div id="loadingIndicator" class="ai-agent-loading hidden">
+                                <div class="ai-agent-spinner"></div>
+                                <p>AI is analyzing your correspondence...</p>
+                            </div>
+                            <div id="aiResponse" class="hidden"></div>
+                        </div>
+                        <div class="ai-agent-actions">
+                            <button id="copyBtn" type="button" class="ai-agent-btn-secondary ai-agent-btn-lg">Copy to Clipboard</button>
+                            <button id="exportBtn" type="button" class="ai-agent-btn-primary ai-agent-btn-lg">Export to PDF</button>
+                        </div>
+                        <div id="aiInsights" class="hidden ai-agent-inline-card">
+                            <div class="ai-agent-inline-card-header">
+                                <p class="ai-agent-divided-title">AI Detected Issues</p>
+                            </div>
+                            <ul id="issuesList" class="ai-agent-divided-list"></ul>
+                        </div>
+                        <div id="aiSuggestions" class="hidden ai-agent-inline-card">
+                            <div class="ai-agent-inline-card-header">
+                                <p class="ai-agent-divided-title">Suggested Actions</p>
+                            </div>
+                            <ul id="suggestionsList" class="ai-agent-divided-list"></ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="ai-agent-section" id="ai-step-6">
+                    <div class="ai-agent-section-header">
+                        <p class="ai-agent-step-label">Step 6</p>
+                        <h2 class="ai-agent-section-title">Supporting Documents</h2>
+                        <p class="ai-agent-section-subtitle">Organize documentation that strengthens your position.</p>
+                    </div>
+                    <div class="ai-agent-grid ai-agent-grid-three">
+                        <div class="ai-agent-card">
+                            <h3 class="ai-agent-card-title">Recommended Documents</h3>
+                            <p class="ai-agent-helper">Policy excerpts, declarations, and endorsements.</p>
+                        </div>
+                        <div class="ai-agent-card">
+                            <h3 class="ai-agent-card-title">Proof of Loss</h3>
+                            <p class="ai-agent-helper">Signed forms, estimates, and valuations to validate amounts.</p>
+                        </div>
+                        <div class="ai-agent-card">
+                            <h3 class="ai-agent-card-title">Claim Journal Entries</h3>
+                            <p class="ai-agent-helper">Date-stamped communications and adjuster interactions.</p>
+                        </div>
+                        <div class="ai-agent-card">
+                            <h3 class="ai-agent-card-title">Evidence Attachments</h3>
+                            <p class="ai-agent-helper">Photos, receipts, expert reports, and contractor notes.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="ai-agent-section" id="ai-step-7">
+                    <div class="ai-agent-section-header">
+                        <p class="ai-agent-step-label">Step 7</p>
+                        <h2 class="ai-agent-section-title">Sync to Claim Tools</h2>
+                        <p class="ai-agent-section-subtitle">Push insights and responses into your claim workspace.</p>
+                    </div>
+                    <div class="ai-agent-grid ai-agent-grid-three">
+                        <div class="ai-agent-card ai-agent-mini-card">
+                            <h3 class="ai-agent-card-title">Add to Claim Journal</h3>
+                            <p class="ai-agent-helper">Log this interaction for audit-ready history.</p>
+                        </div>
+                        <div class="ai-agent-card ai-agent-mini-card">
+                            <h3 class="ai-agent-card-title">Add to Evidence Organizer</h3>
+                            <p class="ai-agent-helper">Attach correspondence alongside exhibits.</p>
+                        </div>
+                        <div class="ai-agent-card ai-agent-mini-card">
+                            <h3 class="ai-agent-card-title">Add to Timeline</h3>
+                            <p class="ai-agent-helper">Track milestones and statutory deadlines.</p>
+                        </div>
+                        <div class="ai-agent-card ai-agent-mini-card">
+                            <h3 class="ai-agent-card-title">Trigger Deadline Scan</h3>
+                            <p class="ai-agent-helper">Surface response windows and reminders.</p>
+                        </div>
+                        <div class="ai-agent-card ai-agent-mini-card">
+                            <h3 class="ai-agent-card-title">Trigger Coverage Review</h3>
+                            <p class="ai-agent-helper">Run coverage checks against state-specific rules.</p>
+                        </div>
+                    </div>
+                </section>
             </div>
-
-            <!-- Right Column - AI Output Panel -->
-            <div class="card p-6">
-                <h2 class="text-2xl font-semibold mb-6">AI Analysis Output</h2>
-                
-                <!-- AI Output Display -->
-                <div id="aiOutput" class="min-h-64">
-                    <div id="placeholder" class="text-center py-8">
-                        <div class="text-4xl mb-4">🤖</div>
-                        <p>Click "Analyze & Draft Reply" to get AI-powered analysis and draft response.</p>
-                    </div>
-                    <div id="loadingIndicator" class="hidden text-center py-8">
-                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-                        <p>AI is analyzing your correspondence...</p>
-                    </div>
-                    <div id="aiResponse" class="hidden"></div>
-                </div>
-
-                <!-- AI Detected Issues -->
-                <div id="aiInsights" class="mt-6 hidden">
-                    <h3 class="text-lg font-semibold mb-3">🔍 AI Detected Issues / Key Points</h3>
-                    <ul id="issuesList" class="space-y-2"></ul>
-                </div>
-
-                <!-- Suggested Actions -->
-                <div id="aiSuggestions" class="mt-6 hidden">
-                    <h3 class="text-lg font-semibold mb-3">💡 Suggested Actions</h3>
-                    <ul id="suggestionsList" class="space-y-2"></ul>
-                </div>
-  
-                <!-- Footer Note -->
-                <div class="mt-6 bg-yellow-50">
-                    <p class="text-sm text-yellow-800">
-                        <strong>Note:</strong> AI-generated guidance — review before submission.
-                    </p>
-                </div>
+        </main>
     </div>
-  </div>
-</main>
 
     <script>
         // DOM Elements
         const analyzeBtn = document.getElementById('analyzeBtn');
+        const copyBtn = document.getElementById('copyBtn');
         const exportBtn = document.getElementById('exportBtn');
         const clearBtn = document.getElementById('clearBtn');
         const responseMode = document.getElementById('responseMode');
@@ -1297,6 +599,30 @@
             }
         });
 
+        // Copy to clipboard functionality
+        copyBtn.addEventListener('click', () => {
+            const text = aiResponse.textContent.trim();
+            if (!text) {
+                alert('Please generate an analysis first before copying.');
+                return;
+            }
+            const copyAction = navigator.clipboard?.writeText
+                ? navigator.clipboard.writeText(text)
+                : Promise.resolve().then(() => {
+                    const temp = document.createElement('textarea');
+                    temp.value = text;
+                    document.body.appendChild(temp);
+                    temp.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(temp);
+                });
+            copyAction.then(() => {
+                alert('Draft copied to clipboard.');
+            }).catch(() => {
+                alert('Unable to copy. Please try manually.');
+            });
+        });
+
         // Export PDF functionality
         exportBtn.addEventListener('click', async () => {
             if (!aiResponse.textContent.trim()) {
@@ -1413,6 +739,5 @@
     <script src="/app/assets/js/state-modules.js"></script>
     <script src="/app/assets/js/health-hooks.js"></script>
     <script type="module" src="/app/assets/js/tools/ai-response-agent.js"></script>
-        </div> <!-- End ai-response-content-wrapper -->
 </body>
 </html>
