@@ -2,636 +2,237 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Claim Deadlines • ClaimNavigatorAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Claim Deadlines &amp; Requirements • ClaimNavigatorAI</title>
   <link rel="stylesheet" href="/app/assets/css/style.css">
-  <link rel="stylesheet" href="/app/assets/css/design-system.css">
-  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
-  <style>
-    body.deadlines-page {
-      background: 
-        linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
-        url('../../assets/images/backgrounds/paperwork6.jpeg') !important;
-      background-size: cover !important;
-      background-position: center !important;
-      background-attachment: fixed !important;
-      color: #ffffff !important;
-    }
-
-    body.deadlines-page * {
-      color: #ffffff !important;
-    }
-
-    body.deadlines-page a {
-      color: #dbeafe !important;
-    }
-
-    .deadlines-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    /* Centered navigation bar */
-    .header .bar.container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .deadlines-header {
-      text-align: center;
-      margin-bottom: 2rem;
-      padding: 2rem;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 1rem;
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .deadlines-header h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin: 0 0 0.5rem 0;
-      color: #ffffff !important;
-    }
-
-    .deadlines-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      padding: 0.75rem 1.5rem;
-      border: none;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    .btn-primary {
-      background: #3b82f6;
-      color: #ffffff !important;
-    }
-
-    .btn-primary:hover {
-      background: #2563eb;
-      transform: translateY(-1px);
-    }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.1);
-      color: #ffffff !important;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .btn-warning {
-      background: #f59e0b;
-      color: #ffffff !important;
-    }
-
-    .btn-warning:hover {
-      background: #d97706;
-    }
-
-    .statistics-section {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    .stat-card {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 1rem;
-      padding: 1.5rem;
-      text-align: center;
-      backdrop-filter: blur(8px);
-    }
-
-    .stat-value {
-      font-size: 2rem;
-      font-weight: 700;
-      margin: 0.5rem 0;
-      color: #ffffff !important;
-    }
-
-    .stat-label {
-      font-size: 0.9rem;
-      color: #dbeafe !important;
-    }
-
-    .stat-card.overdue .stat-value {
-      color: #ef4444 !important;
-    }
-
-    .stat-card.upcoming .stat-value {
-      color: #f59e0b !important;
-    }
-
-    .stat-card.high-priority .stat-value {
-      color: #dc2626 !important;
-    }
-
-    .deadlines-section {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 1rem;
-      padding: 2rem;
-      backdrop-filter: blur(8px);
-    }
-
-    .deadlines-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-
-    .deadlines-table th {
-      text-align: left;
-      padding: 0.75rem;
-      border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-      font-weight: 600;
-      color: #ffffff !important;
-    }
-
-    .deadlines-table td {
-      padding: 0.75rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      color: #ffffff !important;
-    }
-
-    .deadlines-table tr:hover {
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .deadlines-table tr.overdue {
-      background: rgba(239, 68, 68, 0.1);
-    }
-
-    .deadlines-table tr.overdue td {
-      color: #ef4444 !important;
-    }
-
-    .deadlines-table tr.high-priority {
-      background: rgba(220, 38, 38, 0.1);
-    }
-
-    .deadlines-table tr.high-priority td {
-      color: #dc2626 !important;
-      font-weight: 600;
-    }
-
-    .deadlines-table tr.medium-priority td {
-      color: #f59e0b !important;
-    }
-
-    .deadlines-table tr.low-priority td {
-      color: #16a34a !important;
-    }
-
-    .priority-badge {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-
-    .priority-high {
-      background: rgba(220, 38, 38, 0.3);
-      color: #dc2626;
-    }
-
-    .priority-medium {
-      background: rgba(245, 158, 11, 0.3);
-      color: #f59e0b;
-    }
-
-    .priority-low {
-      background: rgba(22, 163, 74, 0.3);
-      color: #16a34a;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal-content {
-      background: rgba(30, 41, 59, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 1rem;
-      padding: 2rem;
-      max-width: 600px;
-      width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-      backdrop-filter: blur(12px);
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: #ffffff !important;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 0.5rem;
-      background: rgba(255, 255, 255, 0.1);
-      color: #ffffff !important;
-      font-size: 1rem;
-      font-family: inherit;
-    }
-
-    .form-group textarea {
-      min-height: 150px;
-      resize: vertical;
-    }
-
-    .form-group input::placeholder,
-    .form-group textarea::placeholder {
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 3rem;
-      color: #dbeafe !important;
-    }
-
-    @media (max-width: 768px) {
-      .deadlines-container {
-        padding: 1rem;
-      }
-
-      .deadlines-table {
-        font-size: 0.85rem;
-      }
-
-      .deadlines-table th,
-      .deadlines-table td {
-        padding: 0.5rem;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="/app/css/design-system.css">
 </head>
-<body class="resource-center deadlines-page">
-  <header class="header">
-    <div class="bar container">
-      <div class="brand"><div>Claim Navigation AI</div></div>
-      <nav class="nav">
-        <a href="/app/index.html">Home</a>
-        <span class="nav-separator">></span>
-        <span class="nav-current">Deadlines</span>
-        <span class="nav-separator">></span>
-        <a href="/app/resource-center.html">Resource Center</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Roadmap Breadcrumb -->
-  <div class="roadmap-breadcrumb" style="max-width: 1200px; margin: 1rem auto 0; padding: 0 1rem;">
-    <a href="/app/resource-center/claim-roadmap.html">← Back to Claim Roadmap</a>
-    <span class="roadmap-stage-label"></span>
-  </div>
-
-  <main class="container">
-    <div class="deadlines-container">
-      <div class="deadlines-header">
-        <h1>Critical Claim Deadlines</h1>
-        <p style="color: #dbeafe !important; margin: 0;">Track and manage important dates for your claim</p>
-      </div>
-
-      <div class="deadlines-actions">
-        <button class="btn btn-primary" id="add-btn">Add Deadline</button>
-        <button class="btn btn-secondary" id="refresh-btn">Refresh</button>
-        <button class="btn btn-warning" id="scan-btn">Auto-Detect From Document</button>
-      </div>
-
-      <div class="statistics-section" id="statistics">
-        <div class="stat-card">
-          <div class="stat-label">Total Deadlines</div>
-          <div class="stat-value" id="stat-total">0</div>
-        </div>
-        <div class="stat-card upcoming">
-          <div class="stat-label">Upcoming</div>
-          <div class="stat-value" id="stat-upcoming">0</div>
-        </div>
-        <div class="stat-card overdue">
-          <div class="stat-label">Overdue</div>
-          <div class="stat-value" id="stat-overdue">0</div>
-        </div>
-        <div class="stat-card high-priority">
-          <div class="stat-label">High Priority</div>
-          <div class="stat-value" id="stat-high">0</div>
+<body class="deadlines-page">
+  <main class="deadlines-main">
+    <section class="deadlines-hero">
+      <div class="deadlines-container">
+        <div class="deadlines-hero-content">
+          <h1>Claim Deadlines &amp; Requirements</h1>
+          <p class="deadlines-hero-subtitle">
+            Understand critical timelines and stay ahead of insurer and state-mandated requirements.
+          </p>
+          <div class="deadlines-hero-actions">
+            <a class="deadlines-btn-primary" href="/app/claim-journal.html">Track Deadlines in Your Claim Journal</a>
+            <a class="deadlines-btn-secondary" href="/app/claim-timeline.html">View Timeline Guide</a>
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="deadlines-section">
-        <h3 style="margin: 0 0 1rem 0; color: #ffffff !important;">Deadline List</h3>
-        <table class="deadlines-table" id="deadlines">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Event</th>
-              <th>Source</th>
-              <th>Priority</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="deadlines-body">
-            <tr>
-              <td colspan="5" class="empty-state">Loading deadlines...</td>
-            </tr>
-          </tbody>
-        </table>
+    <section class="deadlines-section">
+      <div class="deadlines-container">
+        <div class="deadlines-card deadlines-overview-card">
+          <div class="deadlines-overview-copy">
+            <h2>Why deadlines matter</h2>
+            <p>
+              Deadlines control leverage, determine penalties, and can reset or shorten when evidence is late. Your policy clocks and your state’s statutory clocks often differ, and carriers sometimes set aggressive dates that are negotiable. Staying ahead keeps the claim compliant and defensible.
+            </p>
+            <p>
+              Carrier-set deadlines cover their response and action windows. State statutory deadlines govern acknowledgments, investigations, and payment timing. Knowing both lets you push back on unreasonable demands and escalate when timelines slip.
+            </p>
+          </div>
+          <ul class="deadlines-bullets">
+            <li>FNOL timing</li>
+            <li>Proof of Loss deadline</li>
+            <li>Carrier acknowledgment</li>
+            <li>Inspection timeline</li>
+            <li>Adjustment timeline</li>
+            <li>Payment issuance timing</li>
+            <li>Supplemental deadlines</li>
+          </ul>
+        </div>
       </div>
-    </div>
+    </section>
+
+    <section class="deadlines-section" id="deadline-details">
+      <div class="deadlines-container">
+        <div class="deadlines-section-header">
+          <h2>Deadline categories you need</h2>
+          <p>Track every clock that affects leverage and payout speed.</p>
+        </div>
+        <div class="deadlines-grid">
+          <div class="deadlines-card">
+            <h3>Your Required Timelines</h3>
+            <ul>
+              <li>FNOL</li>
+              <li>Proof of Loss</li>
+              <li>Mitigation proof</li>
+              <li>Estimate submission</li>
+              <li>Supplemental deadlines</li>
+            </ul>
+            <a class="deadlines-card-cta" href="#state-deadlines">View Details</a>
+          </div>
+          <div class="deadlines-card">
+            <h3>Carrier Obligations</h3>
+            <ul>
+              <li>Acknowledgment</li>
+              <li>Investigation timelines</li>
+              <li>Payment deadlines</li>
+              <li>Inspection requests</li>
+            </ul>
+            <a class="deadlines-card-cta" href="#state-deadlines">View Details</a>
+          </div>
+          <div class="deadlines-card">
+            <h3>State-Mandated Deadlines</h3>
+            <ul>
+              <li>Fair claims handling deadlines</li>
+              <li>Statutory response timelines</li>
+              <li>Payment windows</li>
+              <li>Request reasonableness standards</li>
+            </ul>
+            <a class="deadlines-card-cta" href="#state-deadlines">View Details</a>
+          </div>
+          <div class="deadlines-card">
+            <h3>Documentation Timing</h3>
+            <ul>
+              <li>When to submit evidence</li>
+              <li>When to follow up</li>
+              <li>When delays harm your position</li>
+              <li>Sequencing advantages</li>
+            </ul>
+            <a class="deadlines-card-cta" href="#deadline-traps">View Details</a>
+          </div>
+          <div class="deadlines-card">
+            <h3>Non-Response Rules</h3>
+            <ul>
+              <li>What to do if the carrier goes silent</li>
+              <li>When silence constitutes non-compliance</li>
+              <li>How to escalate</li>
+            </ul>
+            <a class="deadlines-card-cta" href="#deadline-traps">View Details</a>
+          </div>
+          <div class="deadlines-card">
+            <h3>Supplemental Claims</h3>
+            <ul>
+              <li>Deadlines for supplemental</li>
+              <li>Documentation required</li>
+              <li>How late supplements affect payout</li>
+            </ul>
+            <a class="deadlines-card-cta" href="#deadline-actions">View Details</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="deadlines-section">
+      <div class="deadlines-container">
+        <div class="deadlines-card deadlines-state-card" id="state-deadlines">
+          <div class="deadlines-state-text">
+            <h2>State-level deadlines overview</h2>
+            <p>
+              States layer their own clocks on top of your policy. They dictate when carriers must acknowledge, investigate, decide, and pay. Knowing the local rules keeps pressure on the carrier and prevents avoidable delays.
+            </p>
+            <ul>
+              <li>10–15 day acknowledgment standards</li>
+              <li>30-day acceptance or denial timelines</li>
+              <li>Payment windows that range from 10–20 days</li>
+              <li>Reasonableness standards for document requests</li>
+            </ul>
+          </div>
+          <a class="deadlines-btn-primary" href="/app/state-directory.html">Check Your State’s Rules</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="deadlines-section" id="deadline-traps">
+      <div class="deadlines-container">
+        <div class="deadlines-section-header">
+          <h2>Common traps to avoid</h2>
+          <p>Prevent avoidable delays and keep every clock intact.</p>
+        </div>
+        <div class="deadlines-traps">
+          <div class="deadlines-card">
+            <h3>Missed Proof of Loss deadline</h3>
+            <p>Track the policy and statutory windows so extensions or tolling requests go out before the deadline passes.</p>
+          </div>
+          <div class="deadlines-card">
+            <h3>Submitting evidence too close to deadlines</h3>
+            <p>Last-minute uploads can shorten carrier response clocks; stagger submissions to keep timelines favorable.</p>
+          </div>
+          <div class="deadlines-card">
+            <h3>Delays caused by incomplete submission</h3>
+            <p>Incomplete packages let carriers pause the clock; use checklists to meet documentation standards on the first pass.</p>
+          </div>
+          <div class="deadlines-card">
+            <h3>Carrier delay tactics</h3>
+            <p>Silence, repeated document requests, or rotating adjusters can stall progress—log and challenge unreasonable resets.</p>
+          </div>
+          <div class="deadlines-card">
+            <h3>Letting silence extend timelines</h3>
+            <p>Follow up with dated notices when responses are overdue so interest and penalties accrue.</p>
+          </div>
+          <div class="deadlines-card">
+            <h3>Accepting unreasonable deadlines</h3>
+            <p>Push back on aggressive dates that conflict with policy or statutory rights and propose realistic timelines.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="deadlines-section">
+      <div class="deadlines-container">
+        <div class="deadlines-card deadlines-actions" id="deadline-actions">
+          <div class="deadlines-actions-header">
+            <h2>What To Do Right Now</h2>
+            <p>Lock in clocks, prevent surprise resets, and keep leverage on your side.</p>
+          </div>
+          <ol class="deadlines-actions-list">
+            <li>Add all known deadlines into the Claim Journal</li>
+            <li>Identify and correct missing evidence</li>
+            <li>Submit a timeline confirmation to the carrier</li>
+            <li>Request acknowledgment if overdue</li>
+            <li>Begin a follow-up schedule</li>
+          </ol>
+          <a class="deadlines-btn-primary" href="/app/claim-journal.html">Add These to My Claim Journal</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="deadlines-section">
+      <div class="deadlines-container">
+        <div class="deadlines-section-header">
+          <h2>Use with these tools</h2>
+          <p>Pair the Deadlines Tool with the rest of your claim stack.</p>
+        </div>
+        <div class="deadlines-tools-grid">
+          <div class="deadlines-tool-card">
+            <h3>Claim Journal</h3>
+            <p>Centralize every deadline, note, and follow-up in one workspace.</p>
+            <a class="deadlines-btn-secondary" href="/app/claim-journal.html">Open Claim Journal</a>
+          </div>
+          <div class="deadlines-tool-card">
+            <h3>Timeline &amp; Sequence Guide</h3>
+            <p>See how to order submissions so carrier clocks stay fair.</p>
+            <a class="deadlines-btn-secondary" href="/app/claim-timeline.html">View Timeline Guide</a>
+          </div>
+          <div class="deadlines-tool-card">
+            <h3>Claim Playbook</h3>
+            <p>Follow structured steps for each stage of the claim.</p>
+            <a class="deadlines-btn-secondary" href="/app/knowledge-center.html">Open Playbook</a>
+          </div>
+          <div class="deadlines-tool-card">
+            <h3>Evidence Organizer</h3>
+            <p>Upload and sequence documents to avoid deadline resets.</p>
+            <a class="deadlines-btn-secondary" href="/app/evidence-organizer.html">Go to Evidence Organizer</a>
+          </div>
+          <div class="deadlines-tool-card">
+            <h3>Document Generator</h3>
+            <p>Create deadline notices and proof packages with ready templates.</p>
+            <a class="deadlines-btn-secondary" href="/app/document-generator.html">Generate Documents</a>
+          </div>
+          <div class="deadlines-tool-card">
+            <h3>AI Response Agent</h3>
+            <p>Draft responses and follow-ups aligned to the correct timelines.</p>
+            <a class="deadlines-btn-secondary" href="/app/claim-navigator-agent.html">Open AI Agent</a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
-
-  <!-- Add Deadline Modal -->
-  <div class="modal" id="add-modal">
-    <div class="modal-content">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h3 style="margin: 0; color: #ffffff !important;">Add Deadline</h3>
-        <button class="btn btn-secondary" onclick="closeModal('add-modal')" style="padding: 0.5rem 1rem;">&times;</button>
-      </div>
-      <form id="add-form" onsubmit="submitAddDeadline(event)">
-        <div class="form-group">
-          <label>Event Description</label>
-          <input type="text" id="event-name" placeholder="e.g. Proof of Loss Due, Appraisal Deadline" required>
-        </div>
-        <div class="form-group">
-          <label>Due Date</label>
-          <input type="date" id="deadline-date" required>
-        </div>
-        <div class="form-group">
-          <label>Priority</label>
-          <select id="deadline-priority" required>
-            <option value="High">High</option>
-            <option value="Medium" selected>Medium</option>
-            <option value="Low">Low</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Source (Optional)</label>
-          <input type="text" id="deadline-source" placeholder="e.g. Policy Document, Letter from Insurer">
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('add-modal')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Add Deadline</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Scan Document Modal -->
-  <div class="modal" id="scan-modal">
-    <div class="modal-content">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h3 style="margin: 0; color: #ffffff !important;">Auto-Detect Deadlines</h3>
-        <button class="btn btn-secondary" onclick="closeModal('scan-modal')" style="padding: 0.5rem 1rem;">&times;</button>
-      </div>
-      <form id="scan-form" onsubmit="submitScanDocument(event)">
-        <div class="form-group">
-          <label>Paste Letter or Policy Text</label>
-          <textarea id="document-text" placeholder="Paste the full text of the letter, policy, or document to scan for deadlines..." required></textarea>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('scan-modal')">Cancel</button>
-          <button type="submit" class="btn btn-warning">Scan for Deadlines</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    const claim_id = localStorage.getItem('claim_id') || new URLSearchParams(window.location.search).get('claim_id') || 'TEST-CLAIM';
-
-    async function refresh() {
-      try {
-        const res = await fetch(`/.netlify/functions/get-deadlines?claim_id=${claim_id}`);
-        const data = await res.json();
-
-        if (data.status === 'error') {
-          throw new Error(data.error);
-        }
-
-        const deadlines = data.deadlines || [];
-        const stats = data.statistics || {};
-
-        // Update statistics
-        document.getElementById('stat-total').textContent = stats.total || 0;
-        document.getElementById('stat-upcoming').textContent = stats.upcoming || 0;
-        document.getElementById('stat-overdue').textContent = stats.overdue || 0;
-        document.getElementById('stat-high').textContent = stats.high_priority || 0;
-
-        // Update deadlines table
-        const tbody = document.getElementById('deadlines-body');
-        if (deadlines.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No deadlines yet. Click "Add Deadline" or "Auto-Detect" to get started.</td></tr>';
-        } else {
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-
-          tbody.innerHTML = deadlines.map(d => {
-            const deadlineDate = new Date(d.date);
-            deadlineDate.setHours(0, 0, 0, 0);
-            const isOverdue = deadlineDate < today;
-            const daysUntil = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
-            
-            let rowClass = '';
-            let statusText = '';
-            if (isOverdue) {
-              rowClass = 'overdue';
-              statusText = `Overdue by ${Math.abs(daysUntil)} day${Math.abs(daysUntil) !== 1 ? 's' : ''}`;
-            } else if (daysUntil <= 7) {
-              rowClass = 'high-priority';
-              statusText = `${daysUntil} day${daysUntil !== 1 ? 's' : ''} remaining`;
-            } else if (daysUntil <= 30) {
-              rowClass = 'medium-priority';
-              statusText = `${daysUntil} day${daysUntil !== 1 ? 's' : ''} remaining`;
-            } else {
-              rowClass = 'low-priority';
-              statusText = `${daysUntil} day${daysUntil !== 1 ? 's' : ''} remaining`;
-            }
-
-            const priorityClass = `priority-${d.priority.toLowerCase()}`;
-
-            return `
-              <tr class="${rowClass}">
-                <td>${new Date(d.date).toLocaleDateString()}</td>
-                <td>${d.event}</td>
-                <td>${d.source || '-'}</td>
-                <td><span class="priority-badge ${priorityClass}">${d.priority}</span></td>
-                <td>${statusText}</td>
-              </tr>
-            `;
-          }).join('');
-        }
-
-      } catch (error) {
-        console.error('Error refreshing:', error);
-        document.getElementById('deadlines-body').innerHTML = 
-          `<tr><td colspan="5" class="empty-state">Error loading deadlines: ${error.message}</td></tr>`;
-      }
-    }
-
-    function openModal(modalId) {
-      document.getElementById(modalId).classList.add('active');
-      if (modalId === 'add-modal') {
-        document.getElementById('deadline-date').value = new Date().toISOString().split('T')[0];
-      }
-    }
-
-    function closeModal(modalId) {
-      document.getElementById(modalId).classList.remove('active');
-      if (modalId === 'add-modal') {
-        document.getElementById('add-form').reset();
-      } else if (modalId === 'scan-modal') {
-        document.getElementById('scan-form').reset();
-      }
-    }
-
-    async function submitAddDeadline(event) {
-      event.preventDefault();
-      
-      const deadlineData = {
-        claim_id: claim_id,
-        event: document.getElementById('event-name').value,
-        date: document.getElementById('deadline-date').value,
-        priority: document.getElementById('deadline-priority').value,
-        source: document.getElementById('deadline-source').value || 'Manual Entry'
-      };
-
-      try {
-        const res = await fetch('/.netlify/functions/update-deadlines', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(deadlineData)
-        });
-
-        const data = await res.json();
-        
-        if (data.status === 'error') {
-          throw new Error(data.error);
-        }
-
-        closeModal('add-modal');
-        refresh();
-      } catch (error) {
-        alert('Error adding deadline: ' + error.message);
-      }
-    }
-
-    async function submitScanDocument(event) {
-      event.preventDefault();
-      
-      const documentText = document.getElementById('document-text').value;
-
-      if (!documentText || documentText.trim().length < 50) {
-        alert('Please paste at least 50 characters of text to scan.');
-        return;
-      }
-
-      try {
-        const res = await fetch('/.netlify/functions/update-deadlines', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            claim_id: claim_id,
-            document_text: documentText
-          })
-        });
-
-        const data = await res.json();
-        
-        if (data.status === 'error') {
-          throw new Error(data.error);
-        }
-
-        closeModal('scan-modal');
-        alert(`Successfully extracted ${data.extracted || 0} deadline(s). ${data.added || 0} added, ${data.updated || 0} updated.`);
-        refresh();
-      } catch (error) {
-        alert('Error scanning document: ' + error.message);
-      }
-    }
-
-    // Event listeners
-    document.getElementById('add-btn').addEventListener('click', () => openModal('add-modal'));
-    document.getElementById('refresh-btn').addEventListener('click', refresh);
-    document.getElementById('scan-btn').addEventListener('click', () => openModal('scan-modal'));
-
-    // Initial load
-    refresh();
-  </script>
-    <script type="module" src="/app/assets/js/tools/deadlines-tracker.js"></script>
-    <script src="/app/assets/js/utils/compliance-health-widget.js" type="module"></script>
-    <script type="module">
-        import { renderComplianceHealthWidget } from '/app/assets/js/utils/compliance-health-widget.js';
-        document.addEventListener('DOMContentLoaded', () => {
-            renderComplianceHealthWidget('#compliance-health-widget');
-        });
-    </script>
-    <script>
-      // Roadmap stage label
-      const params = new URLSearchParams(window.location.search);
-      const stage = params.get('stage');
-      const labelMap = {
-        "1": "Stage 1 · Start Your Claim",
-        "2": "Stage 2 · Document Damage",
-        "3": "Stage 3 · Analyze & Compare",
-        "4": "Stage 4 · Submit & Respond",
-        "5": "Stage 5 · Negotiate",
-        "6": "Stage 6 · Resolve or Escalate"
-      };
-      const labelEl = document.querySelector(".roadmap-stage-label");
-      if (labelEl) {
-        labelEl.textContent = labelMap[stage] || "";
-      }
-    </script>
 </body>
 </html>
-
-

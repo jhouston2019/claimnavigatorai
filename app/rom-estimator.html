@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROM Estimator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/app/css/design-system.css">
+</head>
+<body class="rom-page">
+  <header class="rom-hero">
+    <div class="rom-container">
+      <p class="rom-hero-kicker">Claim Navigator AI</p>
+      <h1>ROM Estimator</h1>
+      <p class="rom-hero-subtitle">
+        Generate a high-level Rough Order of Magnitude estimate based on damage type, affected area, and material/labor factors.
+      </p>
+      <div class="rom-hero-actions">
+        <a class="rom-btn-primary" href="/app/evidence-organizer.html">Add to Evidence Organizer</a>
+        <a class="rom-btn-secondary" href="/app/claim-analysis-tools.html">Compare to Carrier Estimate</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="rom-section">
+      <div class="rom-container">
+        <div class="rom-overview-card">
+          <div>
+            <h2>How to use this ROM</h2>
+            <p>
+              A ROM (Rough Order of Magnitude) gives a directional cost range before detailed scoping or contractor bids are available. It is not a final estimate, but a fast way to gauge budget and spot obvious gaps in a carrier’s number.
+            </p>
+            <p>
+              Use it to set expectations, prioritize inspections, and decide which areas need deeper documentation before negotiations start.
+            </p>
+          </div>
+          <div>
+            <h3>Best for</h3>
+            <ul class="rom-bullet-list">
+              <li>Quick budgeting</li>
+              <li>Cross-checking carrier estimates</li>
+              <li>Understanding cost ranges</li>
+              <li>Highlighting discrepancies</li>
+              <li>Supporting supplement requests</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="rom-section">
+      <div class="rom-container">
+        <div class="rom-section-header">
+          <h2>Input the loss details</h2>
+          <p>Capture the essentials for a directional estimate. All fields are static for planning purposes.</p>
+        </div>
+        <div class="rom-input-grid">
+          <div class="rom-card">
+            <div class="rom-card-header">
+              <h3>Damage Description</h3>
+            </div>
+            <div class="rom-field">
+              <label for="rom-damage-notes">Describe the Damage</label>
+              <textarea id="rom-damage-notes" rows="4" placeholder="Summarize visible damage, cause, affected rooms, and any safety concerns."></textarea>
+            </div>
+            <div class="rom-field">
+              <label for="rom-damage-category">Damage Category</label>
+              <select id="rom-damage-category">
+                <option>Water</option>
+                <option>Fire</option>
+                <option>Wind</option>
+                <option>Hail</option>
+                <option>Mold</option>
+                <option>Structural</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="rom-card">
+            <div class="rom-card-header">
+              <h3>Property Area</h3>
+            </div>
+            <div class="rom-field">
+              <label for="rom-area">Area of Focus</label>
+              <select id="rom-area">
+                <option>Roof</option>
+                <option>Attic</option>
+                <option>Living Area</option>
+                <option>Kitchen</option>
+                <option>Bathroom</option>
+                <option>Exterior Walls</option>
+                <option>Flooring</option>
+                <option>Foundation</option>
+              </select>
+            </div>
+            <div class="rom-field">
+              <label for="rom-square-footage">Approx. Square Footage</label>
+              <input id="rom-square-footage" type="number" placeholder="e.g., 850">
+            </div>
+            <div class="rom-field">
+              <label for="rom-area-notes">Optional Notes</label>
+              <input id="rom-area-notes" type="text" placeholder="Access issues, finishes, code requirements">
+            </div>
+          </div>
+
+          <div class="rom-card">
+            <div class="rom-card-header">
+              <h3>Material &amp; Labor Factors</h3>
+            </div>
+            <div class="rom-field">
+              <label for="rom-material-grade">Material Grade</label>
+              <select id="rom-material-grade">
+                <option>Basic</option>
+                <option>Standard</option>
+                <option>Upgraded</option>
+                <option>Premium</option>
+              </select>
+            </div>
+            <div class="rom-field">
+              <label for="rom-labor-intensity">Labor Intensity</label>
+              <select id="rom-labor-intensity">
+                <option>Low</option>
+                <option>Moderate</option>
+                <option>High</option>
+              </select>
+            </div>
+            <div class="rom-field">
+              <label>Include Factors</label>
+              <div class="rom-checkbox-grid">
+                <label><input type="checkbox"> Debris removal</label>
+                <label><input type="checkbox"> Moisture mitigation</label>
+                <label><input type="checkbox"> Structural repair</label>
+                <label><input type="checkbox"> HVAC impact</label>
+                <label><input type="checkbox"> Electrical impact</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="rom-section">
+      <div class="rom-container">
+        <div class="rom-generate-card">
+          <div>
+            <h2>Generate Rough Order of Magnitude</h2>
+            <p>Use these inputs to create a directional cost band. This is a static UI — calculations are not automated yet.</p>
+          </div>
+          <div class="rom-action-row">
+            <a class="rom-btn-primary" href="#">Run Estimate</a>
+            <a class="rom-btn-secondary" href="#">Clear Inputs</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="rom-section rom-results-section">
+      <div class="rom-container">
+        <div class="rom-card rom-estimate-summary">
+          <div class="rom-estimate-header">
+            <h2>Estimated Range</h2>
+            <p>Use these numbers as a directional band until detailed quantities and assemblies are confirmed.</p>
+          </div>
+          <div class="rom-range-grid">
+            <div class="rom-range-block">
+              <p class="rom-range-label">Low</p>
+              <p class="rom-range-value">$8,500</p>
+            </div>
+            <div class="rom-range-block">
+              <p class="rom-range-label">High</p>
+              <p class="rom-range-value">$14,200</p>
+            </div>
+          </div>
+          <p class="rom-uncertainty-note">Range accounts for unknown scope, material substitutions, and regional labor variability.</p>
+        </div>
+
+        <div class="rom-breakdown-grid">
+          <div class="rom-breakdown-card">
+            <h3>Materials</h3>
+            <ul>
+              <li>Core assemblies (roofing, drywall, flooring)</li>
+              <li>Finish levels aligned to selected grade</li>
+              <li>Fasteners, adhesives, sealants</li>
+              <li>Allowances for code upgrades</li>
+            </ul>
+          </div>
+          <div class="rom-breakdown-card">
+            <h3>Labor</h3>
+            <ul>
+              <li>Trade labor time based on intensity selection</li>
+              <li>Mobilization and setup</li>
+              <li>Access constraints or protection</li>
+              <li>Cleanup and punch list</li>
+            </ul>
+          </div>
+          <div class="rom-breakdown-card">
+            <h3>Specialty Trades</h3>
+            <ul>
+              <li>Mitigation (drying, mold containment)</li>
+              <li>Mechanical, electrical, plumbing impacts</li>
+              <li>Structural or engineering oversight</li>
+              <li>Debris hauling and disposal</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="rom-export-card">
+          <div>
+            <h2>Export Estimate</h2>
+            <p>Create a shareable record for your claim file or attach to supplement requests.</p>
+          </div>
+          <div class="rom-action-row">
+            <a class="rom-btn-primary" href="#">Download PDF</a>
+            <a class="rom-btn-secondary" href="/app/evidence-organizer.html">Add to Evidence Organizer</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="rom-section">
+      <div class="rom-container">
+        <div class="rom-section-header">
+          <h2>Use with these tools</h2>
+          <p>Pair the ROM output with downstream checklists and documentation tools.</p>
+        </div>
+        <div class="rom-tools-grid">
+          <div class="rom-tool-card">
+            <div>
+              <h3>Evidence Organizer</h3>
+              <p>Centralize photos, receipts, and mitigation records to support your range.</p>
+            </div>
+            <a class="rom-btn-secondary" href="/app/evidence-organizer.html">Open Organizer</a>
+          </div>
+          <div class="rom-tool-card">
+            <div>
+              <h3>Claim Playbook</h3>
+              <p>Step-by-step actions to negotiate around under-scoped carrier numbers.</p>
+            </div>
+            <a class="rom-btn-secondary" href="/app/claim-playbook.html">View Playbook</a>
+          </div>
+          <div class="rom-tool-card">
+            <div>
+              <h3>Document Generator</h3>
+              <p>Draft cover letters, supplement requests, and evidence summaries.</p>
+            </div>
+            <a class="rom-btn-secondary" href="/app/document-generator.html">Generate Docs</a>
+          </div>
+          <div class="rom-tool-card">
+            <div>
+              <h3>Claim Analysis Tools</h3>
+              <p>Compare carrier estimates and flag missing line items before you counter.</p>
+            </div>
+            <a class="rom-btn-secondary" href="/app/claim-analysis-tools.html">Open Analysis</a>
+          </div>
+          <div class="rom-tool-card">
+            <div>
+              <h3>Claim Timeline</h3>
+              <p>Track deadlines and inspection milestones tied to each cost assumption.</p>
+            </div>
+            <a class="rom-btn-secondary" href="/app/claim-timeline.html">View Timeline</a>
+          </div>
+          <div class="rom-tool-card">
+            <div>
+              <h3>AI Response Agent</h3>
+              <p>Draft quick responses to carrier requests using your ROM assumptions.</p>
+            </div>
+            <a class="rom-btn-secondary" href="/app/ai-response-agent.html">Launch Agent</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
+

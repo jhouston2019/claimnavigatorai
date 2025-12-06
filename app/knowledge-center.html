@@ -3,150 +3,12 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Claim Knowledge Center • ClaimNavigatorAI</title>
-  <meta name="description" content="Guides, claim tips, and insurance insights from ClaimNavigator.">
+  <title>Knowledge Center • ClaimNavigatorAI</title>
+  <meta name="description" content="Clear, actionable guidance to help you understand every part of your claim.">
   <link rel="stylesheet" href="/app/assets/css/style.css">
-  <link rel="stylesheet" href="/app/assets/css/design-system.css">
-  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
-  <style>
-    body.knowledge-center-page {
-      background: 
-        linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
-        url('../../assets/images/backgrounds/paperwork6.jpeg') !important;
-      background-size: cover !important;
-      background-position: center !important;
-      background-attachment: fixed !important;
-      color: #ffffff !important;
-    }
-
-    body.knowledge-center-page * {
-      color: #ffffff !important;
-    }
-
-    body.knowledge-center-page a {
-      color: #dbeafe !important;
-    }
-
-    .knowledge-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    /* Centered navigation bar */
-    .header .bar.container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .knowledge-header {
-      text-align: center;
-      margin-bottom: 3rem;
-      padding: 2rem;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 1rem;
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .knowledge-header h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin: 0 0 0.5rem 0;
-      color: #ffffff !important;
-    }
-
-    .knowledge-header p {
-      font-size: 1.1rem;
-      color: #dbeafe !important;
-      margin: 0;
-    }
-
-    .posts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-
-    .post-card {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 1rem;
-      padding: 1.5rem;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      transition: all 0.25s ease;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .post-card:hover {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: rgba(255, 255, 255, 0.3);
-      transform: translateY(-3px);
-    }
-
-    .post-card h3 {
-      font-size: 1.5rem;
-      margin: 0 0 1rem 0;
-      color: #ffffff !important;
-      font-weight: 700;
-    }
-
-    .post-card p {
-      color: #dbeafe !important;
-      line-height: 1.6;
-      margin: 0 0 1.5rem 0;
-      flex-grow: 1;
-    }
-
-    .post-meta {
-      font-size: 0.85rem;
-      color: #9ca3af !important;
-      margin-bottom: 1rem;
-    }
-
-    .btn-read-more {
-      display: inline-block;
-      padding: 0.75rem 1.5rem;
-      background: #3b82f6;
-      color: white !important;
-      text-decoration: none;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      transition: all 0.2s ease;
-      text-align: center;
-      margin-top: auto;
-    }
-
-    .btn-read-more:hover {
-      background: #2563eb;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-    }
-
-    .loading {
-      text-align: center;
-      padding: 3rem;
-      color: #dbeafe !important;
-      font-size: 1.1rem;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 3rem;
-      color: #9ca3af !important;
-    }
-
-    .empty-state h3 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      color: #ffffff !important;
-    }
-  </style>
+  <link rel="stylesheet" href="/app/css/design-system.css">
 </head>
-<body class="knowledge-center-page resource-center">
+<body class="knowledge-page">
   <header class="header">
     <div class="bar container">
       <div class="brand"><div>Claim Navigation AI</div></div>
@@ -154,72 +16,198 @@
         <a href="/app/index.html">Home</a>
         <span class="nav-separator">></span>
         <span class="nav-current">Knowledge Center</span>
-        <span class="nav-separator">></span>
-        <a href="/app/resource-center.html">Resource Center</a>
       </nav>
     </div>
   </header>
 
-  <div class="knowledge-container">
-    <div class="knowledge-header">
-      <h1>Claim Knowledge Center</h1>
-      <p>Explore expert guides on insurance claims, policy rights, and best practices.</p>
-    </div>
-
-    <div id="posts" class="posts-grid">
-      <div class="loading">Loading articles...</div>
-    </div>
-  </div>
-
-<script>
-async function loadPosts() {
-  try {
-    const res = await fetch('/.netlify/functions/get-posts');
-    const data = await res.json();
-
-    if (data.status === 'error') {
-      throw new Error(data.error);
-    }
-
-    const posts = data.posts || [];
-    const div = document.getElementById('posts');
-    div.innerHTML = '';
-
-    if (posts.length === 0) {
-      div.innerHTML = `
-        <div class="empty-state" style="grid-column: 1 / -1;">
-          <h3>No articles yet</h3>
-          <p>Check back soon for expert guides and insurance insights.</p>
+  <main class="knowledge-main">
+    <section class="knowledge-hero">
+      <div class="knowledge-shell">
+        <p class="knowledge-hero-kicker">Education Hub</p>
+        <h1>Knowledge Center</h1>
+        <p class="knowledge-hero-subtitle">Clear, actionable guidance to help you understand every part of your claim.</p>
+        <div class="knowledge-hero-actions">
+          <a class="knowledge-button" href="#knowledge-categories">Browse Articles</a>
+          <a class="knowledge-button knowledge-button-secondary" href="#knowledge-tools">Use Claim Tools</a>
         </div>
-      `;
-      return;
-    }
-
-    posts.forEach(post => {
-      const card = document.createElement('div');
-      card.className = 'post-card';
-      card.innerHTML = `
-        <div class="post-meta">${post.date || ''} • ${post.category || 'General'}</div>
-        <h3>${post.title}</h3>
-        <p>${post.snippet}</p>
-        <a href="/app/post.html?slug=${post.slug}" class="btn-read-more">Read More →</a>
-      `;
-      div.appendChild(card);
-    });
-
-  } catch (error) {
-    console.error('Error loading posts:', error);
-    document.getElementById('posts').innerHTML = `
-      <div class="empty-state" style="grid-column: 1 / -1;">
-        <h3>Error loading articles</h3>
-        <p>${error.message}</p>
       </div>
-    `;
-  }
-}
+    </section>
 
-loadPosts();
-</script>
+    <section class="knowledge-section">
+      <div class="knowledge-shell">
+        <div class="knowledge-search">
+          <input type="text" placeholder="Search Knowledge Center…" aria-label="Search Knowledge Center">
+          <p class="knowledge-search-helper">Search is a static preview for this release. Use categories to explore articles.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="knowledge-section">
+      <div class="knowledge-shell">
+        <div class="knowledge-overview-card">
+          <div class="knowledge-overview-content">
+            <p class="knowledge-eyebrow">Overview</p>
+            <h2>How the Knowledge Center helps you</h2>
+            <p>Every guide is written for policyholders, translating insurer jargon into plain language and giving you steps you can apply right now.</p>
+            <ul>
+              <li>Purpose: a single hub for strategy, evidence, timelines, and escalations.</li>
+              <li>How articles help: quick wins, templates, and deeper walkthroughs to stay ahead of adjusters.</li>
+              <li>Categories: organized by claim stage, insurer behavior, and high-impact tactics.</li>
+            </ul>
+          </div>
+          <div class="knowledge-overview-actions">
+            <a class="knowledge-button" href="#knowledge-featured">Browse Articles</a>
+            <a class="knowledge-button knowledge-button-secondary" href="#knowledge-categories">View Categories</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="knowledge-categories" class="knowledge-section">
+      <div class="knowledge-shell">
+        <div class="knowledge-section-header">
+          <h2>Categories</h2>
+          <p>Ten focused tracks so you can jump to what matters most right now.</p>
+        </div>
+        <div class="knowledge-grid">
+          <div class="knowledge-card">
+            <h3>Claim Strategy</h3>
+            <p>Build a step-by-step plan that keeps you ahead of every adjuster move.</p>
+            <a class="knowledge-card-cta" href="#">View Articles</a>
+          </div>
+          <div class="knowledge-card">
+            <h3>Documentation</h3>
+            <p>Know exactly which proofs, photos, and logs to gather so nothing is missing.</p>
+            <a class="knowledge-card-cta" href="#">View Articles</a>
+          </div>
+          <div class="knowledge-card">
+            <h3>Financial Calculations</h3>
+            <p>Calculate recoverable depreciation, ALE, and payouts with clear formulas.</p>
+            <a class="knowledge-card-cta" href="#">View Articles</a>
+          </div>
+          <div class="knowledge-card">
+            <h3>Insurer Behavior</h3>
+            <p>Spot delay tactics, lowballing patterns, and ways to respond with evidence.</p>
+            <a class="knowledge-card-cta" href="#">View Articles</a>
+          </div>
+          <div class="knowledge-card">
+            <h3>Legal Rights</h3>
+            <p>Understand timelines, bad-faith indicators, and when to escalate formally.</p>
+            <a class="knowledge-card-cta" href="#">View Articles</a>
+          </div>
+          <div class="knowledge-card">
+            <h3>Adjuster Tactics</h3>
+            <p>Prepare for common adjuster scripts and counter with facts and logs.</p>
+            <a class="knowledge-card-cta" href="#">View Articles</a>
+          </div>
+          <div class="knowledge-card">
+            <h3>Disaster-Specific Guides</h3>
+            <p>Hurricane, wildfire, flood, and storm playbooks tailored to each peril.</p>
+            <a class="knowledge-card-cta" href="#">View Articles</a>
+          </div>
+          <div class="knowledge-card">
+            <h3>High-Value Tips</h3>
+            <p>High-ROI actions that increase payout accuracy and reduce disputes.</p>
+            <a class="knowledge-card-cta" href="#">View Articles</a>
+          </div>
+          <div class="knowledge-card">
+            <h3>How to Escalate a Claim</h3>
+            <p>Move from adjuster to supervisor to DOI with a clear escalation record.</p>
+            <a class="knowledge-card-cta" href="#">View Articles</a>
+          </div>
+          <div class="knowledge-card">
+            <h3>How to Challenge an Engineering Report</h3>
+            <p>Dissect reports, document errors, and request fair re-inspections.</p>
+            <a class="knowledge-card-cta" href="#">View Articles</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="knowledge-featured" class="knowledge-section">
+      <div class="knowledge-shell">
+        <div class="knowledge-featured-card">
+          <div class="knowledge-section-header">
+            <h2>Featured Articles</h2>
+            <p>Curated starting points for faster wins and fewer surprises.</p>
+          </div>
+          <div class="knowledge-featured-grid">
+            <div class="knowledge-article">
+              <h3>Documenting a Total Loss the Adjuster Can’t Ignore</h3>
+              <p>Checklist for photos, receipts, and statements that close gaps before negotiations.</p>
+              <a class="knowledge-card-cta" href="#">Read More</a>
+            </div>
+            <div class="knowledge-article">
+              <h3>How to Respond to a Low Initial Offer</h3>
+              <p>Use comparables, contractor scopes, and timelines to demand a revised estimate.</p>
+              <a class="knowledge-card-cta" href="#">Read More</a>
+            </div>
+            <div class="knowledge-article">
+              <h3>When to Involve the Department of Insurance</h3>
+              <p>Signals of bad faith, what to file, and how to keep momentum after a complaint.</p>
+              <a class="knowledge-card-cta" href="#">Read More</a>
+            </div>
+            <div class="knowledge-article">
+              <h3>Challenging Engineering Reports Without Hiring a Lawyer</h3>
+              <p>Identify flawed assumptions, request supplemental inspections, and cite policy language.</p>
+              <a class="knowledge-card-cta" href="#">Read More</a>
+            </div>
+            <div class="knowledge-article">
+              <h3>Escalation Scripts That Keep Your Claim Moving</h3>
+              <p>Supervisor outreach templates, DOI-ready summaries, and respectful but firm language.</p>
+              <a class="knowledge-card-cta" href="#">Read More</a>
+            </div>
+            <div class="knowledge-article">
+              <h3>Financial Math for Depreciation and ALE</h3>
+              <p>Simple formulas to verify insurer calculations and spot missing reimbursements.</p>
+              <a class="knowledge-card-cta" href="#">Read More</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="knowledge-tools" class="knowledge-section">
+      <div class="knowledge-shell">
+        <div class="knowledge-section-header">
+          <h2>Use These Tools With the Knowledge Center</h2>
+          <p>Pair guidance with action using the core ClaimNavigator tools.</p>
+        </div>
+        <div class="knowledge-grid knowledge-tools-grid">
+          <div class="knowledge-tool-card">
+            <h3>Claim Journal</h3>
+            <p>Track every interaction, promise, and date to strengthen your evidence trail.</p>
+            <a class="knowledge-card-cta" href="#">Open Tool</a>
+          </div>
+          <div class="knowledge-tool-card">
+            <h3>Evidence Organizer</h3>
+            <p>Centralize photos, receipts, and logs so your submissions stay audit-ready.</p>
+            <a class="knowledge-card-cta" href="#">Open Tool</a>
+          </div>
+          <div class="knowledge-tool-card">
+            <h3>Document Generator</h3>
+            <p>Create letters and templates that present your claim facts clearly.</p>
+            <a class="knowledge-card-cta" href="#">Open Tool</a>
+          </div>
+          <div class="knowledge-tool-card">
+            <h3>Deadlines Tool</h3>
+            <p>Stay ahead of proof-of-loss, response, and appeal timelines automatically.</p>
+            <a class="knowledge-card-cta" href="#">Open Tool</a>
+          </div>
+          <div class="knowledge-tool-card">
+            <h3>AI Response Agent</h3>
+            <p>Draft replies to adjuster emails and requests using your evidence record.</p>
+            <a class="knowledge-card-cta" href="#">Open Tool</a>
+          </div>
+          <div class="knowledge-tool-card">
+            <h3>Claim Playbook</h3>
+            <p>Follow a stage-by-stage roadmap that connects articles to next actions.</p>
+            <a class="knowledge-card-cta" href="#">Open Tool</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
 

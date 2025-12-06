@@ -1,1816 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evidence Organizer - ClaimNavigatorAI</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-    <style>
-        :root {
-            --navy: #0f172a;
-            --primary: #1e40af;
-            --primary-600: #1e3a8a;
-            --accent: #3b82f6;
-            --text: #ffffff;
-            --text-secondary: #e5e7eb;
-            --muted: #9ca3af;
-            --border: rgba(255, 255, 255, 0.1);
-            --panel: rgba(255, 255, 255, 0.05);
-            --success: #10b981;
-            --warn: #f59e0b;
-            --error: #ef4444;
-            --bg-overlay: rgba(0, 0, 0, 0.85);
-        }
-        
-        * {
-            box-sizing: border-box;
-        }
-        
-        body {
-            margin: 0;
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-            color: var(--text);
-            background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), 
-                        url('../../assets/images/backgrounds/paperwork6.jpeg') center/cover no-repeat fixed;
-            background-size: cover;
-            background-attachment: fixed;
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-        
-        .header {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background: var(--navy);
-            color: #fff;
-            box-shadow: 0 2px 6px rgba(0,0,0,.2);
-        }
-        
-        .header .bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 16px;
-        }
-        
-        .header .bar.container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 800;
-            font-size: 1.1rem;
-        }
-        
-        .nav {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .nav a {
-            color: #c9d4ff;
-            text-decoration: none;
-            padding: .5rem .75rem;
-            border-radius: .5rem;
-            transition: all 0.2s;
-        }
-        
-        .nav a:hover {
-            background: rgba(255,255,255,.1);
-        }
-        
-        .nav span {
-            color: var(--muted);
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 24px;
-        }
-        
-        /* Hero Section */
-        .hero-section {
-            background: var(--panel);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            margin-bottom: 32px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        
-        .hero-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-            text-align: center;
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .hero-subtitle {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            margin-bottom: 24px;
-        }
-        
-        .claim-info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-top: 24px;
-        }
-        
-        .info-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            transition: all 0.2s;
-        }
-        
-        .info-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-2px);
-        }
-        
-        .info-label {
-            font-size: 0.875rem;
-            color: var(--muted);
-            margin-bottom: 6px;
-        }
-        
-        .info-value {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text);
-        }
-        
-        /* Stats Dashboard */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-        
-        .stat-card {
-            background: var(--panel);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            transition: all 0.2s;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        
-        .stat-label {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-        
-        .stat-value.photos { color: #60a5fa; }
-        .stat-value.documents { color: #34d399; }
-        .stat-value.receipts { color: #fbbf24; }
-        .stat-value.other { color: #a78bfa; }
-        .stat-value.total { color: var(--accent); }
-        
-        /* Upload Section */
-        .section {
-            background: var(--panel);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            margin-bottom: 32px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .upload-zone {
-            border: 2px dashed var(--border);
-            border-radius: 16px;
-            padding: 48px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.02);
-        }
-        
-        .upload-zone:hover {
-            border-color: var(--accent);
-            background: rgba(59, 130, 246, 0.05);
-        }
-        
-        .upload-zone.dragover {
-            border-color: var(--accent);
-            background: rgba(59, 130, 246, 0.1);
-            transform: scale(1.02);
-        }
-        
-        .upload-icon {
-            font-size: 3rem;
-            margin-bottom: 16px;
-        }
-        
-        .upload-text {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .upload-hint {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-        
-        /* File Grid */
-        .file-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 24px;
-        }
-        
-        .file-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            transition: all 0.2s;
-            position: relative;
-        }
-        
-        .file-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            border-color: var(--accent);
-        }
-        
-        .file-header {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        
-        .file-icon {
-            font-size: 2rem;
-            flex-shrink: 0;
-        }
-        
-        .file-info {
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .file-name {
-            font-weight: 600;
-            font-size: 0.875rem;
-            margin-bottom: 4px;
-            word-break: break-word;
-        }
-        
-        .file-meta {
-            font-size: 0.75rem;
-            color: var(--muted);
-        }
-        
-        .file-actions {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .btn-icon {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .btn-icon:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text);
-        }
-        
-        .btn-icon.delete:hover {
-            color: var(--error);
-        }
-        
-        .progress-bar {
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-            margin: 12px 0;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), #60a5fa);
-            transition: width 0.3s;
-        }
-        
-        .category-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .category-photos { background: rgba(96, 165, 250, 0.2); color: #93c5fd; }
-        .category-documents { background: rgba(52, 211, 153, 0.2); color: #6ee7b7; }
-        .category-receipts { background: rgba(251, 191, 36, 0.2); color: #fcd34d; }
-        .category-other { background: rgba(167, 139, 250, 0.2); color: #c4b5fd; }
-        
-        .file-notes {
-            width: 100%;
-            min-height: 60px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 8px;
-            color: var(--text);
-            font-size: 0.875rem;
-            margin-top: 8px;
-            resize: vertical;
-        }
-        
-        .file-notes:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-        
-        .before-after-toggle {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 8px;
-            font-size: 0.75rem;
-        }
-        
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 24px;
-        }
-        
-        .btn {
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.875rem;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-600);
-            transform: translateY(-2px);
-        }
-        
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background: #059669;
-        }
-        
-        .btn-warning {
-            background: var(--warn);
-            color: white;
-        }
-        
-        .btn-warning:hover {
-            background: #d97706;
-        }
-        
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-        
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        /* Search and Filter */
-        .search-filter-bar {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-        }
-        
-        .search-input {
-            flex: 1;
-            min-width: 200px;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-size: 0.875rem;
-        }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-        
-        .filter-select {
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-size: 0.875rem;
-            cursor: pointer;
-        }
-        
-        .filter-select:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-        
-        /* Category Tabs */
-        .category-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-        }
-        
-        .category-tab {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.875rem;
-        }
-        
-        .category-tab:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .category-tab.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        
-        /* AI Results */
-        .ai-results {
-            margin-top: 24px;
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-        }
-        
-        .ai-results.success {
-            background: rgba(16, 185, 129, 0.1);
-            border-color: var(--success);
-        }
-        
-        .ai-results.error {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: var(--error);
-        }
-        
-        .ai-results.warning {
-            background: rgba(245, 158, 11, 0.1);
-            border-color: var(--warn);
-        }
-        
-        /* Chart Container */
-        .chart-container {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            margin-top: 24px;
-        }
-        
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-        }
-        
-        .modal.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: var(--navy);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 800px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-        
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-        
-        .modal-close {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 2rem;
-            cursor: pointer;
-            padding: 0;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-        }
-        
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text);
-        }
-        
-        /* Loading States */
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-secondary);
-        }
-        
-        .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 24px;
-            color: var(--text-secondary);
-        }
-        
-        .empty-icon {
-            font-size: 4rem;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2rem;
-            }
-            
-            .claim-info-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .file-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .search-filter-bar {
-                flex-direction: column;
-            }
-        }
-        
-        /* File Preview */
-        .file-preview {
-            margin-top: 12px;
-            border-radius: 8px;
-            overflow: hidden;
-            max-height: 200px;
-        }
-        
-        .file-preview img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evidence Organizer - ClaimNavigatorAI</title>
+  <link rel="stylesheet" href="/app/css/design-system.css">
 </head>
-<body>
-    <!-- Header -->
-    <header class="header">
-        <div class="bar container">
-            <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
-            <nav class="nav">
-                <a href="/app/index.html">Home</a>
-                <span class="nav-separator">></span>
-                <span class="nav-current">Evidence Organizer</span>
-                <span class="nav-separator">></span>
-                <a href="/app/resource-center.html">Resource Center</a>
-            </nav>
+<body class="evo-body">
+  <main class="evo-main">
+    <section class="evo-hero">
+      <div class="evo-shell">
+        <h1>Evidence Organizer</h1>
+        <p>Upload, categorize, and track all documentation needed to support your property claim.</p>
+      </div>
+    </section>
+
+    <section class="evo-section">
+      <div class="evo-shell">
+        <div class="evo-overview-card">
+          <h2>What This Tool Does</h2>
+          <p>Centralize every piece of supporting evidence so you can keep your claim organized, review readiness at a glance, and export polished packages when you need to respond.</p>
+          <ul>
+            <li>Upload photos, videos, and PDFs with a guided dropzone.</li>
+            <li>Auto-tag evidence with AI and sort by category (damage, financial, communication, and more).</li>
+            <li>Review items on a timeline, surface gaps, and export an Evidence Package PDF.</li>
+          </ul>
         </div>
-    </header>
+      </div>
+    </section>
 
-    <main class="container">
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <h1 class="hero-title">Evidence Organizer</h1>
-            <p class="hero-subtitle">
-                Upload, organize, and manage all your claim evidence with AI-powered categorization and smart recommendations
-            </p>
-            
-            <div class="claim-info-grid" id="claimInfoGrid">
-                <div class="info-card">
-                    <div class="info-label">Claim Holder</div>
-                    <div class="info-value" id="displayName">Loading...</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Policy Number</div>
-                    <div class="info-value" id="displayPolicy">Loading...</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Claim Number</div>
-                    <div class="info-value" id="displayClaim">Loading...</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Date of Loss</div>
-                    <div class="info-value" id="displayDate">Loading...</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Insurance Company</div>
-                    <div class="info-value" id="displayInsurance">Loading...</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Stats Dashboard -->
-        <section class="section">
-            <h2 class="section-title">Evidence Dashboard</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value total" id="totalFiles">0</div>
-                    <div class="stat-label">Total Files</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value photos" id="totalPhotos">0</div>
-                    <div class="stat-label">Photos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value documents" id="totalDocs">0</div>
-                    <div class="stat-label">Documents</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value receipts" id="totalReceipts">0</div>
-                    <div class="stat-label">Receipts</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value other" id="totalOther">0</div>
-                    <div class="stat-label">Other</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="completenessScore" style="color: var(--success);">0%</div>
-                    <div class="stat-label">Completeness</div>
-                </div>
-            </div>
-            
-            <!-- Upload Timeline Chart -->
-            <div class="chart-container">
-                <h3 style="margin-bottom: 16px; font-size: 1.1rem;">Upload Timeline</h3>
-                <canvas id="evidenceTimeline" style="max-height: 300px;"></canvas>
-            </div>
-        </section>
-
-        <!-- Upload Section -->
-        <section class="section">
-            <h2 class="section-title">Upload Evidence</h2>
-            
-            <div id="upload-zone" class="upload-zone">
-                <div class="upload-icon"></div>
-                <div class="upload-text">Drop files here or click to upload</div>
-                <div class="upload-hint">Supports PDF, JPG, PNG, DOCX, XLSX, ZIP files (Max 50MB per file)</div>
-                <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx,.zip" style="display: none;" />
-            </div>
-
-            <div class="action-buttons">
-                <button class="btn btn-primary" id="categorizeBtn">
-                    AI Categorize All
-                </button>
-                <button class="btn btn-success" id="checkEvidenceBtn">
-                    Check Evidence Completeness
-                </button>
-                <button class="btn btn-warning" id="generateReportBtn">
-                    Generate Summary Report
-                </button>
-                <button class="btn btn-secondary" id="exportAllBtn">
-                    Export All (ZIP)
-                </button>
-            </div>
-
-            <div id="aiResults" class="ai-results" style="display: none;"></div>
-        </section>
-
-        <!-- Evidence Files Section -->
-        <section class="section">
-            <h2 class="section-title">Evidence Files</h2>
-            
-            <!-- Search and Filter -->
-            <div class="search-filter-bar">
-                <input type="text" id="searchInput" class="search-input" placeholder="Search files by name, category, or tags...">
-                <select id="categoryFilter" class="filter-select">
-                    <option value="">All Categories</option>
-                    <option value="photos">Photos</option>
-                    <option value="documents">Documents</option>
-                    <option value="receipts">Receipts</option>
-                    <option value="other">Other</option>
-                </select>
-                <select id="sortSelect" class="filter-select">
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="name">Name (A-Z)</option>
-                    <option value="size">Size (Largest)</option>
-                </select>
-            </div>
-
-            <!-- Category Tabs -->
-            <div class="category-tabs">
-                <button class="category-tab active" data-category="all">All Files</button>
-                <button class="category-tab" data-category="photos">Photos</button>
-                <button class="category-tab" data-category="documents">Documents</button>
-                <button class="category-tab" data-category="receipts">Receipts</button>
-                <button class="category-tab" data-category="other">Other</button>
-            </div>
-
-            <!-- File Grid -->
-            <div id="fileGrid" class="file-grid">
-                <div class="empty-state">
-                    <div class="empty-icon"></div>
-                    <h3>No evidence files yet</h3>
-                    <p>Upload your first file to get started</p>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- File Detail Modal -->
-    <div id="fileModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">File Details</h3>
-                <button class="modal-close" id="closeModal">&times;</button>
-            </div>
-            <div id="modalBody"></div>
+    <section class="evo-section">
+      <div class="evo-shell">
+        <div class="evo-grid">
+          <div class="evo-card">
+            <h3>Evidence Upload Manager</h3>
+            <p>Drag, drop, or browse to add all file types with clear status indicators.</p>
+            <a class="evo-button primary" href="#">Open Feature</a>
+          </div>
+          <div class="evo-card">
+            <h3>Auto-Tagging Engine</h3>
+            <p>AI proposes categories and tags so every file is searchable in seconds.</p>
+            <a class="evo-button primary" href="#">Open Feature</a>
+          </div>
+          <div class="evo-card">
+            <h3>Category Sorting System</h3>
+            <p>Organize by damage, financials, communications, estimates, and receipts.</p>
+            <a class="evo-button primary" href="#">Open Feature</a>
+          </div>
+          <div class="evo-card">
+            <h3>File Timeline View</h3>
+            <p>See every upload plotted chronologically to spot activity gaps quickly.</p>
+            <a class="evo-button primary" href="#">Open Feature</a>
+          </div>
+          <div class="evo-card">
+            <h3>Photo/Video Documentation Log</h3>
+            <p>Track visual evidence with notes so adjusters get instant context.</p>
+            <a class="evo-button primary" href="#">Open Feature</a>
+          </div>
+          <div class="evo-card">
+            <h3>Evidence Gap Detection</h3>
+            <p>Receive prompts for missing items like estimates, invoices, or moisture reads.</p>
+            <a class="evo-button primary" href="#">Open Feature</a>
+          </div>
+          <div class="evo-card">
+            <h3>Printable Evidence Package</h3>
+            <p>Create polished PDFs that bundle files, categories, and notes for submission.</p>
+            <a class="evo-button primary" href="#">Open Feature</a>
+          </div>
+          <div class="evo-card">
+            <h3>Attach Evidence to Claim Journal</h3>
+            <p>Link documents directly to journal entries for fast cross-references.</p>
+            <a class="evo-button primary" href="#">Open Feature</a>
+          </div>
+          <div class="evo-card">
+            <h3>Link Evidence to Deadlines</h3>
+            <p>Align uploads with key due dates so submissions never slip.</p>
+            <a class="evo-button primary" href="#">Open Feature</a>
+          </div>
         </div>
-    </div>
+      </div>
+    </section>
 
-    <script>
-        // Global state
-        let supabase = null;
-        let currentClaimId = null;
-        let currentUserId = null;
-        let evidenceFiles = [];
-        let timelineChart = null;
-        let currentCategoryFilter = 'all';
-        let currentSearchTerm = '';
-        let currentSort = 'newest';
+    <section class="evo-section">
+      <div class="evo-shell">
+        <div class="evo-upload-card">
+          <div class="evo-upload-header">
+            <div>
+              <p class="evo-kicker">Add New Evidence</p>
+              <h2>Upload files to keep your claim complete</h2>
+              <p class="evo-subtext">Photos, videos, PDFs accepted. Files remain organized by category with suggested tags.</p>
+            </div>
+            <a class="evo-button primary" href="#">Select File</a>
+          </div>
+          <div class="evo-upload-box">
+            <div class="evo-upload-icon"></div>
+            <div class="evo-upload-text">Drag & drop or click to upload</div>
+            <p class="evo-upload-hint">Photos, videos, PDFs accepted</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        // Initialize Supabase
-        async function initSupabase() {
-            try {
-                const response = await fetch('/.netlify/functions/get-supabase-config');
-                if (!response.ok) throw new Error('Failed to load config');
-                
-                const config = await response.json();
-                supabase = window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
-                
-                // Get current user
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
-                    currentUserId = user.id;
-                    await loadUserClaims();
-                }
-                
-                console.log('Supabase initialized');
-            } catch (error) {
-                console.warn('Supabase not available, using localStorage fallback:', error);
-                supabase = null;
-            }
-        }
+    <section class="evo-section">
+      <div class="evo-shell">
+        <div class="evo-filter-bar" aria-label="Category filters">
+          <button class="evo-filter-pill selected">All</button>
+          <button class="evo-filter-pill">Photos</button>
+          <button class="evo-filter-pill">Videos</button>
+          <button class="evo-filter-pill">Documents</button>
+          <button class="evo-filter-pill">Financial</button>
+          <button class="evo-filter-pill">Communication</button>
+          <button class="evo-filter-pill">Damage</button>
+          <button class="evo-filter-pill">Estimates</button>
+          <button class="evo-filter-pill">Receipts</button>
+        </div>
+      </div>
+    </section>
 
-        // Load user's claims
-        async function loadUserClaims() {
-            if (!supabase || !currentUserId) return;
-            
-            try {
-                const { data, error } = await supabase
-                    .from('claims')
-                    .select('*')
-                    .eq('user_id', currentUserId)
-                    .order('created_at', { ascending: false })
-                    .limit(1);
-                
-                if (error) throw error;
-                if (data && data.length > 0) {
-                    currentClaimId = data[0].id;
-                    loadClaimData(data[0]);
-                }
-            } catch (error) {
-                console.error('Error loading claims:', error);
-            }
-        }
+    <section class="evo-section">
+      <div class="evo-shell">
+        <div class="evo-evidence-grid">
+          <div class="evo-evidence-card">
+            <div class="evo-thumb"></div>
+            <div class="evo-evidence-meta">
+              <h3>roof_damage_photo.jpg</h3>
+              <p>Category: Damage</p>
+              <p>Timestamp: Aug 12, 2025 • Tags: shingles, hail</p>
+            </div>
+            <div class="evo-evidence-actions">
+              <a class="evo-button secondary" href="#">View</a>
+              <a class="evo-button primary" href="#">Attach to Claim Journal</a>
+            </div>
+          </div>
+          <div class="evo-evidence-card">
+            <div class="evo-thumb"></div>
+            <div class="evo-evidence-meta">
+              <h3>contractor_estimate.pdf</h3>
+              <p>Category: Estimates</p>
+              <p>Timestamp: Aug 14, 2025 • Tags: roofing, costs</p>
+            </div>
+            <div class="evo-evidence-actions">
+              <a class="evo-button secondary" href="#">View</a>
+              <a class="evo-button primary" href="#">Attach to Claim Journal</a>
+            </div>
+          </div>
+          <div class="evo-evidence-card">
+            <div class="evo-thumb"></div>
+            <div class="evo-evidence-meta">
+              <h3>adjuster_call_notes.pdf</h3>
+              <p>Category: Communication</p>
+              <p>Timestamp: Aug 15, 2025 • Tags: call log</p>
+            </div>
+            <div class="evo-evidence-actions">
+              <a class="evo-button secondary" href="#">View</a>
+              <a class="evo-button primary" href="#">Attach to Claim Journal</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        // Load claim data
-        function loadClaimData(claim = null) {
-            if (claim) {
-                document.getElementById('displayName').textContent = claim.insured_name || 'Not provided';
-                document.getElementById('displayPolicy').textContent = claim.policy_number || 'Not provided';
-                document.getElementById('displayClaim').textContent = claim.id.substring(0, 8) || 'Not provided';
-                document.getElementById('displayDate').textContent = claim.date_of_loss ? new Date(claim.date_of_loss).toLocaleDateString() : 'Not provided';
-                document.getElementById('displayInsurance').textContent = claim.insurer || 'Not provided';
-            } else {
-                // Try localStorage fallback
-                const savedData = localStorage.getItem('claimData');
-                if (savedData) {
-                    const claimData = JSON.parse(savedData);
-                    document.getElementById('displayName').textContent = claimData.name || 'Not provided';
-                    document.getElementById('displayPolicy').textContent = claimData.policy_number || 'Not provided';
-                    document.getElementById('displayClaim').textContent = claimData.claim_number || 'Not provided';
-                    document.getElementById('displayDate').textContent = claimData.date_of_loss || 'Not provided';
-                    document.getElementById('displayInsurance').textContent = claimData.insurance_company || 'Not provided';
-                } else {
-                    document.getElementById('displayName').textContent = 'Please complete your profile';
-                    document.getElementById('displayPolicy').textContent = 'Not available';
-                    document.getElementById('displayClaim').textContent = 'Not available';
-                    document.getElementById('displayDate').textContent = 'Not available';
-                    document.getElementById('displayInsurance').textContent = 'Not available';
-                }
-            }
-        }
+    <section class="evo-section">
+      <div class="evo-shell">
+        <div class="evo-timeline">
+          <h2>Evidence Timeline</h2>
+          <div class="evo-timeline-list">
+            <div class="evo-timeline-item">
+              <div class="evo-timeline-dot completed"></div>
+              <div class="evo-timeline-content">
+                <p class="evo-timestamp">Aug 12, 2025</p>
+                <h3>Damage</h3>
+                <p>Uploaded roof decking photos and short video walkthrough.</p>
+                <a class="evo-button secondary" href="#">View Evidence</a>
+              </div>
+            </div>
+            <div class="evo-timeline-item">
+              <div class="evo-timeline-dot completed"></div>
+              <div class="evo-timeline-content">
+                <p class="evo-timestamp">Aug 14, 2025</p>
+                <h3>Financial</h3>
+                <p>Added contractor estimate and preliminary repair quote.</p>
+                <a class="evo-button secondary" href="#">View Evidence</a>
+              </div>
+            </div>
+            <div class="evo-timeline-item">
+              <div class="evo-timeline-dot completed"></div>
+              <div class="evo-timeline-content">
+                <p class="evo-timestamp">Aug 15, 2025</p>
+                <h3>Communication</h3>
+                <p>Logged adjuster call summary and follow-up action items.</p>
+                <a class="evo-button secondary" href="#">View Evidence</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        // Setup event listeners
-        function setupEventListeners() {
-            // Upload zone
-            const uploadZone = document.getElementById('upload-zone');
-            const fileInput = document.getElementById('fileInput');
+    <section class="evo-section">
+      <div class="evo-shell">
+        <div class="evo-gap-card">
+          <h2>Potential Evidence Gaps</h2>
+          <ul>
+            <li>Missing photos of roof decking</li>
+            <li>Missing contractor estimate</li>
+            <li>Missing water mitigation invoice</li>
+            <li>Missing interior moisture readings</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-            uploadZone.addEventListener('click', () => fileInput.click());
-            uploadZone.addEventListener('dragover', handleDragOver);
-            uploadZone.addEventListener('dragleave', handleDragLeave);
-            uploadZone.addEventListener('drop', handleDrop);
-            fileInput.addEventListener('change', handleFileSelect);
-
-            // AI buttons
-            document.getElementById('categorizeBtn').addEventListener('click', categorizeAllFiles);
-            document.getElementById('checkEvidenceBtn').addEventListener('click', checkEvidenceCompleteness);
-            document.getElementById('generateReportBtn').addEventListener('click', generateSummaryReport);
-            document.getElementById('exportAllBtn').addEventListener('click', exportAllFiles);
-
-            // Search and filter
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                currentSearchTerm = e.target.value.toLowerCase();
-                renderFiles();
-            });
-
-            document.getElementById('categoryFilter').addEventListener('change', (e) => {
-                currentCategoryFilter = e.target.value || 'all';
-                updateCategoryTabs();
-                renderFiles();
-            });
-
-            document.getElementById('sortSelect').addEventListener('change', (e) => {
-                currentSort = e.target.value;
-                renderFiles();
-            });
-
-            // Category tabs
-            document.querySelectorAll('.category-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    currentCategoryFilter = tab.dataset.category;
-                    document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    document.getElementById('categoryFilter').value = currentCategoryFilter === 'all' ? '' : currentCategoryFilter;
-                    renderFiles();
-                });
-            });
-
-            // Modal
-            document.getElementById('closeModal').addEventListener('click', closeModal);
-            document.getElementById('fileModal').addEventListener('click', (e) => {
-                if (e.target.id === 'fileModal') closeModal();
-            });
-        }
-
-        // File upload handling
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.currentTarget.classList.add('dragover');
-        }
-
-        function handleDragLeave(e) {
-            e.preventDefault();
-            e.currentTarget.classList.remove('dragover');
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            e.currentTarget.classList.remove('dragover');
-            const files = Array.from(e.dataTransfer.files);
-            processFiles(files);
-        }
-
-        function handleFileSelect(e) {
-            const files = Array.from(e.target.files);
-            processFiles(files);
-            e.target.value = ''; // Reset input
-        }
-
-        async function processFiles(files) {
-            for (const file of files) {
-                if (file.size > 50 * 1024 * 1024) {
-                    showAIResults(`File ${file.name} is too large (max 50MB)`, 'error');
-                    continue;
-                }
-                await uploadFile(file);
-            }
-        }
-
-        async function uploadFile(file) {
-            const fileId = Date.now() + Math.random().toString(36).substr(2, 9);
-            
-            // Create file card
-            const fileCard = createFileCard(file, fileId);
-            const fileGrid = document.getElementById('fileGrid');
-            if (fileGrid.querySelector('.empty-state')) {
-                fileGrid.innerHTML = '';
-            }
-            fileGrid.appendChild(fileCard);
-
-            // Simulate upload progress
-            const progressBar = fileCard.querySelector('.progress-fill');
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.random() * 20;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        const progressContainer = fileCard.querySelector('.progress-bar');
-                        if (progressContainer) progressContainer.style.display = 'none';
-                    }, 500);
-                }
-                if (progressBar) progressBar.style.width = progress + '%';
-            }, 200);
-
-            // Auto-categorize with AI
-            try {
-                const aiResult = await categorizeWithAI(file);
-                updateFileCard(fileCard, aiResult);
-                
-                // Create evidence file object
-                const evidenceFile = {
-                    id: fileId,
-                    file_name: file.name,
-                    file_url: URL.createObjectURL(file),
-                    file_size: file.size,
-                    file_type: file.type,
-                    category: aiResult.category,
-                    tags: aiResult.tags || [],
-                    ai_summary: aiResult.summary || '',
-                    notes: '',
-                    is_before_after: false,
-                    created_at: new Date().toISOString(),
-                    file: file // Keep file reference for later upload
-                };
-                
-                evidenceFiles.push(evidenceFile);
-                
-                // Save to Supabase if available
-                if (supabase && currentClaimId) {
-                    try {
-                        // Upload file to Supabase Storage
-                        const fileExt = file.name.split('.').pop();
-                        const fileName = `${currentUserId}/${currentClaimId}/${fileId}.${fileExt}`;
-                        
-                        const { data: uploadData, error: uploadError } = await supabase.storage
-                            .from('evidence-files')
-                            .upload(fileName, file, {
-                                cacheControl: '3600',
-                                upsert: false
-                            });
-                        
-                        if (uploadError) throw uploadError;
-                        
-                        // Get public URL
-                        const { data: urlData } = supabase.storage
-                            .from('evidence-files')
-                            .getPublicUrl(fileName);
-                        
-                        // Save metadata to database
-                        const { data, error } = await supabase
-                            .from('evidence_files')
-                            .insert({
-                                claim_id: currentClaimId,
-                                user_id: currentUserId,
-                                file_name: file.name,
-                                file_url: urlData.publicUrl,
-                                file_size: file.size,
-                                file_type: file.type,
-                                category: aiResult.category,
-                                tags: aiResult.tags || [],
-                                ai_summary: aiResult.summary || ''
-                            })
-                            .select();
-                        
-                        if (error) throw error;
-                        if (data && data.length > 0) {
-                            evidenceFile.id = data[0].id;
-                            evidenceFile.file_url = urlData.publicUrl;
-                            console.log('Evidence file saved to database:', data[0].id);
-                        }
-                    } catch (error) {
-                        console.error('Error saving to Supabase:', error);
-                    }
-                }
-                
-                // Save to localStorage as backup
-                saveEvidenceFilesToLocalStorage();
-                updateDashboard();
-                renderFiles();
-                
-            } catch (error) {
-                console.error('Error categorizing file:', error);
-                updateFileCard(fileCard, { category: 'other', tags: [], summary: 'Unable to categorize' });
-            }
-        }
-
-        function createFileCard(file, fileId) {
-            const card = document.createElement('div');
-            card.className = 'file-card';
-            card.dataset.fileId = fileId;
-            
-            const isImage = file.type.startsWith('image/');
-            const fileIcon = isImage ? '' : getFileIcon(file.type);
-            
-            card.innerHTML = `
-                <div class="file-header">
-                    <div class="file-icon">${fileIcon}</div>
-                    <div class="file-info">
-                        <div class="file-name">${file.name}</div>
-                        <div class="file-meta">${formatFileSize(file.size)} • ${new Date().toLocaleDateString()}</div>
-                    </div>
-                    <div class="file-actions">
-                        <button class="btn-icon view" title="View" onclick="viewFile('${fileId}')">
-                            View
-                        </button>
-                        <button class="btn-icon delete" title="Delete" onclick="deleteFile('${fileId}')">
-                            Delete
-                        </button>
-                    </div>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 0%"></div>
-                </div>
-                <div class="category-badge category-other">Categorizing...</div>
-                ${isImage ? `<div class="file-preview"><img src="${URL.createObjectURL(file)}" alt="${file.name}"></div>` : ''}
-                <textarea class="file-notes" placeholder="Add notes about this file..." rows="2"></textarea>
-                <label class="before-after-toggle">
-                    <input type="checkbox" class="before-after-checkbox">
-                    <span>Mark as Before/After photo</span>
-                </label>
-            `;
-            
-            // Add event listeners
-            const notesTextarea = card.querySelector('.file-notes');
-            notesTextarea.addEventListener('blur', () => {
-                updateFileNotes(fileId, notesTextarea.value);
-            });
-            
-            const beforeAfterCheckbox = card.querySelector('.before-after-checkbox');
-            beforeAfterCheckbox.addEventListener('change', () => {
-                updateFileBeforeAfter(fileId, beforeAfterCheckbox.checked);
-            });
-            
-            return card;
-        }
-
-        function updateFileCard(card, aiResult) {
-            const badge = card.querySelector('.category-badge');
-            badge.textContent = aiResult.category.charAt(0).toUpperCase() + aiResult.category.slice(1);
-            badge.className = `category-badge category-${aiResult.category.toLowerCase()}`;
-        }
-
-        function getFileIcon(type) {
-            if (type.includes('pdf')) return 'PDF';
-            if (type.includes('word') || type.includes('document')) return 'DOC';
-            if (type.includes('excel') || type.includes('spreadsheet')) return 'XLS';
-            if (type.includes('zip') || type.includes('archive')) return 'ZIP';
-            return 'FILE';
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-
-        // AI Functions
-        async function categorizeWithAI(file) {
-            try {
-                const response = await fetch('/.netlify/functions/ai-categorize-evidence', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        fileName: file.name,
-                        fileType: file.type,
-                        fileSize: file.size
-                    })
-                });
-                
-                if (!response.ok) throw new Error('AI categorization failed');
-                return await response.json();
-            } catch (error) {
-                console.error('AI categorization error:', error);
-                // Fallback categorization
-                return getFallbackCategory(file);
-            }
-        }
-
-        function getFallbackCategory(file) {
-            const name = file.name.toLowerCase();
-            const type = file.type.toLowerCase();
-            
-            if (type.startsWith('image/') || name.includes('photo') || name.includes('image')) {
-                return { category: 'photos', tags: ['photo'], summary: 'Photo evidence', confidence: 60 };
-            } else if (name.includes('receipt') || name.includes('invoice') || name.includes('bill')) {
-                return { category: 'receipts', tags: ['receipt'], summary: 'Receipt or invoice', confidence: 60 };
-            } else if (type.includes('pdf') || type.includes('document') || name.includes('report')) {
-                return { category: 'documents', tags: ['document'], summary: 'Document evidence', confidence: 60 };
-            } else {
-                return { category: 'other', tags: ['other'], summary: 'Other evidence', confidence: 40 };
-            }
-        }
-
-        async function categorizeAllFiles() {
-            const button = document.getElementById('categorizeBtn');
-            button.disabled = true;
-            button.innerHTML = 'Categorizing...';
-            
-            try {
-                for (const file of evidenceFiles) {
-                    const fileObj = file.file || { name: file.file_name, type: file.file_type };
-                    const aiResult = await categorizeWithAI(fileObj);
-                    file.category = aiResult.category;
-                    file.tags = aiResult.tags || [];
-                    file.ai_summary = aiResult.summary || '';
-                    
-                    // Update in database
-                    if (supabase && file.id && !file.id.toString().includes('temp')) {
-                        await supabase
-                            .from('evidence_files')
-                            .update({
-                                category: aiResult.category,
-                                tags: aiResult.tags || [],
-                                ai_summary: aiResult.summary || ''
-                            })
-                            .eq('id', file.id);
-                    }
-                }
-                
-                saveEvidenceFilesToLocalStorage();
-                updateDashboard();
-                renderFiles();
-                showAIResults('All files have been re-categorized successfully!', 'success');
-            } catch (error) {
-                showAIResults('Error re-categorizing files: ' + error.message, 'error');
-            } finally {
-                button.disabled = false;
-                button.innerHTML = 'AI Categorize All';
-            }
-        }
-
-        async function checkEvidenceCompleteness() {
-            const button = document.getElementById('checkEvidenceBtn');
-            button.disabled = true;
-            button.innerHTML = 'Checking...';
-            
-            try {
-                const response = await fetch('/.netlify/functions/ai-evidence-check', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        claimType: 'general',
-                        uploadedCategories: evidenceFiles.map(f => f.category)
-                    })
-                });
-                
-                if (!response.ok) throw new Error('Evidence check failed');
-                const result = await response.json();
-                
-                let message = `<strong>Completeness Score: ${result.completeness_score || 0}%</strong><br><br>`;
-                
-                if (result.missing && result.missing.length > 0) {
-                    message += `<strong>Missing Evidence:</strong><br>• ${result.missing.join('<br>• ')}<br><br>`;
-                }
-                
-                if (result.recommendations && result.recommendations.length > 0) {
-                    message += `<strong>Recommendations:</strong><br>• ${result.recommendations.join('<br>• ')}`;
-                }
-                
-                showAIResults(message, result.completeness_score >= 80 ? 'success' : 'warning');
-            } catch (error) {
-                console.error('Evidence check error:', error);
-                const fallbackResult = getFallbackEvidenceCheck();
-                let message = `<strong>Missing Evidence:</strong><br>• ${fallbackResult.missing.join('<br>• ')}<br><br>`;
-                message += `<strong>Recommendations:</strong><br>• ${fallbackResult.recommendations.join('<br>• ')}`;
-                showAIResults(message, 'warning');
-            } finally {
-                button.disabled = false;
-                button.innerHTML = 'Check Evidence Completeness';
-            }
-        }
-
-        function getFallbackEvidenceCheck() {
-            const categories = evidenceFiles.map(f => f.category);
-            const missing = [];
-            const recommendations = [];
-            
-            if (!categories.includes('photos')) {
-                missing.push('Damage photos');
-                recommendations.push('Take photos of all damage from multiple angles');
-            }
-            if (!categories.includes('documents')) {
-                missing.push('Official documents');
-                recommendations.push('Gather police reports, estimates, and official correspondence');
-            }
-            if (!categories.includes('receipts')) {
-                missing.push('Receipts and invoices');
-                recommendations.push('Collect receipts for repairs, temporary housing, and replacement items');
-            }
-            
-            if (missing.length === 0) {
-                return {
-                    missing: ['All basic evidence types present'],
-                    recommendations: ['Consider adding witness statements or expert reports']
-                };
-            }
-            
-            return { missing, recommendations };
-        }
-
-        async function generateSummaryReport() {
-            const button = document.getElementById('generateReportBtn');
-            button.disabled = true;
-            button.innerHTML = 'Generating...';
-            
-            try {
-                const claimInfo = {
-                    claimNumber: document.getElementById('displayClaim').textContent,
-                    dateOfLoss: document.getElementById('displayDate').textContent,
-                    insuranceCompany: document.getElementById('displayInsurance').textContent
-                };
-                
-                const response = await fetch('/.netlify/functions/generate-evidence-report', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        claimInfo,
-                        evidenceList: evidenceFiles,
-                        aiSummary: 'AI-generated summary of all evidence files'
-                    })
-                });
-                
-                if (!response.ok) throw new Error('Report generation failed');
-                
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `evidence-report-${Date.now()}.pdf`;
-                a.click();
-                window.URL.revokeObjectURL(url);
-                
-                showAIResults('Summary report generated successfully!', 'success');
-            } catch (error) {
-                console.error('Report generation error:', error);
-                generateFallbackReport();
-            } finally {
-                button.disabled = false;
-                button.innerHTML = 'Generate Summary Report';
-            }
-        }
-
-        function generateFallbackReport() {
-            const claimInfo = {
-                claimNumber: document.getElementById('displayClaim').textContent,
-                dateOfLoss: document.getElementById('displayDate').textContent,
-                insuranceCompany: document.getElementById('displayInsurance').textContent
-            };
-            
-            let reportContent = `CLAIM EVIDENCE SUMMARY REPORT\n\n`;
-            reportContent += `Claim Number: ${claimInfo.claimNumber}\n`;
-            reportContent += `Date of Loss: ${claimInfo.dateOfLoss}\n`;
-            reportContent += `Insurance Company: ${claimInfo.insuranceCompany}\n\n`;
-            reportContent += `EVIDENCE FILES (${evidenceFiles.length} total):\n\n`;
-            
-            evidenceFiles.forEach((file, index) => {
-                reportContent += `${index + 1}. ${file.file_name}\n`;
-                reportContent += `   Category: ${file.category}\n`;
-                reportContent += `   Summary: ${file.ai_summary || 'No summary available'}\n`;
-                reportContent += `   Uploaded: ${new Date(file.created_at).toLocaleDateString()}\n\n`;
-            });
-            
-            const blob = new Blob([reportContent], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `evidence-report-${Date.now()}.txt`;
-            a.click();
-            window.URL.revokeObjectURL(url);
-            
-            showAIResults('Text report generated successfully! (PDF generation unavailable)', 'warning');
-        }
-
-        async function exportAllFiles() {
-            if (evidenceFiles.length === 0) {
-                showAIResults('No files to export', 'error');
-                return;
-            }
-            
-            try {
-                const zip = new JSZip();
-                
-                for (const file of evidenceFiles) {
-                    if (file.file) {
-                        zip.file(file.file_name, file.file);
-                    }
-                }
-                
-                const blob = await zip.generateAsync({ type: 'blob' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `evidence-export-${Date.now()}.zip`;
-                a.click();
-                window.URL.revokeObjectURL(url);
-                
-                showAIResults('All files exported successfully!', 'success');
-            } catch (error) {
-                console.error('Export error:', error);
-                showAIResults('Error exporting files: ' + error.message, 'error');
-            }
-        }
-
-        function showAIResults(message, type = 'success') {
-            const resultsDiv = document.getElementById('aiResults');
-            resultsDiv.className = `ai-results ${type}`;
-            resultsDiv.innerHTML = message;
-            resultsDiv.style.display = 'block';
-            
-            setTimeout(() => {
-                resultsDiv.style.display = 'none';
-            }, 10000);
-        }
-
-        // File management
-        async function deleteFile(fileId) {
-            if (!confirm('Are you sure you want to delete this file?')) return;
-            
-            const card = document.querySelector(`[data-file-id="${fileId}"]`);
-            if (card) {
-                card.remove();
-                
-                // Remove from database
-                if (supabase) {
-                    try {
-                        const file = evidenceFiles.find(f => f.id === fileId);
-                        if (file && file.id && !file.id.toString().includes('temp')) {
-                            await supabase
-                                .from('evidence_files')
-                                .delete()
-                                .eq('id', file.id);
-                        }
-                    } catch (error) {
-                        console.error('Error deleting from database:', error);
-                    }
-                }
-                
-                evidenceFiles = evidenceFiles.filter(f => f.id !== fileId);
-                saveEvidenceFilesToLocalStorage();
-                updateDashboard();
-                renderFiles();
-            }
-        }
-
-        function viewFile(fileId) {
-            const file = evidenceFiles.find(f => f.id === fileId);
-            if (!file) return;
-            
-            const modal = document.getElementById('fileModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
-            
-            modalTitle.textContent = file.file_name;
-            modalBody.innerHTML = `
-                <div style="margin-bottom: 16px;">
-                    <strong>Category:</strong> <span class="category-badge category-${file.category}">${file.category}</span>
-                </div>
-                <div style="margin-bottom: 16px;">
-                    <strong>Size:</strong> ${formatFileSize(file.file_size)}
-                </div>
-                <div style="margin-bottom: 16px;">
-                    <strong>Uploaded:</strong> ${new Date(file.created_at).toLocaleString()}
-                </div>
-                ${file.ai_summary ? `<div style="margin-bottom: 16px;"><strong>AI Summary:</strong><br>${file.ai_summary}</div>` : ''}
-                ${file.tags && file.tags.length > 0 ? `<div style="margin-bottom: 16px;"><strong>Tags:</strong> ${file.tags.join(', ')}</div>` : ''}
-                ${file.file_type && file.file_type.startsWith('image/') ? `<div style="margin-top: 16px;"><img src="${file.file_url}" style="max-width: 100%; border-radius: 8px;"></div>` : ''}
-                <div style="margin-top: 16px;">
-                    <a href="${file.file_url}" target="_blank" class="btn btn-primary" style="text-decoration: none; display: inline-block;">Open File</a>
-                </div>
-            `;
-            
-            modal.classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('fileModal').classList.remove('active');
-        }
-
-        function updateFileNotes(fileId, notes) {
-            const file = evidenceFiles.find(f => f.id === fileId);
-            if (file) {
-                file.notes = notes;
-                
-                if (supabase && file.id && !file.id.toString().includes('temp')) {
-                    supabase
-                        .from('evidence_files')
-                        .update({ notes })
-                        .eq('id', file.id);
-                }
-                
-                saveEvidenceFilesToLocalStorage();
-            }
-        }
-
-        function updateFileBeforeAfter(fileId, isBeforeAfter) {
-            const file = evidenceFiles.find(f => f.id === fileId);
-            if (file) {
-                file.is_before_after = isBeforeAfter;
-                
-                if (supabase && file.id && !file.id.toString().includes('temp')) {
-                    supabase
-                        .from('evidence_files')
-                        .update({ is_before_after: isBeforeAfter })
-                        .eq('id', file.id);
-                }
-                
-                saveEvidenceFilesToLocalStorage();
-            }
-        }
-
-        function updateCategoryTabs() {
-            document.querySelectorAll('.category-tab').forEach(tab => {
-                if (tab.dataset.category === currentCategoryFilter) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
-        }
-
-        // Dashboard functions
-        function updateDashboard() {
-            updateSummary();
-            updateTimeline();
-        }
-
-        function updateSummary() {
-            const total = evidenceFiles.length;
-            const photos = evidenceFiles.filter(f => f.category === 'photos').length;
-            const docs = evidenceFiles.filter(f => f.category === 'documents').length;
-            const receipts = evidenceFiles.filter(f => f.category === 'receipts').length;
-            const other = evidenceFiles.filter(f => f.category === 'other').length;
-            
-            // Calculate completeness score
-            const hasPhotos = photos > 0;
-            const hasDocs = docs > 0;
-            const hasReceipts = receipts > 0;
-            const hasMultiple = total >= 5;
-            
-            let score = 0;
-            if (hasPhotos) score += 25;
-            if (hasDocs) score += 25;
-            if (hasReceipts) score += 25;
-            if (hasMultiple) score += 25;
-            
-            document.getElementById('totalFiles').textContent = total;
-            document.getElementById('totalPhotos').textContent = photos;
-            document.getElementById('totalDocs').textContent = docs;
-            document.getElementById('totalReceipts').textContent = receipts;
-            document.getElementById('totalOther').textContent = other;
-            document.getElementById('completenessScore').textContent = score + '%';
-        }
-
-        function updateTimeline() {
-            const ctx = document.getElementById('evidenceTimeline');
-            if (!ctx) return;
-            
-            if (timelineChart) {
-                timelineChart.destroy();
-            }
-            
-            const dates = evidenceFiles.map(f => new Date(f.created_at).toLocaleDateString());
-            const uniqueDates = [...new Set(dates)].sort();
-            const counts = uniqueDates.map(date => dates.filter(d => d === date).length);
-            
-            timelineChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: uniqueDates,
-                    datasets: [{
-                        label: 'Files Uploaded',
-                        data: counts,
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: { 
-                            beginAtZero: true,
-                            ticks: { color: '#e5e7eb' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                        },
-                        x: {
-                            ticks: { color: '#e5e7eb' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Render files
-        function renderFiles() {
-            let filtered = [...evidenceFiles];
-            
-            // Apply search filter
-            if (currentSearchTerm) {
-                filtered = filtered.filter(file => 
-                    file.file_name.toLowerCase().includes(currentSearchTerm) ||
-                    file.category.toLowerCase().includes(currentSearchTerm) ||
-                    (file.tags && file.tags.some(tag => tag.toLowerCase().includes(currentSearchTerm))) ||
-                    (file.ai_summary && file.ai_summary.toLowerCase().includes(currentSearchTerm))
-                );
-            }
-            
-            // Apply category filter
-            if (currentCategoryFilter !== 'all') {
-                filtered = filtered.filter(file => file.category === currentCategoryFilter);
-            }
-            
-            // Apply sorting
-            filtered.sort((a, b) => {
-                switch (currentSort) {
-                    case 'oldest':
-                        return new Date(a.created_at) - new Date(b.created_at);
-                    case 'name':
-                        return a.file_name.localeCompare(b.file_name);
-                    case 'size':
-                        return b.file_size - a.file_size;
-                    default: // newest
-                        return new Date(b.created_at) - new Date(a.created_at);
-                }
-            });
-            
-            const fileGrid = document.getElementById('fileGrid');
-            
-            if (filtered.length === 0) {
-                fileGrid.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1 / -1;">
-                        <div class="empty-icon"></div>
-                        <h3>No files found</h3>
-                        <p>Try adjusting your search or filter criteria</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            fileGrid.innerHTML = '';
-            
-            filtered.forEach(file => {
-                const card = createFileCardFromData(file);
-                fileGrid.appendChild(card);
-            });
-        }
-
-        function createFileCardFromData(file) {
-            const card = document.createElement('div');
-            card.className = 'file-card';
-            card.dataset.fileId = file.id;
-            
-            const isImage = file.file_type && file.file_type.startsWith('image/');
-            const fileIcon = isImage ? '' : getFileIcon(file.file_type || '');
-            
-            card.innerHTML = `
-                <div class="file-header">
-                    <div class="file-icon">${fileIcon}</div>
-                    <div class="file-info">
-                        <div class="file-name">${file.file_name}</div>
-                        <div class="file-meta">${formatFileSize(file.file_size)} • ${new Date(file.created_at).toLocaleDateString()}</div>
-                    </div>
-                    <div class="file-actions">
-                        <button class="btn-icon view" title="View" onclick="viewFile('${file.id}')">
-                            View
-                        </button>
-                        <button class="btn-icon delete" title="Delete" onclick="deleteFile('${file.id}')">
-                            Delete
-                        </button>
-                    </div>
-                </div>
-                <div class="category-badge category-${file.category}">${file.category.charAt(0).toUpperCase() + file.category.slice(1)}</div>
-                ${file.ai_summary ? `<div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 8px;">${file.ai_summary.substring(0, 100)}${file.ai_summary.length > 100 ? '...' : ''}</div>` : ''}
-                ${isImage && file.file_url ? `<div class="file-preview"><img src="${file.file_url}" alt="${file.file_name}"></div>` : ''}
-                <textarea class="file-notes" placeholder="Add notes about this file..." rows="2">${file.notes || ''}</textarea>
-                <label class="before-after-toggle">
-                    <input type="checkbox" class="before-after-checkbox" ${file.is_before_after ? 'checked' : ''}>
-                    <span>Mark as Before/After photo</span>
-                </label>
-            `;
-            
-            // Add event listeners
-            const notesTextarea = card.querySelector('.file-notes');
-            notesTextarea.addEventListener('blur', () => {
-                updateFileNotes(file.id, notesTextarea.value);
-            });
-            
-            const beforeAfterCheckbox = card.querySelector('.before-after-checkbox');
-            beforeAfterCheckbox.addEventListener('change', () => {
-                updateFileBeforeAfter(file.id, beforeAfterCheckbox.checked);
-            });
-            
-            return card;
-        }
-
-        // Save/Load functions
-        function saveEvidenceFilesToLocalStorage() {
-            const filesToSave = evidenceFiles.map(f => ({
-                ...f,
-                file: undefined // Don't save file object
-            }));
-            localStorage.setItem('evidenceFiles', JSON.stringify(filesToSave));
-        }
-
-        async function loadEvidenceFiles() {
-            if (supabase && currentClaimId) {
-                try {
-                    const { data, error } = await supabase
-                        .from('evidence_files')
-                        .select('*')
-                        .eq('claim_id', currentClaimId)
-                        .order('created_at', { ascending: false });
-                    
-                    if (error) throw error;
-                    
-                    if (data && data.length > 0) {
-                        evidenceFiles = data.map(file => ({
-                            ...file,
-                            tags: file.tags || [],
-                            is_before_after: file.is_before_after || false
-                        }));
-                        updateDashboard();
-                        renderFiles();
-                        console.log('Loaded', data.length, 'evidence files from database');
-                    }
-                } catch (error) {
-                    console.error('Error loading evidence files:', error);
-                    loadFromLocalStorage();
-                }
-            } else {
-                loadFromLocalStorage();
-            }
-        }
-
-        function loadFromLocalStorage() {
-            const savedFiles = localStorage.getItem('evidenceFiles');
-            if (savedFiles) {
-                try {
-                    evidenceFiles = JSON.parse(savedFiles);
-                    updateDashboard();
-                    renderFiles();
-                } catch (error) {
-                    console.error('Error loading from localStorage:', error);
-                }
-            }
-        }
-
-        // Make functions globally available
-        window.viewFile = viewFile;
-        window.deleteFile = deleteFile;
-
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', async function() {
-            await initSupabase();
-            loadClaimData();
-            setupEventListeners();
-            await loadEvidenceFiles();
-        });
-    </script>
-    <script type="module" src="/app/assets/js/tools/evidence-organizer.js"></script>
+    <section class="evo-section">
+      <div class="evo-shell">
+        <div class="evo-export-card">
+          <div>
+            <h2>Generate Evidence Package (PDF)</h2>
+            <p>Bundle selected items, categories, and notes into a submission-ready Evidence Package.</p>
+          </div>
+          <a class="evo-button primary" href="#">Create Evidence Package</a>
+        </div>
+      </div>
+    </section>
+  </main>
 </body>
 </html>

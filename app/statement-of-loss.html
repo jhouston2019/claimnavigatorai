@@ -2,535 +2,378 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Statement of Loss • ClaimNavigatorAI</title>
   <link rel="stylesheet" href="/app/assets/css/style.css">
-  <link rel="stylesheet" href="/app/assets/css/design-system.css">
-  <link rel="stylesheet" href="/app/assets/css/resource-center.css">
-  <style>
-    body.statement-page {
-      background: 
-        linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
-        url('/assets/images/backgrounds/paperwork6.jpeg') !important;
-      background-size: cover !important;
-      background-position: center !important;
-      background-attachment: fixed !important;
-      color: #ffffff !important;
-    }
-
-    body.statement-page * {
-      color: #ffffff !important;
-    }
-
-    body.statement-page a {
-      color: #dbeafe !important;
-    }
-
-    .statement-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    .statement-header {
-      text-align: center;
-      margin-bottom: 2rem;
-      padding: 2rem;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 1rem;
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .statement-header h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin: 0 0 0.5rem 0;
-      color: #ffffff !important;
-    }
-
-    .statement-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      padding: 0.75rem 1.5rem;
-      border: none;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    .btn-primary {
-      background: rgba(255, 255, 255, 0.15);
-      color: #ffffff !important;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(8px);
-    }
-
-    .btn-primary:hover {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: rgba(255, 255, 255, 0.3);
-      transform: translateY(-1px);
-    }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.1);
-      color: #ffffff !important;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .ledger-section {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 1rem;
-      padding: 2rem;
-      backdrop-filter: blur(8px);
-      margin-bottom: 2rem;
-    }
-
-    .ledger-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-
-    .ledger-table th {
-      text-align: left;
-      padding: 0.75rem;
-      border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-      font-weight: 600;
-      color: #ffffff !important;
-    }
-
-    .ledger-table td {
-      padding: 0.75rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      color: #ffffff !important;
-    }
-
-    .ledger-table tr:hover {
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .totals-section {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 1rem;
-      padding: 1.5rem;
-      margin-top: 2rem;
-      backdrop-filter: blur(8px);
-    }
-
-    .totals-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .total-item {
-      text-align: center;
-    }
-
-    .total-label {
-      font-size: 0.9rem;
-      color: #dbeafe !important;
-      margin-bottom: 0.5rem;
-    }
-
-    .total-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #ffffff !important;
-    }
-
-    .total-grand {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #ffffff !important;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal-content {
-      background: rgba(30, 41, 59, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 1rem;
-      padding: 2rem;
-      max-width: 500px;
-      width: 90%;
-      backdrop-filter: blur(12px);
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: #ffffff !important;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 0.5rem;
-      background: #ffffff;
-      color: #000000 !important;
-      font-size: 1rem;
-      font-family: inherit;
-    }
-
-    .form-group input::placeholder {
-      color: rgba(0, 0, 0, 0.6);
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 3rem;
-      color: #dbeafe !important;
-    }
-
-    @media (max-width: 768px) {
-      .statement-container {
-        padding: 1rem;
-      }
-
-      .ledger-table {
-        font-size: 0.85rem;
-      }
-
-      .ledger-table th,
-      .ledger-table td {
-        padding: 0.5rem;
-      }
-    }
-
-    body.statement-page select,
-    body.statement-page option {
-      color: #000 !important;
-      background: #fff !important;
-    }
-
-    /* Make all text in modal white */
-    .modal-content,
-    .modal-content * {
-      color: #ffffff !important;
-    }
-
-    /* Ensure labels are white */
-    .modal-content label,
-    .modal-content .form-group label {
-      color: #ffffff !important;
-    }
-
-    /* Override input/select/textarea to have black text on white background */
-    .modal-content input,
-    .modal-content select,
-    .modal-content textarea {
-      color: #000000 !important;
-      background: #ffffff !important;
-    }
-
-    .modal-content input::placeholder {
-      color: rgba(0, 0, 0, 0.6) !important;
-    }
-  </style>
+  <link rel="stylesheet" href="/app/css/design-system.css">
 </head>
-<body class="resource-center statement-page">
-  <header class="header">
-    <div class="bar container">
-      <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
-      <nav class="nav">
-        <a href="/app/index.html">Home</a>
-        <span class="nav-separator">></span>
-        <span class="nav-current">Statement of Loss</span>
-        <span class="nav-separator">></span>
-        <a href="/app/resource-center.html">Resource Center</a>
-      </nav>
-    </div>
-  </header>
-
-  <main class="container">
-    <div class="statement-container">
-      <div class="statement-header">
-        <h1>Statement of Loss</h1>
-        <p style="color: #dbeafe !important; margin: 0;">Financial Ledger & PDF Generator</p>
-      </div>
-
-      <div class="statement-actions">
-        <button class="btn btn-primary" id="add-btn">Add Entry</button>
-        <button class="btn btn-secondary" id="refresh-btn">Refresh</button>
-        <button class="btn btn-primary" id="export-btn">Export PDF</button>
-      </div>
-
-      <div class="ledger-section">
-        <h3 style="margin: 0 0 1rem 0; color: #ffffff !important;">Transaction Ledger</h3>
-        <table class="ledger-table" id="ledger">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Type</th>
-              <th>Description</th>
-              <th>Source</th>
-              <th>Amount</th>
-              <th>Balance</th>
-            </tr>
-          </thead>
-          <tbody id="ledger-body">
-            <tr>
-              <td colspan="6" class="empty-state">Loading transactions...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="totals-section">
-        <h3 style="margin: 0 0 1rem 0; color: #ffffff !important;">Financial Summary</h3>
-        <div class="totals-grid" id="totals">
-          <div class="total-item">
-            <div class="total-label">Total Payments</div>
-            <div class="total-value" id="total-payments">$0.00</div>
-          </div>
-          <div class="total-item">
-            <div class="total-label">Total Invoices</div>
-            <div class="total-value" id="total-invoices">$0.00</div>
-          </div>
-          <div class="total-item">
-            <div class="total-label">Total Expenses</div>
-            <div class="total-value" id="total-expenses">$0.00</div>
-          </div>
-          <div class="total-item">
-            <div class="total-label">Total Supplements</div>
-            <div class="total-value" id="total-supplements">$0.00</div>
-          </div>
-          <div class="total-item">
-            <div class="total-label">Total Depreciation</div>
-            <div class="total-value" id="total-depreciation">$0.00</div>
-          </div>
-          <div class="total-item">
-            <div class="total-label">Grand Total</div>
-            <div class="total-value total-grand" id="total-all">$0.00</div>
+<body class="sol-page">
+  <main class="sol-main">
+    <section class="sol-hero">
+      <div class="sol-container">
+        <div class="sol-hero-content">
+          <p class="sol-hero-eyebrow">Loss documentation</p>
+          <h1>Statement of Loss</h1>
+          <p class="sol-hero-subtitle">
+            A complete, itemized declaration of damages, valuations, and recoverable amounts — required by insurers for many property claims.
+          </p>
+          <div class="sol-hero-actions">
+            <a class="sol-btn-primary" href="#start">Start Statement of Loss</a>
+            <a class="sol-btn-secondary" href="/app/document-generator.html#statementofloss">View Example</a>
           </div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <section class="sol-section" id="start">
+      <div class="sol-container">
+        <div class="sol-card sol-overview-card">
+          <div class="sol-overview-text">
+            <h2>Why this form matters</h2>
+            <p>
+              The Statement of Loss is the insurer-facing, itemized record of every claimed damage, valuation method, and calculation. It aligns your evidence with the carrier’s accounting so payments can be issued without delay.
+            </p>
+            <p>
+              Insurers require it to validate coverage, calculate depreciation, and reconcile prior payments. Accuracy, clarity, and supporting documentation reduce disputes and speed settlement.
+            </p>
+          </div>
+          <div class="sol-overview-list">
+            <h3>Key financial lines to summarize</h3>
+            <ul class="sol-bullet-list">
+              <li>Total claimed amount</li>
+              <li>Replacement cost values (RCV)</li>
+              <li>Actual cash value (ACV)</li>
+              <li>Depreciation applied</li>
+              <li>Recoverable depreciation</li>
+              <li>Deductible</li>
+              <li>Net claim payable</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sol-section">
+      <div class="sol-container">
+        <div class="sol-section-header">
+          <h2>Structured inputs to capture every value</h2>
+          <p>Use these fields to draft a complete, auditable Statement of Loss.</p>
+        </div>
+        <div class="sol-input-grid">
+          <div class="sol-input-card">
+            <h3>Property Information</h3>
+            <ul class="sol-bullet-list">
+              <li>Insured name &amp; policy</li>
+              <li>Property type &amp; use</li>
+              <li>Policy form / endorsements</li>
+            </ul>
+            <a class="sol-card-cta" href="#">Add Info</a>
+          </div>
+          <div class="sol-input-card">
+            <h3>Address</h3>
+            <ul class="sol-bullet-list">
+              <li>Site address</li>
+              <li>Unit / building identifiers</li>
+              <li>Mailing details</li>
+            </ul>
+            <a class="sol-card-cta" href="#">Add Info</a>
+          </div>
+          <div class="sol-input-card">
+            <h3>Date of Loss</h3>
+            <ul class="sol-bullet-list">
+              <li>Event date</li>
+              <li>Discovery date</li>
+              <li>Report timing</li>
+            </ul>
+            <a class="sol-card-cta" href="#">Add Info</a>
+          </div>
+          <div class="sol-input-card">
+            <h3>Cause of Loss</h3>
+            <ul class="sol-bullet-list">
+              <li>Peril description</li>
+              <li>Origin &amp; spread</li>
+              <li>Mitigation performed</li>
+            </ul>
+            <a class="sol-card-cta" href="#">Add Info</a>
+          </div>
+          <div class="sol-input-card">
+            <h3>Claim Categories</h3>
+            <ul class="sol-bullet-list">
+              <li>Structural</li>
+              <li>Contents</li>
+              <li>ALE / LOU</li>
+              <li>Other damages</li>
+            </ul>
+            <a class="sol-card-cta" href="#">Add Info</a>
+          </div>
+          <div class="sol-input-card">
+            <h3>Valuation Inputs</h3>
+            <ul class="sol-bullet-list">
+              <li>RCV &amp; ACV per item</li>
+              <li>Depreciation schedules</li>
+              <li>Deductible application</li>
+            </ul>
+            <a class="sol-card-cta" href="#">Add Info</a>
+          </div>
+          <div class="sol-input-card">
+            <h3>Supporting Documentation</h3>
+            <ul class="sol-bullet-list">
+              <li>Photos &amp; videos</li>
+              <li>Estimates &amp; invoices</li>
+              <li>Expert reports</li>
+            </ul>
+            <a class="sol-card-cta" href="#">Add Info</a>
+          </div>
+          <div class="sol-input-card">
+            <h3>Notes &amp; Clarifications</h3>
+            <ul class="sol-bullet-list">
+              <li>Disputed items</li>
+              <li>Missing information</li>
+              <li>Carrier positions</li>
+            </ul>
+            <a class="sol-card-cta" href="#">Add Info</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sol-section sol-breakdown">
+      <div class="sol-container">
+        <div class="sol-section-header">
+          <h2>Breakdown the insurer will check</h2>
+          <p>Explain every calculation and align it to the carrier’s ledger.</p>
+        </div>
+        <div class="sol-breakdown-content">
+          <div class="sol-breakdown-text">
+            <p>
+              Each line in the Statement of Loss must tie to evidence, valuation method, and policy terms. Document how you derived:
+            </p>
+            <ul class="sol-bullet-list">
+              <li><strong>Replacement Cost Value (RCV):</strong> Full repair or replacement pricing.</li>
+              <li><strong>Actual Cash Value (ACV):</strong> RCV minus calculated depreciation.</li>
+              <li><strong>Depreciation:</strong> Method, rate, and rationale for each item.</li>
+              <li><strong>Recoverable depreciation:</strong> Amount released after proof of repairs.</li>
+              <li><strong>Deductible:</strong> Applied once per occurrence per policy terms.</li>
+              <li><strong>Net payment due:</strong> ACV plus recoverable depreciation minus prior payments.</li>
+              <li><strong>Total claim:</strong> Sum of all categories after adjustments.</li>
+            </ul>
+          </div>
+          <div class="sol-breakdown-card">
+            <h3>Statement of Loss numbers</h3>
+            <div class="sol-breakdown-field">
+              <span>RCV</span>
+              <span class="sol-field-value">$0.00</span>
+            </div>
+            <div class="sol-breakdown-field">
+              <span>Depreciation</span>
+              <span class="sol-field-value">($0.00)</span>
+            </div>
+            <div class="sol-breakdown-field">
+              <span>ACV</span>
+              <span class="sol-field-value">$0.00</span>
+            </div>
+            <div class="sol-breakdown-field">
+              <span>Deductible</span>
+              <span class="sol-field-value">($0.00)</span>
+            </div>
+            <div class="sol-breakdown-field">
+              <span>Recoverable Depreciation</span>
+              <span class="sol-field-value">$0.00</span>
+            </div>
+            <div class="sol-breakdown-field total">
+              <span>Total Claim Amount</span>
+              <span class="sol-field-value">$0.00</span>
+            </div>
+            <a class="sol-btn-primary sol-full-width" href="/app/document-generator.html#statementofloss">Generate Statement of Loss (PDF)</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sol-section sol-docs">
+      <div class="sol-container">
+        <div class="sol-section-header">
+          <h2>Required Documentation</h2>
+          <p>Attach proof for every number to prevent delays or reductions.</p>
+        </div>
+        <div class="sol-doc-grid">
+          <div class="sol-doc-card">
+            <h3>Photos &amp; videos</h3>
+            <ul class="sol-bullet-list">
+              <li>Pre-loss and post-loss visuals</li>
+              <li>Location tags and timestamps</li>
+              <li>Damage progression evidence</li>
+            </ul>
+            <a class="sol-card-cta" href="/app/evidence-organizer.html">Organize in Evidence Tool</a>
+          </div>
+          <div class="sol-doc-card">
+            <h3>Contractor estimates</h3>
+            <ul class="sol-bullet-list">
+              <li>Line-item scope</li>
+              <li>Material and labor rates</li>
+              <li>Code upgrades noted</li>
+            </ul>
+            <a class="sol-card-cta" href="/app/evidence-organizer.html">Organize in Evidence Tool</a>
+          </div>
+          <div class="sol-doc-card">
+            <h3>Xactimate/X1 summaries</h3>
+            <ul class="sol-bullet-list">
+              <li>Category breakdown</li>
+              <li>Pricing versions</li>
+              <li>Applied taxes and O&amp;P</li>
+            </ul>
+            <a class="sol-card-cta" href="/app/evidence-organizer.html">Organize in Evidence Tool</a>
+          </div>
+          <div class="sol-doc-card">
+            <h3>Receipts / invoices</h3>
+            <ul class="sol-bullet-list">
+              <li>Mitigation charges</li>
+              <li>Temporary repairs</li>
+              <li>Replacement purchases</li>
+            </ul>
+            <a class="sol-card-cta" href="/app/evidence-organizer.html">Organize in Evidence Tool</a>
+          </div>
+          <div class="sol-doc-card">
+            <h3>Contents inventory</h3>
+            <ul class="sol-bullet-list">
+              <li>Itemized list with RCV/ACV</li>
+              <li>Age and condition</li>
+              <li>Purchase proof</li>
+            </ul>
+            <a class="sol-card-cta" href="/app/evidence-organizer.html">Organize in Evidence Tool</a>
+          </div>
+          <div class="sol-doc-card">
+            <h3>Expert reports</h3>
+            <ul class="sol-bullet-list">
+              <li>Engineer / roofer findings</li>
+              <li>Mitigation vendor reports</li>
+              <li>Causation and scope support</li>
+            </ul>
+            <a class="sol-card-cta" href="/app/evidence-organizer.html">Organize in Evidence Tool</a>
+          </div>
+          <div class="sol-doc-card">
+            <h3>Proof of repairs</h3>
+            <ul class="sol-bullet-list">
+              <li>Completion photos</li>
+              <li>Certificates and permits</li>
+              <li>Progress billing</li>
+            </ul>
+            <a class="sol-card-cta" href="/app/evidence-organizer.html">Organize in Evidence Tool</a>
+          </div>
+          <div class="sol-doc-card">
+            <h3>Policy excerpts</h3>
+            <ul class="sol-bullet-list">
+              <li>Coverage grants</li>
+              <li>Deductible clauses</li>
+              <li>Depreciation provisions</li>
+            </ul>
+            <a class="sol-card-cta" href="/app/evidence-organizer.html">Organize in Evidence Tool</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sol-section sol-mistakes">
+      <div class="sol-container">
+        <div class="sol-section-header">
+          <h2>Common mistakes to avoid</h2>
+          <p>Prevent rejections, underpayments, and avoidable delays.</p>
+        </div>
+        <div class="sol-mistakes-grid">
+          <div class="sol-card">
+            <h3>Understated depreciation</h3>
+            <p>Carrier uses aggressive schedules that reduce ACV without support.</p>
+          </div>
+          <div class="sol-card">
+            <h3>Excluding contents</h3>
+            <p>Leaving personal property off the form lowers the total claim.</p>
+          </div>
+          <div class="sol-card">
+            <h3>Missing ALE</h3>
+            <p>Not documenting temporary housing, meals, or mileage erodes recovery.</p>
+          </div>
+          <div class="sol-card">
+            <h3>Incorrect deductible</h3>
+            <p>Using hurricane/wind deductibles improperly changes the net payment.</p>
+          </div>
+          <div class="sol-card">
+            <h3>Outdated estimates</h3>
+            <p>Old pricing or missing code upgrades understate RCV and holdback.</p>
+          </div>
+          <div class="sol-card">
+            <h3>Missing mitigation costs</h3>
+            <p>Dry-out, tarping, and board-up costs must be itemized to be reimbursed.</p>
+          </div>
+          <div class="sol-card">
+            <h3>Specialty items omitted</h3>
+            <p>Custom finishes, appliances, and antiques need documented valuation.</p>
+          </div>
+          <div class="sol-card">
+            <h3>Wrong ACV/RCV math</h3>
+            <p>Totals must reconcile with depreciation, deductibles, and prior payments.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sol-section">
+      <div class="sol-container">
+        <div class="sol-section-header">
+          <h2>Pair with the right claim tools</h2>
+          <p>Combine your Statement of Loss with tools that maintain evidence, timelines, and exports.</p>
+        </div>
+        <div class="sol-tools-grid">
+          <div class="sol-tool-card">
+            <h3>Evidence Organizer</h3>
+            <p>Centralize photos, invoices, and reports linked to each line item.</p>
+            <a class="sol-btn-secondary" href="/app/evidence-organizer.html">Open Evidence Organizer</a>
+          </div>
+          <div class="sol-tool-card">
+            <h3>Claim Journal</h3>
+            <p>Log carrier communications and confirm valuation assumptions.</p>
+            <a class="sol-btn-secondary" href="/app/claim-journal.html">Open Claim Journal</a>
+          </div>
+          <div class="sol-tool-card">
+            <h3>Document Generator</h3>
+            <p>Create polished Statements of Loss and export ready-to-send PDFs.</p>
+            <a class="sol-btn-secondary" href="/app/document-generator.html">Open Document Generator</a>
+          </div>
+          <div class="sol-tool-card">
+            <h3>Claim Timeline</h3>
+            <p>Align loss dates, proof submissions, and payment deadlines.</p>
+            <a class="sol-btn-secondary" href="/app/claim-timeline.html">Open Claim Timeline</a>
+          </div>
+          <div class="sol-tool-card">
+            <h3>Deadline Detector</h3>
+            <p>Keep statutory and policy clocks visible so payments stay on track.</p>
+            <a class="sol-btn-secondary" href="/app/deadlines.html">Open Deadline Detector</a>
+          </div>
+          <div class="sol-tool-card">
+            <h3>Claim Playbook</h3>
+            <p>Follow negotiation tactics and documentation checklists per stage.</p>
+            <a class="sol-btn-secondary" href="/app/claim-playbook.html">Open Claim Playbook</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sol-section">
+      <div class="sol-container">
+        <div class="sol-action-card">
+          <div>
+            <h2>Create a Complete, Accurate Statement of Loss</h2>
+            <p>
+              This document is the insurer’s roadmap to payment. Capture valuations, depreciation, and documentation now so funds release without avoidable disputes.
+            </p>
+          </div>
+          <div class="sol-action-buttons">
+            <a class="sol-btn-primary" href="/app/document-generator.html#statementofloss">Generate Statement of Loss</a>
+            <a class="sol-btn-secondary" href="/app/evidence-organizer.html">Review Documentation First</a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
-
-  <!-- Add Entry Modal -->
-  <div class="modal" id="add-modal">
-    <div class="modal-content">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h3 style="margin: 0; color: #ffffff !important;">Add Transaction</h3>
-        <button class="btn btn-secondary" onclick="closeModal()" style="padding: 0.5rem 1rem;">&times;</button>
-      </div>
-      <form id="add-form" onsubmit="submitAddEntry(event)">
-        <div class="form-group">
-          <label>Entry Type</label>
-          <select id="entry-type" required>
-            <option value="">Select type...</option>
-            <option value="payment">Payment</option>
-            <option value="invoice">Invoice</option>
-            <option value="expense">Expense</option>
-            <option value="supplement">Supplement</option>
-            <option value="depreciation">Depreciation</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Description</label>
-          <input type="text" id="description" placeholder="Transaction description" required>
-        </div>
-        <div class="form-group">
-          <label>Source (Optional)</label>
-          <input type="text" id="source" placeholder="Source or reference">
-        </div>
-        <div class="form-group">
-          <label>Amount</label>
-          <input type="number" id="amount" step="0.01" placeholder="0.00" required>
-        </div>
-        <div class="form-group">
-          <label>Date</label>
-          <input type="date" id="entry-date">
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary">Add Entry</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    const claim_id = localStorage.getItem('claim_id') || new URLSearchParams(window.location.search).get('claim_id') || 'TEST-CLAIM';
-
-    async function refresh() {
-      try {
-        const res = await fetch(`/.netlify/functions/get-transactions?claim_id=${claim_id}`);
-        const data = await res.json();
-
-        if (data.status === 'error') {
-          throw new Error(data.error);
-        }
-
-        const transactions = data.transactions || [];
-        const totals = data.totals || {};
-
-        // Update ledger table
-        const tbody = document.getElementById('ledger-body');
-        if (transactions.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No transactions yet. Click "Add Entry" to get started.</td></tr>';
-        } else {
-          tbody.innerHTML = transactions.map(txn => {
-            const date = new Date(txn.date).toLocaleDateString();
-            const amount = parseFloat(txn.amount) || 0;
-            const balance = parseFloat(txn.running_balance) || 0;
-            return `
-              <tr>
-                <td>${date}</td>
-                <td>${txn.entry_type}</td>
-                <td>${txn.description}</td>
-                <td>${txn.source || '-'}</td>
-                <td>$${amount.toFixed(2)}</td>
-                <td>$${balance.toFixed(2)}</td>
-              </tr>
-            `;
-          }).join('');
-        }
-
-        // Update totals
-        document.getElementById('total-payments').textContent = `$${(parseFloat(totals.total_payments) || 0).toFixed(2)}`;
-        document.getElementById('total-invoices').textContent = `$${(parseFloat(totals.total_invoices) || 0).toFixed(2)}`;
-        document.getElementById('total-expenses').textContent = `$${(parseFloat(totals.total_expenses) || 0).toFixed(2)}`;
-        document.getElementById('total-supplements').textContent = `$${(parseFloat(totals.total_supplements) || 0).toFixed(2)}`;
-        document.getElementById('total-depreciation').textContent = `$${(parseFloat(totals.total_depreciation) || 0).toFixed(2)}`;
-        document.getElementById('total-all').textContent = `$${(parseFloat(totals.total_all) || 0).toFixed(2)}`;
-
-      } catch (error) {
-        console.error('Error refreshing:', error);
-        document.getElementById('ledger-body').innerHTML = 
-          `<tr><td colspan="6" class="empty-state">Error loading transactions: ${error.message}</td></tr>`;
-      }
-    }
-
-    function openModal() {
-      document.getElementById('add-modal').classList.add('active');
-      document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
-    }
-
-    function closeModal() {
-      document.getElementById('add-modal').classList.remove('active');
-      document.getElementById('add-form').reset();
-    }
-
-    async function submitAddEntry(event) {
-      event.preventDefault();
-      
-      const entryData = {
-        claim_id: claim_id,
-        entry_type: document.getElementById('entry-type').value,
-        description: document.getElementById('description').value,
-        source: document.getElementById('source').value || null,
-        amount: document.getElementById('amount').value,
-        date: document.getElementById('entry-date').value || new Date().toISOString()
-      };
-
-      try {
-        const res = await fetch('/.netlify/functions/add-transaction', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(entryData)
-        });
-
-        const data = await res.json();
-        
-        if (data.status === 'error') {
-          throw new Error(data.error);
-        }
-
-        closeModal();
-        refresh();
-      } catch (error) {
-        alert('Error adding entry: ' + error.message);
-      }
-    }
-
-    async function exportPDF() {
-      try {
-        const email = prompt('Enter email to send PDF (optional, leave blank to skip):');
-        const res = await fetch('/.netlify/functions/generate-statement-of-loss', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            claim_id: claim_id,
-            to_email: email || null
-          })
-        });
-
-        const data = await res.json();
-        
-        if (data.status === 'error') {
-          throw new Error(data.error);
-        }
-
-        if (data.pdf_url) {
-          window.open(data.pdf_url, '_blank');
-        }
-        
-        alert('PDF generated and stored' + (email ? ' and emailed!' : '!'));
-      } catch (error) {
-        alert('Error generating PDF: ' + error.message);
-      }
-    }
-
-    // Event listeners
-    document.getElementById('add-btn').addEventListener('click', openModal);
-    document.getElementById('refresh-btn').addEventListener('click', refresh);
-    document.getElementById('export-btn').addEventListener('click', exportPDF);
-
-    // Initial load
-    refresh();
-  </script>
-    <script type="module" src="/app/assets/js/tools/statement-of-loss.js"></script>
 </body>
 </html>
-
 

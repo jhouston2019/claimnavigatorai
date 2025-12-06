@@ -4,759 +4,1354 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Situational Advisory - ClaimNavigatorAI</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link rel="stylesheet" href="/app/assets/css/style.css">
-  <style>
-    :root{--navy:#0f172a;--primary:#1e40af;--primary-600:#1e3a8a;--accent:#3b82f6;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--panel:#f8fafc;--success:#10b981;--warn:#f59e0b;--error:#ef4444;}
-    *{box-sizing:border-box}
-    
-    body.situational-advisory-page {
-      margin:0;
-      font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
-      color:#ffffff !important;
-      background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url('/app/assets/images/backgrounds/paperwork6.jpeg') no-repeat center center fixed;
-      background-size: cover;
-      line-height:1.6;
-    }
-    
-    /* Ensure all text is readable on dark background */
-    body.situational-advisory-page, 
-    body.situational-advisory-page * {
-        color: #ffffff !important;
-    }
-    
-    body.situational-advisory-page a {
-        color: #dbeafe !important;
-    }
-    
-    .header{
-      position:sticky;
-      top:0;
-      z-index:1000;
-      background:var(--navy);
-      color:#fff;
-      box-shadow:0 2px 6px rgba(0,0,0,.08);
-    }
-    .header .container{
-      max-width:1200px;
-      margin:0 auto;
-      padding:7px 24px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      width:100%;
-    }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:800;
-      margin-right:auto;
-    }
-    .nav{
-      display:flex;
-      align-items:center;
-      gap:0.5rem;
-      margin-left:auto;
-    }
-    .nav a{
-      color:#c9d4ff;
-      text-decoration:none;
-      padding:.5rem .75rem;
-      border-radius:.5rem;
-    }
-    .nav a:hover{
-      background:rgba(255,255,255,.1);
-    }
-    
-    /* Hero Header */
-    .hero-header {
-      padding: 2rem 0;
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    
-    .hero-title {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin: 0 0 0.5rem 0;
-    }
-    
-    .hero-subtitle {
-      font-size: 1.2rem;
-      color: #e2e8f0;
-      margin: 0;
-    }
-    
-    /* Card Styles - Consistent with other tools */
-    .card {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 1rem;
-      padding: 1.5rem;
-      transition: all 0.25s ease;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      display: flex;
-      flex-direction: column;
-      color: #fff;
-    }
-    
-    .card:hover {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: rgba(255, 255, 255, 0.3);
-      transform: translateY(-3px);
-    }
-    
-    .card h3 {
-      color: #1e3a8a !important;
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
-      font-weight: bold !important;
-    }
-    
-    .card p {
-      color: #ffffff !important;
-      font-size: 0.95rem;
-      margin-bottom: 1rem;
-      line-height: 1.5;
-    }
-    
-    /* AI Input Card */
-    .ai-input-card {
-      margin-bottom: 2rem;
-    }
-    
-    .ai-input-card textarea {
-      width: 100%;
-      min-height: 100px;
-      padding: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 8px;
-      font-size: 14px;
-      margin-bottom: 1rem;
-      resize: vertical;
-      background: rgba(255, 255, 255, 0.1);
-      color: #ffffff;
-      font-family: inherit;
-    }
-    
-    .ai-input-card textarea::placeholder {
-      color: rgba(255, 255, 255, 0.7);
-    }
-    
-    .ai-input-card textarea:focus {
-      border-color: rgba(255, 255, 255, 0.5);
-      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-      outline: none;
-    }
-    
-    .ai-analyze-btn {
-      background: #1e3a8a;
-      color: #ffffff;
-      border: 2px solid #1e3a8a;
-      border-radius: 8px;
-      padding: 12px 24px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      width: 100%;
-    }
-    
-    .ai-analyze-btn:hover {
-      background: #1e40af;
-      border-color: #1e40af;
-      transform: translateY(-1px);
-    }
-    
-    .ai-analyze-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    
-    /* AI Response Card */
-    .ai-response-card {
-      margin-bottom: 2rem;
-    }
-    
-    .ai-response-card h3 {
-      color: #ffffff !important;
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
-    
-    .response-section {
-      margin-bottom: 1.5rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .response-section:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-    
-    .response-section h4 {
-      color: #ffffff !important;
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-    }
-    
-    .response-section p {
-      color: #e2e8f0 !important;
-      margin: 0;
-      line-height: 1.6;
-    }
-    
-    /* Search and Filter Card */
-    .search-filter-card {
-      margin-bottom: 1.5rem;
-    }
-    
-    .search-container {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    
-    .search-input,
-    .category-select {
-      flex: 1;
-      min-width: 200px;
-      padding: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.95);
-      color: #000000;
-      font-family: inherit;
-      font-size: 14px;
-    }
-    
-    .category-select option {
-      background: #ffffff;
-      color: #000000;
-    }
-    
-    .search-input::placeholder {
-      color: rgba(255, 255, 255, 0.7);
-    }
-    
-    .search-input:focus,
-    .category-select:focus {
-      border-color: rgba(255, 255, 255, 0.5);
-      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-      outline: none;
-    }
-    
-    /* Category Tabs */
-    .category-tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-    }
-    
-    .category-tab {
-      padding: 10px 20px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      color: #ffffff;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .category-tab:hover {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: rgba(255, 255, 255, 0.4);
-    }
-    
-    .category-tab.active {
-      background: #1e3a8a;
-      border-color: #1e3a8a;
-      color: #ffffff;
-    }
-    
-    /* Scenarios Grid */
-    .scenarios-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-    
-    .scenario-card {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 1rem;
-      padding: 1.5rem;
-      transition: all 0.25s ease;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      display: flex;
-      flex-direction: column;
-      color: #fff;
-    }
-    
-    .scenario-card:hover {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: rgba(255, 255, 255, 0.3);
-      transform: translateY(-3px);
-    }
-    
-    .scenario-header {
-      margin-bottom: 1rem;
-    }
-    
-    .scenario-title {
-      color: #1e3a8a !important;
-      font-size: 1.1rem;
-      font-weight: bold;
-      margin: 0 0 0.5rem 0;
-    }
-    
-    .scenario-summary {
-      color: #ffffff !important;
-      font-size: 0.9rem;
-      margin: 0;
-      line-height: 1.5;
-    }
-    
-    .scenario-actions {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: auto;
-      flex-wrap: wrap;
-    }
-    
-    .view-advice-btn,
-    .generate-letter-btn {
-      flex: 1;
-      min-width: 120px;
-      padding: 10px 16px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      color: #ffffff;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-    
-    .view-advice-btn:hover,
-    .generate-letter-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: rgba(255, 255, 255, 0.4);
-    }
-    
-    .generate-letter-btn {
-      background: #1e3a8a;
-      border-color: #1e3a8a;
-    }
-    
-    .generate-letter-btn:hover {
-      background: #1e40af;
-      border-color: #1e40af;
-    }
-    
-    .scenario-details {
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .scenario-details.hidden {
-      display: none;
-    }
-    
-    .details-content h4 {
-      color: #ffffff !important;
-      font-size: 1rem;
-      margin: 0.75rem 0 0.25rem 0;
-      font-weight: 600;
-    }
-    
-    .details-content h4:first-child {
-      margin-top: 0;
-    }
-    
-    .details-content p {
-      color: #e2e8f0 !important;
-      font-size: 0.9rem;
-      margin: 0 0 0.75rem 0;
-      line-height: 1.5;
-    }
-    
-    /* Container */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 1rem;
-    }
-    
-    main.container {
-      padding: 2rem 1rem;
-    }
-    
-    /* Hidden utility */
-    .hidden {
-      display: none !important;
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-      .scenarios-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .hero-title {
-        font-size: 2rem;
-      }
-      
-      .hero-subtitle {
-        font-size: 1rem;
-      }
-      
-      .search-container {
-        flex-direction: column;
-      }
-      
-      .category-tabs {
-        justify-content: center;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="/app/assets/css/style.css" />
+  <link rel="stylesheet" href="/app/css/design-system.css" />
 </head>
-<body class="situational-advisory-page font-inter">
-  <header class="header">
-    <div class="container">
-      <div class="brand">Claim Navigation AI</div>
-      <nav class="nav">
-        <a href="/app/index.html">Home</a>
-        <span>></span>
-        <span>Situational Advisory</span>
-        <span>></span>
-        <a href="/app/resource-center.html">Resource Center</a>
-      </nav>
-    </div>
-  </header>
-
-  <main class="container">
-    <!-- Hero Header -->
-    <div class="hero-header">
-      <h1 class="hero-title">Situational Advisory</h1>
-      <p class="hero-subtitle">Describe your claim situation and receive expert guidance tailored to your specific circumstances.</p>
-    </div>
-
-    <!-- AI Input Card -->
-    <div class="card ai-input-card">
-      <div class="ai-input-container">
-        <textarea 
-          id="situationInput" 
-          placeholder="Describe your situation (e.g., 'My insurer said my roof leak isn't covered due to wear and tear')"
-          rows="4"
-        ></textarea>
-        <button id="analyzeBtn" class="ai-analyze-btn">
-          <span id="analyzeText">Analyze & Advise</span>
-          <span id="analyzeSpinner" class="hidden">Analyzing...</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- AI Response Display -->
-    <div id="aiResponse" class="card ai-response-card hidden">
-      <h3>AI Analysis & Recommendations</h3>
-      <div id="aiResponseContent" class="ai-response-details"></div>
-    </div>
-
-    <!-- Search and Filter Card -->
-    <div class="card search-filter-card">
-      <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Search scenarios..." class="search-input" />
-        <select id="categoryFilter" class="category-select">
-          <option value="all">All Categories</option>
-          <option value="Property">Property Claims</option>
-          <option value="Commercial & Business Interruption">Commercial/Business</option>
-          <option value="Catastrophe / Disaster">Catastrophe/Disaster</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Category Tabs -->
-    <div class="category-tabs">
-      <button class="category-tab active" data-category="all">All Claims</button>
-      <button class="category-tab" data-category="Property">Property Claims</button>
-      <button class="category-tab" data-category="Commercial & Business Interruption">Commercial/Business</button>
-      <button class="category-tab" data-category="Catastrophe / Disaster">Catastrophe/Disaster</button>
-    </div>
-
-    <!-- Scenarios Grid -->
-    <div id="scenariosGrid" class="scenarios-grid">
-      <!-- Scenarios will be loaded dynamically -->
-    </div>
-  </main>
-
-  <script>
-    let allScenarios = [];
-    let filteredScenarios = [];
-    let currentCategory = 'all';
-
-    // Function to navigate to document generator page
-    function openLetterModal(situation, documentType) {
-      console.log('openLetterModal called with:', situation, documentType);
-      // Map document types to document IDs
-      const documentMapping = {
-        'Appeal Letter': 'appeal-letter',
-        'Demand Letter': 'demand-letter',
-        'Notice of Delay Complaint': 'delay-complaint',
-        'Coverage Clarification Request': 'coverage-clarification',
-        'Proof of Loss': 'proof-of-loss',
-        'Damage Assessment': 'damage-assessment',
-        'Expert Opinion Request': 'expert-opinion-request',
-        'Business Interruption Claim': 'business-interruption-claim',
-        'Proof of Repairs Submission': 'proof-of-repairs',
-        'Notice of Claim': 'notice-of-claim',
-        'Settlement Offer': 'settlement-offer',
-        'Regulatory Complaint': 'regulatory-complaint',
-        'Appraisal Request': 'appraisal-request',
-        'Evidence Log': 'evidence-log',
-        'Expense Reimbursement': 'expense-reimbursement',
-        'Photograph Log': 'photograph-log',
-        'Out-of-Pocket Expenses': 'out-of-pocket-log',
-        'ROM Estimate': 'rom-estimate',
-        'Comparative Estimates': 'comparative-estimates',
-        'Document Index': 'document-index'
-      };
-
-      // Get the document ID, fallback to appeal-letter if not found
-      const documentId = documentMapping[documentType] || 'appeal-letter';
-
-      // Navigate to letter generator with document type and situation
-      console.log('Navigating to:', `/app/letter-generator.html?type=${encodeURIComponent(documentType)}&situation=${encodeURIComponent(situation)}`);
-      window.location.href = `/app/letter-generator.html?type=${encodeURIComponent(documentType)}&situation=${encodeURIComponent(situation)}`;
-    }
-
-    // Load scenarios from JSON
-    async function loadScenarios() {
-      try {
-        const response = await fetch('/assets/data/advisory.json');
-        const data = await response.json();
-        allScenarios = data;
-        filteredScenarios = data;
-        renderScenarios();
-      } catch (error) {
-        console.error('Error loading scenarios:', error);
-        document.getElementById('scenariosGrid').innerHTML = '<p style="text-align: center; padding: 2rem; color: #ef4444;">Error loading scenarios. Please try again.</p>';
-      }
-    }
-
-    function renderScenarios() {
-      const container = document.getElementById('scenariosGrid');
-      container.innerHTML = '';
-      
-      let scenariosToShow = [];
-      
-      if (currentCategory === 'all') {
-        // Show all scenarios from all categories
-        filteredScenarios.forEach(category => {
-          scenariosToShow = scenariosToShow.concat(category.situations);
-        });
-      } else {
-        // Filter by current category
-        const categoryScenarios = filteredScenarios.filter(cat => cat.category === currentCategory);
-        if (categoryScenarios.length > 0) {
-          scenariosToShow = categoryScenarios[0].situations;
-        }
-      }
-      
-      if (scenariosToShow.length === 0) {
-        container.innerHTML = '<p style="text-align: center; padding: 2rem; color: #ffffff;">No scenarios found for this category.</p>';
-        return;
-      }
-
-      scenariosToShow.forEach((situation, index) => {
-        const card = document.createElement('div');
-        card.className = 'scenario-card';
-        card.innerHTML = `
-          <div class="scenario-header">
-            <h3 class="scenario-title">${situation.title}</h3>
-            <p class="scenario-summary">${situation.summary}</p>
+<body class="situ-page font-inter">
+  <main class="situ-main">
+    <section class="situ-hero">
+      <div class="situ-container situ-hero-inner">
+        <div class="situ-hero-text">
+          <p class="situ-eyebrow">Guided playbook</p>
+          <h1>Situational Claim Advisory</h1>
+          <p class="situ-hero-subtitle">Get tailored guidance for more than 60 claim scenarios — from appliances to catastrophes to denials.</p>
+          <div class="situ-hero-actions">
+            <a class="situ-btn-primary" href="#situ-scenarios">Start With Your Scenario</a>
+            <a class="situ-btn-secondary" href="/app/ai-response-agent.html">Describe Your Situation</a>
           </div>
-          <div class="scenario-actions">
-            <button class="view-advice-btn" onclick="toggleAdvice(${index})">
-              <span class="advice-text">View Advice</span>
-              <span class="advice-icon">▼</span>
-            </button>
-            <button class="generate-letter-btn" onclick="openLetterModal('${situation.title}', '${situation.document}')">
-              Generate Letter
-            </button>
+        </div>
+        <div class="situ-hero-meta">
+          <div class="situ-hero-stat">
+            <span class="situ-stat-value">60+</span>
+            <span class="situ-stat-label">Scenario playbooks</span>
           </div>
-          <div class="scenario-details hidden" id="details-${index}">
-            <div class="details-content">
-              <h4>Recommended Action:</h4>
-              <p>${situation.summary}</p>
-              <h4>Document Type:</h4>
-              <p>${situation.document}</p>
+          <div class="situ-hero-stat">
+            <span class="situ-stat-value">5</span>
+            <span class="situ-stat-label">Critical checklists each</span>
+          </div>
+          <div class="situ-hero-stat">
+            <span class="situ-stat-value">AI</span>
+            <span class="situ-stat-label">Ready for document generation</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="situ-section" id="situ-overview">
+      <div class="situ-container">
+        <div class="situ-overview-card situ-card">
+          <div class="situ-section-header">
+            <h2>How to use this page</h2>
+            <p>Choose a category, skim immediate actions, then dive into the expanded advisory to capture evidence, documents, and escalation paths.</p>
+          </div>
+          <div class="situ-overview-body">
+            <div class="situ-overview-columns">
+              <div>
+                <h3>Why scenario-based guidance matters</h3>
+                <p>Each loss type has distinct coverage triggers, red flags, and documentation gaps that can delay or reduce payouts. Focus on the right proof fast.</p>
+              </div>
+              <div>
+                <h3>How to navigate</h3>
+                <p>Use categories to avoid overload, start with the immediate actions, then open the full advisory if you need escalation wording or document templates.</p>
+              </div>
+            </div>
+            <ul class="situ-overview-list">
+              <li><strong>Immediate steps:</strong> Secure the scene, stop further damage, notify carrier.</li>
+              <li><strong>Documentation requirements:</strong> Photos, invoices, expert notes, communications log.</li>
+              <li><strong>Red flags:</strong> Wear-and-tear denials, late notice claims, causation disputes.</li>
+              <li><strong>Estimate considerations:</strong> Scope completeness, code upgrades, depreciation fairness.</li>
+              <li><strong>When to escalate:</strong> Delays, lowball offers, reservation of rights, repeated denials.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="situ-section" id="situ-filters">
+      <div class="situ-container">
+        <div class="situ-search situ-card">
+          <div class="situ-search-fields">
+            <input type="text" placeholder="Search scenarios (e.g., roof leak, theft, mold)" aria-label="Search scenarios">
+            <select aria-label="Filter by category">
+              <option>All categories</option>
+              <option>Appliance &amp; Equipment Loss</option>
+              <option>Weather Events</option>
+              <option>Catastrophic Events</option>
+              <option>Water, Mold &amp; Plumbing</option>
+              <option>Structural &amp; Foundation</option>
+              <option>Business &amp; Income Loss</option>
+              <option>Claim Disputes &amp; Denials</option>
+              <option>Proof of Loss Scenarios</option>
+              <option>Theft &amp; Vandalism</option>
+              <option>Financial/Operational Disruptions</option>
+            </select>
+            <button class="situ-btn-secondary situ-clear">Clear Filters</button>
+          </div>
+          <p class="situ-search-hint">Filters are visual only for this rebuild. Jump to any category below to start.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="situ-section" id="situ-categories">
+      <div class="situ-container">
+        <div class="situ-section-header">
+          <h2>Category navigation</h2>
+          <p>Select a grouping to jump into focused scenario cards.</p>
+        </div>
+        <div class="situ-category-grid">
+          <a class="situ-category-card situ-card" href="#situ-appliance">
+            <h3>Appliance &amp; Equipment Loss</h3>
+            <p>Power surges, HVAC failures, electronics, mechanical breakdown impacts.</p>
+            <span class="situ-card-cta">View Scenarios</span>
+          </a>
+          <a class="situ-category-card situ-card" href="#situ-weather">
+            <h3>Weather Events</h3>
+            <p>Wind, hail, freeze, lightning, and roof-driven water entry.</p>
+            <span class="situ-card-cta">View Scenarios</span>
+          </a>
+          <a class="situ-category-card situ-card" href="#situ-catastrophe">
+            <h3>Catastrophic Events</h3>
+            <p>Wildfire, hurricane surge, earthquake, tornado, widespread outages.</p>
+            <span class="situ-card-cta">View Scenarios</span>
+          </a>
+          <a class="situ-category-card situ-card" href="#situ-plumbing">
+            <h3>Water, Mold &amp; Plumbing</h3>
+            <p>Burst pipes, sewer backup, mold, moisture intrusion.</p>
+            <span class="situ-card-cta">View Scenarios</span>
+          </a>
+          <a class="situ-category-card situ-card" href="#situ-structural">
+            <h3>Structural &amp; Foundation</h3>
+            <p>Foundation shifts, wall cracks, settlement vs. sudden events.</p>
+            <span class="situ-card-cta">View Scenarios</span>
+          </a>
+          <a class="situ-category-card situ-card" href="#situ-business">
+            <h3>Business &amp; Income Loss</h3>
+            <p>Business interruption, extra expense, supply chain breakdowns.</p>
+            <span class="situ-card-cta">View Scenarios</span>
+          </a>
+          <a class="situ-category-card situ-card" href="#situ-disputes">
+            <h3>Claim Disputes &amp; Denials</h3>
+            <p>Coverage denials, causation fights, reservation of rights.</p>
+            <span class="situ-card-cta">View Scenarios</span>
+          </a>
+          <a class="situ-category-card situ-card" href="#situ-proof">
+            <h3>Proof of Loss Scenarios</h3>
+            <p>Completing, revising, or disputing proof-of-loss requirements.</p>
+            <span class="situ-card-cta">View Scenarios</span>
+          </a>
+          <a class="situ-category-card situ-card" href="#situ-theft">
+            <h3>Theft &amp; Vandalism</h3>
+            <p>Burglary, stolen property, malicious damage, civil unrest.</p>
+            <span class="situ-card-cta">View Scenarios</span>
+          </a>
+          <a class="situ-category-card situ-card" href="#situ-financial">
+            <h3>Financial/Operational Disruptions</h3>
+            <p>Loss of utilities, data loss, payment delays, vendor failures.</p>
+            <span class="situ-card-cta">View Scenarios</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="situ-section" id="situ-scenarios">
+      <div class="situ-container">
+        <div class="situ-section-header">
+          <h2>Scenario advisories</h2>
+          <p>Scan immediate actions, capture required documentation, then open the full advisory if escalation is needed.</p>
+        </div>
+      </div>
+
+      <div class="situ-section" id="situ-appliance">
+        <div class="situ-container">
+          <div class="situ-section-header">
+            <h2>Appliance &amp; Equipment Loss</h2>
+            <p>Electrical surges, mechanical failures, and heavy equipment downtime that impact habitability or operations.</p>
+          </div>
+          <div class="situ-scenario-grid">
+            <div class="situ-scenario-card">
+              <h3>Power Surge Appliance Damage</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Unplug affected units and photograph serial plates.</li>
+                  <li>Capture utility outage or lightning confirmation if available.</li>
+                  <li>Prevent further loss by stabilizing electrical panel.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Licensed electrician report or surge strip failure evidence.</li>
+                  <li>Purchase receipts or current replacement pricing.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-surge">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>HVAC Mechanical Failure</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Shut down equipment to prevent secondary damage.</li>
+                  <li>Document ambient conditions and comfort impacts.</li>
+                  <li>Schedule inspection for cause of loss findings.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Technician diagnosis noting sudden breakdown vs wear.</li>
+                  <li>Maintenance history and any prior repairs.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-hvac">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Electronics Loss</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>List impacted devices with age and condition.</li>
+                  <li>Photograph damage and connection setup.</li>
+                  <li>Confirm surge protection in use.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Receipts or bank proof plus replacement quotes.</li>
+                  <li>Utility surge notice if available.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-electronics">View Full Advisory</a>
             </div>
           </div>
-        `;
-        
-        container.appendChild(card);
-      });
-    }
-
-    function toggleAdvice(index) {
-      const details = document.getElementById(`details-${index}`);
-      const button = details.previousElementSibling.querySelector('.view-advice-btn');
-      const icon = button.querySelector('.advice-icon');
-      
-      if (details.classList.contains('hidden')) {
-        details.classList.remove('hidden');
-        icon.textContent = '▲';
-        button.querySelector('.advice-text').textContent = 'Hide Advice';
-      } else {
-        details.classList.add('hidden');
-        icon.textContent = '▼';
-        button.querySelector('.advice-text').textContent = 'View Advice';
-      }
-    }
-
-
-    // AI Analysis functionality
-    document.getElementById('analyzeBtn').addEventListener('click', async () => {
-      const situation = document.getElementById('situationInput').value.trim();
-      if (!situation) {
-        alert('Please describe your situation first.');
-        return;
-      }
-
-      const analyzeBtn = document.getElementById('analyzeBtn');
-      const analyzeText = document.getElementById('analyzeText');
-      const analyzeSpinner = document.getElementById('analyzeSpinner');
-      
-      // Show loading state
-      analyzeText.classList.add('hidden');
-      analyzeSpinner.classList.remove('hidden');
-      analyzeBtn.disabled = true;
-
-      try {
-        const response = await fetch('/netlify/functions/ai-advisory.js', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ situation })
-        });
-
-        const data = await response.json();
-        
-        if (response.ok) {
-          displayAIResponse(data);
-        } else {
-          throw new Error(data.error || 'Failed to get AI advice');
-        }
-      } catch (error) {
-        console.error('Error getting AI advice:', error);
-        alert('Failed to get AI advice. Please try again.');
-      } finally {
-        // Reset button state
-        analyzeText.classList.remove('hidden');
-        analyzeSpinner.classList.add('hidden');
-        analyzeBtn.disabled = false;
-      }
-    });
-
-    function displayAIResponse(data) {
-      const responseContainer = document.getElementById('aiResponse');
-      const responseContent = document.getElementById('aiResponseContent');
-      
-      // Parse the AI response
-      let responseData;
-      try {
-        responseData = JSON.parse(data);
-      } catch (e) {
-        // If not JSON, treat as plain text
-        responseData = {
-          explanation: data,
-          nextSteps: 'Please review the advice above.',
-          recommendedDocument: 'Appeal Letter',
-          exampleText: 'Contact your insurance company for specific guidance.'
-        };
-      }
-
-      responseContent.innerHTML = `
-        <div class="response-section">
-          <h4>📋 Next Steps</h4>
-          <p>${responseData.nextSteps || 'Review the situation and take appropriate action.'}</p>
+          <div class="situ-detail-grid">
+            <div class="situ-detail-card" id="detail-surge">
+              <h3>Power Surge Appliance Damage</h3>
+              <div class="situ-detail-columns">
+                <div>
+                  <p class="situ-label">Immediate Actions</p>
+                  <ul>
+                    <li>Document time/date of surge and any utility outage ticket.</li>
+                    <li>Isolate circuits for damaged appliances to avoid fire risk.</li>
+                    <li>Notify carrier within policy timelines to avoid late notice issues.</li>
+                  </ul>
+                  <p class="situ-label">Required Documentation</p>
+                  <ul>
+                    <li>Electrician letter tying failure to sudden surge vs. wear.</li>
+                    <li>Proof of ownership and replacement cost links.</li>
+                    <li>Photos of breakers, surge protectors, and damaged components.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="situ-label">Evidence Checklist</p>
+                  <ul>
+                    <li>Model/serial photos with date stamps.</li>
+                    <li>Utility company outage or lightning verification.</li>
+                    <li>Pre-loss condition notes (maintenance logs).</li>
+                  </ul>
+                  <p class="situ-label">Estimate Considerations</p>
+                  <ul>
+                    <li>Ensure labor includes diagnostic time and code-required upgrades.</li>
+                    <li>Compare like-kind replacement vs. betterment exclusions.</li>
+                  </ul>
+                  <p class="situ-label">Red Flags</p>
+                  <ul>
+                    <li>Carrier citing wear-and-tear without expert inspection.</li>
+                    <li>Denial due to lack of proof surge occurred.</li>
+                  </ul>
+                  <p class="situ-label">When to Escalate</p>
+                  <ul>
+                    <li>Reservation of rights blaming maintenance.</li>
+                    <li>Repeated delays in scheduling field inspection.</li>
+                  </ul>
+                  <a class="situ-btn-primary" href="/app/document-generator.html">Generate Corresponding Document</a>
+                </div>
+              </div>
+            </div>
+            <div class="situ-detail-card" id="detail-hvac">
+              <h3>HVAC Mechanical Failure</h3>
+              <div class="situ-detail-columns">
+                <div>
+                  <p class="situ-label">Immediate Actions</p>
+                  <ul>
+                    <li>Capture ambient temperatures if habitability is impacted.</li>
+                    <li>Request technician statement on sudden vs. long-term deterioration.</li>
+                    <li>Keep failed parts for inspection.</li>
+                  </ul>
+                  <p class="situ-label">Required Documentation</p>
+                  <ul>
+                    <li>Service ticket describing cause of loss.</li>
+                    <li>Photos of failed components and any burn marks.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="situ-label">Evidence Checklist</p>
+                  <ul>
+                    <li>Prior maintenance invoices (filters, annual service).</li>
+                    <li>Thermostat history if available.</li>
+                  </ul>
+                  <p class="situ-label">Estimate Considerations</p>
+                  <ul>
+                    <li>Load calculations for replacement sizing.</li>
+                    <li>Code-required upgrades (refrigerant conversions).</li>
+                  </ul>
+                  <p class="situ-label">Red Flags</p>
+                  <ul>
+                    <li>Denial citing age only, without mechanical assessment.</li>
+                  </ul>
+                  <p class="situ-label">When to Escalate</p>
+                  <ul>
+                    <li>Carrier refuses inspection of retained parts.</li>
+                  </ul>
+                  <a class="situ-btn-primary" href="/app/document-generator.html">Generate Corresponding Document</a>
+                </div>
+              </div>
+            </div>
+            <div class="situ-detail-card" id="detail-electronics">
+              <h3>Electronics Loss</h3>
+              <div class="situ-detail-columns">
+                <div>
+                  <p class="situ-label">Immediate Actions</p>
+                  <ul>
+                    <li>Catalog serials and confirm surge strip use.</li>
+                    <li>Photograph connection points and burn marks.</li>
+                  </ul>
+                  <p class="situ-label">Required Documentation</p>
+                  <ul>
+                    <li>Receipts or bank statements proving ownership.</li>
+                    <li>Written evaluation from repair shop if possible.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="situ-label">Evidence Checklist</p>
+                  <ul>
+                    <li>Utility outage or lightning data for the date/time.</li>
+                    <li>Condition photos before disposal.</li>
+                  </ul>
+                  <p class="situ-label">Estimate Considerations</p>
+                  <ul>
+                    <li>Like-kind replacement with taxes and setup costs.</li>
+                  </ul>
+                  <p class="situ-label">Red Flags</p>
+                  <ul>
+                    <li>Depreciation excessive relative to device age.</li>
+                  </ul>
+                  <p class="situ-label">When to Escalate</p>
+                  <ul>
+                    <li>Carrier declines surge coverage without expert review.</li>
+                  </ul>
+                  <a class="situ-btn-primary" href="/app/document-generator.html">Generate Corresponding Document</a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="response-section">
-          <h4>💡 Explanation</h4>
-          <p>${responseData.explanation || 'No explanation provided.'}</p>
+      </div>
+
+      <div class="situ-section" id="situ-weather">
+        <div class="situ-container">
+          <div class="situ-section-header">
+            <h2>Weather Event Scenarios</h2>
+            <p>Wind, hail, lightning, and freeze events that trigger roof, siding, and water intrusion claims.</p>
+          </div>
+          <div class="situ-scenario-grid">
+            <div class="situ-scenario-card">
+              <h3>Wind &amp; Hail Roof Damage</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Tarp openings; photograph slopes before mitigation.</li>
+                  <li>Capture hail size, direction, and storm date.</li>
+                  <li>Log interior leaks by room.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Weather report or hail swath map.</li>
+                  <li>Roofer inspection noting fresh vs prior wear.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-hail">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Freeze &amp; Ice Dam</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Stop active dripping and move contents to dry zones.</li>
+                  <li>Document attic insulation and ventilation condition.</li>
+                  <li>Record temperatures during the freeze period.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Photos of ice dams, soffits, and interior staining.</li>
+                  <li>Moisture readings before demolition.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-icedam">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Lightning Strike</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Document burn marks and tripped breakers.</li>
+                  <li>Check electronics and HVAC for sudden failure.</li>
+                  <li>Call utility if downed lines are present.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Lightning verification report.</li>
+                  <li>Electrician assessment of surge path.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-lightning">View Full Advisory</a>
+            </div>
+          </div>
+          <div class="situ-detail-grid">
+            <div class="situ-detail-card" id="detail-hail">
+              <h3>Wind &amp; Hail Roof Damage</h3>
+              <div class="situ-detail-columns">
+                <div>
+                  <p class="situ-label">Immediate Actions</p>
+                  <ul>
+                    <li>Tarp damaged slopes; keep tarp invoices.</li>
+                    <li>Photograph shingles, soft metals, and windows before clean-up.</li>
+                    <li>Log any interior water entry with timestamps.</li>
+                  </ul>
+                  <p class="situ-label">Required Documentation</p>
+                  <ul>
+                    <li>Roofer or adjuster report distinguishing fresh impact vs wear.</li>
+                    <li>Weather data confirming hail or high wind speeds.</li>
+                    <li>Moisture readings and mitigation invoices.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="situ-label">Evidence Checklist</p>
+                  <ul>
+                    <li>Elevation photos, gutters, and AC fin damage.</li>
+                    <li>Roof age and material type.</li>
+                  </ul>
+                  <p class="situ-label">Estimate Considerations</p>
+                  <ul>
+                    <li>Code upgrades (ice/water shield, ventilation, drip edge).</li>
+                    <li>Matching requirements for slopes or elevations.</li>
+                  </ul>
+                  <p class="situ-label">Red Flags</p>
+                  <ul>
+                    <li>Denial citing “wear” without slope-by-slope inspection.</li>
+                  </ul>
+                  <p class="situ-label">When to Escalate</p>
+                  <ul>
+                    <li>Reservation of rights on causation, or delay beyond carrier timelines.</li>
+                  </ul>
+                  <a class="situ-btn-primary" href="/app/document-generator.html">Generate Corresponding Document</a>
+                </div>
+              </div>
+            </div>
+            <div class="situ-detail-card" id="detail-icedam">
+              <h3>Freeze &amp; Ice Dam</h3>
+              <div class="situ-detail-columns">
+                <div>
+                  <p class="situ-label">Immediate Actions</p>
+                  <ul>
+                    <li>Collect photo proof of ice dam thickness and leak paths.</li>
+                    <li>Dry interior quickly; avoid removing materials before moisture mapping.</li>
+                  </ul>
+                  <p class="situ-label">Required Documentation</p>
+                  <ul>
+                    <li>Weather records for freeze period.</li>
+                    <li>Mitigation logs with dehumidifier readings.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="situ-label">Evidence Checklist</p>
+                  <ul>
+                    <li>Attic ventilation and insulation photos.</li>
+                    <li>Ceiling and wall moisture meter readings.</li>
+                  </ul>
+                  <p class="situ-label">Estimate Considerations</p>
+                  <ul>
+                    <li>Drywall, insulation, and paint scope with drying days included.</li>
+                  </ul>
+                  <p class="situ-label">Red Flags</p>
+                  <ul>
+                    <li>Carrier claiming long-term seepage without moisture mapping.</li>
+                  </ul>
+                  <p class="situ-label">When to Escalate</p>
+                  <ul>
+                    <li>Denial for “maintenance” despite storm data.</li>
+                  </ul>
+                  <a class="situ-btn-primary" href="/app/document-generator.html">Generate Corresponding Document</a>
+                </div>
+              </div>
+            </div>
+            <div class="situ-detail-card" id="detail-lightning">
+              <h3>Lightning Strike</h3>
+              <div class="situ-detail-columns">
+                <div>
+                  <p class="situ-label">Immediate Actions</p>
+                  <ul>
+                    <li>Secure scene and keep damaged electronics for inspection.</li>
+                    <li>Check for scorch marks on panels and appliances.</li>
+                  </ul>
+                  <p class="situ-label">Required Documentation</p>
+                  <ul>
+                    <li>Lightning verification report for the loss date/time.</li>
+                    <li>Electrician assessment of surge pathway.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="situ-label">Evidence Checklist</p>
+                  <ul>
+                    <li>Breaker status photos, damaged outlets/surge strips.</li>
+                    <li>Device serials and age.</li>
+                  </ul>
+                  <p class="situ-label">Estimate Considerations</p>
+                  <ul>
+                    <li>Panel replacement, wiring checks, device replacements.</li>
+                  </ul>
+                  <p class="situ-label">Red Flags</p>
+                  <ul>
+                    <li>Carrier denies lightning despite verification data.</li>
+                  </ul>
+                  <p class="situ-label">When to Escalate</p>
+                  <ul>
+                    <li>Reservation of rights citing “wear” without inspection.</li>
+                  </ul>
+                  <a class="situ-btn-primary" href="/app/document-generator.html">Generate Corresponding Document</a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="response-section">
-          <h4>📄 Recommended Document</h4>
-          <p>${responseData.recommendedDocument || 'Appeal Letter'}</p>
+      </div>
+
+      <div class="situ-section" id="situ-catastrophe">
+        <div class="situ-container">
+          <div class="situ-section-header">
+            <h2>Catastrophic Events</h2>
+            <p>High-severity events with complex scope, often needing code upgrades and multiple trades.</p>
+          </div>
+          <div class="situ-scenario-grid">
+            <div class="situ-scenario-card">
+              <h3>Wildfire Smoke &amp; Heat</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Document soot patterns and HVAC filter conditions.</li>
+                  <li>Ventilate safely; avoid cleaning before testing.</li>
+                  <li>Inventory soft goods for cleaning vs replacement.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Air quality reports and smoke intrusion lab results.</li>
+                  <li>Contents list with cleaning estimates.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-wildfire">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Hurricane Wind &amp; Surge</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Separate wind vs. flood impacts in photos.</li>
+                  <li>File claims under both policies if applicable.</li>
+                  <li>Stabilize structure with temporary shoring if needed.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Wind speed reports and flood line markings.</li>
+                  <li>Engineer note distinguishing structural vs. water-driven damage.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-hurricane">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Earthquake Impact</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Photograph foundation, chimneys, and wall separations.</li>
+                  <li>Check gas lines; shut off if leaks suspected.</li>
+                  <li>Document fallen contents for ALE claims.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Structural engineer assessment.</li>
+                  <li>Receipts for emergency lodging and food (ALE).</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-earthquake">View Full Advisory</a>
+            </div>
+          </div>
+          <div class="situ-detail-grid">
+            <div class="situ-detail-card" id="detail-hurricane">
+              <h3>Hurricane Wind &amp; Surge</h3>
+              <div class="situ-detail-columns">
+                <div>
+                  <p class="situ-label">Immediate Actions</p>
+                  <ul>
+                    <li>Mark flood lines and keep separate debris piles for wind vs. water.</li>
+                    <li>Photograph roof, windows, and doors before removal.</li>
+                    <li>Log dates/times of power loss and access restrictions.</li>
+                  </ul>
+                  <p class="situ-label">Required Documentation</p>
+                  <ul>
+                    <li>Engineer or contractor letter distinguishing wind-created openings.</li>
+                    <li>Policy info for both homeowners and flood (if applicable).</li>
+                    <li>Temporary repair invoices and mitigation logs.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="situ-label">Evidence Checklist</p>
+                  <ul>
+                    <li>Drone/ground photos of elevations, roof, and siding.</li>
+                    <li>Interior moisture maps and contents loss list.</li>
+                  </ul>
+                  <p class="situ-label">Estimate Considerations</p>
+                  <ul>
+                    <li>Code upgrades, elevation requirements, and mold remediation scope.</li>
+                    <li>Ordinance &amp; Law coverage for rebuilds.</li>
+                  </ul>
+                  <p class="situ-label">Red Flags</p>
+                  <ul>
+                    <li>Carrier attributing all damage to flood without wind analysis.</li>
+                  </ul>
+                  <p class="situ-label">When to Escalate</p>
+                  <ul>
+                    <li>Delays in advance payments for mitigation or ALE.</li>
+                  </ul>
+                  <a class="situ-btn-primary" href="/app/document-generator.html">Generate Corresponding Document</a>
+                </div>
+              </div>
+            </div>
+            <div class="situ-detail-card" id="detail-wildfire">
+              <h3>Wildfire Smoke &amp; Heat</h3>
+              <div class="situ-detail-columns">
+                <div>
+                  <p class="situ-label">Immediate Actions</p>
+                  <ul>
+                    <li>Do not clean surfaces before taking soot sampling photos.</li>
+                    <li>Remove HVAC filters and bag for testing.</li>
+                    <li>Ventilate when safe to reduce odor concentration.</li>
+                  </ul>
+                  <p class="situ-label">Required Documentation</p>
+                  <ul>
+                    <li>Industrial hygienist testing and scope.</li>
+                    <li>Contents inventory with clean vs replace designation.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="situ-label">Evidence Checklist</p>
+                  <ul>
+                    <li>Soot wipe samples, HVAC duct photos.</li>
+                    <li>Air scrubber usage logs.</li>
+                  </ul>
+                  <p class="situ-label">Estimate Considerations</p>
+                  <ul>
+                    <li>Duct cleaning vs replacement, soft goods cleaning, HEPA vacuuming.</li>
+                  </ul>
+                  <p class="situ-label">Red Flags</p>
+                  <ul>
+                    <li>Carrier limiting to cleaning only without testing results.</li>
+                  </ul>
+                  <p class="situ-label">When to Escalate</p>
+                  <ul>
+                    <li>Delays in approving hygienist testing or contents pack-out.</li>
+                  </ul>
+                  <a class="situ-btn-primary" href="/app/document-generator.html">Generate Corresponding Document</a>
+                </div>
+              </div>
+            </div>
+            <div class="situ-detail-card" id="detail-earthquake">
+              <h3>Earthquake Impact</h3>
+              <div class="situ-detail-columns">
+                <div>
+                  <p class="situ-label">Immediate Actions</p>
+                  <ul>
+                    <li>Check gas and water lines; shut off if leaks are suspected.</li>
+                    <li>Photograph structural separations and fallen items.</li>
+                  </ul>
+                  <p class="situ-label">Required Documentation</p>
+                  <ul>
+                    <li>Engineer report on structural movement.</li>
+                    <li>Receipts for emergency lodging/food (ALE).</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="situ-label">Evidence Checklist</p>
+                  <ul>
+                    <li>Foundation cracks, chimney gaps, door/window racking.</li>
+                    <li>Aftershock timelines.</li>
+                  </ul>
+                  <p class="situ-label">Estimate Considerations</p>
+                  <ul>
+                    <li>Bracing, anchoring, masonry rebuild, contents losses.</li>
+                  </ul>
+                  <p class="situ-label">Red Flags</p>
+                  <ul>
+                    <li>Denial citing pre-existing settlement without engineering.</li>
+                  </ul>
+                  <p class="situ-label">When to Escalate</p>
+                  <ul>
+                    <li>Carrier refuses engineer inspection despite visible cracking.</li>
+                  </ul>
+                  <a class="situ-btn-primary" href="/app/document-generator.html">Generate Corresponding Document</a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="response-section">
-          <h4>📝 Example Response</h4>
-          <p>${responseData.exampleText || 'Contact your insurance company for specific guidance.'}</p>
+      </div>
+
+      <div class="situ-section" id="situ-plumbing">
+        <div class="situ-container">
+          <div class="situ-section-header">
+            <h2>Water, Mold &amp; Plumbing</h2>
+            <p>Sudden water discharge, sewer backup, mold growth, and hidden leaks.</p>
+          </div>
+          <div class="situ-scenario-grid">
+            <div class="situ-scenario-card">
+              <h3>Burst Pipe</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Shut off water; document source and affected rooms.</li>
+                  <li>Start drying within 24 hours to avoid mold.</li>
+                  <li>Protect contents and raise furniture.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Plumber invoice with cause of break.</li>
+                  <li>Moisture maps before demo.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-burst">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Sewer Backup</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Stop use of plumbing fixtures.</li>
+                  <li>Document contamination and affected materials.</li>
+                  <li>Call mitigation for Category 3 cleaning.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Plumber report on cause (blockage vs failure).</li>
+                  <li>Mitigation scope with disposal notes.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-sewer">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Mold Discovery</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Isolate area and run dehumidification.</li>
+                  <li>Identify moisture source before removal.</li>
+                  <li>Photograph pre-removal conditions.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Moisture source report.</li>
+                  <li>Air testing if policy requires proof.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-mold">View Full Advisory</a>
+            </div>
+          </div>
+          <div class="situ-detail-grid">
+            <div class="situ-detail-card" id="detail-burst">
+              <h3>Burst Pipe</h3>
+              <div class="situ-detail-columns">
+                <div>
+                  <p class="situ-label">Immediate Actions</p>
+                  <ul>
+                    <li>Shut off supply; capture photos of the failed section.</li>
+                    <li>Begin mitigation and keep equipment logs.</li>
+                    <li>Notify carrier promptly to avoid late notice issues.</li>
+                  </ul>
+                  <p class="situ-label">Required Documentation</p>
+                  <ul>
+                    <li>Plumber invoice with root cause (freeze, sudden break).</li>
+                    <li>Drying logs and moisture readings.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="situ-label">Evidence Checklist</p>
+                  <ul>
+                    <li>Photos of pipe, fittings, and surrounding materials.</li>
+                    <li>Contents damage list with values.</li>
+                  </ul>
+                  <p class="situ-label">Estimate Considerations</p>
+                  <ul>
+                    <li>Demo/rebuild of walls, flooring, cabinets, and cleanup.</li>
+                  </ul>
+                  <p class="situ-label">Red Flags</p>
+                  <ul>
+                    <li>Denial citing “long-term leak” without moisture mapping.</li>
+                  </ul>
+                  <p class="situ-label">When to Escalate</p>
+                  <ul>
+                    <li>Carrier delays approving mitigation or plumbing access.</li>
+                  </ul>
+                  <a class="situ-btn-primary" href="/app/document-generator.html">Generate Corresponding Document</a>
+                </div>
+              </div>
+            </div>
+            <div class="situ-detail-card" id="detail-sewer">
+              <h3>Sewer Backup</h3>
+              <div class="situ-detail-columns">
+                <div>
+                  <p class="situ-label">Immediate Actions</p>
+                  <ul>
+                    <li>Stop water usage; photograph standing water and solids.</li>
+                    <li>Use PPE and isolate affected rooms.</li>
+                  </ul>
+                  <p class="situ-label">Required Documentation</p>
+                  <ul>
+                    <li>Plumber scope for blockage vs municipal issue.</li>
+                    <li>Mitigation plan documenting Category 3 protocols.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="situ-label">Evidence Checklist</p>
+                  <ul>
+                    <li>Material removal photos and disposal tickets.</li>
+                    <li>Air scrubber/drying logs.</li>
+                  </ul>
+                  <p class="situ-label">Estimate Considerations</p>
+                  <ul>
+                    <li>Disinfection, porous material removal, and rebuild scope.</li>
+                  </ul>
+                  <p class="situ-label">Red Flags</p>
+                  <ul>
+                    <li>Carrier limits to cleaning only despite saturation.</li>
+                  </ul>
+                  <p class="situ-label">When to Escalate</p>
+                  <ul>
+                    <li>Backup sublimit disputes or denial of loss of use.</li>
+                  </ul>
+                  <a class="situ-btn-primary" href="/app/document-generator.html">Generate Corresponding Document</a>
+                </div>
+              </div>
+            </div>
+            <div class="situ-detail-card" id="detail-mold">
+              <h3>Mold Discovery</h3>
+              <div class="situ-detail-columns">
+                <div>
+                  <p class="situ-label">Immediate Actions</p>
+                  <ul>
+                    <li>Identify moisture source and stop it before removal.</li>
+                    <li>Contain area to prevent cross-contamination.</li>
+                  </ul>
+                  <p class="situ-label">Required Documentation</p>
+                  <ul>
+                    <li>Moisture source report or leak detection findings.</li>
+                    <li>Air/clearance testing if performed.</li>
+                  </ul>
+                </div>
+                <div>
+                  <p class="situ-label">Evidence Checklist</p>
+                  <ul>
+                    <li>Pre-remediation photos of growth and materials.</li>
+                    <li>Drying logs and humidity readings.</li>
+                  </ul>
+                  <p class="situ-label">Estimate Considerations</p>
+                  <ul>
+                    <li>Containment, HEPA filtration, removal, and rebuild scope.</li>
+                  </ul>
+                  <p class="situ-label">Red Flags</p>
+                  <ul>
+                    <li>Denial citing “long-term” without timeline evidence.</li>
+                  </ul>
+                  <p class="situ-label">When to Escalate</p>
+                  <ul>
+                    <li>Policy mold sublimits invoked without reviewing cause.</li>
+                  </ul>
+                  <a class="situ-btn-primary" href="/app/document-generator.html">Generate Corresponding Document</a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      `;
-      
-      responseContainer.classList.remove('hidden');
-      responseContainer.scrollIntoView({ behavior: 'smooth' });
-    }
+      </div>
 
-    // Category tab functionality
-    document.querySelectorAll('.category-tab').forEach(tab => {
-      tab.addEventListener('click', (e) => {
-        // Remove active class from all tabs
-        document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-        // Add active class to clicked tab
-        e.target.classList.add('active');
-        
-        currentCategory = e.target.dataset.category;
-        renderScenarios();
-      });
-    });
+      <div class="situ-section" id="situ-structural">
+        <div class="situ-container">
+          <div class="situ-section-header">
+            <h2>Structural &amp; Foundation</h2>
+            <p>Settlement vs. sudden events, wall cracking, and structural shifts.</p>
+          </div>
+          <div class="situ-scenario-grid">
+            <div class="situ-scenario-card">
+              <h3>Foundation Movement</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Photograph cracks with scale references.</li>
+                  <li>Check doors/windows for racking.</li>
+                  <li>Stabilize if structural risk is present.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Engineer assessment on sudden vs long-term movement.</li>
+                  <li>Soil/settlement reports if available.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-foundation">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Structural Impact</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Document impact points and structural members affected.</li>
+                  <li>Shore if there is collapse risk.</li>
+                  <li>Collect witness statements or incident reports.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Engineer or contractor estimate.</li>
+                  <li>Police or incident report if applicable.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-impact">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Masonry/Chimney Damage</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Check for leaning, cracked mortar, and loose bricks.</li>
+                  <li>Block off unsafe areas.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Chimney sweep or mason report.</li>
+                  <li>Photos before any removal.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-chimney">View Full Advisory</a>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    // Search functionality
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-      const searchTerm = e.target.value.toLowerCase();
-      filteredScenarios = allScenarios.map(category => ({
-        ...category,
-        situations: category.situations.filter(situation =>
-          situation.title.toLowerCase().includes(searchTerm) ||
-          situation.summary.toLowerCase().includes(searchTerm)
-        )
-      }));
-      renderScenarios();
-    });
+      <div class="situ-section" id="situ-business">
+        <div class="situ-container">
+          <div class="situ-section-header">
+            <h2>Business &amp; Income Loss</h2>
+            <p>Business interruption, extra expense, supply chain breakdowns, and loss of utilities.</p>
+          </div>
+          <div class="situ-scenario-grid">
+            <div class="situ-scenario-card">
+              <h3>Business Interruption</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Document downtime dates and causal damage.</li>
+                  <li>Track revenue impact daily.</li>
+                  <li>Begin mitigation to resume operations.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>P&amp;L comparisons for pre- and post-loss periods.</li>
+                  <li>Invoices for extra expense and temporary space.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-bi">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Equipment Downtime</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Log production interruptions and backlog impacts.</li>
+                  <li>Arrange rentals and track costs.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Maintenance and repair reports.</li>
+                  <li>Rental agreements and freight.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-equipment">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Utility Outage Loss</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Note outage start/end times.</li>
+                  <li>Protect perishable inventory.</li>
+                  <li>Communicate closures to customers.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Utility notices, outage maps, and vendor statements.</li>
+                  <li>Inventory loss lists with values.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-utility">View Full Advisory</a>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    // Category filter functionality
-    document.getElementById('categoryFilter').addEventListener('change', (e) => {
-      const selectedCategory = e.target.value;
-      if (selectedCategory === 'all') {
-        filteredScenarios = allScenarios;
-      } else {
-        filteredScenarios = allScenarios.filter(cat => cat.category === selectedCategory);
-      }
-      renderScenarios();
-    });
+      <div class="situ-section" id="situ-disputes">
+        <div class="situ-container">
+          <div class="situ-section-header">
+            <h2>Claim Disputes &amp; Denials</h2>
+            <p>Coverage challenges, causation disagreements, and repeated delays.</p>
+          </div>
+          <div class="situ-scenario-grid">
+            <div class="situ-scenario-card">
+              <h3>Coverage Denial</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Request denial letter citing policy provisions.</li>
+                  <li>Clarify facts and supply missing documentation.</li>
+                  <li>Consider appraisal or complaint routes.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Full claim file timeline and adjuster communications.</li>
+                  <li>Independent expert reports.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-denial">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Low Settlement Offer</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Request written basis for line items and pricing.</li>
+                  <li>Prepare comparative estimates.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Contractor estimates and code upgrade citations.</li>
+                  <li>Photos tied to disputed line items.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-lowball">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Delayed Claim</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Document response gaps and missed deadlines.</li>
+                  <li>Request status in writing with dates.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Timeline of calls, emails, inspections.</li>
+                  <li>Policy deadlines for responses.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-delay">View Full Advisory</a>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    // Initialize the page
-    loadScenarios();
-  </script>
-    <script type="module" src="/app/assets/js/tools/situational-advisory.js"></script>
+      <div class="situ-section" id="situ-proof">
+        <div class="situ-container">
+          <div class="situ-section-header">
+            <h2>Proof of Loss Scenarios</h2>
+            <p>Submitting, amending, or disputing proof-of-loss requirements with supporting evidence.</p>
+          </div>
+          <div class="situ-scenario-grid">
+            <div class="situ-scenario-card">
+              <h3>Initial Proof of Loss</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Gather scope, estimates, and inventories.</li>
+                  <li>Confirm deadline and delivery method.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Signed proof form with backup exhibits.</li>
+                  <li>Photos keyed to line items.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-pol">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Revised Proof</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Note changes vs prior submission.</li>
+                  <li>Explain new damage discovered.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Updated estimates and photos.</li>
+                  <li>Explanation letter.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-pol-revise">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Disputed Proof Response</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Address each disputed line item.</li>
+                  <li>Request carrier basis in writing.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Supporting evidence and expert opinions.</li>
+                  <li>Correspondence log.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-pol-dispute">View Full Advisory</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="situ-section" id="situ-theft">
+        <div class="situ-container">
+          <div class="situ-section-header">
+            <h2>Theft &amp; Vandalism</h2>
+            <p>Burglary, forced entry, malicious damage, and civil unrest claims.</p>
+          </div>
+          <div class="situ-scenario-grid">
+            <div class="situ-scenario-card">
+              <h3>Burglary with Forced Entry</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>File police report and obtain case number.</li>
+                  <li>Photograph forced entry points.</li>
+                  <li>List stolen items with values.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Receipts or proof of ownership.</li>
+                  <li>Security footage if available.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-burglary">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Vandalism</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Document all defaced areas before cleaning.</li>
+                  <li>Secure property against repeat entry.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Police report if applicable.</li>
+                  <li>Repair estimates.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-vandalism">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Civil Unrest Damage</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Photograph broken glass, signage, and contents loss.</li>
+                  <li>Board up openings promptly.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Police or incident report.</li>
+                  <li>Contractor estimates for glazing and repairs.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-unrest">View Full Advisory</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="situ-section" id="situ-financial">
+        <div class="situ-container">
+          <div class="situ-section-header">
+            <h2>Financial/Operational Disruptions</h2>
+            <p>Payment delays, vendor failures, data loss, or utility-driven interruptions.</p>
+          </div>
+          <div class="situ-scenario-grid">
+            <div class="situ-scenario-card">
+              <h3>Payment Delay from Carrier</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Request written status with payment breakdown.</li>
+                  <li>Document financial impact and invoices pending.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Claim file timeline and approvals.</li>
+                  <li>Contractor payment schedules.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-payment">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Data Loss from Incident</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Engage IT to identify cause and scope.</li>
+                  <li>Secure backups and isolate affected systems.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Forensic report linking event to loss.</li>
+                  <li>Downtime logs and recovery costs.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-data">View Full Advisory</a>
+            </div>
+            <div class="situ-scenario-card">
+              <h3>Vendor/Supplier Failure</h3>
+              <div class="situ-card-group">
+                <p class="situ-label">Immediate Actions</p>
+                <ul>
+                  <li>Document disruption dates and impacted contracts.</li>
+                  <li>Seek alternate suppliers and track extra costs.</li>
+                </ul>
+              </div>
+              <div class="situ-card-group">
+                <p class="situ-label">Documentation Required</p>
+                <ul>
+                  <li>Contracts, delivery schedules, cancellation notices.</li>
+                  <li>Lost revenue calculations.</li>
+                </ul>
+              </div>
+              <a class="situ-btn-secondary" href="#detail-vendor">View Full Advisory</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="situ-section" id="situ-tools">
+      <div class="situ-container">
+        <div class="situ-section-header">
+          <h2>Use with these tools</h2>
+          <p>Pair your scenario with automation to move faster.</p>
+        </div>
+        <div class="situ-tools-grid">
+          <div class="situ-tool-card situ-card">
+            <h3>AI Response Agent</h3>
+            <p>Summarize your situation and draft responses in carrier-friendly language.</p>
+            <a class="situ-btn-secondary" href="/app/ai-response-agent.html">Open AI Agent</a>
+          </div>
+          <div class="situ-tool-card situ-card">
+            <h3>Evidence Organizer</h3>
+            <p>Track photos, invoices, and expert notes with shareable exports.</p>
+            <a class="situ-btn-secondary" href="/app/evidence-organizer.html">Organize Evidence</a>
+          </div>
+          <div class="situ-tool-card situ-card">
+            <h3>Document Generator</h3>
+            <p>Create letters, proofs, and notices aligned to your scenario.</p>
+            <a class="situ-btn-secondary" href="/app/document-generator.html">Generate Documents</a>
+          </div>
+          <div class="situ-tool-card situ-card">
+            <h3>ROM Estimator</h3>
+            <p>Get rough-order-of-magnitude numbers to sanity-check offers.</p>
+            <a class="situ-btn-secondary" href="/app/rom-estimator.html">Estimate Costs</a>
+          </div>
+          <div class="situ-tool-card situ-card">
+            <h3>Claim Playbook</h3>
+            <p>Step-by-step claim tactics and timelines by coverage type.</p>
+            <a class="situ-btn-secondary" href="/app/claim-playbook.html">View Playbook</a>
+          </div>
+          <div class="situ-tool-card situ-card">
+            <h3>Claim Timeline</h3>
+            <p>Map deadlines, inspections, and payments to avoid delays.</p>
+            <a class="situ-btn-secondary" href="/app/claim-timeline.html">Build Timeline</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="situ-section" id="situ-action">
+      <div class="situ-container">
+        <div class="situ-action-card situ-card">
+          <div>
+            <h2>Not Sure Which Scenario Applies?</h2>
+            <p>Some losses overlap across wind, water, and mechanical causes. Give us a short description and we will route you to the right advisory and documents.</p>
+          </div>
+          <div class="situ-action-cta">
+            <a class="situ-btn-primary" href="/app/ai-response-agent.html">Describe Your Situation</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 </body>
 </html>

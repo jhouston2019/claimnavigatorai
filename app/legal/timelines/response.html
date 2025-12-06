@@ -12,73 +12,75 @@
 <section class="hero-section hero-navy">
     <div class="hero-content">
         <h1>Response Timelines</h1>
-        <p class="subtitle">This guide will be fully populated soon.</p>
+        <p class="subtitle">Deadlines for coverage determinations and status updates once the carrier has what it needs to decide.</p>
     </div>
 </section>
 
 <div class="authority-layout">
-    <!-- Sidebar -->
     <?php include($_SERVER['DOCUMENT_ROOT'] . '/app/partials/authority-sidebar.html'); ?>
 
-    <!-- Main Content -->
     <div class="authority-content">
         <div class="breadcrumbs">
             <a href="/app/authority-guides.html">Authority Guides</a> ›
             <span>Response Timelines</span>
         </div>
+        <div class="toc-container">
+            <h3>On This Page</h3>
+            <ul id="toc-list"></ul>
+        </div>
         <div class="container standard-page">
             <div class="frosted-card">
                 <h2>Overview</h2>
-                <p>Response timelines govern how quickly insurers must answer inquiries and issue coverage decisions. Most states require carriers to provide written decisions within set periods after receiving proofs of loss or completing investigations. Clear, timely responses reduce uncertainty and allow policyholders to plan repairs or pursue dispute options.</p>
-                <p>Responses should cite policy provisions, facts, and the basis for any payment or denial. Partial denials require specificity—what is covered, what is not, and why. Silence or vague statements can breach fair claims standards and should be challenged in writing.</p>
-                <p>Policyholders should track when documents are submitted and when responses are due. If deadlines pass, request status and remind carriers of regulatory timelines. Escalate if repeated delays occur without explanation.</p>
-                <p>Thorough, dated records of submissions and carrier replies help demonstrate compliance and spotlight unreasonable delays.</p>
+                <p>After receiving necessary proofs, carriers must issue coverage decisions within statutory windows or explain why more time is needed. Written responses must cite policy provisions and facts.</p>
 
                 <h2>Key Rules & Requirements</h2>
                 <ul>
-                    <li>Carriers must respond to proofs of loss and inquiries within regulated timeframes.</li>
-                    <li>Decisions must be in writing, citing policy provisions and factual bases.</li>
-                    <li>Partial denials should separate covered vs. non-covered items clearly.</li>
-                    <li>Status updates are required when investigations remain open for a reasonable time.</li>
-                    <li>Unreasonable delay without explanation can violate fair claims standards.</li>
+                    <li><strong>Decision deadlines:</strong> Often 30–45 days from receipt of proofs or completion of investigation.</li>
+                    <li><strong>Ongoing updates:</strong> If more time is needed, carriers must provide periodic status letters (commonly every 30 days) explaining the reason.</li>
+                    <li><strong>Specificity:</strong> Denials must state the policy provisions and facts supporting the decision.</li>
+                    <li><strong>Partial decisions:</strong> Undisputed parts must be paid even if other portions remain under review.</li>
+                    <li><strong>Extensions:</strong> Generic delays are insufficient; the carrier must identify what is outstanding.</li>
                 </ul>
 
                 <h2>Step-by-Step Guidance</h2>
                 <ol>
-                    <li>Submit required documents and note the date they are delivered.</li>
-                    <li>Calendar expected response deadlines per state standards or policy.</li>
-                    <li>If no response arrives, send a written status request referencing the due date.</li>
-                    <li>Request detailed explanations and supporting estimates for any adverse decision.</li>
-                    <li>Escalate to supervisors or DOI if delays or vague responses persist.</li>
+                    <li>Confirm in writing when the carrier has <strong>all requested documents</strong> to start the response clock.</li>
+                    <li>If no decision by the deadline, send a <strong>time-limit demand</strong> citing the statute and requesting payment/decision.</li>
+                    <li>Request <strong>written explanations</strong> for any extension and a target decision date.</li>
+                    <li>Separate and request payment for <strong>undisputed items</strong> immediately.</li>
+                    <li>Escalate to supervisors or regulators if status letters are vague or absent.</li>
                 </ol>
 
                 <h2>Required Documentation</h2>
                 <ul>
-                    <li>Proof of loss and supporting submissions with dates sent.</li>
-                    <li>Carrier responses and decision letters with dates received.</li>
-                    <li>Communication log showing follow-ups and escalations.</li>
-                    <li>Estimates and reports supporting the carrier’s position.</li>
+                    <li>Proof-of-loss submission and delivery receipt (if applicable).</li>
+                    <li>Timeline of when each requested document was delivered.</li>
+                    <li>Carrier status letters and any extension notices.</li>
+                    <li>Correspondence requesting decisions and citing statutes.</li>
                 </ul>
 
                 <h2>Common Insurer Tactics</h2>
                 <ul>
-                    <li>Providing verbal updates without written confirmation.</li>
-                    <li>Issuing vague denials without policy citations or factual support.</li>
-                    <li>Resetting timelines after each new submission without justification.</li>
+                    <li>Claiming the investigation is ongoing without specifying what is missing.</li>
+                    <li>Issuing oral decisions to avoid written obligations.</li>
+                    <li>Delaying decisions while waiting on third-party reports without providing timelines.</li>
+                    <li>Bundling undisputed and disputed items to delay all payment.</li>
                 </ul>
 
                 <h2>Red Flags to Watch For</h2>
                 <ul>
-                    <li>Missed response deadlines after proofs of loss are submitted.</li>
-                    <li>Status updates that repeat “under review” without substance.</li>
-                    <li>Partial denials lacking explanation of excluded items.</li>
+                    <li>No status letter after the initial deadline passes.</li>
+                    <li>Extensions that repeat the same generic reason.</li>
+                    <li>Denials with no policy citation or reference to submitted evidence.</li>
+                    <li>Refusal to confirm what remains outstanding.</li>
                 </ul>
 
                 <h2>Best Practices for Policyholders</h2>
                 <ul>
-                    <li>Keep a calendar of submissions and expected response dates.</li>
-                    <li>Request written decisions with policy citations; challenge vague responses.</li>
-                    <li>Escalate timely when silence or inadequate responses persist.</li>
+                    <li>Track when the carrier received all documents and restate that date in follow-ups.</li>
+                    <li>Use concise, statute-citing emails for time-limit demands.</li>
+                    <li>Request partial decisions to unlock undisputed funds.</li>
+                    <li>Escalate promptly when updates lapse; include complaint options if needed.</li>
                 </ul>
 
                 <a href="/app/authority-guides.html" class="back-link">← Back to Authority Guides</a>
@@ -105,6 +107,42 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const content = document.querySelector('.frosted-card');
+    const headings = content.querySelectorAll('h2, h3');
+
+    const tocList = document.getElementById('toc-list');
+
+    headings.forEach((heading, index) => {
+        const id = heading.innerText.replace(/\s+/g, '-').toLowerCase() + '-' + index;
+        heading.id = id;
+
+        const li = document.createElement('li');
+        li.classList.add(heading.tagName.toLowerCase());
+
+        const link = document.createElement('a');
+        link.href = '#' + id;
+        link.innerText = heading.innerText;
+
+        li.appendChild(link);
+        tocList.appendChild(li);
+    });
+
+    // ScrollSpy
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            const link = tocList.querySelector(`a[href="#${entry.target.id}"]`);
+            if (entry.isIntersecting) {
+                tocList.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+                if (link) link.classList.add('active');
+            }
+        });
+    }, { threshold: 0.4 });
+
+    headings.forEach(heading => observer.observe(heading));
+});
+</script>
+
 </body>
 </html>
-
