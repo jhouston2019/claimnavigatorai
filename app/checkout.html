@@ -103,6 +103,9 @@ body.checkout-page::before {
   <div class="checkout-container">
     <div class="checkout-box">
       <h1>Secure Checkout</h1>
+      <div id="checkout-message" style="display:none; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
+        <p style="color: #93c5fd !important; margin: 0;"></p>
+      </div>
       <p id="checkout-tier">Loading...</p>
       <p>Complete your purchase to unlock full access.</p>
       
@@ -122,6 +125,17 @@ body.checkout-page::before {
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+  // PART 2: Display checkout message if redirected from Claim Management Center
+  const checkoutMessage = sessionStorage.getItem('checkoutMessage');
+  if (checkoutMessage) {
+    const messageDiv = document.getElementById('checkout-message');
+    if (messageDiv) {
+      messageDiv.style.display = 'block';
+      messageDiv.querySelector('p').textContent = checkoutMessage;
+    }
+    sessionStorage.removeItem('checkoutMessage');
+  }
+
   const tier = new URLSearchParams(location.search).get("tier");
   if (!tier) {
     alert("No tier specified. Redirecting to pricing...");
@@ -158,7 +172,8 @@ document.addEventListener("DOMContentLoaded", () => {
         CNAnalytics.log("checkout_completed", { tier });
       }
       
-      location.href = "/app/checkout-success.html";
+      // PART 3: Redirect to Claim Management Center after successful checkout
+      location.href = "/app/claim-management-center.html";
     });
   }
   

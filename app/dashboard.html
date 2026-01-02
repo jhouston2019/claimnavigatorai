@@ -175,170 +175,25 @@
 <body>
   <div class="dashboard-container">
     <div class="dashboard-header">
-      <h1>My Claim</h1>
-      <p>Manage your insurance claim with professional tools</p>
-    </div>
-    
-    <div id="dashboard-content">
-      <!-- Content will be loaded via JavaScript -->
-      <div style="text-align: center; color: #9ca3af; padding: 40px;">
-        Loading your claim...
-      </div>
+      <h1>Redirecting to Claim Control Center...</h1>
+      <p>Taking you to the Claim Success Protocol™</p>
     </div>
   </div>
 
   <script src="/app/assets/js/supabase-client.js"></script>
   <script src="/app/assets/js/auth-session.js"></script>
-  <script src="/app/assets/js/claim-profile.js"></script>
-  <script src="/app/assets/js/claim-health-v2.js"></script>
-  <script src="/app/assets/js/state-modules.js"></script>
-  <script src="/app/assets/js/toasts.js"></script>
-  <script src="/app/assets/js/loading.js"></script>
   <script>
+    // Redirect to Claim Control Center
     (async () => {
       // Require authentication
       const isAuthenticated = await window.CNAuth?.requireAuth(true);
       if (!isAuthenticated) return;
 
-      try {
-        if (window.CNLoading) {
-          window.CNLoading.show('Loading your claim...');
-        }
-
-        const user = await window.CNAuth.currentUser();
-        if (!user) {
-          window.location.href = '/auth/login.html';
-          return;
-        }
-
-        // Check for active claim via Supabase
-        const supabase = await window.getSupabaseClient();
-        const { data: claims, error } = await supabase
-          .from('claims')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('status', 'active')
-          .limit(1);
-
-        if (error) {
-          console.error('CNError (Load Claims):', error);
-        }
-
-        const activeClaim = claims && claims.length > 0 ? claims[0] : null;
-        const profile = window.CNClaimProfile?.getClaimProfile() || {};
-        const hasProfile = window.CNClaimProfile?.hasClaimProfile() || false;
-        const health = window.CNHealth ? window.CNHealth.compute() : { score: 0, flags: [] };
-
-        // Calculate activation progress
-        let activationProgress = 0;
-        let activationItems = [];
-        if (activeClaim && activeClaim.claim_data?.activation) {
-          const activation = activeClaim.claim_data.activation;
-          const totalItems = 7;
-          let completed = 0;
-          
-          if (activation.lossDate) completed++;
-          if (activation.description) completed++;
-          if (activation.photosUploaded) completed++;
-          if (activation.firstDocument) completed++;
-          if (activation.aiAgentUsed) completed++;
-          if (activation.stage1Complete) completed++;
-          if (health.score >= 60) completed++;
-          
-          activationProgress = Math.round((completed / totalItems) * 100);
-          activationItems = [
-            { label: 'Add Loss Date', done: !!activation.lossDate },
-            { label: 'Add Claim Description', done: !!activation.description },
-            { label: 'Upload Photos', done: !!activation.photosUploaded },
-            { label: 'Generate First Document', done: !!activation.firstDocument },
-            { label: 'Use AI Response Agent', done: !!activation.aiAgentUsed },
-            { label: 'Complete Roadmap Stage 1', done: !!activation.stage1Complete },
-            { label: 'Achieve Claim Health 60+', done: health.score >= 60 }
-          ];
-        }
-
-        const dashboardContent = document.getElementById('dashboard-content');
-
-        if (!activeClaim && !hasProfile) {
-          // No claim - show purchase CTA
-          dashboardContent.innerHTML = `
-            <div class="no-claim-cta">
-              <h2>Get Started with Your Claim</h2>
-              <p>Unlock the complete Claim Navigator AI toolkit to manage your insurance claim professionally.</p>
-              <button onclick="window.launchClaimCheckout()" class="btn-action" style="max-width: 300px; margin: 0 auto;">
-                Unlock My Claim - $99
-              </button>
-            </div>
-          `;
-        } else {
-          // Show claim dashboard
-          const lastUpdated = activeClaim?.updated_at 
-            ? new Date(activeClaim.updated_at).toLocaleDateString()
-            : 'Never';
-
-          dashboardContent.innerHTML = `
-            <div class="dashboard-grid">
-              <div class="dashboard-card">
-                <h2>Claim Status</h2>
-                <p><strong>Status:</strong> <span class="status-badge status-active">Active</span></p>
-                <p><strong>Last Updated:</strong> ${lastUpdated}</p>
-                ${activeClaim?.claim_data?.claimNumber ? `<p><strong>Claim #:</strong> ${activeClaim.claim_data.claimNumber}</p>` : ''}
-                ${profile.claim?.carrier ? `<p><strong>Carrier:</strong> ${profile.claim.carrier}</p>` : ''}
-              </div>
-              
-              <div class="dashboard-card">
-                <h2>Claim Health Score</h2>
-                <div class="health-score">${health.score || 0}</div>
-                <p style="color: #9ca3af; font-size: 14px;">
-                  ${health.flags && health.flags.length > 0 
-                    ? `${health.flags.length} issue${health.flags.length > 1 ? 's' : ''} to address`
-                    : 'Your claim is in good shape'}
-                </p>
-                ${health.stateName ? `<p style="color: #9ca3af; font-size: 12px; margin-top: 8px;">Based on ${health.stateName} guidelines</p>` : ''}
-              </div>
-              
-              <div class="dashboard-card">
-                <h2>Quick Actions</h2>
-                <div class="action-buttons">
-                  <a href="/app/resource-center/claim-roadmap.html" class="btn-action">Resume Claim</a>
-                  <a href="/app/onboarding/index.html" class="btn-action btn-action-secondary">Edit Claim Setup</a>
-                  <a href="/app/resource-center/claim-roadmap.html" class="btn-action btn-action-secondary">View Roadmap</a>
-                  <a href="/app/document-generator-v2/document-generator.html" class="btn-action btn-action-secondary">Generate Documents</a>
-                  <a href="/app/resource-center/ai-response-agent.html" class="btn-action btn-action-secondary">AI Response Agent</a>
-                  <a href="/app/evidence-organizer.html" class="btn-action btn-action-secondary">Evidence Organizer</a>
-                </div>
-              </div>
-            </div>
-            
-            ${activationProgress > 0 ? `
-              <div class="dashboard-card activation-widget">
-                <h3>Claim Activation Progress</h3>
-                <div class="activation-progress">
-                  <div class="activation-progress-bar" style="width: ${activationProgress}%"></div>
-                </div>
-                <p style="color: #9ca3af; font-size: 14px; margin: 0;">
-                  ${activationProgress}% complete
-                  <a href="/app/activation/first-steps.html" style="color: #38bdf8; margin-left: 12px; text-decoration: none;">
-                    Continue activation →
-                  </a>
-                </p>
-              </div>
-            ` : ''}
-          `;
-        }
-
-      } catch (error) {
-        console.error('CNError (Dashboard):', error);
-        if (window.CNToast) {
-          window.CNToast.error('Failed to load dashboard');
-        }
-      } finally {
-        if (window.CNLoading) {
-          window.CNLoading.hide();
-        }
-      }
+      // Redirect to Control Center
+      setTimeout(() => {
+        window.location.href = '/app/claim-control-center.html';
+      }, 1000);
     })();
   </script>
-  <script src="/app/assets/js/stripe-checkout.js"></script>
 </body>
 </html>

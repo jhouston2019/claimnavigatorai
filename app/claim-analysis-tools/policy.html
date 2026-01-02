@@ -5,87 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Policy Review & Coverage Analysis - ClaimNavigatorAI</title>
     <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/css/design-system.css">
     <style>
-        .results {
-            display: none;
-            background: #f5f7fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border: 1px solid #e1e5e9;
-        }
-        .error {
-            color: #dc2626;
-            background: #fef2f2;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #fecaca;
-        }
-        .input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-        .input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        textarea.input {
-            min-height: 120px;
-            resize: vertical;
-        }
+      .results {
+        display: none;
+        background: #f5f7fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 15px;
+        border: 1px solid #e1e5e9;
+      }
+      .error {
+        color: #dc2626;
+        background: #fef2f2;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #fecaca;
+      }
+      .input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+      .input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+      textarea.input {
+        min-height: 120px;
+        resize: vertical;
+      }
     </style>
-    <script src="/assets/js/navigation-template.js"></script>
+    <script src="/app/assets/js/navigation-template.js"></script>
 </head>
-<body>
-    <script>createNavigationBar();</script>
+<body class="tool-page">
+  <script>createNavigationBar('Policy Review');</script>
 
-    
-    <main class="container">
-        <div class="card">
-            <h2>⚖️ Policy Review & Coverage Analysis</h2>
-            <p>Upload or paste policy text to generate a detailed coverage summary, exclusion list, and recommendations.</p>
-            
-            <label>Policy Text / Excerpt:
-                <textarea id="policyText" class="input" placeholder="Paste policy section here..."></textarea>
-            </label>
+  <section class="hero-section hero-navy">
+    <div class="hero-content">
+      <h1>Policy Review &amp; Coverage</h1>
+      <p class="subtitle">Clear guidance for this step of your claim.</p>
+    </div>
+  </section>
 
-            <label>Policy Type:
-                <select id="policyType" class="input">
-                    <option value="">Select Policy Type</option>
-                    <option value="homeowners">Homeowners</option>
-                    <option value="commercial">Commercial</option>
-                    <option value="auto">Auto</option>
-                    <option value="renters">Renters</option>
-                    <option value="flood">Flood</option>
-                    <option value="umbrella">Umbrella</option>
-                    <option value="other">Other</option>
-                </select>
-            </label>
+  <main>
+    <section class="page-section">
+      <div class="frosted-card">
+        <h2>⚖️ Policy Review &amp; Coverage Analysis</h2>
+        <p>Upload or paste policy text to generate a detailed coverage summary, exclusion list, and recommendations.</p>
 
-            <label>Jurisdiction: 
-                <input id="jurisdiction" class="input" placeholder="State / Province">
-            </label>
+        <label>Policy Text / Excerpt:
+          <textarea id="policyText" class="input" placeholder="Paste policy section here..."></textarea>
+        </label>
 
-            <label>Deductible: 
-                <input id="deductible" class="input" placeholder="Enter deductible amount" type="number" step="0.01">
-            </label>
+        <label>Policy Type:
+          <select id="policyType" class="input">
+            <option value="">Select Policy Type</option>
+            <option value="homeowners">Homeowners</option>
+            <option value="commercial">Commercial</option>
+            <option value="auto">Auto</option>
+            <option value="renters">Renters</option>
+            <option value="flood">Flood</option>
+            <option value="umbrella">Umbrella</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
 
-            <button class="button primary" onclick="runAnalysis('policy')">Analyze Coverage</button>
-            <div id="result-policy" class="results"></div>
-        </div>
-    </main>
+        <label>Jurisdiction:
+          <input id="jurisdiction" class="input" placeholder="State / Province">
+        </label>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>© 2025 ClaimNavigatorAI • Policy Review Tool</p>
-        </div>
-    </footer>
+        <label>Deductible:
+          <input id="deductible" class="input" placeholder="Enter deductible amount" type="number" step="0.01">
+        </label>
+
+        <button class="button primary" onclick="runAnalysis('policy')">Analyze Coverage</button>
+        <div id="result-policy" class="results"></div>
+      </div>
+    </section>
+  </main>
 
     <script>
         async function runAnalysis(module) {

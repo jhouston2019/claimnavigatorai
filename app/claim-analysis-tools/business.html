@@ -5,123 +5,125 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business Interruption Calculator - ClaimNavigatorAI</title>
     <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/css/design-system.css">
     <style>
-        .results {
-            display: none;
-            background: #f5f7fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border: 1px solid #e1e5e9;
-        }
-        .error {
-            color: #dc2626;
-            background: #fef2f2;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #fecaca;
-        }
-        .input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-        .input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        textarea.input {
-            min-height: 100px;
-            resize: vertical;
-        }
+      .results {
+        display: none;
+        background: #f5f7fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 15px;
+        border: 1px solid #e1e5e9;
+      }
+      .error {
+        color: #dc2626;
+        background: #fef2f2;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #fecaca;
+      }
+      .input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+      .input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+      textarea.input {
+        min-height: 100px;
+        resize: vertical;
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+      @media (max-width: 768px) {
         .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+          grid-template-columns: 1fr;
         }
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
+      }
     </style>
-    <script src="/assets/js/navigation-template.js"></script>
+    <script src="/app/assets/js/navigation-template.js"></script>
 </head>
-<body>
-    <script>createNavigationBar();</script>
+<body class="tool-page">
+  <script>createNavigationBar('Business Interruption');</script>
 
-    
-    <main class="container">
-        <div class="card">
-            <h2>💼 Business Interruption Calculator</h2>
-            <p>Calculate lost revenue, extra expenses, and business interruption losses with forensic accounting.</p>
-            
-            <label>Business Name:
-                <input id="businessName" class="input" placeholder="Enter business name">
-            </label>
+  <section class="hero-section hero-navy">
+    <div class="hero-content">
+      <h1>Business Interruption Calculator</h1>
+      <p class="subtitle">Clear guidance for this step of your claim.</p>
+    </div>
+  </section>
 
-            <div class="form-row">
-                <label>Interruption Start Date:
-                    <input id="startDate" class="input" type="date">
-                </label>
-                <label>Interruption End Date:
-                    <input id="endDate" class="input" type="date">
-                </label>
-            </div>
+  <main>
+    <section class="page-section">
+      <div class="frosted-card">
+        <h2>💼 Business Interruption Calculator</h2>
+        <p>Calculate lost revenue, extra expenses, and business interruption losses with forensic accounting.</p>
 
-            <label>Monthly Revenues (comma separated):
-                <input id="revenues" class="input" placeholder="e.g., 50000, 45000, 55000, 60000">
-            </label>
+        <label>Business Name:
+          <input id="businessName" class="input" placeholder="Enter business name">
+        </label>
 
-            <div class="form-row">
-                <label>COGS % (Cost of Goods Sold):
-                    <input id="cogs" class="input" placeholder="e.g., 30" type="number" step="0.01">
-                </label>
-                <label>Fixed Costs %:
-                    <input id="fixed" class="input" placeholder="e.g., 25" type="number" step="0.01">
-                </label>
-            </div>
-
-            <div class="form-row">
-                <label>Variable Costs %:
-                    <input id="variable" class="input" placeholder="e.g., 15" type="number" step="0.01">
-                </label>
-                <label>Days of Interruption:
-                    <input id="days" class="input" placeholder="Auto-calculated" readonly>
-                </label>
-            </div>
-
-            <label>Extra Expenses:
-                <textarea id="extra" class="input" placeholder="Describe any extra expenses incurred during the interruption..."></textarea>
-            </label>
-
-            <label>Business Type:
-                <select id="businessType" class="input">
-                    <option value="">Select Business Type</option>
-                    <option value="retail">Retail</option>
-                    <option value="restaurant">Restaurant</option>
-                    <option value="manufacturing">Manufacturing</option>
-                    <option value="service">Service</option>
-                    <option value="professional">Professional Services</option>
-                    <option value="other">Other</option>
-                </select>
-            </label>
-
-            <button class="button primary" onclick="runAnalysis('business')">Calculate BI Loss</button>
-            <div id="result-business" class="results"></div>
+        <div class="form-row">
+          <label>Interruption Start Date:
+            <input id="startDate" class="input" type="date">
+          </label>
+          <label>Interruption End Date:
+            <input id="endDate" class="input" type="date">
+          </label>
         </div>
-    </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>© 2025 ClaimNavigatorAI • Business Interruption Tool</p>
+        <label>Monthly Revenues (comma separated):
+          <input id="revenues" class="input" placeholder="e.g., 50000, 45000, 55000, 60000">
+        </label>
+
+        <div class="form-row">
+          <label>COGS % (Cost of Goods Sold):
+            <input id="cogs" class="input" placeholder="e.g., 30" type="number" step="0.01">
+          </label>
+          <label>Fixed Costs %:
+            <input id="fixed" class="input" placeholder="e.g., 25" type="number" step="0.01">
+          </label>
         </div>
-    </footer>
+
+        <div class="form-row">
+          <label>Variable Costs %:
+            <input id="variable" class="input" placeholder="e.g., 15" type="number" step="0.01">
+          </label>
+          <label>Days of Interruption:
+            <input id="days" class="input" placeholder="Auto-calculated" readonly>
+          </label>
+        </div>
+
+        <label>Extra Expenses:
+          <textarea id="extra" class="input" placeholder="Describe any extra expenses incurred during the interruption..."></textarea>
+        </label>
+
+        <label>Business Type:
+          <select id="businessType" class="input">
+            <option value="">Select Business Type</option>
+            <option value="retail">Retail</option>
+            <option value="restaurant">Restaurant</option>
+            <option value="manufacturing">Manufacturing</option>
+            <option value="service">Service</option>
+            <option value="professional">Professional Services</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+
+        <button class="button primary" onclick="runAnalysis('business')">Calculate BI Loss</button>
+        <div id="result-business" class="results"></div>
+      </div>
+    </section>
+  </main>
 
     <script>
         // Auto-calculate days when dates change

@@ -5,137 +5,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expert Opinion Request Generator - ClaimNavigatorAI</title>
     <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/css/design-system.css">
     <style>
-        .results {
-            display: none;
-            background: #f5f7fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border: 1px solid #e1e5e9;
-        }
-        .error {
-            color: #dc2626;
-            background: #fef2f2;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #fecaca;
-        }
-        .input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-        .input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        textarea.input {
-            min-height: 120px;
-            resize: vertical;
-        }
-        .file-upload {
-            border: 2px dashed #d1d5db;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            background: #f9fafb;
-            margin-bottom: 15px;
-        }
-        .file-upload:hover {
-            border-color: #3b82f6;
-            background: #f0f9ff;
-        }
+      .results {
+        display: none;
+        background: #f5f7fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 15px;
+        border: 1px solid #e1e5e9;
+      }
+      .error {
+        color: #dc2626;
+        background: #fef2f2;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #fecaca;
+      }
+      .input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+      .input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+      textarea.input {
+        min-height: 120px;
+        resize: vertical;
+      }
+      .file-upload {
+        border: 2px dashed #d1d5db;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        background: #f9fafb;
+        margin-bottom: 15px;
+      }
+      .file-upload:hover {
+        border-color: #3b82f6;
+        background: #f0f9ff;
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+      @media (max-width: 768px) {
         .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+          grid-template-columns: 1fr;
         }
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
+      }
     </style>
-    <script src="/assets/js/navigation-template.js"></script>
+    <script src="/app/assets/js/navigation-template.js"></script>
 </head>
-<body>
-    <script>createNavigationBar();</script>
+<body class="tool-page">
+  <script>createNavigationBar('Expert Opinion');</script>
 
-    
-    <main class="container">
-        <div class="card">
-            <h2>🧠 Expert Opinion Request Generator</h2>
-            <p>Generate professional requests for expert opinions, witness coordination, and specialized analysis.</p>
-            
-            <label>Expert Request Description:
-                <textarea id="description" class="input" placeholder="Describe what expert opinion or analysis you need..."></textarea>
-            </label>
+  <section class="hero-section hero-navy">
+    <div class="hero-content">
+      <h1>Expert Opinion Request Generator</h1>
+      <p class="subtitle">Clear guidance for this step of your claim.</p>
+    </div>
+  </section>
 
-            <label>Upload Supporting Documents:
-                <div class="file-upload">
-                    <input type="file" id="documents" class="input" multiple accept=".pdf,.doc,.docx,.txt,.jpg,.png">
-                    <p>Upload PDF, DOC, images, or other supporting files</p>
-                </div>
-            </label>
+  <main>
+    <section class="page-section">
+      <div class="frosted-card">
+        <h2>🧠 Expert Opinion Request Generator</h2>
+        <p>Generate professional requests for expert opinions, witness coordination, and specialized analysis.</p>
 
-            <div class="form-row">
-                <label>Desired Expertise:
-                    <select id="expertise" class="input">
-                        <option value="">Select Expertise Area</option>
-                        <option value="engineering">Engineering</option>
-                        <option value="construction">Construction</option>
-                        <option value="fire-investigation">Fire Investigation</option>
-                        <option value="forensic-accounting">Forensic Accounting</option>
-                        <option value="medical">Medical</option>
-                        <option value="automotive">Automotive</option>
-                        <option value="electrical">Electrical</option>
-                        <option value="plumbing">Plumbing</option>
-                        <option value="roofing">Roofing</option>
-                        <option value="other">Other</option>
-                    </select>
-                </label>
-                <label>Urgency Level:
-                    <select id="urgency" class="input">
-                        <option value="standard">Standard (2-4 weeks)</option>
-                        <option value="expedited">Expedited (1-2 weeks)</option>
-                        <option value="urgent">Urgent (3-7 days)</option>
-                        <option value="emergency">Emergency (24-48 hours)</option>
-                    </select>
-                </label>
-            </div>
+        <label>Expert Request Description:
+          <textarea id="description" class="input" placeholder="Describe what expert opinion or analysis you need..."></textarea>
+        </label>
 
-            <label>Expert Qualifications Required:
-                <textarea id="qualifications" class="input" placeholder="List specific qualifications, certifications, or experience required..."></textarea>
-            </label>
+        <label>Upload Supporting Documents:
+          <div class="file-upload">
+            <input type="file" id="documents" class="input" multiple accept=".pdf,.doc,.docx,.txt,.jpg,.png">
+            <p>Upload PDF, DOC, images, or other supporting files</p>
+          </div>
+        </label>
 
-            <label>Budget Range:
-                <input id="budget" class="input" placeholder="e.g., $2,000 - $5,000 or 'To be discussed'">
-            </label>
-
-            <label>Timeline Requirements:
-                <input id="timeline" class="input" placeholder="e.g., 'Report needed by [date]' or 'As soon as possible'">
-            </label>
-
-            <label>Additional Requirements:
-                <textarea id="requirements" class="input" placeholder="Any specific requirements, deliverables, or special instructions..."></textarea>
-            </label>
-
-            <button class="button primary" onclick="runAnalysis('expert')">Generate Expert Request</button>
-            <div id="result-expert" class="results"></div>
+        <div class="form-row">
+          <label>Desired Expertise:
+            <select id="expertise" class="input">
+              <option value="">Select Expertise Area</option>
+              <option value="engineering">Engineering</option>
+              <option value="construction">Construction</option>
+              <option value="fire-investigation">Fire Investigation</option>
+              <option value="forensic-accounting">Forensic Accounting</option>
+              <option value="medical">Medical</option>
+              <option value="automotive">Automotive</option>
+              <option value="electrical">Electrical</option>
+              <option value="plumbing">Plumbing</option>
+              <option value="roofing">Roofing</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label>Urgency Level:
+            <select id="urgency" class="input">
+              <option value="standard">Standard (2-4 weeks)</option>
+              <option value="expedited">Expedited (1-2 weeks)</option>
+              <option value="urgent">Urgent (3-7 days)</option>
+              <option value="emergency">Emergency (24-48 hours)</option>
+            </select>
+          </label>
         </div>
-    </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>© 2025 ClaimNavigatorAI • Expert Opinion Request Tool</p>
-        </div>
-    </footer>
+        <label>Expert Qualifications Required:
+          <textarea id="qualifications" class="input" placeholder="List specific qualifications, certifications, or experience required..."></textarea>
+        </label>
+
+        <label>Budget Range:
+          <input id="budget" class="input" placeholder="e.g., $2,000 - $5,000 or 'To be discussed'">
+        </label>
+
+        <label>Timeline Requirements:
+          <input id="timeline" class="input" placeholder="e.g., 'Report needed by [date]' or 'As soon as possible'">
+        </label>
+
+        <label>Additional Requirements:
+          <textarea id="requirements" class="input" placeholder="Any specific requirements, deliverables, or special instructions..."></textarea>
+        </label>
+
+        <button class="button primary" onclick="runAnalysis('expert')">Generate Expert Request</button>
+        <div id="result-expert" class="results"></div>
+      </div>
+    </section>
+  </main>
 
     <script>
         async function runAnalysis(module) {

@@ -136,8 +136,27 @@
         console.log("Access token:", session?.access_token);
       }
 
-      // Redirect to response center
-      window.location.href = "response-center.html";
+      // PART 3: Check payment status and redirect accordingly
+      try {
+        const { data: paymentData, error: paymentError } = await supabase
+          .from('payments')
+          .select('status')
+          .eq('user_id', user.id)
+          .eq('status', 'completed')
+          .single();
+
+        if (paymentData && !paymentError) {
+          // Paid user: redirect to Claim Management Center
+          window.location.href = "/app/claim-management-center.html";
+        } else {
+          // Not paid: redirect to checkout
+          window.location.href = "/app/checkout.html?tier=pro";
+        }
+      } catch (err) {
+        console.error('Payment check error:', err);
+        // Default to checkout on error
+        window.location.href = "/app/checkout.html?tier=pro";
+      }
     });
   </script>
 <script type="module" src="/app/assets/js/diagnostics.js"></script>

@@ -1,11 +1,41 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Claim Navigator • Resource Center</title>
+<title>Claim Navigator • Reference Library</title>
     <link rel="stylesheet" href="/app/assets/css/theme.css">
     <link rel="stylesheet" href="/app/assets/css/style.css">
     <link rel="stylesheet" href="/app/assets/css/design-system.css">
     <link rel="stylesheet" href="/app/css/design-system.css">
     <link rel="stylesheet" href="/app/assets/css/guided-tour.css">
+    <script type="module">
+      // PART 2: ADMIN-ONLY ACCESS GUARD
+      import { checkAuthentication } from './assets/js/auth.js';
+      
+      async function enforceAdminAccess() {
+        const auth = await checkAuthentication();
+        
+        if (!auth.authenticated) {
+          window.location.href = '/app/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+          return false;
+        }
+        
+        // Check if user has admin role
+        const user = auth.user;
+        const isAdmin = user?.user_metadata?.role === 'admin' || user?.app_metadata?.role === 'admin';
+        
+        if (!isAdmin) {
+          window.location.href = '/app/claim-management-center.html';
+          return false;
+        }
+        
+        return true;
+      }
+      
+      enforceAdminAccess().then(allowed => {
+        if (allowed) {
+          document.body.style.visibility = 'visible';
+        }
+      });
+    </script>
     <script src="/app/assets/js/user-tier.js"></script>
     <script src="/app/assets/js/feature-gate.js"></script>
     <script src="/app/assets/js/demo-mode.js"></script>
@@ -19,12 +49,13 @@
 }
 </style>
 </head>
-<body class="resource-center" >
+<body class="resource-center reference-library" style="visibility:hidden;">
 <header class="header">
   <div class="bar container">
     <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
     <nav class="nav">
       <a href="/app/index.html">Home</a>
+      <a href="/app/claim-management-center.html" class="nav-link-primary" data-auth-required="true" data-paid-required="true">Claim Management Center</a>
       
       <!-- Claim Navigator Agent Dropdown -->
       <div class="nav-dropdown">
@@ -244,16 +275,19 @@
 
 <main class="rc-page" id="main">
   <div id="main-content-wrapper">
+    <!-- Reference Library Notice -->
+    <div style="background: rgba(56,189,248,0.1); border: 2px solid rgba(56,189,248,0.3); padding: 20px; margin: 20px auto; max-width: 1200px; border-radius: 8px; text-align: center;">
+      <p style="color: #38bdf8; font-weight: 700; font-size: 18px; margin: 0 0 8px 0;">📚 Reference Library</p>
+      <p style="color: #1f2937; margin: 0 0 12px 0;">This is a reference-only resource library. To work on your claim, return to the Claim Control Center.</p>
+      <a href="/app/claim-control-center.html" style="display: inline-block; padding: 10px 20px; background: #38bdf8; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600;">← Return to Claim Control Center</a>
+    </div>
+
     <section class="rc-hero">
       <div class="rc-container rc-hero-content">
         <div class="rc-hero-text">
-          <p class="rc-hero-eyebrow">Resource Center</p>
-          <h1 class="rc-hero-title">Claim Navigator Resource Center</h1>
-          <p class="rc-hero-subtitle">Your central hub for tools, templates, calculators, and AI guidance to keep every claim moving with clarity.</p>
-          <div class="rc-hero-actions">
-            <a href="/app/resource-center/claim-roadmap.html" id="roadmap-entry" class="rc-btn-primary">Start Claim Flow</a>
-            <a href="/app/document-library/" class="rc-btn-secondary">Browse Resources</a>
-          </div>
+          <p class="rc-hero-eyebrow">Reference Library</p>
+          <h1 class="rc-hero-title">Claim Navigator Reference Library</h1>
+          <p class="rc-hero-subtitle">Documentation, guides, and reference materials. Tools are accessed through the Claim Success Protocol™ in the Control Center.</p>
         </div>
       </div>
     </section>
@@ -1058,6 +1092,43 @@
         }
       }
     };
+  });
+  
+  // PART 4: Navigation handler for Claim Management Center
+  document.addEventListener('DOMContentLoaded', async function() {
+    const claimCenterLink = document.querySelector('a[href="/app/claim-management-center.html"]');
+    if (claimCenterLink) {
+      claimCenterLink.addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        // Check if auth module is available
+        if (typeof checkAuthentication === 'function' && typeof checkPaymentStatus === 'function') {
+          try {
+            const auth = await checkAuthentication();
+            
+            if (!auth.authenticated) {
+              window.location.href = '/app/login.html?redirect=' + encodeURIComponent('/app/claim-management-center.html');
+              return;
+            }
+            
+            const payment = await checkPaymentStatus();
+            
+            if (!payment.hasAccess) {
+              window.location.href = '/app/checkout.html?tier=pro';
+              return;
+            }
+            
+            window.location.href = '/app/claim-management-center.html';
+          } catch (error) {
+            console.error('Navigation check error:', error);
+            window.location.href = '/app/claim-management-center.html';
+          }
+        } else {
+          // Fallback: just navigate
+          window.location.href = '/app/claim-management-center.html';
+        }
+      });
+    }
   });
 </script>
 </body></html>

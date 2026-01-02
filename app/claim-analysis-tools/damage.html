@@ -5,167 +5,169 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Damage Assessment Calculator - ClaimNavigatorAI</title>
     <link rel="stylesheet" href="/app/assets/css/style.css">
+    <link rel="stylesheet" href="/app/css/design-system.css">
     <style>
-        .results {
-            display: none;
-            background: #f5f7fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border: 1px solid #e1e5e9;
-        }
-        .error {
-            color: #dc2626;
-            background: #fef2f2;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #fecaca;
-        }
-        .input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-        .input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        textarea.input {
-            min-height: 120px;
-            resize: vertical;
-        }
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .damage-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
-        }
-        .damage-table th,
-        .damage-table td {
-            border: 1px solid #d1d5db;
-            padding: 8px;
-            text-align: left;
-        }
-        .damage-table th {
-            background: #f9fafb;
-            font-weight: 600;
-        }
-        .add-row-btn {
-            background: #6b7280;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .add-row-btn:hover {
-            background: #4b5563;
-        }
-        .remove-row-btn {
-            background: #dc2626;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        .remove-row-btn:hover {
-            background: #b91c1c;
-        }
+      .results {
+        display: none;
+        background: #f5f7fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 15px;
+        border: 1px solid #e1e5e9;
+      }
+      .error {
+        color: #dc2626;
+        background: #fef2f2;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #fecaca;
+      }
+      .input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+      .input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+      textarea.input {
+        min-height: 120px;
+        resize: vertical;
+      }
+      .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .damage-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15px;
+      }
+      .damage-table th,
+      .damage-table td {
+        border: 1px solid #d1d5db;
+        padding: 8px;
+        text-align: left;
+      }
+      .damage-table th {
+        background: #f9fafb;
+        font-weight: 600;
+      }
+      .add-row-btn {
+        background: #6b7280;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .add-row-btn:hover {
+        background: #4b5563;
+      }
+      .remove-row-btn {
+        background: #dc2626;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+      .remove-row-btn:hover {
+        background: #b91c1c;
+      }
     </style>
-    <script src="/assets/js/navigation-template.js"></script>
+    <script src="/app/assets/js/navigation-template.js"></script>
 </head>
-<body>
-    <script>createNavigationBar();</script>
+<body class="tool-page">
+  <script>createNavigationBar('Damage Assessment');</script>
 
-    
-    <main class="container">
-        <div class="card">
-            <h2>🏚️ Damage Assessment Calculator</h2>
-            <p>Calculate repair costs, replacement values, and document damage with professional assessment tools.</p>
-            
-            <label>Damage Description:
-                <textarea id="damageDesc" class="input" placeholder="Describe the damage in detail..."></textarea>
-            </label>
+  <section class="hero-section hero-navy">
+    <div class="hero-content">
+      <h1>Damage Assessment Calculator</h1>
+      <p class="subtitle">Clear guidance for this step of your claim.</p>
+    </div>
+  </section>
 
-            <label>Damage Types:</label>
-            <div class="checkbox-group">
-                <div class="checkbox-item">
-                    <input type="checkbox" id="damage-fire" value="fire">
-                    <label for="damage-fire">Fire</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="damage-water" value="water">
-                    <label for="damage-water">Water</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="damage-wind" value="wind">
-                    <label for="damage-wind">Wind</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="damage-theft" value="theft">
-                    <label for="damage-theft">Theft</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="damage-vandalism" value="vandalism">
-                    <label for="damage-vandalism">Vandalism</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="damage-other" value="other">
-                    <label for="damage-other">Other</label>
-                </div>
-            </div>
+  <main>
+    <section class="page-section">
+      <div class="frosted-card">
+        <h2>🏚️ Damage Assessment Calculator</h2>
+        <p>Calculate repair costs, replacement values, and document damage with professional assessment tools.</p>
 
-            <label>Damage Items:</label>
-            <table class="damage-table">
-                <thead>
-                    <tr>
-                        <th>Item Description</th>
-                        <th>Quantity</th>
-                        <th>Unit Cost</th>
-                        <th>Total</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="damage-items">
-                    <tr>
-                        <td><input type="text" class="input" placeholder="Item description"></td>
-                        <td><input type="number" class="input" placeholder="Qty" step="0.01" onchange="calculateRowTotal(this)"></td>
-                        <td><input type="number" class="input" placeholder="Cost" step="0.01" onchange="calculateRowTotal(this)"></td>
-                        <td><span class="total">$0.00</span></td>
-                        <td><button type="button" class="remove-row-btn" onclick="removeDamageRow(this)">×</button></td>
-                    </tr>
-                </tbody>
-            </table>
-            <button type="button" class="add-row-btn" onclick="addDamageRow()">+ Add Item</button>
+        <label>Damage Description:
+          <textarea id="damageDesc" class="input" placeholder="Describe the damage in detail..."></textarea>
+        </label>
 
-            <button class="button primary" onclick="runAnalysis('damage')">Run Damage Analysis</button>
-            <div id="result-damage" class="results"></div>
+        <label>Damage Types:</label>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <input type="checkbox" id="damage-fire" value="fire">
+            <label for="damage-fire">Fire</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="damage-water" value="water">
+            <label for="damage-water">Water</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="damage-wind" value="wind">
+            <label for="damage-wind">Wind</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="damage-theft" value="theft">
+            <label for="damage-theft">Theft</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="damage-vandalism" value="vandalism">
+            <label for="damage-vandalism">Vandalism</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="damage-other" value="other">
+            <label for="damage-other">Other</label>
+          </div>
         </div>
-    </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>© 2025 ClaimNavigatorAI • Damage Assessment Tool</p>
-        </div>
-    </footer>
+        <label>Damage Items:</label>
+        <table class="damage-table">
+          <thead>
+            <tr>
+              <th>Item Description</th>
+              <th>Quantity</th>
+              <th>Unit Cost</th>
+              <th>Total</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="damage-items">
+            <tr>
+              <td><input type="text" class="input" placeholder="Item description"></td>
+              <td><input type="number" class="input" placeholder="Qty" step="0.01" onchange="calculateRowTotal(this)"></td>
+              <td><input type="number" class="input" placeholder="Cost" step="0.01" onchange="calculateRowTotal(this)"></td>
+              <td><span class="total">$0.00</span></td>
+              <td><button type="button" class="remove-row-btn" onclick="removeDamageRow(this)">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button type="button" class="add-row-btn" onclick="addDamageRow()">+ Add Item</button>
+
+        <button class="button primary" onclick="runAnalysis('damage')">Run Damage Analysis</button>
+        <div id="result-damage" class="results"></div>
+      </div>
+    </section>
+  </main>
 
     <script>
         // Damage table management
