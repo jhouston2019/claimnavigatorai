@@ -3700,46 +3700,27 @@
       12: {
         label: 'STEP 12 OF 13',
         title: 'Respond to Carrier Requests',
-        subtitle: 'Log carrier requests and use AI to analyze legitimacy and prepare responses. Track all deadlines to avoid delays.',
+        subtitle: 'Log, evaluate, and respond to insurance company requests. AI analyzes legitimacy, drafts responses, and tracks deadlines to prevent delays or rights waiver.',
         beforeYouContinue: {
           ifSkipped: 'Your claim will be delayed or denied.',
           prevents: 'Processing delays and compliance violations.',
           doNot: 'Proceed to Step 13 until all carrier requests have been addressed and responses submitted. Ignoring requests can void coverage.'
         },
-        tasksIntro: 'This step is ongoing. Each time the carrier requests information, log it here. AI evaluates legitimacy and drafts responses based on prior reports.',
+        tasksIntro: 'Insurance companies routinely request additional information during the claim process. This step evaluates the legitimacy of each request and prepares an appropriate, policy-based response.\n\nNote: This step remains active throughout the claim. Each new request should be logged and reviewed individually.',
         tasks: [
           { 
-            title: 'Log Carrier Request', 
-            description: 'Each time you receive a request for information from the carrier, upload or enter the request details including what is being requested and the deadline.',
-            tool: { id: 'request-logger', title: 'Carrier Request Logger', classification: 'required' }
-          },
-          { 
-            title: 'System Analyzes Request', 
-            description: 'The AI automatically analyzes the carrier request for legitimacy, evaluates reasonableness under policy terms, tracks deadlines, and drafts a recommended response. It generates a Carrier Response Analysis Report. No action required.',
-            tool: { id: 'response-report-engine', title: 'AI Request Analysis Engine (Automatic)', classification: 'required' }
-          },
-          { 
-            title: 'Review Carrier Response Analysis Report', 
-            description: 'Review the AI-generated Carrier Response Analysis Report showing: Request Legitimacy Analysis, Response Deadline Tracking, AI-Drafted Response, and Delay or Bad Faith Flags.',
-            tool: { id: 'response-report-viewer', title: 'View Carrier Response Analysis Report', classification: 'required' }
-          },
-          { 
-            title: 'Submit Response', 
-            description: 'Upload supporting documents, finalize response letter, and submit to carrier with proof of receipt.',
-            tool: { id: 'response-submitter', title: 'Response Submission Tool', classification: 'required' }
-          },
-          { 
-            title: 'Track Request Status (Ongoing)', 
-            description: 'Monitor all open carrier requests, deadlines, and response status. This step continues until all requests are resolved.',
-            tool: { id: 'request-status-tracker', title: 'Request Status Dashboard', classification: 'required' }
+            title: 'Log Request & Generate Response Strategy', 
+            description: 'Enter or upload carrier request details (email, letter, portal message). The AI automatically analyzes legitimacy, evaluates policy basis, assesses response scope, identifies overproduction risks, and generates a Carrier Response Analysis Report with recommended actions.',
+            tool: { id: 'carrier-response', title: 'Carrier Request Response Engine', classification: 'primary' }
           }
         ],
         additionalTools: [
-          { id: 'carrier-response-letter', title: 'Carrier Response Letter' },
-          { id: 'delay-notice-letter', title: 'Delay / Non-Compliance Notice Letter' },
-          { id: 'objection-letter', title: 'Request Objection Letter' },
-          { id: 'download-response-log', title: 'Download Response Log' }
-        ]
+          { id: 'carrier-request-logger', title: 'Carrier Request Logger' },
+          { id: 'deadline-response-tracker', title: 'Deadline & Response Tracker' },
+          { id: 'response-letter-generator', title: 'Response Letter Generator' },
+          { id: 'document-production-checklist', title: 'Document Production Checklist' }
+        ],
+        acknowledgmentText: 'Acknowledge Carrier Response Review & Continue'
       },
       13: {
         label: 'STEP 13 OF 13',
@@ -3958,7 +3939,7 @@
         8: 'contents-valuation',
         9: 'coverage-alignment',
         10: 'claim-package-assembly',
-        12: 'response-report-engine',
+        12: 'carrier-response',
         13: 'supplement-report-engine'
       };
       
@@ -4985,7 +4966,7 @@
         8: 'contents-valuation',
         9: 'coverage-alignment',
         10: 'claim-package-assembly',
-        12: 'response-report-engine',
+        12: 'carrier-response',
         13: 'supplement-report-engine'
       };
       
