@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="storage/claimStorage.js"></script>
   <script src="ai-expert-config.js"></script>
   <style>
     * {
@@ -3900,11 +3901,10 @@
     let completedSteps = [];
     let taskCompletion = {}; // Track which tasks are completed per step
 
-    // Load saved state from localStorage
+    // Load saved state from storage
     function loadSavedState() {
-      const saved = localStorage.getItem('claimNavigatorState');
-      if (saved) {
-        const state = JSON.parse(saved);
+      const state = getClaimData('claimNavigatorState');
+      if (state) {
         currentStep = state.currentStep || 1;
         completedSteps = state.completedSteps || [];
         taskCompletion = state.taskCompletion || {};
@@ -3921,7 +3921,7 @@
       }
     }
 
-    // Save state to localStorage
+    // Save state to storage
     function saveState() {
       const state = {
         currentStep: currentStep,
@@ -3937,7 +3937,7 @@
         },
         lastSaved: new Date().toISOString()
       };
-      localStorage.setItem('claimNavigatorState', JSON.stringify(state));
+      saveClaimData('claimNavigatorState', state);
     }
 
     // Calculate real progress based on completed tasks
@@ -4042,14 +4042,13 @@
     // Get stored tool output
     function getToolOutput(stepNum, toolId) {
       const key = `claim_step_${stepNum}_${toolId}_output`;
-      const stored = localStorage.getItem(key);
-      return stored ? JSON.parse(stored) : null;
+      return getClaimData(key);
     }
     
     // Save tool output
     function saveToolOutput(stepNum, toolId, output) {
       const key = `claim_step_${stepNum}_${toolId}_output`;
-      localStorage.setItem(key, JSON.stringify(output));
+      saveClaimData(key, output);
     }
     
     // Check if primary tool output exists
@@ -4908,6 +4907,18 @@
       return reportNames[stepNum] || `Step_${stepNum}_Report`;
     }
     
+    // Log export activity
+    function logExportActivity(stepNum, reportName, type) {
+      const log = getClaimData('exportActivityLog') || [];
+      log.push({
+        step: stepNum,
+        reportName: reportName,
+        type: type,
+        timestamp: new Date().toISOString()
+      });
+      saveClaimData('exportActivityLog', log);
+    }
+    
     // Export report as PDF
     function exportReportPDF(stepNum) {
       const output = getToolOutput(stepNum, getPrimaryToolId(stepNum));
@@ -5014,6 +5025,9 @@
       // Save PDF
       const filename = `ClaimNavigator_Step_${stepNum}_${reportName}.pdf`;
       doc.save(filename);
+      
+      // Log export activity
+      logExportActivity(stepNum, reportName, 'PDF');
     }
     
     // Export report as DOC
@@ -5063,6 +5077,9 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      
+      // Log export activity
+      logExportActivity(stepNum, reportName, 'DOC');
     }
     
     // Get primary tool ID for step

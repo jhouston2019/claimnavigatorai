@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Audit View - ClaimNavigatorAI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f5f5;
+      color: #1a202c;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 32px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 32px;
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1e3a5f;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .overview-card {
+      background: #f8f9fa;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 16px;
+    }
+
+    .overview-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .overview-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a202c;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+    }
+
+    th {
+      background: #f8f9fa;
+      padding: 12px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 14px;
+    }
+
+    tr:hover {
+      background: #f8f9fa;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-complete {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-incomplete {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      background: white;
+      color: #1e3a5f;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: #f3f4f6;
+      border-color: #9ca3af;
+    }
+
+    .tool-list {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .log-entry {
+      padding: 10px 12px;
+      background: #f8f9fa;
+      border-left: 3px solid #3b82f6;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .log-timestamp {
+      font-size: 11px;
+      color: #64748b;
+      margin-left: 8px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #9ca3af;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Claim Audit View</h1>
+    <p class="subtitle">Read-only oversight view for claim activity, step status, reports, and exports</p>
+
+    <div class="section">
+      <div class="section-title">Claim Overview</div>
+      <div class="overview-grid">
+        <div class="overview-card">
+          <div class="overview-label">Claim ID</div>
+          <div class="overview-value" id="claimId">—</div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-label">Date Created</div>
+          <div class="overview-value" id="dateCreated">—</div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-label">Last Activity</div>
+          <div class="overview-value" id="lastActivity">—</div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-label">Steps Completed</div>
+          <div class="overview-value" id="stepsCompleted">0 / 13</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Step Status Table</div>
+      <table id="stepStatusTable">
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th>Step Name</th>
+            <th>Primary Report Generated</th>
+            <th>Supporting Tools Used</th>
+            <th>Last Updated</th>
+          </tr>
+        </thead>
+        <tbody id="stepStatusBody">
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Reports Generated</div>
+      <div id="reportsContainer"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Export Activity Log</div>
+      <div id="exportLogContainer"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Tool Activity Log</div>
+      <div id="toolLogContainer"></div>
+    </div>
+  </div>
+
+  <script src="../storage/claimStorage.js"></script>
+  <script>
+    const STEP_NAMES = {
+      1: 'Policy Review',
+      2: 'Policyholder Duties & Timelines',
+      3: 'Document the Damage',
+      4: 'Get Professional Repair Estimate',
+      5: 'Estimate Analysis & Comparison',
+      6: 'ALE & Temporary Housing',
+      7: 'Build Contents Inventory',
+      8: 'Contents Valuation',
+      9: 'Align Loss With Policy Coverage',
+      10: 'Assemble the Claim Package',
+      11: 'Submit the Claim',
+      12: 'Respond to Carrier Requests',
+      13: 'Correct Underpayments & Supplements'
+    };
+
+    const PRIMARY_TOOLS = {
+      1: 'policy-intelligence-engine',
+      2: 'compliance-review',
+      3: 'damage-documentation',
+      4: 'estimate-quality-engine',
+      5: 'comparison-report-engine',
+      6: 'ale-report-engine',
+      7: 'inventory-report-engine',
+      8: 'valuation-report-engine',
+      9: 'alignment-report-engine',
+      10: 'package-report-engine',
+      12: 'response-report-engine',
+      13: 'supplement-report-engine'
+    };
+
+    function loadClaimOverview() {
+      const state = getClaimData('claimNavigatorState');
+      const claimId = getCurrentSessionId() || 'default-session';
+      
+      let dateCreated = '—';
+      let lastActivity = '—';
+      let stepsCompleted = 0;
+
+      if (state) {
+        if (state.lastSaved) {
+          lastActivity = new Date(state.lastSaved).toLocaleString();
+        }
+        if (state.completedSteps) {
+          stepsCompleted = state.completedSteps.length;
+        }
+      }
+
+      // Try to find earliest timestamp from claim data
+      const claimKeys = listClaimData('claim_step_');
+      const timestamps = claimKeys
+        .map(k => {
+          try {
+            const data = getClaimData(k);
+            return data?.metadata?.generatedAt || data?.metadata?.savedAt || data?.timestamp;
+          } catch {
+            return null;
+          }
+        })
+        .filter(t => t);
+
+      if (timestamps.length > 0) {
+        timestamps.sort();
+        dateCreated = new Date(timestamps[0]).toLocaleString();
+      }
+
+      document.getElementById('claimId').textContent = claimId;
+      document.getElementById('dateCreated').textContent = dateCreated;
+      document.getElementById('lastActivity').textContent = lastActivity;
+      document.getElementById('stepsCompleted').textContent = `${stepsCompleted} / 13`;
+    }
+
+    function loadStepStatus() {
+      const tbody = document.getElementById('stepStatusBody');
+      tbody.innerHTML = '';
+
+      for (let step = 1; step <= 13; step++) {
+        const row = document.createElement('tr');
+        
+        const primaryToolId = PRIMARY_TOOLS[step];
+        const primaryKey = `claim_step_${step}_${primaryToolId}_output`;
+        const primaryOutput = getClaimData(primaryKey);
+        
+        const hasPrimary = primaryOutput !== null;
+        
+        // Find supporting tools
+        const allClaimKeys = listClaimData(`claim_step_${step}_`);
+        const supportingTools = allClaimKeys
+          .filter(k => k !== primaryKey)
+          .map(k => {
+            const parts = k.split('_');
+            return parts.slice(3, -1).join('_');
+          })
+          .filter(t => t);
+
+        let lastUpdated = '—';
+        if (hasPrimary) {
+          try {
+            if (primaryOutput.metadata?.generatedAt) {
+              lastUpdated = new Date(primaryOutput.metadata.generatedAt).toLocaleString();
+            } else if (primaryOutput.metadata?.savedAt) {
+              lastUpdated = new Date(primaryOutput.metadata.savedAt).toLocaleString();
+            } else if (primaryOutput.timestamp) {
+              lastUpdated = new Date(primaryOutput.timestamp).toLocaleString();
+            }
+          } catch {}
+        }
+
+        row.innerHTML = `
+          <td><strong>Step ${step}</strong></td>
+          <td>${STEP_NAMES[step]}</td>
+          <td>
+            <span class="status-badge ${hasPrimary ? 'status-complete' : 'status-incomplete'}">
+              ${hasPrimary ? 'Generated' : 'Not Generated'}
+            </span>
+          </td>
+          <td class="tool-list">${supportingTools.length > 0 ? supportingTools.join(', ') : '—'}</td>
+          <td>${lastUpdated}</td>
+        `;
+        
+        tbody.appendChild(row);
+      }
+    }
+
+    function loadReports() {
+      const container = document.getElementById('reportsContainer');
+      container.innerHTML = '';
+
+      let hasReports = false;
+
+      for (let step = 1; step <= 13; step++) {
+        const primaryToolId = PRIMARY_TOOLS[step];
+        if (!primaryToolId) continue;
+
+        const primaryKey = `claim_step_${step}_${primaryToolId}_output`;
+        const primaryOutput = getClaimData(primaryKey);
+
+        if (primaryOutput) {
+          hasReports = true;
+          const timestamp = primaryOutput.metadata?.generatedAt || primaryOutput.metadata?.savedAt || primaryOutput.timestamp || '—';
+          const reportName = getReportName(step);
+
+          const reportCard = document.createElement('div');
+          reportCard.style.cssText = 'background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 6px; padding: 16px; margin-bottom: 12px;';
+          reportCard.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-weight: 600; color: #1e3a5f; margin-bottom: 4px;">
+                  Step ${step}: ${reportName}
+                </div>
+                <div style="font-size: 12px; color: #64748b;">
+                  Generated: ${timestamp ? new Date(timestamp).toLocaleString() : '—'}
+                </div>
+              </div>
+              <div>
+                <button class="btn" onclick="viewReport(${step})">View Report</button>
+                <button class="btn" onclick="exportPDF(${step})">Download PDF</button>
+                <button class="btn" onclick="exportDOC(${step})">Download DOC</button>
+              </div>
+            </div>
+          `;
+          container.appendChild(reportCard);
+        }
+      }
+
+      if (!hasReports) {
+        container.innerHTML = '<div class="empty-state">No reports generated yet</div>';
+      }
+    }
+
+    function loadExportLog() {
+      const container = document.getElementById('exportLogContainer');
+      const exportLog = getClaimData('exportActivityLog');
+      
+      if (!exportLog || exportLog.length === 0) {
+        container.innerHTML = '<div class="empty-state">No export activity recorded</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+
+      [...exportLog].reverse().forEach(log => {
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `
+          <strong>Step ${log.step}</strong>: ${log.reportName} 
+          <span style="color: #3b82f6; font-weight: 600;">${log.type}</span>
+          <span class="log-timestamp">${new Date(log.timestamp).toLocaleString()}</span>
+        `;
+        container.appendChild(entry);
+      });
+    }
+
+    function loadToolLog() {
+      const container = document.getElementById('toolLogContainer');
+      const allClaimKeys = listClaimData('claim_step_');
+      const toolActivities = [];
+
+      allClaimKeys.forEach(key => {
+        try {
+          const data = getClaimData(key);
+          const parts = key.split('_');
+          const step = parts[2];
+          const toolName = parts.slice(3, -1).join('_');
+          const timestamp = data?.metadata?.generatedAt || data?.metadata?.savedAt || data?.timestamp;
+
+          if (timestamp) {
+            toolActivities.push({
+              tool: toolName,
+              step: step,
+              timestamp: timestamp
+            });
+          }
+        } catch {}
+      });
+
+      if (toolActivities.length === 0) {
+        container.innerHTML = '<div class="empty-state">No tool activity recorded</div>';
+        return;
+      }
+
+      toolActivities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      container.innerHTML = '';
+
+      toolActivities.forEach(activity => {
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `
+          <strong>${activity.tool}</strong> (Step ${activity.step})
+          <span class="log-timestamp">${new Date(activity.timestamp).toLocaleString()}</span>
+        `;
+        container.appendChild(entry);
+      });
+    }
+
+    function getReportName(stepNum) {
+      const names = {
+        1: 'Policy Intelligence Report',
+        2: 'Compliance Status Report',
+        3: 'Damage Documentation Report',
+        4: 'Estimate Quality Report',
+        5: 'Estimate Comparison Report',
+        6: 'ALE Compliance Report',
+        7: 'Inventory Completeness Report',
+        8: 'Contents Valuation Report',
+        9: 'Coverage Alignment Report',
+        10: 'Claim Package Readiness Report',
+        12: 'Carrier Response Analysis Report',
+        13: 'Supplement Strategy Report'
+      };
+      return names[stepNum] || `Step ${stepNum} Report`;
+    }
+
+    function viewReport(stepNum) {
+      window.open(`../step-by-step-claim-guide.html?step=${stepNum}`, '_blank');
+    }
+
+    function exportPDF(stepNum) {
+      alert(`PDF export for Step ${stepNum} would be triggered here (reusing existing export logic)`);
+    }
+
+    function exportDOC(stepNum) {
+      alert(`DOC export for Step ${stepNum} would be triggered here (reusing existing export logic)`);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      loadClaimOverview();
+      loadStepStatus();
+      loadReports();
+      loadExportLog();
+      loadToolLog();
+    });
+  </script>
+</body>
+</html>
+
