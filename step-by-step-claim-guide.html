@@ -3386,13 +3386,13 @@
       2: {
         label: 'STEP 2 OF 13',
         title: 'Policyholder Duties & Timelines',
-        subtitle: 'Review your required duties including mitigation, timely notice, cooperation, property protection, and policy deadlines. Failure to comply can reduce or void coverage.',
+        subtitle: 'Failure to comply with policy duties or deadlines can reduce or void coverage. This step evaluates your compliance based on your policy terms.',
         beforeYouContinue: {
           ifSkipped: 'You may violate policy requirements and lose coverage.',
           prevents: 'Coverage denials due to non-compliance with policy duties.',
           doNot: 'Proceed to Step 3 until you understand all requirements and deadlines. Violations can void coverage.'
         },
-        tasksIntro: 'Your policy requires specific actions and imposes strict deadlines. This step consolidates all duties and deadlines identified in your Policy Intelligence Report from Step 1.',
+        tasksIntro: 'Failure to comply with policy duties or deadlines can reduce or void coverage. This step evaluates your compliance based on your policy terms.',
         tasks: [
           { 
             title: 'System Auto-Imports Duties & Deadlines from Step 1', 
@@ -3400,43 +3400,43 @@
             tool: { id: 'compliance-auto-import', title: 'Auto-Import Duties & Deadlines (Automatic)', classification: 'required' }
           },
           { 
-            title: 'System Evaluates Compliance Status', 
-            description: 'The AI automatically evaluates your compliance with each duty and generates a Policyholder Compliance Status Report showing: Compliant, At Risk, or Non-Compliant status for each requirement.',
-            tool: { id: 'compliance-report-engine', title: 'AI Compliance Evaluation (Automatic)', classification: 'required' }
+            title: 'Use Compliance Review Tool', 
+            description: 'Run the Compliance Review Tool to evaluate your compliance with each duty and generate a Compliance Status Report.',
+            tool: { id: 'compliance-review', title: 'Compliance Review Tool', classification: 'required' }
           },
           { 
             title: 'Review Compliance Status Report', 
-            description: 'Review your Policyholder Compliance Status Report showing status per duty: Mitigation Compliance, Notice of Loss, Cooperation Requirements, Property Protection, Deadline Compliance Matrix, and required corrective actions.',
+            description: 'Review your Compliance Status Report showing status per duty: Compliant, At Risk, or Non-Compliant status for each requirement with required corrective actions.',
             tool: { id: 'compliance-report-viewer', title: 'View Compliance Status Report', classification: 'required' }
           },
           { 
-            title: 'Acknowledge Understanding of Duties & Deadlines', 
+            title: 'Acknowledge Compliance Review & Continue', 
             description: 'Confirm you understand all policyholder duties, deadlines, and compliance requirements. This acknowledgment is required to proceed to Step 3.',
-            tool: { id: 'step2-acknowledgment', title: 'Acknowledge & Unlock Step 3', classification: 'required' }
+            tool: { id: 'step2-acknowledgment', title: 'Acknowledge Compliance Review & Continue', classification: 'required' }
           }
         ],
         additionalTools: [
-          { id: 'notice-confirmation-letter', title: 'Notice of Loss Confirmation Letter' },
-          { id: 'compliance-acknowledgment-letter', title: 'Compliance Acknowledgment Letter' },
-          { id: 'mitigation-submission-letter', title: 'Mitigation Documentation Submission Letter' },
-          { id: 'download-compliance-report', title: 'Download Compliance Status Report' }
+          { id: 'deadline-calculator', title: 'Deadline Calculator' },
+          { id: 'mitigation-documentation-tool', title: 'Mitigation Documentation Tool' },
+          { id: 'proof-of-loss-tracker', title: 'Proof of Loss Tracker' },
+          { id: 'euo-sworn-statement-guide', title: 'EUO / Sworn Statement Guide' }
         ]
       },
       3: {
         label: 'STEP 3 OF 13',
         title: 'Document the Damage',
-        subtitle: 'Upload photos and videos of all damage. AI will organize, label, and analyze your documentation to ensure completeness.',
+        subtitle: 'Insurance claims are decided based on evidence. This step organizes and evaluates your damage documentation for completeness and quality.',
         beforeYouContinue: {
           ifSkipped: 'You will have no evidence of your loss.',
           prevents: 'Claim denial due to insufficient documentation.',
           doNot: 'Proceed to Step 4 until all damage is photographed and the AI completeness check confirms adequate documentation.'
         },
-        tasksIntro: 'Upload all damage documentation. The AI will organize, label, and analyze completeness.',
+        tasksIntro: 'Insurance claims are decided based on evidence. This step organizes and evaluates your damage documentation for completeness and quality.',
         tasks: [
           { 
-            title: 'Upload All Damage Photos & Videos', 
+            title: 'Use Damage Documentation Tool', 
             description: 'Upload all photos and videos showing structural damage, contents damage, and cause of loss. Include multiple angles and close-ups of each damaged area.',
-            tool: { id: 'damage-uploader', title: 'Damage Photo & Video Uploader', classification: 'required' }
+            tool: { id: 'damage-documentation', title: 'Damage Documentation Tool', classification: 'required' }
           },
           { 
             title: 'System Organizes & Analyzes Documentation', 
@@ -3451,19 +3451,18 @@
           { 
             title: 'Upload Additional Photos (If Gaps Identified)', 
             description: 'If the AI completeness check identified documentation gaps, upload additional photos to address missing areas or angles.',
-            tool: { id: 'additional-upload', title: 'Upload Additional Photos', classification: 'required' }
+            tool: { id: 'damage-documentation', title: 'Upload Additional Photos', classification: 'required' }
           },
           { 
-            title: 'Acknowledge Documentation Complete', 
+            title: 'Acknowledge Damage Documentation & Continue', 
             description: 'Confirm all damage is adequately documented and the AI completeness check shows no critical gaps. This acknowledgment is required to proceed to Step 4.',
-            tool: { id: 'step3-acknowledgment', title: 'Acknowledge & Unlock Step 4', classification: 'required' }
+            tool: { id: 'step3-acknowledgment', title: 'Acknowledge Damage Documentation & Continue', classification: 'required' }
           }
         ],
         additionalTools: [
-          { id: 'damage-submission-letter', title: 'Damage Documentation Submission Letter' },
-          { id: 'evidence-supplement-notice', title: 'Evidence Supplement Notice' },
-          { id: 'photo-standards-guide', title: 'Photo Standards Guide' },
-          { id: 'download-damage-report', title: 'Download Damage Documentation Report' }
+          { id: 'photo-upload-organizer', title: 'Photo Upload Organizer' },
+          { id: 'damage-labeling-tool', title: 'Damage Labeling Tool' },
+          { id: 'missing-evidence-identifier', title: 'Missing Evidence Identifier' }
         ]
       },
       4: {
@@ -4058,21 +4057,26 @@
       const step = stepData[stepNum];
       if (!step || !step.tasks) return false;
       
-      // Find primary tool (first automatic tool that generates report)
-      const primaryTask = step.tasks.find(task => 
-        task.tool && (
-          task.tool.id.includes('report-engine') ||
-          task.tool.id.includes('intelligence-engine') ||
-          task.tool.id.includes('compliance-auto-import') ||
-          task.tool.id.includes('valuation-report-engine') ||
-          task.tool.id.includes('alignment-report-engine') ||
-          task.tool.id.includes('package-report-engine')
-        )
-      );
+      // Define primary tools by step
+      const primaryToolIds = {
+        1: 'policy-intelligence-engine',
+        2: 'compliance-review',
+        3: 'damage-documentation',
+        4: 'estimate-quality-engine',
+        5: 'comparison-report-engine',
+        6: 'ale-report-engine',
+        7: 'inventory-report-engine',
+        8: 'valuation-report-engine',
+        9: 'alignment-report-engine',
+        10: 'package-report-engine',
+        12: 'response-report-engine',
+        13: 'supplement-report-engine'
+      };
       
-      if (!primaryTask) return false;
+      const primaryToolId = primaryToolIds[stepNum];
+      if (!primaryToolId) return false;
       
-      const output = getToolOutput(stepNum, primaryTask.tool.id);
+      const output = getToolOutput(stepNum, primaryToolId);
       return output !== null;
     }
     
@@ -4084,12 +4088,10 @@
       let outputsHtml = '';
       
       // Check for primary report
-      const primaryTask = step.tasks.find(task => 
-        task.tool && task.tool.title.includes('(Automatic)')
-      );
+      const primaryToolId = getPrimaryToolId(stepNum);
       
-      if (primaryTask) {
-        const output = getToolOutput(stepNum, primaryTask.tool.id);
+      if (primaryToolId) {
+        const output = getToolOutput(stepNum, primaryToolId);
         if (output) {
           const reportName = getReportName(stepNum);
           outputsHtml += `
@@ -4101,7 +4103,7 @@
                 ${output.summary || 'Report completed successfully.'}
               </div>
               <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button onclick="openTool('${primaryTask.tool.id}', ${stepNum})" style="padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
+                <button onclick="openTool('${primaryToolId}', ${stepNum})" style="padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
                   View Full Report →
                 </button>
                 <button onclick="exportReportPDF(${stepNum})" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
@@ -5065,14 +5067,22 @@
     
     // Get primary tool ID for step
     function getPrimaryToolId(stepNum) {
-      const step = stepData[stepNum];
-      if (!step || !step.tasks) return null;
+      const primaryToolIds = {
+        1: 'policy-intelligence-engine',
+        2: 'compliance-review',
+        3: 'damage-documentation',
+        4: 'estimate-quality-engine',
+        5: 'comparison-report-engine',
+        6: 'ale-report-engine',
+        7: 'inventory-report-engine',
+        8: 'valuation-report-engine',
+        9: 'alignment-report-engine',
+        10: 'package-report-engine',
+        12: 'response-report-engine',
+        13: 'supplement-report-engine'
+      };
       
-      const primaryTask = step.tasks.find(task => 
-        task.tool && task.tool.title.includes('(Automatic)')
-      );
-      
-      return primaryTask ? primaryTask.tool.id : null;
+      return primaryToolIds[stepNum] || null;
     }
     
     // Handle return from tool
