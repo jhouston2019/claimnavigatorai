@@ -3544,85 +3544,50 @@
       7: {
         label: 'STEP 7 OF 13',
         title: 'Build Contents Inventory',
-        subtitle: 'Enter all damaged contents item-by-item. AI will suggest categories, validate completeness, and organize your inventory by room.',
+        subtitle: 'Create a complete inventory of damaged personal property. The AI validates completeness and identifies missing categories or rooms.',
         beforeYouContinue: {
           ifSkipped: 'You will lose thousands in contents value.',
           prevents: 'Underpayment of personal property claims.',
-          doNot: 'Proceed to Step 8 until your contents inventory is complete and the AI completeness check confirms adequate coverage of all rooms.'
+          doNot: 'Proceed to Step 8 until the Inventory Completeness Report confirms adequate coverage of all rooms and categories.'
         },
-        tasksIntro: 'Build a comprehensive room-by-room inventory of all damaged contents. The AI will identify gaps to ensure nothing is missed.',
+        tasksIntro: 'Insurance companies only pay for items that are properly listed and documented. This step ensures your contents inventory is complete before valuation.',
         tasks: [
           { 
-            title: 'Enter Contents Item-by-Item', 
-            description: 'Enter every damaged item with description, quantity, quality/grade, age, and condition. Work systematically through each room.',
-            tool: { id: 'contents-entry-system', title: 'Contents Inventory Entry System', classification: 'required' }
-          },
-          { 
-            title: 'System Validates Inventory Completeness', 
-            description: 'The AI automatically validates your contents inventory, identifies missing categories and gaps, and generates a Contents Inventory Completeness Report. No action required.',
-            tool: { id: 'inventory-report-engine', title: 'AI Contents Inventory Validation (Automatic)', classification: 'required' }
-          },
-          { 
-            title: 'Review Completeness Report', 
-            description: 'Review the AI-generated Completeness Report showing: Room-by-Room Inventory Status, Category Distribution, Missing Item Detection, and Inventory Completeness Score.',
-            tool: { id: 'inventory-report-viewer', title: 'View Completeness Report', classification: 'required' }
-          },
-          { 
-            title: 'Add Missing Items (If Gaps Identified)', 
-            description: 'If the AI completeness check identified potentially missed items or rooms, add any additional damaged contents to your inventory.',
-            tool: { id: 'add-items', title: 'Add Additional Items', classification: 'required' }
-          },
-          { 
-            title: 'Acknowledge Inventory Complete', 
-            description: 'Confirm your contents inventory is complete and includes all damaged personal property. This acknowledgment is required to proceed to Step 8.',
-            tool: { id: 'step7-acknowledgment', title: 'Acknowledge & Unlock Step 8', classification: 'required' }
+            title: 'Enter Items & Validate Completeness', 
+            description: 'Enter all damaged items with description, room/location, quantity, damage status, and photos/receipts if available. The AI automatically validates completeness, identifies missing categories and rooms, and generates an Inventory Completeness Report.',
+            tool: { id: 'contents-inventory', title: 'Contents Inventory Tool', classification: 'primary' }
           }
         ],
         additionalTools: [
-          { id: 'contents-submission-letter', title: 'Contents Inventory Submission Letter' },
-          { id: 'category-guide', title: 'Contents Category Guide' },
-          { id: 'quality-guide', title: 'Quality Grade Reference' },
-          { id: 'download-inventory-report', title: 'Download Inventory Report' }
-        ]
+          { id: 'room-by-room-prompt-tool', title: 'Room-by-Room Prompt Tool' },
+          { id: 'category-coverage-checker', title: 'Category Coverage Checker' },
+          { id: 'contents-documentation-helper', title: 'Contents Documentation Helper' }
+        ],
+        acknowledgmentText: 'Acknowledge Contents Inventory & Continue'
       },
       8: {
         label: 'STEP 8 OF 13',
-        title: 'Contents Valuation (ACV / RCV)',
-        subtitle: 'AI automatically values all contents from your inventory. Review and adjust valuations to ensure accurate replacement costs and depreciation.',
+        title: 'Contents Valuation',
+        subtitle: 'AI calculates ACV and RCV for all inventoried contents. Review valuations, depreciation, and holdback amounts to ensure accuracy.',
         beforeYouContinue: {
           ifSkipped: 'You won\'t know the true value of your contents claim.',
           prevents: 'Accepting inadequate contents settlements.',
-          doNot: 'Proceed to Step 9 until all contents are properly valued and you have reviewed the depreciation calculations.'
+          doNot: 'Proceed to Step 9 until the Contents Valuation Report confirms accurate ACV and RCV calculations.'
         },
-        tasksIntro: 'AI will automatically calculate RCV and ACV for all items. ACV and RCV are clearly separated, with depreciation and holdback shown.',
+        tasksIntro: 'Contents claims are frequently underpaid due to depreciation errors and undervaluation. This step calculates ACV and RCV to ensure accurate reimbursement.',
         tasks: [
           { 
-            title: 'System Auto-Values All Contents', 
-            description: 'The AI automatically calculates RCV (Replacement Cost Value) and ACV (Actual Cash Value) for all items in your inventory. It generates a Contents Valuation Report with depreciation and holdback amounts. No action required.',
-            tool: { id: 'valuation-report-engine', title: 'AI Contents Valuation Engine (Automatic)', classification: 'required' }
-          },
-          { 
-            title: 'Review Contents Valuation Report', 
-            description: 'Review the AI-generated Contents Valuation Report showing: RCV Calculations, ACV Calculations, Depreciation Analysis, Holdback Recovery Amounts, and Undervaluation Flags.',
-            tool: { id: 'valuation-report-viewer', title: 'View Contents Valuation Report', classification: 'required' }
-          },
-          { 
-            title: 'Adjust Valuations (If Needed)', 
-            description: 'If you have better pricing information or disagree with AI valuations, adjust values and provide supporting documentation.',
-            tool: { id: 'valuation-adjuster', title: 'Manual Valuation Adjustment Tool', classification: 'required' }
-          },
-          { 
-            title: 'Acknowledge Valuations Complete', 
-            description: 'Confirm all contents are properly valued with accurate RCV and ACV calculations. This acknowledgment is required to proceed to Step 9.',
-            tool: { id: 'step8-acknowledgment', title: 'Acknowledge & Unlock Step 9', classification: 'required' }
+            title: 'Auto-Value & Review Contents', 
+            description: 'The AI automatically calculates RCV (Replacement Cost Value) and ACV (Actual Cash Value) for all items from Step 7 inventory. Review valuations, adjust if needed, and generate a Contents Valuation Report showing ACV/RCV totals, depreciation summary, and holdback amounts.',
+            tool: { id: 'contents-valuation', title: 'Contents Valuation Tool', classification: 'primary' }
           }
         ],
         additionalTools: [
-          { id: 'valuation-dispute-letter', title: 'Contents Valuation Dispute Letter' },
-          { id: 'depreciation-challenge-letter', title: 'Depreciation Challenge Letter' },
-          { id: 'pricing-sources', title: 'Pricing Source Validator' },
-          { id: 'download-valuation-report', title: 'Download Valuation Report' }
-        ]
+          { id: 'depreciation-calculator', title: 'Depreciation Calculator' },
+          { id: 'comparable-item-finder', title: 'Comparable Item Finder' },
+          { id: 'replacement-cost-justification-tool', title: 'Replacement Cost Justification Tool' }
+        ],
+        acknowledgmentText: 'Acknowledge Contents Valuation & Continue'
       },
       9: {
         label: 'STEP 9 OF 13',
@@ -4007,8 +3972,8 @@
         4: 'estimate-review',
         5: 'estimate-comparison',
         6: 'ale-tracker',
-        7: 'inventory-report-engine',
-        8: 'valuation-report-engine',
+        7: 'contents-inventory',
+        8: 'contents-valuation',
         9: 'alignment-report-engine',
         10: 'package-report-engine',
         12: 'response-report-engine',
@@ -5034,8 +4999,8 @@
         4: 'estimate-review',
         5: 'estimate-comparison',
         6: 'ale-tracker',
-        7: 'inventory-report-engine',
-        8: 'valuation-report-engine',
+        7: 'contents-inventory',
+        8: 'contents-valuation',
         9: 'alignment-report-engine',
         10: 'package-report-engine',
         12: 'response-report-engine',
