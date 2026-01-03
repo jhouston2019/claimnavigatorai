@@ -3518,47 +3518,28 @@
       },
       6: {
         label: 'STEP 6 OF 13',
-        title: 'Additional Living Expense (ALE) & Temporary Housing',
-        subtitle: 'Track and document all additional living expenses. AI will categorize expenses, validate eligibility, and identify potential underpayments.',
+        title: 'ALE & Temporary Housing',
+        subtitle: 'Track and validate Additional Living Expense (ALE) benefits. The system imports ALE rules from Step 1, validates expenses, and monitors remaining limits.',
         beforeYouContinue: {
           ifSkipped: 'You may miss thousands in ALE reimbursement.',
           prevents: 'Lost reimbursement for temporary housing and living expenses.',
-          doNot: 'Proceed to Step 7 until you have reviewed ALE eligibility and begun expense tracking. Pay nothing out of pocket without documenting.'
+          doNot: 'Proceed to Step 7 until you have reviewed ALE eligibility and begun expense tracking. This step remains active throughout your claim.'
         },
-        tasksIntro: 'ALE rules were pulled from your Policy Intelligence Report (Step 1). Expense tracking remains active throughout your claim.',
+        tasksIntro: 'Additional Living Expense (ALE) coverage reimburses increased living costs while your home is uninhabitable. This step tracks, validates, and documents ALE expenses to ensure proper reimbursement.\n\nNote: This step remains active while displacement continues. You may return to update expenses at any time.',
         tasks: [
           { 
-            title: 'Review ALE Rules from Step 1', 
-            description: 'Review the ALE rules extracted from your Policy Intelligence Report including eligibility requirements, covered expenses, duration limits, and sublimits.',
-            tool: { id: 'ale-rules-review', title: 'View ALE Rules from Policy Report', classification: 'required' }
-          },
-          { 
-            title: 'Track ALE Expenses', 
-            description: 'Begin logging all additional living expenses including temporary housing, meals, transportation, storage, and other increased costs. Upload receipts and documentation as expenses are incurred.',
-            tool: { id: 'ale-expense-tracker', title: 'ALE Expense Tracking System', classification: 'required' }
-          },
-          { 
-            title: 'System Validates ALE Expenses', 
-            description: 'The AI automatically validates your ALE expenses, categorizes them, checks reasonableness, tracks duration limits, and flags potential underpayments. It generates an ALE Report. No action required.',
-            tool: { id: 'ale-report-engine', title: 'AI ALE Validation Engine (Automatic)', classification: 'required' }
-          },
-          { 
-            title: 'Review ALE Report', 
-            description: 'Review the AI-generated ALE Report showing: Eligibility Confirmation, Expense Category Validation, Reasonableness Analysis, Duration Limit Tracking, and ALE Underpayment Flags.',
-            tool: { id: 'ale-report-viewer', title: 'View ALE Report', classification: 'required' }
-          },
-          { 
-            title: 'Acknowledge ALE Tracking Active', 
-            description: 'Confirm ALE expense tracking is active and you understand the documentation requirements. ALE tracking continues throughout your claim. This acknowledgment is required to proceed to Step 7.',
-            tool: { id: 'step6-acknowledgment', title: 'Acknowledge & Unlock Step 7', classification: 'required' }
+            title: 'Track & Validate ALE Expenses', 
+            description: 'Log all additional living expenses including temporary housing, meals, transportation, laundry, storage, and other displacement costs. Upload receipts and documentation. The AI automatically validates expenses, checks eligibility, tracks remaining limits, and generates an ALE Compliance Report.',
+            tool: { id: 'ale-tracker', title: 'ALE Tracker / Validator', classification: 'primary' }
           }
         ],
         additionalTools: [
-          { id: 'ale-demand-letter', title: 'ALE Coverage Demand Letter' },
-          { id: 'ale-reimbursement-letter', title: 'ALE Expense Reimbursement Letter' },
-          { id: 'reasonableness-guide', title: 'Reasonableness Standards Guide' },
-          { id: 'download-ale-report', title: 'Download ALE Report' }
-        ]
+          { id: 'expense-upload-tool', title: 'Expense Upload Tool' },
+          { id: 'ale-eligibility-checker', title: 'ALE Eligibility Checker' },
+          { id: 'remaining-ale-limit-calculator', title: 'Remaining ALE Limit Calculator' },
+          { id: 'temporary-housing-documentation-helper', title: 'Temporary Housing Documentation Helper' }
+        ],
+        acknowledgmentText: 'Acknowledge ALE Review & Continue'
       },
       7: {
         label: 'STEP 7 OF 13',
@@ -4025,7 +4006,7 @@
         3: 'damage-documentation',
         4: 'estimate-review',
         5: 'estimate-comparison',
-        6: 'ale-report-engine',
+        6: 'ale-tracker',
         7: 'inventory-report-engine',
         8: 'valuation-report-engine',
         9: 'alignment-report-engine',
@@ -5052,7 +5033,7 @@
         3: 'damage-documentation',
         4: 'estimate-review',
         5: 'estimate-comparison',
-        6: 'ale-report-engine',
+        6: 'ale-tracker',
         7: 'inventory-report-engine',
         8: 'valuation-report-engine',
         9: 'alignment-report-engine',
