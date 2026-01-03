@@ -3617,36 +3617,27 @@
       10: {
         label: 'STEP 10 OF 13',
         title: 'Assemble the Claim Package',
-        subtitle: 'AI automatically compiles all documentation from previous steps into a professional claim submission package.',
+        subtitle: 'AI compiles all reports and documentation from Steps 1-9 into a professional, submission-ready claim package with readiness evaluation.',
         beforeYouContinue: {
           ifSkipped: 'Your claim will be incomplete and delayed.',
           prevents: 'Requests for additional information and carrier delays.',
-          doNot: 'Proceed to Step 11 until you have reviewed the complete assembled package and confirmed all sections are included.'
+          doNot: 'Proceed to Step 11 until the Claim Package Readiness Report confirms submission readiness.'
         },
-        tasksIntro: 'AI automatically assembles all your documented evidence into a single professional submission package. Completeness is verified.',
+        tasksIntro: 'Insurance claims are strongest when submitted as a complete, well-organized package. This step assembles all documentation and evaluates readiness before submission.',
         tasks: [
           { 
-            title: 'System Auto-Assembles Claim Package', 
-            description: 'The AI automatically compiles all documentation from previous steps into a complete, organized submission package. It generates a Claim Package Readiness Report. No action required.',
-            tool: { id: 'package-report-engine', title: 'AI Claim Package Assembly Engine (Automatic)', classification: 'required' }
-          },
-          { 
-            title: 'Review Claim Package Readiness Report', 
-            description: 'Review the assembled claim package including: Cover Letter & Executive Summary, Structural Damage Section, Contents Section, ALE Section, Loss Narrative, and Package Completeness Check.',
-            tool: { id: 'package-report-viewer', title: 'View Claim Package Readiness Report', classification: 'required' }
-          },
-          { 
-            title: 'Acknowledge Package Complete', 
-            description: 'Confirm the claim package is complete, accurate, and ready for submission. This acknowledgment is required to proceed to Step 11.',
-            tool: { id: 'step10-acknowledgment', title: 'Acknowledge & Unlock Step 11', classification: 'required' }
+            title: 'Auto-Assemble & Evaluate Package', 
+            description: 'The AI automatically imports all completed reports from Steps 1-9, compiles them into a professional submission package, evaluates completeness, identifies missing components and submission risks, and generates a Claim Package Readiness Report.',
+            tool: { id: 'claim-package-assembly', title: 'Claim Package Assembly Engine', classification: 'primary' }
           }
         ],
         additionalTools: [
-          { id: 'formal-submission-letter', title: 'Formal Claim Submission Letter' },
-          { id: 'edit-narrative', title: 'Edit Loss Narrative' },
-          { id: 'add-documentation', title: 'Add Additional Documentation' },
-          { id: 'download-package', title: 'Download Complete Claim Package' }
-        ]
+          { id: 'submission-checklist-generator', title: 'Submission Checklist Generator' },
+          { id: 'missing-document-identifier', title: 'Missing Document Identifier' },
+          { id: 'pre-submission-risk-review-tool', title: 'Pre-Submission Risk Review Tool' },
+          { id: 'carrier-submission-cover-letter-generator', title: 'Carrier Submission Cover Letter Generator' }
+        ],
+        acknowledgmentText: 'Acknowledge Claim Package Assembly & Continue'
       },
       11: {
         label: 'STEP 11 OF 13',
@@ -3966,7 +3957,7 @@
         7: 'contents-inventory',
         8: 'contents-valuation',
         9: 'coverage-alignment',
-        10: 'package-report-engine',
+        10: 'claim-package-assembly',
         12: 'response-report-engine',
         13: 'supplement-report-engine'
       };
@@ -4993,7 +4984,7 @@
         7: 'contents-inventory',
         8: 'contents-valuation',
         9: 'coverage-alignment',
-        10: 'package-report-engine',
+        10: 'claim-package-assembly',
         12: 'response-report-engine',
         13: 'supplement-report-engine'
       };
