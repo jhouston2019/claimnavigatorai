@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Claim Management Center - ClaimNavigatorAI</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="ai-expert-config.js"></script>
   <style>
     * {
       margin: 0;
@@ -4088,17 +4091,26 @@
       if (primaryTask) {
         const output = getToolOutput(stepNum, primaryTask.tool.id);
         if (output) {
+          const reportName = getReportName(stepNum);
           outputsHtml += `
-            <div style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 8px; padding: 16px; margin: 20px 0;">
+            <div id="primary-report-${stepNum}" style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 8px; padding: 16px; margin: 20px 0;">
               <div style="font-size: 14px; font-weight: 700; color: #166534; margin-bottom: 8px;">
                 ✅ Primary Step Report Generated
               </div>
-              <div style="font-size: 13px; color: #166534;">
+              <div style="font-size: 13px; color: #166534; margin-bottom: 12px;">
                 ${output.summary || 'Report completed successfully.'}
               </div>
-              <button onclick="openTool('${primaryTask.tool.id}', ${stepNum})" style="margin-top: 10px; padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
-                View Full Report →
-              </button>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button onclick="openTool('${primaryTask.tool.id}', ${stepNum})" style="padding: 8px 16px; background: #22c55e; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
+                  View Full Report →
+                </button>
+                <button onclick="exportReportPDF(${stepNum})" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
+                  📥 Download PDF
+                </button>
+                <button onclick="exportReportDOC(${stepNum})" style="padding: 8px 16px; background: #8b5cf6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
+                  📄 Download DOC
+                </button>
+              </div>
             </div>
           `;
         }
@@ -4875,6 +4887,194 @@
       */
     }
 
+    // Get report name for step
+    function getReportName(stepNum) {
+      const reportNames = {
+        1: 'Policy_Intelligence_Report',
+        2: 'Compliance_Status_Report',
+        3: 'Damage_Documentation_Report',
+        4: 'Estimate_Quality_Report',
+        5: 'Estimate_Comparison_Report',
+        6: 'ALE_Compliance_Report',
+        7: 'Inventory_Completeness_Report',
+        8: 'Contents_Valuation_Report',
+        9: 'Coverage_Alignment_Report',
+        10: 'Claim_Package_Readiness_Report',
+        12: 'Carrier_Response_Analysis_Report',
+        13: 'Supplement_Strategy_Report'
+      };
+      return reportNames[stepNum] || `Step_${stepNum}_Report`;
+    }
+    
+    // Export report as PDF
+    function exportReportPDF(stepNum) {
+      const output = getToolOutput(stepNum, getPrimaryToolId(stepNum));
+      if (!output) {
+        alert('No report data available to export.');
+        return;
+      }
+      
+      const reportName = getReportName(stepNum);
+      const step = stepData[stepNum];
+      const claimNumber = document.getElementById('claimNumber').textContent;
+      const dateGenerated = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      
+      // Create PDF content
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      let yPos = 20;
+      const lineHeight = 7;
+      const pageHeight = doc.internal.pageSize.height;
+      const margin = 20;
+      
+      // Header
+      doc.setFontSize(18);
+      doc.setFont(undefined, 'bold');
+      doc.text('ClaimNavigator AI', margin, yPos);
+      yPos += lineHeight + 3;
+      
+      doc.setFontSize(14);
+      doc.text(`Step ${stepNum} Report`, margin, yPos);
+      yPos += lineHeight + 2;
+      
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'normal');
+      doc.text(step.title, margin, yPos);
+      yPos += lineHeight + 5;
+      
+      // Metadata
+      doc.setFontSize(10);
+      doc.text(`Claim Number: ${claimNumber}`, margin, yPos);
+      yPos += lineHeight;
+      doc.text(`Date Generated: ${dateGenerated}`, margin, yPos);
+      yPos += lineHeight + 5;
+      
+      // Separator
+      doc.setDrawColor(200, 200, 200);
+      doc.line(margin, yPos, doc.internal.pageSize.width - margin, yPos);
+      yPos += 10;
+      
+      // Report content
+      doc.setFontSize(11);
+      
+      if (output.sections && Array.isArray(output.sections)) {
+        output.sections.forEach(section => {
+          // Check page break
+          if (yPos > pageHeight - 40) {
+            doc.addPage();
+            yPos = margin;
+          }
+          
+          // Section header
+          doc.setFont(undefined, 'bold');
+          doc.text(section.title || 'Section', margin, yPos);
+          yPos += lineHeight;
+          
+          // Section content
+          doc.setFont(undefined, 'normal');
+          const content = section.content || section.text || '';
+          const lines = doc.splitTextToSize(content, doc.internal.pageSize.width - 2 * margin);
+          
+          lines.forEach(line => {
+            if (yPos > pageHeight - 30) {
+              doc.addPage();
+              yPos = margin;
+            }
+            doc.text(line, margin, yPos);
+            yPos += lineHeight;
+          });
+          
+          yPos += 5;
+        });
+      } else if (output.content) {
+        const lines = doc.splitTextToSize(output.content, doc.internal.pageSize.width - 2 * margin);
+        lines.forEach(line => {
+          if (yPos > pageHeight - 30) {
+            doc.addPage();
+            yPos = margin;
+          }
+          doc.text(line, margin, yPos);
+          yPos += lineHeight;
+        });
+      } else if (output.summary) {
+        const lines = doc.splitTextToSize(output.summary, doc.internal.pageSize.width - 2 * margin);
+        lines.forEach(line => {
+          if (yPos > pageHeight - 30) {
+            doc.addPage();
+            yPos = margin;
+          }
+          doc.text(line, margin, yPos);
+          yPos += lineHeight;
+        });
+      }
+      
+      // Save PDF
+      const filename = `ClaimNavigator_Step_${stepNum}_${reportName}.pdf`;
+      doc.save(filename);
+    }
+    
+    // Export report as DOC
+    function exportReportDOC(stepNum) {
+      const output = getToolOutput(stepNum, getPrimaryToolId(stepNum));
+      if (!output) {
+        alert('No report data available to export.');
+        return;
+      }
+      
+      const reportName = getReportName(stepNum);
+      const step = stepData[stepNum];
+      const claimNumber = document.getElementById('claimNumber').textContent;
+      const dateGenerated = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      
+      // Build DOC content
+      let docContent = '';
+      
+      // Header
+      docContent += `ClaimNavigator AI\n`;
+      docContent += `Step ${stepNum} Report\n`;
+      docContent += `${step.title}\n\n`;
+      docContent += `Claim Number: ${claimNumber}\n`;
+      docContent += `Date Generated: ${dateGenerated}\n`;
+      docContent += `${'='.repeat(80)}\n\n`;
+      
+      // Report content
+      if (output.sections && Array.isArray(output.sections)) {
+        output.sections.forEach(section => {
+          docContent += `${section.title || 'Section'}\n`;
+          docContent += `${'-'.repeat((section.title || 'Section').length)}\n`;
+          docContent += `${section.content || section.text || ''}\n\n`;
+        });
+      } else if (output.content) {
+        docContent += output.content + '\n\n';
+      } else if (output.summary) {
+        docContent += output.summary + '\n\n';
+      }
+      
+      // Create blob and download
+      const blob = new Blob([docContent], { type: 'application/msword' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ClaimNavigator_Step_${stepNum}_${reportName}.doc`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    
+    // Get primary tool ID for step
+    function getPrimaryToolId(stepNum) {
+      const step = stepData[stepNum];
+      if (!step || !step.tasks) return null;
+      
+      const primaryTask = step.tasks.find(task => 
+        task.tool && task.tool.title.includes('(Automatic)')
+      );
+      
+      return primaryTask ? primaryTask.tool.id : null;
+    }
+    
     // Handle return from tool
     function handleToolReturn() {
       const urlParams = new URLSearchParams(window.location.search);
