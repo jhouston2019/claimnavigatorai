@@ -3724,47 +3724,28 @@
       },
       13: {
         label: 'STEP 13 OF 13',
-        title: 'Correct Underpayments & Submit Supplements',
-        subtitle: 'Identify underpayments, document additional damage, and submit supplemental claims. Negotiate until you reach a fair settlement that covers all documented damages.',
+        title: 'Correct Underpayments & Supplements',
+        subtitle: 'Identify underpayments, scope omissions, and valuation errors. Generate supplement justification and support negotiation or escalation until proper payment.',
         beforeYouContinue: {
           ifSkipped: 'You accept whatever the carrier offers.',
           prevents: 'Underpayment and settlement regret.',
           doNot: 'Accept the first offer without analysis. This step is complete only when you have accepted final payment and received all withheld depreciation.'
         },
-        tasksIntro: 'AI supports supplement logic by comparing carrier offers to your documented loss. This step continues until fair settlement.',
+        tasksIntro: 'Insurance claims are frequently underpaid due to scope omissions, pricing errors, and valuation disputes. This step identifies underpayments and prepares a structured supplement or negotiation strategy.\n\nNote: This step may be repeated until the claim is fully and properly paid.',
         tasks: [
           { 
-            title: 'Upload Carrier Settlement Offer', 
-            description: 'Upload the insurance company\'s settlement offer, explanation of benefits, or payment breakdown.',
-            tool: { id: 'settlement-uploader', title: 'Settlement Offer Uploader', classification: 'required' }
-          },
-          { 
-            title: 'System Analyzes Underpayments', 
-            description: 'The AI automatically compares the carrier settlement to your documented loss, identifies underpayments, calculates supplemental amounts, identifies negotiation leverage, and recommends escalation options. It generates an Underpayment & Supplement Report. No action required.',
-            tool: { id: 'supplement-report-engine', title: 'AI Underpayment Analysis Engine (Automatic)', classification: 'required' }
-          },
-          { 
-            title: 'Review Underpayment & Supplement Report', 
-            description: 'Review the AI-generated Underpayment & Supplement Report showing: Underpayment Identification, Supplemental Amounts, Negotiation Leverage Points, and Escalation Recommendations.',
-            tool: { id: 'supplement-report-viewer', title: 'View Underpayment & Supplement Report', classification: 'required' }
-          },
-          { 
-            title: 'Submit Supplement', 
-            description: 'Prepare supplemental claim package with documented justifications and submit to carrier.',
-            tool: { id: 'supplement-submitter', title: 'Supplement Submission Tool', classification: 'required' }
-          },
-          { 
-            title: 'Negotiate Until Fair Settlement (Ongoing)', 
-            description: 'Continue negotiations, submit additional supplements, and escalate if necessary until you reach a fair settlement. This step is complete only when you accept final payment and receive all withheld depreciation.',
-            tool: { id: 'negotiation-tracker', title: 'Negotiation Progress Tracker', classification: 'required' }
+            title: 'Upload Evidence & Analyze Underpayments', 
+            description: 'Upload updated estimates, additional documentation, carrier payment summaries, and prior correspondence. The AI automatically imports prior reports from Steps 5, 8, 9, 10, and 12, compares carrier offers to documented loss, identifies underpayments, and generates an Underpayment & Supplement Report with negotiation positions and escalation triggers.',
+            tool: { id: 'supplement-analysis', title: 'Supplement & Underpayment Analysis Engine', classification: 'primary' }
           }
         ],
         additionalTools: [
-          { id: 'supplement-demand-letter', title: 'Supplement Demand Letter' },
-          { id: 'final-rebuttal-letter', title: 'Final Rebuttal Letter' },
-          { id: 'escalation-appraisal-letter', title: 'Escalation / Appraisal Demand Letter' },
-          { id: 'download-supplement-report', title: 'Download Supplement Report' }
-        ]
+          { id: 'supplement-calculation-tool', title: 'Supplement Calculation Tool' },
+          { id: 'negotiation-strategy-generator', title: 'Negotiation Strategy Generator' },
+          { id: 'supplement-cover-letter-generator', title: 'Supplement Cover Letter Generator' },
+          { id: 'escalation-readiness-checker', title: 'Escalation Readiness Checker' }
+        ],
+        acknowledgmentText: 'Acknowledge Supplement Review & Continue'
       }
     };
 
@@ -3940,7 +3921,7 @@
         9: 'coverage-alignment',
         10: 'claim-package-assembly',
         12: 'carrier-response',
-        13: 'supplement-report-engine'
+        13: 'supplement-analysis'
       };
       
       const primaryToolId = primaryToolIds[stepNum];
@@ -4967,7 +4948,7 @@
         9: 'coverage-alignment',
         10: 'claim-package-assembly',
         12: 'carrier-response',
-        13: 'supplement-report-engine'
+        13: 'supplement-analysis'
       };
       
       return primaryToolIds[stepNum] || null;
