@@ -3468,91 +3468,53 @@
       },
       4: {
         label: 'STEP 4 OF 13',
-        title: 'Get a Professional Repair Estimate',
-        subtitle: 'Hire a licensed contractor and upload their estimate. AI will validate quality, scope, and completeness to ensure it properly documents all repairs.',
+        title: 'Get Professional Repair Estimate',
+        subtitle: 'Upload your contractor\'s repair estimate for AI quality analysis. The system validates completeness, scope, and defensibility before comparison with the carrier.',
         beforeYouContinue: {
           ifSkipped: 'The insurance company will define your loss for you.',
           prevents: 'Underpayment and missed repair items.',
-          doNot: 'Proceed to Step 5 until you have uploaded a complete contractor estimate and the AI quality check confirms it meets professional standards.'
+          doNot: 'Proceed to Step 5 until the Estimate Quality Report confirms your estimate is complete and defensible.'
         },
-        tasksIntro: 'This is your estimate, not the insurance company\'s estimate. If you don\'t get your own estimate, the insurance company will define your loss for you.',
+        tasksIntro: 'Insurance companies evaluate claims based on the quality and completeness of repair estimates. This step analyzes whether your estimate fully represents the required scope and cost of repairs.',
         tasks: [
           { 
-            title: 'Hire Licensed Contractor', 
-            description: 'Select and hire a licensed contractor qualified to prepare a detailed repair estimate. The contractor must be licensed in your jurisdiction.',
-            tool: { id: 'contractor-guide', title: 'Contractor Selection Guide', classification: 'required' }
-          },
-          { 
-            title: 'Upload Contractor Estimate', 
-            description: 'Upload the complete contractor estimate including line-item pricing, scope of work, materials specifications, and labor breakdown.',
-            tool: { id: 'estimate-uploader', title: 'Contractor Estimate Uploader', classification: 'required' }
-          },
-          { 
-            title: 'System Runs AI Quality Review', 
-            description: 'The AI automatically validates estimate quality, checks scope completeness, verifies line-item detail, identifies code upgrades, and flags deficiencies. It generates an Estimate Quality Report. No action required.',
-            tool: { id: 'estimate-quality-engine', title: 'AI Estimate Quality Engine (Automatic)', classification: 'required' }
-          },
-          { 
-            title: 'Review Estimate Quality Report', 
-            description: 'Review the AI-generated Estimate Quality Report showing: Estimator Credentials Check, Scope Completeness Analysis, Line-Item Detail Score, Code Upgrade Identification, and Estimate Deficiency Flags.',
-            tool: { id: 'estimate-quality-viewer', title: 'View Estimate Quality Report', classification: 'required' }
-          },
-          { 
-            title: 'Request Estimate Revisions (If Deficiencies Identified)', 
-            description: 'If the AI quality check identified deficiencies, request revisions from your contractor to address missing scope, insufficient detail, or omitted code upgrades.',
-            tool: { id: 'revision-request', title: 'Contractor Revision Request Generator', classification: 'required' }
-          },
-          { 
-            title: 'Acknowledge Estimate Complete', 
-            description: 'Confirm the contractor estimate meets professional standards and adequately documents all necessary repairs. This acknowledgment is required to proceed to Step 5.',
-            tool: { id: 'step4-acknowledgment', title: 'Acknowledge & Unlock Step 5', classification: 'required' }
+            title: 'Upload Contractor Estimate & Run Quality Review', 
+            description: 'Upload your contractor\'s repair estimate (PDF, DOC, XLS, or image). The AI automatically analyzes scope gaps, pricing issues, code upgrade requirements, missing trade items, and generates an Estimate Quality Report.',
+            tool: { id: 'estimate-review', title: 'Estimate Review Tool', classification: 'primary' }
           }
         ],
         additionalTools: [
-          { id: 'contractor-revision-letter', title: 'Contractor Revision Request Letter' },
-          { id: 'estimate-submission-letter', title: 'Estimate Submission Cover Letter' },
-          { id: 'contractor-finder', title: 'Find Licensed Contractors' },
-          { id: 'download-quality-report', title: 'Download Estimate Quality Report' }
-        ]
+          { id: 'contractor-scope-checklist', title: 'Contractor Scope Checklist' },
+          { id: 'code-upgrade-identifier', title: 'Code Upgrade Identifier' },
+          { id: 'missing-trade-detector', title: 'Missing Trade Detector' },
+          { id: 'estimate-revision-request-generator', title: 'Estimate Revision Request Generator' }
+        ],
+        acknowledgmentText: 'Acknowledge Estimate Review & Continue'
       },
       5: {
         label: 'STEP 5 OF 13',
-        title: 'Estimate Analysis & Comparison (AI Expert Analysis)',
-        subtitle: 'Upload the carrier estimate and AI will perform side-by-side comparison to identify all discrepancies, omissions, and underpayments.',
+        title: 'Estimate Analysis & Comparison',
+        subtitle: 'Upload the insurance company\'s estimate for line-by-line comparison. The AI identifies underpayment, scope omissions, and pricing discrepancies.',
         beforeYouContinue: {
           ifSkipped: 'You won\'t know if the carrier estimate is accurate or complete.',
           prevents: 'Accepting underpayments and missing scope items.',
-          doNot: 'Proceed to Step 6 until you have reviewed the complete comparison analysis and documented all discrepancies.'
+          doNot: 'Proceed to Step 6 until you have reviewed the Estimate Comparison Report and documented all discrepancies.'
         },
-        tasksIntro: 'The AI will compare your contractor estimate to the carrier estimate line-by-line and identify every difference.',
+        tasksIntro: 'Insurance estimates often differ from professional repair estimates. This step identifies missing scope, pricing errors, and underpayment indicators.',
         tasks: [
           { 
-            title: 'Upload Carrier Estimate', 
-            description: 'Upload the insurance company\'s estimate or scope of loss once received. The AI needs both estimates to perform comparison.',
-            tool: { id: 'carrier-estimate-uploader', title: 'Carrier Estimate Uploader', classification: 'required' }
-          },
-          { 
-            title: 'System Runs Line-by-Line Comparison', 
-            description: 'The AI automatically performs a line-by-line comparison of your contractor estimate vs the carrier estimate. It generates an Estimate Comparison Report identifying all discrepancies. No action required.',
-            tool: { id: 'comparison-report-engine', title: 'AI Estimate Comparison Engine (Automatic)', classification: 'required' }
-          },
-          { 
-            title: 'Review Estimate Comparison Report', 
-            description: 'Review the AI-generated Estimate Comparison Report showing: Missing Scope Items, Pricing Discrepancies, Code Upgrade Omissions, Under-Scoping Issues, and Total Discrepancy Amount.',
-            tool: { id: 'comparison-report-viewer', title: 'View Estimate Comparison Report', classification: 'required' }
-          },
-          { 
-            title: 'Acknowledge Discrepancies Documented', 
-            description: 'Confirm you have reviewed all estimate discrepancies and understand the differences. This acknowledgment is required to proceed to Step 6.',
-            tool: { id: 'step5-acknowledgment', title: 'Acknowledge & Unlock Step 6', classification: 'required' }
+            title: 'Upload Carrier Estimate & Run Comparison', 
+            description: 'Upload the insurance company\'s estimate. The AI automatically performs a line-by-line comparison against your contractor estimate from Step 4, identifies discrepancies, scope omissions, pricing deviations, and generates an Estimate Comparison Report.',
+            tool: { id: 'estimate-comparison', title: 'Estimate Comparison Tool', classification: 'primary' }
           }
         ],
         additionalTools: [
-          { id: 'estimate-rebuttal-letter', title: 'Estimate Rebuttal Letter' },
-          { id: 'scope-dispute-letter', title: 'Scope Dispute Letter' },
-          { id: 'supplement-justification-letter', title: 'Supplement Justification Letter' },
-          { id: 'download-comparison-report', title: 'Download Comparison Report' }
-        ]
+          { id: 'line-item-discrepancy-finder', title: 'Line-Item Discrepancy Finder' },
+          { id: 'pricing-deviation-analyzer', title: 'Pricing Deviation Analyzer' },
+          { id: 'scope-omission-detector', title: 'Scope Omission Detector' },
+          { id: 'negotiation-language-generator', title: 'Negotiation Language Generator' }
+        ],
+        acknowledgmentText: 'Acknowledge Estimate Comparison & Continue'
       },
       6: {
         label: 'STEP 6 OF 13',
@@ -4061,8 +4023,8 @@
         1: 'policy-intelligence-engine',
         2: 'compliance-review',
         3: 'damage-documentation',
-        4: 'estimate-quality-engine',
-        5: 'comparison-report-engine',
+        4: 'estimate-review',
+        5: 'estimate-comparison',
         6: 'ale-report-engine',
         7: 'inventory-report-engine',
         8: 'valuation-report-engine',
@@ -5088,8 +5050,8 @@
         1: 'policy-intelligence-engine',
         2: 'compliance-review',
         3: 'damage-documentation',
-        4: 'estimate-quality-engine',
-        5: 'comparison-report-engine',
+        4: 'estimate-review',
+        5: 'estimate-comparison',
         6: 'ale-report-engine',
         7: 'inventory-report-engine',
         8: 'valuation-report-engine',
