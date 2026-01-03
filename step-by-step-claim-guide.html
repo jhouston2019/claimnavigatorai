@@ -3592,36 +3592,27 @@
       9: {
         label: 'STEP 9 OF 13',
         title: 'Align Loss With Policy Coverage',
-        subtitle: 'AI compares your documented loss to policy limits from Step 1. Review alignment analysis to identify coverage gaps and sublimit impacts.',
+        subtitle: 'AI maps documented losses to policy coverages, limits, sublimits, and endorsements. Identifies missed coverage opportunities and exclusion conflicts.',
         beforeYouContinue: {
           ifSkipped: 'You may claim items not covered or miss covered items.',
           prevents: 'Wasted effort claiming non-covered items and missing recoverable amounts.',
-          doNot: 'Proceed to Step 10 until you have reviewed the complete coverage alignment analysis and understand all limits and caps.'
+          doNot: 'Proceed to Step 10 until the Coverage Alignment Report confirms proper application of all available coverage.'
         },
-        tasksIntro: 'AI automatically maps your documented loss to policy limits and sublimits from Step 1. Missed coverage is flagged.',
+        tasksIntro: 'Insurance claims are paid based on how losses are aligned to specific policy coverages. This step ensures all documented losses are properly applied to available coverage and identifies any missed opportunities.',
         tasks: [
           { 
-            title: 'System Auto-Aligns Loss to Coverage', 
-            description: 'The AI automatically compares your repair estimate and contents claim to your policy coverage limits identified in Step 1. It generates a Coverage Alignment Report. No action required.',
-            tool: { id: 'alignment-report-engine', title: 'AI Coverage Alignment Engine (Automatic)', classification: 'required' }
-          },
-          { 
-            title: 'Review Coverage Alignment Report', 
-            description: 'Review the AI-generated Coverage Alignment Report showing: Coverage-to-Loss Mapping, Sublimit Impact Analysis, Uncovered Loss Flags, and Missed Coverage Opportunities.',
-            tool: { id: 'alignment-report-viewer', title: 'View Coverage Alignment Report', classification: 'required' }
-          },
-          { 
-            title: 'Acknowledge Coverage Alignment', 
-            description: 'Confirm you understand how your loss aligns with policy coverage and the impact of any limits or gaps. This acknowledgment is required to proceed to Step 10.',
-            tool: { id: 'step9-acknowledgment', title: 'Acknowledge & Unlock Step 10', classification: 'required' }
+            title: 'Auto-Align Loss to Coverage', 
+            description: 'The AI automatically imports policy details from Step 1 and loss documentation from Steps 3-8, maps all losses to applicable coverages, identifies sublimit impacts, flags exclusion conflicts, and generates a Coverage Alignment Report.',
+            tool: { id: 'coverage-alignment', title: 'Coverage Alignment Engine', classification: 'primary' }
           }
         ],
         additionalTools: [
-          { id: 'coverage-correction-letter', title: 'Coverage Application Correction Letter' },
-          { id: 'missed-coverage-letter', title: 'Missed Coverage Demand Letter' },
-          { id: 'coverage-strategy', title: 'Coverage Strategy Recommendations' },
-          { id: 'download-alignment-report', title: 'Download Coverage Alignment Report' }
-        ]
+          { id: 'coverage-mapping-visualizer', title: 'Coverage Mapping Visualizer' },
+          { id: 'sublimit-impact-analyzer', title: 'Sublimit Impact Analyzer' },
+          { id: 'endorsement-opportunity-identifier', title: 'Endorsement Opportunity Identifier' },
+          { id: 'coverage-gap-detector', title: 'Coverage Gap Detector' }
+        ],
+        acknowledgmentText: 'Acknowledge Coverage Alignment & Continue'
       },
       10: {
         label: 'STEP 10 OF 13',
@@ -3974,7 +3965,7 @@
         6: 'ale-tracker',
         7: 'contents-inventory',
         8: 'contents-valuation',
-        9: 'alignment-report-engine',
+        9: 'coverage-alignment',
         10: 'package-report-engine',
         12: 'response-report-engine',
         13: 'supplement-report-engine'
@@ -5001,7 +4992,7 @@
         6: 'ale-tracker',
         7: 'contents-inventory',
         8: 'contents-valuation',
-        9: 'alignment-report-engine',
+        9: 'coverage-alignment',
         10: 'package-report-engine',
         12: 'response-report-engine',
         13: 'supplement-report-engine'
