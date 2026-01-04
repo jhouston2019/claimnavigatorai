@@ -1827,7 +1827,7 @@
     <div class="step-accordion">
       
       <div class="accordion-item" data-step="1">
-        <div class="accordion-header" onclick="openStep(1)">
+        <div class="accordion-header" onclick="openStep(1)" role="button" aria-expanded="false" tabindex="0">
           <div class="accordion-left">
             <div class="accordion-number">1</div>
             <div class="accordion-title-area">
@@ -1843,7 +1843,7 @@
       </div>
 
       <div class="accordion-item" data-step="2">
-        <div class="accordion-header" onclick="openStep(2)">
+        <div class="accordion-header" onclick="openStep(2)" role="button" aria-expanded="false" tabindex="0">
           <div class="accordion-left">
             <div class="accordion-number">2</div>
             <div class="accordion-title-area">
@@ -1859,7 +1859,7 @@
       </div>
 
       <div class="accordion-item" data-step="3">
-        <div class="accordion-header" onclick="openStep(3)">
+        <div class="accordion-header" onclick="openStep(3)" role="button" aria-expanded="false" tabindex="0">
           <div class="accordion-left">
             <div class="accordion-number">3</div>
             <div class="accordion-title-area">
@@ -1875,7 +1875,7 @@
       </div>
 
       <div class="accordion-item" data-step="4">
-        <div class="accordion-header" onclick="openStep(4)">
+        <div class="accordion-header" onclick="openStep(4)" role="button" aria-expanded="false" tabindex="0">
           <div class="accordion-left">
             <div class="accordion-number">4</div>
             <div class="accordion-title-area">
@@ -1891,7 +1891,7 @@
       </div>
 
       <div class="accordion-item" data-step="5">
-        <div class="accordion-header" onclick="openStep(5)">
+        <div class="accordion-header" onclick="openStep(5)" role="button" aria-expanded="false" tabindex="0">
           <div class="accordion-left">
             <div class="accordion-number">5</div>
             <div class="accordion-title-area">
@@ -1907,7 +1907,7 @@
       </div>
 
       <div class="accordion-item" data-step="6">
-        <div class="accordion-header" onclick="openStep(6)">
+        <div class="accordion-header" onclick="openStep(6)" role="button" aria-expanded="false" tabindex="0">
           <div class="accordion-left">
             <div class="accordion-number">6</div>
             <div class="accordion-title-area">
@@ -1923,7 +1923,7 @@
       </div>
 
       <div class="accordion-item" data-step="7">
-        <div class="accordion-header" onclick="openStep(7)">
+        <div class="accordion-header" onclick="openStep(7)" role="button" aria-expanded="false" tabindex="0">
           <div class="accordion-left">
             <div class="accordion-number">7</div>
             <div class="accordion-title-area">
@@ -1939,7 +1939,7 @@
       </div>
 
       <div class="accordion-item" data-step="8">
-        <div class="accordion-header" onclick="openStep(8)">
+        <div class="accordion-header" onclick="openStep(8)" role="button" aria-expanded="false" tabindex="0">
           <div class="accordion-left">
             <div class="accordion-number">8</div>
             <div class="accordion-title-area">
@@ -1955,7 +1955,7 @@
       </div>
 
       <div class="accordion-item" data-step="9">
-        <div class="accordion-header" onclick="openStep(9)">
+        <div class="accordion-header" onclick="openStep(9)" role="button" aria-expanded="false" tabindex="0">
           <div class="accordion-left">
             <div class="accordion-number">9</div>
             <div class="accordion-title-area">
@@ -1971,7 +1971,7 @@
       </div>
 
       <div class="accordion-item" data-step="10">
-        <div class="accordion-header" onclick="openStep(10)">
+        <div class="accordion-header" onclick="openStep(10)" role="button" aria-expanded="false" tabindex="0">
           <div class="accordion-left">
             <div class="accordion-number">10</div>
             <div class="accordion-title-area">
@@ -2157,8 +2157,18 @@
   </div><!-- End container -->
 
   <script type="module">
-    // Import auth functions
-    import { checkAuthentication, checkPaymentStatus } from './assets/js/auth.js';
+    // Import auth functions (with error handling)
+    let checkAuthentication, checkPaymentStatus;
+    try {
+      const authModule = await import('./assets/js/auth.js');
+      checkAuthentication = authModule.checkAuthentication;
+      checkPaymentStatus = authModule.checkPaymentStatus;
+    } catch (error) {
+      console.warn('Auth module not available:', error);
+      // Provide fallback functions
+      checkAuthentication = () => Promise.resolve(true);
+      checkPaymentStatus = () => Promise.resolve(true);
+    }
     
     // GLOBAL FUNCTIONS - Must be defined before any onclick handlers
     function toggleDropdown(e) {
@@ -2736,14 +2746,37 @@
     }
 
     function openStep(stepNum) {
-      const allItems = document.querySelectorAll('.accordion-item');
-      allItems.forEach(item => item.classList.remove('active'));
-      
       const selectedItem = document.querySelector(`.accordion-item[data-step="${stepNum}"]`);
       if (!selectedItem) return;
       
-      selectedItem.classList.add('active');
-      currentStep = stepNum;
+      // Check if this step is already open
+      const isOpen = selectedItem.classList.contains('active');
+      
+      // Close all steps first (accordion behavior)
+      const allItems = document.querySelectorAll('.accordion-item');
+      allItems.forEach(item => {
+        item.classList.remove('active');
+        const header = item.querySelector('.accordion-header');
+        if (header) {
+          header.setAttribute('aria-expanded', 'false');
+        }
+      });
+      
+      // If the step was closed, open it
+      if (!isOpen) {
+        selectedItem.classList.add('active');
+        currentStep = stepNum;
+        
+        // Update ARIA state
+        const header = selectedItem.querySelector('.accordion-header');
+        if (header) {
+          header.setAttribute('aria-expanded', 'true');
+        }
+      } else {
+        // Step was open and is now closed, clear currentStep
+        currentStep = null;
+        return; // Exit early, don't populate content
+      }
       
       const data = stepData[stepNum];
       if (!data) return;

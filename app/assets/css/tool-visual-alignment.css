@@ -1,0 +1,562 @@
+/**
+ * CLAIM NAVIGATOR AI — TOOL VISUAL ALIGNMENT LAYER
+ * 
+ * This CSS-only layer aligns all 52 tools to match the Claim Management Center visual style.
+ * 
+ * CONSTRAINTS:
+ * - CSS-only (no JavaScript, no HTML changes)
+ * - Solid colors only (no gradients, images, icons, SVGs)
+ * - Reuses existing Claim Management Center design tokens
+ * - Applied uniformly to all tools
+ * 
+ * Date: January 3, 2026
+ */
+
+/* ============================================
+   DESIGN TOKENS (from Claim Management Center)
+   ============================================ */
+:root {
+  --navy-primary: #1e3a5f;
+  --navy-dark: #0f1f3d;
+  --navy-light: #2c5282;
+  --gold-accent: #d4af37;
+  --gold-light: #f0e5c5;
+  --bg-page: #c4c6c8;
+  --bg-white: #ffffff;
+  --bg-cream: #fafaf8;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8f9fb;
+  --border-light: #e8edf2;
+  --border-medium: #d1dce6;
+  --border-dark: #b8c5d3;
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+  --text-white: #ffffff;
+  --accent-blue: #3b82f6;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+/* ============================================
+   GLOBAL BODY & PAGE BACKGROUND
+   ============================================ */
+body.tool-page {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================
+   PAGE HEADER (matches CMC header)
+   ============================================ */
+.tool-page-header {
+  background: var(--navy-primary);
+  padding: 32px 40px;
+  text-align: center;
+  border-bottom: 3px solid var(--gold-accent);
+  margin-bottom: 0;
+}
+
+.tool-page-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-white);
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.tool-page-subtitle {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* ============================================
+   MAIN CONTENT CONTAINER
+   ============================================ */
+.tool-content-area {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 40px;
+  background: var(--bg-page);
+}
+
+/* ============================================
+   CARD STYLES (matches CMC accordion cards)
+   ============================================ */
+.tool-card {
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-left: 4px solid var(--border-dark);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-md);
+  transition: all 0.2s ease;
+}
+
+.tool-card:hover {
+  border-left-color: var(--accent-blue);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.tool-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.tool-card-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy-primary);
+  margin: 0;
+}
+
+.tool-card-body {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ============================================
+   SECTION HEADERS
+   ============================================ */
+.tool-section {
+  margin-bottom: 32px;
+}
+
+.tool-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy-primary);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border-medium);
+}
+
+.tool-section-description {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+/* ============================================
+   BUTTONS (matches CMC button styles)
+   ============================================ */
+.tool-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  gap: 8px;
+}
+
+.tool-btn-primary {
+  background: var(--navy-primary);
+  color: var(--text-white);
+  border: 2px solid var(--navy-primary);
+}
+
+.tool-btn-primary:hover {
+  background: var(--navy-dark);
+  border-color: var(--navy-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.tool-btn-secondary {
+  background: var(--bg-white);
+  color: var(--navy-primary);
+  border: 2px solid var(--border-medium);
+}
+
+.tool-btn-secondary:hover {
+  background: var(--bg-cream);
+  border-color: var(--navy-primary);
+}
+
+.tool-btn-accent {
+  background: var(--gold-accent);
+  color: var(--navy-dark);
+  border: 2px solid var(--gold-accent);
+}
+
+.tool-btn-accent:hover {
+  background: var(--gold-light);
+  border-color: var(--gold-accent);
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   FORM INPUTS (matches CMC form styles)
+   ============================================ */
+.tool-form-group {
+  margin-bottom: 20px;
+}
+
+.tool-form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.tool-form-input,
+.tool-form-textarea,
+.tool-form-select {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--bg-white);
+  border: 2px solid var(--border-medium);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.tool-form-input:focus,
+.tool-form-textarea:focus,
+.tool-form-select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.tool-form-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.tool-form-help {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* ============================================
+   TABLES (matches CMC table styles)
+   ============================================ */
+.tool-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tool-table thead {
+  background: var(--bg-cream);
+}
+
+.tool-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border-medium);
+}
+
+.tool-table td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.tool-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tool-table tbody tr:hover {
+  background: var(--bg-card-hover);
+}
+
+/* ============================================
+   ALERTS & NOTICES (matches CMC warning styles)
+   ============================================ */
+.tool-alert {
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.tool-alert-info {
+  background: #eff6ff;
+  border-color: var(--accent-blue);
+  color: #1e40af;
+}
+
+.tool-alert-success {
+  background: #f0fdf4;
+  border-color: var(--accent-green);
+  color: #166534;
+}
+
+.tool-alert-warning {
+  background: #fef3c7;
+  border-color: #f59e0b;
+  color: #92400e;
+}
+
+.tool-alert-error {
+  background: #fee2e2;
+  border-color: var(--accent-red);
+  color: #991b1b;
+}
+
+.tool-alert-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ============================================
+   LISTS (matches CMC list styles)
+   ============================================ */
+.tool-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tool-list-item {
+  padding: 12px 16px;
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+}
+
+.tool-list-item:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-medium);
+  transform: translateX(4px);
+}
+
+.tool-list-item:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================
+   BADGES & TAGS
+   ============================================ */
+.tool-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tool-badge-primary {
+  background: var(--navy-primary);
+  color: var(--text-white);
+}
+
+.tool-badge-secondary {
+  background: var(--border-medium);
+  color: var(--text-secondary);
+}
+
+.tool-badge-success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.tool-badge-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.tool-badge-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ============================================
+   GRID LAYOUTS
+   ============================================ */
+.tool-grid {
+  display: grid;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.tool-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.tool-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.tool-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1024px) {
+  .tool-grid-3,
+  .tool-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .tool-grid-2,
+  .tool-grid-3,
+  .tool-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================
+   LOADING & EMPTY STATES
+   ============================================ */
+.tool-loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+.tool-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--bg-white);
+  border: 2px dashed var(--border-medium);
+  border-radius: 12px;
+  color: var(--text-muted);
+}
+
+.tool-empty-state-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.tool-empty-state-text {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+@media (max-width: 768px) {
+  .tool-page-header {
+    padding: 24px 20px;
+  }
+
+  .tool-page-title {
+    font-size: 24px;
+  }
+
+  .tool-page-subtitle {
+    font-size: 14px;
+  }
+
+  .tool-content-area {
+    padding: 20px 16px;
+  }
+
+  .tool-card {
+    padding: 16px;
+  }
+
+  .tool-card-title {
+    font-size: 18px;
+  }
+
+  .tool-btn {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+}
+
+/* ============================================
+   TYPOGRAPHY UTILITIES
+   ============================================ */
+.tool-text-primary {
+  color: var(--text-primary);
+}
+
+.tool-text-secondary {
+  color: var(--text-secondary);
+}
+
+.tool-text-muted {
+  color: var(--text-muted);
+}
+
+.tool-text-white {
+  color: var(--text-white);
+}
+
+.tool-text-navy {
+  color: var(--navy-primary);
+}
+
+.tool-text-gold {
+  color: var(--gold-accent);
+}
+
+/* ============================================
+   SPACING UTILITIES
+   ============================================ */
+.tool-mb-0 { margin-bottom: 0; }
+.tool-mb-1 { margin-bottom: 8px; }
+.tool-mb-2 { margin-bottom: 16px; }
+.tool-mb-3 { margin-bottom: 24px; }
+.tool-mb-4 { margin-bottom: 32px; }
+
+.tool-mt-0 { margin-top: 0; }
+.tool-mt-1 { margin-top: 8px; }
+.tool-mt-2 { margin-top: 16px; }
+.tool-mt-3 { margin-top: 24px; }
+.tool-mt-4 { margin-top: 32px; }
+
+/* ============================================
+   END OF TOOL VISUAL ALIGNMENT LAYER
+   ============================================ */
+
