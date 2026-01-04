@@ -561,22 +561,35 @@ body.tool-page {
    (Works with any class names or HTML structure)
    ============================================ */
 
-/* Apply to ALL body elements */
-body {
+/* Apply to ALL body elements - HIGHEST PRIORITY */
+body,
+body.resource-center,
+body.agent-page,
+body.rom-page,
+body.authority-page,
+body:has(main.container),
+body:has(.main-grid),
+body:has(#main) {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
   background: var(--bg-page) !important;
   color: var(--text-primary) !important;
-  line-height: 1.6;
-  margin: 0;
-  padding: 0;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-/* Generic header styling */
-header, .header {
+/* Generic header styling - OVERRIDE ALL */
+header,
+.header,
+body .header,
+body:has(main.container) .header,
+body:has(.main-grid) .header,
+body:has(#main) .header {
   background: var(--navy-primary) !important;
   color: var(--text-white) !important;
-  padding: 16px 32px;
-  border-bottom: 2px solid var(--gold-accent);
+  padding: 16px 32px !important;
+  border-bottom: 2px solid var(--gold-accent) !important;
+  box-shadow: none !important;
 }
 
 /* Generic navigation */
@@ -596,11 +609,19 @@ nav a:hover, .nav a:hover {
   color: var(--gold-accent) !important;
 }
 
-/* Generic containers */
-.container, main, .main {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 32px;
+/* Generic containers - OVERRIDE ALL */
+.container,
+main,
+.main,
+main.container,
+body .container,
+body main,
+body:has(main.container) .container,
+body:has(.main-grid) .container,
+body:has(#main) .container {
+  max-width: 1400px !important;
+  margin: 0 auto !important;
+  padding: 32px !important;
   background: var(--bg-page) !important;
 }
 
@@ -639,33 +660,53 @@ nav a:hover, .nav a:hover {
   margin: 0;
 }
 
-/* Generic buttons - match ANY class containing "button" or "btn" */
+/* Generic buttons - match ANY class containing "button" or "btn" - OVERRIDE ALL */
 button,
 [class*="button"],
 [class*="btn"],
+[class*="action"],
 input[type="submit"],
-input[type="button"] {
+input[type="button"],
+body button,
+body [class*="button"],
+body [class*="btn"],
+body:has(main.container) button,
+body:has(main.container) .btn,
+body:has(.main-grid) button,
+body:has(.main-grid) .btn,
+body:has(#main) button,
+body:has(#main) .btn {
   font-family: 'Inter', sans-serif !important;
-  padding: 12px 24px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  border: 1px solid var(--border-medium);
+  padding: 12px 24px !important;
+  border-radius: 6px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  border: 2px solid var(--navy-primary) !important;
   background: var(--bg-white) !important;
-  color: var(--text-primary) !important;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
+  color: var(--navy-primary) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: var(--shadow-sm) !important;
 }
 
 button:hover,
 [class*="button"]:hover,
-[class*="btn"]:hover {
+[class*="btn"]:hover,
+[class*="action"]:hover,
+body button:hover,
+body [class*="button"]:hover,
+body [class*="btn"]:hover,
+body:has(main.container) button:hover,
+body:has(main.container) .btn:hover,
+body:has(.main-grid) button:hover,
+body:has(.main-grid) .btn:hover,
+body:has(#main) button:hover,
+body:has(#main) .btn:hover {
   background: var(--navy-primary) !important;
   color: var(--text-white) !important;
-  border-color: var(--navy-primary);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  border-color: var(--navy-dark) !important;
+  box-shadow: var(--shadow-md) !important;
+  transform: translateY(-1px) !important;
 }
 
 /* Primary action buttons */
