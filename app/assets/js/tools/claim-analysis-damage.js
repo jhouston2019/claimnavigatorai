@@ -4,6 +4,7 @@
 
 import { requireAuth, checkPaymentStatus, getAuthToken, getSupabaseClient } from '../auth.js';
 import { getIntakeData } from '../autofill.js';
+import { saveAndReturn, getToolParams, getReportName } from '../tool-output-bridge.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -93,6 +94,17 @@ async function handleAnalyze(module) {
     }
 
     await saveToDatabase(result.data, damageDesc, damageItems);
+
+    // Save to step guide and return
+    const toolParams = getToolParams();
+    if (toolParams.step && toolParams.toolId) {
+      saveAndReturn({
+        step: toolParams.step,
+        toolId: toolParams.toolId,
+        reportName: getReportName(toolParams.toolId),
+        output: result.data
+      });
+    }
 
   } catch (error) {
     console.error('Analyze error:', error);

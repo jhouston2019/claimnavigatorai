@@ -4,6 +4,7 @@
 
 import { requireAuth, checkPaymentStatus, getAuthToken, getSupabaseClient } from '../auth.js';
 import { getIntakeData } from '../autofill.js';
+import { saveAndReturn, getToolParams, getReportName } from '../tool-output-bridge.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -40,6 +41,10 @@ async function handleAnalyze(module) {
   }
 
   try {
+    // Get mode from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode') || 'valuation';
+
     const offer = parseFloat(document.getElementById('offer')?.value) || 0;
     const valuation = parseFloat(document.getElementById('valuation')?.value) || 0;
     const disputed = document.getElementById('disputed')?.value || '';
@@ -56,6 +61,26 @@ async function handleAnalyze(module) {
     const gapPercent = (gap / valuation) * 100;
 
     const token = await getAuthToken();
+    
+    // Select appropriate analysis focus based on mode
+    let analysisFocus = 'negotiation';
+    switch (mode) {
+      case 'valuation':
+        analysisFocus = 'contents_valuation';
+        break;
+      case 'supplement':
+        analysisFocus = 'supplement_strategy';
+        break;
+      case 'depreciation':
+        analysisFocus = 'depreciation_analysis';
+        break;
+      case 'comparables':
+        analysisFocus = 'comparable_items';
+        break;
+      default:
+        analysisFocus = 'negotiation';
+    }
+
     const response = await fetch('/.netlify/functions/ai-negotiation-advisor', {
       method: 'POST',
       headers: {
@@ -71,7 +96,9 @@ async function handleAnalyze(module) {
         jurisdiction: jurisdiction,
         days_since_claim: days,
         policy_limits: policyLimits,
-        context: context
+        context: context,
+        analysis_mode: mode,
+        analysis_focus: analysisFocus
       })
     });
 
@@ -87,6 +114,18 @@ async function handleAnalyze(module) {
     }
 
     await saveToDatabase(result.data, offer, valuation);
+
+    // Save to step guide and return
+    const toolParams = getToolParams();
+    if (toolParams.step && toolParams.toolId) {
+      saveAndReturn({
+        step: toolParams.step,
+        toolId: toolParams.toolId,
+        reportName: getReportName(toolParams.toolId),
+        summary: result.data.analysis || result.data.summary,
+        sections: result.data
+      });
+    }
 
   } catch (error) {
     console.error('Analyze error:', error);

@@ -5,6 +5,7 @@
 import { requireAuth, checkPaymentStatus, getAuthToken, getSupabaseClient } from '../auth.js';
 import { uploadToStorage, extractTextFromFile } from '../storage.js';
 import { getIntakeData } from '../autofill.js';
+import { saveAndReturn, getToolParams, getReportName } from '../tool-output-bridge.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -41,6 +42,10 @@ async function handleAnalyze(module) {
   }
 
   try {
+    // Get mode from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode') || 'comparison';
+
     const fileInput = document.getElementById('estimates');
     const files = fileInput?.files || [];
     
@@ -66,6 +71,29 @@ async function handleAnalyze(module) {
     const notes = document.getElementById('notes')?.value || '';
 
     const token = await getAuthToken();
+    
+    // Select appropriate analysis focus based on mode
+    let analysisFocus = 'comparison';
+    switch (mode) {
+      case 'quality':
+        analysisFocus = 'quality_review';
+        break;
+      case 'comparison':
+        analysisFocus = 'comparison';
+        break;
+      case 'discrepancies':
+        analysisFocus = 'line_item_discrepancies';
+        break;
+      case 'pricing':
+        analysisFocus = 'pricing_deviations';
+        break;
+      case 'omissions':
+        analysisFocus = 'scope_omissions';
+        break;
+      default:
+        analysisFocus = 'comparison';
+    }
+
     const response = await fetch('/.netlify/functions/ai-estimate-comparison', {
       method: 'POST',
       headers: {
@@ -77,6 +105,8 @@ async function handleAnalyze(module) {
         labor_rate: laborRate,
         tax_rate: taxRate,
         include_overhead: includeOverhead,
+        analysis_mode: mode,
+        analysis_focus: analysisFocus,
         notes: notes
       })
     });
@@ -93,6 +123,17 @@ async function handleAnalyze(module) {
     }
 
     await saveToDatabase(result.data, estimateTexts);
+
+    // Save to step guide and return
+    const toolParams = getToolParams();
+    if (toolParams.step && toolParams.toolId) {
+      saveAndReturn({
+        step: toolParams.step,
+        toolId: toolParams.toolId,
+        reportName: getReportName(toolParams.toolId),
+        output: result.data
+      });
+    }
 
   } catch (error) {
     console.error('Analyze error:', error);

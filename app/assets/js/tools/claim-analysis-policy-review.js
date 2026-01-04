@@ -4,6 +4,7 @@
 
 import { requireAuth, checkPaymentStatus, getAuthToken, getSupabaseClient } from '../auth.js';
 import { getIntakeData } from '../autofill.js';
+import { saveAndReturn, getToolParams, getReportName } from '../tool-output-bridge.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -40,6 +41,10 @@ async function handleAnalyze(module) {
   }
 
   try {
+    // Get mode from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode') || 'policy';
+
     const policyText = document.getElementById('policyText').value;
     const policyType = document.getElementById('policyType').value;
     const jurisdiction = document.getElementById('jurisdiction').value;
@@ -50,18 +55,41 @@ async function handleAnalyze(module) {
     }
 
     const token = await getAuthToken();
-    const response = await fetch('/.netlify/functions/ai-policy-review', {
+    
+    // Select appropriate AI function based on mode
+    let endpoint = '/.netlify/functions/ai-policy-review';
+    let requestBody = {
+      policy_text: policyText,
+      policy_type: policyType,
+      jurisdiction: jurisdiction,
+      deductible: deductible,
+      analysis_mode: mode
+    };
+
+    // Adapt endpoint based on mode
+    switch (mode) {
+      case 'compliance':
+        endpoint = '/.netlify/functions/ai-policy-review';
+        requestBody.focus = 'compliance';
+        break;
+      case 'alignment':
+        endpoint = '/.netlify/functions/ai-policy-review';
+        requestBody.focus = 'coverage_alignment';
+        break;
+      case 'policy':
+      default:
+        endpoint = '/.netlify/functions/ai-policy-review';
+        requestBody.focus = 'policy_intelligence';
+        break;
+    }
+
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({
-        policy_text: policyText,
-        policy_type: policyType,
-        jurisdiction: jurisdiction,
-        deductible: deductible
-      })
+      body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {
@@ -76,6 +104,17 @@ async function handleAnalyze(module) {
     }
 
     await saveToDatabase(result.data, policyType);
+
+    // Save to step guide and return
+    const toolParams = getToolParams();
+    if (toolParams.step && toolParams.toolId) {
+      saveAndReturn({
+        step: toolParams.step,
+        toolId: toolParams.toolId,
+        reportName: getReportName(toolParams.toolId),
+        output: result.data
+      });
+    }
 
   } catch (error) {
     console.error('Analyze error:', error);

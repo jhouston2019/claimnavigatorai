@@ -5,6 +5,7 @@
 
 import { requireAuth, checkPaymentStatus, getAuthToken, getSupabaseClient } from '../auth.js';
 import { autofillForm, getIntakeData } from '../autofill.js';
+import { saveAndReturn, getToolParams, getReportName } from '../tool-output-bridge.js';
 
 // Initialize controller
 document.addEventListener('DOMContentLoaded', async () => {
@@ -348,7 +349,23 @@ async function handleSaveToDashboard(result, documentType) {
 
     if (error) throw error;
 
-    alert('Document saved to dashboard!');
+    // Save to step guide and return
+    const toolParams = getToolParams();
+    if (toolParams.step && toolParams.toolId) {
+      saveAndReturn({
+        step: toolParams.step,
+        toolId: toolParams.toolId,
+        reportName: getReportName(toolParams.toolId),
+        summary: `${documentType} generated successfully`,
+        sections: {
+          documentText: result.document_text || result.html || result.content || '',
+          subjectLine: result.subject_line,
+          metadata: result
+        }
+      });
+    } else {
+      alert('Document saved to dashboard!');
+    }
   } catch (error) {
     console.error('Save error:', error);
     alert(`Error saving: ${error.message}`);

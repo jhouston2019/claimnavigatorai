@@ -9,6 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="storage/claimStorage.js"></script>
   <script src="ai-expert-config.js"></script>
+  <script src="/app/assets/js/tool-registry.js"></script>
   <style>
     * {
       margin: 0;
@@ -555,6 +556,22 @@
     
     .accordion-item.completed:hover {
       box-shadow: 0 0 0 1px #10b981, 0 4px 12px rgba(16, 185, 129, 0.12);
+    }
+    
+    .accordion-item.step-complete-flash {
+      animation: stepCompleteFlash 2s ease-in-out;
+    }
+    
+    @keyframes stepCompleteFlash {
+      0%, 100% {
+        background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), 0 3px 8px rgba(0, 0, 0, 0.25);
+      }
+      50% {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        box-shadow: 0 0 0 2px #10b981, 0 8px 24px rgba(16, 185, 129, 0.3);
+        transform: scale(1.02);
+      }
     }
 
     .accordion-header {
@@ -3885,10 +3902,80 @@
     }
 
     function openTool(toolId, stepNum) {
-      // Route to Resource Center with query params
+      // Get tool configuration from registry
+      const toolConfig = getToolConfig(toolId);
+      
+      if (!toolConfig) {
+        console.error(`Tool ID "${toolId}" not found in registry`);
+        alert(`⚠️ Tool "${toolId}" is not yet available.\n\nThis tool is currently being configured. Please try again later or contact support.`);
+        return;
+      }
+      
+      // Handle acknowledgment tools (stay on page)
+      if (toolConfig.engine === 'acknowledgment') {
+        const step = stepNum || currentStep;
+        acknowledgeStep(step);
+        return;
+      }
+      
+      // Build URL with query parameters
       const step = stepNum || currentStep;
-      const returnUrl = encodeURIComponent('/step-guide');
-      window.location.href = `/resource-center/${toolId}?step=${step}&return=${returnUrl}`;
+      const returnUrl = encodeURIComponent('/step-by-step-claim-guide.html');
+      
+      const url = `${toolConfig.url}`
+        + `?engine=${toolConfig.engine}`
+        + `&mode=${toolConfig.mode}`
+        + `&toolId=${toolId}`
+        + `&step=${step}`
+        + `&return=${returnUrl}`;
+      
+      // Navigate to tool
+      console.log(`Opening tool: ${toolId} → ${toolConfig.url}`);
+      window.location.href = url;
+    }
+    
+    // Acknowledge step completion
+    function acknowledgeStep(stepNum) {
+      // Check if primary tool output exists
+      const hasPrimaryOutput = hasPrimaryToolOutput(stepNum);
+      
+      if (!hasPrimaryOutput && stepNum !== 11) {
+        alert(`⚠️ Cannot acknowledge Step ${stepNum}\n\nYou must complete the primary tool and generate a report before acknowledging this step.`);
+        return;
+      }
+      
+      // Mark step as acknowledged
+      if (!taskCompletion[stepNum]) {
+        taskCompletion[stepNum] = [];
+      }
+      
+      // Mark all tasks as complete
+      const step = stepData[stepNum];
+      if (step && step.tasks) {
+        taskCompletion[stepNum] = step.tasks.map(() => true);
+      }
+      
+      // Add to completed steps
+      if (!completedSteps.includes(stepNum)) {
+        completedSteps.push(stepNum);
+      }
+      
+      // Save state
+      saveState();
+      
+      // Update UI
+      updateUI();
+      updateProgressIndicator();
+      
+      // Show confirmation
+      alert(`✅ Step ${stepNum} Acknowledged!\n\nYou can now proceed to Step ${stepNum + 1}.`);
+      
+      // Auto-open next step if not on Step 13
+      if (stepNum < 13) {
+        setTimeout(() => {
+          openStep(stepNum + 1);
+        }, 500);
+      }
     }
     
     // Get stored tool output
@@ -4947,6 +5034,7 @@
         8: 'contents-valuation',
         9: 'coverage-alignment',
         10: 'claim-package-assembly',
+        11: 'claim-submitter',
         12: 'carrier-response',
         13: 'supplement-analysis'
       };
@@ -4957,24 +5045,32 @@
     // Handle return from tool
     function handleToolReturn() {
       const urlParams = new URLSearchParams(window.location.search);
-      const toolId = urlParams.get('tool');
-      const stepNum = urlParams.get('step');
-      const output = urlParams.get('output');
+      const stepNum = parseInt(urlParams.get('step'), 10);
+      const saved = urlParams.get('saved');
       
-      if (toolId && stepNum && output) {
-        try {
-          const parsedOutput = JSON.parse(decodeURIComponent(output));
-          saveToolOutput(parseInt(stepNum), toolId, parsedOutput);
-          
-          // Clean URL
-          window.history.replaceState({}, document.title, window.location.pathname);
-          
-          // Open the step to show updated outputs
-          openStep(parseInt(stepNum));
-        } catch (e) {
-          console.error('Error processing tool output:', e);
-        }
+      if (saved === 'true' && stepNum) {
+        // Ensure step content loads and renders outputs
+        openStep(stepNum);
+        
+        // Optional: visual confirmation
+        setTimeout(() => {
+          highlightStepCompletion(stepNum);
+        }, 300);
+        
+        // Clean URL
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
+    }
+    
+    // Visual confirmation of step completion
+    function highlightStepCompletion(stepNum) {
+      const stepEl = document.querySelector(`[data-step="${stepNum}"]`);
+      if (!stepEl) return;
+      
+      stepEl.classList.add('step-complete-flash');
+      setTimeout(() => {
+        stepEl.classList.remove('step-complete-flash');
+      }, 2000);
     }
     
     // Initialize on load

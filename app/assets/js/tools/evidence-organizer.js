@@ -8,6 +8,7 @@ import { uploadToStorage, uploadMultipleFiles } from '../storage.js';
 import { getIntakeData } from '../autofill.js';
 import { runViolationCheck, generateAlerts } from '../utils/compliance-engine-helper.js';
 import { addTimelineEvent } from '../utils/timeline-autosync.js';
+import { saveAndReturn, getToolParams, getReportName } from '../tool-output-bridge.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -367,7 +368,19 @@ async function handleGenerateReport() {
       metadata: { evidence_count: evidence?.length || 0, generated_at: new Date().toISOString() }
     });
 
-    alert('Report generated and saved to dashboard!');
+    // Save to step guide and return
+    const toolParams = getToolParams();
+    if (toolParams.step && toolParams.toolId) {
+      saveAndReturn({
+        step: toolParams.step,
+        toolId: toolParams.toolId,
+        reportName: getReportName(toolParams.toolId),
+        summary: `Evidence report generated with ${evidence?.length || 0} items`,
+        sections: { reportContent, evidence, evidenceCount: evidence?.length || 0 }
+      });
+    } else {
+      alert('Report generated and saved to dashboard!');
+    }
 
   } catch (error) {
     console.error('Generate report error:', error);
