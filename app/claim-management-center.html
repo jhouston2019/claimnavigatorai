@@ -2749,10 +2749,21 @@
       const selectedItem = document.querySelector(`.accordion-item[data-step="${stepNum}"]`);
       if (!selectedItem) return;
       
-      // Check if this step is already open
+      // Check if this step is already open BEFORE we modify anything
       const isOpen = selectedItem.classList.contains('active');
       
-      // Close all steps first (accordion behavior)
+      // If clicking an already-open step, close it and exit
+      if (isOpen) {
+        selectedItem.classList.remove('active');
+        const header = selectedItem.querySelector('.accordion-header');
+        if (header) {
+          header.setAttribute('aria-expanded', 'false');
+        }
+        currentStep = null;
+        return; // Exit early - step is now closed
+      }
+      
+      // Close all OTHER steps (accordion behavior)
       const allItems = document.querySelectorAll('.accordion-item');
       allItems.forEach(item => {
         item.classList.remove('active');
@@ -2762,20 +2773,14 @@
         }
       });
       
-      // If the step was closed, open it
-      if (!isOpen) {
-        selectedItem.classList.add('active');
-        currentStep = stepNum;
-        
-        // Update ARIA state
-        const header = selectedItem.querySelector('.accordion-header');
-        if (header) {
-          header.setAttribute('aria-expanded', 'true');
-        }
-      } else {
-        // Step was open and is now closed, clear currentStep
-        currentStep = null;
-        return; // Exit early, don't populate content
+      // Now open the clicked step
+      selectedItem.classList.add('active');
+      currentStep = stepNum;
+      
+      // Update ARIA state
+      const header = selectedItem.querySelector('.accordion-header');
+      if (header) {
+        header.setAttribute('aria-expanded', 'true');
       }
       
       const data = stepData[stepNum];
