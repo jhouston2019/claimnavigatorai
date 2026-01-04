@@ -144,34 +144,8 @@
             }
         }
 
-        async function runAnalysis(module) {
-            const resultDiv = document.getElementById('result-' + module);
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = '<p><em>Analyzing, please wait...</em></p>';
-
-            const inputs = {
-                offer: document.getElementById('offer').value,
-                valuation: document.getElementById('valuation').value,
-                disputed: document.getElementById('disputed').value,
-                jurisdiction: document.getElementById('jurisdiction').value,
-                days: document.getElementById('days').value,
-                policyLimits: document.getElementById('policyLimits').value,
-                context: document.getElementById('context').value
-            };
-
-            try {
-                const res = await fetch('/.netlify/functions/claim-analysis', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ module, inputs })
-                });
-                
-                const data = await res.json();
-                resultDiv.innerHTML = data.ok ? data.html : '<p class="error">Error: ' + (data.error || 'No response') + '</p>';
-            } catch (e) {
-                resultDiv.innerHTML = '<p class="error">Network error. Try again.</p>';
-            }
-        }
+        // Fallback removed - module script is the ONLY execution path
+        // If module fails to load, user will see an error instead of silently using old logic
     </script>
     <script type="module" src="/app/assets/js/tools/claim-analysis-negotiation.js"></script>
 </body>

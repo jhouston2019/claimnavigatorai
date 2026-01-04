@@ -1,10 +1,11 @@
 /**
  * AI Estimate Comparison Function
+ * NOW POWERED BY ESTIMATE REVIEW PRO ENGINE
  */
 
-const { runOpenAI, sanitizeInput } = require('./lib/ai-utils');
 const { createClient } = require('@supabase/supabase-js');
 const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
+const EstimateEngine = require('../../app/assets/js/intelligence/estimate-engine');
 
 exports.handler = async (event) => {
   const headers = {
@@ -81,7 +82,15 @@ exports.handler = async (event) => {
     // Log event
     await LOG_EVENT('ai_request', 'ai-estimate-comparison', { payload: body });
     
-    const { estimates = [], labor_rate = '', tax_rate = '', include_overhead = false, notes = '' } = body;
+    const { 
+      estimates = [], 
+      labor_rate = '', 
+      tax_rate = '', 
+      include_overhead = false, 
+      notes = '',
+      analysis_mode = 'comparison',
+      analysis_focus = 'comparison'
+    } = body;
 
     if (estimates.length === 0) {
       return {
@@ -93,42 +102,71 @@ exports.handler = async (event) => {
 
     const startTime = Date.now();
 
-    const systemPrompt = `You are an expert construction cost estimator. Compare multiple estimates and identify discrepancies, validate pricing, and provide recommendations.`;
+    // ESTIMATE REVIEW PRO ENGINE INTEGRATION
+    // Process each estimate through the canonical engine
+    const analysisResults = [];
+    
+    for (let i = 0; i < estimates.length; i++) {
+      const estimate = estimates[i];
+      
+      // Run through Estimate Review Pro engine
+      const engineResult = EstimateEngine.analyzeEstimate({
+        estimateText: estimate.text || '',
+        lineItems: [],
+        userInput: notes || '',
+        metadata: {
+          filename: estimate.filename,
+          labor_rate,
+          tax_rate,
+          include_overhead,
+          analysis_mode,
+          analysis_focus,
+          estimateNumber: i + 1
+        }
+      });
 
-    const estimatesText = estimates.map((est, idx) => 
-      `Estimate ${idx + 1} (${est.filename}):\n${sanitizeInput(est.text).substring(0, 5000)}`
-    ).join('\n\n---\n\n');
+      if (!engineResult.success) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ 
+            success: false, 
+            data: null, 
+            error: { 
+              code: 'CN-1000', 
+              message: engineResult.error || 'Estimate analysis failed',
+              details: engineResult.details
+            } 
+          })
+        };
+      }
 
-    const userPrompt = `Compare these contractor estimates:
+      analysisResults.push({
+        filename: estimate.filename,
+        classification: engineResult.classification,
+        analysis: engineResult.analysis,
+        report: engineResult.report
+      });
+    }
 
-${estimatesText}
-
-Labor Rate: ${labor_rate || 'Not specified'}
-Tax Rate: ${tax_rate || 'Not specified'}
-Include Overhead: ${include_overhead ? 'Yes' : 'No'}
-Notes: ${sanitizeInput(notes)}
-
-Provide:
-1. Comparison summary
-2. Price discrepancies identified
-3. Validation of pricing
-4. Recommendations
-
-Format as HTML.`;
-
-    const comparison = await runOpenAI(systemPrompt, userPrompt, {
-      model: 'gpt-4o',
-      temperature: 0.7,
-      max_tokens: 2000
+    // Build comparison HTML from engine results
+    const comparisonHTML = buildComparisonHTML(analysisResults, {
+      labor_rate,
+      tax_rate,
+      include_overhead,
+      analysis_mode,
+      analysis_focus
     });
 
     const endTime = Date.now();
     const durationMs = endTime - startTime;
 
     const result = {
-      html: comparison,
-      comparison: comparison,
-      estimate_count: estimates.length
+      html: comparisonHTML,
+      comparison: comparisonHTML,
+      estimate_count: estimates.length,
+      engine_results: analysisResults,
+      engine: 'Estimate Review Pro'
     };
 
     // Log usage
@@ -137,13 +175,14 @@ Format as HTML.`;
       duration_ms: durationMs,
       input_token_estimate: 0,
       output_token_estimate: 0,
-      success: true
+      success: true,
+      engine: 'estimate-review-pro'
     });
 
     // Log cost
     await LOG_COST({
       function: 'ai-estimate-comparison',
-      estimated_cost_usd: 0.002
+      estimated_cost_usd: 0.0
     });
 
     return {
@@ -170,5 +209,81 @@ Format as HTML.`;
     };
   }
 };
+
+/**
+ * Build comparison HTML from engine results
+ */
+function buildComparisonHTML(analysisResults, options) {
+  const html = [];
+  
+  html.push('<div class="estimate-comparison-report">');
+  html.push('<h2>Estimate Analysis Report</h2>');
+  html.push(`<p class="report-meta">Generated: ${new Date().toISOString()}</p>`);
+  html.push(`<p class="report-meta">Estimates Analyzed: ${analysisResults.length}</p>`);
+  
+  // Individual estimate reports
+  analysisResults.forEach((result, idx) => {
+    html.push(`<div class="estimate-section">`);
+    html.push(`<h3>Estimate ${idx + 1}: ${result.filename}</h3>`);
+    html.push(`<div class="classification"><strong>Type:</strong> ${result.classification.classification} (${result.classification.confidence} confidence)</div>`);
+    
+    if (result.report) {
+      html.push('<div class="report-content">');
+      html.push(`<pre>${escapeHtml(result.report.summary)}</pre>`);
+      html.push(`<pre>${escapeHtml(result.report.includedItems)}</pre>`);
+      html.push(`<pre>${escapeHtml(result.report.potentialOmissions)}</pre>`);
+      html.push(`<pre>${escapeHtml(result.report.potentialUnderScoping)}</pre>`);
+      html.push(`<pre>${escapeHtml(result.report.limitations)}</pre>`);
+      html.push('</div>');
+    }
+    
+    html.push('</div>');
+  });
+  
+  // Comparison summary (if multiple estimates)
+  if (analysisResults.length > 1) {
+    html.push('<div class="comparison-summary">');
+    html.push('<h3>Comparison Summary</h3>');
+    
+    // Compare classifications
+    const classifications = analysisResults.map(r => r.classification.classification);
+    const allSameType = classifications.every(c => c === classifications[0]);
+    
+    if (allSameType) {
+      html.push(`<p>✓ All estimates are classified as <strong>${classifications[0]}</strong> type.</p>`);
+    } else {
+      html.push(`<p>⚠️ Estimates have different classifications: ${classifications.join(', ')}</p>`);
+    }
+    
+    // Compare categories
+    html.push('<h4>Category Coverage Comparison</h4>');
+    html.push('<table class="comparison-table">');
+    html.push('<thead><tr><th>Estimate</th><th>Categories Found</th><th>Categories Missing</th></tr></thead>');
+    html.push('<tbody>');
+    
+    analysisResults.forEach((result, idx) => {
+      const found = result.analysis.includedCategories?.length || 0;
+      const missing = result.analysis.missingCategories?.length || 0;
+      html.push(`<tr><td>${result.filename}</td><td>${found}</td><td>${missing}</td></tr>`);
+    });
+    
+    html.push('</tbody></table>');
+    html.push('</div>');
+  }
+  
+  html.push('</div>');
+  
+  return html.join('\n');
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
 

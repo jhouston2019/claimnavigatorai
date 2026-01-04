@@ -103,34 +103,7 @@
     </section>
   </main>
 
-    <script>
-        async function runAnalysis(module) {
-            const resultDiv = document.getElementById('result-' + module);
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = '<p><em>Analyzing, please wait...</em></p>';
-
-            const inputs = {
-                laborRate: document.getElementById('laborRate').value,
-                taxRate: document.getElementById('taxRate').value,
-                includeOverhead: document.getElementById('includeOverhead').checked,
-                notes: document.getElementById('notes').value,
-                fileCount: document.getElementById('estimates').files.length
-            };
-
-            try {
-                const res = await fetch('/.netlify/functions/claim-analysis', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ module, inputs })
-                });
-                
-                const data = await res.json();
-                resultDiv.innerHTML = data.ok ? data.html : '<p class="error">Error: ' + (data.error || 'No response') + '</p>';
-            } catch (e) {
-                resultDiv.innerHTML = '<p class="error">Network error. Try again.</p>';
-            }
-        }
-    </script>
+    <!-- Fallback removed - module script is the ONLY execution path -->
     <script type="module" src="/app/assets/js/tools/claim-analysis-estimate.js"></script>
 </body>
 </html>
