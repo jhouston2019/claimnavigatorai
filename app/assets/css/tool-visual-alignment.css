@@ -557,6 +557,258 @@ body.tool-page {
 .tool-mt-4 { margin-top: 32px; }
 
 /* ============================================
+   UNIVERSAL FALLBACK STYLES
+   (Works with any class names or HTML structure)
+   ============================================ */
+
+/* Apply to ALL body elements */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  background: var(--bg-page) !important;
+  color: var(--text-primary) !important;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* Generic header styling */
+header, .header {
+  background: var(--navy-primary) !important;
+  color: var(--text-white) !important;
+  padding: 16px 32px;
+  border-bottom: 2px solid var(--gold-accent);
+}
+
+/* Generic navigation */
+nav, .nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+nav a, .nav a {
+  color: var(--text-white) !important;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+nav a:hover, .nav a:hover {
+  color: var(--gold-accent) !important;
+}
+
+/* Generic containers */
+.container, main, .main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px;
+  background: var(--bg-page) !important;
+}
+
+/* Generic content boxes/cards - match ANY class ending in -container, -card, -box, -panel */
+[class*="-container"],
+[class*="-card"],
+[class*="-box"],
+[class*="-panel"],
+[class*="-wrapper"] {
+  background: var(--bg-white) !important;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+/* Generic headers within containers */
+[class*="-header"] {
+  background: var(--bg-cream) !important;
+  padding: 20px 24px;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 2px solid var(--border-light);
+  margin: -24px -24px 24px -24px;
+}
+
+[class*="-header"] h1,
+[class*="-header"] h2 {
+  color: var(--navy-dark) !important;
+  margin: 0 0 8px 0;
+  font-weight: 700;
+}
+
+[class*="-header"] p {
+  color: var(--text-secondary) !important;
+  margin: 0;
+}
+
+/* Generic buttons - match ANY class containing "button" or "btn" */
+button,
+[class*="button"],
+[class*="btn"],
+input[type="submit"],
+input[type="button"] {
+  font-family: 'Inter', sans-serif !important;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-white) !important;
+  color: var(--text-primary) !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+button:hover,
+[class*="button"]:hover,
+[class*="btn"]:hover {
+  background: var(--navy-primary) !important;
+  color: var(--text-white) !important;
+  border-color: var(--navy-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Primary action buttons */
+[class*="primary"],
+button[type="submit"] {
+  background: var(--navy-primary) !important;
+  color: var(--text-white) !important;
+  border-color: var(--navy-primary);
+}
+
+[class*="primary"]:hover,
+button[type="submit"]:hover {
+  background: var(--navy-dark) !important;
+}
+
+/* Generic form inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+input[type="number"],
+textarea,
+select {
+  font-family: 'Inter', sans-serif !important;
+  padding: 10px 14px;
+  border: 1px solid var(--border-medium);
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--bg-white) !important;
+  color: var(--text-primary) !important;
+  width: 100%;
+  max-width: 100%;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--navy-primary);
+  box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1);
+}
+
+/* Generic status badges */
+[class*="badge"],
+[class*="status"],
+[class*="tag"] {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--bg-cream) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-light);
+}
+
+/* Generic action grids */
+[class*="-actions"],
+[class*="-grid"] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+/* Generic lists */
+ul, ol {
+  color: var(--text-primary) !important;
+}
+
+/* Generic headings */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--navy-dark) !important;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: 0;
+}
+
+h1 { font-size: 32px; margin-bottom: 16px; }
+h2 { font-size: 24px; margin-bottom: 12px; }
+h3 { font-size: 20px; margin-bottom: 10px; }
+h4 { font-size: 18px; margin-bottom: 8px; }
+
+/* Generic paragraphs */
+p {
+  color: var(--text-secondary) !important;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+/* Generic links */
+a {
+  color: var(--accent-blue) !important;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--navy-primary) !important;
+  text-decoration: underline;
+}
+
+/* Generic tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-white) !important;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+th {
+  background: var(--navy-primary) !important;
+  color: var(--text-white) !important;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary) !important;
+}
+
+tr:hover {
+  background: var(--bg-cream) !important;
+}
+
+/* Generic alerts/messages */
+[class*="alert"],
+[class*="message"],
+[class*="notice"] {
+  padding: 16px 20px;
+  border-radius: 6px;
+  border-left: 4px solid var(--accent-blue);
+  background: var(--bg-cream) !important;
+  color: var(--text-primary) !important;
+  margin-bottom: 16px;
+}
+
+/* ============================================
    END OF TOOL VISUAL ALIGNMENT LAYER
    ============================================ */
 
