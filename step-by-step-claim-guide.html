@@ -527,26 +527,27 @@
       top: 80px;
       right: 24px;
       background: var(--bg-white);
-      border: 2px solid var(--border-medium);
-      border-radius: 14px;
-      padding: 6px 10px;
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 4px 8px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
       z-index: 1000;
-      box-shadow: var(--shadow-md);
-      min-width: 110px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      min-width: 90px;
+      max-width: 120px;
     }
 
     .progress-indicator > div:first-child {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
     }
 
     .progress-ring {
-      width: 18px;
-      height: 18px;
+      width: 14px;
+      height: 14px;
       position: relative;
       flex-shrink: 0;
     }
@@ -558,13 +559,13 @@
     .progress-ring-bg {
       fill: none;
       stroke: var(--border-light);
-      stroke-width: 2;
+      stroke-width: 1.5;
     }
 
     .progress-ring-fill {
       fill: none;
       stroke: var(--navy-primary);
-      stroke-width: 2;
+      stroke-width: 1.5;
       stroke-linecap: round;
       stroke-dasharray: 100;
       stroke-dashoffset: calc(100 - (100 * var(--progress, 0)) / 100);
@@ -578,34 +579,40 @@
     }
 
     .progress-percent {
-      font-size: 8px;
+      font-size: 9px;
       font-weight: 600;
       color: var(--text-primary);
+      line-height: 1.2;
     }
 
     .progress-stage {
-      font-size: 6px;
+      font-size: 7px;
       color: var(--text-muted);
+      line-height: 1.2;
     }
 
     .progress-readiness {
       display: flex;
       align-items: center;
-      gap: 2px;
+      gap: 3px;
       padding-top: 3px;
       border-top: 1px solid #e5e7eb;
-      font-size: 9px;
     }
 
     .readiness-icon {
-      font-size: 10px;
+      font-size: 9px;
       line-height: 1;
+      flex-shrink: 0;
     }
 
     .readiness-status {
-      font-size: 9px;
+      font-size: 8px;
       font-weight: 500;
       color: #6b7280;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* Step Accordion */
@@ -2876,9 +2883,9 @@
     <div class="progress-indicator">
       <div>
         <div class="progress-ring" style="--progress: 10">
-          <svg width="18" height="18">
-            <circle class="progress-ring-bg" cx="9" cy="9" r="8"></circle>
-            <circle class="progress-ring-fill" cx="9" cy="9" r="8"></circle>
+          <svg width="14" height="14">
+            <circle class="progress-ring-bg" cx="7" cy="7" r="6"></circle>
+            <circle class="progress-ring-fill" cx="7" cy="7" r="6"></circle>
           </svg>
         </div>
         <div class="progress-text">
@@ -2888,7 +2895,7 @@
       </div>
       <div class="progress-readiness">
         <span class="readiness-icon" id="readinessIcon">⚠️</span>
-        <span class="readiness-status" id="readinessStatus">Claim Not Ready to Submit</span>
+        <span class="readiness-status" id="readinessStatus">Not Ready</span>
       </div>
     </div>
 
@@ -4508,15 +4515,15 @@
       if (criticalCompleted === 0) {
         // Not Ready
         icon.textContent = '⚠️';
-        status.textContent = 'Claim Not Ready to Submit';
+        status.textContent = 'Not Ready';
       } else if (criticalCompleted < criticalSteps.length) {
         // Partially Ready
         icon.textContent = '⚙️';
-        status.textContent = 'Claim Partially Ready';
+        status.textContent = 'Partial';
       } else {
         // Ready to Submit
         icon.textContent = '✅';
-        status.textContent = 'Claim Ready to Submit';
+        status.textContent = 'Ready';
       }
     }
 
