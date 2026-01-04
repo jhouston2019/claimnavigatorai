@@ -3178,8 +3178,8 @@
           <div class="accordion-left">
             <div class="accordion-number">6</div>
             <div class="accordion-title-area">
-              <div class="accordion-title">Additional Living Expense (ALE) & Temporary Housing</div>
-              <div class="accordion-subtitle">Determine ALE eligibility, document necessary expenses, and understand reasonable vs necessary standards and duration limits.</div>
+              <div class="accordion-title">Align Loss With Policy Coverage</div>
+              <div class="accordion-subtitle">Match your repair estimate and contents inventory to policy coverage limits, sub-limits, and exclusions. Identify any gaps or caps that apply.</div>
             </div>
           </div>
           <div class="accordion-toggle">▼</div>
@@ -3194,8 +3194,8 @@
           <div class="accordion-left">
             <div class="accordion-number">7</div>
             <div class="accordion-title-area">
-              <div class="accordion-title">Build Contents Inventory</div>
-              <div class="accordion-subtitle">Create a room-by-room inventory of all damaged personal property. List every item with description, quantity, condition, and age.</div>
+              <div class="accordion-title">Additional Living Expense (ALE) & Temporary Housing</div>
+              <div class="accordion-subtitle">Determine ALE eligibility, document necessary expenses, and understand reasonable vs necessary standards and duration limits.</div>
             </div>
           </div>
           <div class="accordion-toggle">▼</div>
@@ -3210,8 +3210,8 @@
           <div class="accordion-left">
             <div class="accordion-number">8</div>
             <div class="accordion-title-area">
-              <div class="accordion-title">Contents Valuation (ACV / RCV)</div>
-              <div class="accordion-subtitle">Calculate replacement cost value and actual cash value for each item in your inventory. Understand depreciation handling and RCV recovery requirements.</div>
+              <div class="accordion-title">Build Contents Inventory</div>
+              <div class="accordion-subtitle">Create a room-by-room inventory of all damaged personal property. List every item with description, quantity, condition, and age.</div>
             </div>
           </div>
           <div class="accordion-toggle">▼</div>
@@ -3226,8 +3226,8 @@
           <div class="accordion-left">
             <div class="accordion-number">9</div>
             <div class="accordion-title-area">
-              <div class="accordion-title">Align Loss With Policy Coverage</div>
-              <div class="accordion-subtitle">Match your repair estimate and contents inventory to policy coverage limits, sub-limits, and exclusions. Identify any gaps or caps that apply.</div>
+              <div class="accordion-title">Contents Valuation (ACV / RCV)</div>
+              <div class="accordion-subtitle">Calculate replacement cost value and actual cash value for each item in your inventory. Understand depreciation handling and RCV recovery requirements.</div>
             </div>
           </div>
           <div class="accordion-toggle">▼</div>
@@ -3652,6 +3652,35 @@
       },
       6: {
         label: 'STEP 6 OF 13',
+        title: 'Align Loss With Policy Coverage',
+        subtitle: 'Map documented losses to policy coverages, limits, and endorsements to ensure proper claim alignment.',
+        primaryAction: {
+          title: 'Align Loss to Coverage',
+          description: 'The AI automatically imports policy details from Step 1 and loss documentation from Steps 3-5, maps all losses to applicable coverages, identifies sublimit impacts, flags exclusion conflicts, and generates a Coverage Alignment Report.',
+          tool: { id: 'coverage-alignment', title: 'Coverage Alignment Engine', classification: 'required' }
+        },
+        reportSections: {
+          title: 'Coverage Alignment Report',
+          description: 'Mapping of losses to policy coverages',
+          viewTool: { id: 'alignment-report-viewer', title: 'View Coverage Alignment Report', classification: 'required' },
+          sections: [
+            'Coverage Mapping Summary',
+            'Sublimit Impact Analysis',
+            'Exclusion Conflict Flags',
+            'Missed Coverage Opportunities',
+            'Claim Allocation Strategy'
+          ]
+        },
+        infoNote: 'Note: This step ensures all documented losses are properly applied to available coverage and identifies missed opportunities.',
+        additionalTools: [
+          { id: 'coverage-mapping-visualizer', title: 'Coverage Mapping Visualizer' },
+          { id: 'sublimit-impact-analyzer', title: 'Sublimit Impact Analyzer' },
+          { id: 'endorsement-opportunity-identifier', title: 'Endorsement Opportunity Identifier' },
+          { id: 'coverage-gap-detector', title: 'Coverage Gap Detector' }
+        ]
+      },
+      7: {
+        label: 'STEP 7 OF 13',
         title: 'ALE & Temporary Housing',
         subtitle: 'Track and validate Additional Living Expense (ALE) benefits for temporary housing and displacement costs.',
         primaryAction: {
@@ -3679,8 +3708,8 @@
           { id: 'temporary-housing-documentation-helper', title: 'Temporary Housing Documentation Helper' }
         ]
       },
-      7: {
-        label: 'STEP 7 OF 13',
+      8: {
+        label: 'STEP 8 OF 13',
         title: 'Build Contents Inventory',
         subtitle: 'Create a complete room-by-room inventory of damaged personal property.',
         primaryAction: {
@@ -3708,13 +3737,13 @@
         ],
         isCritical: true
       },
-      8: {
-        label: 'STEP 8 OF 13',
+      9: {
+        label: 'STEP 9 OF 13',
         title: 'Contents Valuation',
         subtitle: 'Calculate ACV and RCV for all inventoried contents with AI-powered valuation.',
         primaryAction: {
           title: 'Calculate Contents Value',
-          description: 'The AI automatically calculates RCV (Replacement Cost Value) and ACV (Actual Cash Value) for all items from Step 7 inventory. Review valuations, adjust if needed, and generate a Contents Valuation Report showing ACV/RCV totals, depreciation summary, and holdback amounts.',
+          description: 'The AI automatically calculates RCV (Replacement Cost Value) and ACV (Actual Cash Value) for all items from Step 8 inventory. Review valuations, adjust if needed, and generate a Contents Valuation Report showing ACV/RCV totals, depreciation summary, and holdback amounts.',
           tool: { id: 'contents-valuation', title: 'Contents Valuation Tool', classification: 'required' }
         },
         reportSections: {
@@ -3734,35 +3763,6 @@
           { id: 'depreciation-calculator', title: 'Depreciation Calculator' },
           { id: 'comparable-item-finder', title: 'Comparable Item Finder' },
           { id: 'replacement-cost-justification-tool', title: 'Replacement Cost Justification Tool' }
-        ]
-      },
-      9: {
-        label: 'STEP 9 OF 13',
-        title: 'Align Loss With Policy Coverage',
-        subtitle: 'Map documented losses to policy coverages, limits, and endorsements to ensure proper claim alignment.',
-        primaryAction: {
-          title: 'Align Loss to Coverage',
-          description: 'The AI automatically imports policy details from Step 1 and loss documentation from Steps 3-8, maps all losses to applicable coverages, identifies sublimit impacts, flags exclusion conflicts, and generates a Coverage Alignment Report.',
-          tool: { id: 'coverage-alignment', title: 'Coverage Alignment Engine', classification: 'required' }
-        },
-        reportSections: {
-          title: 'Coverage Alignment Report',
-          description: 'Mapping of losses to policy coverages',
-          viewTool: { id: 'alignment-report-viewer', title: 'View Coverage Alignment Report', classification: 'required' },
-          sections: [
-            'Coverage Mapping Summary',
-            'Sublimit Impact Analysis',
-            'Exclusion Conflict Flags',
-            'Missed Coverage Opportunities',
-            'Claim Allocation Strategy'
-          ]
-        },
-        infoNote: 'Note: This step ensures all documented losses are properly applied to available coverage and identifies missed opportunities.',
-        additionalTools: [
-          { id: 'coverage-mapping-visualizer', title: 'Coverage Mapping Visualizer' },
-          { id: 'sublimit-impact-analyzer', title: 'Sublimit Impact Analyzer' },
-          { id: 'endorsement-opportunity-identifier', title: 'Endorsement Opportunity Identifier' },
-          { id: 'coverage-gap-detector', title: 'Coverage Gap Detector' }
         ]
       },
       10: {
