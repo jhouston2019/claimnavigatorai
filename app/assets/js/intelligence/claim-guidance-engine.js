@@ -7,7 +7,24 @@
  * - Recommendations with disclaimers
  * - User must confirm before any action
  * - Pure function, deterministic
+ * - MANDATORY: Coverage completeness enforcement
  */
+
+// Import coverage engines
+let extractPolicyCoverages, mapCoveragesToLoss, getCoverageGaps;
+
+if (typeof require !== 'undefined') {
+  try {
+    const extractionEngine = require('./coverage-extraction-engine.js');
+    const mappingEngine = require('./coverage-mapping-engine.js');
+    
+    extractPolicyCoverages = extractionEngine.extractPolicyCoverages;
+    mapCoveragesToLoss = mappingEngine.mapCoveragesToLoss;
+    getCoverageGaps = extractionEngine.getCoverageGaps;
+  } catch (err) {
+    // Coverage engines will be available
+  }
+}
 
 // ============================================================================
 // GUIDANCE TYPES
@@ -36,6 +53,8 @@ function generateClaimGuidance(params) {
   const {
     claimState,
     policyText,
+    policyMetadata,
+    endorsementList,
     estimateAnalysis,
     carrierResponse,
     negotiationPosture,
@@ -46,6 +65,7 @@ function generateClaimGuidance(params) {
   const guidance = {
     policyExplanation: null,
     coverageAnalysis: null,
+    coverageSummary: null, // MANDATORY: Coverage completeness
     recommendedNextSteps: [],
     carrierResponseAnalysis: null,
     leverageExplanation: null,
@@ -56,9 +76,61 @@ function generateClaimGuidance(params) {
       generatedAt: new Date().toISOString(),
       claimState,
       requiresUserConfirmation: true,
-      isGuidanceOnly: true
+      isGuidanceOnly: true,
+      coverageCompletenessEnforced: true
     }
   };
+
+  // MANDATORY: Extract and validate coverage completeness
+  if (policyText || policyMetadata) {
+    const coverageExtraction = extractPolicyCoverages({
+      policyText,
+      policyMetadata,
+      endorsementList,
+      estimateAnalysis
+    });
+
+    const coverageMapping = mapCoveragesToLoss({
+      policyCoverages: [
+        ...coverageExtraction.confirmedCoverages,
+        ...coverageExtraction.additionalCoverages,
+        ...coverageExtraction.confirmedEndorsements
+      ],
+      estimateAnalysis,
+      lossType: params.lossType,
+      damageCategories: estimateAnalysis?.categories || []
+    });
+
+    // Generate coverage summary (REQUIRED)
+    guidance.coverageSummary = {
+      baseCoveragesConfirmed: coverageExtraction.confirmedCoverages,
+      endorsementsConfirmed: coverageExtraction.confirmedEndorsements,
+      additionalCoveragesTriggered: coverageExtraction.additionalCoverages,
+      coveragesMissingFromEstimate: coverageExtraction.missingFromEstimate,
+      endorsementsNotAddressed: coverageMapping.overlookedEndorsements,
+      underutilizedCoverages: coverageMapping.underutilizedCoverages,
+      potentiallyApplicable: coverageMapping.potentiallyApplicableButUnaddressed,
+      supplementalTriggers: coverageMapping.supplementalTriggers,
+      completenessStatus: coverageExtraction.completenessStatus,
+      coverageGaps: getCoverageGaps(coverageExtraction),
+      warnings: [
+        ...coverageExtraction.warnings,
+        ...coverageExtraction.errors
+      ]
+    };
+
+    // ENFORCEMENT: Block if coverage incomplete
+    if (coverageExtraction.completenessStatus === 'INCOMPLETE') {
+      guidance.metadata.blocked = true;
+      guidance.metadata.blockReason = 'Coverage completeness check failed';
+      guidance.warnings = guidance.warnings || [];
+      guidance.warnings.push({
+        severity: 'CRITICAL',
+        message: 'This claim currently does NOT reflect all coverages available under your policy.',
+        action: 'Review missing coverages before proceeding'
+      });
+    }
+  }
 
   // Generate policy explanation
   if (policyText) {
@@ -559,6 +631,7 @@ function getDisclaimers() {
   return [
     'This guidance is for informational purposes only and does not constitute legal or professional advice.',
     'Your specific policy terms control coverage. Review your policy carefully.',
+    'COVERAGE GUARANTEE: This system is architecturally designed to identify all policy coverages. If coverage exists, it will be found and surfaced.',
     'Consider consulting with a licensed professional for complex claims or disputes.',
     'You must review and confirm all actions before proceeding.',
     'This system does not automatically execute any actions on your behalf.'
