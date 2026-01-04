@@ -1,406 +1,511 @@
 /**
  * CLAIM NAVIGATOR TOOL REGISTRY
  * 
- * This registry maps step guide tool IDs to actual tool pages.
- * All tools are now in /app/tools/ directory with clean, consistent templates.
+ * This registry maps step guide tool IDs back to the step-by-step claim guide.
+ * All tools are embedded within the step-by-step guide interface.
  * 
  * Updated: January 2026
  */
 
 const TOOL_REGISTRY = {
+  // All tools redirect to step-by-step guide with step parameter
+  // The guide handles tool functionality internally
+  
+  // Step 1 - Policy Review
   'policy-uploader': {
-    url: '/app/tools/policy-uploader.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=1',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 1
   },
   'policy-intelligence-engine': {
-    url: '/app/tools/policy-intelligence-engine.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=1',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 1
   },
   'policy-report-viewer': {
-    url: '/app/tools/policy-report-viewer.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=1',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 1
   },
   'step1-acknowledgment': {
-    url: '/app/tools/step1-acknowledgment.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=1',
+    engine: 'acknowledgment',
+    mode: 'embedded',
+    step: 1
   },
   'coverage-qa-chat': {
-    url: '/app/tools/coverage-qa-chat.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=1',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 1
   },
   'coverage-clarification-letter': {
-    url: '/app/tools/coverage-clarification-letter.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=1',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 1
   },
   'policy-interpretation-letter': {
-    url: '/app/tools/policy-interpretation-letter.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=1',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 1
   },
   'download-policy-report': {
-    url: '/app/tools/download-policy-report.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=1',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 1
   },
+  
+  // Step 2 - Policyholder Duties
   'compliance-auto-import': {
-    url: '/app/tools/compliance-auto-import.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=2',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 2
   },
   'compliance-review': {
-    url: '/app/tools/compliance-review.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=2',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 2
   },
   'compliance-report-viewer': {
-    url: '/app/tools/compliance-report-viewer.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=2',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 2
   },
   'step2-acknowledgment': {
-    url: '/app/tools/step2-acknowledgment.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=2',
+    engine: 'acknowledgment',
+    mode: 'embedded',
+    step: 2
   },
   'deadline-calculator': {
-    url: '/app/tools/deadline-calculator.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=2',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 2
   },
   'mitigation-documentation-tool': {
-    url: '/app/tools/mitigation-documentation-tool.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=2',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 2
   },
   'proof-of-loss-tracker': {
-    url: '/app/tools/proof-of-loss-tracker.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=2',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 2
   },
   'euo-sworn-statement-guide': {
-    url: '/app/tools/euo-sworn-statement-guide.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=2',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 2
   },
+  
+  // Step 3 - Damage Documentation
   'damage-documentation': {
-    url: '/app/tools/damage-documentation.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=3',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 3
   },
   'damage-report-engine': {
-    url: '/app/tools/damage-report-engine.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=3',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 3
   },
   'damage-report-viewer': {
-    url: '/app/tools/damage-report-viewer.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=3',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 3
   },
   'step3-acknowledgment': {
-    url: '/app/tools/step3-acknowledgment.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=3',
+    engine: 'acknowledgment',
+    mode: 'embedded',
+    step: 3
   },
   'photo-upload-organizer': {
-    url: '/app/tools/photo-upload-organizer.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=3',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 3
   },
   'damage-labeling-tool': {
-    url: '/app/tools/damage-labeling-tool.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=3',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 3
   },
   'missing-evidence-identifier': {
-    url: '/app/tools/missing-evidence-identifier.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=3',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 3
   },
+  
+  // Step 4 - Repair Estimate
   'estimate-review': {
-    url: '/app/tools/estimate-review.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=4',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 4
   },
   'contractor-scope-checklist': {
-    url: '/app/tools/contractor-scope-checklist.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=4',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 4
   },
   'code-upgrade-identifier': {
-    url: '/app/tools/code-upgrade-identifier.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=4',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 4
   },
   'missing-trade-detector': {
-    url: '/app/tools/missing-trade-detector.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=4',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 4
   },
   'estimate-revision-request-generator': {
-    url: '/app/tools/estimate-revision-request-generator.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=4',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 4
   },
+  
+  // Step 5 - Estimate Comparison
   'estimate-comparison': {
-    url: '/app/tools/estimate-comparison.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=5',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 5
   },
   'line-item-discrepancy-finder': {
-    url: '/app/tools/line-item-discrepancy-finder.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=5',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 5
   },
   'pricing-deviation-analyzer': {
-    url: '/app/tools/pricing-deviation-analyzer.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=5',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 5
   },
   'scope-omission-detector': {
-    url: '/app/tools/scope-omission-detector.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=5',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 5
   },
   'negotiation-language-generator': {
-    url: '/app/tools/negotiation-language-generator.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=5',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 5
   },
+  
+  // Step 6 - ALE & Housing
   'ale-tracker': {
-    url: '/app/tools/ale-tracker.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=6',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 6
   },
   'expense-upload-tool': {
-    url: '/app/tools/expense-upload-tool.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=6',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 6
   },
   'ale-eligibility-checker': {
-    url: '/app/tools/ale-eligibility-checker.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=6',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 6
   },
   'remaining-ale-limit-calculator': {
-    url: '/app/tools/remaining-ale-limit-calculator.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=6',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 6
   },
   'temporary-housing-documentation-helper': {
-    url: '/app/tools/temporary-housing-documentation-helper.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=6',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 6
   },
+  
+  // Step 7 - Contents Inventory
   'contents-inventory': {
-    url: '/app/tools/contents-inventory.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=7',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 7
   },
   'room-by-room-prompt-tool': {
-    url: '/app/tools/room-by-room-prompt-tool.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=7',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 7
   },
   'category-coverage-checker': {
-    url: '/app/tools/category-coverage-checker.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=7',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 7
   },
   'contents-documentation-helper': {
-    url: '/app/tools/contents-documentation-helper.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=7',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 7
   },
+  
+  // Step 8 - Contents Valuation
   'contents-valuation': {
-    url: '/app/tools/contents-valuation.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=8',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 8
   },
   'depreciation-calculator': {
-    url: '/app/tools/depreciation-calculator.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=8',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 8
   },
   'comparable-item-finder': {
-    url: '/app/tools/comparable-item-finder.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=8',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 8
   },
   'replacement-cost-justification-tool': {
-    url: '/app/tools/replacement-cost-justification-tool.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=8',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 8
   },
+  
+  // Step 9 - Coverage Alignment
   'coverage-alignment': {
-    url: '/app/tools/coverage-alignment.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=9',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 9
   },
   'coverage-mapping-visualizer': {
-    url: '/app/tools/coverage-mapping-visualizer.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=9',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 9
   },
   'sublimit-impact-analyzer': {
-    url: '/app/tools/sublimit-impact-analyzer.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=9',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 9
   },
   'endorsement-opportunity-identifier': {
-    url: '/app/tools/endorsement-opportunity-identifier.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=9',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 9
   },
   'coverage-gap-detector': {
-    url: '/app/tools/coverage-gap-detector.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=9',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 9
   },
+  
+  // Step 10 - Claim Package
   'claim-package-assembly': {
-    url: '/app/tools/claim-package-assembly.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=10',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 10
   },
   'submission-checklist-generator': {
-    url: '/app/tools/submission-checklist-generator.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=10',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 10
   },
   'missing-document-identifier': {
-    url: '/app/tools/missing-document-identifier.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=10',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 10
   },
   'pre-submission-risk-review-tool': {
-    url: '/app/tools/pre-submission-risk-review-tool.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=10',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 10
   },
   'carrier-submission-cover-letter-generator': {
-    url: '/app/tools/carrier-submission-cover-letter-generator.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=10',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 10
   },
+  
+  // Step 11 - Submit Claim
   'submission-method': {
-    url: '/app/tools/submission-method.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=11',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 11
   },
   'claim-submitter': {
-    url: '/app/tools/claim-submitter.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=11',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 11
   },
   'submission-report-engine': {
-    url: '/app/tools/submission-report-engine.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=11',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 11
   },
   'method-timestamp-view': {
-    url: '/app/tools/method-timestamp-view.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=11',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 11
   },
   'acknowledgment-status-view': {
-    url: '/app/tools/acknowledgment-status-view.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=11',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 11
   },
   'followup-schedule-view': {
-    url: '/app/tools/followup-schedule-view.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=11',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 11
   },
   'step11-next-moves': {
-    url: '/app/tools/step11-next-moves.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=11',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 11
   },
   'step11-acknowledgment': {
-    url: '/app/tools/step11-acknowledgment.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=11',
+    engine: 'acknowledgment',
+    mode: 'embedded',
+    step: 11
   },
   'submission-confirmation-email': {
-    url: '/app/tools/submission-confirmation-email.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=11',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 11
   },
   'followup-status-letter': {
-    url: '/app/tools/followup-status-letter.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=11',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 11
   },
   'download-submission-report': {
-    url: '/app/tools/download-submission-report.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=11',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 11
   },
+  
+  // Step 12 - Carrier Requests
   'carrier-response': {
-    url: '/app/tools/carrier-response.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=12',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 12
   },
   'carrier-request-logger': {
-    url: '/app/tools/carrier-request-logger.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=12',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 12
   },
   'deadline-response-tracker': {
-    url: '/app/tools/deadline-response-tracker.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=12',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 12
   },
   'response-letter-generator': {
-    url: '/app/tools/response-letter-generator.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=12',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 12
   },
   'document-production-checklist': {
-    url: '/app/tools/document-production-checklist.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=12',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 12
   },
+  
+  // Step 13 - Underpayments
   'supplement-analysis': {
-    url: '/app/tools/supplement-analysis.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=13',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 13
   },
   'supplement-calculation-tool': {
-    url: '/app/tools/supplement-calculation-tool.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=13',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 13
   },
   'negotiation-strategy-generator': {
-    url: '/app/tools/negotiation-strategy-generator.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=13',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 13
   },
   'supplement-cover-letter-generator': {
-    url: '/app/tools/supplement-cover-letter-generator.html',
-    engine: 'tool',
-    mode: 'standard'
+    url: '/step-by-step-claim-guide.html?step=13',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 13
   },
   'escalation-readiness-checker': {
-    url: '/app/tools/escalation-readiness-checker.html',
-    engine: 'tool',
-    mode: 'standard'
-  },
-}
+    url: '/step-by-step-claim-guide.html?step=13',
+    engine: 'guide',
+    mode: 'embedded',
+    step: 13
+  }
+};
 
 // Helper function to get tool configuration
 function getToolConfig(toolId) {
   return TOOL_REGISTRY[toolId] || null;
 }
 
-// Helper function to open a tool
+// Helper function to open a tool (redirects to step-by-step guide)
 function openTool(toolId, stepNum) {
   const config = getToolConfig(toolId);
   if (!config) {
@@ -408,6 +513,7 @@ function openTool(toolId, stepNum) {
     return;
   }
   
-  const url = config.url + (stepNum ? `?step=${stepNum}` : '');
-  window.location.href = url;
+  // All tools redirect to the step-by-step guide
+  const step = stepNum || config.step || 1;
+  window.location.href = `/step-by-step-claim-guide.html?step=${step}`;
 }
