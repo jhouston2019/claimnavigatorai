@@ -529,16 +529,24 @@
       border-radius: 28px;
       padding: 12px 20px;
       display: flex;
-      align-items: center;
-      gap: 12px;
+      flex-direction: column;
+      gap: 8px;
       z-index: 1000;
       box-shadow: var(--shadow-md);
+      min-width: 220px;
+    }
+
+    .progress-indicator > div:first-child {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .progress-ring {
       width: 36px;
       height: 36px;
       position: relative;
+      flex-shrink: 0;
     }
 
     .progress-ring svg {
@@ -564,6 +572,7 @@
     .progress-text {
       display: flex;
       flex-direction: column;
+      flex: 1;
     }
 
     .progress-percent {
@@ -575,6 +584,25 @@
     .progress-stage {
       font-size: 12px;
       color: var(--text-muted);
+    }
+
+    .progress-readiness {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-top: 8px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 11px;
+    }
+
+    .readiness-icon {
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .readiness-status {
+      font-weight: 600;
+      color: #6b7280;
     }
 
     /* Step Accordion */
@@ -2765,15 +2793,21 @@
   <div class="container">
     <!-- Progress Indicator -->
     <div class="progress-indicator">
-      <div class="progress-ring" style="--progress: 10">
-        <svg width="36" height="36">
-          <circle class="progress-ring-bg" cx="18" cy="18" r="16"></circle>
-          <circle class="progress-ring-fill" cx="18" cy="18" r="16"></circle>
-        </svg>
+      <div>
+        <div class="progress-ring" style="--progress: 10">
+          <svg width="36" height="36">
+            <circle class="progress-ring-bg" cx="18" cy="18" r="16"></circle>
+            <circle class="progress-ring-fill" cx="18" cy="18" r="16"></circle>
+          </svg>
+        </div>
+        <div class="progress-text">
+          <span class="progress-percent">10% Complete</span>
+          <span class="progress-stage">Step 1 of 13</span>
+        </div>
       </div>
-      <div class="progress-text">
-        <span class="progress-percent">10% Complete</span>
-        <span class="progress-stage">Step 1 of 13</span>
+      <div class="progress-readiness">
+        <span class="readiness-icon" id="readinessIcon">⚠️</span>
+        <span class="readiness-status" id="readinessStatus">Claim Not Ready to Submit</span>
       </div>
     </div>
 
@@ -3061,14 +3095,6 @@
         <button class="btn-post-claim" onclick="downloadClaimFile()">📥 Download Complete Claim File</button>
         <button class="btn-post-claim secondary" onclick="viewClaimArchive()">📂 View Archived Documents</button>
       </div>
-    </div>
-
-    <!-- Claim Readiness Status -->
-    <div style="background: #f9fafb; border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px 20px; margin: 48px 0 32px 0; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); text-align: center;">
-      <div style="font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 4px;">
-        <span id="readinessIcon">⚠️</span> <span id="readinessStatus">Claim Not Ready to Submit</span>
-      </div>
-      <div style="font-size: 12px; color: #6b7280;" id="readinessMessage">Complete required documentation steps to submit your claim.</div>
     </div>
 
     </div><!-- End content-area -->
@@ -4332,9 +4358,8 @@
     function updateReadinessStatus() {
       const icon = document.getElementById('readinessIcon');
       const status = document.getElementById('readinessStatus');
-      const message = document.getElementById('readinessMessage');
       
-      if (!icon || !status || !message) return;
+      if (!icon || !status) return;
       
       // Define critical steps for readiness
       const criticalSteps = [3, 5, 6]; // Photos, Estimate, Proof of Loss
@@ -4343,18 +4368,15 @@
       if (criticalCompleted === 0) {
         // Not Ready
         icon.textContent = '⚠️';
-        status.textContent = 'Claim Not Ready to Submit';
-        message.textContent = 'Complete required documentation steps to submit your claim.';
+        status.textContent = 'Not Ready to Submit';
       } else if (criticalCompleted < criticalSteps.length) {
         // Partially Ready
-        icon.textContent = '⚠️';
+        icon.textContent = '⚙️';
         status.textContent = 'Partially Ready';
-        message.textContent = `You have completed ${criticalCompleted} of ${criticalSteps.length} critical documentation steps.`;
       } else {
         // Ready to Submit
         icon.textContent = '✅';
         status.textContent = 'Ready to Submit';
-        message.textContent = 'All critical documentation is complete. Your claim is ready for submission.';
       }
     }
 
