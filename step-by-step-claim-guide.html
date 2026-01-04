@@ -1049,7 +1049,34 @@
       margin-bottom: 4px;
     }
 
-    /* Step 1 Refactored - Before You Continue */
+    /* Step 1 Refactored - Minimized Informational Note */
+    .step-info-note {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 24px;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .step-info-note-icon {
+      display: inline-block;
+      margin-right: 4px;
+      opacity: 0.7;
+    }
+
+    /* Tasks Intro (for Steps 2+) */
+    .tasks-intro {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      background: #eff6ff;
+      border-left: 3px solid #3b82f6;
+      border-radius: 4px;
+    }
+
+    /* Before You Continue (for Steps 2+) */
     .before-you-continue {
       background: #fef9e7;
       border: 2px solid #f59e0b;
@@ -1088,16 +1115,81 @@
       color: #92400e;
     }
 
-    /* Step 1 Refactored - Tasks Intro */
-    .tasks-intro {
-      font-size: 14px;
+    /* Step 1 - Primary Action Container */
+    .primary-action-container {
+      margin-bottom: 32px;
+      padding: 20px;
+      background: #f9fafb;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .primary-action-title {
+      font-size: 18px;
       font-weight: 600;
-      color: #2c3e50;
-      margin-bottom: 16px;
-      padding: 12px 16px;
-      background: #eff6ff;
-      border-left: 3px solid #3b82f6;
-      border-radius: 4px;
+      color: #111827;
+      margin: 0 0 12px 0;
+    }
+
+    .primary-action-description {
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.6;
+      margin: 0 0 16px 0;
+    }
+
+    /* Step 1 - Report Sections Container */
+    .report-sections-container {
+      margin-bottom: 24px;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .report-sections-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111827;
+      margin: 0 0 8px 0;
+    }
+
+    .report-sections-description {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.6;
+      margin: 0 0 16px 0;
+    }
+
+    .report-sections-list {
+      margin-top: 16px;
+      padding: 16px;
+      background: #f9fafb;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #374151;
+    }
+
+    .report-sections-list strong {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .report-sections-list ul {
+      margin: 0;
+      padding-left: 20px;
+      list-style: disc;
+    }
+
+    .report-sections-list li {
+      margin-bottom: 4px;
+      line-height: 1.5;
+    }
+
+    .report-sections-list li:last-child {
+      margin-bottom: 0;
     }
 
     /* TASKS - PRIMARY WORK SURFACE (HIGHEST VISUAL WEIGHT) */
@@ -2969,8 +3061,8 @@
           <div class="accordion-left">
             <div class="accordion-number">1</div>
             <div class="accordion-title-area">
-              <div class="accordion-title">Policy Review (Expert AI Analysis & Coverage Clarification)</div>
-              <div class="accordion-subtitle">Upload your insurance policy for AI-assisted analysis of coverages, limits, endorsements, loss settlement terms, ALE eligibility, and contents rules. Do not proceed to Step 2 until you understand your coverage terms in plain English.</div>
+              <div class="accordion-title">Policy Review & Coverage Analysis</div>
+              <div class="accordion-subtitle">Upload your insurance policy for AI-assisted analysis of coverages, limits, endorsements, loss settlement terms, ALE eligibility, and contents rules. Review your coverage terms to understand what is covered and how your claim will be paid.</div>
             </div>
           </div>
           <div class="accordion-toggle">▼</div>
@@ -3371,36 +3463,33 @@
     const stepData = {
       1: {
         label: 'STEP 1 OF 13',
-        title: 'Policy Review (Expert AI Analysis & Coverage Clarification)',
-        subtitle: 'Upload your policy documents for comprehensive AI analysis. This analysis defines what is covered, how your claim will be paid, and what rules you must follow.',
-        beforeYouContinue: {
-          ifSkipped: 'You will not know what is covered or how your claim will be settled.',
-          prevents: 'Proceeding without understanding coverage terms, limits, duties, and deadlines.',
-          doNot: 'Proceed to Step 2 until this analysis is complete and reviewed. This report governs your entire claim.'
+        title: 'Policy Review & Coverage Analysis',
+        subtitle: 'Upload your policy documents for AI analysis to understand your coverage, limits, and claim requirements.',
+        primaryAction: {
+          title: 'Upload Policy & Generate Analysis',
+          description: 'Upload all policy documents (declarations page, full policy, endorsements, riders, amendments). The AI will automatically analyze your policy and generate a comprehensive Policy Intelligence Report.',
+          tool: { id: 'policy-uploader', title: 'Upload Policy Documents', classification: 'required' }
         },
-        tasksIntro: 'Do not proceed until this analysis is complete. This report defines what is covered, how your claim will be paid, and what rules you must follow.',
-        tasks: [
-          { 
-            title: 'Upload Policy Documents', 
-            description: 'Upload all policy documents including the full policy, declarations page, endorsements, riders, amendments, and all related forms.',
-            tool: { id: 'policy-uploader', title: 'Policy Document Uploader', classification: 'required' }
-          },
-          { 
-            title: 'System Automatically Runs AI Policy Analysis', 
-            description: 'The system automatically analyzes your policy and generates a comprehensive Policy Intelligence Report. No action required.',
-            tool: { id: 'policy-intelligence-engine', title: 'AI Policy Intelligence Engine (Automatic)', classification: 'required' }
-          },
-          { 
-            title: 'Review Policy Intelligence Report', 
-            description: 'Review the complete Policy Intelligence Report including all sections: Covered Losses & Property, Coverage Limits & Sublimits, Endorsements & Riders, Exclusions & Restrictions, Loss Settlement Terms (ACV/RCV), Policyholder Duties, Deadlines & Time Requirements, ALE Rules, Contents Coverage Rules, and Critical Risk Flags.',
-            tool: { id: 'policy-report-viewer', title: 'View Policy Intelligence Report', classification: 'required' }
-          },
-          { 
-            title: 'Acknowledge Understanding of Coverage', 
-            description: 'Confirm you have reviewed and understand your policy coverage, limits, duties, and deadlines. This acknowledgment is required to proceed to Step 2.',
-            tool: { id: 'step1-acknowledgment', title: 'Acknowledge & Unlock Step 2', classification: 'required' }
-          }
-        ],
+        reportSections: {
+          title: 'Policy Intelligence Report',
+          description: 'System-generated analysis of your policy coverage',
+          viewTool: { id: 'policy-report-viewer', title: 'View Policy Intelligence Report', classification: 'required' },
+          sections: [
+            'Executive Summary',
+            'Covered Losses & Property',
+            'Coverage Limits & Sublimits',
+            'Endorsements & Riders',
+            'Exclusions & Restrictions',
+            'Loss Settlement Terms (ACV/RCV)',
+            'Policyholder Duties',
+            'Deadlines & Time Requirements',
+            'ALE Rules',
+            'Contents Coverage Rules',
+            'Critical Risk Flags',
+            'Next Moves'
+          ]
+        },
+        infoNote: 'Note: This policy analysis defines what is covered, how your claim will be paid, and which rules apply to your claim.',
         additionalTools: [
           { id: 'coverage-qa-chat', title: 'Coverage Q&A Chat' },
           { id: 'coverage-clarification-letter', title: 'Coverage Clarification Request Letter' },
@@ -4167,8 +4256,70 @@
       // Build content HTML
       let html = '';
       
-      // ALL STEPS now use the new beforeYouContinue format
-      if (data.beforeYouContinue) {
+      // STEP 1 - Special simplified structure
+      if (stepNum === 1 && data.primaryAction) {
+        // Primary action - upload and analyze
+        html += `
+          <div class="primary-action-container">
+            <h3 class="primary-action-title">${data.primaryAction.title}</h3>
+            <p class="primary-action-description">${data.primaryAction.description}</p>
+        `;
+        
+        if (data.primaryAction.tool) {
+          const classification = data.primaryAction.tool.classification || 'required';
+          html += `
+            <div class="task-tool-inline" onclick="openTool('${data.primaryAction.tool.id}', ${stepNum})">
+              <span class="task-tool-arrow">→</span>
+              <span class="task-tool-label">Use:</span>
+              <span class="task-tool-title">${data.primaryAction.tool.title}</span>
+              <span class="task-tool-classification ${classification}">${classification}</span>
+            </div>
+          `;
+        }
+        
+        html += '</div>';
+        
+        // Policy Intelligence Report Sections
+        if (data.reportSections) {
+          html += `
+            <div class="report-sections-container">
+              <h3 class="report-sections-title">${data.reportSections.title}</h3>
+              <p class="report-sections-description">${data.reportSections.description}</p>
+          `;
+          
+          if (data.reportSections.viewTool) {
+            const classification = data.reportSections.viewTool.classification || 'required';
+            html += `
+              <div class="task-tool-inline" onclick="openTool('${data.reportSections.viewTool.id}', ${stepNum})">
+                <span class="task-tool-arrow">→</span>
+                <span class="task-tool-label">View:</span>
+                <span class="task-tool-title">${data.reportSections.viewTool.title}</span>
+                <span class="task-tool-classification ${classification}">${classification}</span>
+              </div>
+            `;
+          }
+          
+          // Report sections list
+          html += '<div class="report-sections-list"><strong>Report Sections:</strong><ul>';
+          data.reportSections.sections.forEach(section => {
+            html += `<li>${section}</li>`;
+          });
+          html += '</ul></div>';
+          
+          html += '</div>';
+        }
+        
+        // Informational note at bottom
+        if (data.infoNote) {
+          html += `
+            <div class="step-info-note">
+              <span class="step-info-note-icon">ℹ️</span>${data.infoNote}
+            </div>
+          `;
+        }
+      }
+      // ALL OTHER STEPS use the standard beforeYouContinue format
+      else if (data.beforeYouContinue) {
         // Before You Continue block
         html += `
           <div class="before-you-continue">
