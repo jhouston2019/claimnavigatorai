@@ -233,6 +233,162 @@
       padding-top: 20px;
       border-top: 1px solid #e5e7eb;
     }
+
+    /* Claim Information Panel */
+    .claim-info-panel {
+      background: #1e3a8a;
+      border: none;
+      border-bottom: 1px solid #1e40af;
+      border-radius: 0;
+      padding: 0;
+      margin-bottom: 0;
+      box-shadow: none;
+    }
+
+    .claim-info-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 40px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      border-bottom: none;
+    }
+
+    .claim-info-header:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .claim-info-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .claim-info-summary {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 400;
+      margin-left: 8px;
+    }
+
+    .panel-toggle-icon {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.7);
+      transition: transform 0.2s ease;
+      margin-left: 8px;
+    }
+
+    .claim-info-panel.expanded .panel-toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    .claim-info-content {
+      display: none;
+      padding: 8px 40px 12px 40px;
+    }
+
+    .claim-info-panel.expanded .claim-info-content {
+      display: block;
+    }
+
+    .btn-edit {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 600;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-edit:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.5);
+      color: #ffffff;
+    }
+
+    .claim-info-header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .claim-info-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 20px;
+      margin-bottom: 0;
+    }
+
+    .claim-info-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 20px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .claim-info-item {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .info-label {
+      font-size: 10px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .info-label::after {
+      content: ':';
+    }
+
+    .info-value {
+      font-size: 11px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .info-value.urgent {
+      color: #fbbf24;
+      font-weight: 700;
+    }
+
+    .info-value.status-active {
+      color: #60a5fa;
+    }
+
+    .deadline-alert {
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #fbbf24;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .deadline-alert strong {
+      font-weight: 700;
+      color: #fbbf24;
+    }
   </style>
 </head>
 <body>
@@ -243,6 +399,55 @@
     <h1 class="page-title">Financial Summary</h1>
     <p class="page-subtitle">Auto-computed financial position based on your claim documentation and carrier responses.</p>
   </header>
+
+  <!-- Claim Information Panel -->
+  <section class="claim-info-panel" id="claimInfoPanel">
+    <div class="claim-info-header" onclick="toggleClaimInfoPanel()">
+      <div>
+        <h2 class="claim-info-title">
+          Your Claim Information
+          <span class="claim-info-summary">CLM-2024-089456 • State Farm</span>
+          <span class="panel-toggle-icon">▼</span>
+        </h2>
+      </div>
+      <div class="claim-info-header-right">
+        <button class="btn-edit" onclick="editClaimInfo(); event.stopPropagation();">✏️ Edit</button>
+      </div>
+    </div>
+    <div class="claim-info-content">
+      <div class="claim-info-grid">
+        <div class="claim-info-item">
+          <span class="info-label">Claim Number</span>
+          <span class="info-value" id="claimNumber">CLM-2024-089456</span>
+        </div>
+        <div class="claim-info-item">
+          <span class="info-label">Insurance Company</span>
+          <span class="info-value" id="insurerName">State Farm</span>
+        </div>
+        <div class="claim-info-item">
+          <span class="info-label">Claim Status</span>
+          <span class="info-value status-active" id="claimStatus">Active - Under Review</span>
+        </div>
+      </div>
+      <div class="claim-info-details expanded" id="claimDetails">
+        <div class="claim-info-item">
+          <span class="info-label">Date of Loss</span>
+          <span class="info-value" id="dateOfLoss">November 15, 2024</span>
+        </div>
+        <div class="claim-info-item">
+          <span class="info-label">Days Since Loss</span>
+          <span class="info-value urgent" id="daysSinceLoss">45 days</span>
+        </div>
+        <div class="claim-info-item">
+          <span class="info-label">Adjuster Name</span>
+          <span class="info-value" id="adjusterName">Mike Johnson</span>
+        </div>
+      </div>
+      <div class="deadline-alert">
+        ⚠️ <strong>Upcoming Deadline</strong> Proof of Loss due in 15 days (January 14, 2025)
+      </div>
+    </div>
+  </section>
 
   <!-- Content Area -->
   <div class="content-area">
@@ -555,6 +760,29 @@
     // Print summary
     function printSummary() {
       window.print();
+    }
+
+    // Toggle claim info panel
+    function toggleClaimInfoPanel() {
+      const panel = document.getElementById('claimInfoPanel');
+      
+      if (!panel) {
+        console.error('Claim info panel not found');
+        return;
+      }
+      
+      const isExpanded = panel.classList.contains('expanded');
+      
+      if (isExpanded) {
+        panel.classList.remove('expanded');
+      } else {
+        panel.classList.add('expanded');
+      }
+    }
+
+    // Edit claim info (placeholder)
+    function editClaimInfo() {
+      alert('Edit claim information functionality coming soon.');
     }
 
     // Load data on page load
