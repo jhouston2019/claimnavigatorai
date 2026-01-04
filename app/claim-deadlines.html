@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Deadlines - Claim Navigator AI</title>
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/css/design-system.css">
+  <script src="/storage/claimStorage.js"></script>
+  <script src="/app/assets/js/navigation-template.js"></script>
+  <style>
+    body {
+      background: #f8fafc;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+      padding: 32px 40px;
+      color: white;
+      border-bottom: 1px solid #1e3a8a;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.02em;
+    }
+
+    .page-subtitle {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 0;
+      font-weight: 400;
+    }
+
+    .content-area {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px;
+    }
+
+    .alert-banner {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 24px 32px;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+    }
+
+    .alert-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    .alert-content h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #92400e;
+      margin: 0 0 8px 0;
+    }
+
+    .alert-content p {
+      font-size: 14px;
+      color: #78350f;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .deadline-card {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e5e7eb;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .deadline-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .deadline-card.urgent {
+      border-left: 6px solid #dc2626;
+      background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
+    }
+
+    .deadline-card.warning {
+      border-left: 6px solid #f59e0b;
+      background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+    }
+
+    .deadline-card.info {
+      border-left: 6px solid #3b82f6;
+      background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+    }
+
+    .deadline-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .deadline-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    .deadline-info {
+      flex: 1;
+    }
+
+    .deadline-date {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+
+    .deadline-card.urgent .deadline-date {
+      color: #dc2626;
+    }
+
+    .deadline-card.warning .deadline-date {
+      color: #d97706;
+    }
+
+    .deadline-countdown {
+      display: inline-block;
+      background: #dc2626;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-left: 12px;
+    }
+
+    .deadline-card.warning .deadline-countdown {
+      background: #f59e0b;
+    }
+
+    .deadline-card.info .deadline-countdown {
+      background: #3b82f6;
+    }
+
+    .deadline-description {
+      font-size: 15px;
+      color: #475569;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .deadline-consequences {
+      background: #fef2f2;
+      border-left: 3px solid #dc2626;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+
+    .deadline-card.warning .deadline-consequences {
+      background: #fffbeb;
+      border-left-color: #f59e0b;
+    }
+
+    .deadline-card.info .deadline-consequences {
+      background: #eff6ff;
+      border-left-color: #3b82f6;
+    }
+
+    .deadline-consequences strong {
+      font-size: 13px;
+      font-weight: 700;
+      color: #991b1b;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .deadline-card.warning .deadline-consequences strong {
+      color: #92400e;
+    }
+
+    .deadline-card.info .deadline-consequences strong {
+      color: #1e40af;
+    }
+
+    .deadline-consequences p {
+      font-size: 13px;
+      color: #7f1d1d;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .deadline-card.warning .deadline-consequences p {
+      color: #78350f;
+    }
+
+    .deadline-card.info .deadline-consequences p {
+      color: #1e3a8a;
+    }
+
+    .deadline-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .action-link {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .action-link:hover {
+      color: #1d4ed8;
+      gap: 12px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-pending {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .status-in-progress {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-complete {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .info-note {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 16px 20px;
+      margin-top: 32px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #1e40af;
+    }
+
+    .info-note strong {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .info-note ul {
+      margin: 8px 0 0 20px;
+      padding: 0;
+    }
+
+    .info-note li {
+      margin-bottom: 4px;
+      line-height: 1.6;
+    }
+
+    .last-updated {
+      text-align: center;
+      color: #64748b;
+      font-size: 13px;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+  <script>createNavigationBar('Claim Deadlines');</script>
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1 class="page-title">Critical Claim Deadlines</h1>
+    <p class="page-subtitle">Missing these deadlines can delay payment, reduce your settlement, or result in claim denial. Monitor these dates carefully.</p>
+  </header>
+
+  <!-- Content Area -->
+  <div class="content-area">
+
+    <!-- Alert Banner -->
+    <div class="alert-banner">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-content">
+        <h3>Time-Sensitive Actions Required</h3>
+        <p>Insurance claim deadlines are strictly enforced. Missing a deadline can forfeit your right to payment or legal action. Review all deadlines below and complete required actions immediately.</p>
+      </div>
+    </div>
+
+    <!-- Deadline 1: Proof of Loss (URGENT) -->
+    <div class="deadline-card urgent" onclick="navigateToStep(6)">
+      <div class="deadline-header">
+        <div class="deadline-icon">⚠️</div>
+        <div class="deadline-info">
+          <div class="deadline-date">
+            Proof of Loss Deadline
+            <span class="deadline-countdown" id="proofCountdown">15 days remaining</span>
+          </div>
+          <div style="font-size: 14px; color: #64748b; margin-bottom: 12px;">
+            Due: <strong id="proofDeadlineDate">January 14, 2025</strong>
+          </div>
+        </div>
+      </div>
+      <div class="deadline-description">
+        You must submit a sworn Proof of Loss statement with all supporting documentation (estimates, receipts, photos, inventories) to your insurance carrier. This is a formal legal document required by your policy.
+      </div>
+      <div class="deadline-consequences">
+        <strong>⚠️ Consequences of Missing This Deadline:</strong>
+        <p>Your claim may be denied entirely. The carrier can refuse to process or pay your claim if Proof of Loss is not submitted by the deadline specified in your policy (typically 60 days from loss date).</p>
+      </div>
+      <div class="deadline-action">
+        <a href="/step-by-step-claim-guide.html?step=6" class="action-link">
+          Complete Step 6: File Your Proof of Loss →
+        </a>
+        <span class="status-badge status-pending" id="proofStatus">Pending</span>
+      </div>
+    </div>
+
+    <!-- Deadline 2: Suit Limitation Period (WARNING) -->
+    <div class="deadline-card warning">
+      <div class="deadline-header">
+        <div class="deadline-icon">📅</div>
+        <div class="deadline-info">
+          <div class="deadline-date">
+            Lawsuit Filing Deadline (Suit Limitation)
+            <span class="deadline-countdown" id="suitCountdown">365 days remaining</span>
+          </div>
+          <div style="font-size: 14px; color: #64748b; margin-bottom: 12px;">
+            Due: <strong id="suitDeadlineDate">November 15, 2025</strong> (1 year from loss date)
+          </div>
+        </div>
+      </div>
+      <div class="deadline-description">
+        If your claim is denied, underpaid, or you cannot reach a fair settlement, you must file a lawsuit against your insurance carrier before this date. This deadline is set by your policy's "Suit Against Us" clause (typically 1-2 years from loss date, varies by state).
+      </div>
+      <div class="deadline-consequences">
+        <strong>⚠️ Consequences of Missing This Deadline:</strong>
+        <p>You permanently forfeit your right to sue your insurance company. Even if your claim was wrongfully denied or severely underpaid, you cannot take legal action after this date. Your only recourse is lost forever.</p>
+      </div>
+      <div class="deadline-action">
+        <a href="/step-by-step-claim-guide.html?step=10" class="action-link">
+          Review Steps 10-12: Negotiation & Settlement →
+        </a>
+        <span class="status-badge status-in-progress" id="suitStatus">Monitoring</span>
+      </div>
+    </div>
+
+    <!-- Deadline 3: Appraisal Demand (INFO) -->
+    <div class="deadline-card info">
+      <div class="deadline-header">
+        <div class="deadline-icon">⚖️</div>
+        <div class="deadline-info">
+          <div class="deadline-date">
+            Appraisal Request Deadline
+          </div>
+          <div style="font-size: 14px; color: #64748b; margin-bottom: 12px;">
+            Must be invoked before suit limitation expires
+          </div>
+        </div>
+      </div>
+      <div class="deadline-description">
+        If you and your insurance carrier cannot agree on the amount of loss (not coverage disputes), either party may demand an appraisal under your policy terms. This is a binding dispute resolution process where independent appraisers determine the loss value.
+      </div>
+      <div class="deadline-consequences">
+        <strong>ℹ️ When to Use Appraisal:</strong>
+        <p>Appraisal is appropriate when the carrier acknowledges coverage but disputes the dollar amount of your loss. It cannot resolve coverage disputes (what is covered) or bad faith claims. Appraisal must be invoked before your suit limitation period expires.</p>
+      </div>
+      <div class="deadline-action">
+        <a href="/step-by-step-claim-guide.html?step=11" class="action-link">
+          Review Step 11: Negotiate Settlement →
+        </a>
+        <span class="status-badge status-in-progress" id="appraisalStatus">Available</span>
+      </div>
+    </div>
+
+    <!-- Deadline 4: Additional Deadlines (INFO) -->
+    <div class="deadline-card info">
+      <div class="deadline-header">
+        <div class="deadline-icon">📋</div>
+        <div class="deadline-info">
+          <div class="deadline-date">
+            Other Important Deadlines
+          </div>
+        </div>
+      </div>
+      <div class="deadline-description">
+        <strong style="display: block; margin-bottom: 12px;">Additional time-sensitive requirements:</strong>
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
+          <li><strong>Notice of Loss:</strong> Must be reported "promptly" or within policy timeframe (typically 30-60 days)</li>
+          <li><strong>Cooperation Clause:</strong> You must cooperate with carrier's investigation, provide requested documents, and attend examinations under oath (EUO) when requested</li>
+          <li><strong>Supplemental Claims:</strong> Additional damage discovered later must be documented and submitted within policy timeframes</li>
+          <li><strong>Depreciation Recovery:</strong> Receipts for completed repairs must be submitted to recover withheld depreciation (typically within 180-365 days)</li>
+          <li><strong>State-Specific Deadlines:</strong> Some states impose additional deadlines for bad faith claims, unfair claims practices complaints, or Department of Insurance complaints</li>
+        </ul>
+      </div>
+      <div class="deadline-action">
+        <a href="/step-by-step-claim-guide.html" class="action-link">
+          View All Claim Steps →
+        </a>
+        <span class="status-badge status-in-progress" id="otherStatus">Ongoing</span>
+      </div>
+    </div>
+
+    <!-- Info Note -->
+    <div class="info-note">
+      <strong>🛡️ Protecting Your Rights:</strong>
+      <ul>
+        <li>Set calendar reminders for all critical deadlines with 7-day and 1-day advance warnings</li>
+        <li>Document all communications with your carrier (dates, times, names, content)</li>
+        <li>Send all important documents via certified mail with return receipt or email with read receipts</li>
+        <li>Consult a public adjuster or attorney if you're approaching a deadline and haven't completed required steps</li>
+        <li>Never assume a deadline can be extended without written confirmation from your carrier</li>
+      </ul>
+    </div>
+
+    <!-- Last Updated -->
+    <div class="last-updated">
+      Last updated: <span id="lastUpdated">—</span> | Deadlines computed from claim data
+    </div>
+
+  </div>
+
+  <script>
+    // Calculate days remaining
+    function daysUntil(dateString) {
+      const target = new Date(dateString);
+      const today = new Date();
+      const diffTime = target - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays;
+    }
+
+    // Format date
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    // Navigate to step
+    function navigateToStep(stepNum) {
+      window.location.href = `/step-by-step-claim-guide.html?step=${stepNum}`;
+    }
+
+    // Load deadline data
+    function loadDeadlineData() {
+      // Get claim state from storage
+      const claimState = getClaimData('claimNavigatorState') || {};
+      const claimInfo = claimState.claimInfo || {};
+      
+      // Calculate deadlines based on loss date
+      const lossDate = claimInfo.dateOfLoss || '2024-11-15';
+      const lossDateObj = new Date(lossDate);
+      
+      // Proof of Loss: 60 days from loss date
+      const proofDeadline = new Date(lossDateObj);
+      proofDeadline.setDate(proofDeadline.getDate() + 60);
+      
+      // Suit Limitation: 365 days from loss date
+      const suitDeadline = new Date(lossDateObj);
+      suitDeadline.setDate(suitDeadline.getDate() + 365);
+      
+      // Update UI
+      const proofDays = daysUntil(proofDeadline);
+      const suitDays = daysUntil(suitDeadline);
+      
+      document.getElementById('proofDeadlineDate').textContent = formatDate(proofDeadline);
+      document.getElementById('proofCountdown').textContent = `${proofDays} days remaining`;
+      
+      document.getElementById('suitDeadlineDate').textContent = formatDate(suitDeadline);
+      document.getElementById('suitCountdown').textContent = `${suitDays} days remaining`;
+      
+      // Update status badges based on completion
+      // This would integrate with actual step completion data
+      
+      // Last updated
+      document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+    }
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', loadDeadlineData);
+  </script>
+</body>
+</html>
+
