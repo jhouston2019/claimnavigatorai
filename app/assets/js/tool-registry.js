@@ -2,551 +2,412 @@
  * CLAIM NAVIGATOR TOOL REGISTRY
  * 
  * This registry maps step guide tool IDs to actual tool pages.
- * It bridges the gap between the step-by-step guide and the resource center.
+ * All tools are now in /app/tools/ directory with clean, consistent templates.
+ * 
+ * Updated: January 2026
  */
 
 const TOOL_REGISTRY = {
-  // ============================================
-  // STEP 1: POLICY REVIEW
-  // ============================================
-  'policy-intelligence-engine': {
-    url: '/app/claim-analysis-tools/policy.html',
-    engine: 'claim-analysis',
-    mode: 'policy',
-    reportType: 'Policy_Intelligence_Report'
-  },
   'policy-uploader': {
-    url: '/app/claim-analysis-tools/policy.html',
-    engine: 'claim-analysis',
-    mode: 'policy'
+    url: '/app/tools/policy-uploader.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'policy-intelligence-engine': {
+    url: '/app/tools/policy-intelligence-engine.html',
+    engine: 'tool',
+    mode: 'standard'
   },
   'policy-report-viewer': {
-    url: '/app/claim-analysis-tools/policy.html',
-    engine: 'claim-analysis',
-    mode: 'policy'
+    url: '/app/tools/policy-report-viewer.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'step1-acknowledgment': {
+    url: '/app/tools/step1-acknowledgment.html',
+    engine: 'tool',
+    mode: 'standard'
   },
   'coverage-qa-chat': {
-    url: '/app/claim-analysis-tools/policy.html',
-    engine: 'claim-analysis',
-    mode: 'policy'
+    url: '/app/tools/coverage-qa-chat.html',
+    engine: 'tool',
+    mode: 'standard'
   },
   'coverage-clarification-letter': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'document-generator',
-    mode: 'coverage-clarification'
+    url: '/app/tools/coverage-clarification-letter.html',
+    engine: 'tool',
+    mode: 'standard'
   },
   'policy-interpretation-letter': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'document-generator',
-    mode: 'policy-interpretation'
+    url: '/app/tools/policy-interpretation-letter.html',
+    engine: 'tool',
+    mode: 'standard'
   },
   'download-policy-report': {
-    url: '/app/claim-analysis-tools/policy.html',
-    engine: 'claim-analysis',
-    mode: 'policy'
-  },
-
-  // ============================================
-  // STEP 2: COMPLIANCE REVIEW
-  // ============================================
-  'compliance-review': {
-    url: '/app/claim-analysis-tools/policy.html',
-    engine: 'claim-analysis',
-    mode: 'compliance',
-    reportType: 'Compliance_Status_Report'
+    url: '/app/tools/download-policy-report.html',
+    engine: 'tool',
+    mode: 'standard'
   },
   'compliance-auto-import': {
-    url: '/app/claim-analysis-tools/policy.html',
-    engine: 'claim-analysis',
-    mode: 'compliance'
+    url: '/app/tools/compliance-auto-import.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'compliance-review': {
+    url: '/app/tools/compliance-review.html',
+    engine: 'tool',
+    mode: 'standard'
   },
   'compliance-report-viewer': {
-    url: '/app/claim-analysis-tools/policy.html',
-    engine: 'claim-analysis',
-    mode: 'compliance'
-  },
-  'deadline-calculator': {
-    url: '/app/deadlines.html',
-    engine: 'deadlines',
-    mode: 'calculator'
-  },
-  'mitigation-documentation-tool': {
-    url: '/app/evidence-organizer.html',
-    engine: 'evidence',
-    mode: 'mitigation'
-  },
-  'proof-of-loss-tracker': {
-    url: '/app/statement-of-loss.html',
-    engine: 'statement',
-    mode: 'proof-of-loss'
-  },
-  'euo-sworn-statement-guide': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'document-generator',
-    mode: 'euo-guide'
-  },
-
-  // ============================================
-  // STEP 3: DAMAGE DOCUMENTATION
-  // ============================================
-  'damage-documentation': {
-    url: '/app/claim-analysis-tools/damage.html',
-    engine: 'claim-analysis',
-    mode: 'damage',
-    reportType: 'Damage_Documentation_Report'
-  },
-  'damage-report-engine': {
-    url: '/app/claim-analysis-tools/damage.html',
-    engine: 'claim-analysis',
-    mode: 'damage'
-  },
-  'damage-report-viewer': {
-    url: '/app/claim-analysis-tools/damage.html',
-    engine: 'claim-analysis',
-    mode: 'damage'
-  },
-  'photo-upload-organizer': {
-    url: '/app/evidence-organizer.html',
-    engine: 'evidence',
-    mode: 'photos'
-  },
-  'damage-labeling-tool': {
-    url: '/app/evidence-organizer.html',
-    engine: 'evidence',
-    mode: 'labeling'
-  },
-  'missing-evidence-identifier': {
-    url: '/app/evidence-organizer.html',
-    engine: 'evidence',
-    mode: 'missing'
-  },
-
-  // ============================================
-  // STEP 4: ESTIMATE REVIEW
-  // ============================================
-  'estimate-review': {
-    url: '/app/claim-analysis-tools/estimates.html',
-    engine: 'estimate-review',
-    mode: 'quality',
-    reportType: 'Estimate_Quality_Report'
-  },
-  'contractor-scope-checklist': {
-    url: '/app/claim-analysis-tools/estimates.html',
-    engine: 'estimate-review',
-    mode: 'scope-checklist'
-  },
-  'code-upgrade-identifier': {
-    url: '/app/claim-analysis-tools/estimates.html',
-    engine: 'estimate-review',
-    mode: 'code-upgrades'
-  },
-  'missing-trade-detector': {
-    url: '/app/claim-analysis-tools/estimates.html',
-    engine: 'estimate-review',
-    mode: 'missing-trades'
-  },
-  'estimate-revision-request-generator': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'document-generator',
-    mode: 'estimate-revision'
-  },
-
-  // ============================================
-  // STEP 5: ESTIMATE COMPARISON
-  // ============================================
-  'estimate-comparison': {
-    url: '/app/claim-analysis-tools/estimates.html',
-    engine: 'estimate-review',
-    mode: 'comparison',
-    reportType: 'Estimate_Comparison_Report'
-  },
-  'line-item-discrepancy-finder': {
-    url: '/app/claim-analysis-tools/estimates.html',
-    engine: 'estimate-review',
-    mode: 'discrepancies'
-  },
-  'pricing-deviation-analyzer': {
-    url: '/app/claim-analysis-tools/estimates.html',
-    engine: 'estimate-review',
-    mode: 'pricing'
-  },
-  'scope-omission-detector': {
-    url: '/app/claim-analysis-tools/estimates.html',
-    engine: 'estimate-review',
-    mode: 'omissions'
-  },
-  'negotiation-language-generator': {
-    url: '/app/negotiation-tools.html',
-    engine: 'negotiation',
-    mode: 'language'
-  },
-
-  // ============================================
-  // STEP 6: ALE TRACKER
-  // ============================================
-  'ale-tracker': {
-    url: '/app/claim-analysis-tools/business.html',
-    engine: 'claim-analysis',
-    mode: 'ale',
-    reportType: 'ALE_Compliance_Report'
-  },
-  'expense-upload-tool': {
-    url: '/app/evidence-organizer.html',
-    engine: 'evidence',
-    mode: 'expenses'
-  },
-  'ale-eligibility-checker': {
-    url: '/app/claim-analysis-tools/business.html',
-    engine: 'claim-analysis',
-    mode: 'ale-eligibility'
-  },
-  'remaining-ale-limit-calculator': {
-    url: '/app/claim-analysis-tools/business.html',
-    engine: 'claim-analysis',
-    mode: 'ale-limits'
-  },
-  'temporary-housing-documentation-helper': {
-    url: '/app/evidence-organizer.html',
-    engine: 'evidence',
-    mode: 'housing'
-  },
-
-  // ============================================
-  // STEP 7: CONTENTS INVENTORY
-  // ============================================
-  'contents-inventory': {
-    url: '/app/evidence-organizer.html',
-    engine: 'contents',
-    mode: 'inventory',
-    reportType: 'Inventory_Completeness_Report'
-  },
-  'room-by-room-prompt-tool': {
-    url: '/app/evidence-organizer.html',
-    engine: 'contents',
-    mode: 'room-prompts'
-  },
-  'category-coverage-checker': {
-    url: '/app/evidence-organizer.html',
-    engine: 'contents',
-    mode: 'categories'
-  },
-  'contents-documentation-helper': {
-    url: '/app/evidence-organizer.html',
-    engine: 'contents',
-    mode: 'documentation'
-  },
-
-  // ============================================
-  // STEP 8: CONTENTS VALUATION
-  // ============================================
-  'contents-valuation': {
-    url: '/app/claim-analysis-tools/settlement.html',
-    engine: 'contents',
-    mode: 'valuation',
-    reportType: 'Contents_Valuation_Report'
-  },
-  'depreciation-calculator': {
-    url: '/app/claim-analysis-tools/settlement.html',
-    engine: 'contents',
-    mode: 'depreciation'
-  },
-  'comparable-item-finder': {
-    url: '/app/claim-analysis-tools/settlement.html',
-    engine: 'contents',
-    mode: 'comparables'
-  },
-  'replacement-cost-justification-tool': {
-    url: '/app/claim-analysis-tools/settlement.html',
-    engine: 'contents',
-    mode: 'rcv-justification'
-  },
-
-  // ============================================
-  // STEP 9: COVERAGE ALIGNMENT
-  // ============================================
-  'coverage-alignment': {
-    url: '/app/claim-analysis-tools/policy.html',
-    engine: 'claim-analysis',
-    mode: 'alignment',
-    reportType: 'Coverage_Alignment_Report'
-  },
-  'coverage-mapping-visualizer': {
-    url: '/app/claim-analysis-tools/policy.html',
-    engine: 'claim-analysis',
-    mode: 'coverage-map'
-  },
-  'sublimit-impact-analyzer': {
-    url: '/app/claim-analysis-tools/policy.html',
-    engine: 'claim-analysis',
-    mode: 'sublimits'
-  },
-  'endorsement-opportunity-identifier': {
-    url: '/app/claim-analysis-tools/policy.html',
-    engine: 'claim-analysis',
-    mode: 'endorsements'
-  },
-  'coverage-gap-detector': {
-    url: '/app/claim-analysis-tools/policy.html',
-    engine: 'claim-analysis',
-    mode: 'gaps'
-  },
-
-  // ============================================
-  // STEP 10: CLAIM PACKAGE ASSEMBLY
-  // ============================================
-  'claim-package-assembly': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'claim-analysis',
-    mode: 'assembly',
-    reportType: 'Claim_Package_Readiness_Report'
-  },
-  'submission-checklist-generator': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'document-generator',
-    mode: 'submission-checklist'
-  },
-  'missing-document-identifier': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'document-generator',
-    mode: 'missing-docs'
-  },
-  'pre-submission-risk-review-tool': {
-    url: '/app/claim-analysis-tools/settlement.html',
-    engine: 'claim-analysis',
-    mode: 'risk-review'
-  },
-  'carrier-submission-cover-letter-generator': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'document-generator',
-    mode: 'cover-letter'
-  },
-
-  // ============================================
-  // STEP 11: SUBMIT CLAIM
-  // ============================================
-  'submission-method': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'submission',
-    mode: 'method-guide'
-  },
-  'claim-submitter': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'submission',
-    mode: 'submit',
-    reportType: 'Submission_Confirmation_Report'
-  },
-  'submission-report-engine': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'submission',
-    mode: 'report'
-  },
-  'method-timestamp-view': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'submission',
-    mode: 'timestamp'
-  },
-  'acknowledgment-status-view': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'submission',
-    mode: 'acknowledgment'
-  },
-  'followup-schedule-view': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'submission',
-    mode: 'followup'
-  },
-  'step11-next-moves': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'submission',
-    mode: 'next-moves'
-  },
-  'step11-acknowledgment': {
-    url: '/step-by-step-claim-guide.html',
-    engine: 'acknowledgment',
-    mode: 'step11'
-  },
-  'submission-confirmation-email': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'document-generator',
-    mode: 'submission-email'
-  },
-  'followup-status-letter': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'document-generator',
-    mode: 'followup-letter'
-  },
-  'download-submission-report': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'submission',
-    mode: 'download'
-  },
-
-  // ============================================
-  // STEP 12: CARRIER RESPONSE
-  // ============================================
-  'carrier-response': {
-    url: '/app/ai-response-agent.html',
-    engine: 'correspondence',
-    mode: 'carrier',
-    reportType: 'Carrier_Response_Analysis_Report'
-  },
-  'carrier-request-logger': {
-    url: '/app/claim-journal.html',
-    engine: 'journal',
-    mode: 'requests'
-  },
-  'deadline-response-tracker': {
-    url: '/app/deadlines.html',
-    engine: 'deadlines',
-    mode: 'response-tracker'
-  },
-  'response-letter-generator': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'document-generator',
-    mode: 'response-letter'
-  },
-  'document-production-checklist': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'document-generator',
-    mode: 'production-checklist'
-  },
-
-  // ============================================
-  // STEP 13: SUPPLEMENT ANALYSIS
-  // ============================================
-  'supplement-analysis': {
-    url: '/app/claim-analysis-tools/settlement.html',
-    engine: 'estimate-review',
-    mode: 'supplement',
-    reportType: 'Supplement_Strategy_Report'
-  },
-  'supplement-calculation-tool': {
-    url: '/app/claim-analysis-tools/settlement.html',
-    engine: 'settlement',
-    mode: 'supplement-calc'
-  },
-  'negotiation-strategy-generator': {
-    url: '/app/negotiation-tools.html',
-    engine: 'negotiation',
-    mode: 'strategy'
-  },
-  'supplement-cover-letter-generator': {
-    url: '/app/document-generator-v2/document-generator.html',
-    engine: 'document-generator',
-    mode: 'supplement-letter'
-  },
-  'escalation-readiness-checker': {
-    url: '/app/claim-analysis-tools/settlement.html',
-    engine: 'settlement',
-    mode: 'escalation'
-  },
-
-  // ============================================
-  // ACKNOWLEDGMENT TOOLS (ALL STEPS)
-  // ============================================
-  'step1-acknowledgment': {
-    url: '/step-by-step-claim-guide.html',
-    engine: 'acknowledgment',
-    mode: 'step1'
+    url: '/app/tools/compliance-report-viewer.html',
+    engine: 'tool',
+    mode: 'standard'
   },
   'step2-acknowledgment': {
-    url: '/step-by-step-claim-guide.html',
-    engine: 'acknowledgment',
-    mode: 'step2'
+    url: '/app/tools/step2-acknowledgment.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'deadline-calculator': {
+    url: '/app/tools/deadline-calculator.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'mitigation-documentation-tool': {
+    url: '/app/tools/mitigation-documentation-tool.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'proof-of-loss-tracker': {
+    url: '/app/tools/proof-of-loss-tracker.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'euo-sworn-statement-guide': {
+    url: '/app/tools/euo-sworn-statement-guide.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'damage-documentation': {
+    url: '/app/tools/damage-documentation.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'damage-report-engine': {
+    url: '/app/tools/damage-report-engine.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'damage-report-viewer': {
+    url: '/app/tools/damage-report-viewer.html',
+    engine: 'tool',
+    mode: 'standard'
   },
   'step3-acknowledgment': {
-    url: '/step-by-step-claim-guide.html',
-    engine: 'acknowledgment',
-    mode: 'step3'
+    url: '/app/tools/step3-acknowledgment.html',
+    engine: 'tool',
+    mode: 'standard'
   },
-  'step4-acknowledgment': {
-    url: '/step-by-step-claim-guide.html',
-    engine: 'acknowledgment',
-    mode: 'step4'
+  'photo-upload-organizer': {
+    url: '/app/tools/photo-upload-organizer.html',
+    engine: 'tool',
+    mode: 'standard'
   },
-  'step5-acknowledgment': {
-    url: '/step-by-step-claim-guide.html',
-    engine: 'acknowledgment',
-    mode: 'step5'
+  'damage-labeling-tool': {
+    url: '/app/tools/damage-labeling-tool.html',
+    engine: 'tool',
+    mode: 'standard'
   },
-  'step6-acknowledgment': {
-    url: '/step-by-step-claim-guide.html',
-    engine: 'acknowledgment',
-    mode: 'step6'
+  'missing-evidence-identifier': {
+    url: '/app/tools/missing-evidence-identifier.html',
+    engine: 'tool',
+    mode: 'standard'
   },
-  'step7-acknowledgment': {
-    url: '/step-by-step-claim-guide.html',
-    engine: 'acknowledgment',
-    mode: 'step7'
+  'estimate-review': {
+    url: '/app/tools/estimate-review.html',
+    engine: 'tool',
+    mode: 'standard'
   },
-  'step8-acknowledgment': {
-    url: '/step-by-step-claim-guide.html',
-    engine: 'acknowledgment',
-    mode: 'step8'
+  'contractor-scope-checklist': {
+    url: '/app/tools/contractor-scope-checklist.html',
+    engine: 'tool',
+    mode: 'standard'
   },
-  'step9-acknowledgment': {
-    url: '/step-by-step-claim-guide.html',
-    engine: 'acknowledgment',
-    mode: 'step9'
+  'code-upgrade-identifier': {
+    url: '/app/tools/code-upgrade-identifier.html',
+    engine: 'tool',
+    mode: 'standard'
   },
-  'step10-acknowledgment': {
-    url: '/step-by-step-claim-guide.html',
-    engine: 'acknowledgment',
-    mode: 'step10'
+  'missing-trade-detector': {
+    url: '/app/tools/missing-trade-detector.html',
+    engine: 'tool',
+    mode: 'standard'
   },
-  'step12-acknowledgment': {
-    url: '/step-by-step-claim-guide.html',
-    engine: 'acknowledgment',
-    mode: 'step12'
+  'estimate-revision-request-generator': {
+    url: '/app/tools/estimate-revision-request-generator.html',
+    engine: 'tool',
+    mode: 'standard'
   },
-  'step13-acknowledgment': {
-    url: '/step-by-step-claim-guide.html',
-    engine: 'acknowledgment',
-    mode: 'step13'
-  }
-};
+  'estimate-comparison': {
+    url: '/app/tools/estimate-comparison.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'line-item-discrepancy-finder': {
+    url: '/app/tools/line-item-discrepancy-finder.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'pricing-deviation-analyzer': {
+    url: '/app/tools/pricing-deviation-analyzer.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'scope-omission-detector': {
+    url: '/app/tools/scope-omission-detector.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'negotiation-language-generator': {
+    url: '/app/tools/negotiation-language-generator.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'ale-tracker': {
+    url: '/app/tools/ale-tracker.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'expense-upload-tool': {
+    url: '/app/tools/expense-upload-tool.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'ale-eligibility-checker': {
+    url: '/app/tools/ale-eligibility-checker.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'remaining-ale-limit-calculator': {
+    url: '/app/tools/remaining-ale-limit-calculator.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'temporary-housing-documentation-helper': {
+    url: '/app/tools/temporary-housing-documentation-helper.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'contents-inventory': {
+    url: '/app/tools/contents-inventory.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'room-by-room-prompt-tool': {
+    url: '/app/tools/room-by-room-prompt-tool.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'category-coverage-checker': {
+    url: '/app/tools/category-coverage-checker.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'contents-documentation-helper': {
+    url: '/app/tools/contents-documentation-helper.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'contents-valuation': {
+    url: '/app/tools/contents-valuation.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'depreciation-calculator': {
+    url: '/app/tools/depreciation-calculator.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'comparable-item-finder': {
+    url: '/app/tools/comparable-item-finder.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'replacement-cost-justification-tool': {
+    url: '/app/tools/replacement-cost-justification-tool.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'coverage-alignment': {
+    url: '/app/tools/coverage-alignment.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'coverage-mapping-visualizer': {
+    url: '/app/tools/coverage-mapping-visualizer.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'sublimit-impact-analyzer': {
+    url: '/app/tools/sublimit-impact-analyzer.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'endorsement-opportunity-identifier': {
+    url: '/app/tools/endorsement-opportunity-identifier.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'coverage-gap-detector': {
+    url: '/app/tools/coverage-gap-detector.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'claim-package-assembly': {
+    url: '/app/tools/claim-package-assembly.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'submission-checklist-generator': {
+    url: '/app/tools/submission-checklist-generator.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'missing-document-identifier': {
+    url: '/app/tools/missing-document-identifier.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'pre-submission-risk-review-tool': {
+    url: '/app/tools/pre-submission-risk-review-tool.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'carrier-submission-cover-letter-generator': {
+    url: '/app/tools/carrier-submission-cover-letter-generator.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'submission-method': {
+    url: '/app/tools/submission-method.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'claim-submitter': {
+    url: '/app/tools/claim-submitter.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'submission-report-engine': {
+    url: '/app/tools/submission-report-engine.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'method-timestamp-view': {
+    url: '/app/tools/method-timestamp-view.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'acknowledgment-status-view': {
+    url: '/app/tools/acknowledgment-status-view.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'followup-schedule-view': {
+    url: '/app/tools/followup-schedule-view.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'step11-next-moves': {
+    url: '/app/tools/step11-next-moves.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'step11-acknowledgment': {
+    url: '/app/tools/step11-acknowledgment.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'submission-confirmation-email': {
+    url: '/app/tools/submission-confirmation-email.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'followup-status-letter': {
+    url: '/app/tools/followup-status-letter.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'download-submission-report': {
+    url: '/app/tools/download-submission-report.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'carrier-response': {
+    url: '/app/tools/carrier-response.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'carrier-request-logger': {
+    url: '/app/tools/carrier-request-logger.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'deadline-response-tracker': {
+    url: '/app/tools/deadline-response-tracker.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'response-letter-generator': {
+    url: '/app/tools/response-letter-generator.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'document-production-checklist': {
+    url: '/app/tools/document-production-checklist.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'supplement-analysis': {
+    url: '/app/tools/supplement-analysis.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'supplement-calculation-tool': {
+    url: '/app/tools/supplement-calculation-tool.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'negotiation-strategy-generator': {
+    url: '/app/tools/negotiation-strategy-generator.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'supplement-cover-letter-generator': {
+    url: '/app/tools/supplement-cover-letter-generator.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+  'escalation-readiness-checker': {
+    url: '/app/tools/escalation-readiness-checker.html',
+    engine: 'tool',
+    mode: 'standard'
+  },
+}
 
-/**
- * Get tool configuration by ID
- * @param {string} toolId - The tool identifier
- * @returns {object|null} Tool configuration or null if not found
- */
+// Helper function to get tool configuration
 function getToolConfig(toolId) {
   return TOOL_REGISTRY[toolId] || null;
 }
 
-/**
- * Check if a tool exists in the registry
- * @param {string} toolId - The tool identifier
- * @returns {boolean} True if tool exists
- */
-function toolExists(toolId) {
-  return toolId in TOOL_REGISTRY;
+// Helper function to open a tool
+function openTool(toolId, stepNum) {
+  const config = getToolConfig(toolId);
+  if (!config) {
+    console.error(`Tool not found: ${toolId}`);
+    return;
+  }
+  
+  const url = config.url + (stepNum ? `?step=${stepNum}` : '');
+  window.location.href = url;
 }
-
-/**
- * Get all tools for a specific engine
- * @param {string} engine - The engine name
- * @returns {array} Array of tool configurations
- */
-function getToolsByEngine(engine) {
-  return Object.entries(TOOL_REGISTRY)
-    .filter(([id, config]) => config.engine === engine)
-    .map(([id, config]) => ({ id, ...config }));
-}
-
-/**
- * Get all primary tools (those with reportType)
- * @returns {array} Array of primary tool configurations
- */
-function getPrimaryTools() {
-  return Object.entries(TOOL_REGISTRY)
-    .filter(([id, config]) => config.reportType)
-    .map(([id, config]) => ({ id, ...config }));
-}
-
-// Export for use in other scripts
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { TOOL_REGISTRY, getToolConfig, toolExists, getToolsByEngine, getPrimaryTools };
-}
-
