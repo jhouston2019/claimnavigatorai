@@ -129,6 +129,10 @@
           <nav class="nav">
             <a href="/app/index.html">Home</a>
             <span class="nav-separator">></span>
+            <a href="/step-by-step-claim-guide.html">Claim Guide</a>
+            <span class="nav-separator">></span>
+            <a href="/app/claim-financial-summary.html">Financial Summary</a>
+            <span class="nav-separator">></span>
             <span class="nav-current">${currentLabel || 'Tool'}</span>
             <span class="nav-separator">></span>
             <a href="/app/resource-center.html">Resource Center</a>

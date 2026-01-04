@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Financial Summary - Claim Navigator AI</title>
+  <link rel="stylesheet" href="/app/assets/css/style.css">
+  <link rel="stylesheet" href="/app/css/design-system.css">
+  <script src="/storage/claimStorage.js"></script>
+  <script src="/app/assets/js/navigation-template.js"></script>
+  <style>
+    body {
+      background: #f8fafc;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+      padding: 32px 40px;
+      color: white;
+      border-bottom: 1px solid #1e3a8a;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.02em;
+    }
+
+    .page-subtitle {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 0;
+      font-weight: 400;
+    }
+
+    .content-area {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px;
+    }
+
+    .summary-card {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e5e7eb;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 0 20px 0;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .summary-table thead {
+      background: #f8fafc;
+    }
+
+    .summary-table th {
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 600;
+      color: #475569;
+      border-bottom: 2px solid #e5e7eb;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .summary-table td {
+      padding: 16px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+    }
+
+    .summary-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .summary-table tr:hover {
+      background: #f8fafc;
+    }
+
+    .amount {
+      font-weight: 600;
+      font-size: 15px;
+      font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+    }
+
+    .amount.positive {
+      color: #059669;
+    }
+
+    .amount.negative {
+      color: #dc2626;
+    }
+
+    .amount.neutral {
+      color: #0f172a;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-complete {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-partial {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-incomplete {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .status-pending {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .status-paid {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-unpaid {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .total-row td {
+      font-weight: 700;
+      font-size: 16px;
+      background: #f8fafc;
+      border-top: 2px solid #e5e7eb;
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+
+    .info-note {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 16px 20px;
+      margin-top: 24px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #1e40af;
+    }
+
+    .info-note strong {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .action-link {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 13px;
+    }
+
+    .action-link:hover {
+      text-decoration: underline;
+    }
+
+    .export-buttons {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+    }
+
+    .btn-secondary:hover {
+      background: #f8fafc;
+    }
+
+    .last-updated {
+      text-align: center;
+      color: #64748b;
+      font-size: 13px;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+  <script>createNavigationBar('Financial Summary');</script>
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1 class="page-title">Financial Summary</h1>
+    <p class="page-subtitle">Auto-computed financial position based on your claim documentation and carrier responses.</p>
+  </header>
+
+  <!-- Content Area -->
+  <div class="content-area">
+
+    <!-- Export Buttons -->
+    <div class="export-buttons">
+      <button class="btn btn-primary" onclick="exportToPDF()">📄 Export to PDF</button>
+      <button class="btn btn-secondary" onclick="printSummary()">🖨️ Print Summary</button>
+      <button class="btn btn-secondary" onclick="refreshData()">🔄 Refresh Data</button>
+    </div>
+
+    <!-- Table 1: Claim Position Summary -->
+    <div class="summary-card">
+      <h2 class="card-title">Claim Position Summary</h2>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th style="text-align: right;">Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="claimPositionTable">
+          <tr>
+            <td>Documented Loss</td>
+            <td style="text-align: right;"><span class="amount neutral" id="documentedLoss">$0.00</span></td>
+            <td><span class="status-badge status-partial" id="documentedStatus">Partial</span></td>
+          </tr>
+          <tr>
+            <td>Covered Loss (Eligible)</td>
+            <td style="text-align: right;"><span class="amount neutral" id="coveredLoss">$0.00</span></td>
+            <td><span class="status-badge status-pending" id="coveredStatus">Pending Review</span></td>
+          </tr>
+          <tr>
+            <td>Deductible</td>
+            <td style="text-align: right;"><span class="amount neutral" id="deductible">$0.00</span></td>
+            <td><span class="status-badge status-complete" id="deductibleStatus">Policy Value</span></td>
+          </tr>
+          <tr>
+            <td>Carrier Paid</td>
+            <td style="text-align: right;"><span class="amount positive" id="carrierPaid">$0.00</span></td>
+            <td><span class="status-badge status-paid" id="paidStatus">Paid</span></td>
+          </tr>
+          <tr class="total-row">
+            <td>Outstanding Claim Gap</td>
+            <td style="text-align: right;"><span class="amount negative" id="outstandingGap">$0.00</span></td>
+            <td><span class="status-badge status-unpaid" id="gapStatus">Unpaid</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-note">
+        <strong>Formula:</strong> Outstanding Gap = Covered Loss − Carrier Paid − Deductible
+      </div>
+    </div>
+
+    <!-- Table 2: Loss Category Breakdown -->
+    <div class="summary-card">
+      <h2 class="card-title">Loss Category Breakdown</h2>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th style="text-align: right;">Documented</th>
+            <th style="text-align: right;">Covered</th>
+            <th style="text-align: right;">Paid</th>
+            <th style="text-align: right;">Recoverable</th>
+            <th style="text-align: right;">Blocked</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="categoryBreakdownTable">
+          <tr>
+            <td><strong>Structure</strong></td>
+            <td style="text-align: right;"><span class="amount neutral" id="structureDocumented">$0.00</span></td>
+            <td style="text-align: right;"><span class="amount neutral" id="structureCovered">$0.00</span></td>
+            <td style="text-align: right;"><span class="amount positive" id="structurePaid">$0.00</span></td>
+            <td style="text-align: right;">—</td>
+            <td style="text-align: right;"><span class="amount negative" id="structureBlocked">$0.00</span></td>
+            <td><span class="status-badge status-partial" id="structureStatus">Partial</span></td>
+          </tr>
+          <tr>
+            <td><strong>Contents</strong></td>
+            <td style="text-align: right;"><span class="amount neutral" id="contentsDocumented">$0.00</span></td>
+            <td style="text-align: right;"><span class="amount neutral" id="contentsCovered">$0.00</span></td>
+            <td style="text-align: right;"><span class="amount positive" id="contentsPaid">$0.00</span></td>
+            <td style="text-align: right;">—</td>
+            <td style="text-align: right;"><span class="amount negative" id="contentsBlocked">$0.00</span></td>
+            <td><span class="status-badge status-incomplete" id="contentsStatus">Not Started</span></td>
+          </tr>
+          <tr>
+            <td><strong>ALE (Additional Living Expenses)</strong></td>
+            <td style="text-align: right;"><span class="amount neutral" id="aleDocumented">$0.00</span></td>
+            <td style="text-align: right;"><span class="amount neutral" id="aleCovered">$0.00</span></td>
+            <td style="text-align: right;"><span class="amount positive" id="alePaid">$0.00</span></td>
+            <td style="text-align: right;">—</td>
+            <td style="text-align: right;"><span class="amount negative" id="aleBlocked">$0.00</span></td>
+            <td><span class="status-badge status-incomplete" id="aleStatus">Not Started</span></td>
+          </tr>
+          <tr>
+            <td><strong>Ordinance & Law</strong></td>
+            <td style="text-align: right;"><span class="amount neutral" id="ordinanceDocumented">$0.00</span></td>
+            <td style="text-align: right;"><span class="amount neutral" id="ordinanceCovered">$0.00</span></td>
+            <td style="text-align: right;"><span class="amount positive" id="ordinancePaid">$0.00</span></td>
+            <td style="text-align: right;">—</td>
+            <td style="text-align: right;"><span class="amount negative" id="ordinanceBlocked">$0.00</span></td>
+            <td><span class="status-badge status-incomplete" id="ordinanceStatus">Not Started</span></td>
+          </tr>
+          <tr>
+            <td><strong>Depreciation (Withheld)</strong></td>
+            <td style="text-align: right;">—</td>
+            <td style="text-align: right;"><span class="amount neutral" id="depreciationCovered">$0.00</span></td>
+            <td style="text-align: right;"><span class="amount positive" id="depreciationPaid">$0.00</span></td>
+            <td style="text-align: right;"><span class="amount neutral" id="depreciationRecoverable">$0.00</span></td>
+            <td style="text-align: right;">—</td>
+            <td><span class="status-badge status-pending" id="depreciationStatus">Pending Receipts</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-note">
+        <strong>Blocked:</strong> Amount that cannot be claimed due to missing documentation. <strong>Recoverable:</strong> Depreciation withheld pending replacement receipts.
+      </div>
+    </div>
+
+    <!-- Table 3: Action → Dollar Unlock Map -->
+    <div class="summary-card">
+      <h2 class="card-title">Action → Dollar Unlock Map</h2>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Missing Action</th>
+            <th>Step</th>
+            <th style="text-align: right;">Unlocks</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="actionUnlockTable">
+          <tr>
+            <td>Upload structure photos</td>
+            <td>Step 3: Damage Documentation</td>
+            <td style="text-align: right;"><span class="amount neutral">$0.00</span></td>
+            <td><span class="status-badge status-incomplete">Incomplete</span></td>
+            <td><a href="/step-by-step-claim-guide.html?step=3" class="action-link">Go to Step →</a></td>
+          </tr>
+          <tr>
+            <td>Complete contents inventory</td>
+            <td>Step 8: Build Contents Inventory</td>
+            <td style="text-align: right;"><span class="amount neutral">$0.00</span></td>
+            <td><span class="status-badge status-incomplete">Not Started</span></td>
+            <td><a href="/step-by-step-claim-guide.html?step=8" class="action-link">Go to Step →</a></td>
+          </tr>
+          <tr>
+            <td>Submit ALE receipts</td>
+            <td>Step 7: ALE & Temporary Housing</td>
+            <td style="text-align: right;"><span class="amount neutral">$0.00</span></td>
+            <td><span class="status-badge status-incomplete">Not Started</span></td>
+            <td><a href="/step-by-step-claim-guide.html?step=7" class="action-link">Go to Step →</a></td>
+          </tr>
+          <tr>
+            <td>Submit repair receipts</td>
+            <td>Step 9: Contents Valuation</td>
+            <td style="text-align: right;"><span class="amount neutral">$0.00</span></td>
+            <td><span class="status-badge status-pending">Pending</span></td>
+            <td><a href="/step-by-step-claim-guide.html?step=9" class="action-link">Go to Step →</a></td>
+          </tr>
+          <tr>
+            <td>Verify coverage alignment</td>
+            <td>Step 6: Align Loss With Policy Coverage</td>
+            <td style="text-align: right;"><span class="amount neutral">$0.00</span></td>
+            <td><span class="status-badge status-incomplete">Incomplete</span></td>
+            <td><a href="/step-by-step-claim-guide.html?step=6" class="action-link">Go to Step →</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-note">
+        <strong>Action Required:</strong> Complete these steps to unlock additional claim value and ensure full reimbursement.
+      </div>
+    </div>
+
+    <!-- Table 4: Claim Timeline & Deadlines -->
+    <div class="summary-card">
+      <h2 class="card-title">Claim Timeline & Deadlines</h2>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Date</th>
+            <th>Days Ago</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="timelineTable">
+          <tr>
+            <td>Loss Date</td>
+            <td id="lossDate">—</td>
+            <td id="lossDaysAgo">—</td>
+            <td><span class="status-badge status-complete">✓ Recorded</span></td>
+          </tr>
+          <tr>
+            <td>Notice of Loss</td>
+            <td id="noticeDate">—</td>
+            <td id="noticeDaysAgo">—</td>
+            <td><span class="status-badge status-complete">✓ Submitted</span></td>
+          </tr>
+          <tr>
+            <td>Inspection Completed</td>
+            <td id="inspectionDate">—</td>
+            <td id="inspectionDaysAgo">—</td>
+            <td><span class="status-badge status-complete">✓ Completed</span></td>
+          </tr>
+          <tr>
+            <td>Estimate Issued</td>
+            <td id="estimateDate">—</td>
+            <td id="estimateDaysAgo">—</td>
+            <td><span class="status-badge status-partial">Partial</span></td>
+          </tr>
+          <tr>
+            <td>Payment Issued</td>
+            <td id="paymentDate">—</td>
+            <td id="paymentDaysAgo">—</td>
+            <td><span class="status-badge status-unpaid">Unpaid</span></td>
+          </tr>
+          <tr>
+            <td>Proof of Loss Deadline</td>
+            <td id="proofDeadline">—</td>
+            <td id="proofDaysRemaining">—</td>
+            <td><span class="status-badge status-pending">Pending</span></td>
+          </tr>
+          <tr>
+            <td>Statutory Deadline</td>
+            <td id="statutoryDeadline">—</td>
+            <td id="statutoryDaysRemaining">—</td>
+            <td><span class="status-badge status-pending">Pending</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-note">
+        <strong>Critical Deadlines:</strong> Monitor proof of loss and statutory deadlines to preserve your claim rights.
+      </div>
+    </div>
+
+    <!-- Last Updated -->
+    <div class="last-updated">
+      Last updated: <span id="lastUpdated">—</span> | Data auto-computed from claim steps
+    </div>
+
+  </div>
+
+  <script>
+    // Format currency
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2
+      }).format(amount);
+    }
+
+    // Calculate days between dates
+    function daysBetween(date1, date2) {
+      const oneDay = 24 * 60 * 60 * 1000;
+      return Math.round(Math.abs((date1 - date2) / oneDay));
+    }
+
+    // Load and compute financial data
+    function loadFinancialData() {
+      // Get claim state from storage
+      const claimState = getClaimData('claimNavigatorState') || {};
+      const claimInfo = claimState.claimInfo || {};
+      
+      // TABLE 1: Claim Position Summary
+      const documentedLoss = 0; // Sum from all documented categories
+      const coveredLoss = 0; // From policy alignment
+      const deductible = 2500; // From policy
+      const carrierPaid = 0; // From payment records
+      const outstandingGap = coveredLoss - carrierPaid - deductible;
+
+      document.getElementById('documentedLoss').textContent = formatCurrency(documentedLoss);
+      document.getElementById('coveredLoss').textContent = formatCurrency(coveredLoss);
+      document.getElementById('deductible').textContent = formatCurrency(deductible);
+      document.getElementById('carrierPaid').textContent = formatCurrency(carrierPaid);
+      document.getElementById('outstandingGap').textContent = formatCurrency(outstandingGap);
+
+      // TABLE 4: Timeline
+      const lossDate = claimInfo.dateOfLoss || '—';
+      document.getElementById('lossDate').textContent = lossDate;
+      
+      if (lossDate !== '—') {
+        const lossDateObj = new Date(lossDate);
+        const today = new Date();
+        const daysAgo = daysBetween(today, lossDateObj);
+        document.getElementById('lossDaysAgo').textContent = `${daysAgo} days ago`;
+      }
+
+      // Last updated
+      document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+    }
+
+    // Refresh data
+    function refreshData() {
+      loadFinancialData();
+      alert('✓ Financial data refreshed from claim steps');
+    }
+
+    // Export to PDF
+    function exportToPDF() {
+      window.print();
+    }
+
+    // Print summary
+    function printSummary() {
+      window.print();
+    }
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', loadFinancialData);
+  </script>
+</body>
+</html>
+
