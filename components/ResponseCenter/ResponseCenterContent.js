@@ -83,7 +83,7 @@ class ResponseCenterContent {
   createHowToUseContent() {
     return `
       <h2>How to Use This Site</h2>
-      <p>Welcome to <strong>Claim Navigator AI</strong>. This guide shows you how to get the most out of the Resource Center and tools available.</p>
+      <p>Welcome to <strong>Claim Navigator</strong>. This guide shows you how to get the most out of the Resource Center and tools available.</p>
 
       <div class="tool-card" style="margin-bottom: 2rem;">
         <h3 style="color: var(--primary); margin-bottom: 1rem;">1. Explore the Resource Center</h3>

@@ -1,6 +1,6 @@
 # Deadlines
 
-This directory contains resources and tools for Deadlines functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for Deadlines functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

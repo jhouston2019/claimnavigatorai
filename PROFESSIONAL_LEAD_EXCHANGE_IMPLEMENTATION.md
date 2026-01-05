@@ -1,6 +1,6 @@
 # Professional Lead Exchange Implementation
 
-This document outlines the complete implementation of the Professional Lead Exchange system for ClaimNavigatorAI.
+This document outlines the complete implementation of the Professional Lead Exchange system for Claim Navigator.
 
 ## Overview
 

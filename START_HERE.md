@@ -6,7 +6,7 @@
 
 ## 📋 What Happened?
 
-The Claim Navigator AI codebase has been **completely re-architected** around the **Claim Success Protocol™**.
+The Claim Navigator codebase has been **completely re-architected** around the **Claim Success Protocol™**.
 
 ### Before → After
 

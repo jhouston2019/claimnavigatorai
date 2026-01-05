@@ -1,6 +1,6 @@
 # Ai Response Agent
 
-This directory contains resources and tools for Ai Response Agent functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for Ai Response Agent functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

@@ -7,7 +7,7 @@
 
 ## SUMMARY
 
-Phase 4 transformed ClaimNavigatorAI from a static marketing/resource site into a production-grade SaaS platform with authentication, payments, AI tools, and a user dashboard. All existing design and styling has been preserved.
+Phase 4 transformed Claim Navigator from a static marketing/resource site into a production-grade SaaS platform with authentication, payments, AI tools, and a user dashboard. All existing design and styling has been preserved.
 
 ---
 
@@ -251,7 +251,7 @@ SITE_URL
 
 ### Stripe Configuration
 - [ ] Create product in Stripe
-- [ ] Create price for ClaimNavigatorAI toolkit
+- [ ] Create price for Claim Navigator toolkit
 - [ ] Set `STRIPE_PRICE_CLAIM_NAVIGATOR` env var
 - [ ] Configure webhook endpoint: `/.netlify/functions/stripe-webhook`
 - [ ] Enable `checkout.session.completed` event

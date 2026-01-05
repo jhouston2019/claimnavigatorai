@@ -63,16 +63,16 @@ def create_deployment_instructions():
 
 ### Option 1: Manual Upload via Netlify Dashboard
 1. Go to your Netlify dashboard
-2. Navigate to your site: claimnavigatorai.netlify.app
+2. Navigate to your site: Claim Navigator.netlify.app
 3. Go to Site settings → Deploys
 4. Upload the protected documents to replace the originals
-5. The documents should be accessible at: https://claimnavigatorai.com/docs/
+5. The documents should be accessible at: https://Claim Navigator.com/docs/
 
 ### Option 2: Git-based Deployment
 1. Create a 'docs' directory in your repository
 2. Copy the protected documents to the docs directory
 3. Commit and push to trigger automatic deployment
-4. The documents will be available at: https://claimnavigatorai.com/docs/
+4. The documents will be available at: https://Claim Navigator.com/docs/
 
 ### Option 3: Netlify CLI Deployment
 1. Install Netlify CLI: npm install -g netlify-cli
@@ -88,14 +88,14 @@ docs/
 ```
 
 ## Security Features Applied
-- Password: ClaimNavigatorAI2025
-- Watermark: "ClaimNavigatorAI - Protected Document"
+- Password: Claim Navigator2025
+- Watermark: "Claim Navigator - Protected Document"
 - Restrictions: No printing, copying, or modification
 - Encryption: 128-bit AES
 
 ## Verification
 After deployment, verify that:
-1. Documents are accessible at https://claimnavigatorai.com/docs/
+1. Documents are accessible at https://Claim Navigator.com/docs/
 2. Documents require password to open
 3. Watermark appears at bottom of each page
 4. Printing and copying are disabled
@@ -114,7 +114,7 @@ After deployment, verify that:
 
 def main():
     """Main function"""
-    logger.info("ClaimNavigatorAI Protected Documents - Netlify Site Deployment")
+    logger.info("Claim Navigator Protected Documents - Netlify Site Deployment")
     logger.info("=" * 70)
     
     # Check protected documents
@@ -130,7 +130,7 @@ def main():
     logger.info("DEPLOYMENT READY")
     logger.info("=" * 70)
     logger.info("✅ Protected documents are ready for Netlify deployment")
-    logger.info("🌐 Target: https://claimnavigatorai.com/docs/")
+    logger.info("🌐 Target: https://Claim Navigator.com/docs/")
     logger.info("📁 Documents location: ./Document Library - Final English/ and ./Document Library - Final Spanish/")
     logger.info("🔒 Security features: Password protection, watermarks, restrictions")
     logger.info("📋 Instructions: NETLIFY_DEPLOYMENT_INSTRUCTIONS.txt")

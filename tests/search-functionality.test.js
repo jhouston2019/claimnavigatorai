@@ -185,7 +185,7 @@ function runSearchTests() {
     console.log('  ✅ Category tag filtering (Documents, Tools, Calculators, Guides, Advisory)');
     console.log('  ✅ Responsive design for mobile and desktop');
     console.log('  ✅ Dynamic results without page reload');
-    console.log('  ✅ Professional styling matching Claim Navigator AI theme');
+    console.log('  ✅ Professional styling matching Claim Navigator theme');
     process.exit(0);
   }
 }

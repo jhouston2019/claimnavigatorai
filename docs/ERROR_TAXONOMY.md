@@ -1,5 +1,5 @@
 # Error Taxonomy
-## ClaimNavigatorAI API Layer
+## Claim Navigator API Layer
 
 **Date:** 2025-01-28  
 **Version:** 1.0
@@ -8,7 +8,7 @@
 
 ## Overview
 
-This document defines the standardized error code system for the ClaimNavigatorAI API. All API endpoints use these error codes consistently to provide clear, actionable error information.
+This document defines the standardized error code system for the Claim Navigator API. All API endpoints use these error codes consistently to provide clear, actionable error information.
 
 ---
 

@@ -1,4 +1,4 @@
-# ClaimNavigatorAI Production Checklist
+# Claim Navigator Production Checklist
 
 ## Pre-Deployment Testing
 

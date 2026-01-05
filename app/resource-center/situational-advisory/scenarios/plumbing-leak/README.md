@@ -1,6 +1,6 @@
 # plumbing leak
 
-This directory contains resources and tools for plumbing leak functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for plumbing leak functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

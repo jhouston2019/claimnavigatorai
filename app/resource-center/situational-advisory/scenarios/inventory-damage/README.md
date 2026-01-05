@@ -1,6 +1,6 @@
 # inventory damage
 
-This directory contains resources and tools for inventory damage functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for inventory damage functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

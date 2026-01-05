@@ -57,7 +57,7 @@ exports.handler = async (event, context) => {
       messages: [
         {
           role: "system",
-          content: "You are ClaimNavigatorAI, an expert insurance documentation assistant. Generate professional, ready-to-submit insurance claim documents. Use proper formatting with HTML tags for structure. Always include appropriate headers, dates, and signature blocks."
+          content: "You are Claim Navigator, an expert insurance documentation assistant. Generate professional, ready-to-submit insurance claim documents. Use proper formatting with HTML tags for structure. Always include appropriate headers, dates, and signature blocks."
         },
         {
           role: "user",
@@ -178,7 +178,7 @@ function applyWatermark(content, claimInfo) {
   const watermarkHeader = `
 <div style="border: 2px solid #1e3a8a; background: #f0f4ff; padding: 15px; margin-bottom: 20px; border-radius: 8px; font-family: Arial, sans-serif;">
     <div style="text-align: center; margin-bottom: 10px;">
-        <strong style="color: #1e3a8a; font-size: 14px;">CLAIM NAVIGATOR AI - GENERATED DOCUMENT</strong>
+        <strong style="color: #1e3a8a; font-size: 14px;">Claim Navigator - GENERATED DOCUMENT</strong>
     </div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; color: #374151;">
         ${claimInfo.name ? `<div><strong>Policyholder:</strong> ${claimInfo.name}</div>` : ''}
@@ -190,7 +190,7 @@ function applyWatermark(content, claimInfo) {
         ${claimInfo.phone ? `<div><strong>Phone:</strong> ${claimInfo.phone}</div>` : ''}
     </div>
     <div style="text-align: center; margin-top: 10px; font-size: 11px; color: #6b7280;">
-        Generated on ${today} by ClaimNavigatorAI | ${claimInfo.address || ''}
+        Generated on ${today} by Claim Navigator | ${claimInfo.address || ''}
     </div>
 </div>
 `;

@@ -139,7 +139,7 @@ def main():
     print("RESTORE AND PROTECT COMPLETE")
     print(f"{'='*60}")
     print(f"✅ Documents have been restored and protected!")
-    print(f"🔒 All documents now require password: ClaimNavigatorAI2025")
+    print(f"🔒 All documents now require password: Claim Navigator2025")
     print(f"🏷️ All documents are watermarked for identification.")
     
     return True

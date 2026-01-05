@@ -81,7 +81,7 @@ def update_password_protection():
     logger.info(f"Failed updates: {failed_files}")
     logger.info(f"New password: ClaimNav2025")
     logger.info(f"Print/Copy: Allowed")
-    logger.info(f"Watermark: ClaimNavigatorAI - Protected Document")
+    logger.info(f"Watermark: Claim Navigator - Protected Document")
     
     return protected_files, failed_files
 

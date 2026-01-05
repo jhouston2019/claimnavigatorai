@@ -1,5 +1,5 @@
 /**
- * ClaimNavigatorAI Sample Claims Library
+ * Claim Navigator Sample Claims Library
  * Pre-populated sample claims for demo purposes
  */
 

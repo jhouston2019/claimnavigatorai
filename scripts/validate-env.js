@@ -117,7 +117,7 @@ function getVariableDescription(key) {
     'SUPABASE_ANON_KEY': 'Supabase anonymous key',
     'SUPABASE_SERVICE_ROLE_KEY': 'Supabase service role key (admin)',
     'STRIPE_SECRET_KEY': 'Stripe secret key for payments',
-    'SITE_URL': 'Your site URL (e.g., https://claimnavigatorai.com)',
+    'SITE_URL': 'Your site URL (e.g., https://Claim Navigator.com)',
     'STRIPE_PUBLIC_KEY': 'Stripe publishable key for frontend',
     'STRIPE_WEBHOOK_SECRET': 'Stripe webhook secret for payment events',
     'JWT_SECRET': 'Secret for JWT token signing',

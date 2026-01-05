@@ -81,7 +81,7 @@ def reprotect_with_claimnav1():
     logger.info(f"Failed protections: {failed_files}")
     logger.info(f"New password: ClaimNav1")
     logger.info(f"Print/Copy: Allowed")
-    logger.info(f"Watermark: ClaimNavigatorAI - Protected Document")
+    logger.info(f"Watermark: Claim Navigator - Protected Document")
     
     return protected_files, failed_files
 

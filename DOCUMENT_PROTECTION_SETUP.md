@@ -1,6 +1,6 @@
 # Document Protection System Setup Guide
 
-This guide explains how to set up comprehensive claimant protection for all document outputs in ClaimNavigatorAI.
+This guide explains how to set up comprehensive claimant protection for all document outputs in Claim Navigator.
 
 ## Overview
 

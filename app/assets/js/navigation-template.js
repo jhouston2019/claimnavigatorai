@@ -1,6 +1,6 @@
 /**
  * Consistent Navigation Bar Template for All Tool Pages
- * Provides standardized navigation across all ClaimNavigatorAI tools.
+ * Provides standardized navigation across all Claim Navigator tools.
  *
  * Usage:
  *   <script src="/app/assets/js/navigation-template.js"></script>

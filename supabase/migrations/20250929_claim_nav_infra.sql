@@ -1,4 +1,4 @@
--- ClaimNavigatorAI Infrastructure Migration
+-- Claim Navigator Infrastructure Migration
 -- Consolidated migration for all new feature tables
 -- Run this via Supabase CLI or Dashboard
 

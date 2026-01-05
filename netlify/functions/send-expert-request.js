@@ -46,7 +46,7 @@ exports.handler = async (event, context) => {
 
     const expertEmail = process.env.EXPERT_EMAIL || 'experts@claimnavigator.ai';
     const fromEmail = process.env.FROM_EMAIL || 'no-reply@claimnavigator.ai';
-    const fromName = process.env.FROM_NAME || 'ClaimNavigatorAI';
+    const fromName = process.env.FROM_NAME || 'Claim Navigator';
 
     const emailContent = {
       to: expertEmail,
@@ -70,7 +70,7 @@ exports.handler = async (event, context) => {
           </div>
           <hr style="border: 1px solid #e5e7eb; margin: 1rem 0;">
           <p style="color: #6b7280; font-size: 0.875rem;">
-            This request was submitted through ClaimNavigatorAI Expert Opinion Request form.
+            This request was submitted through Claim Navigator Expert Opinion Request form.
           </p>
         </div>
       `,

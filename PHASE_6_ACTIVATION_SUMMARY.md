@@ -3,7 +3,7 @@
 
 **Date:** January 3, 2026  
 **Time:** Immediate  
-**System:** Claim Navigator AI  
+**System:** Claim Navigator  
 **Phase:** 6 — Canonical Coverage Intelligence  
 **Status:** 🔒 **ACTIVE & ENFORCED**
 
@@ -364,7 +364,7 @@ The following coverages are **commonly missed** and are now **automatically flag
 **Activation Status:** 🔒 **COMPLETE & ENFORCED**
 
 **Certification Date:** January 3, 2026  
-**Certified By:** Claim Navigator AI Development Team  
+**Certified By:** Claim Navigator Development Team  
 **Verdict:** ✅ **COVERAGE COMPLETENESS ENFORCEMENT ACTIVE**
 
 ---

@@ -346,7 +346,7 @@
 
 ---
 
-**Auditor:** Claim Navigator AI System  
+**Auditor:** Claim Navigator System  
 **Audit Completion Date:** January 3, 2026  
 **Audit Standard:** Production / Licensing / Liability-safe  
 **Verdict:** 🟢 **GO**

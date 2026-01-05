@@ -1,5 +1,5 @@
 # Security Hardening Report
-## ClaimNavigatorAI API Layer
+## Claim Navigator API Layer
 
 **Date:** 2025-01-28  
 **Version:** 1.0  
@@ -9,7 +9,7 @@
 
 ## Overview
 
-This document outlines the security hardening measures implemented for the ClaimNavigatorAI API layer, including input validation, file handling, and protection against common attack vectors.
+This document outlines the security hardening measures implemented for the Claim Navigator API layer, including input validation, file handling, and protection against common attack vectors.
 
 ---
 

@@ -37,7 +37,7 @@ Document Type: AI RESPONSE
 
 `;
   
-  const sys = "You are ClaimNavigatorAI. Draft clear, assertive claim communications. Keep output HTML-ready. ALWAYS start your response with the claim information header provided.";
+  const sys = "You are Claim Navigator. Draft clear, assertive claim communications. Keep output HTML-ready. ALWAYS start your response with the claim information header provided.";
   const { content } = await openaiChat([{role:'system',content:sys},{role:'user',content:`Language: ${lang}\n\nClaim Information Header:\n${claimHeader}\n\nTask:\n${text}`}]);
   return {
     statusCode: 200,

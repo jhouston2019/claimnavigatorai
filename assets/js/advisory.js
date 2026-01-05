@@ -313,7 +313,7 @@ class AdvisorySystem {
     const footerY = 285;
     doc.setFontSize(9);
     doc.setTextColor(128, 128, 128);
-    doc.text("Claim Navigator AI • Professional Claim Assistance", 105, footerY, { align: "center" });
+    doc.text("Claim Navigator • Professional Claim Assistance", 105, footerY, { align: "center" });
   }
 
   copyText() {

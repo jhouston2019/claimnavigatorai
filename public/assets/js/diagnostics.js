@@ -1,4 +1,4 @@
-// Diagnostics utilities for ClaimNavigatorAI Resource Center
+// Diagnostics utilities for Claim Navigator Resource Center
 // Provides automated testing and health checks
 
 /**

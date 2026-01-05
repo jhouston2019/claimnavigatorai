@@ -1,5 +1,5 @@
 /**
- * ClaimNavigatorAI User Tier System
+ * Claim Navigator User Tier System
  * Central source of truth for user tier management
  */
 

@@ -72,7 +72,7 @@ exports.handler = async (event) => {
     // Fallback to GitHub documents JSON if Supabase fails
     try {
       console.log('Fetching GitHub documents JSON from web...');
-      const response = await fetch(`${process.env.SITE_URL || process.env.URL || 'https://claimnavigatorai.com'}/assets/data/github-documents.json`);
+      const response = await fetch(`${process.env.SITE_URL || process.env.URL || 'https://Claim Navigator.com'}/assets/data/github-documents.json`);
       if (response.ok) {
         const githubDocumentsData = await response.json();
         const filteredDocs = githubDocumentsData.filter(doc => doc.language === lang);
@@ -113,8 +113,8 @@ exports.handler = async (event) => {
           return {
             label: name.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
             description: "Insurance Document",
-            templatePath: `https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs/en/${file}`,
-            samplePath: sampleExists ? `https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs/en/${sampleFile}` : null
+            templatePath: `https://raw.githubusercontent.com/jhouston2019/Claim Navigator/main/docs/en/${file}`,
+            samplePath: sampleExists ? `https://raw.githubusercontent.com/jhouston2019/Claim Navigator/main/docs/en/${sampleFile}` : null
           };
         });
       }
@@ -143,8 +143,8 @@ exports.handler = async (event) => {
           return {
             label: name,
             description: "Documento de Seguros",
-            templatePath: `https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs/es/${file}`,
-            samplePath: sampleExists ? `https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs/es/${sampleFile}` : null
+            templatePath: `https://raw.githubusercontent.com/jhouston2019/Claim Navigator/main/docs/es/${file}`,
+            samplePath: sampleExists ? `https://raw.githubusercontent.com/jhouston2019/Claim Navigator/main/docs/es/${sampleFile}` : null
           };
         });
       }

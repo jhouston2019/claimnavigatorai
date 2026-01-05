@@ -33,13 +33,13 @@ URL=http://localhost:8888
 #### **Option A: Direct File Access**
 1. Open the file directly in your browser:
    ```
-   file:///D:/Projects - Master/Priority 1/claimnavigatorai/app/resource-center/document-generator.html
+   file:///D:/Projects - Master/Priority 1/Claim Navigator/app/resource-center/document-generator.html
    ```
 
 #### **Option B: Use the Test File**
 1. Open the standalone test file:
    ```
-   file:///D:/Projects - Master/Priority 1/claimnavigatorai/test-document-generator-standalone.html
+   file:///D:/Projects - Master/Priority 1/Claim Navigator/test-document-generator-standalone.html
    ```
 
 #### **Option C: Start Netlify Dev Server**

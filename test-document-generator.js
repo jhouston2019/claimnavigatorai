@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * Test script for ClaimNavigatorAI Document Generator
+ * Test script for Claim Navigator Document Generator
  * Tests the generate-document function with sample data
  */
 
 const testDocumentGeneration = async () => {
-    console.log('🧪 Testing ClaimNavigatorAI Document Generator...\n');
+    console.log('🧪 Testing Claim Navigator Document Generator...\n');
     
     // Test data
     const testData = {

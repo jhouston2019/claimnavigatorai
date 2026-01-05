@@ -1,5 +1,5 @@
 /**
- * ClaimNavigatorAI Organization Management Module
+ * Claim Navigator Organization Management Module
  * Handles organization identity, team members, and seat licensing
  */
 

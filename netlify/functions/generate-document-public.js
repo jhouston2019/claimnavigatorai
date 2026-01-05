@@ -35,7 +35,7 @@ exports.handler = async (event, context) => {
       messages: [
         {
           role: 'system',
-          content: `You are ClaimNavigatorAI, an expert insurance document generator. Create professional, legally sound insurance documents with the following requirements:
+          content: `You are Claim Navigator, an expert insurance document generator. Create professional, legally sound insurance documents with the following requirements:
 
 CRITICAL REQUIREMENTS:
 1. Generate ONLY the actual document content - NO CSS styling, NO template instructions, NO placeholder text like [Insert Date], [Your Name], etc.

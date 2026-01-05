@@ -1,9 +1,9 @@
 @echo off
-REM ClaimNavigatorAI PDF Protection Dependencies Installer
-REM Repository: https://github.com/jhouston2019/claimnavigatorai.git
+REM Claim Navigator PDF Protection Dependencies Installer
+REM Repository: https://github.com/jhouston2019/Claim Navigator.git
 
 echo ========================================
-echo ClaimNavigatorAI PDF Protection Setup
+echo Claim Navigator PDF Protection Setup
 echo ========================================
 echo.
 

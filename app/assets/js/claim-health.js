@@ -1,5 +1,5 @@
 /**
- * ClaimNavigatorAI Claim Health Score Calculator
+ * Claim Navigator Claim Health Score Calculator
  * Dynamic scoring model based on user activation and engagement
  */
 

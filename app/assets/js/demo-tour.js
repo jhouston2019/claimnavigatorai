@@ -1,12 +1,12 @@
 /**
- * ClaimNavigatorAI Guided Demo Tour
+ * Claim Navigator Guided Demo Tour
  * Step-by-step tour overlay for sales demos
  */
 
 window.CNDemoTour = {
   steps: [
     {
-      title: "Welcome to ClaimNavigatorAI",
+      title: "Welcome to Claim Navigator",
       text: "This is the Claim Navigator guided demo. It shows the insurance claim flow with real tools that help policyholders get fair settlements."
     },
     {

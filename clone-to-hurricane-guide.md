@@ -1,6 +1,6 @@
 # HurricaneClaimNavigator Clone Guide
 
-This guide will help you clone ClaimNavigatorAI into HurricaneClaimNavigator while preserving the existing branding and color scheme.
+This guide will help you clone Claim Navigator into HurricaneClaimNavigator while preserving the existing branding and color scheme.
 
 ## Step 1: Prepare the HurricaneClaimNavigator Repository
 
@@ -18,58 +18,58 @@ This guide will help you clone ClaimNavigatorAI into HurricaneClaimNavigator whi
 
 ## Step 2: Copy Core Application Files
 
-Copy these directories and files from ClaimNavigatorAI to HurricaneClaimNavigator:
+Copy these directories and files from Claim Navigator to HurricaneClaimNavigator:
 
 ### Essential Directories:
 ```bash
 # Copy the entire app directory
-cp -r ../claimnavigatorai/app ./
+cp -r ../Claim Navigator/app ./
 
 # Copy netlify functions
-cp -r ../claimnavigatorai/netlify ./
+cp -r ../Claim Navigator/netlify ./
 
 # Copy assets (but preserve existing CSS)
-cp -r ../claimnavigatorai/assets/data ./
-cp -r ../claimnavigatorai/assets/docs ./
-cp -r ../claimnavigatorai/assets/js ./
+cp -r ../Claim Navigator/assets/data ./
+cp -r ../Claim Navigator/assets/docs ./
+cp -r ../Claim Navigator/assets/js ./
 
 # Copy document libraries
-cp -r ../claimnavigatorai/docs ./
-cp -r ../claimnavigatorai/"Document Library - Final English" ./
-cp -r ../claimnavigatorai/"Document Library - Final Spanish" ./
+cp -r ../Claim Navigator/docs ./
+cp -r ../Claim Navigator/"Document Library - Final English" ./
+cp -r ../Claim Navigator/"Document Library - Final Spanish" ./
 
 # Copy public directory
-cp -r ../claimnavigatorai/public ./
+cp -r ../Claim Navigator/public ./
 
 # Copy scripts
-cp -r ../claimnavigatorai/scripts ./
+cp -r ../Claim Navigator/scripts ./
 
 # Copy supabase
-cp -r ../claimnavigatorai/supabase ./
+cp -r ../Claim Navigator/supabase ./
 ```
 
 ### Essential Files:
 ```bash
 # Configuration files
-cp ../claimnavigatorai/package.json ./
-cp ../claimnavigatorai/package-lock.json ./
-cp ../claimnavigatorai/netlify.toml ./
-cp ../claimnavigatorai/manifest.json ./
+cp ../Claim Navigator/package.json ./
+cp ../Claim Navigator/package-lock.json ./
+cp ../Claim Navigator/netlify.toml ./
+cp ../Claim Navigator/manifest.json ./
 
 # Static files
-cp ../claimnavigatorai/_redirects ./
-cp ../claimnavigatorai/404.html ./
-cp ../claimnavigatorai/robots.txt ./
-cp ../claimnavigatorai/sitemap.xml ./
+cp ../Claim Navigator/_redirects ./
+cp ../Claim Navigator/404.html ./
+cp ../Claim Navigator/robots.txt ./
+cp ../Claim Navigator/sitemap.xml ./
 
 # Legal pages
-cp ../claimnavigatorai/terms.html ./
-cp ../claimnavigatorai/privacy.html ./
-cp ../claimnavigatorai/disclaimer.html ./
-cp ../claimnavigatorai/success.html ./
+cp ../Claim Navigator/terms.html ./
+cp ../Claim Navigator/privacy.html ./
+cp ../Claim Navigator/disclaimer.html ./
+cp ../Claim Navigator/success.html ./
 
 # Other pages
-cp ../claimnavigatorai/product.html ./
+cp ../Claim Navigator/product.html ./
 ```
 
 ## Step 3: Adapt Branding and Messaging
@@ -95,7 +95,7 @@ cp ../claimnavigatorai/product.html ./
 ```
 
 ### Update netlify.toml:
-- Change the redirect URLs from `claimnavigatorai.netlify.app` to your hurricane site URL
+- Change the redirect URLs from `Claim Navigator.netlify.app` to your hurricane site URL
 - Update any site-specific configurations
 
 ## Step 4: Update Content for Hurricane Context
@@ -179,7 +179,7 @@ cp ../claimnavigatorai/product.html ./
 4. **Deploy:**
    ```bash
    git add .
-   git commit -m "Clone ClaimNavigatorAI functionality for hurricane claims"
+   git commit -m "Clone Claim Navigator functionality for hurricane claims"
    git push origin main
    ```
 
@@ -227,4 +227,4 @@ The existing HurricaneClaimNavigator branding should be preserved by:
 3. Preserving the existing layout structure
 4. Only updating text content and messaging
 
-This approach ensures that HurricaneClaimNavigator maintains its unique identity while gaining all the functionality of ClaimNavigatorAI.
+This approach ensures that HurricaneClaimNavigator maintains its unique identity while gaining all the functionality of Claim Navigator.

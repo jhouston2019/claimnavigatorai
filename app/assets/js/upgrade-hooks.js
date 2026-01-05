@@ -1,5 +1,5 @@
 /**
- * ClaimNavigatorAI Upgrade Hooks System
+ * Claim Navigator Upgrade Hooks System
  * Centralized upgrade trigger and messaging system
  */
 

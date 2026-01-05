@@ -1,6 +1,6 @@
 # Statement Of Loss
 
-This directory contains resources and tools for Statement Of Loss functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for Statement Of Loss functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

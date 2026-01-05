@@ -1,6 +1,6 @@
 # estimate comparison
 
-This directory contains resources and tools for estimate comparison functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for estimate comparison functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

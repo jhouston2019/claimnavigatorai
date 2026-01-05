@@ -1,6 +1,6 @@
 # components for claim-journal
 
-This directory contains resources and tools for components for claim-journal functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for components for claim-journal functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

@@ -1,6 +1,6 @@
 # volcanic eruption
 
-This directory contains resources and tools for volcanic eruption functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for volcanic eruption functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

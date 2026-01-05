@@ -68,7 +68,7 @@ exports.handler = async (event) => {
     // Create signed URL with proper error handling
     const { data, error } = await supabase
       .storage
-      .from('claimnavigatorai-docs')
+      .from('Claim Navigator-docs')
       .createSignedUrl(sanitizedPath, 60 * 5); // URL expires in 5 minutes
 
     if (error) {

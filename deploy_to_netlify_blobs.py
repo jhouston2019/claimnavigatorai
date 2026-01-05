@@ -122,7 +122,7 @@ class NetlifyBlobsDeployer:
 
 def main():
     """Main deployment function"""
-    logger.info("ClaimNavigatorAI Protected Documents - Netlify Blobs Deployment")
+    logger.info("Claim Navigator Protected Documents - Netlify Blobs Deployment")
     logger.info("=" * 70)
     
     # Check if protected documents exist
@@ -151,7 +151,7 @@ def main():
     if failed == 0:
         logger.info("✅ All protected documents deployed successfully!")
         logger.info("🔒 Protected documents are now live in the response center!")
-        logger.info("📝 Users will need password 'ClaimNavigatorAI2025' to access documents")
+        logger.info("📝 Users will need password 'Claim Navigator2025' to access documents")
         logger.info("💧 All documents have watermarks for identification")
         logger.info("🚫 Printing and copying are disabled by default")
     else:

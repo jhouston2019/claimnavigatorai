@@ -1,5 +1,5 @@
 /**
- * ClaimNavigatorAI Global Scripts
+ * Claim Navigator Global Scripts
  * Attribution tracking, retention loops, and global behaviors
  */
 

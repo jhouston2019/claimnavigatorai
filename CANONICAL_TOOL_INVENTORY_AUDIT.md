@@ -1,4 +1,4 @@
-# Claim Navigator AI — Canonical Tool Inventory Audit
+# Claim Navigator — Canonical Tool Inventory Audit
 **Date:** January 3, 2026  
 **Auditor:** AI Assistant  
 **Scope:** Read-only audit of implemented, functional, and reachable tools
@@ -777,7 +777,7 @@ These tools exist in `tool-registry.js` but are **not explicitly called by the 1
 
 ## CONCLUSION
 
-The Claim Navigator AI system contains a **comprehensive, fully-implemented tool ecosystem** with:
+The Claim Navigator system contains a **comprehensive, fully-implemented tool ecosystem** with:
 
 ✅ **52 standalone tools** all functional and reachable  
 ✅ **17 primary tools** directly integrated into the 10-step claim protocol  

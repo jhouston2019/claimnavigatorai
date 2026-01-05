@@ -1,4 +1,4 @@
-// Validation utilities for ClaimNavigatorAI Resource Center
+// Validation utilities for Claim Navigator Resource Center
 // Provides form validation and data validation functions
 
 /**

@@ -127,7 +127,7 @@ Sincerely,
         apiKey: process.env.OPENAI_API_KEY 
       });
 
-      const prompt = `You are Claim Navigator AI, an expert insurance claim advisor. 
+      const prompt = `You are Claim Navigator, an expert insurance claim advisor. 
 
 Using this standard ${documentType} template as a foundation, create a customized, professional letter that incorporates the user's specific situation and input.
 

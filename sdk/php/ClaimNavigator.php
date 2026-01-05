@@ -1,7 +1,7 @@
 <?php
 /**
- * ClaimNavigatorAI PHP SDK
- * Enterprise client library for ClaimNavigatorAI API
+ * Claim Navigator PHP SDK
+ * Enterprise client library for Claim Navigator API
  * 
  * Usage:
  *   $client = new ClaimNavigator(['apiKey' => 'your-key', 'baseUrl' => 'https://...']);

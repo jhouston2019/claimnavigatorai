@@ -180,7 +180,7 @@ def main():
         print(f"   - {BACKUP_FOLDER}")
         print(f"   - {AUTOCLAIM_BACKUP_FOLDER}")
         print(f"\n🔒 All documents now require passwords:")
-        print(f"   - Main System: ClaimNavigatorAI2025")
+        print(f"   - Main System: Claim Navigator2025")
         print(f"   - AutoClaimNavigator: AutoClaimNav2025")
         print(f"\n🏷️ All documents are watermarked for identification.")
     

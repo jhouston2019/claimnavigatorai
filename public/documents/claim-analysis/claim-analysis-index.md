@@ -1,7 +1,7 @@
 # Claim Analysis Tools - Document Library
 
 ## Overview
-This document library contains comprehensive guides for each of the 6 Claim Analysis Tools available in the ClaimNavigatorAI Response Center. Each guide provides detailed, step-by-step instructions for analyzing and maximizing your insurance claim.
+This document library contains comprehensive guides for each of the 6 Claim Analysis Tools available in the Claim Navigator Response Center. Each guide provides detailed, step-by-step instructions for analyzing and maximizing your insurance claim.
 
 ## Available Documents
 
@@ -130,7 +130,7 @@ If you have questions about using these guides or encounter issues with your cla
 - Consulting with qualified professionals
 - Contacting your insurance company
 - Seeking legal advice for complex situations
-- Using the ClaimNavigatorAI tools for additional support
+- Using the Claim Navigator tools for additional support
 
 ### Document Improvements
 These guides are designed to be comprehensive and practical. If you have suggestions for improvements or additional topics, please provide feedback through the appropriate channels.
@@ -139,4 +139,4 @@ These guides are designed to be comprehensive and practical. If you have suggest
 
 *Last Updated: January 2025*
 *Version: 1.0*
-*ClaimNavigatorAI - Your AI-Powered Claim Solution*
+*Claim Navigator - Your AI-Powered Claim Solution*

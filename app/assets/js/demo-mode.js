@@ -1,5 +1,5 @@
 /**
- * ClaimNavigatorAI Demo Mode Engine
+ * Claim Navigator Demo Mode Engine
  * Core switch for enabling/disabling demo mode across the application
  */
 

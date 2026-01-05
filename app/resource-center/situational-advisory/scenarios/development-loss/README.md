@@ -1,6 +1,6 @@
 # development loss
 
-This directory contains resources and tools for development loss functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for development loss functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

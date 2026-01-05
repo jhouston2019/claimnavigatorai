@@ -1,6 +1,6 @@
 # partial payment
 
-This directory contains resources and tools for partial payment functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for partial payment functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

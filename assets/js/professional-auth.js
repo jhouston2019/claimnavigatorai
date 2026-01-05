@@ -99,11 +99,11 @@ class ProfessionalAuth {
 
     // Professional verification logic (in production, this would be server-side)
     const professionalEmails = [
-      'admin@claimnavigatorai.com',
-      'professional@claimnavigatorai.com',
-      'adjuster@claimnavigatorai.com',
-      'attorney@claimnavigatorai.com',
-      'contractor@claimnavigatorai.com'
+      'admin@Claim Navigator.com',
+      'professional@Claim Navigator.com',
+      'adjuster@Claim Navigator.com',
+      'attorney@Claim Navigator.com',
+      'contractor@Claim Navigator.com'
     ];
 
     const professionalPasswords = [

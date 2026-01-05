@@ -1,5 +1,5 @@
 /**
- * ClaimNavigatorAI Event Analytics System
+ * Claim Navigator Event Analytics System
  * Tracks user interactions and events for analytics and monetization
  */
 

@@ -1,5 +1,5 @@
 /**
- * ClaimNavigatorAI Activation Tracking System
+ * Claim Navigator Activation Tracking System
  * Tracks 10 key activation milestones for user engagement
  */
 

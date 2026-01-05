@@ -11,7 +11,7 @@
     {
       id: "welcome",
       selector: null,
-      title: "Welcome to Claim Navigator AI",
+      title: "Welcome to Claim Navigator",
       body: "I'll guide you through the most important tools so you know exactly where to start.",
       position: "center"
     },

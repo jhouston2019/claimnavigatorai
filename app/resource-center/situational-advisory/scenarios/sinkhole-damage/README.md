@@ -1,6 +1,6 @@
 # sinkhole damage
 
-This directory contains resources and tools for sinkhole damage functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for sinkhole damage functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

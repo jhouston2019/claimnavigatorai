@@ -1,6 +1,6 @@
 # lowball estimate
 
-This directory contains resources and tools for lowball estimate functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for lowball estimate functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

@@ -403,7 +403,7 @@ Result: 15/15 tests passed
 
 **Audit Verdict:** 🟢 **GO FOR PRODUCTION**
 
-**Auditor:** Claim Navigator AI System  
+**Auditor:** Claim Navigator System  
 **Audit Date:** January 3, 2026  
 **Audit Standard:** Production / Licensing / Liability-safe  
 

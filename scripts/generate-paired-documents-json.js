@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Generate document metadata for GitHub storage with proper template/sample pairing
-const githubBaseUrl = 'https://raw.githubusercontent.com/jhouston2019/claimnavigatorai/main/docs';
+const githubBaseUrl = 'https://raw.githubusercontent.com/jhouston2019/Claim Navigator/main/docs';
 
 const documents = [];
 

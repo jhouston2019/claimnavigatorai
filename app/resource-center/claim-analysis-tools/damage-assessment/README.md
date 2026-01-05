@@ -1,6 +1,6 @@
 # damage assessment
 
-This directory contains resources and tools for damage assessment functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for damage assessment functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

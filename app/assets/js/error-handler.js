@@ -1,4 +1,4 @@
-// Error handling utilities for ClaimNavigatorAI Resource Center
+// Error handling utilities for Claim Navigator Resource Center
 // Provides centralized error handling and user feedback
 
 /**
@@ -141,7 +141,7 @@ window.handleValidationErrors = function(errors) {
  * @param {Object} data - Additional error data
  */
 window.logError = function(message, data = {}) {
-  console.error(`[ClaimNavigatorAI Error] ${message}`, data);
+  console.error(`[Claim Navigator Error] ${message}`, data);
   
   // In production, you might want to send this to an error tracking service
   if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {

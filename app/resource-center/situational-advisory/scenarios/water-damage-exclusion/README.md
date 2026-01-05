@@ -1,6 +1,6 @@
 # water damage exclusion
 
-This directory contains resources and tools for water damage exclusion functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for water damage exclusion functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

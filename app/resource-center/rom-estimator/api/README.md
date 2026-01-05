@@ -1,6 +1,6 @@
 # api for rom-estimator
 
-This directory contains resources and tools for api for rom-estimator functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for api for rom-estimator functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

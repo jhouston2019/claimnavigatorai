@@ -1,6 +1,6 @@
 # State Rights Deadlines
 
-This directory contains resources and tools for State Rights Deadlines functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for State Rights Deadlines functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

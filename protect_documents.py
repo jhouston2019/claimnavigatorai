@@ -23,7 +23,7 @@ INPUT_FOLDER = "./docs"  # Folder containing your original PDFs
 OUTPUT_FOLDER = "./docs/protected"  # Where to save protected PDFs
 
 # Watermark Settings
-WATERMARK_TEXT = "ClaimNavigatorAI - Protected Document"
+WATERMARK_TEXT = "Claim Navigator - Protected Document"
 WATERMARK_OPACITY = 0.3  # 0.0 (invisible) to 1.0 (fully opaque)
 WATERMARK_FONT_SIZE = 14
 WATERMARK_COLOR = (0.5, 0.5, 0.5)  # RGB values (0-1), this is gray
@@ -33,7 +33,7 @@ WATERMARK_ROTATION = 0  # Degrees (0 for horizontal, 45 for diagonal)
 WATERMARK_POSITION = 'bottom'  
 
 # Password Settings
-USER_PASSWORD = "ClaimNavigatorAI2025"  # Password to open the document
+USER_PASSWORD = "Claim Navigator2025"  # Password to open the document
 OWNER_PASSWORD = "AdminClaimNav2025"  # Password for permissions (should be different)
 
 # Permissions (set False to restrict)

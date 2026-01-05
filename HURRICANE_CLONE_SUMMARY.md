@@ -12,14 +12,14 @@ cd hurricaneclaimnavigator
 
 **For Linux/Mac:**
 ```bash
-# From the ClaimNavigatorAI directory
+# From the Claim Navigator directory
 chmod +x clone-to-hurricane.sh
 ./clone-to-hurricane.sh
 ```
 
 **For Windows PowerShell:**
 ```powershell
-# From the ClaimNavigatorAI directory
+# From the Claim Navigator directory
 .\clone-to-hurricane.ps1
 ```
 
@@ -40,7 +40,7 @@ chmod +x clone-to-hurricane.sh
    npm install
    npm run dev  # Test locally
    git add .
-   git commit -m "Clone ClaimNavigatorAI functionality for hurricane claims"
+   git commit -m "Clone Claim Navigator functionality for hurricane claims"
    git push origin main
    ```
 
@@ -108,7 +108,7 @@ chmod +x clone-to-hurricane.sh
 
 ## Key Messaging Changes
 
-### From ClaimNavigatorAI to HurricaneClaimNavigator:
+### From Claim Navigator to HurricaneClaimNavigator:
 
 | Original | Hurricane Version |
 |----------|------------------|
@@ -163,4 +163,4 @@ chmod +x clone-to-hurricane.sh
    - Set up monitoring
    - Launch marketing campaign
 
-The clone process preserves your existing branding while adding all the powerful functionality of ClaimNavigatorAI, specifically tailored for hurricane damage claims.
+The clone process preserves your existing branding while adding all the powerful functionality of Claim Navigator, specifically tailored for hurricane damage claims.

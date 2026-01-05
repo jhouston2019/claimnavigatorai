@@ -1,6 +1,6 @@
 /**
- * ClaimNavigatorAI JavaScript SDK
- * Enterprise client library for ClaimNavigatorAI API
+ * Claim Navigator JavaScript SDK
+ * Enterprise client library for Claim Navigator API
  * 
  * Usage:
  *   const client = new ClaimNavigator({ apiKey: 'your-key', baseUrl: 'https://...' });

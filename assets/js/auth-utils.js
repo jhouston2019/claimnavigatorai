@@ -1,4 +1,4 @@
-// Authentication utilities for ClaimNavigatorAI
+// Authentication utilities for Claim Navigator
 // This file provides shared authentication functionality across the app
 
 let supabase = null;

@@ -1,6 +1,6 @@
 # Authority Guides
 
-This directory contains resources and tools for Authority Guides functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for Authority Guides functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

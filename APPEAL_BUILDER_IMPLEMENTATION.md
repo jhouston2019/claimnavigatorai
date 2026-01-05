@@ -149,7 +149,7 @@ Requirements:
 ## 📁 File Structure
 
 ```
-claimnavigatorai/
+Claim Navigator/
 ├── app/
 │   ├── AppealBuilder.js          # Main UI component
 │   └── response-center.html      # Integration point

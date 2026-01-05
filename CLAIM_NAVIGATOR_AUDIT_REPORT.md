@@ -1,6 +1,6 @@
 # CLAIM NAVIGATOR AUDIT REPORT
 **Generated:** 2025-01-27  
-**Scope:** Full repository audit of ClaimNavigatorAI site
+**Scope:** Full repository audit of Claim Navigator site
 
 ---
 

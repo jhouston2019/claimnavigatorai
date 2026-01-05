@@ -1,4 +1,4 @@
--- ClaimNavigatorAI Phase 4 SaaS Schema
+-- Claim Navigator Phase 4 SaaS Schema
 -- Complete database schema for production SaaS platform
 -- Run this in Supabase SQL Editor
 

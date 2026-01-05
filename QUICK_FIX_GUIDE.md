@@ -181,7 +181,7 @@ Each tool must follow this pattern:
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Policy Intelligence Engine - ClaimNavigatorAI</title>
+  <title>Policy Intelligence Engine - Claim Navigator</title>
   <script src="/storage/claimStorage.js"></script>
 </head>
 <body>

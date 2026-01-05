@@ -1,6 +1,6 @@
 # components for evidence-organizer
 
-This directory contains resources and tools for components for evidence-organizer functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for components for evidence-organizer functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

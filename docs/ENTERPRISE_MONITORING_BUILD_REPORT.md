@@ -1,5 +1,5 @@
 # Enterprise Monitoring Dashboard - Build Report
-## ClaimNavigatorAI
+## Claim Navigator
 
 **Date:** 2025-01-28  
 **Status:** ✅ Complete

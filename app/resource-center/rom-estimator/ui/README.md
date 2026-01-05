@@ -1,6 +1,6 @@
 # ui for rom-estimator
 
-This directory contains resources and tools for ui for rom-estimator functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for ui for rom-estimator functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

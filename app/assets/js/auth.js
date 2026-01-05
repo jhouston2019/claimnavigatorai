@@ -1,5 +1,5 @@
 /**
- * Unified Authentication Module for ClaimNavigatorAI
+ * Unified Authentication Module for Claim Navigator
  * Handles login, register, logout, and auth checks
  */
 

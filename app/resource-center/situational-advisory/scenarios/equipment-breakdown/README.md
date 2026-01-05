@@ -1,6 +1,6 @@
 # equipment breakdown
 
-This directory contains resources and tools for equipment breakdown functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for equipment breakdown functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

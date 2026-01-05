@@ -1,6 +1,6 @@
 # employee loss of income
 
-This directory contains resources and tools for employee loss of income functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for employee loss of income functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

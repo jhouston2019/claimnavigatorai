@@ -34,7 +34,7 @@
 ### 4. **Enhanced Features**
 - ✅ **Smart Fallback System**: If AI generation fails, generates professional templates
 - ✅ **Document Type Detection**: Automatically formats based on document type
-- ✅ **Professional Watermarking**: All documents include ClaimNavigatorAI branding
+- ✅ **Professional Watermarking**: All documents include Claim Navigator branding
 - ✅ **PDF Generation**: jsPDF integration for document downloads
 - ✅ **Search Functionality**: Real-time search through document types
 - ✅ **Responsive Design**: Mobile-friendly interface

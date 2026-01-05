@@ -1,6 +1,6 @@
 # heat wave damage
 
-This directory contains resources and tools for heat wave damage functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for heat wave damage functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

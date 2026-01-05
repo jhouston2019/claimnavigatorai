@@ -2,7 +2,7 @@
 ## System Guarantee: Zero Coverage Omissions
 
 **Effective Date:** January 3, 2026  
-**System:** Claim Navigator AI  
+**System:** Claim Navigator  
 **Module:** Phase 6 — Canonical Coverage Intelligence  
 **Status:** ✅ **ACTIVE & ENFORCED**
 
@@ -404,7 +404,7 @@ YES → Generate Guidance + Display Coverage Summary
 **Guarantee Status:** 🔒 **ACTIVE & ENFORCED**
 
 **Certification Date:** January 3, 2026  
-**System:** Claim Navigator AI — Phase 6  
+**System:** Claim Navigator — Phase 6  
 **Verdict:** ✅ **COVERAGE COMPLETENESS GUARANTEED**
 
 ---

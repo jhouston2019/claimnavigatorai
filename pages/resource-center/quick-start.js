@@ -78,7 +78,7 @@ export default function QuickStartGuide() {
         </div>
 
         <footer className="mt-16 text-center text-sm text-gray-500">
-          © 2025 Claim Navigator AI – Axis Strategic Holdings. All rights reserved.
+          © 2025 Claim Navigator – Axis Strategic Holdings. All rights reserved.
         </footer>
       </div>
     </ResourceLayout>

@@ -13,7 +13,7 @@ const stateTemplate = `<!doctype html>
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>{{state}} Fire Claim Guide • ClaimNavigatorAI</title>
+  <title>{{state}} Fire Claim Guide • Claim Navigator</title>
   <meta name="description" content="Insurance claim deadlines, proof of loss requirements, and contact information for {{state}}. Fire damage claim guide with state-specific regulations.">
   <meta name="keywords" content="{{state}} fire claim, {{state}} insurance, {{state}} deadline, {{state}} DOI, fire damage claim {{state}}">
   <link rel="stylesheet" href="/app/assets/css/style.css">
@@ -62,7 +62,7 @@ const stateTemplate = `<!doctype html>
 <body class="resource-center state-guide-page">
   <header class="header">
     <div class="bar container">
-      <div class="brand"><div class="logo"></div><div>ClaimNavigatorAI</div></div>
+      <div class="brand"><div class="logo"></div><div>Claim Navigator</div></div>
       <nav class="nav">
         <a href="/app/index.html">Home</a>
         <a href="/app/resource-center.html">Resource Center</a>
@@ -125,7 +125,7 @@ const pillarTemplate = `<!doctype html>
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>{{title}} • ClaimNavigatorAI</title>
+  <title>{{title}} • Claim Navigator</title>
   <meta name="description" content="{{desc}}">
   <meta name="keywords" content="{{keywords}}">
   <link rel="stylesheet" href="/app/assets/css/style.css">
@@ -161,7 +161,7 @@ const pillarTemplate = `<!doctype html>
 <body class="resource-center pillar-guide-page">
   <header class="header">
     <div class="bar container">
-      <div class="brand"><div class="logo"></div><div>ClaimNavigatorAI</div></div>
+      <div class="brand"><div class="logo"></div><div>Claim Navigator</div></div>
       <nav class="nav">
         <a href="/app/index.html">Home</a>
         <a href="/app/resource-center.html">Resource Center</a>

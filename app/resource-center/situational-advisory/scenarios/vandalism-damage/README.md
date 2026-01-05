@@ -1,6 +1,6 @@
 # vandalism damage
 
-This directory contains resources and tools for vandalism damage functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for vandalism damage functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

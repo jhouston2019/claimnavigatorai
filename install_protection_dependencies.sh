@@ -1,9 +1,9 @@
 #!/bin/bash
-# ClaimNavigatorAI PDF Protection Dependencies Installer
-# Repository: https://github.com/jhouston2019/claimnavigatorai.git
+# Claim Navigator PDF Protection Dependencies Installer
+# Repository: https://github.com/jhouston2019/Claim Navigator.git
 
 echo "========================================"
-echo "ClaimNavigatorAI PDF Protection Setup"
+echo "Claim Navigator PDF Protection Setup"
 echo "========================================"
 echo
 

@@ -10,7 +10,7 @@
   // Existing disclaimer text from compliance-banner.js
   const DISCLAIMER_TEXT = `
     <strong>Important:</strong>
-    Claim Navigator AI provides informational tools and document assistance only.
+    Claim Navigator provides informational tools and document assistance only.
     It is not a law firm, does not provide legal advice, and does not act as a public adjuster,
     attorney, or insurance producer. You are responsible for all decisions related to your claim.
     For legal, coverage, or representation questions, consult a licensed professional in your state.
@@ -18,7 +18,7 @@
   
   // Compact disclaimer for inline display
   const DISCLAIMER_COMPACT = `
-    <strong>Disclaimer:</strong> ClaimNavigatorAI provides documentation tools only, not legal advice or professional services.
+    <strong>Disclaimer:</strong> Claim Navigator provides documentation tools only, not legal advice or professional services.
     You are responsible for all claim decisions. Consult licensed professionals for legal or coverage advice.
   `;
   
@@ -159,7 +159,7 @@
       
       // Show quick acknowledgment
       const acknowledged = confirm(
-        'Disclaimer: ClaimNavigatorAI provides documentation tools only, not legal advice or professional services. ' +
+        'Disclaimer: Claim Navigator provides documentation tools only, not legal advice or professional services. ' +
         'You are responsible for all claim decisions. Consult licensed professionals for legal or coverage advice.\n\n' +
         'Click OK to proceed with export.'
       );

@@ -1,6 +1,6 @@
 # Negotiation Scripts
 
-This directory contains resources and tools for Negotiation Scripts functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for Negotiation Scripts functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

@@ -3,7 +3,7 @@
  * Ensures admin access without needing browser headers.
  */
 
-const ADMIN_EMAIL = "claimnavigatorai@gmail.com";
+const ADMIN_EMAIL = "Claim Navigator@gmail.com";
 
 module.exports = function requireAdmin(event, injectedEmail = null) {
   const headers = event.headers || {};

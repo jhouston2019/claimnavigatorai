@@ -232,7 +232,7 @@ STRIPE_SECRET_KEY=your_stripe_secret
 ## File Structure
 
 ```
-claimnavigatorai/
+Claim Navigator/
 ├── app/
 │   └── document-generator.html
 ├── components/DocGen/

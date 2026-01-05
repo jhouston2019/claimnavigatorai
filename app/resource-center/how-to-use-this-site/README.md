@@ -1,6 +1,6 @@
 # How To Use This Site
 
-This directory contains resources and tools for How To Use This Site functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for How To Use This Site functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

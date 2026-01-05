@@ -10,7 +10,7 @@ The enhanced protection system builds on your existing document protection (pass
 
 ### 1. **Existing Protection** (Already Working)
 - ✅ **Password Protection**: User: `ClaimNav1`, Owner: `AdminClaimNav2025`
-- ✅ **Watermarks**: "ClaimNavigatorAI - Protected Document"
+- ✅ **Watermarks**: "Claim Navigator - Protected Document"
 - ✅ **Document Storage**: 263 protected PDFs in `/protected_documents_package/`
 - ✅ **Serving**: Via `serve-protected-document-simple.js`
 
@@ -95,12 +95,12 @@ ORDER BY accessed_at DESC;
 
 ### Before (Original Protection):
 - Password-protected PDF
-- "ClaimNavigatorAI - Protected Document" watermark
+- "Claim Navigator - Protected Document" watermark
 - No personal information
 
 ### After (Enhanced Protection):
 - Password-protected PDF (same as before)
-- "ClaimNavigatorAI - Protected Document" watermark (same as before)
+- "Claim Navigator - Protected Document" watermark (same as before)
 - **NEW**: Header with claimant info on every page
 - **NEW**: Footer with "Generated for [Name] – Not transferable"
 - **NEW**: Document ID for tracking

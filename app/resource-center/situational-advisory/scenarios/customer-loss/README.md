@@ -1,6 +1,6 @@
 # customer loss
 
-This directory contains resources and tools for customer loss functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for customer loss functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

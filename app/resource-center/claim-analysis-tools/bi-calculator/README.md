@@ -1,6 +1,6 @@
 # bi calculator
 
-This directory contains resources and tools for bi calculator functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for bi calculator functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

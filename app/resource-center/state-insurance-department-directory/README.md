@@ -1,6 +1,6 @@
 # State Insurance Department Directory
 
-This directory contains resources and tools for State Insurance Department Directory functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for State Insurance Department Directory functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

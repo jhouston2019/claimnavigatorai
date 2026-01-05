@@ -1,5 +1,5 @@
 # Penetration Testing Plan
-## ClaimNavigatorAI API Layer
+## Claim Navigator API Layer
 
 **Date:** 2025-01-28  
 **Version:** 1.0  
@@ -9,7 +9,7 @@
 
 ## Overview
 
-This document outlines the penetration testing scenarios and red-team exercises for the ClaimNavigatorAI API layer. These tests validate security controls and identify potential vulnerabilities.
+This document outlines the penetration testing scenarios and red-team exercises for the Claim Navigator API layer. These tests validate security controls and identify potential vulnerabilities.
 
 ---
 

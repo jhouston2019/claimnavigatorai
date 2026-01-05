@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test script for ClaimNavigatorAI PDF Protection System
+Test script for Claim Navigator PDF Protection System
 Tests the protection functionality on a sample document
 """
 
@@ -30,7 +30,7 @@ def create_test_pdf():
         
         test_file = "test_document.pdf"
         c = canvas.Canvas(test_file, pagesize=letter)
-        c.drawString(100, 750, "ClaimNavigatorAI Test Document")
+        c.drawString(100, 750, "Claim Navigator Test Document")
         c.drawString(100, 700, "This is a test document for PDF protection.")
         c.drawString(100, 650, "Testing password protection and watermarking.")
         c.showPage()
@@ -46,7 +46,7 @@ def create_test_pdf():
 def test_pdf_protection():
     """Test the PDF protection functionality"""
     print("=" * 60)
-    print("ClaimNavigatorAI PDF Protection Test")
+    print("Claim Navigator PDF Protection Test")
     print("=" * 60)
     
     # Create test PDF
@@ -85,13 +85,13 @@ def test_pdf_protection():
                         print("✅ PDF is encrypted")
                         
                         # Try with correct password
-                        if reader.decrypt("ClaimNavigatorAI2025"):
+                        if reader.decrypt("Claim Navigator2025"):
                             print("✅ Password protection working correctly")
                             
                             # Check watermark
                             print("💧 Checking watermark...")
                             page = reader.pages[0]
-                            if "ClaimNavigatorAI - Protected Document" in str(page):
+                            if "Claim Navigator - Protected Document" in str(page):
                                 print("✅ Watermark applied successfully")
                             else:
                                 print("⚠️  Watermark not detected in text extraction")
@@ -169,7 +169,7 @@ def test_dry_run():
 
 def main():
     """Main test function"""
-    print("🚀 Starting ClaimNavigatorAI PDF Protection Tests")
+    print("🚀 Starting Claim Navigator PDF Protection Tests")
     
     # Test 1: PDF Protection
     test1_success = test_pdf_protection()

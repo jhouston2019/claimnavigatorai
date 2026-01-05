@@ -1,12 +1,12 @@
 # HurricaneClaimNavigator Clone Script for Windows PowerShell
-# This script copies ClaimNavigatorAI files to HurricaneClaimNavigator while preserving branding
+# This script copies Claim Navigator files to HurricaneClaimNavigator while preserving branding
 
 Write-Host "🚀 Starting HurricaneClaimNavigator clone process..." -ForegroundColor Green
 
 # Check if we're in the right directory
 if (-not (Test-Path "package.json") -or -not (Test-Path "app")) {
-    Write-Host "❌ Error: This script must be run from the ClaimNavigatorAI root directory" -ForegroundColor Red
-    Write-Host "Please navigate to the ClaimNavigatorAI directory and run this script" -ForegroundColor Yellow
+    Write-Host "❌ Error: This script must be run from the Claim Navigator root directory" -ForegroundColor Red
+    Write-Host "Please navigate to the Claim Navigator directory and run this script" -ForegroundColor Yellow
     exit 1
 }
 
@@ -37,7 +37,7 @@ if (Test-Path "assets/css") {
     Write-Host "✅ Backed up assets/css" -ForegroundColor Green
 }
 
-# Go back to ClaimNavigatorAI directory
+# Go back to Claim Navigator directory
 Set-Location ..
 
 Write-Host "📋 Copying core application files..." -ForegroundColor Yellow
@@ -106,22 +106,22 @@ Set-Location $HURRICANE_DIR
 # Update package.json
 Write-Host "📝 Updating package.json..." -ForegroundColor Cyan
 $packageJson = Get-Content "package.json" -Raw
-$packageJson = $packageJson -replace '"name": "claimnavigatorai"', '"name": "hurricaneclaimnavigator"'
+$packageJson = $packageJson -replace '"name": "Claim Navigator"', '"name": "hurricaneclaimnavigator"'
 $packageJson = $packageJson -replace '"description": "AI-powered claim documentation tools with Netlify Functions"', '"description": "AI-powered hurricane claim documentation tools with Netlify Functions"'
 Set-Content "package.json" $packageJson
 
 # Update manifest.json
 Write-Host "📝 Updating manifest.json..." -ForegroundColor Cyan
 $manifestJson = Get-Content "manifest.json" -Raw
-$manifestJson = $manifestJson -replace '"name": "ClaimNavigatorAI - AI-Powered Claim Documentation Tools"', '"name": "HurricaneClaimNavigator - AI-Powered Hurricane Claim Documentation Tools"'
-$manifestJson = $manifestJson -replace '"short_name": "ClaimNavigatorAI"', '"short_name": "HurricaneClaimNavigator"'
+$manifestJson = $manifestJson -replace '"name": "Claim Navigator - AI-Powered Claim Documentation Tools"', '"name": "HurricaneClaimNavigator - AI-Powered Hurricane Claim Documentation Tools"'
+$manifestJson = $manifestJson -replace '"short_name": "Claim Navigator"', '"short_name": "HurricaneClaimNavigator"'
 $manifestJson = $manifestJson -replace '"description": "AI-powered documentation tools for property and business interruption insurance claims. Save time and maximize your claim potential."', '"description": "AI-powered documentation tools for hurricane damage insurance claims. Save time and maximize your claim potential."'
 Set-Content "manifest.json" $manifestJson
 
 # Update netlify.toml redirects
 Write-Host "📝 Updating netlify.toml..." -ForegroundColor Cyan
 $netlifyToml = Get-Content "netlify.toml" -Raw
-$netlifyToml = $netlifyToml -replace 'claimnavigatorai\.netlify\.app', 'hurricaneclaimnavigator.netlify.app'
+$netlifyToml = $netlifyToml -replace 'Claim Navigator\.netlify\.app', 'hurricaneclaimnavigator.netlify.app'
 Set-Content "netlify.toml" $netlifyToml
 
 Write-Host "✅ Files updated for hurricane context!" -ForegroundColor Green

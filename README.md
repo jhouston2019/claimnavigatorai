@@ -1,4 +1,4 @@
-# ClaimNavigatorAI - AI Response & Analysis Agent
+# Claim Navigator - AI Response & Analysis Agent
 
 A professional-grade AI-powered tool for analyzing insurer correspondence and generating expert responses for insurance claims.
 
@@ -13,7 +13,7 @@ A professional-grade AI-powered tool for analyzing insurer correspondence and ge
 ## Project Structure
 
 ```
-claimnavigatorai/
+Claim Navigator/
 ├── app/
 │   └── ai-response-agent.html    # Frontend interface
 ├── netlify/
@@ -139,4 +139,4 @@ Enable debug logging by adding `console.log` statements in the Netlify function 
 
 ## License
 
-This project is proprietary software for ClaimNavigatorAI.
+This project is proprietary software for Claim Navigator.

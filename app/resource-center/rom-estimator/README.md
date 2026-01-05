@@ -1,6 +1,6 @@
 # Rom Estimator
 
-This directory contains resources and tools for Rom Estimator functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for Rom Estimator functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

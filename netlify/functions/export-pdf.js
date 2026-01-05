@@ -121,7 +121,7 @@ exports.handler = async (event, context) => {
       },
       printBackground: true,
       displayHeaderFooter: true,
-      headerTemplate: '<div style="font-size: 10px; text-align: center; width: 100%; color: #666;">ClaimNavigatorAI Document Generator</div>',
+      headerTemplate: '<div style="font-size: 10px; text-align: center; width: 100%; color: #666;">Claim Navigator Document Generator</div>',
       footerTemplate: '<div style="font-size: 10px; text-align: center; width: 100%; color: #666;">Generated on ' + new Date().toLocaleDateString() + '</div>'
     });
 

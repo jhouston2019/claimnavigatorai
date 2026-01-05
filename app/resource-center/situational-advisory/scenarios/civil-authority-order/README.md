@@ -1,6 +1,6 @@
 # civil authority order
 
-This directory contains resources and tools for civil authority order functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for civil authority order functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

@@ -1,5 +1,5 @@
 # SDK Usage Guide
-## ClaimNavigatorAI API Client Libraries
+## Claim Navigator API Client Libraries
 
 **Date:** 2025-01-28  
 **Version:** 1.0
@@ -8,7 +8,7 @@
 
 ## Overview
 
-This document provides usage examples for the ClaimNavigatorAI SDKs in JavaScript, Python, and PHP.
+This document provides usage examples for the Claim Navigator SDKs in JavaScript, Python, and PHP.
 
 ---
 

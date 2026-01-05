@@ -1,6 +1,6 @@
 # depreciation dispute
 
-This directory contains resources and tools for depreciation dispute functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for depreciation dispute functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

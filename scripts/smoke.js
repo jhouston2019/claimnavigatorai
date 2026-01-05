@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Smoke tests for ClaimNavigatorAI infrastructure
+ * Smoke tests for Claim Navigator infrastructure
  * Tests basic functionality of Netlify functions and infrastructure
  */
 
@@ -243,7 +243,7 @@ async function testTypeScriptCompilation() {
 
 // Main test runner
 async function runSmokeTests() {
-  console.log('🚀 Starting ClaimNavigatorAI Smoke Tests\n');
+  console.log('🚀 Starting Claim Navigator Smoke Tests\n');
   
   await test('Environment Variables', testEnvironmentVariables);
   await test('File Structure', testFileStructure);

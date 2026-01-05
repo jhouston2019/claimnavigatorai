@@ -1,6 +1,6 @@
 # theft claim
 
-This directory contains resources and tools for theft claim functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for theft claim functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

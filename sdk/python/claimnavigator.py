@@ -1,6 +1,6 @@
 """
-ClaimNavigatorAI Python SDK
-Enterprise client library for ClaimNavigatorAI API
+Claim Navigator Python SDK
+Enterprise client library for Claim Navigator API
 
 Usage:
     from claimnavigator import ClaimNavigator
@@ -15,7 +15,7 @@ from urllib.parse import urlencode
 
 
 class ClaimNavigator:
-    """ClaimNavigatorAI API client"""
+    """Claim Navigator API client"""
     
     def __init__(self, api_key: str = '', base_url: str = 'https://your-site.netlify.app/.netlify/functions/api', timeout: int = 30):
         """

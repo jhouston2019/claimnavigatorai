@@ -1,5 +1,5 @@
 /**
- * ClaimNavigatorAI Feature Gating System
+ * Claim Navigator Feature Gating System
  * Blocks access to Pro/Enterprise features based on user tier
  */
 

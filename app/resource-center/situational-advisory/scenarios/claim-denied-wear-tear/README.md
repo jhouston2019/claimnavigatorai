@@ -1,6 +1,6 @@
 # claim denied wear tear
 
-This directory contains resources and tools for claim denied wear tear functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for claim denied wear tear functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

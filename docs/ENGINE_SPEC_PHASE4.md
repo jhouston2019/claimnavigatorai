@@ -1,6 +1,6 @@
-# ClaimNavigatorAI SaaS Engine Specification - Phase 4
+# Claim Navigator SaaS Engine Specification - Phase 4
 **Generated:** 2025-01-27  
-**Purpose:** Complete architecture and implementation guide for transforming ClaimNavigatorAI into a production SaaS platform
+**Purpose:** Complete architecture and implementation guide for transforming Claim Navigator into a production SaaS platform
 
 ---
 
@@ -8,7 +8,7 @@
 
 ### Root Structure
 ```
-claimnavigatorai/
+Claim Navigator/
 ├── index.html                    # Landing page (marketing)
 ├── app/                          # Application directory
 │   ├── index.html               # App home
@@ -314,7 +314,7 @@ STRIPE_PRICE_CLAIM_NAVIGATOR=price_...
 OPENAI_API_KEY=sk-...
 
 # Site
-SITE_URL=https://claimnavigatorai.com
+SITE_URL=https://Claim Navigator.com
 ```
 
 ---

@@ -1,6 +1,6 @@
 # Images Directory Structure
 
-This directory contains all images and photos for the ClaimNavigatorAI website.
+This directory contains all images and photos for the Claim Navigator website.
 
 ## Directory Structure
 
@@ -35,7 +35,7 @@ assets/images/
 ### Usage Examples
 ```html
 <!-- Hero image -->
-<img src="assets/images/heroes/claim-navigator-hero.jpg" alt="Claim Navigator AI">
+<img src="assets/images/heroes/claim-navigator-hero.jpg" alt="Claim Navigator">
 
 <!-- Feature icon -->
 <img src="assets/images/icons/ai-analysis.svg" alt="AI Analysis">

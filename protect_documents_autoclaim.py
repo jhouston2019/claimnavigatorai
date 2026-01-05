@@ -23,7 +23,7 @@ INPUT_FOLDER = "./autoclaimnavigator/docs"  # Folder containing your original PD
 OUTPUT_FOLDER = "./autoclaimnavigator/docs/protected"  # Where to save protected PDFs
 
 # Watermark Settings
-WATERMARK_TEXT = "AutoClaimNavigatorAI - Protected Document"
+WATERMARK_TEXT = "AutoClaim Navigator - Protected Document"
 WATERMARK_OPACITY = 0.3  # 0.0 (invisible) to 1.0 (fully opaque)
 WATERMARK_FONT_SIZE = 14
 WATERMARK_COLOR = (0.5, 0.5, 0.5)  # RGB values (0-1), this is gray

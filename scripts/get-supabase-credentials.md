@@ -17,7 +17,7 @@
 ## Step 4: Add to Netlify
 ### Option A: Netlify Dashboard (Recommended)
 1. Go to: https://app.netlify.com/
-2. Select your site: `claimnavigatorai`
+2. Select your site: `Claim Navigator`
 3. Go to **Site settings** → **Environment variables**
 4. Add these variables:
    - `SUPABASE_URL` = `https://your-project-id.supabase.co`
@@ -40,7 +40,7 @@ After adding the environment variables, trigger a new deployment:
 ## Step 6: Test the Function
 Once deployed, test the populate function:
 ```powershell
-Invoke-RestMethod -Uri "https://claimnavigatorai.com/.netlify/functions/populate-documents-bilingual" -Method POST -ContentType "application/json" -Body "{}"
+Invoke-RestMethod -Uri "https://Claim Navigator.com/.netlify/functions/populate-documents-bilingual" -Method POST -ContentType "application/json" -Body "{}"
 ```
 
 ## Security Note

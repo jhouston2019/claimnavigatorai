@@ -1,4 +1,4 @@
-# CLAIM NAVIGATOR AI — TOOL RESKIN COMPLETION REPORT
+# Claim Navigator — TOOL RESKIN COMPLETION REPORT
 
 **Date:** January 3, 2026  
 **Task:** Global Visual Reskin of All 52 Tools  

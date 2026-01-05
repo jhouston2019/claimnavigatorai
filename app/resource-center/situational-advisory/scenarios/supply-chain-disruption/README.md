@@ -1,6 +1,6 @@
 # supply chain disruption
 
-This directory contains resources and tools for supply chain disruption functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for supply chain disruption functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

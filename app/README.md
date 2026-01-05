@@ -1,6 +1,6 @@
 # Resource Center Structure
 
-This directory contains all Resource Center pages and tools for ClaimNavigatorAI.
+This directory contains all Resource Center pages and tools for Claim Navigator.
 
 ## Current Structure
 
@@ -87,9 +87,9 @@ When adding new pages:
 Each new page should include:
 
 ```html
-<title>Page Name - ClaimNavigatorAI</title>
+<title>Page Name - Claim Navigator</title>
 <meta name="description" content="Concise description of the tool or feature">
-<link rel="canonical" href="https://claimnavigatorai.com/app/resource-center/page-name.html">
+<link rel="canonical" href="https://Claim Navigator.com/app/resource-center/page-name.html">
 ```
 
 ## Testing

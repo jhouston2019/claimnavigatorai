@@ -1,6 +1,6 @@
 # Knowledge Center
 
-This directory contains resources and tools for Knowledge Center functionality in the ClaimNavigatorAI Resource Center.
+This directory contains resources and tools for Knowledge Center functionality in the Claim Navigator Resource Center.
 
 ## Purpose
 

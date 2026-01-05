@@ -1,5 +1,5 @@
 # High Availability Architecture
-## ClaimNavigatorAI API Layer
+## Claim Navigator API Layer
 
 **Date:** 2025-01-28  
 **Version:** 1.0
@@ -8,7 +8,7 @@
 
 ## Overview
 
-This document outlines the high availability architecture, scaling strategies, and disaster recovery procedures for the ClaimNavigatorAI API layer.
+This document outlines the high availability architecture, scaling strategies, and disaster recovery procedures for the Claim Navigator API layer.
 
 ---
 
