@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Correspondence - Claim Navigator</title>
+  <link rel="stylesheet" href="/app/assets/css/tool-visual-alignment.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #F7F9FC;
+      color: #1f2937;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Header */
+    .page-header {
+      background: linear-gradient(135deg, #0B2545 0%, #123A63 100%);
+      padding: 2rem 0;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .page-title {
+      color: #ffffff;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.1rem;
+    }
+
+    /* Correspondence Container */
+    .correspondence-container {
+      background: #ffffff;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .correspondence-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #E5E7EB;
+    }
+
+    .correspondence-header h2 {
+      font-size: 1.5rem;
+      color: #1f2937;
+      font-weight: 600;
+    }
+
+    .new-message-btn {
+      background: #17BEBB;
+      color: #ffffff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .new-message-btn:hover {
+      background: #13a5a2;
+      transform: translateY(-1px);
+    }
+
+    /* Message Thread */
+    .message-thread {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .message-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1.5rem;
+      background: #F7F9FC;
+      border-radius: 8px;
+      border-left: 4px solid #E5E7EB;
+    }
+
+    .message-item.from-adjuster {
+      border-left-color: #0B2545;
+    }
+
+    .message-item.from-system {
+      border-left-color: #17BEBB;
+    }
+
+    .message-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #E5E7EB;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #6b7280;
+      flex-shrink: 0;
+    }
+
+    .message-avatar.adjuster {
+      background: #0B2545;
+      color: #ffffff;
+    }
+
+    .message-avatar.system {
+      background: #17BEBB;
+      color: #ffffff;
+    }
+
+    .message-content {
+      flex: 1;
+    }
+
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .message-sender {
+      font-weight: 600;
+      color: #1f2937;
+      font-size: 1rem;
+    }
+
+    .message-date {
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+
+    .message-subject {
+      font-weight: 500;
+      color: #4b5563;
+      margin-bottom: 0.5rem;
+    }
+
+    .message-body {
+      color: #1f2937;
+      line-height: 1.6;
+    }
+
+    .message-actions {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .message-action-btn {
+      background: transparent;
+      border: 1px solid #E5E7EB;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .message-action-btn:hover {
+      background: #F7F9FC;
+      border-color: #0B2545;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state-description {
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
+
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #0B2545;
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      transition: all 0.2s;
+    }
+
+    .back-button:hover {
+      color: #17BEBB;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .page-title {
+        font-size: 1.5rem;
+      }
+
+      .correspondence-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+
+      .message-item {
+        padding: 1rem;
+      }
+
+      .message-avatar {
+        width: 40px;
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <h1 class="page-title">Claim Correspondence</h1>
+    <p class="page-subtitle">Messages and communications regarding your claim</p>
+  </header>
+
+  <div class="container">
+    <a href="/step-by-step-claim-guide.html" class="back-button">
+      ← Back to Claim Management Center
+    </a>
+
+    <div class="correspondence-container">
+      <div class="correspondence-header">
+        <h2>Messages</h2>
+        <button class="new-message-btn" onclick="alert('Message composition feature coming soon. For now, please contact your adjuster directly.')">
+          ✉️ New Message
+        </button>
+      </div>
+
+      <div class="message-thread" id="messageThread">
+        <!-- Messages will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sample message data
+    const messages = [
+      {
+        id: 1,
+        from: 'Mike Johnson',
+        type: 'adjuster',
+        subject: 'Initial Claim Review Complete',
+        body: 'I have completed my initial review of your claim. The damage appears to be covered under your policy. I will be scheduling an inspection of the property within the next 5 business days. Please ensure someone is available to provide access.',
+        date: '2025-01-03',
+        time: '10:30 AM'
+      },
+      {
+        id: 2,
+        from: 'Claim Navigator System',
+        type: 'system',
+        subject: 'Document Upload Confirmation',
+        body: 'Your insurance policy document has been successfully uploaded and analyzed. The AI analysis is complete and available in Step 1 of your claim guide.',
+        date: '2025-01-02',
+        time: '2:15 PM'
+      },
+      {
+        id: 3,
+        from: 'Mike Johnson',
+        type: 'adjuster',
+        subject: 'Claim Assignment Notification',
+        body: 'Hello, I am Mike Johnson and I have been assigned as the adjuster for your claim (CLM-2024-089456). I will be reviewing your case and will contact you within 48 hours with next steps. If you have any urgent questions, please call me at (555) 123-4567.',
+        date: '2025-01-01',
+        time: '9:00 AM'
+      },
+      {
+        id: 4,
+        from: 'Claim Navigator System',
+        type: 'system',
+        subject: 'Welcome to Claim Navigator',
+        body: 'Welcome to your Claim Management Center. We have created a personalized step-by-step guide to help you navigate your insurance claim. Start by uploading your policy document in Step 1.',
+        date: '2024-12-30',
+        time: '4:45 PM'
+      }
+    ];
+
+    // Render messages
+    function renderMessages() {
+      const threadContainer = document.getElementById('messageThread');
+      
+      if (messages.length === 0) {
+        threadContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <h3 class="empty-state-title">No Messages Yet</h3>
+            <p class="empty-state-description">
+              You don't have any correspondence yet. Messages from your adjuster and system notifications will appear here.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      threadContainer.innerHTML = messages.map(message => `
+        <div class="message-item from-${message.type}">
+          <div class="message-avatar ${message.type}">
+            ${message.type === 'adjuster' ? 'MJ' : '🤖'}
+          </div>
+          <div class="message-content">
+            <div class="message-header">
+              <span class="message-sender">${message.from}</span>
+              <span class="message-date">${message.date} at ${message.time}</span>
+            </div>
+            <div class="message-subject">${message.subject}</div>
+            <div class="message-body">${message.body}</div>
+            <div class="message-actions">
+              <button class="message-action-btn" onclick="alert('Reply feature coming soon')">Reply</button>
+              <button class="message-action-btn" onclick="alert('Forward feature coming soon')">Forward</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMessages();
+    });
+  </script>
+</body>
+</html>
+
