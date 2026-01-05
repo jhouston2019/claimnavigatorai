@@ -143,9 +143,9 @@
     body .global-header,
     body > .global-header,
     body header.global-header {
-      background: #ffffff !important;
-      background-color: #ffffff !important;
-      border-bottom: 1px solid #e5e7eb !important;
+      background: linear-gradient(135deg, #0B2545 0%, #123A63 100%) !important;
+      background-color: #0B2545 !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
       position: sticky !important;
       top: 0 !important;
       z-index: 1000 !important;
@@ -157,8 +157,8 @@
       margin: 0 auto !important;
       display: flex !important;
       align-items: center !important;
-      justify-content: space-between !important;
-      padding: 1rem 20px !important;
+      justify-content: flex-start !important;
+      padding: 0.5rem 0 0.5rem 20px !important;
       height: auto !important;
       background: transparent !important;
     }
@@ -166,11 +166,13 @@
     .nav-brand {
       font-size: 1.125rem !important;
       font-weight: 700 !important;
-      color: #0B2545 !important;
+      color: #ffffff !important;
       text-decoration: none !important;
       margin-right: auto !important;
-      padding-right: 0 !important;
+      padding-right: 40px !important;
       white-space: nowrap !important;
+      order: -1 !important;
+      flex-shrink: 0 !important;
     }
 
     .nav-menu {
@@ -189,30 +191,30 @@
     .nav-link {
       display: flex !important;
       align-items: center !important;
-      padding: 0 !important;
-      color: #4b5563 !important;
+      padding: 10px 20px !important;
+      color: #ffffff !important;
       text-decoration: none !important;
-      font-size: 0.9rem !important;
+      font-size: 0.875rem !important;
       font-weight: 500 !important;
-      transition: color 0.2s ease !important;
-      border-bottom: none !important;
+      transition: all 0.2s ease !important;
+      border-bottom: 3px solid transparent !important;
       white-space: nowrap !important;
     }
 
     .nav-link:hover {
-      background: transparent !important;
-      color: #17BEBB !important;
+      background: rgba(255, 255, 255, 0.1) !important;
+      color: #ffffff !important;
     }
 
     .nav-link.active {
-      background: transparent !important;
-      color: #17BEBB !important;
-      border-bottom-color: transparent !important;
+      background: rgba(255, 255, 255, 0.15) !important;
+      color: #ffffff !important;
+      border-bottom-color: #ffffff !important;
       font-weight: 600 !important;
     }
 
     .nav-link-primary {
-      color: #4b5563 !important;
+      color: #ffffff !important;
       font-weight: 500 !important;
     }
 
@@ -239,12 +241,11 @@
       left: 0;
       background: white;
       border: 1px solid #e5e7eb;
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
       min-width: 200px;
       display: none;
       z-index: 1001;
-      margin-top: 8px;
     }
 
     /* Show dropdown when .open class is present */
@@ -254,22 +255,22 @@
 
     .dropdown-item {
       display: block;
-      padding: 12px 16px;
-      color: #4b5563;
+      padding: 12px 20px;
+      color: #1f2937;
       text-decoration: none;
-      font-size: 0.9rem;
-      transition: all 0.2s;
+      font-size: 0.875rem;
+      transition: background 0.2s;
       border-bottom: 1px solid #e5e7eb;
     }
 
     .dropdown-item:last-child {
       border-bottom: none;
-      border-radius: 0 0 0.5rem 0.5rem;
+      border-radius: 0 0 8px 8px;
     }
 
     .dropdown-item:hover {
       background: #F7F9FC;
-      color: #17BEBB;
+      color: #0B2545;
     }
 
     .nav-subtext {
@@ -283,7 +284,7 @@
     /* Mobile Navigation */
     @media (max-width: 968px) {
       .global-nav {
-        padding: 1rem 20px;
+        padding: 0.5rem 20px;
         height: auto;
         flex-direction: row;
         align-items: center;
@@ -336,21 +337,21 @@
       }
 
       .dropdown-item {
-        color: #4b5563;
-        font-size: 0.9rem;
-        padding: 12px 16px;
+        color: #1f2937;
+        font-size: 0.875rem;
+        padding: 10px 16px;
         border-bottom: 1px solid #e5e7eb;
       }
 
       .dropdown-item:hover {
         background: #F7F9FC;
-        color: #17BEBB;
+        color: #0B2545;
       }
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: #ffffff;
+      background: #F7F9FC;
       color: #1f2937;
       min-height: 100vh;
       line-height: 1.6;
@@ -367,94 +368,227 @@
     .page-header {
       margin-bottom: 0;
       text-align: center;
-      background: #ffffff;
-      padding: 5rem 0;
+      background: linear-gradient(135deg, #0B2545 0%, #123A63 100%);
+      padding: 0.9375rem 0;
       border-radius: 0;
       box-shadow: none;
-      border-bottom: 1px solid #e5e7eb;
-      width: 100%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      width: 100vw;
+      margin-left: calc(-50vw + 50%);
+      margin-right: calc(-50vw + 50%);
     }
 
     .page-title {
-      font-size: clamp(1.9rem, 4vw, 2.8rem);
+      font-size: clamp(1.25rem, 2.5vw, 1.875rem);
       font-weight: 700;
-      color: #0B2545;
+      color: #ffffff;
       letter-spacing: -0.02em;
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.5625rem;
       line-height: 1.3;
     }
 
     .page-subtitle {
       font-size: 1.1rem;
-      color: #4b5563;
+      color: rgba(255, 255, 255, 0.9);
       max-width: 900px;
       margin: 0 auto;
       font-weight: 400;
       line-height: 1.6;
       padding: 0 40px;
     }
+
+    /* Quiet Progress Bar */
+    .quiet-progress-bar {
+      background: linear-gradient(135deg, #0B2545 0%, #123A63 100%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 0;
+      width: 100vw;
+      margin-left: calc(-50vw + 50%);
+      margin-right: calc(-50vw + 50%);
+    }
+
+    .quiet-progress-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    .quiet-progress-text {
+      font-size: 0.75rem;
+      color: #ffffff;
+      font-weight: 500;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .quiet-progress-track {
+      height: 3px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .quiet-progress-fill {
+      height: 100%;
+      background: #ffffff;
+      transition: width 0.3s ease;
+    }
+
+    /* Upcoming Deadlines Section */
+    .upcoming-deadlines-section {
+      background: #ffffff;
+      border: 1px solid #E5E7EB;
+      border-radius: 6px;
+      padding: 16px 24px;
+      margin-bottom: 2rem;
+    }
+
+    .upcoming-deadlines-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 8px;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .upcoming-deadlines-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .deadline-item {
+      font-size: 0.875rem;
+      color: #4b5563;
+      line-height: 1.5;
+    }
+
+    .deadline-item strong {
+      color: #1f2937;
+      font-weight: 500;
+    }
+
+    /* Step Status Indicators */
+    .step-status {
+      display: inline-block;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-left: 12px;
+    }
+
+    .step-status.completed {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .step-status.in-progress {
+      background: #f3f4f6;
+      color: #0B2545;
+    }
+
+    .step-status.upcoming {
+      background: #f3f4f6;
+      color: #9ca3af;
+    }
     
     @media (max-width: 768px) {
       .page-header {
-        padding: 3rem 0;
+        padding: 0.5625rem 0;
       }
       .page-title {
-        font-size: 1.6rem;
+        font-size: 1.125rem;
         padding: 0 20px;
+        margin-bottom: 0.375rem;
       }
       .page-subtitle {
         font-size: 1rem;
         padding: 0 20px;
       }
+      
+      .quiet-progress-container {
+        padding: 0 20px;
+      }
+      
+      .quiet-progress-text {
+        font-size: 0.6875rem;
+      }
+      
+      .upcoming-deadlines-section {
+        padding: 12px 16px;
+        margin-bottom: 1.5rem;
+      }
+      
+      .upcoming-deadlines-title {
+        font-size: 0.8125rem;
+      }
+      
+      .deadline-item {
+        font-size: 0.8125rem;
+      }
+      
+      .step-status {
+        font-size: 0.625rem;
+        padding: 2px 6px;
+        margin-left: 8px;
+      }
     }
 
     /* Claim Information Panel */
     .claim-info-panel {
-      background: #F7F9FC;
-      border: 1px solid #e5e7eb;
+      background: linear-gradient(135deg, #0B2545 0%, #123A63 100%);
+      border: none;
       border-radius: 0;
       padding: 0;
       margin-bottom: 0;
       box-shadow: none;
+      width: 100vw;
+      margin-left: calc(-50vw + 50%);
+      margin-right: calc(-50vw + 50%);
     }
 
     .claim-info-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 40px;
+      padding: 8px 40px;
       cursor: pointer;
       transition: background 0.2s ease;
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: none;
     }
 
     .claim-info-header:hover {
-      background: #ffffff;
+      background: rgba(255, 255, 255, 0.05);
     }
 
     .claim-info-title {
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       font-weight: 600;
-      color: #1f2937;
-      text-transform: none;
-      letter-spacing: 0;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .claim-info-summary {
-      font-size: 0.875rem;
-      color: #6b7280;
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.8);
       font-weight: 400;
-      margin-left: 8px;
+      margin-left: 6px;
     }
 
     .panel-toggle-icon {
-      font-size: 0.75rem;
-      color: #6b7280;
+      font-size: 0.625rem;
+      color: rgba(255, 255, 255, 0.8);
       transition: transform 0.2s ease;
-      margin-left: 8px;
+      margin-left: 6px;
     }
 
     .claim-info-panel.expanded .panel-toggle-icon {
@@ -463,7 +597,7 @@
 
     .claim-info-content {
       display: none;
-      padding: 16px 40px 20px 40px;
+      padding: 8px 40px 12px 40px;
       background: #ffffff;
     }
 
@@ -473,53 +607,53 @@
 
     .btn-edit {
       background: transparent;
-      border: 1px solid #d1d5db;
-      padding: 6px 12px;
-      border-radius: 5px;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: #4b5563;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.625rem;
+      font-weight: 600;
+      color: #ffffff;
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
     .btn-edit:hover {
-      background: #F7F9FC;
-      border-color: #9ca3af;
-      color: #1f2937;
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.5);
+      color: #ffffff;
     }
 
     .claim-info-header-right {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
     }
 
     .claim-info-grid {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px 24px;
+      gap: 10px 16px;
       margin-bottom: 0;
     }
 
     .claim-info-details {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px 24px;
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid #e5e7eb;
+      gap: 10px 16px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: none;
     }
 
     .claim-info-item {
       display: inline-flex;
       align-items: baseline;
-      gap: 6px;
+      gap: 4px;
       white-space: nowrap;
     }
 
     .info-label {
-      font-size: 0.875rem;
+      font-size: 0.6875rem;
       font-weight: 500;
       color: #6b7280;
       text-transform: none;
@@ -531,7 +665,7 @@
     }
 
     .info-value {
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       font-weight: 600;
       color: #1f2937;
     }
@@ -548,15 +682,15 @@
     .deadline-alert {
       background: #fef3c7;
       border: 1px solid #fbbf24;
-      padding: 12px 16px;
-      border-radius: 5px;
-      font-size: 0.875rem;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 0.6875rem;
       color: #92400e;
       font-weight: 500;
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-top: 16px;
+      gap: 6px;
+      margin-top: 8px;
     }
 
     .deadline-alert strong {
@@ -628,68 +762,63 @@
     .content-area {
       max-width: 1100px;
       margin: 0 auto;
-      padding: 4rem 20px;
+      padding: 3rem 20px;
     }
     
     @media (max-width: 768px) {
       .content-area {
-        padding: 2rem 20px;
+        padding: 1.5rem 20px;
       }
     }
 
-    /* Progress Indicator - Minimal */
+    /* Side Deadlines Block (replaces old progress indicator) */
     .progress-indicator {
       position: fixed;
       top: 80px;
       right: 24px;
       background: #ffffff;
-      border: 1px solid #e5e7eb;
-      border-radius: 5px;
-      padding: 8px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
+      border: 1px solid #E5E7EB;
+      border-radius: 6px;
+      padding: 16px;
+      max-width: 280px;
       z-index: 1000;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
-    .progress-indicator > div:first-child {
-      display: flex;
-      align-items: center;
-      gap: 0;
+    .progress-indicator .upcoming-deadlines-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 12px;
+      text-transform: none;
+      letter-spacing: 0;
     }
 
-    .progress-ring {
-      display: none;
-    }
-
-    .progress-text {
+    .progress-indicator .upcoming-deadlines-list {
       display: flex;
       flex-direction: column;
-      flex: 1;
+      gap: 8px;
     }
 
-    .progress-percent {
-      font-size: 0.75rem;
+    .progress-indicator .deadline-item {
+      font-size: 0.8125rem;
+      color: #4b5563;
+      line-height: 1.5;
+    }
+
+    .progress-indicator .deadline-item strong {
+      color: #1f2937;
       font-weight: 500;
-      color: #6b7280;
-      line-height: 1.4;
     }
 
-    .progress-stage {
-      font-size: 0.75rem;
-      color: #6b7280;
-      line-height: 1.4;
-    }
-
-    .progress-readiness {
-      display: none;
-    }
-
-    .readiness-icon {
-      display: none;
-    }
-
+    /* Hide old progress elements */
+    .progress-indicator > div:first-child,
+    .progress-ring,
+    .progress-text,
+    .progress-percent,
+    .progress-stage,
+    .progress-readiness,
+    .readiness-icon,
     .readiness-status {
       display: none;
     }
@@ -708,13 +837,12 @@
 
     .accordion-item {
       background: #ffffff;
-      border: 1px solid #e5e7eb;
-      border-left: none;
+      border: 1px solid #E5E7EB;
       border-radius: 8px;
       margin-top: 0;
       margin-bottom: 3rem;
       padding: 0;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       transition: box-shadow 0.2s ease;
       overflow: hidden;
     }
@@ -733,26 +861,24 @@
     }
 
     .accordion-item.active {
-      border-left: none;
       background: #ffffff;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
-      border-color: #e5e7eb;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      border-color: #E5E7EB;
     }
     
     .accordion-item.active:hover {
       transform: none;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), 0 6px 16px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
     }
     
     .accordion-item.completed {
-      border-left: none;
       background: #ffffff;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
-      opacity: 0.6;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      opacity: 0.7;
     }
     
     .accordion-item.completed:hover {
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), 0 6px 16px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
     }
     
     .accordion-item.step-complete-flash {
@@ -762,11 +888,11 @@
     @keyframes stepCompleteFlash {
       0%, 100% {
         background: #ffffff;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       }
       50% {
         background: #ffffff;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         transform: none;
       }
     }
@@ -778,22 +904,22 @@
       padding: 24px 32px;
       cursor: pointer;
       transition: background 0.2s ease;
-      background: #ffffff;
+      background: transparent;
       border-radius: 0;
       border-bottom: 1px solid #e5e7eb;
     }
 
     .accordion-header:hover {
-      background: #F7F9FC;
+      background: rgba(255, 255, 255, 0.5);
     }
 
     .accordion-item.active .accordion-header {
-      background: #ffffff;
+      background: transparent;
       border-bottom-color: #e5e7eb;
     }
 
     .accordion-item.completed .accordion-header {
-      background: #ffffff;
+      background: transparent;
       border-bottom-color: #e5e7eb;
     }
 
@@ -870,9 +996,9 @@
     }
 
     .accordion-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #3b82f6;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e40af;
       margin-bottom: 8px;
       margin-top: 0;
       line-height: 1.4;
@@ -882,12 +1008,12 @@
     }
     
     .accordion-item.active .accordion-title {
-      color: #3b82f6 !important;
+      color: #1e40af !important;
       border-bottom-color: transparent;
     }
     
     .accordion-item.completed .accordion-title {
-      color: #3b82f6;
+      color: #1e40af;
     }
 
     .accordion-subtitle {
@@ -1256,22 +1382,24 @@
     /* Step-by-Step Claim Guide Section Title */
     .claim-steps-title {
       font-size: 1.8rem;
-      font-weight: 600;
+      font-weight: 700;
       color: #1f2937;
       margin-bottom: 1.25rem;
       margin-top: 0;
       text-align: center;
       letter-spacing: 0;
-      max-width: 750px;
+      max-width: 100%;
       margin-left: auto;
       margin-right: auto;
+      white-space: nowrap;
+      padding: 0 20px;
     }
 
     .claim-steps-subtitle {
       font-size: 1rem;
       font-weight: 400;
       color: #6b7280;
-      margin: 0 0 3rem 0;
+      margin: 0 0 2.25rem 0;
       text-align: center;
       letter-spacing: 0;
     }
@@ -1279,9 +1407,10 @@
     @media (max-width: 768px) {
       .claim-steps-title {
         font-size: 1.62rem;
+        white-space: normal;
       }
       .claim-steps-subtitle {
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
       }
     }
 
@@ -2827,22 +2956,22 @@
       }
 
       .claim-info-header {
-        padding: 8px 20px;
+        padding: 6px 20px;
       }
 
       .claim-info-content {
-        padding: 8px 20px 12px 20px;
+        padding: 6px 20px 8px 20px;
       }
 
       .claim-info-title {
-        font-size: 10px;
+        font-size: 0.625rem;
         flex-direction: column;
         align-items: flex-start;
-        gap: 4px;
+        gap: 3px;
       }
 
       .claim-info-summary {
-        font-size: 9px;
+        font-size: 0.625rem;
         margin-left: 0;
       }
 
@@ -2968,12 +3097,12 @@
   </header>
 
   <div class="container">
-    <!-- Progress Indicator -->
+    <!-- Side Deadlines Block -->
     <div class="progress-indicator">
-      <div>
-        <div class="progress-text">
-          <span class="progress-stage">Step 1 of 14</span>
-        </div>
+      <div class="upcoming-deadlines-title">Upcoming Deadlines</div>
+      <div class="upcoming-deadlines-list">
+        <div class="deadline-item"><strong>Notice of Loss</strong> — January 8, 2025</div>
+        <div class="deadline-item"><strong>Proof of Loss</strong> — January 14, 2025</div>
       </div>
     </div>
 
@@ -2982,6 +3111,16 @@
       <h1 class="page-title">Claim Management Center</h1>
       <p class="page-subtitle">Step-by-step claim management with AI-powered analysis</p>
     </header>
+
+    <!-- Quiet Progress Bar -->
+    <div class="quiet-progress-bar">
+      <div class="quiet-progress-container">
+        <div class="quiet-progress-text" id="quietProgressText">Step 1 of 14</div>
+        <div class="quiet-progress-track">
+          <div class="quiet-progress-fill" id="quietProgressFill" style="width: 7%;"></div>
+        </div>
+      </div>
+    </div>
 
     <!-- Claim Information Panel -->
     <section class="claim-info-panel" id="claimInfoPanel">
@@ -3050,7 +3189,7 @@
               <div class="accordion-number">1</div>
             </div>
             <div class="accordion-title-area">
-              <div class="accordion-title">Upload your insurance policy for AI-powered coverage analysis</div>
+              <div class="accordion-title">Upload your insurance policy for AI-powered coverage analysis<span class="step-status in-progress">In Progress</span></div>
               <div class="accordion-subtitle">Upload your insurance policy for AI-assisted analysis of coverages, limits, endorsements, loss settlement terms, ALE eligibility, and contents rules. Review your coverage terms to understand what is covered and how your claim will be paid.</div>
             </div>
           </div>
@@ -3069,7 +3208,7 @@
               <div class="accordion-number">2</div>
             </div>
             <div class="accordion-title-area">
-              <div class="accordion-title">Understand your duties and obligations during your claim</div>
+              <div class="accordion-title">Understand your duties and obligations during your claim<span class="step-status upcoming">Upcoming</span></div>
               <div class="accordion-subtitle">Review your required policyholder duties including mitigation, timely notice, cooperation, property protection, and policy deadlines to ensure compliance.</div>
             </div>
           </div>
@@ -3088,7 +3227,7 @@
               <div class="accordion-number">3</div>
             </div>
             <div class="accordion-title-area">
-              <div class="accordion-title">Report your loss to your insurance company</div>
+              <div class="accordion-title">Report your loss to your insurance company<span class="step-status upcoming">Upcoming</span></div>
               <div class="accordion-subtitle">Contact your insurance company to report the loss. Provide basic information about what happened, when it occurred, and the type of damage. Obtain your claim number and adjuster contact information.</div>
             </div>
           </div>
@@ -3107,7 +3246,7 @@
               <div class="accordion-number">4</div>
             </div>
             <div class="accordion-title-area">
-              <div class="accordion-title">Photograph all structural damage and damaged contents from multiple angles</div>
+              <div class="accordion-title">Photograph all structural damage and damaged contents from multiple angles<span class="step-status upcoming">Upcoming</span></div>
               <div class="accordion-subtitle">Upload photos and videos of all damage. The AI will organize, analyze, and assess completeness.</div>
             </div>
           </div>
@@ -4132,10 +4271,21 @@
       if (stageEl) {
         stageEl.textContent = `Step ${currentStep} of 14`;
       }
+      
+      // Update quiet progress bar
+      const quietProgressText = document.getElementById('quietProgressText');
+      const quietProgressFill = document.getElementById('quietProgressFill');
+      if (quietProgressText) {
+        quietProgressText.textContent = `Step ${currentStep} of 14`;
+      }
+      if (quietProgressFill) {
+        const progressPercent = (currentStep / 14) * 100;
+        quietProgressFill.style.width = `${progressPercent}%`;
+      }
     }
 
     function openStep(stepNum) {
-      console.log('Opening step:', stepNum);
+      console.log('Toggling step:', stepNum);
       
       // Get selected item
       const selectedItem = document.querySelector(`.accordion-item[data-step="${stepNum}"]`);
@@ -4147,16 +4297,16 @@
       // Check if already active
       const isActive = selectedItem.classList.contains('active');
       
-      // Close all accordion items
-      const allItems = document.querySelectorAll('.accordion-item');
-      allItems.forEach(item => item.classList.remove('active'));
-      
-      // If it wasn't active, open it (toggle behavior)
-      if (!isActive) {
-        selectedItem.classList.add('active');
-      } else {
-        // If it was active, we already closed it above, so just return
+      // Toggle the selected item (don't close others - allow multiple open)
+      if (isActive) {
+        // Close this item
+        selectedItem.classList.remove('active');
+        console.log('Step closed:', stepNum);
         return;
+      } else {
+        // Open this item
+        selectedItem.classList.add('active');
+        console.log('Step opened:', stepNum);
       }
       
       // Update current step
@@ -5229,6 +5379,17 @@
           postClaimSection.style.display = 'block';
         }
       }
+      
+      // EXPAND ALL STEPS BY DEFAULT
+      const allAccordionItems = document.querySelectorAll('.accordion-item');
+      allAccordionItems.forEach(item => {
+        item.classList.add('active');
+        const content = item.querySelector('.accordion-content');
+        if (content) {
+          content.style.display = 'block';
+        }
+      });
+      console.log('All steps expanded by default');
     });
   </script>
 </body>
