@@ -6,11 +6,94 @@
   <title>Claim Management Center - ClaimNavigatorAI</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/app/assets/css/tool-visual-alignment.css">
+  
+  <!-- CRITICAL: Load auth and paywall BEFORE any other scripts -->
+  <script src="/app/assets/js/supabase-client.js"></script>
+  <script src="/app/assets/js/auth.js" type="module"></script>
+  <script src="/app/assets/js/paywall-enforcement.js"></script>
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="storage/claimStorage.js"></script>
   <script src="ai-expert-config.js"></script>
   <script src="/app/assets/js/tool-registry.js"></script>
+  <script src="/app/assets/js/disclaimer-component.js"></script>
+  
+  <!-- BLOCKING GUARD: Hide content until access verified -->
+  <script>
+    // Block rendering immediately
+    document.documentElement.style.visibility = 'hidden';
+    document.documentElement.style.opacity = '0';
+    
+    // Enforce access control before page loads
+    (async function() {
+      try {
+        // Wait for auth system to load
+        let attempts = 0;
+        while (!window.CNAuth && attempts < 50) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
+        }
+        
+        if (!window.CNAuth) {
+          console.error('CN Auth system failed to load');
+          window.location.href = '/app/access-denied.html';
+          return;
+        }
+        
+        // Check authentication
+        const user = await window.CNAuth.currentUser();
+        if (!user) {
+          console.warn('CN Access Denied: No authenticated user');
+          window.location.href = '/app/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+          return;
+        }
+        
+        // Wait for Supabase client
+        attempts = 0;
+        while (!window.getSupabaseClient && attempts < 50) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
+        }
+        
+        const supabase = await window.getSupabaseClient();
+        if (!supabase) {
+          console.error('CN Access Denied: Supabase unavailable');
+          window.location.href = '/app/access-denied.html';
+          return;
+        }
+        
+        // Check for active claim
+        const { data: claims, error } = await supabase
+          .from('claims')
+          .select('id, status')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .limit(1);
+        
+        if (error) {
+          console.error('CN Access Denied: Database error', error);
+          window.location.href = '/app/access-denied.html';
+          return;
+        }
+        
+        if (!claims || claims.length === 0) {
+          console.warn('CN Access Denied: No active claim');
+          window.location.href = '/paywall/locked.html';
+          return;
+        }
+        
+        // Access granted - show page
+        document.documentElement.style.visibility = 'visible';
+        document.documentElement.style.opacity = '1';
+        
+      } catch (error) {
+        console.error('CN Access Denied: Exception', error);
+        window.location.href = '/app/access-denied.html';
+      }
+    })();
+  </script>
+  
   <style>
     * {
       margin: 0;
@@ -4460,6 +4543,19 @@
         return;
       }
       
+      // Show disclaimer modal before completing step
+      if (window.CNDisclaimer) {
+        window.CNDisclaimer.showModal(function() {
+          // Proceed with completion after acknowledgment
+          proceedWithStepCompletion(stepNum);
+        });
+      } else {
+        // Fallback if disclaimer not loaded
+        proceedWithStepCompletion(stepNum);
+      }
+    }
+    
+    function proceedWithStepCompletion(stepNum) {
       // Mark step as completed
       if (!completedSteps.includes(stepNum)) {
         completedSteps.push(stepNum);
@@ -4483,6 +4579,14 @@
         const postClaimSection = document.getElementById('postClaimSection');
         if (postClaimSection) {
           postClaimSection.style.display = 'block';
+          
+          // Add disclaimer to completion screen
+          if (window.CNDisclaimer) {
+            setTimeout(() => {
+              window.CNDisclaimer.addToCompletion('postClaimSection');
+            }, 100);
+          }
+          
           setTimeout(() => {
             postClaimSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }, 300);

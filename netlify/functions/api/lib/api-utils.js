@@ -299,9 +299,9 @@ async function rateLimit(userId, apiKey, ipAddress, endpoint) {
       resetAt: nowMs + 60000
     };
   } catch (error) {
-    // On error, allow request (fail open)
-    console.warn('Rate limit check failed:', error);
-    return { allowed: true, remaining: RATE_LIMITS.perMinutePerKey, resetAt: Date.now() + 60000 };
+    // FAIL CLOSED: On error, deny request
+    console.error('Rate limit check failed - denying request:', error);
+    return { allowed: false, remaining: 0, resetAt: Date.now() + 60000, error: 'Rate limit verification failed' };
   }
 }
 

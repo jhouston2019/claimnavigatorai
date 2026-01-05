@@ -42,6 +42,9 @@
                 </div>
             </div>
             
+            <!-- Disclaimer before form -->
+            <div id="pol-disclaimer-container"></div>
+            
             <form id="proof-of-loss-form">
                 <div class="form-group">
                     <label for="incident-date">Incident Date:</label>
@@ -112,6 +115,7 @@
     </main>
 
     <!-- Scripts -->
+    <script src="/app/assets/js/disclaimer-component.js"></script>
     <script type="module" src="/assets/js/api-client.js"></script>
     <script type="module" src="/assets/js/validation-utils.js"></script>
     <script type="module" src="/assets/js/error-handler.js"></script>
@@ -135,6 +139,11 @@
             ],
             testEndpoints: ['generate-response', 'generate-document-simple']
         });
+        
+        // Add disclaimer above form
+        if (window.CNDisclaimer) {
+            window.CNDisclaimer.showInline('pol-disclaimer-container', 'before');
+        }
 
         // Get DOM elements
         const form = document.getElementById('proof-of-loss-form');
