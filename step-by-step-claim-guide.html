@@ -812,7 +812,6 @@
     }
 
     /* Hide old progress elements */
-    .progress-indicator > div:first-child,
     .progress-ring,
     .progress-text,
     .progress-percent,
@@ -3099,7 +3098,7 @@
   <div class="container">
     <!-- Side Deadlines Block -->
     <div class="progress-indicator">
-      <div class="upcoming-deadlines-title">Upcoming Deadlines</div>
+      <div class="upcoming-deadlines-title">Deadlines</div>
       <div class="upcoming-deadlines-list">
         <div class="deadline-item"><strong>Notice of Loss</strong> — January 8, 2025</div>
         <div class="deadline-item"><strong>Proof of Loss</strong> — January 14, 2025</div>
@@ -4284,6 +4283,33 @@
       }
     }
 
+    // Helper function to load step content without toggling
+    function loadStepContent(stepNum) {
+      const selectedItem = document.querySelector(`.accordion-item[data-step="${stepNum}"]`);
+      if (!selectedItem) {
+        console.warn('Could not find item for step:', stepNum);
+        return;
+      }
+      
+      const content = selectedItem.querySelector('.accordion-content');
+      if (!content) {
+        console.warn('Could not find content element for step:', stepNum);
+        return;
+      }
+      
+      // Check if content already loaded (skip if it has substantial content)
+      const currentContent = content.innerHTML.trim();
+      if (currentContent && 
+          !currentContent.includes('Content will be inserted') &&
+          currentContent.length > 100) {
+        console.log('Content already loaded for step:', stepNum);
+        return;
+      }
+      
+      console.log('Loading content for step:', stepNum);
+      buildStepContent(stepNum, content);
+    }
+
     function openStep(stepNum) {
       console.log('Toggling step:', stepNum);
       
@@ -4303,25 +4329,24 @@
         selectedItem.classList.remove('active');
         console.log('Step closed:', stepNum);
         return;
-      } else {
-        // Open this item
-        selectedItem.classList.add('active');
-        console.log('Step opened:', stepNum);
       }
+      
+      // Open this item
+      selectedItem.classList.add('active');
+      console.log('Step opened:', stepNum);
+      
+      // Load content if not already loaded
+      loadStepContent(stepNum);
       
       // Update current step
       currentStep = stepNum;
-      
-      // Load content into accordion
+    }
+
+    // Build step content HTML
+    function buildStepContent(stepNum, content) {
       const data = stepData[stepNum];
       if (!data) {
         console.error('No data found for step:', stepNum);
-        return;
-      }
-      
-      const content = selectedItem.querySelector('.accordion-content');
-      if (!content) {
-        console.error('Could not find accordion-content element');
         return;
       }
       
@@ -5380,16 +5405,18 @@
         }
       }
       
-      // EXPAND ALL STEPS BY DEFAULT
+      // EXPAND ALL STEPS BY DEFAULT AND LOAD CONTENT
       const allAccordionItems = document.querySelectorAll('.accordion-item');
       allAccordionItems.forEach(item => {
-        item.classList.add('active');
-        const content = item.querySelector('.accordion-content');
-        if (content) {
-          content.style.display = 'block';
+        const stepNum = parseInt(item.getAttribute('data-step'));
+        if (stepNum) {
+          // Load content for this step
+          loadStepContent(stepNum);
+          // Mark as active
+          item.classList.add('active');
         }
       });
-      console.log('All steps expanded by default');
+      console.log('All steps expanded by default with content loaded');
     });
   </script>
 </body>
