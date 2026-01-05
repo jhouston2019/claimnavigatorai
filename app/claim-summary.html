@@ -1,207 +1,430 @@
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Claim Summary • Claim Navigator</title>
-    <link rel="stylesheet" href="/app/assets/css/style.css">
-    <link rel="stylesheet" href="/app/assets/css/design-system.css">
-    <link rel="stylesheet" href="/app/assets/css/resource-center.css">
-    <script src="/app/assets/js/analytics.js"></script>
-    <script src="/app/assets/js/activation.js"></script>
-    <script src="/app/assets/js/claim-health.js"></script>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Summary - Claim Navigator</title>
   <link rel="stylesheet" href="/app/assets/css/tool-visual-alignment.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #F7F9FC;
+      color: #1f2937;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Header */
+    .page-header {
+      background: linear-gradient(135deg, #0B2545 0%, #123A63 100%);
+      padding: 2rem 0;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .page-title {
+      color: #ffffff;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.1rem;
+    }
+
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #0B2545;
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 2rem;
+      transition: all 0.2s;
+    }
+
+    .back-button:hover {
+      color: #17BEBB;
+    }
+
+    /* Summary Grid */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Summary Cards */
+    .summary-card {
+      background: #ffffff;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: box-shadow 0.2s ease;
+    }
+
+    .summary-card:hover {
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .summary-card h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1e40af;
+      margin-bottom: 1rem;
+    }
+
+    .summary-card-content {
+      color: #4b5563;
+    }
+
+    /* Claim Info */
+    .claim-info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .claim-info-item:last-child {
+      border-bottom: none;
+    }
+
+    .claim-info-label {
+      font-weight: 500;
+      color: #6b7280;
+    }
+
+    .claim-info-value {
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .status-active {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    /* Progress Section */
+    .progress-section {
+      background: #ffffff;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
+      margin-bottom: 2rem;
+    }
+
+    .progress-section h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e40af;
+      margin-bottom: 1.5rem;
+    }
+
+    .progress-bar-container {
+      background: #E5E7EB;
+      height: 12px;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #17BEBB 0%, #0B2545 100%);
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      text-align: right;
+      font-size: 0.875rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    /* Steps List */
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: #F7F9FC;
+      border-radius: 6px;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #0B2545;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .step-number.completed {
+      background: #17BEBB;
+    }
+
+    .step-info {
+      flex: 1;
+    }
+
+    .step-title {
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 0.25rem;
+    }
+
+    .step-status {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+
+    .step-checkmark {
+      font-size: 1.5rem;
+      color: #17BEBB;
+    }
+
+    /* Download Section */
+    .download-section {
+      background: #ffffff;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
+      text-align: center;
+    }
+
+    .download-section h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e40af;
+      margin-bottom: 1rem;
+    }
+
+    .download-section p {
+      color: #6b7280;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-download {
+      background: #17BEBB;
+      color: #ffffff;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-download:hover {
+      background: #13a5a2;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(23, 190, 187, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .page-title {
+        font-size: 1.5rem;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .summary-card {
+        padding: 1.5rem;
+      }
+    }
+  </style>
 </head>
-<body class="resource-center claim-summary-page">
-<header class="header">
-  <div class="bar container">
-    <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
-    <nav class="nav">
-      <a href="/app/index.html">Home</a>
-      <span>></span>
-      <a href="/app/resource-center.html">Resource Center</a>
-      <span>></span>
-      <span>Claim Summary</span>
-    </nav>
-  </div>
-</header>
+<body>
+  <header class="page-header">
+    <h1 class="page-title">Claim Summary</h1>
+    <p class="page-subtitle">Complete overview of your claim progress and health</p>
+  </header>
 
-<main class="container">
-  <div class="summary-container">
-    <div class="summary-header">
-      <h1>Your Claim Summary</h1>
-      <p>Complete overview of your claim progress and health</p>
-    </div>
+  <div class="container">
+    <a href="/step-by-step-claim-guide.html" class="back-button">
+      ← Back to Claim Management Center
+    </a>
 
-    <div class="summary-card">
-      <h2>Claim Health Score</h2>
-      <div class="health-score-display" id="health-score">0</div>
-      <div class="health-level" id="health-level">Calculating...</div>
-    </div>
+    <!-- Claim Information Grid -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <h2>Claim Information</h2>
+        <div class="summary-card-content">
+          <div class="claim-info-item">
+            <span class="claim-info-label">Claim Number</span>
+            <span class="claim-info-value">CLM-2024-089456</span>
+          </div>
+          <div class="claim-info-item">
+            <span class="claim-info-label">Insurance Company</span>
+            <span class="claim-info-value">State Farm</span>
+          </div>
+          <div class="claim-info-item">
+            <span class="claim-info-label">Date of Loss</span>
+            <span class="claim-info-value">November 15, 2024</span>
+          </div>
+          <div class="claim-info-item">
+            <span class="claim-info-label">Claim Status</span>
+            <span class="claim-info-value">
+              <span class="status-badge status-active">Active - Under Review</span>
+            </span>
+          </div>
+        </div>
+      </div>
 
-    <div class="summary-card">
-      <h2>Activation Milestones</h2>
-      <div id="activation-list">
-        <p>Loading milestones...</p>
+      <div class="summary-card">
+        <h2>Adjuster Information</h2>
+        <div class="summary-card-content">
+          <div class="claim-info-item">
+            <span class="claim-info-label">Adjuster Name</span>
+            <span class="claim-info-value">Mike Johnson</span>
+          </div>
+          <div class="claim-info-item">
+            <span class="claim-info-label">Contact Number</span>
+            <span class="claim-info-value">(555) 123-4567</span>
+          </div>
+          <div class="claim-info-item">
+            <span class="claim-info-label">Email</span>
+            <span class="claim-info-value">mjohnson@statefarm.com</span>
+          </div>
+          <div class="claim-info-item">
+            <span class="claim-info-label">Days Since Loss</span>
+            <span class="claim-info-value">51 days</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <h2>Key Deadlines</h2>
+        <div class="summary-card-content">
+          <div class="claim-info-item">
+            <span class="claim-info-label">Notice of Loss</span>
+            <span class="claim-info-value">January 8, 2025</span>
+          </div>
+          <div class="claim-info-item">
+            <span class="claim-info-label">Proof of Loss</span>
+            <span class="claim-info-value">January 14, 2025</span>
+          </div>
+          <div class="claim-info-item">
+            <span class="claim-info-label">Policy Deadline</span>
+            <span class="claim-info-value">February 15, 2025</span>
+          </div>
+          <div class="claim-info-item">
+            <span class="claim-info-label">Days Remaining</span>
+            <span class="claim-info-value" style="color: #dc2626;">15 days</span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="summary-card">
-      <h2>Completed Stages</h2>
-      <div id="stages-list">
-        <p>Loading stages...</p>
+    <!-- Progress Section -->
+    <div class="progress-section">
+      <h2>Claim Progress</h2>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" style="width: 21%;"></div>
+      </div>
+      <p class="progress-text">3 of 14 steps completed (21%)</p>
+
+      <div class="steps-list" style="margin-top: 2rem;">
+        <div class="step-item">
+          <div class="step-number completed">1</div>
+          <div class="step-info">
+            <div class="step-title">Upload insurance policy</div>
+            <div class="step-status">Completed - AI analysis complete</div>
+          </div>
+          <span class="step-checkmark">✓</span>
+        </div>
+
+        <div class="step-item">
+          <div class="step-number completed">2</div>
+          <div class="step-info">
+            <div class="step-title">Understand duties and obligations</div>
+            <div class="step-status">Completed - Review complete</div>
+          </div>
+          <span class="step-checkmark">✓</span>
+        </div>
+
+        <div class="step-item">
+          <div class="step-number completed">3</div>
+          <div class="step-info">
+            <div class="step-title">Report loss to insurance company</div>
+            <div class="step-status">Completed - Claim filed</div>
+          </div>
+          <span class="step-checkmark">✓</span>
+        </div>
+
+        <div class="step-item">
+          <div class="step-number">4</div>
+          <div class="step-info">
+            <div class="step-title">Photograph all damage</div>
+            <div class="step-status">In Progress</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-number">5</div>
+          <div class="step-info">
+            <div class="step-title">Create detailed inventory</div>
+            <div class="step-status">Not Started</div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="summary-card">
-      <h2>Tools Used</h2>
-      <div id="tools-list">
-        <p>Loading tools...</p>
-      </div>
-    </div>
-
+    <!-- Download Section -->
     <div class="download-section">
-      <h2 style="color: #ffffff !important; margin-bottom: 1rem;">Download Your Claim Summary</h2>
-      <p style="color: #dbeafe !important; margin-bottom: 1.5rem;">Get a complete PDF summary of your claim progress and documentation.</p>
-      <button id="download-summary" class="btn-primary">Download Claim Summary PDF</button>
-      <div id="upgrade-notice" class="upgrade-notice" style="display: none;">
-        <p>PDF downloads are available for Pro members. <a href="/app/upgrade.html?source=summary">Upgrade to Pro</a> to unlock this feature.</p>
-      </div>
+      <h2>Download Your Claim Summary</h2>
+      <p>Get a complete PDF summary of your claim progress and documentation</p>
+      <button class="btn-download" onclick="alert('PDF generation feature coming soon. This will include all your claim details, progress, and documentation.')">
+        📄 Download Claim Summary PDF
+      </button>
     </div>
   </div>
-</main>
-
-<script>
-  // Load summary data
-  document.addEventListener("DOMContentLoaded", () => {
-    const health = computeClaimHealth();
-    const level = getClaimHealthLevel(health);
-    const activation = getActivation();
-    
-    // Update health score
-    document.getElementById("health-score").textContent = health;
-    document.getElementById("health-level").textContent = level.level;
-    document.getElementById("health-level").style.color = level.color;
-    
-    // Update activation milestones
-    const milestones = [
-      { key: "stage_1_complete", label: "Stage 1 Completed" },
-      { key: "evidence_organizer_opened", label: "Evidence Organizer Opened" },
-      { key: "first_doc_generated", label: "First Document Generated" },
-      { key: "ai_agent_used", label: "AI Response Agent Used" },
-      { key: "rom_run", label: "ROM Estimator Run" },
-      { key: "negotiation_script_opened", label: "Negotiation Scripts Opened" },
-      { key: "compliance_engine_opened", label: "Compliance Engine Opened" },
-      { key: "claim_journal_entry", label: "Claim Journal Entry Created" },
-      { key: "completed_3_stages", label: "Completed 3 Stages" },
-      { key: "full_activation", label: "Full Activation (All 6 Stages)" }
-    ];
-    
-    const activationList = document.getElementById("activation-list");
-    activationList.innerHTML = "<ul>";
-    milestones.forEach(m => {
-      const completed = activation[m.key];
-      const date = completed ? new Date(completed).toLocaleDateString() : null;
-      activationList.innerHTML += `
-        <li>
-          ${completed ? "✔" : "○"} ${m.label}
-          ${date ? ` <span style="opacity: 0.7; font-size: 0.9rem;">(${date})</span>` : ""}
-        </li>
-      `;
-    });
-    activationList.innerHTML += "</ul>";
-    
-    // Update completed stages
-    const stagesList = document.getElementById("stages-list");
-    stagesList.innerHTML = "<ul>";
-    for (let i = 1; i <= 6; i++) {
-      const completed = activation[`stage_${i}_complete`];
-      const date = completed ? new Date(completed).toLocaleDateString() : null;
-      const stageNames = [
-        "Start Your Claim",
-        "Document Damage",
-        "Analyze & Compare",
-        "Submit & Respond",
-        "Negotiate",
-        "Resolve or Escalate"
-      ];
-      stagesList.innerHTML += `
-        <li>
-          ${completed ? "✔" : "○"} Stage ${i}: ${stageNames[i-1]}
-          ${date ? ` <span style="opacity: 0.7; font-size: 0.9rem;">(${date})</span>` : ""}
-        </li>
-      `;
-    }
-    stagesList.innerHTML += "</ul>";
-    
-    // Update tools used
-    const toolsList = document.getElementById("tools-list");
-    const toolMap = {
-      "evidence_organizer_opened": "Evidence Organizer",
-      "first_doc_generated": "Document Generator",
-      "ai_agent_used": "AI Response Agent",
-      "rom_run": "ROM Estimator",
-      "negotiation_script_opened": "Negotiation Scripts",
-      "compliance_engine_opened": "Compliance Engine",
-      "claim_journal_entry": "Claim Journal"
-    };
-    
-    toolsList.innerHTML = "<ul>";
-    Object.keys(toolMap).forEach(key => {
-      if (activation[key]) {
-        const date = new Date(activation[key]).toLocaleDateString();
-        toolsList.innerHTML += `
-          <li>
-            ✔ ${toolMap[key]} <span style="opacity: 0.7; font-size: 0.9rem;">(${date})</span>
-          </li>
-        `;
-      }
-    });
-    if (Object.keys(toolMap).filter(k => activation[k]).length === 0) {
-      toolsList.innerHTML = "<p>No tools used yet.</p>";
-    } else {
-      toolsList.innerHTML += "</ul>";
-    }
-    
-    // Download button handler
-    document.getElementById("download-summary").addEventListener("click", () => {
-      if (window.CNAnalytics) {
-        CNAnalytics.log("claim_summary_download_attempt", { health });
-      }
-      
-      // Check if user is Pro
-      const isProUser = localStorage.getItem("isProUser") === "true";
-      
-      if (!isProUser) {
-        // Show upgrade notice
-        document.getElementById("upgrade-notice").style.display = "block";
-        // Redirect to upgrade page
-        setTimeout(() => {
-          window.location.href = "/app/upgrade.html?source=summary";
-        }, 2000);
-        return;
-      }
-      
-      // Save summary data
-      const summary = {
-        health,
-        activation,
-        completedStages: Object.keys(activation).filter(k => k.includes("stage") && k.includes("complete")),
-        timestamp: Date.now(),
-        generatedAt: new Date().toISOString()
-      };
-      
-      localStorage.setItem("cn_claim_summary", JSON.stringify(summary));
-      
-      if (window.CNAnalytics) {
-        CNAnalytics.log("claim_summary_downloaded", { health });
-      }
-      
-      // Trigger print dialog (temporary PDF solution)
-      window.print();
-    });
-  });
-</script>
-
-
-
-</body></html>
-
+</body>
+</html>
