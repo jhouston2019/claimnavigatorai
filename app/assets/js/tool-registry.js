@@ -13,9 +13,9 @@ const TOOL_REGISTRY = {
   
   // Step 1 - Policy Review
   'policy-uploader': {
-    url: '/step-by-step-claim-guide.html?step=1',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 1
   },
   'policy-intelligence-engine': {
@@ -25,9 +25,9 @@ const TOOL_REGISTRY = {
     step: 1
   },
   'policy-report-viewer': {
-    url: '/step-by-step-claim-guide.html?step=1',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 1
   },
   'step1-acknowledgment': {
@@ -55,29 +55,29 @@ const TOOL_REGISTRY = {
     step: 1
   },
   'download-policy-report': {
-    url: '/step-by-step-claim-guide.html?step=1',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 1
   },
   
   // Step 2 - Policyholder Duties
   'compliance-auto-import': {
-    url: '/step-by-step-claim-guide.html?step=2',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 2
   },
   'compliance-review': {
-    url: '/step-by-step-claim-guide.html?step=2',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 2
   },
   'compliance-report-viewer': {
-    url: '/step-by-step-claim-guide.html?step=2',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 2
   },
   'step2-acknowledgment': {
@@ -93,15 +93,15 @@ const TOOL_REGISTRY = {
     step: 2
   },
   'mitigation-documentation-tool': {
-    url: '/step-by-step-claim-guide.html?step=2',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 2
   },
   'proof-of-loss-tracker': {
-    url: '/step-by-step-claim-guide.html?step=2',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 2
   },
   'euo-sworn-statement-guide': {
@@ -125,9 +125,9 @@ const TOOL_REGISTRY = {
     step: 3
   },
   'damage-report-viewer': {
-    url: '/step-by-step-claim-guide.html?step=3',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 3
   },
   'step3-acknowledgment': {
@@ -137,15 +137,15 @@ const TOOL_REGISTRY = {
     step: 3
   },
   'photo-upload-organizer': {
-    url: '/step-by-step-claim-guide.html?step=3',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 3
   },
   'damage-labeling-tool': {
-    url: '/step-by-step-claim-guide.html?step=3',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 3
   },
   'missing-evidence-identifier': {
@@ -163,9 +163,9 @@ const TOOL_REGISTRY = {
     step: 4
   },
   'contractor-scope-checklist': {
-    url: '/step-by-step-claim-guide.html?step=4',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 4
   },
   'code-upgrade-identifier': {
@@ -221,15 +221,15 @@ const TOOL_REGISTRY = {
   
   // Step 6 - ALE & Housing
   'ale-tracker': {
-    url: '/step-by-step-claim-guide.html?step=6',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 6
   },
   'expense-upload-tool': {
-    url: '/step-by-step-claim-guide.html?step=6',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 6
   },
   'ale-eligibility-checker': {
@@ -245,23 +245,23 @@ const TOOL_REGISTRY = {
     step: 6
   },
   'temporary-housing-documentation-helper': {
-    url: '/step-by-step-claim-guide.html?step=6',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 6
   },
   
   // Step 7 - Contents Inventory
   'contents-inventory': {
-    url: '/step-by-step-claim-guide.html?step=7',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 7
   },
   'room-by-room-prompt-tool': {
-    url: '/step-by-step-claim-guide.html?step=7',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 7
   },
   'category-coverage-checker': {
@@ -271,9 +271,9 @@ const TOOL_REGISTRY = {
     step: 7
   },
   'contents-documentation-helper': {
-    url: '/step-by-step-claim-guide.html?step=7',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 7
   },
   
@@ -311,9 +311,9 @@ const TOOL_REGISTRY = {
     step: 9
   },
   'coverage-mapping-visualizer': {
-    url: '/step-by-step-claim-guide.html?step=9',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 9
   },
   'sublimit-impact-analyzer': {
@@ -337,9 +337,9 @@ const TOOL_REGISTRY = {
   
   // Step 10 - Claim Package
   'claim-package-assembly': {
-    url: '/step-by-step-claim-guide.html?step=10',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 10
   },
   'submission-checklist-generator': {
@@ -369,15 +369,15 @@ const TOOL_REGISTRY = {
   
   // Step 11 - Submit Claim
   'submission-method': {
-    url: '/step-by-step-claim-guide.html?step=11',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 11
   },
   'claim-submitter': {
-    url: '/step-by-step-claim-guide.html?step=11',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 11
   },
   'submission-report-engine': {
@@ -387,27 +387,27 @@ const TOOL_REGISTRY = {
     step: 11
   },
   'method-timestamp-view': {
-    url: '/step-by-step-claim-guide.html?step=11',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 11
   },
   'acknowledgment-status-view': {
-    url: '/step-by-step-claim-guide.html?step=11',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 11
   },
   'followup-schedule-view': {
-    url: '/step-by-step-claim-guide.html?step=11',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 11
   },
   'step11-next-moves': {
-    url: '/step-by-step-claim-guide.html?step=11',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 11
   },
   'step11-acknowledgment': {
@@ -429,9 +429,9 @@ const TOOL_REGISTRY = {
     step: 11
   },
   'download-submission-report': {
-    url: '/step-by-step-claim-guide.html?step=11',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 11
   },
   
@@ -443,15 +443,15 @@ const TOOL_REGISTRY = {
     step: 12
   },
   'carrier-request-logger': {
-    url: '/step-by-step-claim-guide.html?step=12',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 12
   },
   'deadline-response-tracker': {
-    url: '/step-by-step-claim-guide.html?step=12',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 12
   },
   'response-letter-generator': {
@@ -461,9 +461,9 @@ const TOOL_REGISTRY = {
     step: 12
   },
   'document-production-checklist': {
-    url: '/step-by-step-claim-guide.html?step=12',
-    engine: 'guide',
-    mode: 'embedded',
+    url: '/workflow-tool.html',
+    engine: 'workflow',
+    mode: 'standalone',
     step: 12
   },
   

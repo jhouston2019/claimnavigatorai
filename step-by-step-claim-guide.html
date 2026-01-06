@@ -6,6 +6,7 @@ image.png<!DOCTYPE html>
   <title>Claim Management Center - Claim Navigator</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/app/assets/css/tool-visual-alignment.css">
+  <link rel="stylesheet" href="/app/assets/css/workflow-tools-ai.css">
   
   <!-- CRITICAL: Load auth and paywall BEFORE any other scripts -->
   <script src="/app/assets/js/supabase-client.js"></script>
@@ -18,6 +19,7 @@ image.png<!DOCTYPE html>
   <script src="ai-expert-config.js"></script>
   <script src="/app/assets/js/tool-registry.js"></script>
   <script src="/app/assets/js/disclaimer-component.js"></script>
+  <script src="/app/assets/js/workflow-tools-ai.js"></script>
   
   <!-- BLOCKING GUARD: Hide content until access verified -->
   <!-- TEMPORARILY DISABLED FOR LOCAL TESTING -->
@@ -5446,6 +5448,585 @@ image.png<!DOCTYPE html>
       });
       console.log('All steps expanded by default with content loaded');
     });
+  </script>
+
+  <!-- DOCUMENT GENERATOR MODALS -->
+  <div id="documentGeneratorModal" class="doc-gen-modal" style="display: none;">
+    <div class="doc-gen-modal-overlay" onclick="closeDocumentGenerator()"></div>
+    <div class="doc-gen-modal-content">
+      <div class="doc-gen-modal-header">
+        <h2 id="docGenTitle">Document Generator</h2>
+        <button class="doc-gen-close-btn" onclick="closeDocumentGenerator()">×</button>
+      </div>
+      <div class="doc-gen-modal-body" id="docGenBody">
+        <!-- Content will be inserted dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .doc-gen-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .doc-gen-modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+    }
+
+    .doc-gen-modal-content {
+      position: relative;
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .doc-gen-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .doc-gen-modal-header h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy-primary);
+    }
+
+    .doc-gen-close-btn {
+      background: none;
+      border: none;
+      font-size: 32px;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .doc-gen-close-btn:hover {
+      background: #f3f4f6;
+      color: #1f2937;
+    }
+
+    .doc-gen-modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .doc-gen-form-group {
+      margin-bottom: 20px;
+    }
+
+    .doc-gen-form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 8px;
+    }
+
+    .doc-gen-form-group input,
+    .doc-gen-form-group textarea,
+    .doc-gen-form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .doc-gen-form-group input:focus,
+    .doc-gen-form-group textarea:focus,
+    .doc-gen-form-group select:focus {
+      outline: none;
+      border-color: var(--teal-primary);
+      box-shadow: 0 0 0 3px rgba(23, 190, 187, 0.1);
+    }
+
+    .doc-gen-form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .doc-gen-form-group small {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .doc-gen-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .doc-gen-btn {
+      flex: 1;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .doc-gen-btn-primary {
+      background: var(--teal-primary);
+      color: white;
+    }
+
+    .doc-gen-btn-primary:hover {
+      background: var(--teal-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(23, 190, 187, 0.3);
+    }
+
+    .doc-gen-btn-primary:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .doc-gen-btn-secondary {
+      background: #f3f4f6;
+      color: #1f2937;
+    }
+
+    .doc-gen-btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .doc-gen-output {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .doc-gen-output-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy-primary);
+      margin-bottom: 16px;
+    }
+
+    .doc-gen-output-content {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .doc-gen-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      color: #6b7280;
+    }
+
+    .doc-gen-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #e5e7eb;
+      border-top-color: var(--teal-primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 12px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .doc-gen-success {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      color: #166534;
+      font-size: 14px;
+    }
+
+    .doc-gen-error {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      color: #991b1b;
+      font-size: 14px;
+    }
+  </style>
+
+  <script>
+    // Document Generator System
+    const documentGenerators = {
+      'carrier-submission-cover-letter-generator': {
+        title: 'Carrier Submission Cover Letter Generator',
+        description: 'Generate a professional cover letter for your claim package submission',
+        fields: [
+          { name: 'insurerName', label: 'Insurance Company Name', type: 'text', required: true },
+          { name: 'policyNumber', label: 'Policy Number', type: 'text', required: true },
+          { name: 'claimNumber', label: 'Claim Number (if assigned)', type: 'text', required: false },
+          { name: 'dateOfLoss', label: 'Date of Loss', type: 'date', required: true },
+          { name: 'propertyAddress', label: 'Property Address', type: 'textarea', required: true },
+          { name: 'lossType', label: 'Type of Loss', type: 'select', options: ['Fire', 'Water Damage', 'Wind/Hail', 'Theft', 'Other'], required: true },
+          { name: 'documentsIncluded', label: 'Documents Included in Package', type: 'textarea', required: true, placeholder: 'List all documents being submitted (e.g., Proof of Loss, estimates, photos, receipts)' },
+          { name: 'totalClaimAmount', label: 'Total Claim Amount', type: 'number', required: true },
+          { name: 'additionalNotes', label: 'Additional Notes or Special Circumstances', type: 'textarea', required: false }
+        ]
+      },
+      'coverage-clarification-letter': {
+        title: 'Coverage Clarification Letter',
+        description: 'Request clarification on policy coverage and interpretation',
+        fields: [
+          { name: 'insurerName', label: 'Insurance Company Name', type: 'text', required: true },
+          { name: 'policyNumber', label: 'Policy Number', type: 'text', required: true },
+          { name: 'claimNumber', label: 'Claim Number', type: 'text', required: false },
+          { name: 'coverageQuestion', label: 'Coverage Question or Issue', type: 'textarea', required: true, placeholder: 'Describe what coverage aspect needs clarification' },
+          { name: 'policySection', label: 'Relevant Policy Section/Endorsement', type: 'text', required: false },
+          { name: 'specificLanguage', label: 'Specific Policy Language in Question', type: 'textarea', required: false },
+          { name: 'yourInterpretation', label: 'Your Understanding of Coverage', type: 'textarea', required: true },
+          { name: 'requestedAction', label: 'What You\'re Requesting', type: 'textarea', required: true }
+        ]
+      },
+      'estimate-revision-request-generator': {
+        title: 'Estimate Revision Request Generator',
+        description: 'Request revisions to the insurance company\'s estimate',
+        fields: [
+          { name: 'insurerName', label: 'Insurance Company Name', type: 'text', required: true },
+          { name: 'adjusterName', label: 'Adjuster Name', type: 'text', required: true },
+          { name: 'claimNumber', label: 'Claim Number', type: 'text', required: true },
+          { name: 'estimateDate', label: 'Date of Original Estimate', type: 'date', required: true },
+          { name: 'estimateAmount', label: 'Original Estimate Amount', type: 'number', required: true },
+          { name: 'discrepancies', label: 'Specific Discrepancies or Omissions', type: 'textarea', required: true, placeholder: 'List specific line items, omissions, or pricing issues' },
+          { name: 'supportingEvidence', label: 'Supporting Evidence Available', type: 'textarea', required: true, placeholder: 'Photos, contractor estimates, expert opinions, etc.' },
+          { name: 'requestedAmount', label: 'Requested Revised Amount', type: 'number', required: false },
+          { name: 'urgencyReason', label: 'Reason for Urgency (if applicable)', type: 'textarea', required: false }
+        ]
+      },
+      'euo-sworn-statement-guide': {
+        title: 'EUO Sworn Statement Guide',
+        description: 'Prepare for Examination Under Oath with guidance document',
+        fields: [
+          { name: 'insurerName', label: 'Insurance Company Name', type: 'text', required: true },
+          { name: 'claimNumber', label: 'Claim Number', type: 'text', required: true },
+          { name: 'euoDate', label: 'Scheduled EUO Date', type: 'date', required: false },
+          { name: 'euoLocation', label: 'EUO Location', type: 'text', required: false },
+          { name: 'lossType', label: 'Type of Loss', type: 'text', required: true },
+          { name: 'dateOfLoss', label: 'Date of Loss', type: 'date', required: true },
+          { name: 'keyFacts', label: 'Key Facts About Your Claim', type: 'textarea', required: true, placeholder: 'Important facts you need to remember and communicate' },
+          { name: 'concernAreas', label: 'Areas of Concern or Complex Issues', type: 'textarea', required: false },
+          { name: 'documentsToReview', label: 'Documents to Review Before EUO', type: 'textarea', required: false }
+        ]
+      },
+      'followup-status-letter': {
+        title: 'Follow-Up Status Request Letter',
+        description: 'Request status update on your claim',
+        fields: [
+          { name: 'insurerName', label: 'Insurance Company Name', type: 'text', required: true },
+          { name: 'claimNumber', label: 'Claim Number', type: 'text', required: true },
+          { name: 'adjusterName', label: 'Adjuster Name', type: 'text', required: false },
+          { name: 'submissionDate', label: 'Date Claim/Documents Submitted', type: 'date', required: true },
+          { name: 'daysSinceSubmission', label: 'Days Since Submission', type: 'number', required: true },
+          { name: 'lastContact', label: 'Date of Last Contact', type: 'date', required: false },
+          { name: 'pendingItems', label: 'Items Pending Response', type: 'textarea', required: true, placeholder: 'What are you waiting for? (e.g., estimate review, payment, coverage decision)' },
+          { name: 'stateDeadline', label: 'State-Mandated Response Deadline (if applicable)', type: 'text', required: false },
+          { name: 'urgencyReason', label: 'Reason for Urgency', type: 'textarea', required: false }
+        ]
+      },
+      'policy-interpretation-letter': {
+        title: 'Policy Interpretation Letter',
+        description: 'Document your interpretation of policy language',
+        fields: [
+          { name: 'insurerName', label: 'Insurance Company Name', type: 'text', required: true },
+          { name: 'policyNumber', label: 'Policy Number', type: 'text', required: true },
+          { name: 'claimNumber', label: 'Claim Number', type: 'text', required: false },
+          { name: 'policySection', label: 'Policy Section/Provision', type: 'text', required: true },
+          { name: 'policyLanguage', label: 'Exact Policy Language', type: 'textarea', required: true },
+          { name: 'yourInterpretation', label: 'Your Interpretation', type: 'textarea', required: true },
+          { name: 'insurerPosition', label: 'Insurer\'s Interpretation (if stated)', type: 'textarea', required: false },
+          { name: 'supportingAuthority', label: 'Supporting Authority', type: 'textarea', required: false, placeholder: 'Case law, state regulations, or other policy provisions that support your interpretation' },
+          { name: 'requestedAction', label: 'Requested Action', type: 'textarea', required: true }
+        ]
+      },
+      'submission-confirmation-email': {
+        title: 'Submission Confirmation Email',
+        description: 'Confirm receipt of your claim submission',
+        fields: [
+          { name: 'insurerName', label: 'Insurance Company Name', type: 'text', required: true },
+          { name: 'recipientName', label: 'Recipient Name', type: 'text', required: false },
+          { name: 'recipientEmail', label: 'Recipient Email', type: 'email', required: false },
+          { name: 'claimNumber', label: 'Claim Number', type: 'text', required: false },
+          { name: 'submissionDate', label: 'Submission Date', type: 'date', required: true },
+          { name: 'submissionMethod', label: 'Submission Method', type: 'select', options: ['Email', 'Certified Mail', 'Online Portal', 'In Person', 'Fax'], required: true },
+          { name: 'trackingNumber', label: 'Tracking Number (if applicable)', type: 'text', required: false },
+          { name: 'documentsSubmitted', label: 'Documents Submitted', type: 'textarea', required: true, placeholder: 'List all documents included in submission' },
+          { name: 'requestedResponse', label: 'Requested Response Timeframe', type: 'text', required: false }
+        ]
+      },
+      'supplement-cover-letter-generator': {
+        title: 'Supplement Cover Letter Generator',
+        description: 'Generate cover letter for supplemental claim submission',
+        fields: [
+          { name: 'insurerName', label: 'Insurance Company Name', type: 'text', required: true },
+          { name: 'claimNumber', label: 'Claim Number', type: 'text', required: true },
+          { name: 'adjusterName', label: 'Adjuster Name', type: 'text', required: false },
+          { name: 'originalClaimDate', label: 'Original Claim Date', type: 'date', required: true },
+          { name: 'originalAmount', label: 'Original Claim Amount', type: 'number', required: true },
+          { name: 'supplementReason', label: 'Reason for Supplement', type: 'textarea', required: true, placeholder: 'Why are you filing a supplement? (e.g., additional damage discovered, omitted items, pricing corrections)' },
+          { name: 'supplementAmount', label: 'Supplement Amount', type: 'number', required: true },
+          { name: 'newDocumentation', label: 'New Documentation Included', type: 'textarea', required: true },
+          { name: 'totalRevisedAmount', label: 'Total Revised Claim Amount', type: 'number', required: true }
+        ]
+      }
+    };
+
+    function openDocumentGenerator(toolId) {
+      const generator = documentGenerators[toolId];
+      if (!generator) {
+        console.error('Document generator not found:', toolId);
+        return;
+      }
+
+      const modal = document.getElementById('documentGeneratorModal');
+      const title = document.getElementById('docGenTitle');
+      const body = document.getElementById('docGenBody');
+
+      title.textContent = generator.title;
+      
+      let html = `
+        <p style="color: #6b7280; margin-bottom: 24px;">${generator.description}</p>
+        <form id="docGenForm" onsubmit="generateDocument(event, '${toolId}'); return false;">
+      `;
+
+      generator.fields.forEach(field => {
+        html += `<div class="doc-gen-form-group">`;
+        html += `<label for="${field.name}">${field.label}${field.required ? ' <span style="color: #ef4444;">*</span>' : ''}</label>`;
+        
+        if (field.type === 'textarea') {
+          html += `<textarea id="${field.name}" name="${field.name}" ${field.required ? 'required' : ''} placeholder="${field.placeholder || ''}"></textarea>`;
+        } else if (field.type === 'select') {
+          html += `<select id="${field.name}" name="${field.name}" ${field.required ? 'required' : ''}>`;
+          html += `<option value="">Select...</option>`;
+          field.options.forEach(opt => {
+            html += `<option value="${opt}">${opt}</option>`;
+          });
+          html += `</select>`;
+        } else {
+          html += `<input type="${field.type}" id="${field.name}" name="${field.name}" ${field.required ? 'required' : ''} placeholder="${field.placeholder || ''}">`;
+        }
+        
+        if (field.placeholder && field.type !== 'textarea') {
+          html += `<small>${field.placeholder}</small>`;
+        }
+        html += `</div>`;
+      });
+
+      html += `
+          <div class="doc-gen-actions">
+            <button type="button" class="doc-gen-btn doc-gen-btn-secondary" onclick="closeDocumentGenerator()">Cancel</button>
+            <button type="submit" class="doc-gen-btn doc-gen-btn-primary">
+              <span>✨ Generate with AI</span>
+            </button>
+          </div>
+        </form>
+        <div id="docGenOutput"></div>
+      `;
+
+      body.innerHTML = html;
+      modal.style.display = 'flex';
+    }
+
+    function closeDocumentGenerator() {
+      const modal = document.getElementById('documentGeneratorModal');
+      modal.style.display = 'none';
+    }
+
+    async function generateDocument(event, toolId) {
+      event.preventDefault();
+      
+      const form = event.target;
+      const formData = new FormData(form);
+      const data = {};
+      
+      for (let [key, value] of formData.entries()) {
+        data[key] = value;
+      }
+
+      const outputDiv = document.getElementById('docGenOutput');
+      outputDiv.innerHTML = `
+        <div class="doc-gen-loading">
+          <div class="doc-gen-spinner"></div>
+          <span>Generating your document with AI...</span>
+        </div>
+      `;
+
+      try {
+        const generator = documentGenerators[toolId];
+        
+        // Call AI generation endpoint
+        const response = await fetch('/netlify/functions/ai-document-generator', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            template_type: toolId,
+            document_type: generator.title,
+            user_inputs: data
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to generate document');
+        }
+
+        const result = await response.json();
+        
+        if (result.success && result.data && result.data.document_text) {
+          outputDiv.innerHTML = `
+            <div class="doc-gen-success">
+              ✅ Document generated successfully!
+            </div>
+            <div class="doc-gen-output">
+              <div class="doc-gen-output-title">${generator.title}</div>
+              <div class="doc-gen-output-content">${result.data.document_text}</div>
+              <div class="doc-gen-actions">
+                <button type="button" class="doc-gen-btn doc-gen-btn-primary" onclick="copyToClipboard()">
+                  📋 Copy to Clipboard
+                </button>
+                <button type="button" class="doc-gen-btn doc-gen-btn-primary" onclick="downloadDocument('${generator.title}')">
+                  📥 Download as PDF
+                </button>
+                <button type="button" class="doc-gen-btn doc-gen-btn-secondary" onclick="resetForm()">
+                  🔄 Generate Another
+                </button>
+              </div>
+            </div>
+          `;
+          
+          // Store the generated document
+          window.currentGeneratedDocument = result.data.document_text;
+        } else {
+          throw new Error(result.error?.message || 'Unknown error');
+        }
+      } catch (error) {
+        console.error('Document generation error:', error);
+        outputDiv.innerHTML = `
+          <div class="doc-gen-error">
+            ❌ Error generating document: ${error.message}
+          </div>
+          <div class="doc-gen-actions">
+            <button type="button" class="doc-gen-btn doc-gen-btn-primary" onclick="resetForm()">
+              🔄 Try Again
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    function copyToClipboard() {
+      const content = document.querySelector('.doc-gen-output-content').textContent;
+      navigator.clipboard.writeText(content).then(() => {
+        alert('✅ Document copied to clipboard!');
+      }).catch(err => {
+        console.error('Copy failed:', err);
+        alert('❌ Failed to copy to clipboard');
+      });
+    }
+
+    function downloadDocument(title) {
+      const content = window.currentGeneratedDocument || document.querySelector('.doc-gen-output-content').textContent;
+      
+      // Create a simple PDF-like download (text file for now)
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      alert('✅ Document downloaded! You can copy this text into a Word document for further formatting.');
+    }
+
+    function resetForm() {
+      const outputDiv = document.getElementById('docGenOutput');
+      outputDiv.innerHTML = '';
+      document.getElementById('docGenForm').reset();
+    }
+
+    // Override the openTool function to handle document generators
+    const originalOpenTool = window.openTool;
+    window.openTool = function(toolId, stepNum) {
+      // Check if this is a document generator
+      if (documentGenerators[toolId]) {
+        openDocumentGenerator(toolId);
+        return;
+      }
+      
+      // Otherwise use original function
+      if (originalOpenTool) {
+        originalOpenTool(toolId, stepNum);
+      }
+    };
   </script>
 </body>
 </html>
