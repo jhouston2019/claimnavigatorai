@@ -23,20 +23,47 @@
     <!-- Tool Content -->
     <div class="tool-card">
       <div class="tool-card-header">
-        <h2 class="tool-card-title">Step 6 Tool</h2>
+        <h2 class="tool-card-title">Expense Details</h2>
       </div>
       <div class="tool-card-body">
-        <p>This tool is part of Step 6 of the Step-by-Step Claim Guide.</p>
-        
-        <div class="tool-alert tool-alert-info">
-          <h3 class="tool-alert-title">Tool Status</h3>
-          <p>This tool interface is being configured. Full functionality will be available soon.</p>
-        </div>
+        <form data-tool-form>
+          <div class="tool-form-group">
+            <label for="expenseType">Expense Type</label>
+            <select id="expenseType" name="expenseType" class="tool-input" required>
+              <option value="">Select type...</option>
+              <option value="hotel">Hotel/Lodging</option>
+              <option value="food">Food/Meals</option>
+              <option value="transportation">Transportation</option>
+              <option value="storage">Storage</option>
+              <option value="utilities">Utilities</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          
+          <div class="tool-form-group">
+            <label for="expenseAmount">Expense Amount ($)</label>
+            <input type="number" id="expenseAmount" name="expenseAmount" class="tool-input" step="0.01" required>
+          </div>
+          
+          <div class="tool-form-group">
+            <label for="expenseDescription">Description</label>
+            <textarea id="expenseDescription" name="expenseDescription" class="tool-input" rows="3" required></textarea>
+          </div>
+          
+          <button type="submit" class="tool-btn tool-btn-primary" data-analyze-btn>
+            Check Eligibility
+          </button>
+        </form>
+      </div>
+    </div>
 
-        <div class="tool-section">
-          <h3 class="tool-section-title">What This Tool Does</h3>
-          <p>Check expense eligibility for ALE</p>
-        </div>
+    <!-- Output Area -->
+    <div id="output" data-tool-output style="display: none;" class="tool-card">
+      <div class="tool-card-header">
+        <h2 class="tool-card-title">Eligibility Results</h2>
+      </div>
+      <div class="tool-card-body">
+        <!-- Results will be rendered here by controller -->
       </div>
     </div>
 
@@ -44,9 +71,6 @@
     <div class="tool-section">
       <button class="tool-btn tool-btn-secondary" onclick="goBack()">
         ← Back to Claim Guide
-      </button>
-      <button class="tool-btn tool-btn-primary" onclick="markComplete()">
-        Mark as Complete →
       </button>
     </div>
 
@@ -56,16 +80,33 @@
     function goBack() {
       window.location.href = '/step-by-step-claim-guide.html?step=6';
     }
+  </script>
 
-    function markComplete() {
-      saveClaimData('tool_ale-eligibility-checker_complete', true);
-      alert('✓ Tool marked as complete!\n\nReturning to Claim Guide...');
-      goBack();
-    }
+  <script type="module">
+    import { AIToolController } from '../assets/js/controllers/index.js';
+    
+    document.addEventListener('DOMContentLoaded', async function() {
+      await AIToolController.initTool({
+        toolId: 'ale-eligibility-checker',
+        toolName: 'ALE Eligibility Checker',
+        backendFunction: '/.netlify/functions/ai-rom-estimator',
+        outputFormat: 'structured',
+        timelineEventType: 'ale_eligibility_check'
+      });
+    });
+  </script>
 
-    // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('Tool loaded: ale-eligibility-checker');
+
+  <script type="module">
+    import { AIToolController } from '../assets/js/controllers/index.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await AIToolController.initTool({
+        toolId: 'ale-eligibility-checker',
+        toolName: 'ALE Eligibility Checker',
+        backendFunction: '/.netlify/functions/ai-rom-estimator',
+        outputFormat: 'calculation'
+      });
     });
   </script>
 

@@ -30,7 +30,7 @@
         
         <div class="tool-alert tool-alert-info">
           <h3 class="tool-alert-title">Tool Status</h3>
-          <p>This tool interface is being configured. Full functionality will be available soon.</p>
+          <p></p>
         </div>
 
         <div class="tool-section">
@@ -45,9 +45,7 @@
       <button class="tool-btn tool-btn-secondary" onclick="goBack()">
         ← Back to Claim Guide
       </button>
-      <button class="tool-btn tool-btn-primary" onclick="markComplete()">
-        Mark as Complete →
-      </button>
+      
     </div>
 
   </div>
@@ -57,15 +55,23 @@
       window.location.href = '/step-by-step-claim-guide.html?step=6';
     }
 
-    function markComplete() {
-      saveClaimData('tool_remaining-ale-limit-calculator_complete', true);
-      alert('✓ Tool marked as complete!\n\nReturning to Claim Guide...');
-      goBack();
-    }
-
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
       console.log('Tool loaded: remaining-ale-limit-calculator');
+    });
+  </script>
+
+
+  <script type="module">
+    import { AIToolController } from '../assets/js/controllers/index.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await AIToolController.initTool({
+        toolId: 'remaining-ale-limit-calculator',
+        toolName: 'Remaining ALE Limit Calculator',
+        backendFunction: '/.netlify/functions/ai-rom-estimator',
+        outputFormat: 'calculation'
+      });
     });
   </script>
 

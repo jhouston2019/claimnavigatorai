@@ -28,10 +28,7 @@
       <div class="tool-card-body">
         <p>This tool is part of Step 3 of the Step-by-Step Claim Guide.</p>
         
-        <div class="tool-alert tool-alert-info">
-          <h3 class="tool-alert-title">Tool Status</h3>
-          <p>This tool interface is being configured. Full functionality will be available soon.</p>
-        </div>
+        
 
         <div class="tool-section">
           <h3 class="tool-section-title">What This Tool Does</h3>
@@ -68,6 +65,20 @@
       console.log('Tool loaded: damage-documentation');
     });
   </script>
+
+
+<script type="module">
+  import { WorkflowViewController } from '/app/assets/js/controllers/index.js';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    WorkflowViewController.initTool({
+      "toolId": "damage-documentation",
+      "toolName": "Damage Documentation Tool",
+      "supabaseTable": "evidence_items",
+      "viewType": "cards"
+});
+  });
+</script>
 
 </body>
 </html>

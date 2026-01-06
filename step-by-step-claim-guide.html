@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+image.png<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -3110,6 +3110,7 @@
     <header class="page-header">
       <h1 class="page-title">Claim Management Center</h1>
       <p class="page-subtitle">Step-by-step claim management with AI-powered analysis</p>
+      <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.75rem; max-width: 800px; margin-left: auto; margin-right: auto;">This tool provides guidance and documentation support based on the information you provide. It does not replace professional legal or adjusting advice.</p>
     </header>
 
     <!-- Quiet Progress Bar -->
@@ -4660,6 +4661,32 @@
             </div>
           `;
         }
+      }
+      
+      // Step Reassurance (before actions)
+      const stepReassurance = {
+        1: "If you've completed this step, you understand your coverage and are ready to proceed.",
+        2: "Most claim issues originate when compliance requirements are missed.",
+        3: "Timely notice protects your claim rights.",
+        4: "Proper documentation is the foundation of every successful claim.",
+        5: "A complete contractor estimate establishes the true cost of repairs.",
+        6: "Identifying estimate discrepancies early prevents underpayment.",
+        7: "This step ensures all documented losses are properly applied to available coverage.",
+        8: "ALE tracking remains active throughout your claim.",
+        9: "Insurance companies only pay for items that are properly listed and documented.",
+        10: "Accurate valuation ensures proper contents reimbursement.",
+        11: "A complete, well-organized package strengthens your claim.",
+        12: "Document your submission method to establish your claim timeline.",
+        13: "This step remains active throughout your claim.",
+        14: "This step may be repeated as needed until your claim is fully paid."
+      };
+      
+      if (stepReassurance[stepNum]) {
+        html += `
+          <div style="background: #eff6ff; border-left: 3px solid #3b82f6; padding: 12px 16px; margin: 20px 0; font-size: 0.875rem; color: #1e40af;">
+            ${stepReassurance[stepNum]}
+          </div>
+        `;
       }
       
       // Actions (for all steps)

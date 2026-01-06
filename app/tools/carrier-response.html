@@ -23,20 +23,29 @@
     <!-- Tool Content -->
     <div class="tool-card">
       <div class="tool-card-header">
-        <h2 class="tool-card-title">Step 12 Tool</h2>
+        <h2 class="tool-card-title">Carrier Request</h2>
       </div>
       <div class="tool-card-body">
-        <p>This tool is part of Step 12 of the Step-by-Step Claim Guide.</p>
-        
-        <div class="tool-alert tool-alert-info">
-          <h3 class="tool-alert-title">Tool Status</h3>
-          <p>This tool interface is being configured. Full functionality will be available soon.</p>
-        </div>
+        <form data-tool-form>
+          <div class="tool-form-group">
+            <label for="carrierLetter">Paste Carrier Request/Letter</label>
+            <textarea id="carrierLetter" name="carrierLetter" class="tool-input" rows="8" required placeholder="Paste the carrier's request or letter here..."></textarea>
+          </div>
+          
+          <button type="submit" class="tool-btn tool-btn-primary" data-analyze-btn>
+            Generate Response
+          </button>
+        </form>
+      </div>
+    </div>
 
-        <div class="tool-section">
-          <h3 class="tool-section-title">What This Tool Does</h3>
-          <p>Analyze and respond to carrier requests</p>
-        </div>
+    <!-- Output Area -->
+    <div id="output" data-tool-output style="display: none;" class="tool-card">
+      <div class="tool-card-header">
+        <h2 class="tool-card-title">Suggested Response</h2>
+      </div>
+      <div class="tool-card-body">
+        <!-- Results will be rendered here by controller -->
       </div>
     </div>
 
@@ -44,9 +53,6 @@
     <div class="tool-section">
       <button class="tool-btn tool-btn-secondary" onclick="goBack()">
         ← Back to Claim Guide
-      </button>
-      <button class="tool-btn tool-btn-primary" onclick="markComplete()">
-        Mark as Complete →
       </button>
     </div>
 
@@ -56,16 +62,33 @@
     function goBack() {
       window.location.href = '/step-by-step-claim-guide.html?step=12';
     }
+  </script>
 
-    function markComplete() {
-      saveClaimData('tool_carrier-response_complete', true);
-      alert('✓ Tool marked as complete!\n\nReturning to Claim Guide...');
-      goBack();
-    }
+  <script type="module">
+    import { AIToolController } from '../assets/js/controllers/index.js';
+    
+    document.addEventListener('DOMContentLoaded', async function() {
+      await AIToolController.initTool({
+        toolId: 'carrier-response',
+        toolName: 'Carrier Request Response Engine',
+        backendFunction: '/.netlify/functions/ai-response-agent',
+        outputFormat: 'structured',
+        timelineEventType: 'carrier_response_generated'
+      });
+    });
+  </script>
 
-    // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('Tool loaded: carrier-response');
+
+  <script type="module">
+    import { AIToolController } from '../assets/js/controllers/index.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await AIToolController.initTool({
+        toolId: 'carrier-response',
+        toolName: 'Carrier Request Response Engine',
+        backendFunction: '/.netlify/functions/ai-response-agent',
+        outputFormat: 'structured'
+      });
     });
   </script>
 

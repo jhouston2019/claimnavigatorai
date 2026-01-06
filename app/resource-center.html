@@ -1,1017 +1,339 @@
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Claim Navigator • Reference Library</title>
-    <link rel="stylesheet" href="/app/assets/css/theme.css">
-    <link rel="stylesheet" href="/app/assets/css/style.css">
-    <link rel="stylesheet" href="/app/assets/css/design-system.css">
-    <link rel="stylesheet" href="/app/css/design-system.css">
-    <link rel="stylesheet" href="/app/assets/css/guided-tour.css">
-    <script type="module">
-      // PART 2: ADMIN-ONLY ACCESS GUARD
-      import { checkAuthentication } from './assets/js/auth.js';
-      
-      async function enforceAdminAccess() {
-        const auth = await checkAuthentication();
-        
-        if (!auth.authenticated) {
-          window.location.href = '/app/login.html?redirect=' + encodeURIComponent(window.location.pathname);
-          return false;
-        }
-        
-        // Check if user has admin role
-        const user = auth.user;
-        const isAdmin = user?.user_metadata?.role === 'admin' || user?.app_metadata?.role === 'admin';
-        
-        if (!isAdmin) {
-          window.location.href = '/app/claim-management-center.html';
-          return false;
-        }
-        
-        return true;
-      }
-      
-      enforceAdminAccess().then(allowed => {
-        if (allowed) {
-          document.body.style.visibility = 'visible';
-        }
-      });
-    </script>
-    <script src="/app/assets/js/user-tier.js"></script>
-    <script src="/app/assets/js/feature-gate.js"></script>
-    <script src="/app/assets/js/demo-mode.js"></script>
-    <script src="/app/assets/js/upgrade-hooks.js"></script>
-    <script src="/app/assets/js/org.js"></script>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resource Center - Claim Navigator</title>
   <link rel="stylesheet" href="/app/assets/css/tool-visual-alignment.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #F7F9FC;
+      color: #1f2937;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Header */
+    .page-header {
+      background: linear-gradient(135deg, #0B2545 0%, #123A63 100%);
+      padding: 3rem 0;
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+
+    .page-title {
+      color: #ffffff;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .page-subtitle {
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 1.2rem;
+      font-weight: 400;
+    }
+
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #0B2545;
+      text-decoration: none;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      transition: all 0.2s;
+    }
+
+    .back-button:hover {
+      color: #17BEBB;
+    }
+
+    /* Section */
+    .resource-section {
+      background: #ffffff;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0B2545;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #E5E7EB;
+    }
+
+    /* Resource List */
+    .resource-list {
+      list-style: none;
+    }
+
+    .resource-list li {
+      margin-bottom: 0.5rem;
+      padding-left: 0;
+    }
+
+    .resource-list a {
+      color: #1f2937;
+      text-decoration: none;
+      display: inline-block;
+      font-weight: 500;
+      transition: all 0.2s;
+      padding: 0.25rem 0;
+    }
+
+    .resource-list a:hover {
+      color: #17BEBB;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .page-title {
+        font-size: 1.75rem;
+      }
+
+      .resource-section {
+        padding: 1.5rem;
+      }
+    }
+  </style>
 </head>
-<body class="resource-center reference-library" style="visibility:hidden;">
-<header class="header">
-  <div class="bar container">
-    <div class="brand"><div class="logo"></div><div>Claim Navigation AI</div></div>
-    <nav class="nav">
-      <a href="/app/index.html">Home</a>
-      <a href="/app/claim-management-center.html" class="nav-link-primary" data-auth-required="true" data-paid-required="true">Claim Management Center</a>
-      
-      <!-- Claim Navigator Agent Dropdown -->
-      <div class="nav-dropdown">
-        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('cn-agent')">
-          Claim Navigator Agent
-        </button>
-        <div class="nav-dropdown-content" id="cn-agent">
-          <a href="/app/cn-agent.html">CN Agent Dashboard</a>
-          <a href="/app/cn-agent.html#draft-email">Draft Email</a>
-          <a href="/app/cn-agent.html#send-email">Send Email</a>
-          <a href="/app/cn-agent.html#create-alert">Create Alert</a>
-          <a href="/app/cn-agent.html#detect-deadlines">Detect Deadlines</a>
-          <a href="/app/cn-agent.html#detect-payments">Detect Payments</a>
-          <a href="/app/cn-agent.html#detect-invoices">Detect Invoices</a>
-          <a href="/app/cn-agent.html#update-statement">Update Statement of Loss</a>
-          <a href="/app/cn-agent.html#update-deadlines">Update Deadlines</a>
-        </div>
-      </div>
-      
-      <!-- How to Use Dropdown -->
-      <div class="nav-dropdown">
-        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('how-to-use')">
-          How to Use
-        </button>
-        <div class="nav-dropdown-content" id="how-to-use">
-          <div class="how-to-steps">
-            <div class="step">
-              <div class="step-number">1</div>
-              <div class="step-content">
-                <h4>Describe Your Situation</h4>
-                <p>Use the search bar or Situational Advisory to get started.</p>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-number">2</div>
-              <div class="step-content">
-                <h4>Generate Documents</h4>
-                <p>Create letters, forms, and evidence with AI assistance.</p>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-number">3</div>
-              <div class="step-content">
-                <h4>Analyze & Compare</h4>
-                <p>Review policies, compare estimates, and assess damage.</p>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-number">4</div>
-              <div class="step-content">
-                <h4>Track Progress</h4>
-                <p>Use Trackers & Timeline to monitor your claim journey.</p>
-              </div>
-            </div>
-          </div>
-          <a href="/app/how-to-use.html" class="nav-link">View Detailed Guide</a>
-        </div>
-      </div>
-
-      <!-- Quick Start Dropdown -->
-      <div class="nav-dropdown">
-        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('quick-start')">
-          Quick Start
-        </button>
-        <div class="nav-dropdown-content" id="quick-start">
-          <div class="quick-start-scenarios">
-            <div class="scenario">
-              <h4>My claim was just denied</h4>
-              <div class="scenario-links">
-                <a href="/app/ai-response-agent.html" class="scenario-link">AI Response</a>
-                <a href="/app/negotiation-tools.html" class="scenario-link">Negotiation</a>
-                <a href="/app/document-generator-v2/document-generator.html" class="scenario-link">Appeal</a>
-              </div>
-            </div>
-            <div class="scenario">
-              <h4>I got a lowball offer</h4>
-              <div class="scenario-links">
-                <a href="/app/claim-analysis.html" class="scenario-link">Damage</a>
-                <a href="/app/claim-analysis.html" class="scenario-link">Policy</a>
-                <a href="/app/negotiation-tools.html" class="scenario-link">Counter</a>
-              </div>
-            </div>
-            <div class="scenario">
-              <h4>Filing for the first time</h4>
-              <div class="scenario-links">
-                <a href="/app/claim-playbook.html" class="scenario-link">Playbook</a>
-                <a href="/app/resource-center/claim-timeline.html" class="scenario-link">Timeline</a>
-                <a href="/app/document-generator-v2/document-generator.html" class="scenario-link">Notice</a>
-              </div>
-            </div>
-            <div class="scenario">
-              <h4>Stuck - No Response</h4>
-              <div class="scenario-links">
-                <a href="/app/state-rights.html" class="scenario-link">Rights</a>
-                <a href="/app/document-generator-v2/document-generator.html" class="scenario-link">Complaint</a>
-                <a href="/app/trackers.html" class="scenario-link">Track</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Strategy & Guidance Dropdown -->
-      <div class="nav-dropdown">
-        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('strategy')">
-          Strategy & Guidance
-        </button>
-        <div class="nav-dropdown-content" id="strategy">
-          <a href="/app/claim-playbook.html">Claim Playbook</a>
-          <a href="/app/resource-center/claim-timeline.html">Claim Timeline & Sequence Guide</a>
-          <a href="/app/resource-center/insurance-company-tactics.html">Insurance Company Tactics</a>
-          <a href="/app/maximize-claim.html">Maximize Your Claim</a>
-          <a href="/app/state-rights.html">State Rights & Deadlines</a>
-        </div>
-      </div>
-
-      <!-- Core Claim Tools Dropdown -->
-      <div class="nav-dropdown">
-        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('core-tools')">
-          Core Claim Tools
-        </button>
-        <div class="nav-dropdown-content" id="core-tools">
-          <a href="/app/resource-center/fnol-wizard.html">FNOL Auto-File Wizard</a>
-          <a href="/app/document-library/">Claim Document Library</a>
-          <a href="/app/resource-center/ai-response-agent.html">AI Response Agent</a>
-          <a href="/app/cn-agent.html">ClaimNavigator Agent (AI Copilot)</a>
-          <a href="/app/statement-of-loss.html">Statement of Loss</a>
-          <a href="/app/deadlines.html">Deadlines</a>
-          <a href="/app/resource-center/compliance-engine.html">Compliance Engine</a>
-          <a href="/app/resource-center/checklist-engine.html">Checklist Engine</a>
-          <a href="/app/api-docs.html">API Layer</a>
-          <a href="/app/claim-journal.html">Claim Journal</a>
-          <a href="/app/authority-hub.html">Authority Guides</a>
-          <a href="/app/rom-tool.html">ROM Estimator</a>
-          <a href="/app/claim-stage-tracker.html">Claim Stage Tracker</a>
-          <a href="/app/knowledge-center.html">Knowledge Center</a>
-          <a href="/app/claim-analysis.html">Claim Analysis Tools</a>
-          <a href="/app/resource-center/advanced-tools/advanced-tools.html">Advanced Tools Suite</a>
-          <a href="/app/situational-advisory.html">Situational Advisory</a>
-          <a href="/app/negotiation-tools.html">Negotiation Scripts & Escalation</a>
-          <a href="/app/documentation-guides.html">Claim Documentation Guides</a>
-          <a href="/app/evidence-organizer.html">Evidence Organizer</a>
-          <a href="/app/recommended-resources.html">Recommended Resources</a>
-          <a href="/app/insurer-directory.html">Insurer Directory</a>
-          <a href="/app/document-generator-v2/document-generator.html">Document Generator</a>
-        </div>
-      </div>
-
-      <!-- Document Generator Dropdown -->
-      <div class="nav-dropdown">
-        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('documents')">
-          Document Generator
-        </button>
-        <div class="nav-dropdown-content" id="documents">
-          <a href="/app/document-generator-v2/document-generator.html">All Documents (61+)</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=proof-of-loss">Proof of Loss</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=demand-letter">Demand Letter</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=appeal-letter">Appeal Letter</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=damage-assessment">Damage Assessment</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=business-interruption-claim">Business Interruption</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=evidence-log">Evidence Log</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=expense-reimbursement">Expense Reimbursement</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=appraisal-request">Appraisal Request</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=regulatory-complaint">Regulatory Complaint</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=settlement-offer">Settlement Offer</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=notice-of-claim">Notice of Claim</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=coverage-clarification">Coverage Clarification</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=delay-complaint">Delay Complaint</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=photograph-log">Photograph Log</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=repair-replace-analysis">Repair vs Replace Analysis</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=out-of-pocket-log">Out-of-Pocket Expenses</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=rom-estimate">ROM Estimate</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=comparative-estimates">Comparative Estimates</a>
-          <a href="/app/document-generator-v2/forms/form-template.html?id=document-index">Document Index</a>
-        </div>
-      </div>
-
-      <!-- Claim Analysis Tools Dropdown -->
-      <div class="nav-dropdown">
-        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('analysis')">
-          Claim Analysis Tools
-        </button>
-        <div class="nav-dropdown-content" id="analysis">
-          <a href="/app/claim-analysis.html">Policy Review & Coverage Analysis</a>
-          <a href="/app/claim-analysis.html">Damage Assessment Calculator</a>
-          <a href="/app/maximize-claim.html">Financial Impact Calculator</a>
-          <a href="/app/claim-analysis.html">Estimate Review & Comparison</a>
-          <a href="/app/claim-analysis.html">Business Interruption Calculator</a>
-          <a href="/app/negotiation-tools.html">Settlement Analysis & Negotiation</a>
-          <a href="/app/resource-center/advanced-tools/advanced-tools.html">Advanced Tools Suite</a>
-        </div>
-      </div>
-      <!-- Global Roadmap Context Chip -->
-      <div class="nav-roadmap-chip">
-        <a id="nav-roadmap-chip-link" href="/app/resource-center/claim-roadmap.html">Roadmap: Stage 1</a>
-      </div>
-      <!-- Developer / API Links -->
-      <div class="nav-dropdown">
-        <button class="nav-dropdown-toggle" onclick="toggleNavDropdown('developer')">
-          Developer
-        </button>
-        <div class="nav-dropdown-content" id="developer">
-          <a href="/app/developer.html">Developer Portal</a>
-          <a href="/app/api-marketplace.html">API Marketplace</a>
-          <a href="/app/api-pricing.html">API Pricing</a>
-          <a href="/app/api-sandbox.html">API Sandbox</a>
-          <a href="/app/api-usage.html">Usage & Billing</a>
-        </div>
-      </div>
-      <!-- Tier Badge -->
-      <li class="nav-tier-badge">
-        <span id="nav-tier-label">Free</span>
-      </li>
-    </nav>
-  </div>
+<body>
+  <header class="page-header">
+    <h1 class="page-title">Resource Center</h1>
+    <p class="page-subtitle">Complete index of all tools, documents, and resources</p>
+    <p style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.85); margin-top: 0.75rem; max-width: 800px; margin-left: auto; margin-right: auto;">This tool provides guidance and documentation support based on the information you provide. It does not replace professional legal or adjusting advice.</p>
 </header>
 
-<main class="rc-page" id="main">
-  <div id="main-content-wrapper">
-    <!-- Reference Library Notice -->
-    <div style="background: rgba(56,189,248,0.1); border: 2px solid rgba(56,189,248,0.3); padding: 20px; margin: 20px auto; max-width: 1200px; border-radius: 8px; text-align: center;">
-      <p style="color: #38bdf8; font-weight: 700; font-size: 18px; margin: 0 0 8px 0;">📚 Reference Library</p>
-      <p style="color: #1f2937; margin: 0 0 12px 0;">This is a reference-only resource library. To work on your claim, return to the Claim Control Center.</p>
-      <a href="/app/claim-control-center.html" style="display: inline-block; padding: 10px 20px; background: #38bdf8; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600;">← Return to Claim Control Center</a>
-    </div>
+  <div class="container">
+    <a href="/app/claim-management-center.html" class="back-button">
+      ← Back to Claim Management Center
+    </a>
 
-    <section class="rc-hero">
-      <div class="rc-container rc-hero-content">
-        <div class="rc-hero-text">
-          <p class="rc-hero-eyebrow">Reference Library</p>
-          <h1 class="rc-hero-title">Claim Navigator Reference Library</h1>
-          <p class="rc-hero-subtitle">Documentation, guides, and reference materials. Tools are accessed through the Claim Success Protocol™ in the Control Center.</p>
-        </div>
-      </div>
+    <!-- SECTION 1: AI TOOLS -->
+    <section class="resource-section">
+      <h2 class="section-title">AI Tools</h2>
+      <ul class="resource-list">
+        <li><a href="/app/tools/carrier-response.html">Carrier Response</a></li>
+        <li><a href="/app/tools/category-coverage-checker.html">Category Coverage Checker</a></li>
+        <li><a href="/app/tools/code-upgrade-identifier.html">Code Upgrade Identifier</a></li>
+        <li><a href="/app/tools/comparable-item-finder.html">Comparable Item Finder</a></li>
+        <li><a href="/app/tools/contents-valuation.html">Contents Valuation</a></li>
+        <li><a href="/app/tools/coverage-alignment.html">Coverage Alignment</a></li>
+        <li><a href="/app/tools/coverage-gap-detector.html">Coverage Gap Detector</a></li>
+        <li><a href="/app/tools/coverage-qa-chat.html">Coverage QA Chat</a></li>
+        <li><a href="/app/tools/damage-report-engine.html">Damage Report Engine</a></li>
+        <li><a href="/app/tools/deadline-calculator.html">Deadline Calculator</a></li>
+        <li><a href="/app/tools/depreciation-calculator.html">Depreciation Calculator</a></li>
+        <li><a href="/app/tools/endorsement-opportunity-identifier.html">Endorsement Opportunity Identifier</a></li>
+        <li><a href="/app/tools/escalation-readiness-checker.html">Escalation Readiness Checker</a></li>
+        <li><a href="/app/tools/estimate-comparison.html">Estimate Comparison</a></li>
+        <li><a href="/app/tools/estimate-review.html">Estimate Review</a></li>
+        <li><a href="/app/tools/line-item-discrepancy-finder.html">Line Item Discrepancy Finder</a></li>
+        <li><a href="/app/tools/missing-document-identifier.html">Missing Document Identifier</a></li>
+        <li><a href="/app/tools/missing-evidence-identifier.html">Missing Evidence Identifier</a></li>
+        <li><a href="/app/tools/missing-trade-detector.html">Missing Trade Detector</a></li>
+        <li><a href="/app/tools/negotiation-language-generator.html">Negotiation Language Generator</a></li>
+        <li><a href="/app/tools/negotiation-strategy-generator.html">Negotiation Strategy Generator</a></li>
+        <li><a href="/app/tools/policy-intelligence-engine.html">Policy Intelligence Engine</a></li>
+        <li><a href="/app/tools/pre-submission-risk-review-tool.html">Pre Submission Risk Review Tool</a></li>
+        <li><a href="/app/tools/pricing-deviation-analyzer.html">Pricing Deviation Analyzer</a></li>
+        <li><a href="/app/tools/remaining-ale-limit-calculator.html">Remaining ALE Limit Calculator</a></li>
+        <li><a href="/app/tools/replacement-cost-justification-tool.html">Replacement Cost Justification Tool</a></li>
+        <li><a href="/app/tools/response-letter-generator.html">Response Letter Generator</a></li>
+        <li><a href="/app/tools/scope-omission-detector.html">Scope Omission Detector</a></li>
+        <li><a href="/app/tools/submission-checklist-generator.html">Submission Checklist Generator</a></li>
+        <li><a href="/app/tools/submission-report-engine.html">Submission Report Engine</a></li>
+        <li><a href="/app/tools/sublimit-impact-analyzer.html">Sublimit Impact Analyzer</a></li>
+        <li><a href="/app/tools/supplement-analysis.html">Supplement Analysis</a></li>
+        <li><a href="/app/tools/supplement-calculation-tool.html">Supplement Calculation Tool</a></li>
+        <li><a href="/app/tools/ale-eligibility-checker.html">ALE Eligibility Checker</a></li>
+      </ul>
     </section>
 
-    <section class="rc-section" id="quick-access">
-      <div class="rc-container">
-        <div class="rc-section-header">
-          <h2>Quick Access Tools</h2>
-          <p>Launch the core claim workflows in seconds.</p>
-        </div>
-        <div class="rc-grid">
-          <a class="rc-card rc-card-link resource-center-card" href="/app/resource-center/ai-response-agent.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">AI</div>
-              <h3>AI Response Agent</h3>
-            </div>
-            <p>Draft insurer-ready responses with compliant language and tone.</p>
-            <span class="rc-card-cta">Open tool ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/document-generator-v2/document-generator.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">DG</div>
-              <h3>Document Generator</h3>
-            </div>
-            <p>Create 60+ carrier-ready templates with structured prompts.</p>
-            <span class="rc-card-cta">Open tool ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/claim-analysis.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">CA</div>
-              <h3>Claim Analysis Tools</h3>
-            </div>
-            <p>Review coverage, quantify impacts, and compare carrier estimates.</p>
-            <span class="rc-card-cta">Open tool ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/evidence-organizer.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">EO</div>
-              <h3>Evidence Organizer</h3>
-            </div>
-            <p>Centralize photos, receipts, and correspondence for every claim.</p>
-            <span class="rc-card-cta">Open tool ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/claim-journal.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">CJ</div>
-              <h3>Claim Journal</h3>
-            </div>
-            <p>Maintain a timestamped log of conversations, decisions, and tasks.</p>
-            <span class="rc-card-cta">Open tool ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/claim-stage-tracker.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">ST</div>
-              <h3>Claim Stage Tracker</h3>
-            </div>
-            <p>See where you are in the claim journey and what happens next.</p>
-            <span class="rc-card-cta">Open tool ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/deadlines.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">DL</div>
-              <h3>Deadlines Tool</h3>
-            </div>
-            <p>Track statutory and carrier timelines with reminders and alerts.</p>
-            <span class="rc-card-cta">Open tool ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/statement-of-loss.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">SL</div>
-              <h3>Statement of Loss</h3>
-            </div>
-            <p>Compile itemized losses and exports for carrier-ready submissions.</p>
-            <span class="rc-card-cta">Open tool ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/rom-tool.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">ROM</div>
-              <h3>ROM Estimator</h3>
-            </div>
-            <p>Estimate repair and replacement ranges to frame negotiations.</p>
-            <span class="rc-card-cta">Open tool ></span>
-          </a>
-        </div>
-      </div>
+    <!-- SECTION 2: WORKFLOW TOOLS -->
+    <section class="resource-section">
+      <h2 class="section-title">Workflow Tools</h2>
+      <ul class="resource-list">
+        <li><a href="/app/tools/acknowledgment-status-view.html">Acknowledgment Status View</a></li>
+        <li><a href="/app/tools/ale-tracker.html">ALE Tracker</a></li>
+        <li><a href="/app/tools/carrier-request-logger.html">Carrier Request Logger</a></li>
+        <li><a href="/app/tools/claim-package-assembly.html">Claim Package Assembly</a></li>
+        <li><a href="/app/tools/claim-submitter.html">Claim Submitter</a></li>
+        <li><a href="/app/tools/compliance-auto-import.html">Compliance Auto Import</a></li>
+        <li><a href="/app/tools/compliance-report-viewer.html">Compliance Report Viewer</a></li>
+        <li><a href="/app/tools/compliance-review.html">Compliance Review</a></li>
+        <li><a href="/app/tools/contents-documentation-helper.html">Contents Documentation Helper</a></li>
+        <li><a href="/app/tools/contents-inventory.html">Contents Inventory</a></li>
+        <li><a href="/app/tools/contractor-scope-checklist.html">Contractor Scope Checklist</a></li>
+        <li><a href="/app/tools/coverage-mapping-visualizer.html">Coverage Mapping Visualizer</a></li>
+        <li><a href="/app/tools/damage-documentation.html">Damage Documentation Tool</a></li>
+        <li><a href="/app/tools/damage-labeling-tool.html">Damage Labeling Tool</a></li>
+        <li><a href="/app/tools/damage-report-viewer.html">Damage Report Viewer</a></li>
+        <li><a href="/app/tools/deadline-response-tracker.html">Deadline Response Tracker</a></li>
+        <li><a href="/app/tools/document-production-checklist.html">Document Production Checklist</a></li>
+        <li><a href="/app/tools/download-policy-report.html">Download Policy Report</a></li>
+        <li><a href="/app/tools/download-submission-report.html">Download Submission Report</a></li>
+        <li><a href="/app/tools/expense-upload-tool.html">Expense Upload Tool</a></li>
+        <li><a href="/app/tools/followup-schedule-view.html">Followup Schedule View</a></li>
+        <li><a href="/app/tools/method-timestamp-view.html">Method Timestamp View</a></li>
+        <li><a href="/app/tools/mitigation-documentation-tool.html">Mitigation Documentation Tool</a></li>
+        <li><a href="/app/tools/photo-upload-organizer.html">Photo Upload Organizer</a></li>
+        <li><a href="/app/tools/policy-report-viewer.html">Policy Report Viewer</a></li>
+        <li><a href="/app/tools/policy-uploader.html">Policy Uploader</a></li>
+        <li><a href="/app/tools/proof-of-loss-tracker.html">Proof of Loss Tracker</a></li>
+        <li><a href="/app/tools/room-by-room-prompt-tool.html">Room by Room Prompt Tool</a></li>
+        <li><a href="/app/tools/step1-acknowledgment.html">Step 1 Acknowledgment</a></li>
+        <li><a href="/app/tools/step2-acknowledgment.html">Step 2 Acknowledgment</a></li>
+        <li><a href="/app/tools/step3-acknowledgment.html">Step 3 Acknowledgment</a></li>
+        <li><a href="/app/tools/step11-acknowledgment.html">Step 11 Acknowledgment</a></li>
+        <li><a href="/app/tools/step11-next-moves.html">Step 11 Next Moves</a></li>
+        <li><a href="/app/tools/submission-method.html">Submission Method</a></li>
+        <li><a href="/app/tools/temporary-housing-documentation-helper.html">Temporary Housing Documentation Helper</a></li>
+      </ul>
     </section>
 
-    <section class="rc-section" id="document-library">
-      <div class="rc-container">
-        <div class="rc-section-header">
-          <h2>Document Library</h2>
-          <p>Access every template, guide, and category in one organized hub.</p>
-        </div>
-        <div class="rc-grid">
-          <a class="rc-card rc-card-link resource-center-card" href="/app/document-library/">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">DL</div>
-              <h3>Claim Document Library</h3>
-            </div>
-            <p>All 61 templates for notices, proofs, follow-ups, and escalations.</p>
-            <span class="rc-card-cta">View collection ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/documentation-guides.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">GD</div>
-              <h3>Documentation Guides</h3>
-            </div>
-            <p>Step-by-step instructions to gather and package evidence correctly.</p>
-            <span class="rc-card-cta">View guides ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/resource-center/property-damage-categories.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">PD</div>
-              <h3>Property Damage Categories</h3>
-            </div>
-            <p>Organized checklists for structural, contents, and specialty losses.</p>
-            <span class="rc-card-cta">View categories ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/document-library/collections.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">SC</div>
-              <h3>Specialized Document Collections</h3>
-            </div>
-            <p>Pre-bundled letters and forms tailored for common claim scenarios.</p>
-            <span class="rc-card-cta">View collections ></span>
-          </a>
-        </div>
-      </div>
+    <!-- SECTION 3: DOCUMENT GENERATORS -->
+    <section class="resource-section">
+      <h2 class="section-title">Document Generators</h2>
+      <ul class="resource-list">
+        <li><a href="/app/tools/carrier-submission-cover-letter-generator.html">Carrier Submission Cover Letter Generator</a></li>
+        <li><a href="/app/tools/coverage-clarification-letter.html">Coverage Clarification Letter</a></li>
+        <li><a href="/app/tools/estimate-revision-request-generator.html">Estimate Revision Request Generator</a></li>
+        <li><a href="/app/tools/euo-sworn-statement-guide.html">EUO Sworn Statement Guide</a></li>
+        <li><a href="/app/tools/followup-status-letter.html">Followup Status Letter</a></li>
+        <li><a href="/app/tools/policy-interpretation-letter.html">Policy Interpretation Letter</a></li>
+        <li><a href="/app/tools/submission-confirmation-email.html">Submission Confirmation Email</a></li>
+        <li><a href="/app/tools/supplement-cover-letter-generator.html">Supplement Cover Letter Generator</a></li>
+      </ul>
     </section>
 
-    <section class="rc-section" id="calculators">
-      <div class="rc-container">
-        <div class="rc-section-header">
-          <h2>Calculators & Analysis Tools</h2>
-          <p>Quantify impact, validate coverage, and compare carrier positions.</p>
-        </div>
-        <div class="rc-grid">
-          <a class="rc-card rc-card-link resource-center-card" href="/app/claim-analysis.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">DA</div>
-              <h3>Damage Assessment Calculator</h3>
-            </div>
-            <p>Calculate repair scope and loss values with guided checkpoints.</p>
-            <span class="rc-card-cta">Launch calculator ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/resource-center/contractor-estimate-interpreter.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">EC</div>
-              <h3>Estimate Comparison</h3>
-            </div>
-            <p>Compare contractor and carrier estimates to surface gaps.</p>
-            <span class="rc-card-cta">Launch tool ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/claim-analysis.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">BI</div>
-              <h3>Business Interruption Calculator</h3>
-            </div>
-            <p>Model income loss, downtime, and recovery scenarios.</p>
-            <span class="rc-card-cta">Launch calculator ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/negotiation-tools.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">SA</div>
-              <h3>Settlement Analysis</h3>
-            </div>
-            <p>Measure offers against damages, coverage, and negotiation levers.</p>
-            <span class="rc-card-cta">Launch analysis ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/claim-analysis.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">CR</div>
-              <h3>Coverage Review</h3>
-            </div>
-            <p>Check policy terms, exclusions, and required documentation.</p>
-            <span class="rc-card-cta">Launch review ></span>
-          </a>
-        </div>
-      </div>
+    <!-- SECTION 4: CORE FUNCTIONAL TOOLS -->
+    <section class="resource-section">
+      <h2 class="section-title">Core Functional Tools</h2>
+      <ul class="resource-list">
+        <li><a href="/app/ai-response-agent.html">AI Response Agent</a></li>
+        <li><a href="/app/claim-analysis-tools/business.html">Business Interruption Calculator</a></li>
+        <li><a href="/app/claim-analysis-tools/damage.html">Damage Assessment</a></li>
+        <li><a href="/app/claim-analysis-tools/estimates.html">Estimate Comparison Analysis</a></li>
+        <li><a href="/app/claim-analysis-tools/expert.html">Expert Opinion</a></li>
+        <li><a href="/app/claim-analysis-tools/policy.html">Policy Review</a></li>
+        <li><a href="/app/claim-analysis-tools/settlement.html">Settlement Analysis</a></li>
+        <li><a href="/app/claim-journal.html">Claim Journal</a></li>
+        <li><a href="/app/claim-navigator-agent.html">Claim Navigator Agent</a></li>
+        <li><a href="/app/claim-stage-tracker.html">Claim Stage Tracker</a></li>
+        <li><a href="/app/deadlines.html">Deadlines</a></li>
+        <li><a href="/app/document-generator.html">Document Generator</a></li>
+        <li><a href="/app/evidence-organizer.html">Evidence Organizer</a></li>
+        <li><a href="/app/negotiation-tools.html">Negotiation Scripts</a></li>
+        <li><a href="/app/rom-estimator.html">ROM Estimator</a></li>
+        <li><a href="/app/situational-advisory.html">Situational Advisory</a></li>
+        <li><a href="/app/statement-of-loss.html">Statement of Loss</a></li>
+      </ul>
     </section>
 
-    <section class="rc-section" id="ai-tools">
-      <div class="rc-container">
-        <div class="rc-section-header">
-          <h2>AI Tools</h2>
-          <p>Automate drafting, analysis, and prep with claim-specific AI.</p>
-        </div>
-        <div class="rc-grid">
-          <a class="rc-card rc-card-link resource-center-card" href="/app/resource-center/ai-response-agent.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">RA</div>
-              <h3>AI Response Agent</h3>
-            </div>
-            <p>Generate carrier-ready emails and letters in minutes.</p>
-            <span class="rc-card-cta">Open agent ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/claim-analysis.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">PA</div>
-              <h3>AI Policy Analyzer</h3>
-            </div>
-            <p>Summarize coverage, obligations, and key policy triggers.</p>
-            <span class="rc-card-cta">Open analyzer ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/resource-center/damage-description.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">DD</div>
-              <h3>AI Damage Description Generator</h3>
-            </div>
-            <p>Turn field notes into structured descriptions for adjusters.</p>
-            <span class="rc-card-cta">Generate text ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/negotiation-tools.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">NS</div>
-              <h3>AI Negotiation Script Builder</h3>
-            </div>
-            <p>Create counterpoints and escalation scripts tailored to your claim.</p>
-            <span class="rc-card-cta">Build script ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/inspection-prep.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">IP</div>
-              <h3>AI Inspection Prep</h3>
-            </div>
-            <p>Prep walkthrough checklists and talking points for inspections.</p>
-            <span class="rc-card-cta">Prep now ></span>
-          </a>
-        </div>
-      </div>
+    <!-- SECTION 5: DOCUMENT LIBRARY — ENGLISH -->
+    <section class="resource-section">
+      <h2 class="section-title">Document Library — English</h2>
+      <ul class="resource-list">
+        <li><a href="/app/document-library/appraisal-demand.html">Appraisal Demand</a></li>
+        <li><a href="/app/document-library/business-interruption.html">Business Interruption</a></li>
+        <li><a href="/app/document-library/carrier-communication-letters.html">Carrier Communication Letters</a></li>
+        <li><a href="/app/document-library/carrier-communications.html">Carrier Communications</a></li>
+        <li><a href="/app/document-library/claim-timeline-documents.html">Claim Timeline Documents</a></li>
+        <li><a href="/app/document-library/commercial-tenant-lease-interruption.html">Commercial Tenant Lease Interruption</a></li>
+        <li><a href="/app/document-library/core-documents.html">Core Documents</a></li>
+        <li><a href="/app/document-library/damage-documentation.html">Damage Documentation</a></li>
+        <li><a href="/app/document-library/demand-packages.html">Demand Packages</a></li>
+        <li><a href="/app/document-library/department-of-insurance-complaint-letters.html">Department of Insurance Complaint Letters</a></li>
+        <li><a href="/app/document-library/engineer-engagement-letters.html">Engineer Engagement Letters</a></li>
+        <li><a href="/app/document-library/evidence-documents.html">Evidence Documents</a></li>
+        <li><a href="/app/document-library/evidence-logs.html">Evidence Logs</a></li>
+        <li><a href="/app/document-library/expense-tracking.html">Expense Tracking</a></li>
+        <li><a href="/app/document-library/financial-documents.html">Financial Documents</a></li>
+        <li><a href="/app/document-library/fire-damage-documents.html">Fire Damage Documents</a></li>
+        <li><a href="/app/document-library/first-notice-of-loss.html">First Notice of Loss</a></li>
+        <li><a href="/app/document-library/hurricane-windstorm-documents.html">Hurricane Windstorm Documents</a></li>
+        <li><a href="/app/document-library/index.html">Document Library (English) - Main Index</a></li>
+        <li><a href="/app/document-library/inspection-requests.html">Inspection Requests</a></li>
+        <li><a href="/app/document-library/legal-documents.html">Legal Documents</a></li>
+        <li><a href="/app/document-library/mediation-requests.html">Mediation Requests</a></li>
+        <li><a href="/app/document-library/mold-claim-documents.html">Mold Claim Documents</a></li>
+        <li><a href="/app/document-library/negotiation-letters.html">Negotiation Letters</a></li>
+        <li><a href="/app/document-library/photo-video-documentation-templates.html">Photo Video Documentation Templates</a></li>
+        <li><a href="/app/document-library/pro-templates.html">Pro Templates</a></li>
+        <li><a href="/app/document-library/proof-of-loss-templates.html">Proof of Loss Templates</a></li>
+        <li><a href="/app/document-library/rebuttals-to-denials.html">Rebuttals to Denials</a></li>
+        <li><a href="/app/document-library/restaurant-loss-documentation.html">Restaurant Loss Documentation</a></li>
+        <li><a href="/app/document-library/settlement-and-negotiation-letters.html">Settlement and Negotiation Letters</a></li>
+        <li><a href="/app/document-library/vandalism-and-theft-documents.html">Vandalism and Theft Documents</a></li>
+        <li><a href="/app/document-library/water-damage-documents.html">Water Damage Documents</a></li>
+      </ul>
     </section>
 
-    <section class="rc-section" id="knowledge-guides">
-      <div class="rc-container">
-        <div class="rc-section-header">
-          <h2>Knowledge & Guides</h2>
-          <p>Stay oriented with playbooks, timelines, and carrier tactics.</p>
-        </div>
-        <div class="rc-grid">
-          <a class="rc-card rc-card-link resource-center-card" href="/app/claim-playbook.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">PB</div>
-              <h3>Claim Playbook</h3>
-            </div>
-            <p>Full-stage strategy to manage every part of your claim.</p>
-            <span class="rc-card-cta">Read guide ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/quick-start.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">QS</div>
-              <h3>Quick Start Guide</h3>
-            </div>
-            <p>Pick your scenario and get curated next steps and tools.</p>
-            <span class="rc-card-cta">Read guide ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/resource-center/claim-timeline.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">TL</div>
-              <h3>Claim Timeline & Sequence Guide</h3>
-            </div>
-            <p>Follow the right order-of-operations to avoid delays.</p>
-            <span class="rc-card-cta">View timeline ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/authority-hub.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">AG</div>
-              <h3>Authority Guides</h3>
-            </div>
-            <p>Know who can approve what, and when to escalate.</p>
-            <span class="rc-card-cta">View guides ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/resource-center/insurance-company-tactics.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">ICT</div>
-              <h3>Insurance Company Tactics</h3>
-            </div>
-            <p>Identify common carrier tactics and the best responses.</p>
-            <span class="rc-card-cta">View tactics ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/knowledge-center.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">KC</div>
-              <h3>Knowledge Center</h3>
-            </div>
-            <p>Search the full library of claim answers and walkthroughs.</p>
-            <span class="rc-card-cta">Browse topics ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/maximize-claim.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">MX</div>
-              <h3>Maximize Your Claim</h3>
-            </div>
-            <p>Find missing value, plug documentation gaps, and optimize asks.</p>
-            <span class="rc-card-cta">Read guide ></span>
-          </a>
-        </div>
-      </div>
+    <!-- SECTION 6: DOCUMENT LIBRARY — SPANISH -->
+    <section class="resource-section">
+      <h2 class="section-title">Document Library — Spanish</h2>
+      <ul class="resource-list">
+        <li><a href="/app/document-library-spanish.html">Document Library (Spanish) - Main Index</a></li>
+      </ul>
     </section>
 
-    <section class="rc-section" id="state-resources">
-      <div class="rc-container">
-        <div class="rc-section-header">
-          <h2>State Resources</h2>
-          <p>Stay compliant with state-specific rights, deadlines, and contacts.</p>
-        </div>
-        <div class="rc-grid">
-          <a class="rc-card rc-card-link resource-center-card" href="/app/state-rights.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">SR</div>
-              <h3>State Rights & Deadlines</h3>
-            </div>
-            <p>Know the protections and timelines that govern your claim.</p>
-            <span class="rc-card-cta">View rights ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/resource-center/state-insurance-departments.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">ID</div>
-              <h3>State Insurance Department Directory</h3>
-            </div>
-            <p>Find regulator contacts for inquiries, complaints, and escalations.</p>
-            <span class="rc-card-cta">Open directory ></span>
-          </a>
-          <a class="rc-card rc-card-link resource-center-card" href="/app/insurer-directory.html">
-            <div class="rc-card-header">
-              <div class="rc-card-icon">IN</div>
-              <h3>Insurer Directory</h3>
-            </div>
-            <p>Carrier claim departments with submission links and phone numbers.</p>
-            <span class="rc-card-cta">Open directory ></span>
-          </a>
-        </div>
-      </div>
+    <!-- SECTION 7: GUIDES, PLAYBOOKS & REFERENCES -->
+    <section class="resource-section">
+      <h2 class="section-title">Guides, Playbooks & References</h2>
+      <ul class="resource-list">
+        <li><a href="/app/claim-playbook.html">Claim Playbook</a></li>
+        <li><a href="/app/documentation-guides.html">Documentation Guides</a></li>
+        <li><a href="/app/insurance-company-tactics.html">Insurance Company Tactics</a></li>
+        <li><a href="/app/insurer-directory.html">Insurer Directory</a></li>
+        <li><a href="/app/knowledge-center.html">Knowledge Center</a></li>
+        <li><a href="/app/quick-start.html">Quick Start Guide</a></li>
+        <li><a href="/app/recommended-resources.html">Recommended Resources</a></li>
+        <li><a href="/app/state-directory.html">State Insurance Department Directory</a></li>
+        <li><a href="/app/state-rights-deadlines.html">State Rights Deadlines</a></li>
+      </ul>
     </section>
   </div>
-</main>
 
-<script>
-  // Navigation dropdown toggle function
-  function toggleNavDropdown(id) {
-    const dropdown = document.getElementById(id);
-    if (dropdown.style.display === 'block') {
-      dropdown.style.display = 'none';
-    } else {
-      // Close all other dropdowns
-      document.querySelectorAll('.nav-dropdown-content').forEach(d => {
-        d.style.display = 'none';
-      });
-      
-      // Open this dropdown
-      dropdown.style.display = 'block';
-    }
-  }
-
-  // Stage highlighting from roadmap
-  (function() {
-    const params = new URLSearchParams(window.location.search);
-    const stage = params.get('stage'); // "1".."6"
-
-    if (!stage) return;
-
-    // mapping from stage id to href patterns or data attributes
-    const stageToolSelectors = {
-      "1": [
-        '/fnol-wizard.html',
-        '/quick-start.html',
-        '/claim-timeline.html',
-        '/state-rights.html'
-      ],
-      "2": [
-        '/evidence-organizer.html',
-        '/document-generator',
-        '/claim-journal.html',
-        '/checklist-engine.html'
-      ],
-      "3": [
-        '/claim-analysis.html',
-        '/contractor-estimate-interpreter.html',
-        '/rom-tool.html',
-        '/maximize-claim.html',
-        '/authority-hub.html'
-      ],
-      "4": [
-        '/ai-response-agent.html',
-        '/deadlines.html',
-        '/insurer-directory.html',
-        '/compliance-engine.html'
-      ],
-      "5": [
-        '/negotiation-tools.html',
-        '/claim-stage-tracker.html'
-      ],
-      "6": [
-        '/advanced-tools/advanced-tools.html',
-        '/regulatory-complaint',
-        '/state-insurance-departments.html',
-        '/recommended-resources.html'
-      ]
-    };
-
-    const links = document.querySelectorAll('.rc-card-link');
-
-    const matchesStage = stageToolSelectors[stage];
-    if (!matchesStage) return;
-
-    links.forEach(card => {
-      const href = card.getAttribute('href');
-      if (!href) return;
-      const isStageTool = matchesStage.some(fragment => href.includes(fragment));
-      if (isStageTool) {
-        card.classList.add('stage-highlight');
-      } else {
-        card.classList.add('stage-dimmed');
-      }
-    });
-  })();
-  
-  // Return to last stage button
-  (function() {
-    const stored = localStorage.getItem('claimRoadmapProgress');
-    if (stored) {
-      try {
-        const state = JSON.parse(stored);
-        if (state.currentStageId) {
-          const btn = document.getElementById('return-last-stage-btn');
-          if (btn) {
-            btn.href = `/app/resource-center/claim-roadmap.html?stage=${state.currentStageId}`;
-            document.getElementById('return-last-stage').style.display = 'block';
-          }
-        }
-      } catch (e) {
-        console.error('Error parsing roadmap state:', e);
-      }
-    }
-  })();
-  
-  // Update global roadmap chip
-  (function() {
-    const savedStageName = localStorage.getItem("globalRoadmapStageName");
-    const chipLink = document.getElementById("nav-roadmap-chip-link");
-    if (savedStageName && chipLink) {
-      chipLink.textContent = `Roadmap: ${savedStageName}`;
-    }
-  })();
-  
-  // Demo Toggle Button
-  (function() {
-    const dt = document.getElementById("demo-toggle");
-    if (!dt) return;
+  <script type="module">
+    import { checkAuthentication } from './assets/js/auth.js';
     
-    if (window.CNDemo && CNDemo.isDemoMode()) {
-      dt.classList.add("active");
-    }
-    
-    dt.addEventListener("click", () => {
-      if (window.CNDemo) {
-        if (CNDemo.isDemoMode()) {
-          CNDemo.disableDemoMode();
-          dt.classList.remove("active");
-          alert("Demo Mode Disabled");
-        } else {
-          CNDemo.enableDemoMode();
-          dt.classList.add("active");
-          alert("Demo Mode Enabled");
-        }
-        location.reload();
-      }
-    });
-  })();
-</script>
-
-
-
-<script type="module" src="/app/assets/js/validation-utils.js"></script>
-<script type="module" src="/app/assets/js/error-handler.js"></script>
-<script type="module" src="/app/assets/js/api-client.js"></script>
-<script type="module" src="/app/assets/js/response-center.js"></script>
-<script type="module" src="/app/assets/js/window-bridge.js"></script>
-<script type="module" src="/app/assets/js/diagnostics.js"></script>
-
-
-<script src="/app/assets/js/supabase-client.js"></script>
-<script src="/app/assets/js/auth-session.js"></script>
-<script src="/app/assets/js/error-logging.js"></script>
-<script src="/app/assets/js/toasts.js"></script>
-<script src="/app/assets/js/loading.js"></script>
-<script src="/app/assets/js/storage-v2.js"></script>
-<script src="/app/assets/js/compliance-banner.js"></script>
-<script src="/app/assets/js/claim-profile.js"></script>
-<script src="/app/assets/js/claim-health-v2.js"></script>
-<script src="/app/assets/js/health-hooks.js"></script>
-<script src="/app/assets/js/claim-timeline.js"></script>
-<script src="/app/assets/js/claim-reset.js"></script>
-<script src="/app/assets/js/guided-tour.js"></script>
-<script src="/app/assets/js/qa-mode.js" defer></script>
-<script src="/app/assets/js/contrast-debug.js" defer></script>
-<script src="/app/assets/js/font-color-audit.js" defer></script>
-<script>
   // Require authentication
   (async () => {
-    const isAuthenticated = await window.CNAuth?.requireAuth(true);
-    if (!isAuthenticated) return; // Redirect will happen in requireAuth
-  })();
-  
-  document.addEventListener("DOMContentLoaded", async () => {
-    // Ensure user is authenticated
-    const isAuthenticated = await window.CNAuth?.requireAuth(true);
-    if (!isAuthenticated) return;
-    
-    // Render compliance banner
-    if (window.CNCompliance) {
-      CNCompliance.renderBanner("main-content-wrapper");
-    }
-    
-    // If no claim profile yet → send to onboarding
-    if (!CNClaimProfile.hasClaimProfile()) {
-      window.location.href = "/app/onboarding/index.html";
-    }
-    
-    // Display Claim Health Score
-    if (window.CNHealth) {
-      const health = CNHealth.compute();
-      const scoreEl = document.getElementById("claim-health-score");
-      const flagsEl = document.getElementById("claim-health-flags");
-      const stateNoteEl = document.getElementById("claim-health-state-note");
+      const auth = await checkAuthentication();
       
-      if (scoreEl) {
-        scoreEl.textContent = health.score || 0;
-      }
-      
-      if (flagsEl && health.flags && health.flags.length > 0) {
-        flagsEl.innerHTML = "";
-        health.flags.forEach(f => {
-          const li = document.createElement("li");
-          li.textContent = f;
-          li.style.marginBottom = "8px";
-          li.style.fontSize = "14px";
-          flagsEl.appendChild(li);
-        });
-      }
-      
-      // Show state-specific note
-      if (stateNoteEl && health.stateName) {
-        stateNoteEl.textContent = `Health insights reflect general timing and documentation expectations for ${health.stateName}.`;
-        stateNoteEl.style.display = "block";
-      }
-    }
-    
-    // Start guided tour only if claim profile exists and tour not completed
-    if (CNClaimProfile.hasClaimProfile() && !localStorage.getItem("cn_guided_tour_complete")) {
-      setTimeout(() => {
-        if (window.startClaimNavigatorTour) {
-          startClaimNavigatorTour();
-        }
-      }, 600);
-    }
-    
-    // Listen for real-time health updates with feedback
-    document.addEventListener("claimHealthUpdated", (e) => {
-      const health = e.detail;
-      const scoreEl = document.getElementById("claim-health-score");
-      const flagsEl = document.getElementById("claim-health-flags");
-      
-      if (scoreEl) {
-        const previousScore = parseInt(scoreEl.textContent) || 0;
-        const newScore = health.score || 0;
-        const delta = health.delta || (newScore - previousScore);
-        
-        scoreEl.textContent = newScore;
-        
-        // Add animation for score change
-        scoreEl.style.animation = 'none';
-        setTimeout(() => {
-          scoreEl.style.animation = 'pulse 0.5s ease-in-out';
-        }, 10);
-        
-        // Show toast feedback
-        if (window.CNToast && delta !== 0) {
-          if (delta > 0) {
-            window.CNToast.success(`Claim Health improved to ${newScore}`);
-          } else if (delta < 0) {
-            window.CNToast.warn(`Some areas need attention (Score: ${newScore})`);
-          }
-        }
-      }
-      
-      if (flagsEl) {
-        flagsEl.innerHTML = "";
-        if (health.flags && health.flags.length > 0) {
-          health.flags.forEach(f => {
-            const li = document.createElement("li");
-            li.textContent = f;
-            li.style.marginBottom = "8px";
-            li.style.fontSize = "14px";
-            flagsEl.appendChild(li);
-          });
-        }
-      }
-    });
-    
-    // Add nudges based on claim state
-    setTimeout(() => {
-      const photoCount = parseInt(localStorage.getItem("cn_evidence_photo_count") || "0", 10);
-      const docCount = parseInt(localStorage.getItem("cn_docs_generated") || "0", 10);
-      const profile = CNClaimProfile.getClaimProfile();
-      
-      if (photoCount < 3 && window.CNToast) {
-        setTimeout(() => {
-          window.CNToast.info("Add more photos to strengthen your claim.");
-        }, 2000);
-      }
-      
-      if (docCount === 0 && window.CNToast) {
-        setTimeout(() => {
-          window.CNToast.info("Generate your first claim document.");
-        }, 4000);
-      }
-      
-      if (!profile.claim?.claimType && window.CNToast) {
-        setTimeout(() => {
-          window.CNToast.info("Complete onboarding for accurate guidance.");
-        }, 6000);
-      }
-    }, 1000);
-    
-    // Import file handler
-    window.handleImportFile = function(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const jsonData = e.target.result;
-          if (window.CNStorage) {
-            // Show confirmation modal
-            if (confirm("This will overwrite your current claim data. Continue?")) {
-              if (window.CNStorage.importJson(jsonData)) {
-                setTimeout(() => {
-                  window.location.reload();
-                }, 1000);
-              }
-            }
-          }
-        } catch (error) {
-          console.error("CNError (Import):", error);
-          if (window.CNToast) {
-            window.CNToast.error("Failed to import file. Invalid format.");
-          }
-        }
-      };
-      reader.readAsText(file);
-      event.target.value = ''; // Reset input
-    };
-    
-    // Snapshot handlers
-    window.handleCreateSnapshot = function() {
-      const label = prompt("Enter a label for this snapshot (optional):");
-      if (window.CNStorage) {
-        window.CNStorage.createSnapshot(label || "");
-      }
-    };
-    
-    window.handleShowSnapshots = function() {
-      if (!window.CNStorage) return;
-      
-      const snapshots = window.CNStorage.listSnapshots();
-      if (snapshots.length === 0) {
-        if (window.CNToast) {
-          window.CNToast.info("No snapshots available.");
-        }
+      if (!auth.authenticated) {
+        window.location.href = '/app/login.html?redirect=' + encodeURIComponent(window.location.pathname);
         return;
       }
       
-      let message = "Available Snapshots:\n\n";
-      snapshots.forEach((s, i) => {
-        message += `${i + 1}. ${s.label} (${new Date(s.timestamp).toLocaleString()})\n`;
-      });
-      message += "\nEnter snapshot number to restore:";
-      
-      const choice = prompt(message);
-      const index = parseInt(choice, 10) - 1;
-      
-      if (index >= 0 && index < snapshots.length) {
-        if (confirm("This will overwrite your current claim data. Continue?")) {
-          if (window.CNStorage.restoreSnapshot(snapshots[index].id)) {
-            setTimeout(() => {
-              window.location.reload();
-            }, 1000);
-          }
-        }
-      }
-    };
-  });
-  
-  // PART 4: Navigation handler for Claim Management Center
-  document.addEventListener('DOMContentLoaded', async function() {
-    const claimCenterLink = document.querySelector('a[href="/app/claim-management-center.html"]');
-    if (claimCenterLink) {
-      claimCenterLink.addEventListener('click', async function(e) {
-        e.preventDefault();
-        
-        // Check if auth module is available
-        if (typeof checkAuthentication === 'function' && typeof checkPaymentStatus === 'function') {
-          try {
-            const auth = await checkAuthentication();
-            
-            if (!auth.authenticated) {
-              window.location.href = '/app/login.html?redirect=' + encodeURIComponent('/app/claim-management-center.html');
-              return;
-            }
-            
-            const payment = await checkPaymentStatus();
-            
-            if (!payment.hasAccess) {
-              window.location.href = '/app/checkout.html?tier=pro';
-              return;
-            }
-            
-            window.location.href = '/app/claim-management-center.html';
-          } catch (error) {
-            console.error('Navigation check error:', error);
-            window.location.href = '/app/claim-management-center.html';
-          }
-        } else {
-          // Fallback: just navigate
-          window.location.href = '/app/claim-management-center.html';
-        }
-      });
-    }
-  });
+      // Show page after auth check
+      document.body.style.visibility = 'visible';
+    })();
 </script>
-</body></html>
+</body>
+</html>
