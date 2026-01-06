@@ -30,6 +30,80 @@
         
         
 
+        <!-- Input Form -->
+        <form data-tool-form class="tool-form">
+          <div class="tool-form-group">
+            <label for="photoUpload" class="tool-label">Upload Photo to Label</label>
+            <input 
+              type="file" 
+              id="photoUpload" 
+              name="photoUpload" 
+              class="tool-input" 
+              accept="image/*"
+              required
+            />
+            <small>Upload a damage photo to add labels and annotations.</small>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="damageCategory" class="tool-label">Damage Category</label>
+            <select id="damageCategory" name="damageCategory" class="tool-input" required>
+              <option value="">Select category...</option>
+              <option value="structural">Structural</option>
+              <option value="water">Water</option>
+              <option value="fire">Fire</option>
+              <option value="wind">Wind/Hail</option>
+              <option value="contents">Contents</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="location" class="tool-label">Location/Room</label>
+            <input 
+              type="text" 
+              id="location" 
+              name="location" 
+              class="tool-input" 
+              placeholder="e.g., Living Room"
+              required
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="context" class="tool-label">Label Notes (Optional, max 500 chars)</label>
+            <textarea 
+              id="context" 
+              name="context" 
+              class="tool-textarea" 
+              rows="3" 
+              maxlength="500"
+              placeholder="e.g., Ceiling water stain from roof leak..."
+            ></textarea>
+          </div>
+
+          <div class="tool-form-actions">
+            <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
+              Add Labels
+            </button>
+          </div>
+        </form>
+
+        <!-- Output Area -->
+        <div data-tool-output id="output" class="tool-output" style="display: none;">
+          <h3 class="tool-section-title">Labeled Photo</h3>
+          <div class="tool-output-content"></div>
+          
+          <div class="tool-form-actions" style="margin-top: 1.5rem;">
+            <button data-export-pdf class="tool-btn tool-btn-secondary">
+              Export as PDF
+            </button>
+            <button data-copy-clipboard class="tool-btn tool-btn-secondary">
+              Copy to Clipboard
+            </button>
+          </div>
+        </div>
+
         <div class="tool-section">
           <h3 class="tool-section-title">What This Tool Does</h3>
           <p>Add labels and notes to damage photos</p>

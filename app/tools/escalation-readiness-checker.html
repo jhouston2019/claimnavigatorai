@@ -34,20 +34,68 @@
         <!-- Input Form -->
         <form data-tool-form class="tool-form">
           <div class="tool-form-group">
-            <label for="inputText" class="tool-label">Input Data</label>
-            <textarea 
-              id="inputText" 
-              name="inputText" 
-              class="tool-textarea" 
-              rows="8" 
-              placeholder="Enter the information to analyze..."
+            <label for="claimStatus" class="tool-label">Current Claim Status</label>
+            <select id="claimStatus" name="claimStatus" class="tool-input" required>
+              <option value="">Select status...</option>
+              <option value="denied">Denied</option>
+              <option value="underpaid">Underpaid</option>
+              <option value="delayed">Delayed</option>
+              <option value="disputed">Disputed</option>
+              <option value="stalled">Stalled</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="daysSinceFiling" class="tool-label">Days Since Filing</label>
+            <input 
+              type="number" 
+              id="daysSinceFiling" 
+              name="daysSinceFiling" 
+              class="tool-input" 
+              min="0"
               required
+              placeholder="e.g., 45"
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="jurisdiction" class="tool-label">Jurisdiction (State)</label>
+            <input 
+              type="text" 
+              id="jurisdiction" 
+              name="jurisdiction" 
+              class="tool-input" 
+              placeholder="e.g., California"
+              required
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="escalationType" class="tool-label">Escalation Type</label>
+            <select id="escalationType" name="escalationType" class="tool-input" required>
+              <option value="">Select type...</option>
+              <option value="doi">Department of Insurance Complaint</option>
+              <option value="appraisal">Appraisal</option>
+              <option value="mediation">Mediation</option>
+              <option value="legal">Legal Action</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="context" class="tool-label">Brief Context (Optional, max 500 chars)</label>
+            <textarea 
+              id="context" 
+              name="context" 
+              class="tool-textarea" 
+              rows="3" 
+              maxlength="500"
+              placeholder="e.g., Multiple denials, no response to appeals..."
             ></textarea>
           </div>
 
           <div class="tool-form-actions">
             <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
-              Analyze
+              Check Readiness
             </button>
           </div>
         </form>
