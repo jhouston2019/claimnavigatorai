@@ -25,6 +25,8 @@ import { requireAuth, checkPaymentStatus, getAuthToken, getSupabaseClient } from
 import { autofillForm, getIntakeData } from '../autofill.js';
 import { saveAndReturn, getToolParams, getReportName } from '../tool-output-bridge.js';
 import { addTimelineEvent } from '../utils/timeline-autosync.js';
+import { formatClaimOutput, getJournalEntryType, OutputTypes } from '../utils/claim-output-standard.js';
+import { applyDocumentBranding, injectBrandingStyles, getClaimInfoFromContext } from '../utils/document-branding.js';
 
 /**
  * Initialize a document generator tool
@@ -40,6 +42,8 @@ export async function initTool(config) {
     toolId,
     toolName,
     templateType,
+    documentType, // NEW: Type of document (letter, email, etc.)
+    outputType = OutputTypes.LETTER, // NEW: Default to letter
     backendFunction = '/.netlify/functions/ai-document-generator',
     timelineEventType = 'document_generated'
   } = config;
@@ -53,13 +57,16 @@ export async function initTool(config) {
       return;
     }
 
-    // Phase 2: Auto-fill form from intake data
+    // Phase 2: Inject branding styles
+    injectBrandingStyles();
+
+    // Phase 3: Auto-fill form from intake data
     await autofillIntakeData();
 
-    // Phase 3: Bind form submission
+    // Phase 4: Bind form submission
     await bindFormSubmit(config);
 
-    // Phase 4: Bind export actions
+    // Phase 5: Bind export actions
     await bindExportActions();
 
     console.log(`[DocumentGeneratorController] ${toolName} initialized successfully`);
@@ -121,10 +128,19 @@ async function bindFormSubmit(config) {
 }
 
 /**
- * Handle document generation
+ * Handle document generation (PHASE 5A - Claim-grade output)
  */
 async function handleGenerate(config, form) {
-  const { toolId, toolName, templateType, backendFunction, timelineEventType } = config;
+  const { 
+    toolId, 
+    toolName, 
+    templateType, 
+    documentType,
+    outputType = OutputTypes.LETTER,
+    backendFunction, 
+    timelineEventType 
+  } = config;
+  
   const submitBtn = form.querySelector('button[type="submit"]');
   const originalText = submitBtn ? submitBtn.textContent : 'Generate Document';
 
@@ -142,8 +158,13 @@ async function handleGenerate(config, form) {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
-    // Get auth token
+    // Get claim context
+    const claimInfo = getClaimInfoFromContext();
+
+    // Get auth token and user
     const token = await getAuthToken();
+    const client = await getSupabaseClient();
+    const { data: { user } } = await client.auth.getUser();
 
     // Call backend AI function
     const response = await fetch(backendFunction, {
@@ -155,7 +176,8 @@ async function handleGenerate(config, form) {
       body: JSON.stringify({
         template_type: templateType,
         user_inputs: data,
-        document_type: toolName
+        document_type: documentType || toolName,
+        claim_info: claimInfo
       })
     });
 
@@ -165,11 +187,41 @@ async function handleGenerate(config, form) {
     }
 
     const result = await response.json();
+    const documentContent = result.data?.document_text || result.data?.content || result.data;
 
-    // Render generated document
-    await renderDocument(result.data);
+    // PHASE 5A: Format output to claim-grade standard
+    const formattedOutput = formatClaimOutput({
+      toolName,
+      outputType,
+      content: documentContent,
+      claimInfo,
+      userId: user?.id
+    });
 
-    // Save to database
+    // Apply document branding
+    const brandedHtml = applyDocumentBranding(
+      formattedOutput.formattedHtml,
+      claimInfo,
+      formattedOutput.metadata
+    );
+
+    // Render branded document
+    await renderBrandedDocument(brandedHtml);
+
+    // MANDATORY: Save to Claim Journal (journal_entries table)
+    await saveToClaimJournal({
+      userId: user?.id,
+      claimId: claimInfo.claimId,
+      toolName,
+      outputType,
+      title: formattedOutput.title,
+      content: formattedOutput.plainText,
+      htmlContent: brandedHtml,
+      metadata: formattedOutput.metadata,
+      inputData: data
+    });
+
+    // Also save to documents table for backward compatibility
     await saveToDatabase(toolId, toolName, result.data, data);
 
     // Add timeline event
@@ -179,16 +231,26 @@ async function handleGenerate(config, form) {
         date: new Date().toISOString().split('T')[0],
         source: toolId,
         title: `Generated: ${toolName}`,
-        description: `Document generated successfully`,
-        metadata: { template_type: templateType }
+        description: formattedOutput.title,
+        metadata: { 
+          template_type: templateType,
+          journal_entry: formattedOutput.title
+        }
       });
     }
+
+    // Store for export
+    window._currentDocument = {
+      raw: result.data,
+      formatted: formattedOutput,
+      branded: brandedHtml
+    };
 
     // Show success message
     if (window.CNLoading) {
       window.CNLoading.hide();
     }
-    showSuccess('Document generated successfully!');
+    showSuccess('Document generated and saved to Claim Journal!');
 
   } catch (error) {
     console.error('[DocumentGeneratorController] Generation error:', error);
@@ -206,7 +268,25 @@ async function handleGenerate(config, form) {
 }
 
 /**
- * Render generated document in output area
+ * Render branded document (PHASE 5A)
+ */
+async function renderBrandedDocument(brandedHtml) {
+  const outputArea = document.querySelector('[data-tool-output]') || document.getElementById('output');
+  if (!outputArea) {
+    console.warn('[DocumentGeneratorController] No output area found');
+    return;
+  }
+
+  // Show output area
+  outputArea.style.display = 'block';
+  outputArea.classList.remove('hidden');
+
+  // Render branded HTML directly
+  outputArea.innerHTML = brandedHtml;
+}
+
+/**
+ * Render generated document in output area (LEGACY - kept for backward compatibility)
  */
 async function renderDocument(documentData) {
   const outputArea = document.querySelector('[data-tool-output]') || document.getElementById('output');
@@ -235,7 +315,73 @@ async function renderDocument(documentData) {
 }
 
 /**
- * Save generated document to database
+ * MANDATORY: Save to Claim Journal (PHASE 5A)
+ * Every document MUST be journaled - no opt-out
+ */
+async function saveToClaimJournal({
+  userId,
+  claimId,
+  toolName,
+  outputType,
+  title,
+  content,
+  htmlContent,
+  metadata,
+  inputData
+}) {
+  try {
+    const client = await getSupabaseClient();
+    
+    if (!userId) {
+      const { data: { user } } = await client.auth.getUser();
+      userId = user?.id;
+    }
+
+    if (!userId) {
+      throw new Error('User ID required for journaling');
+    }
+
+    // Determine entry type based on output type
+    const entryType = getJournalEntryType(outputType);
+
+    // Insert into journal_entries table
+    const { data, error } = await client
+      .from('journal_entries')
+      .insert({
+        user_id: userId,
+        claim_id: claimId || null,
+        tool_name: toolName,
+        entry_type: entryType,
+        title: title,
+        content: content,
+        html_content: htmlContent,
+        metadata: {
+          ...metadata,
+          input_data: inputData,
+          output_type: outputType,
+          journaled_at: new Date().toISOString()
+        },
+        created_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    console.log(`[DocumentGeneratorController] ✅ Saved to Claim Journal: ${title}`);
+    return data;
+
+  } catch (error) {
+    console.error('[DocumentGeneratorController] ❌ CRITICAL: Failed to save to Claim Journal:', error);
+    // This is critical - throw error to prevent silent failures
+    throw new Error(`Failed to journal document: ${error.message}`);
+  }
+}
+
+/**
+ * Save generated document to database (backward compatibility)
  */
 async function saveToDatabase(toolId, toolName, documentData, userInputs) {
   try {

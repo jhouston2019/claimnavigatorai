@@ -26,6 +26,8 @@ import { requireAuth, checkPaymentStatus, getAuthToken, getSupabaseClient } from
 import { getIntakeData } from '../autofill.js';
 import { saveAndReturn, getToolParams, getReportName } from '../tool-output-bridge.js';
 import { addTimelineEvent } from '../utils/timeline-autosync.js';
+import { formatClaimOutput, getJournalEntryType, OutputTypes } from '../utils/claim-output-standard.js';
+import { applyDocumentBranding, injectBrandingStyles, getClaimInfoFromContext } from '../utils/document-branding.js';
 
 /**
  * Initialize an AI tool
@@ -45,6 +47,7 @@ export async function initTool(config) {
     backendFunction,
     inputFields = [],
     outputFormat = 'structured',
+    outputType = OutputTypes.ANALYSIS, // NEW: Claim output type
     supabaseTable = 'documents',
     timelineEventType = 'ai_analysis'
   } = config;
@@ -58,13 +61,16 @@ export async function initTool(config) {
       return;
     }
 
-    // Phase 2: Load intake data for context
+    // Phase 2: Inject branding styles
+    injectBrandingStyles();
+
+    // Phase 3: Load intake data for context
     await loadIntakeContext();
 
-    // Phase 3: Bind analyze/calculate button
+    // Phase 4: Bind analyze/calculate button
     await bindAnalyzeButton(config);
 
-    // Phase 4: Bind export actions
+    // Phase 5: Bind export actions
     await bindExportActions();
 
     console.log(`[AIToolController] ${toolName} initialized successfully`);
@@ -112,7 +118,17 @@ async function bindAnalyzeButton(config) {
  * Handle AI analysis
  */
 async function handleAnalyze(config) {
-  const { toolId, toolName, backendFunction, inputFields, outputFormat, supabaseTable, timelineEventType } = config;
+  const { 
+    toolId, 
+    toolName, 
+    backendFunction, 
+    inputFields, 
+    outputFormat, 
+    outputType = OutputTypes.ANALYSIS,
+    supabaseTable, 
+    timelineEventType 
+  } = config;
+  
   const analyzeBtn = document.querySelector('[data-analyze-btn]') || 
                      document.querySelector('[data-calculate-btn]') ||
                      document.getElementById('analyzeBtn') ||
@@ -137,14 +153,20 @@ async function handleAnalyze(config) {
       throw new Error('Please fill in all required fields');
     }
 
+    // Get claim context
+    const claimInfo = getClaimInfoFromContext();
+
     // Add intake context
     const requestData = {
       ...inputData,
-      context: window._intakeContext || {}
+      context: window._intakeContext || {},
+      claimInfo: claimInfo
     };
 
-    // Get auth token
+    // Get auth token and user
     const token = await getAuthToken();
+    const client = await getSupabaseClient();
+    const { data: { user } } = await client.auth.getUser();
 
     // Call backend AI function
     const response = await fetch(backendFunction, {
@@ -162,12 +184,42 @@ async function handleAnalyze(config) {
     }
 
     const result = await response.json();
+    const aiContent = result.data || result;
 
-    // Render AI output
-    await renderOutput(result.data, outputFormat);
+    // PHASE 5A: Format output to claim-grade standard
+    const formattedOutput = formatClaimOutput({
+      toolName,
+      outputType,
+      content: typeof aiContent === 'string' ? aiContent : JSON.stringify(aiContent, null, 2),
+      claimInfo,
+      userId: user?.id
+    });
 
-    // Save to database
-    await saveToDatabase(toolId, toolName, result.data, inputData, supabaseTable);
+    // Apply document branding
+    const brandedHtml = applyDocumentBranding(
+      formattedOutput.formattedHtml,
+      claimInfo,
+      formattedOutput.metadata
+    );
+
+    // Render branded output
+    await renderBrandedOutput(brandedHtml, outputFormat);
+
+    // MANDATORY: Save to Claim Journal (journal_entries table)
+    await saveToClaimJournal({
+      userId: user?.id,
+      claimId: claimInfo.claimId,
+      toolName,
+      outputType,
+      title: formattedOutput.title,
+      content: formattedOutput.plainText,
+      htmlContent: brandedHtml,
+      metadata: formattedOutput.metadata,
+      inputData
+    });
+
+    // Also save to documents table for backward compatibility
+    await saveToDatabase(toolId, toolName, aiContent, inputData, supabaseTable);
 
     // Add timeline event
     if (timelineEventType) {
@@ -176,16 +228,26 @@ async function handleAnalyze(config) {
         date: new Date().toISOString().split('T')[0],
         source: toolId,
         title: `Completed: ${toolName}`,
-        description: `AI analysis completed successfully`,
-        metadata: { tool_id: toolId }
+        description: formattedOutput.title,
+        metadata: { 
+          tool_id: toolId,
+          journal_entry: formattedOutput.title
+        }
       });
     }
+
+    // Store for export
+    window._currentAnalysis = {
+      raw: aiContent,
+      formatted: formattedOutput,
+      branded: brandedHtml
+    };
 
     // Show success message
     if (window.CNLoading) {
       window.CNLoading.hide();
     }
-    showSuccess('Analysis completed successfully!');
+    showSuccess('Analysis completed and saved to Claim Journal!');
 
   } catch (error) {
     console.error('[AIToolController] Analysis error:', error);
@@ -245,7 +307,25 @@ function validateInputs(inputData, requiredFields) {
 }
 
 /**
- * Render AI output based on format
+ * Render branded output (PHASE 5A)
+ */
+async function renderBrandedOutput(brandedHtml, format) {
+  const outputArea = document.querySelector('[data-tool-output]') || document.getElementById('output');
+  if (!outputArea) {
+    console.warn('[AIToolController] No output area found');
+    return;
+  }
+
+  // Show output area
+  outputArea.style.display = 'block';
+  outputArea.classList.remove('hidden');
+
+  // Render branded HTML directly
+  outputArea.innerHTML = brandedHtml;
+}
+
+/**
+ * Render AI output based on format (LEGACY - kept for backward compatibility)
  */
 async function renderOutput(data, format) {
   const outputArea = document.querySelector('[data-tool-output]') || document.getElementById('output');
@@ -375,7 +455,73 @@ function renderTextOutput(data) {
 }
 
 /**
- * Save analysis results to database
+ * MANDATORY: Save to Claim Journal (PHASE 5A)
+ * Every AI output MUST be journaled - no opt-out
+ */
+async function saveToClaimJournal({
+  userId,
+  claimId,
+  toolName,
+  outputType,
+  title,
+  content,
+  htmlContent,
+  metadata,
+  inputData
+}) {
+  try {
+    const client = await getSupabaseClient();
+    
+    if (!userId) {
+      const { data: { user } } = await client.auth.getUser();
+      userId = user?.id;
+    }
+
+    if (!userId) {
+      throw new Error('User ID required for journaling');
+    }
+
+    // Determine entry type based on output type
+    const entryType = getJournalEntryType(outputType);
+
+    // Insert into journal_entries table
+    const { data, error } = await client
+      .from('journal_entries')
+      .insert({
+        user_id: userId,
+        claim_id: claimId || null,
+        tool_name: toolName,
+        entry_type: entryType,
+        title: title,
+        content: content,
+        html_content: htmlContent,
+        metadata: {
+          ...metadata,
+          input_data: inputData,
+          output_type: outputType,
+          journaled_at: new Date().toISOString()
+        },
+        created_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    console.log(`[AIToolController] ✅ Saved to Claim Journal: ${title}`);
+    return data;
+
+  } catch (error) {
+    console.error('[AIToolController] ❌ CRITICAL: Failed to save to Claim Journal:', error);
+    // This is critical - throw error to prevent silent failures
+    throw new Error(`Failed to journal output: ${error.message}`);
+  }
+}
+
+/**
+ * Save analysis results to database (backward compatibility)
  */
 async function saveToDatabase(toolId, toolName, analysisData, inputData, tableName) {
   try {
@@ -417,7 +563,7 @@ async function bindExportActions() {
 }
 
 /**
- * Export analysis as PDF
+ * Export analysis as PDF (PHASE 5A - uses formatted output)
  */
 async function handleExportPDF() {
   if (!window._currentAnalysis) {
@@ -433,12 +579,18 @@ async function handleExportPDF() {
     }
 
     const doc = new jsPDF();
-    const text = JSON.stringify(window._currentAnalysis, null, 2);
+    
+    // Use formatted plain text if available
+    const text = window._currentAnalysis.formatted?.plainText || 
+                 JSON.stringify(window._currentAnalysis.raw || window._currentAnalysis, null, 2);
+    
     const splitText = doc.splitTextToSize(text, 170);
     
-    doc.setFontSize(12);
+    doc.setFontSize(10);
     doc.text(splitText, 20, 20);
-    doc.save('analysis.pdf');
+    
+    const filename = `claim-analysis-${Date.now()}.pdf`;
+    doc.save(filename);
 
     showSuccess('PDF downloaded successfully');
   } catch (error) {
@@ -448,7 +600,7 @@ async function handleExportPDF() {
 }
 
 /**
- * Copy analysis to clipboard
+ * Copy analysis to clipboard (PHASE 5A - uses formatted output)
  */
 async function handleCopyToClipboard() {
   if (!window._currentAnalysis) {
@@ -457,7 +609,10 @@ async function handleCopyToClipboard() {
   }
 
   try {
-    const text = JSON.stringify(window._currentAnalysis, null, 2);
+    // Use formatted plain text if available
+    const text = window._currentAnalysis.formatted?.plainText || 
+                 JSON.stringify(window._currentAnalysis.raw || window._currentAnalysis, null, 2);
+    
     await navigator.clipboard.writeText(text);
     showSuccess('Copied to clipboard!');
   } catch (error) {
