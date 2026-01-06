@@ -26,10 +26,6 @@
         <h2>🧠 Expert Opinion Request Generator</h2>
         <p>Generate professional requests for expert opinions, witness coordination, and specialized analysis.</p>
 
-        <label>Expert Request Description:
-          <textarea id="description" class="input" placeholder="Describe what expert opinion or analysis you need..."></textarea>
-        </label>
-
         <label>Upload Supporting Documents:
           <div class="file-upload">
             <input type="file" id="documents" class="input" multiple accept=".pdf,.doc,.docx,.txt,.jpg,.png">
@@ -38,6 +34,17 @@
         </label>
 
         <div class="form-row">
+          <label>Claim Type:
+            <select id="claimType" class="input">
+              <option value="">Select Claim Type</option>
+              <option value="fire">Fire Damage</option>
+              <option value="water">Water Damage</option>
+              <option value="wind">Wind/Hail Damage</option>
+              <option value="structural">Structural</option>
+              <option value="mold">Mold</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
           <label>Desired Expertise:
             <select id="expertise" class="input">
               <option value="">Select Expertise Area</option>
@@ -53,6 +60,9 @@
               <option value="other">Other</option>
             </select>
           </label>
+        </div>
+
+        <div class="form-row">
           <label>Urgency Level:
             <select id="urgency" class="input">
               <option value="standard">Standard (2-4 weeks)</option>
@@ -61,22 +71,17 @@
               <option value="emergency">Emergency (24-48 hours)</option>
             </select>
           </label>
+          <label>Budget Range:
+            <input id="budget" class="input" placeholder="e.g., $2,000 - $5,000" type="number" step="100">
+          </label>
         </div>
 
-        <label>Expert Qualifications Required:
-          <textarea id="qualifications" class="input" placeholder="List specific qualifications, certifications, or experience required..."></textarea>
+        <label>Timeline Requirements (Date):
+          <input id="timeline" class="input" type="date">
         </label>
 
-        <label>Budget Range:
-          <input id="budget" class="input" placeholder="e.g., $2,000 - $5,000 or 'To be discussed'">
-        </label>
-
-        <label>Timeline Requirements:
-          <input id="timeline" class="input" placeholder="e.g., 'Report needed by [date]' or 'As soon as possible'">
-        </label>
-
-        <label>Additional Requirements:
-          <textarea id="requirements" class="input" placeholder="Any specific requirements, deliverables, or special instructions..."></textarea>
+        <label>Brief Context (Optional, max 500 chars):
+          <textarea id="context" class="input" maxlength="500" rows="3" placeholder="e.g., Need structural engineer to assess foundation damage..."></textarea>
         </label>
 
         <button class="button primary" onclick="runAnalysis('expert')">Generate Expert Request</button>

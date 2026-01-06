@@ -34,20 +34,56 @@
         <!-- Input Form -->
         <form data-tool-form class="tool-form">
           <div class="tool-form-group">
-            <label for="inputText" class="tool-label">Input Data</label>
+            <label for="claimType" class="tool-label">Type of Claim</label>
+            <select id="claimType" name="claimType" class="tool-input" required>
+              <option value="">Select claim type...</option>
+              <option value="fire">Fire Damage</option>
+              <option value="water">Water Damage</option>
+              <option value="wind">Wind/Hail Damage</option>
+              <option value="theft">Theft</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="lossCategory" class="tool-label">Loss Category</label>
+            <select id="lossCategory" name="lossCategory" class="tool-input" required>
+              <option value="">Select loss category...</option>
+              <option value="structure">Structure</option>
+              <option value="contents">Contents</option>
+              <option value="ale">Additional Living Expenses</option>
+              <option value="liability">Liability</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="evidenceType" class="tool-label">Evidence Type</label>
+            <select id="evidenceType" name="evidenceType" class="tool-input" required>
+              <option value="">Select type...</option>
+              <option value="photos">Photos/Videos</option>
+              <option value="receipts">Receipts/Invoices</option>
+              <option value="estimates">Estimates</option>
+              <option value="reports">Reports</option>
+              <option value="all">All Types</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="context" class="tool-label">Brief Context (Optional, max 500 chars)</label>
             <textarea 
-              id="inputText" 
-              name="inputText" 
+              id="context" 
+              name="context" 
               class="tool-textarea" 
-              rows="8" 
-              placeholder="Enter the information to analyze..."
-              required
+              rows="3" 
+              maxlength="500"
+              placeholder="e.g., Need to identify missing evidence for supplement..."
             ></textarea>
           </div>
 
           <div class="tool-form-actions">
             <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
-              Analyze
+              Identify Missing Evidence
             </button>
           </div>
         </form>
