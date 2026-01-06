@@ -34,20 +34,57 @@
         <!-- Input Form -->
         <form data-tool-form class="tool-form">
           <div class="tool-form-group">
-            <label for="inputText" class="tool-label">Input Data</label>
-            <textarea 
-              id="inputText" 
-              name="inputText" 
-              class="tool-textarea" 
-              rows="8" 
-              placeholder="Enter the information to analyze..."
+            <label for="itemDescription" class="tool-label">Item Description</label>
+            <input 
+              type="text" 
+              id="itemDescription" 
+              name="itemDescription" 
+              class="tool-input" 
+              placeholder="e.g., Samsung 55-inch 4K Smart TV"
               required
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="itemCategory" class="tool-label">Item Category</label>
+            <select id="itemCategory" name="itemCategory" class="tool-input" required>
+              <option value="">Select category...</option>
+              <option value="electronics">Electronics</option>
+              <option value="furniture">Furniture</option>
+              <option value="appliances">Appliances</option>
+              <option value="tools">Tools</option>
+              <option value="fixtures">Fixtures</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="estimatedValue" class="tool-label">Estimated Value ($)</label>
+            <input 
+              type="number" 
+              id="estimatedValue" 
+              name="estimatedValue" 
+              class="tool-input" 
+              step="0.01"
+              placeholder="e.g., 1200.00"
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="context" class="tool-label">Brief Context (Optional, max 500 chars)</label>
+            <textarea 
+              id="context" 
+              name="context" 
+              class="tool-textarea" 
+              rows="3" 
+              maxlength="500"
+              placeholder="e.g., Need comparable for insurance claim valuation..."
             ></textarea>
           </div>
 
           <div class="tool-form-actions">
             <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
-              Analyze
+              Find Comparables
             </button>
           </div>
         </form>

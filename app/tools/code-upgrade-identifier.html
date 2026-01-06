@@ -34,20 +34,55 @@
         <!-- Input Form -->
         <form data-tool-form class="tool-form">
           <div class="tool-form-group">
-            <label for="inputText" class="tool-label">Input Data</label>
-            <textarea 
-              id="inputText" 
-              name="inputText" 
-              class="tool-textarea" 
-              rows="8" 
-              placeholder="Enter the information to analyze..."
+            <label for="estimateUpload" class="tool-label">Upload Estimate or Scope Document</label>
+            <input 
+              type="file" 
+              id="estimateUpload" 
+              name="estimateUpload" 
+              class="tool-input" 
+              accept=".pdf,.txt"
               required
+            />
+            <small>Upload contractor estimate or adjuster scope to identify code upgrade requirements.</small>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="propertyType" class="tool-label">Property Type</label>
+            <select id="propertyType" name="propertyType" class="tool-input" required>
+              <option value="">Select property type...</option>
+              <option value="residential">Residential</option>
+              <option value="commercial">Commercial</option>
+              <option value="multi-family">Multi-Family</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="jurisdiction" class="tool-label">Jurisdiction (State)</label>
+            <input 
+              type="text" 
+              id="jurisdiction" 
+              name="jurisdiction" 
+              class="tool-input" 
+              placeholder="e.g., California"
+              required
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="context" class="tool-label">Brief Context (Optional, max 500 chars)</label>
+            <textarea 
+              id="context" 
+              name="context" 
+              class="tool-textarea" 
+              rows="3" 
+              maxlength="500"
+              placeholder="e.g., Electrical panel replacement needed..."
             ></textarea>
           </div>
 
           <div class="tool-form-actions">
             <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
-              Analyze
+              Identify Code Upgrades
             </button>
           </div>
         </form>

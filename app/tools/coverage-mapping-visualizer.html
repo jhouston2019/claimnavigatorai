@@ -30,6 +30,78 @@
         
         
 
+        <!-- Input Form -->
+        <form data-tool-form class="tool-form">
+          <div class="tool-form-group">
+            <label for="policyUpload" class="tool-label">Upload Policy Document</label>
+            <input 
+              type="file" 
+              id="policyUpload" 
+              name="policyUpload" 
+              class="tool-input" 
+              accept=".pdf,.txt"
+              required
+            />
+            <small>Upload your policy to visualize coverage mapping.</small>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="claimType" class="tool-label">Type of Claim</label>
+            <select id="claimType" name="claimType" class="tool-input" required>
+              <option value="">Select claim type...</option>
+              <option value="fire">Fire Damage</option>
+              <option value="water">Water Damage</option>
+              <option value="wind">Wind/Hail Damage</option>
+              <option value="theft">Theft</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="lossDate" class="tool-label">Date of Loss</label>
+            <input 
+              type="date" 
+              id="lossDate" 
+              name="lossDate" 
+              class="tool-input" 
+              required
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="context" class="tool-label">Brief Context (Optional, max 500 chars)</label>
+            <textarea 
+              id="context" 
+              name="context" 
+              class="tool-textarea" 
+              rows="3" 
+              maxlength="500"
+              placeholder="e.g., Need to map coverage for multi-peril claim..."
+            ></textarea>
+          </div>
+
+          <div class="tool-form-actions">
+            <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
+              Generate Coverage Map
+            </button>
+          </div>
+        </form>
+
+        <!-- Output Area -->
+        <div data-tool-output id="output" class="tool-output" style="display: none;">
+          <h3 class="tool-section-title">Coverage Map</h3>
+          <div class="tool-output-content"></div>
+          
+          <div class="tool-form-actions" style="margin-top: 1.5rem;">
+            <button data-export-pdf class="tool-btn tool-btn-secondary">
+              Export as PDF
+            </button>
+            <button data-copy-clipboard class="tool-btn tool-btn-secondary">
+              Copy to Clipboard
+            </button>
+          </div>
+        </div>
+
         <div class="tool-section">
           <h3 class="tool-section-title">What This Tool Does</h3>
           <p>Visualize coverage application</p>
