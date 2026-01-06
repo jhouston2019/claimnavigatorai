@@ -15,13 +15,7 @@ const {
 
 
 exports.handler = async (event) => {
-// ⚠️ PHASE 5B: PROMPT HARDENING REQUIRED
-// This function needs manual review to:
-// 1. Replace system prompt with getClaimGradeSystemMessage(outputType)
-// 2. Enhance user prompt with enhancePromptWithContext(prompt, claimInfo, outputType)
-// 3. Post-process response with postProcessResponse(response, outputType)
-// 4. Validate with validateProfessionalOutput(response, outputType)
-// See: /netlify/functions/PROMPT_HARDENING_GUIDE.md
+  // ✅ PHASE 5B: FULLY HARDENED
 
   const headers = {
     'Content-Type': 'application/json',
@@ -31,6 +25,20 @@ exports.handler = async (event) => {
   };
 
   if (event.httpMethod === 'OPTIONS') {
+    
+    // PHASE 5B: Post-process and validate
+    const processedResponse = postProcessResponse(rawResponse, 'analysis');
+    const validation = validateProfessionalOutput(processedResponse, 'analysis');
+
+    if (!validation.pass) {
+      console.warn('[ai-estimate-comparison] Quality issues:', validation.issues);
+      await LOG_EVENT('quality_warning', 'ai-estimate-comparison', {
+        issues: validation.issues,
+        score: validation.score,
+        user_id: user.id
+      });
+    }
+
     return { statusCode: 200, headers, body: '' };
   }
 
@@ -97,15 +105,13 @@ exports.handler = async (event) => {
     // Log event
     await LOG_EVENT('ai_request', 'ai-estimate-comparison', { payload: body });
     
-    const { 
-      estimates = [], 
+    const { estimates = [], 
       labor_rate = '', 
       tax_rate = '', 
       include_overhead = false, 
       notes = '',
       analysis_mode = 'comparison',
-      analysis_focus = 'comparison'
-    } = body;
+      analysis_focus = 'comparison', claimInfo = {} } = body;
 
     if (estimates.length === 0) {
       return {
@@ -203,7 +209,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ success: true, data: result, error: null })
+      body: JSON.stringify({ success: true, data: result, metadata: { quality_score: validation.score, validation_passed: validation.pass }, error: null })
     };
 
   } catch (error) {

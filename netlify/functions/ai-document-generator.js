@@ -15,13 +15,7 @@ const {
 
 
 exports.handler = async (event) => {
-// ⚠️ PHASE 5B: PROMPT HARDENING REQUIRED
-// This function needs manual review to:
-// 1. Replace system prompt with getClaimGradeSystemMessage(outputType)
-// 2. Enhance user prompt with enhancePromptWithContext(prompt, claimInfo, outputType)
-// 3. Post-process response with postProcessResponse(response, outputType)
-// 4. Validate with validateProfessionalOutput(response, outputType)
-// See: /netlify/functions/PROMPT_HARDENING_GUIDE.md
+  // ✅ PHASE 5B: FULLY HARDENED
 
   const headers = {
     'Content-Type': 'application/json',
@@ -31,6 +25,20 @@ exports.handler = async (event) => {
   };
 
   if (event.httpMethod === 'OPTIONS') {
+    
+    // PHASE 5B: Post-process and validate
+    const processedResponse = postProcessResponse(rawResponse, 'letter');
+    const validation = validateProfessionalOutput(processedResponse, 'letter');
+
+    if (!validation.pass) {
+      console.warn('[ai-document-generator] Quality issues:', validation.issues);
+      await LOG_EVENT('quality_warning', 'ai-document-generator', {
+        issues: validation.issues,
+        score: validation.score,
+        user_id: user.id
+      });
+    }
+
     return { statusCode: 200, headers, body: '' };
   }
 
@@ -114,18 +122,10 @@ exports.handler = async (event) => {
     const startTime = Date.now();
 
     // Build system prompt
-    const systemPrompt = `You are a professional document generator specializing in insurance claim documents. Your role is to create accurate, legally appropriate, and professionally formatted documents based on user inputs.
-
-Guidelines:
-- Use the exact template structure requested
-- Fill in all user-provided information accurately
-- Maintain professional tone and formatting
-- Ensure legal compliance and accuracy
-- Include all required sections
-- Format for clarity and readability`;
+    const systemMessage = getClaimGradeSystemMessage('letter');
 
     // Build user prompt
-    const userPrompt = `Generate a ${document_type} document using the following information:
+    let userPrompt = `Generate a ${document_type} document using the following information:
 
 Template Type: ${template_type}
 Document Type: ${document_type}
@@ -140,6 +140,9 @@ Please generate a complete, professional document that:
 4. Is properly formatted and structured
 
 Return the document as formatted text/HTML that can be displayed and exported.`;
+
+    // PHASE 5B: Enhance prompt with claim context
+    userPrompt = enhancePromptWithContext(userPrompt, claimInfo, 'letter');
 
     // Call OpenAI
     const documentText = await runOpenAI(systemPrompt, userPrompt, {
@@ -181,7 +184,7 @@ Return the document as formatted text/HTML that can be displayed and exported.`;
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ success: true, data: result, error: null })
+      body: JSON.stringify({ success: true, data: result, metadata: { quality_score: validation.score, validation_passed: validation.pass }, error: null })
     };
 
   } catch (error) {

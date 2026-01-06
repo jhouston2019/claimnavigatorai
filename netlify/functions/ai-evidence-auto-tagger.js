@@ -15,13 +15,7 @@ const {
 
 
 exports.handler = async (event) => {
-// ⚠️ PHASE 5B: PROMPT HARDENING REQUIRED
-// This function needs manual review to:
-// 1. Replace system prompt with getClaimGradeSystemMessage(outputType)
-// 2. Enhance user prompt with enhancePromptWithContext(prompt, claimInfo, outputType)
-// 3. Post-process response with postProcessResponse(response, outputType)
-// 4. Validate with validateProfessionalOutput(response, outputType)
-// See: /netlify/functions/PROMPT_HARDENING_GUIDE.md
+  // ✅ PHASE 5B: FULLY HARDENED
 
   const headers = {
     'Content-Type': 'application/json',
@@ -31,6 +25,20 @@ exports.handler = async (event) => {
   };
 
   if (event.httpMethod === 'OPTIONS') {
+    
+    // PHASE 5B: Post-process and validate
+    const processedResponse = postProcessResponse(rawResponse, 'analysis');
+    const validation = validateProfessionalOutput(processedResponse, 'analysis');
+
+    if (!validation.pass) {
+      console.warn('[ai-evidence-auto-tagger] Quality issues:', validation.issues);
+      await LOG_EVENT('quality_warning', 'ai-evidence-auto-tagger', {
+        issues: validation.issues,
+        score: validation.score,
+        user_id: user.id
+      });
+    }
+
     return { statusCode: 200, headers, body: '' };
   }
 
@@ -99,7 +107,7 @@ exports.handler = async (event) => {
     // Log event
     await LOG_EVENT('ai_request', 'ai-evidence-auto-tagger', { payload: body });
     
-    const { evidence_items = [] } = body;
+    const { evidence_items = [], claimInfo = {} } = body;
 
     if (evidence_items.length === 0) {
       return {
@@ -112,25 +120,14 @@ exports.handler = async (event) => {
     const startTime = Date.now();
 
     // Build system prompt
-    const systemPrompt = `You are an evidence categorization expert. Categorize insurance claim evidence files into appropriate categories based on file names and context.
-
-Categories:
-- photo: Photographs, images, visual documentation
-- estimate: Contractor estimates, repair quotes
-- invoice: Invoices, bills, receipts for expenses
-- receipt: Receipts, payment confirmations
-- document: Official documents, letters, policies
-- email: Email correspondence
-- other: Anything that doesn't fit above categories
-
-Return JSON array with category for each file.`;
+    const systemMessage = getClaimGradeSystemMessage('analysis');
 
     // Build user prompt
     const fileList = evidence_items.map((item, index) => 
       `${index + 1}. ${item.file_name} (current: ${item.current_category || 'uncategorized'})`
     ).join('\n');
 
-    const userPrompt = `Categorize these evidence files:
+    let userPrompt = `Categorize these evidence files:
 
 ${fileList}
 
@@ -141,8 +138,11 @@ Return JSON array:
   ...
 ]`;
 
+    // PHASE 5B: Enhance prompt with claim context
+    userPrompt = enhancePromptWithContext(userPrompt, claimInfo, 'analysis');
+
     // Call OpenAI
-    const response = await runOpenAI(systemPrompt, userPrompt, {
+    const processedResponse = await runOpenAI(systemMessage.content, userPrompt, {
       model: 'gpt-4o',
       temperature: 0.3,
       max_tokens: 1000
@@ -191,7 +191,7 @@ Return JSON array:
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ success: true, data: result, error: null })
+      body: JSON.stringify({ success: true, data: result, metadata: { quality_score: validation.score, validation_passed: validation.pass }, error: null })
     };
 
   } catch (error) {

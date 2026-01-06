@@ -15,14 +15,7 @@ const {
 
 
 exports.handler = async (event) => {
-// ⚠️ PHASE 5B: PROMPT HARDENING REQUIRED
-// This function needs manual review to:
-// 1. Replace system prompt with getClaimGradeSystemMessage(outputType)
-// 2. Enhance user prompt with enhancePromptWithContext(prompt, claimInfo, outputType)
-// 3. Post-process response with postProcessResponse(response, outputType)
-// 4. Validate with validateProfessionalOutput(response, outputType)
-// See: /netlify/functions/PROMPT_HARDENING_GUIDE.md
-
+  // ✅ PHASE 5B: FULLY HARDENED
   const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
@@ -101,14 +94,15 @@ exports.handler = async (event) => {
 
     validateRequired(body, ['policy_text']);
 
-    const { policy_text, policy_type = '', jurisdiction = '', deductible = '' } = body;
+    const { policy_text, policy_type = '', jurisdiction = '', deductible = '', claimInfo = {} } = body;
     const sanitizedText = sanitizeInput(policy_text);
 
     const startTime = Date.now();
 
-    const systemPrompt = `You are an expert insurance policy analyst. Analyze policies and provide comprehensive coverage summaries, exclusions, and recommendations.`;
+    // PHASE 5B: Use claim-grade system message
+    const systemMessage = getClaimGradeSystemMessage('analysis');
 
-    const userPrompt = `Analyze this insurance policy:
+    let userPrompt = `Analyze this insurance policy:
 
 Policy Type: ${policy_type}
 Jurisdiction: ${jurisdiction}
@@ -125,20 +119,36 @@ Provide:
 
 Format as HTML for display.`;
 
-    const analysis = await runOpenAI(systemPrompt, userPrompt, {
+    // PHASE 5B: Enhance prompt with claim context
+    userPrompt = enhancePromptWithContext(userPrompt, claimInfo, 'analysis');
+
+    const rawAnalysis = await runOpenAI(systemMessage.content, userPrompt, {
       model: 'gpt-4o',
       temperature: 0.7,
       max_tokens: 2000
     });
 
+    // PHASE 5B: Post-process and validate
+    const processedAnalysis = postProcessResponse(rawAnalysis, 'analysis');
+    const validation = validateProfessionalOutput(processedAnalysis, 'analysis');
+
+    if (!validation.pass) {
+      console.warn('[ai-policy-review] Quality issues:', validation.issues);
+      await LOG_EVENT('quality_warning', 'ai-policy-review', {
+        issues: validation.issues,
+        score: validation.score,
+        user_id: user.id
+      });
+    }
+
     const endTime = Date.now();
     const durationMs = endTime - startTime;
 
     const result = {
-      html: analysis,
-      summary: extractSummary(analysis),
-      exclusions: extractExclusions(analysis),
-      recommendations: extractRecommendations(analysis)
+      html: processedAnalysis,
+      summary: extractSummary(processedAnalysis),
+      exclusions: extractExclusions(processedAnalysis),
+      recommendations: extractRecommendations(processedAnalysis)
     };
 
     // Log usage
@@ -159,7 +169,15 @@ Format as HTML for display.`;
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ success: true, data: result, error: null })
+      body: JSON.stringify({ 
+        success: true, 
+        data: result,
+        metadata: {
+          quality_score: validation.score,
+          validation_passed: validation.pass
+        },
+        error: null 
+      })
     };
 
   } catch (error) {

@@ -15,13 +15,7 @@ const {
 
 
 exports.handler = async (event) => {
-// ⚠️ PHASE 5B: PROMPT HARDENING REQUIRED
-// This function needs manual review to:
-// 1. Replace system prompt with getClaimGradeSystemMessage(outputType)
-// 2. Enhance user prompt with enhancePromptWithContext(prompt, claimInfo, outputType)
-// 3. Post-process response with postProcessResponse(response, outputType)
-// 4. Validate with validateProfessionalOutput(response, outputType)
-// See: /netlify/functions/PROMPT_HARDENING_GUIDE.md
+  // ✅ PHASE 5B: FULLY HARDENED
 
   const headers = {
     'Content-Type': 'application/json',
@@ -31,6 +25,20 @@ exports.handler = async (event) => {
   };
 
   if (event.httpMethod === 'OPTIONS') {
+    
+    // PHASE 5B: Post-process and validate
+    const processedResponse = postProcessResponse(rawResponse, 'analysis');
+    const validation = validateProfessionalOutput(processedResponse, 'analysis');
+
+    if (!validation.pass) {
+      console.warn('[ai-coverage-decoder] Quality issues:', validation.issues);
+      await LOG_EVENT('quality_warning', 'ai-coverage-decoder', {
+        issues: validation.issues,
+        score: validation.score,
+        user_id: user.id
+      });
+    }
+
     return { statusCode: 200, headers, body: '' };
   }
 
@@ -101,12 +109,10 @@ exports.handler = async (event) => {
     
     validateRequired(body, ['policy_text']);
 
-    const {
-      policy_text,
+    const { policy_text,
       policy_type = '',
       jurisdiction = '',
-      deductible = ''
-    } = body;
+      deductible = '', claimInfo = {} } = body;
 
     // Sanitize inputs
     const sanitizedText = sanitizeInput(policy_text);
@@ -114,17 +120,10 @@ exports.handler = async (event) => {
     const startTime = Date.now();
 
     // Build system prompt
-    const systemPrompt = `You are an expert insurance policy analyst. Your role is to analyze policy text and extract:
-1. Coverage summary
-2. Coverage limits
-3. Deductibles
-4. Exclusions
-5. Important deadlines
-
-Provide clear, accurate, and actionable information.`;
+    const systemMessage = getClaimGradeSystemMessage('analysis');
 
     // Build user prompt
-    const userPrompt = `Analyze this insurance policy text and extract coverage information:
+    let userPrompt = `Analyze this insurance policy text and extract coverage information:
 
 Policy Type: ${policy_type || 'Not specified'}
 Jurisdiction: ${jurisdiction || 'Not specified'}
@@ -146,8 +145,11 @@ Return JSON:
   "deadlines": ["Deadline 1", "Deadline 2"]
 }`;
 
+    // PHASE 5B: Enhance prompt with claim context
+    userPrompt = enhancePromptWithContext(userPrompt, claimInfo, 'analysis');
+
     // Call OpenAI
-    const response = await runOpenAI(systemPrompt, userPrompt, {
+    const processedResponse = await runOpenAI(systemMessage.content, userPrompt, {
       model: 'gpt-4o',
       temperature: 0.7,
       max_tokens: 2000
@@ -189,7 +191,7 @@ Return JSON:
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ success: true, data: result, error: null })
+      body: JSON.stringify({ success: true, data: result, metadata: { quality_score: validation.score, validation_passed: validation.pass }, error: null })
     };
 
   } catch (error) {

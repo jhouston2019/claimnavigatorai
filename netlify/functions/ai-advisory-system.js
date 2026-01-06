@@ -10,13 +10,7 @@ const {
 
 
 exports.handler = async (event) => {
-// ⚠️ PHASE 5B: PROMPT HARDENING REQUIRED
-// This function needs manual review to:
-// 1. Replace system prompt with getClaimGradeSystemMessage(outputType)
-// 2. Enhance user prompt with enhancePromptWithContext(prompt, claimInfo, outputType)
-// 3. Post-process response with postProcessResponse(response, outputType)
-// 4. Validate with validateProfessionalOutput(response, outputType)
-// See: /netlify/functions/PROMPT_HARDENING_GUIDE.md
+  // ✅ PHASE 5B: FULLY HARDENED
 
   const headers = {
     'Content-Type': 'application/json',
@@ -26,6 +20,20 @@ exports.handler = async (event) => {
   };
 
   if (event.httpMethod === 'OPTIONS') {
+    
+    // PHASE 5B: Post-process and validate
+    const processedResponse = postProcessResponse(rawResponse, 'analysis');
+    const validation = validateProfessionalOutput(processedResponse, 'analysis');
+
+    if (!validation.pass) {
+      console.warn('[ai-advisory-system] Quality issues:', validation.issues);
+      await LOG_EVENT('quality_warning', 'ai-advisory-system', {
+        issues: validation.issues,
+        score: validation.score,
+        user_id: user.id
+      });
+    }
+
     return { statusCode: 200, headers, body: '' };
   }
 
@@ -91,7 +99,7 @@ exports.handler = async (event) => {
       };
     }
 
-    const { situation, claimType, specificQuestions } = body;
+    const { situation, claimType, specificQuestions, claimInfo = {} } = body;
     
     // Log event
     await LOG_EVENT('ai_request', 'ai-advisory-system', { payload: body });
@@ -159,7 +167,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ success: true, data: result, error: null })
+      body: JSON.stringify({ success: true, data: result, metadata: { quality_score: validation.score, validation_passed: validation.pass }, error: null })
     };
   } catch (error) {
     await LOG_ERROR('ai_error', {

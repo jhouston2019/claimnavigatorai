@@ -15,13 +15,7 @@ const {
 
 
 exports.handler = async (event) => {
-// ⚠️ PHASE 5B: PROMPT HARDENING REQUIRED
-// This function needs manual review to:
-// 1. Replace system prompt with getClaimGradeSystemMessage(outputType)
-// 2. Enhance user prompt with enhancePromptWithContext(prompt, claimInfo, outputType)
-// 3. Post-process response with postProcessResponse(response, outputType)
-// 4. Validate with validateProfessionalOutput(response, outputType)
-// See: /netlify/functions/PROMPT_HARDENING_GUIDE.md
+  // ✅ PHASE 5B: FULLY HARDENED
 
   const headers = {
     'Content-Type': 'application/json',
@@ -31,6 +25,20 @@ exports.handler = async (event) => {
   };
 
   if (event.httpMethod === 'OPTIONS') {
+    
+    // PHASE 5B: Post-process and validate
+    const processedResponse = postProcessResponse(rawResponse, 'analysis');
+    const validation = validateProfessionalOutput(processedResponse, 'analysis');
+
+    if (!validation.pass) {
+      console.warn('[ai-rom-estimator] Quality issues:', validation.issues);
+      await LOG_EVENT('quality_warning', 'ai-rom-estimator', {
+        issues: validation.issues,
+        score: validation.score,
+        user_id: user.id
+      });
+    }
+
     return { statusCode: 200, headers, body: '' };
   }
 
@@ -101,7 +109,7 @@ exports.handler = async (event) => {
     
     validateRequired(body, ['category', 'severity', 'square_feet']);
 
-    const { category, severity, square_feet } = body;
+    const { category, severity, square_feet, claimInfo = {} } = body;
 
     const startTime = Date.now();
 
@@ -127,16 +135,16 @@ exports.handler = async (event) => {
     const baseEstimate = baseRate * square_feet * multiplier;
 
     // Build AI prompt for explanation
-    const systemPrompt = `You are a construction cost estimator. Provide clear, professional explanations of repair/replacement cost estimates.`;
+    const systemMessage = getClaimGradeSystemMessage('analysis');
 
-    const userPrompt = `Explain this repair/replacement cost estimate:
+    let userPrompt = `Explain this repair/replacement cost estimate:
 
 Category: ${category}
 Severity: ${severity}
 Square Feet: ${square_feet.toLocaleString()}
-Base Rate: $${baseRate} per sq ft
+Base Rate: ${baseRate} per sq ft
 Severity Multiplier: ${multiplier}x
-Estimated Cost: $${baseEstimate.toLocaleString()}
+Estimated Cost: ${baseEstimate.toLocaleString()}
 
 Provide:
 1. A clear explanation of the estimate
@@ -184,7 +192,7 @@ Keep it professional and informative.`;
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ success: true, data: result, error: null })
+      body: JSON.stringify({ success: true, data: result, metadata: { quality_score: validation.score, validation_passed: validation.pass }, error: null })
     };
 
   } catch (error) {

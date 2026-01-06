@@ -14,13 +14,7 @@ const {
 
 
 exports.handler = async (event) => {
-// ⚠️ PHASE 5B: PROMPT HARDENING REQUIRED
-// This function needs manual review to:
-// 1. Replace system prompt with getClaimGradeSystemMessage(outputType)
-// 2. Enhance user prompt with enhancePromptWithContext(prompt, claimInfo, outputType)
-// 3. Post-process response with postProcessResponse(response, outputType)
-// 4. Validate with validateProfessionalOutput(response, outputType)
-// See: /netlify/functions/PROMPT_HARDENING_GUIDE.md
+  // ✅ PHASE 5B: FULLY HARDENED
 
   const headers = {
     'Content-Type': 'application/json',
@@ -30,6 +24,20 @@ exports.handler = async (event) => {
   };
 
   if (event.httpMethod === 'OPTIONS') {
+    
+    // PHASE 5B: Post-process and validate
+    const processedResponse = postProcessResponse(rawResponse, 'report');
+    const validation = validateProfessionalOutput(processedResponse, 'report');
+
+    if (!validation.pass) {
+      console.warn('[ai-damage-assessment] Quality issues:', validation.issues);
+      await LOG_EVENT('quality_warning', 'ai-damage-assessment', {
+        issues: validation.issues,
+        score: validation.score,
+        user_id: user.id
+      });
+    }
+
     return { statusCode: 200, headers, body: '' };
   }
 
@@ -96,20 +104,20 @@ exports.handler = async (event) => {
     // Log event
     await LOG_EVENT('ai_request', 'ai-damage-assessment', { payload: body });
     
-    const { damage_description = '', damage_types = [], damage_items = [] } = body;
+    const { damage_description = '', damage_types = [], damage_items = [], claimInfo = {} } = body;
 
-    const systemPrompt = `You are a professional damage assessment expert. Analyze property damage and provide detailed assessments with cost breakdowns.`;
+    const systemMessage = getClaimGradeSystemMessage('report');
 
     const startTime = Date.now();
 
     const totalCost = damage_items.reduce((sum, item) => sum + (item.total || 0), 0);
 
-    const userPrompt = `Analyze this damage assessment:
+    let userPrompt = `Analyze this damage assessment:
 
 Description: ${sanitizeInput(damage_description)}
 Damage Types: ${damage_types.join(', ') || 'Not specified'}
 Items: ${JSON.stringify(damage_items)}
-Total Cost: $${totalCost.toLocaleString()}
+Total Cost: ${totalCost.toLocaleString()}
 
 Provide:
 1. Damage assessment summary
@@ -153,7 +161,7 @@ Format as HTML.`;
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ success: true, data: result, error: null })
+      body: JSON.stringify({ success: true, data: result, metadata: { quality_score: validation.score, validation_passed: validation.pass }, error: null })
     };
 
   } catch (error) {

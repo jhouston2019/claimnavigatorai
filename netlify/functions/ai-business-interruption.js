@@ -14,13 +14,7 @@ const {
 
 
 exports.handler = async (event) => {
-// ⚠️ PHASE 5B: PROMPT HARDENING REQUIRED
-// This function needs manual review to:
-// 1. Replace system prompt with getClaimGradeSystemMessage(outputType)
-// 2. Enhance user prompt with enhancePromptWithContext(prompt, claimInfo, outputType)
-// 3. Post-process response with postProcessResponse(response, outputType)
-// 4. Validate with validateProfessionalOutput(response, outputType)
-// See: /netlify/functions/PROMPT_HARDENING_GUIDE.md
+  // ✅ PHASE 5B: FULLY HARDENED
 
   const headers = {
     'Content-Type': 'application/json',
@@ -30,6 +24,20 @@ exports.handler = async (event) => {
   };
 
   if (event.httpMethod === 'OPTIONS') {
+    
+    // PHASE 5B: Post-process and validate
+    const processedResponse = postProcessResponse(rawResponse, 'analysis');
+    const validation = validateProfessionalOutput(processedResponse, 'analysis');
+
+    if (!validation.pass) {
+      console.warn('[ai-business-interruption] Quality issues:', validation.issues);
+      await LOG_EVENT('quality_warning', 'ai-business-interruption', {
+        issues: validation.issues,
+        score: validation.score,
+        user_id: user.id
+      });
+    }
+
     return { statusCode: 200, headers, body: '' };
   }
 
@@ -96,8 +104,7 @@ exports.handler = async (event) => {
     // Log event
     await LOG_EVENT('ai_request', 'ai-business-interruption', { payload: body });
     
-    const {
-      business_name = '',
+    const { business_name = '',
       start_date = '',
       end_date = '',
       revenues = '',
@@ -105,8 +112,7 @@ exports.handler = async (event) => {
       fixed_costs_percent = '',
       variable_costs_percent = '',
       extra_expenses = '',
-      business_type = ''
-    } = body;
+      business_type = '', claimInfo = {} } = body;
 
     const startTime = Date.now();
 
@@ -134,25 +140,25 @@ exports.handler = async (event) => {
     const extraExpensesAmount = parseFloat(extra_expenses) || 0;
     const totalBI = totalLostProfit + extraExpensesAmount;
 
-    const systemPrompt = `You are a forensic accounting expert specializing in business interruption claims. Calculate and explain BI losses professionally.`;
+    const systemMessage = getClaimGradeSystemMessage('analysis');
 
-    const userPrompt = `Calculate business interruption loss:
+    let userPrompt = `Calculate business interruption loss:
 
 Business: ${sanitizeInput(business_name)}
 Type: ${business_type || 'Not specified'}
 Interruption: ${start_date} to ${end_date} (${days} days)
-Average Monthly Revenue: $${avgRevenue.toLocaleString()}
+Average Monthly Revenue: ${avgRevenue.toLocaleString()}
 COGS: ${cogs}%
 Fixed Costs: ${fixed}%
 Variable Costs: ${variable}%
-Extra Expenses: $${extraExpensesAmount.toLocaleString()}
+Extra Expenses: ${extraExpensesAmount.toLocaleString()}
 
 Calculations:
-- Daily Revenue: $${dailyRevenue.toFixed(2)}
-- Daily Net Profit: $${dailyNetProfit.toFixed(2)}
-- Total Lost Revenue: $${totalLostRevenue.toLocaleString()}
-- Total Lost Profit: $${totalLostProfit.toLocaleString()}
-- Total BI Loss: $${totalBI.toLocaleString()}
+- Daily Revenue: ${dailyRevenue.toFixed(2)}
+- Daily Net Profit: ${dailyNetProfit.toFixed(2)}
+- Total Lost Revenue: ${totalLostRevenue.toLocaleString()}
+- Total Lost Profit: ${totalLostProfit.toLocaleString()}
+- Total BI Loss: ${totalBI.toLocaleString()}
 
 Provide:
 1. Calculation explanation
@@ -199,7 +205,7 @@ Format as HTML.`;
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ success: true, data: result, error: null })
+      body: JSON.stringify({ success: true, data: result, metadata: { quality_score: validation.score, validation_passed: validation.pass }, error: null })
     };
 
   } catch (error) {

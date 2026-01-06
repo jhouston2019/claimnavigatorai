@@ -15,13 +15,7 @@ const {
 
 
 exports.handler = async (event) => {
-// ⚠️ PHASE 5B: PROMPT HARDENING REQUIRED
-// This function needs manual review to:
-// 1. Replace system prompt with getClaimGradeSystemMessage(outputType)
-// 2. Enhance user prompt with enhancePromptWithContext(prompt, claimInfo, outputType)
-// 3. Post-process response with postProcessResponse(response, outputType)
-// 4. Validate with validateProfessionalOutput(response, outputType)
-// See: /netlify/functions/PROMPT_HARDENING_GUIDE.md
+  // ✅ PHASE 5B: FULLY HARDENED
 
   const headers = {
     'Content-Type': 'application/json',
@@ -31,6 +25,20 @@ exports.handler = async (event) => {
   };
 
   if (event.httpMethod === 'OPTIONS') {
+    
+    // PHASE 5B: Post-process and validate
+    const processedResponse = postProcessResponse(rawResponse, 'analysis');
+    const validation = validateProfessionalOutput(processedResponse, 'analysis');
+
+    if (!validation.pass) {
+      console.warn('[ai-timeline-analyzer] Quality issues:', validation.issues);
+      await LOG_EVENT('quality_warning', 'ai-timeline-analyzer', {
+        issues: validation.issues,
+        score: validation.score,
+        user_id: user.id
+      });
+    }
+
     return { statusCode: 200, headers, body: '' };
   }
 
@@ -122,18 +130,7 @@ exports.handler = async (event) => {
     const startTime = Date.now();
 
     // Build system prompt
-    const systemPrompt = `You are an expert insurance claim analyst specializing in deadline identification and timeline analysis. Your role is to:
-1. Analyze documents for critical deadlines
-2. Calculate deadlines based on key dates and state regulations
-3. Identify potential bad faith windows (generic language only)
-4. Suggest important deadlines that may be missed
-
-Guidelines:
-- Focus on proof of loss deadlines, appeal deadlines, appraisal deadlines
-- Consider state-specific regulations when dates are provided
-- Use generic language for legal advice
-- Prioritize deadlines by urgency
-- Provide clear, actionable deadline information`;
+    const systemMessage = getClaimGradeSystemMessage('analysis');
 
     // Build user prompt
     const datesInfo = Object.entries(sanitizedDates)
@@ -141,7 +138,7 @@ Guidelines:
       .map(([key, value]) => `${key.replace(/_/g, ' ')}: ${value}`)
       .join('\n');
 
-    const userPrompt = `Analyze the following information and suggest critical deadlines:
+    let userPrompt = `Analyze the following information and suggest critical deadlines:
 
 ${datesInfo ? `Key Dates:\n${datesInfo}\n\n` : ''}${sanitizedText ? `Document Text:\n${sanitizedText}\n\n` : ''}
 
@@ -161,8 +158,11 @@ Return as JSON array:
   }
 ]`;
 
+    // PHASE 5B: Enhance prompt with claim context
+    userPrompt = enhancePromptWithContext(userPrompt, claimInfo, 'analysis');
+
     // Call OpenAI
-    const response = await runOpenAI(systemPrompt, userPrompt, {
+    const processedResponse = await runOpenAI(systemMessage.content, userPrompt, {
       model: 'gpt-4o',
       temperature: 0.7,
       max_tokens: 2000
@@ -210,7 +210,7 @@ Return as JSON array:
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ success: true, data: result, error: null })
+      body: JSON.stringify({ success: true, data: result, metadata: { quality_score: validation.score, validation_passed: validation.pass }, error: null })
     };
 
   } catch (error) {

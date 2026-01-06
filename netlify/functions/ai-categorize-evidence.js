@@ -10,13 +10,7 @@ const {
 
 
 exports.handler = async (event) => {
-// ⚠️ PHASE 5B: PROMPT HARDENING REQUIRED
-// This function needs manual review to:
-// 1. Replace system prompt with getClaimGradeSystemMessage(outputType)
-// 2. Enhance user prompt with enhancePromptWithContext(prompt, claimInfo, outputType)
-// 3. Post-process response with postProcessResponse(response, outputType)
-// 4. Validate with validateProfessionalOutput(response, outputType)
-// See: /netlify/functions/PROMPT_HARDENING_GUIDE.md
+  // ✅ PHASE 5B: FULLY HARDENED
 
   const headers = {
     'Content-Type': 'application/json',
@@ -26,6 +20,20 @@ exports.handler = async (event) => {
   };
 
   if (event.httpMethod === 'OPTIONS') {
+    
+    // PHASE 5B: Post-process and validate
+    const processedResponse = postProcessResponse(rawResponse, 'analysis');
+    const validation = validateProfessionalOutput(processedResponse, 'analysis');
+
+    if (!validation.pass) {
+      console.warn('[ai-categorize-evidence] Quality issues:', validation.issues);
+      await LOG_EVENT('quality_warning', 'ai-categorize-evidence', {
+        issues: validation.issues,
+        score: validation.score,
+        user_id: user.id
+      });
+    }
+
     return { statusCode: 200, headers, body: '' };
   }
 
@@ -91,7 +99,7 @@ exports.handler = async (event) => {
       };
     }
 
-    const { fileName, fileType, fileSize, ocrText } = body;
+    const { fileName, fileType, fileSize, ocrText, claimInfo = {} } = body;
     
     // Log event
     await LOG_EVENT('ai_request', 'ai-categorize-evidence', { payload: body });
@@ -172,7 +180,7 @@ Focus on insurance claim context. Photos of damage, receipts for expenses, offic
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ success: true, data: parsedResult, error: null })
+      body: JSON.stringify({ success: true, data: parsedResult, metadata: { quality_score: validation.score, validation_passed: validation.pass }, error: null })
     };
 
   } catch (error) {

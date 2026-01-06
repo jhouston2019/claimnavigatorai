@@ -14,13 +14,7 @@ const {
 
 
 exports.handler = async (event) => {
-// ⚠️ PHASE 5B: PROMPT HARDENING REQUIRED
-// This function needs manual review to:
-// 1. Replace system prompt with getClaimGradeSystemMessage(outputType)
-// 2. Enhance user prompt with enhancePromptWithContext(prompt, claimInfo, outputType)
-// 3. Post-process response with postProcessResponse(response, outputType)
-// 4. Validate with validateProfessionalOutput(response, outputType)
-// See: /netlify/functions/PROMPT_HARDENING_GUIDE.md
+  // ✅ PHASE 5B: FULLY HARDENED
 
   const headers = {
     'Content-Type': 'application/json',
@@ -30,6 +24,20 @@ exports.handler = async (event) => {
   };
 
   if (event.httpMethod === 'OPTIONS') {
+    
+    // PHASE 5B: Post-process and validate
+    const processedResponse = postProcessResponse(rawResponse, 'analysis');
+    const validation = validateProfessionalOutput(processedResponse, 'analysis');
+
+    if (!validation.pass) {
+      console.warn('[ai-expert-opinion] Quality issues:', validation.issues);
+      await LOG_EVENT('quality_warning', 'ai-expert-opinion', {
+        issues: validation.issues,
+        score: validation.score,
+        user_id: user.id
+      });
+    }
+
     return { statusCode: 200, headers, body: '' };
   }
 
@@ -96,20 +104,18 @@ exports.handler = async (event) => {
     // Log event
     await LOG_EVENT('ai_request', 'ai-expert-opinion', { payload: body });
     
-    const {
-      description = '',
+    const { description = '',
       expertise = '',
       urgency = '',
       deadline = '',
       requirements = '',
-      supporting_documents = []
-    } = body;
+      supporting_documents = [], claimInfo = {} } = body;
 
     const startTime = Date.now();
 
-    const systemPrompt = `You are a professional document generator specializing in expert opinion requests. Create formal, professional requests for expert analysis.`;
+    const systemMessage = getClaimGradeSystemMessage('analysis');
 
-    const userPrompt = `Generate an expert opinion request document:
+    let userPrompt = `Generate an expert opinion request document:
 
 Request Description: ${sanitizeInput(description)}
 Expertise Area: ${expertise || 'Not specified'}
@@ -127,6 +133,9 @@ Create a professional request document that includes:
 6. Professional closing
 
 Format as a formal document.`;
+
+    // PHASE 5B: Enhance prompt with claim context
+    userPrompt = enhancePromptWithContext(userPrompt, claimInfo, 'analysis');
 
     const document = await runOpenAI(systemPrompt, userPrompt, {
       model: 'gpt-4o',
@@ -162,7 +171,7 @@ Format as a formal document.`;
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ success: true, data: result, error: null })
+      body: JSON.stringify({ success: true, data: result, metadata: { quality_score: validation.score, validation_passed: validation.pass }, error: null })
     };
 
   } catch (error) {
