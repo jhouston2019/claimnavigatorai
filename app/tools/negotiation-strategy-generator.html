@@ -34,20 +34,78 @@
         <!-- Input Form -->
         <form data-tool-form class="tool-form">
           <div class="tool-form-group">
-            <label for="inputText" class="tool-label">Input Data</label>
-            <textarea 
-              id="inputText" 
-              name="inputText" 
-              class="tool-textarea" 
-              rows="8" 
-              placeholder="Enter the information to analyze..."
+            <label for="claimNumber" class="tool-label">Claim Number</label>
+            <input 
+              type="text" 
+              id="claimNumber" 
+              name="claimNumber" 
+              class="tool-input" 
+              placeholder="e.g., SF-2023-12345"
               required
-            ></textarea>
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="insurerName" class="tool-label">Insurance Company Name</label>
+            <input 
+              type="text" 
+              id="insurerName" 
+              name="insurerName" 
+              class="tool-input" 
+              placeholder="e.g., State Farm"
+              required
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="currentOffer" class="tool-label">Current Offer Amount ($)</label>
+            <input 
+              type="number" 
+              id="currentOffer" 
+              name="currentOffer" 
+              class="tool-input" 
+              step="0.01"
+              placeholder="e.g., 50000.00"
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="targetAmount" class="tool-label">Target Settlement Amount ($)</label>
+            <input 
+              type="number" 
+              id="targetAmount" 
+              name="targetAmount" 
+              class="tool-input" 
+              step="0.01"
+              placeholder="e.g., 75000.00"
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="strategyType" class="tool-label">Strategy Type</label>
+            <select id="strategyType" name="strategyType" class="tool-input" required>
+              <option value="">Select strategy...</option>
+              <option value="initial">Initial Negotiation</option>
+              <option value="counter">Counter Offer</option>
+              <option value="escalation">Escalation</option>
+              <option value="final">Final Settlement</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="jurisdiction" class="tool-label">Jurisdiction (State)</label>
+            <input 
+              type="text" 
+              id="jurisdiction" 
+              name="jurisdiction" 
+              class="tool-input" 
+              placeholder="e.g., California"
+            />
           </div>
 
           <div class="tool-form-actions">
             <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
-              Analyze
+              Generate Strategy
             </button>
           </div>
         </form>

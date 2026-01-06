@@ -34,20 +34,78 @@
         <!-- Input Form -->
         <form data-tool-form class="tool-form">
           <div class="tool-form-group">
-            <label for="inputText" class="tool-label">Input Data</label>
-            <textarea 
-              id="inputText" 
-              name="inputText" 
-              class="tool-textarea" 
-              rows="8" 
-              placeholder="Enter the information to analyze..."
+            <label for="claimNumber" class="tool-label">Claim Number</label>
+            <input 
+              type="text" 
+              id="claimNumber" 
+              name="claimNumber" 
+              class="tool-input" 
+              placeholder="e.g., SF-2023-12345"
               required
-            ></textarea>
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="itemDescription" class="tool-label">Item Description</label>
+            <input 
+              type="text" 
+              id="itemDescription" 
+              name="itemDescription" 
+              class="tool-input" 
+              placeholder="e.g., Samsung 55-inch 4K TV"
+              required
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="rcvAmount" class="tool-label">Replacement Cost Value ($)</label>
+            <input 
+              type="number" 
+              id="rcvAmount" 
+              name="rcvAmount" 
+              class="tool-input" 
+              step="0.01"
+              placeholder="e.g., 1200.00"
+              required
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="acvAmount" class="tool-label">Actual Cash Value Offered ($)</label>
+            <input 
+              type="number" 
+              id="acvAmount" 
+              name="acvAmount" 
+              class="tool-input" 
+              step="0.01"
+              placeholder="e.g., 800.00"
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="documentType" class="tool-label">Document Type</label>
+            <select id="documentType" name="documentType" class="tool-input" required>
+              <option value="">Select type...</option>
+              <option value="justification-letter">Justification Letter</option>
+              <option value="appeal">Appeal</option>
+              <option value="supplement-request">Supplement Request</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="jurisdiction" class="tool-label">Jurisdiction (State)</label>
+            <input 
+              type="text" 
+              id="jurisdiction" 
+              name="jurisdiction" 
+              class="tool-input" 
+              placeholder="e.g., California"
+            />
           </div>
 
           <div class="tool-form-actions">
             <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
-              Analyze
+              Generate Justification
             </button>
           </div>
         </form>

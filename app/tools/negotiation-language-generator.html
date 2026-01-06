@@ -34,20 +34,66 @@
         <!-- Input Form -->
         <form data-tool-form class="tool-form">
           <div class="tool-form-group">
-            <label for="inputText" class="tool-label">Input Data</label>
-            <textarea 
-              id="inputText" 
-              name="inputText" 
-              class="tool-textarea" 
-              rows="8" 
-              placeholder="Enter the information to analyze..."
+            <label for="claimNumber" class="tool-label">Claim Number</label>
+            <input 
+              type="text" 
+              id="claimNumber" 
+              name="claimNumber" 
+              class="tool-input" 
+              placeholder="e.g., SF-2023-12345"
               required
-            ></textarea>
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="insurerName" class="tool-label">Insurance Company Name</label>
+            <input 
+              type="text" 
+              id="insurerName" 
+              name="insurerName" 
+              class="tool-input" 
+              placeholder="e.g., State Farm"
+              required
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="negotiationType" class="tool-label">Type of Negotiation</label>
+            <select id="negotiationType" name="negotiationType" class="tool-input" required>
+              <option value="">Select type...</option>
+              <option value="settlement-offer">Settlement Offer Response</option>
+              <option value="scope-dispute">Scope Dispute</option>
+              <option value="valuation">Valuation Disagreement</option>
+              <option value="coverage">Coverage Dispute</option>
+              <option value="depreciation">Depreciation Challenge</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="tone" class="tool-label">Desired Tone</label>
+            <select id="tone" name="tone" class="tool-input" required>
+              <option value="professional">Professional</option>
+              <option value="assertive">Assertive</option>
+              <option value="conciliatory">Conciliatory</option>
+              <option value="formal">Formal</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="jurisdiction" class="tool-label">Jurisdiction (State)</label>
+            <input 
+              type="text" 
+              id="jurisdiction" 
+              name="jurisdiction" 
+              class="tool-input" 
+              placeholder="e.g., California"
+            />
           </div>
 
           <div class="tool-form-actions">
             <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
-              Analyze
+              Generate Language
             </button>
           </div>
         </form>
