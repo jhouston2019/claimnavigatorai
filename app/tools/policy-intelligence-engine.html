@@ -34,23 +34,71 @@
         <!-- Input Form -->
         <form data-tool-form class="tool-form">
           <div class="tool-form-group">
-            <label for="inputText" class="tool-label">Input Data</label>
-            <textarea 
-              id="inputText" 
-              name="inputText" 
-              class="tool-textarea" 
-              rows="8" 
-              placeholder="Enter the information to analyze..."
+            <label for="policyUpload" class="tool-label">Upload Insurance Policy</label>
+            <input 
+              type="file" 
+              id="policyUpload" 
+              name="policyUpload" 
+              class="tool-input" 
+              accept=".pdf,.doc,.docx,.txt"
               required
+            />
+            <small class="tool-help-text">Accepted formats: PDF, DOC, DOCX, TXT</small>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="policyType" class="tool-label">Policy Type</label>
+            <select id="policyType" name="policyType" class="tool-input" required>
+              <option value="">Select policy type...</option>
+              <option value="homeowners">Homeowners (HO-3)</option>
+              <option value="condo">Condo (HO-6)</option>
+              <option value="renters">Renters (HO-4)</option>
+              <option value="commercial">Commercial Property</option>
+              <option value="business-owners">Business Owners Policy (BOP)</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="claimType" class="tool-label">Claim Type</label>
+            <select id="claimType" name="claimType" class="tool-input" required>
+              <option value="">Select claim type...</option>
+              <option value="water">Water Damage</option>
+              <option value="fire">Fire Damage</option>
+              <option value="wind">Wind/Hurricane Damage</option>
+              <option value="theft">Theft/Vandalism</option>
+              <option value="liability">Liability</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="analysisContext" class="tool-label">Analysis Context (Optional)</label>
+            <textarea 
+              id="analysisContext" 
+              name="analysisContext" 
+              class="tool-input" 
+              rows="3" 
+              maxlength="500"
+              placeholder="Brief context about what you're looking for (max 500 characters)..."
             ></textarea>
+            <small class="tool-help-text">Character count: <span id="charCount">0</span>/500</small>
           </div>
 
           <div class="tool-form-actions">
             <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
-              Analyze
+              Analyze Policy
             </button>
           </div>
         </form>
+
+        <script>
+          // Character counter for context field
+          document.getElementById('analysisContext')?.addEventListener('input', function(e) {
+            const count = e.target.value.length;
+            document.getElementById('charCount').textContent = count;
+          });
+        </script>
 
         <!-- Output Area -->
         <div data-tool-output id="output" class="tool-output" style="display: none;">
