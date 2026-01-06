@@ -457,7 +457,7 @@ async function loadStages() {
         </div>
         ${stage.updated_at ? `<small style="display: block; margin-top: 0.5rem; opacity: 0.7; font-size: 0.85rem;">Last updated: ${new Date(stage.updated_at).toLocaleString()}</small>` : ''}
         <div class="stage-notes">
-          <textarea id="notes-${index}" placeholder="Add notes about this stage...">${escapeHtml(stage.notes || '')}</textarea>
+          <textarea id="notes-${index}" placeholder="Add notes about this stage (max 300 chars)..." maxlength="300">${escapeHtml(stage.notes || '')}</textarea>
           <button onclick="window.saveNotes('${stage.stage_name}', ${index})">Save Notes</button>
           ${stage.notes ? `<div class="notes-display">${escapeHtml(stage.notes)}</div>` : ''}
         </div>
