@@ -2,11 +2,42 @@
 
 A professional-grade AI-powered tool for analyzing insurer correspondence and generating expert responses for insurance claims.
 
+## 🚀 Quick Start
+
+**⚠️ IMPORTANT: Do NOT open HTML files directly. Always use a local server.**
+
+### Run Locally (3 Options)
+
+**Option 1: Simple Server (Fastest)**
+```bash
+npm run dev:simple
+```
+Then open: `http://localhost:3000/app/resource-center.html`
+
+**Option 2: Full Netlify Environment**
+```bash
+npm run dev
+```
+Then open: `http://localhost:8888/app/resource-center.html`
+
+**Option 3: Python (No Node.js)**
+```bash
+python -m http.server 3000
+```
+Then open: `http://localhost:3000/app/resource-center.html`
+
+📖 **Full setup guide:** See [LOCAL_DEVELOPMENT.md](LOCAL_DEVELOPMENT.md)
+
+---
+
 ## Features
 
-- **Multiple Analysis Modes**: Standard Reply, Professional Appeal, Policy Clarification, Negotiation Strategy, Summary & Guidance
+- **136+ Tools & Resources**: AI tools, workflow tools, document generators, and reference libraries
 - **Smart AI Analysis**: Powered by OpenAI GPT-4o-mini for accurate, professional responses
-- **PDF Export**: Generate professional PDF reports with claim information and AI analysis
+- **Document Generation**: Generate professional letters, reports, and legal documents
+- **Workflow Management**: Track deadlines, evidence, expenses, and claim stages
+- **Step-by-Step Guidance**: Complete 13-step claim process with integrated tools
+- **PDF/DOCX Export**: Generate professional documents in multiple formats
 - **Responsive Design**: Modern, mobile-friendly interface using TailwindCSS
 - **Auto-save**: Form data is automatically saved to localStorage
 
