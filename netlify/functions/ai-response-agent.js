@@ -6,8 +6,16 @@
 const { runOpenAI, sanitizeInput, validateRequired } = require('./lib/ai-utils');
 const { createClient } = require('@supabase/supabase-js');
 const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
+const { 
+  getClaimGradeSystemMessage,
+  enhancePromptWithContext,
+  postProcessResponse,
+  validateProfessionalOutput
+} = require('./utils/prompt-hardening');
+
 
 exports.handler = async (event) => {
+  // ✅ PHASE 5B: PROMPT HARDENING COMPLETE
   const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
@@ -91,7 +99,8 @@ exports.handler = async (event) => {
       claim_type = 'general',
       insurer_name = '',
       denial_letter_text,
-      tone = 'professional'
+      tone = 'professional',
+      claimInfo = {} // PHASE 5B: Claim context from frontend
     } = body;
 
     // Sanitize inputs
@@ -100,18 +109,8 @@ exports.handler = async (event) => {
 
     const startTime = Date.now();
 
-    // Build prompts
-    const systemPrompt = `You are a professional insurance claim advocate specializing in policyholder rights. Your role is to analyze insurer correspondence and draft expert response letters that are:
-- Professional and legally appropriate
-- Fact-based and evidence-driven
-- Clear and actionable
-- Respectful but firm when necessary
-
-Guidelines:
-- Cite specific policy language when relevant
-- Address each point raised by the insurer
-- Provide actionable next steps
-- Maintain appropriate tone based on context`;
+    // PHASE 5B: Use claim-grade system message
+    const systemMessage = getClaimGradeSystemMessage('letter');
 
     const toneInstructions = {
       professional: 'Use a professional, cooperative tone. Focus on facts and policy compliance.',
@@ -120,7 +119,8 @@ Guidelines:
       'attorney-style': 'Use a formal, legalistic tone appropriate for attorney correspondence. Cite legal precedents when relevant.'
     };
 
-    const userPrompt = `Analyze the following insurer correspondence and draft a ${tone} response letter.
+    // Build user prompt
+    let userPrompt = `Analyze the following insurer correspondence and draft a ${tone} response letter.
 
 Insurer: ${sanitizedInsurer}
 Claim Type: ${claim_type}
@@ -141,8 +141,11 @@ Format your response as JSON:
   "next_steps": ["Step 1", "Step 2", "Step 3"]
 }`;
 
+    // PHASE 5B: Enhance prompt with claim context and harden
+    userPrompt = enhancePromptWithContext(userPrompt, claimInfo, 'letter');
+
     // Call OpenAI
-    const response = await runOpenAI(systemPrompt, userPrompt, {
+    const rawResponse = await runOpenAI(systemMessage.content, userPrompt, {
       model: 'gpt-4o',
       temperature: 0.7,
       max_tokens: 2000
@@ -151,14 +154,27 @@ Format your response as JSON:
     // Parse JSON response
     let result;
     try {
-      result = JSON.parse(response);
+      result = JSON.parse(rawResponse);
     } catch (e) {
       // If not JSON, extract structured data
       result = {
-        subject: extractSubject(response),
-        body: response,
-        next_steps: extractNextSteps(response)
+        subject: extractSubject(rawResponse),
+        body: rawResponse,
+        next_steps: extractNextSteps(rawResponse)
       };
+    }
+
+    // PHASE 5B: Post-process and validate letter body
+    result.body = postProcessResponse(result.body, 'letter');
+    const validation = validateProfessionalOutput(result.body, 'letter');
+
+    if (!validation.pass) {
+      console.warn('[ai-response-agent] Quality issues detected:', validation.issues);
+      await LOG_EVENT('quality_warning', 'ai-response-agent', {
+        issues: validation.issues,
+        score: validation.score,
+        user_id: user.id
+      });
     }
 
     const endTime = Date.now();
@@ -179,10 +195,19 @@ Format your response as JSON:
       estimated_cost_usd: 0.002
     });
 
+    // PHASE 5B: Include quality metadata in response
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ success: true, data: result, error: null })
+      body: JSON.stringify({ 
+        success: true, 
+        data: result, 
+        metadata: {
+          quality_score: validation.score,
+          validation_passed: validation.pass
+        },
+        error: null 
+      })
     };
 
   } catch (error) {

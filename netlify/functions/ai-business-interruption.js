@@ -5,8 +5,23 @@
 const { runOpenAI, sanitizeInput } = require('./lib/ai-utils');
 const { createClient } = require('@supabase/supabase-js');
 const { LOG_EVENT, LOG_ERROR, LOG_USAGE, LOG_COST } = require('./_utils');
+const { 
+  getClaimGradeSystemMessage,
+  enhancePromptWithContext,
+  postProcessResponse,
+  validateProfessionalOutput
+} = require('./utils/prompt-hardening');
+
 
 exports.handler = async (event) => {
+// ⚠️ PHASE 5B: PROMPT HARDENING REQUIRED
+// This function needs manual review to:
+// 1. Replace system prompt with getClaimGradeSystemMessage(outputType)
+// 2. Enhance user prompt with enhancePromptWithContext(prompt, claimInfo, outputType)
+// 3. Post-process response with postProcessResponse(response, outputType)
+// 4. Validate with validateProfessionalOutput(response, outputType)
+// See: /netlify/functions/PROMPT_HARDENING_GUIDE.md
+
   const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
