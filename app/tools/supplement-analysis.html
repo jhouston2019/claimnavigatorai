@@ -34,20 +34,81 @@
         <!-- Input Form -->
         <form data-tool-form class="tool-form">
           <div class="tool-form-group">
-            <label for="inputText" class="tool-label">Input Data</label>
-            <textarea 
-              id="inputText" 
-              name="inputText" 
-              class="tool-textarea" 
-              rows="8" 
-              placeholder="Enter the information to analyze..."
+            <label for="claimNumber" class="tool-label">Claim Number</label>
+            <input 
+              type="text" 
+              id="claimNumber" 
+              name="claimNumber" 
+              class="tool-input" 
+              placeholder="e.g., SF-2023-12345"
               required
-            ></textarea>
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="insurerName" class="tool-label">Insurance Company Name</label>
+            <input 
+              type="text" 
+              id="insurerName" 
+              name="insurerName" 
+              class="tool-input" 
+              placeholder="e.g., State Farm"
+              required
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="originalEstimate" class="tool-label">Original Estimate Amount ($)</label>
+            <input 
+              type="number" 
+              id="originalEstimate" 
+              name="originalEstimate" 
+              class="tool-input" 
+              step="0.01"
+              placeholder="e.g., 50000.00"
+              required
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="supplementAmount" class="tool-label">Supplement Amount ($)</label>
+            <input 
+              type="number" 
+              id="supplementAmount" 
+              name="supplementAmount" 
+              class="tool-input" 
+              step="0.01"
+              placeholder="e.g., 15000.00"
+              required
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="supplementReason" class="tool-label">Reason for Supplement</label>
+            <select id="supplementReason" name="supplementReason" class="tool-input" required>
+              <option value="">Select reason...</option>
+              <option value="additional-damage">Additional Damage Discovered</option>
+              <option value="scope-omission">Scope Omission</option>
+              <option value="pricing-error">Pricing Error</option>
+              <option value="code-upgrade">Code Upgrade Required</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="jurisdiction" class="tool-label">Jurisdiction (State)</label>
+            <input 
+              type="text" 
+              id="jurisdiction" 
+              name="jurisdiction" 
+              class="tool-input" 
+              placeholder="e.g., California"
+            />
           </div>
 
           <div class="tool-form-actions">
             <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
-              Analyze
+              Analyze Supplement
             </button>
           </div>
         </form>
