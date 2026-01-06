@@ -36,18 +36,25 @@
               <option value="transportation">Transportation</option>
               <option value="storage">Storage</option>
               <option value="utilities">Utilities</option>
+              <option value="laundry">Laundry</option>
+              <option value="pet-boarding">Pet Boarding</option>
               <option value="other">Other</option>
             </select>
           </div>
           
           <div class="tool-form-group">
             <label for="expenseAmount">Expense Amount ($)</label>
-            <input type="number" id="expenseAmount" name="expenseAmount" class="tool-input" step="0.01" required>
+            <input type="number" id="expenseAmount" name="expenseAmount" class="tool-input" step="0.01" min="0" required>
           </div>
-          
+
           <div class="tool-form-group">
-            <label for="expenseDescription">Description</label>
-            <textarea id="expenseDescription" name="expenseDescription" class="tool-input" rows="3" required></textarea>
+            <label for="daysDisplaced">Days Displaced</label>
+            <input type="number" id="daysDisplaced" name="daysDisplaced" class="tool-input" min="1" required>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="policyALELimit">Policy ALE Limit ($)</label>
+            <input type="number" id="policyALELimit" name="policyALELimit" class="tool-input" step="0.01" min="0" required>
           </div>
           
           <button type="submit" class="tool-btn tool-btn-primary" data-analyze-btn>
@@ -78,7 +85,7 @@
 
   <script>
     function goBack() {
-      window.location.href = '../step-by-step-claim-guide.html?step=6';
+      window.location.href = '/step-by-step-claim-guide.html?step=6';
     }
   </script>
 
@@ -92,20 +99,6 @@
         backendFunction: '/.netlify/functions/ai-rom-estimator',
         outputFormat: 'structured',
         timelineEventType: 'ale_eligibility_check'
-      });
-    });
-  </script>
-
-
-  <script type="module">
-    import { AIToolController } from '../assets/js/controllers/index.js';
-
-    document.addEventListener('DOMContentLoaded', async () => {
-      await AIToolController.initTool({
-        toolId: 'ale-eligibility-checker',
-        toolName: 'ALE Eligibility Checker',
-        backendFunction: '/.netlify/functions/ai-rom-estimator',
-        outputFormat: 'calculation'
       });
     });
   </script>
