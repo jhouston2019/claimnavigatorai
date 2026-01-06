@@ -30,6 +30,83 @@
         
         
 
+        <!-- Input Form -->
+        <form data-tool-form class="tool-form">
+          <div class="tool-form-group">
+            <label for="roomName" class="tool-label">Room Name</label>
+            <input 
+              type="text" 
+              id="roomName" 
+              name="roomName" 
+              class="tool-input" 
+              placeholder="e.g., Master Bedroom"
+              required
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="roomType" class="tool-label">Room Type</label>
+            <select id="roomType" name="roomType" class="tool-input" required>
+              <option value="">Select room type...</option>
+              <option value="bedroom">Bedroom</option>
+              <option value="bathroom">Bathroom</option>
+              <option value="kitchen">Kitchen</option>
+              <option value="living-room">Living Room</option>
+              <option value="dining-room">Dining Room</option>
+              <option value="office">Office</option>
+              <option value="garage">Garage</option>
+              <option value="basement">Basement</option>
+              <option value="attic">Attic</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="damageLevel" class="tool-label">Damage Level</label>
+            <select id="damageLevel" name="damageLevel" class="tool-input" required>
+              <option value="">Select damage level...</option>
+              <option value="none">No Damage</option>
+              <option value="minor">Minor</option>
+              <option value="moderate">Moderate</option>
+              <option value="severe">Severe</option>
+              <option value="total">Total Loss</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="context" class="tool-label">Brief Notes (Optional, max 500 chars)</label>
+            <textarea 
+              id="context" 
+              name="context" 
+              class="tool-textarea" 
+              rows="3" 
+              maxlength="500"
+              placeholder="e.g., Water damage to ceiling and carpet..."
+            ></textarea>
+          </div>
+
+          <div class="tool-form-actions">
+            <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
+              Generate Prompts
+            </button>
+          </div>
+        </form>
+
+        <!-- Output Area -->
+        <div data-tool-output id="output" class="tool-output" style="display: none;">
+          <h3 class="tool-section-title">Room-by-Room Prompts</h3>
+          <div class="tool-output-content"></div>
+          
+          <div class="tool-form-actions" style="margin-top: 1.5rem;">
+            <button data-export-pdf class="tool-btn tool-btn-secondary">
+              Export as PDF
+            </button>
+            <button data-copy-clipboard class="tool-btn tool-btn-secondary">
+              Copy to Clipboard
+            </button>
+          </div>
+        </div>
+
         <div class="tool-section">
           <h3 class="tool-section-title">What This Tool Does</h3>
           <p>Guided prompts for complete inventory</p>

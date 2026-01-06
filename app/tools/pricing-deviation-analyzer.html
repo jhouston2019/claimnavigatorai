@@ -34,20 +34,57 @@
         <!-- Input Form -->
         <form data-tool-form class="tool-form">
           <div class="tool-form-group">
-            <label for="inputText" class="tool-label">Input Data</label>
-            <textarea 
-              id="inputText" 
-              name="inputText" 
-              class="tool-textarea" 
-              rows="8" 
-              placeholder="Enter the information to analyze..."
+            <label for="estimateUpload" class="tool-label">Upload Estimate Document</label>
+            <input 
+              type="file" 
+              id="estimateUpload" 
+              name="estimateUpload" 
+              class="tool-input" 
+              accept=".pdf,.txt"
               required
+            />
+            <small>Upload estimate to analyze pricing deviations.</small>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="jurisdiction" class="tool-label">Jurisdiction (State)</label>
+            <input 
+              type="text" 
+              id="jurisdiction" 
+              name="jurisdiction" 
+              class="tool-input" 
+              placeholder="e.g., California"
+              required
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="claimType" class="tool-label">Type of Claim</label>
+            <select id="claimType" name="claimType" class="tool-input" required>
+              <option value="">Select claim type...</option>
+              <option value="fire">Fire Damage</option>
+              <option value="water">Water Damage</option>
+              <option value="wind">Wind/Hail Damage</option>
+              <option value="structural">Structural</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="context" class="tool-label">Brief Context (Optional, max 500 chars)</label>
+            <textarea 
+              id="context" 
+              name="context" 
+              class="tool-textarea" 
+              rows="3" 
+              maxlength="500"
+              placeholder="e.g., Pricing seems unusually low for roofing..."
             ></textarea>
           </div>
 
           <div class="tool-form-actions">
             <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
-              Analyze
+              Analyze Pricing
             </button>
           </div>
         </form>

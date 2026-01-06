@@ -34,20 +34,55 @@
         <!-- Input Form -->
         <form data-tool-form class="tool-form">
           <div class="tool-form-group">
-            <label for="inputText" class="tool-label">Input Data</label>
-            <textarea 
-              id="inputText" 
-              name="inputText" 
-              class="tool-textarea" 
-              rows="8" 
-              placeholder="Enter the information to analyze..."
+            <label for="scopeUpload" class="tool-label">Upload Scope/Estimate Document</label>
+            <input 
+              type="file" 
+              id="scopeUpload" 
+              name="scopeUpload" 
+              class="tool-input" 
+              accept=".pdf,.txt"
               required
+            />
+            <small>Upload scope or estimate to detect omissions.</small>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="damageType" class="tool-label">Type of Damage</label>
+            <select id="damageType" name="damageType" class="tool-input" required>
+              <option value="">Select damage type...</option>
+              <option value="fire">Fire Damage</option>
+              <option value="water">Water Damage</option>
+              <option value="wind">Wind/Hail Damage</option>
+              <option value="structural">Structural</option>
+              <option value="comprehensive">Comprehensive</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="propertyType" class="tool-label">Property Type</label>
+            <select id="propertyType" name="propertyType" class="tool-input" required>
+              <option value="">Select property type...</option>
+              <option value="residential">Residential</option>
+              <option value="commercial">Commercial</option>
+              <option value="multi-family">Multi-Family</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="context" class="tool-label">Brief Context (Optional, max 500 chars)</label>
+            <textarea 
+              id="context" 
+              name="context" 
+              class="tool-textarea" 
+              rows="3" 
+              maxlength="500"
+              placeholder="e.g., Suspect HVAC work is missing from scope..."
             ></textarea>
           </div>
 
           <div class="tool-form-actions">
             <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
-              Analyze
+              Detect Omissions
             </button>
           </div>
         </form>
