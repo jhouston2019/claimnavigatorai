@@ -97,9 +97,18 @@ exports.handler = async (event) => {
       include_overhead = false, 
       notes = '',
       analysis_mode = 'comparison',
-      analysis_focus = 'comparison', claimInfo = {} } = body;
+      analysis_focus = 'comparison', 
+      claimInfo = {},
+      context = '',
+      affectedRooms = '',
+      claimType = '',
+      mitigationActions = '',
+      mitigationCost = 0,
+      mitigationDate = '' } = body;
 
-    if (estimates.length === 0) {
+    // For certain modes, estimates are optional
+    const estimateOptionalModes = ['damage-assessment', 'mitigation-documentation'];
+    if (estimates.length === 0 && !estimateOptionalModes.includes(analysis_mode)) {
       return {
         statusCode: 400,
         headers,
@@ -157,7 +166,15 @@ exports.handler = async (event) => {
     }
 
     // Extract structured data from engine results
-    const structuredData = extractStructuredData(analysisResults, analysis_mode);
+    const structuredData = extractStructuredData(analysisResults, analysis_mode, {
+      context,
+      affectedRooms,
+      claimType,
+      mitigationActions,
+      mitigationCost,
+      mitigationDate,
+      notes
+    });
 
     const endTime = Date.now();
     const durationMs = endTime - startTime;
@@ -219,7 +236,7 @@ exports.handler = async (event) => {
 /**
  * Extract structured data from engine results based on analysis mode
  */
-function extractStructuredData(analysisResults, analysisMode) {
+function extractStructuredData(analysisResults, analysisMode, formData = {}) {
   // Determine which structured format to return based on analysis mode
   switch (analysisMode) {
     case 'line-item-discrepancy':
@@ -233,9 +250,9 @@ function extractStructuredData(analysisResults, analysisMode) {
     case 'missing-trade':
       return extractMissingTrades(analysisResults);
     case 'damage-assessment':
-      return extractDamageAssessment(analysisResults);
+      return extractDamageAssessment(analysisResults, formData);
     case 'mitigation-documentation':
-      return extractMitigationDocumentation(analysisResults);
+      return extractMitigationDocumentation(analysisResults, formData);
     default:
       // Default to line item discrepancies for comparison mode
       return extractLineItemDiscrepancies(analysisResults);
@@ -458,12 +475,36 @@ function extractMissingTrades(analysisResults) {
 }
 
 /**
- * Extract damage assessment from engine results
+ * Extract damage assessment from engine results OR form data
  */
-function extractDamageAssessment(analysisResults) {
+function extractDamageAssessment(analysisResults, formData = {}) {
   const assessment = [];
   let totalCost = 0;
   
+  // If no estimates provided, create assessment from form data
+  if (analysisResults.length === 0 && formData.context) {
+    const rooms = formData.affectedRooms ? formData.affectedRooms.split(',').map(r => r.trim()) : ['Affected Area'];
+    const damageType = formData.claimType || 'Damage';
+    
+    rooms.forEach(room => {
+      assessment.push({
+        area: room,
+        damage_type: damageType,
+        severity: 'MEDIUM',
+        estimated_cost: 5000,
+        documentation_notes: 'Based on damage description - requires professional estimate'
+      });
+      totalCost += 5000;
+    });
+    
+    return {
+      assessment: assessment,
+      total_estimated_damage: totalCost,
+      summary: `Preliminary damage assessment: ${assessment.length} area(s) identified. Professional estimate recommended.`
+    };
+  }
+  
+  // Extract from estimate analysis results
   analysisResults.forEach((result, idx) => {
     if (result.report) {
       // Parse report to extract damage areas
@@ -499,12 +540,37 @@ function extractDamageAssessment(analysisResults) {
 }
 
 /**
- * Extract mitigation documentation from engine results
+ * Extract mitigation documentation from form data OR engine results
  */
-function extractMitigationDocumentation(analysisResults) {
+function extractMitigationDocumentation(analysisResults, formData = {}) {
   const mitigationItems = [];
   let totalCost = 0;
   
+  // If form data provided, use it directly
+  if (formData.mitigationActions) {
+    const actions = formData.mitigationActions.split('\n').filter(a => a.trim());
+    const costPerAction = formData.mitigationCost ? parseFloat(formData.mitigationCost) / actions.length : 0;
+    
+    actions.forEach(action => {
+      mitigationItems.push({
+        action: action.trim(),
+        date: formData.mitigationDate || new Date().toISOString().split('T')[0],
+        cost: Math.round(costPerAction),
+        vendor: 'As documented',
+        documentation_status: 'Complete'
+      });
+      totalCost += Math.round(costPerAction);
+    });
+    
+    return {
+      mitigation_items: mitigationItems,
+      total_mitigation_cost: totalCost,
+      documentation_completeness: 90,
+      summary: `${mitigationItems.length} mitigation action(s) documented with total cost $${totalCost.toLocaleString()}`
+    };
+  }
+  
+  // Extract from estimate analysis results
   analysisResults.forEach((result, idx) => {
     if (result.report && result.report.potentialOmissions) {
       const text = result.report.potentialOmissions || '';
