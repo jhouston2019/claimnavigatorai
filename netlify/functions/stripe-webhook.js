@@ -47,7 +47,7 @@ exports.handler = async (event, context) => {
       const { data: existingClaim } = await supabase
         .from('claims')
         .select('id')
-        .eq('unlocked_via_stripe_session_id', sessionId)
+        .eq('stripe_session_id', sessionId)
         .single();
 
       if (existingClaim) {
@@ -63,7 +63,7 @@ exports.handler = async (event, context) => {
         .from('claims')
         .insert({
           user_id: userId,
-          unlocked_via_stripe_session_id: sessionId,
+          stripe_session_id: sessionId,
           status: 'active',
           claim_data: {}
         })

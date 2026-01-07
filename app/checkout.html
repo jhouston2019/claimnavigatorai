@@ -5,7 +5,9 @@
     <link rel="stylesheet" href="/app/assets/css/design-system.css">
     <link rel="stylesheet" href="/app/assets/css/resource-center.css">
     <script src="/app/assets/js/analytics.js"></script>
-    <script src="/app/assets/js/user-tier.js"></script>
+    <script src="/app/assets/js/supabase-client.js"></script>
+    <script src="/app/assets/js/auth-session.js"></script>
+    <script src="/app/assets/js/stripe-checkout.js"></script>
 
   <link rel="stylesheet" href="/app/assets/css/tool-visual-alignment.css">
 </head>
@@ -26,30 +28,48 @@
 <main class="container">
   <div class="checkout-container">
     <div class="checkout-box">
-      <h1>Secure Checkout</h1>
+      <h1>🔒 Secure Checkout</h1>
       <div id="checkout-message" style="display:none; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
         <p style="color: #93c5fd !important; margin: 0;"></p>
       </div>
-      <p id="checkout-tier">Loading...</p>
-      <p>Complete your purchase to unlock full access.</p>
+      <p id="checkout-tier">Claim Navigator - One Claim</p>
+      <p style="font-size: 48px; font-weight: bold; color: #38bdf8; margin: 20px 0;">$99</p>
+      <p>Complete your purchase to unlock full access to all professional claim management tools.</p>
       
       <div class="checkout-steps">
-        <h3>Purchase Steps:</h3>
-        <ol>
-          <li>Click "Complete Purchase" below</li>
+        <h3>What You Get:</h3>
+        <ul style="text-align: left; margin: 20px 0;">
+          <li>✅ Document Generator (60+ templates)</li>
+          <li>✅ AI Response Agent</li>
+          <li>✅ Evidence Organizer</li>
+          <li>✅ Claim Health Engine</li>
+          <li>✅ Complete Claim Roadmap</li>
+          <li>✅ State-specific guidance</li>
+        </ul>
+        
+        <h3>Secure Payment:</h3>
+        <ol style="text-align: left; margin: 20px 0;">
+          <li>Click "Proceed to Secure Checkout" below</li>
+          <li>Enter payment details on Stripe's secure page</li>
           <li>Your account will be upgraded instantly</li>
-          <li>Start using Pro features immediately</li>
+          <li>Start using all features immediately</li>
         </ol>
       </div>
       
-      <button class="btn-primary" id="checkout-complete">Complete Purchase</button>
+      <button class="btn-primary" id="checkout-complete" style="font-size: 18px; padding: 16px 32px;">
+        🔒 Proceed to Secure Checkout
+      </button>
+      
+      <p style="margin-top: 20px; font-size: 14px; color: #9ca3af;">
+        Powered by Stripe • Secure payment processing • No monthly fees
+      </p>
     </div>
   </div>
 </main>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  // PART 2: Display checkout message if redirected from Claim Management Center
+document.addEventListener("DOMContentLoaded", async () => {
+  // Display checkout message if redirected from Claim Management Center
   const checkoutMessage = sessionStorage.getItem('checkoutMessage');
   if (checkoutMessage) {
     const messageDiv = document.getElementById('checkout-message');
@@ -60,59 +80,32 @@ document.addEventListener("DOMContentLoaded", () => {
     sessionStorage.removeItem('checkoutMessage');
   }
 
-  const tier = new URLSearchParams(location.search).get("tier");
-  if (!tier) {
-    alert("No tier specified. Redirecting to pricing...");
-    location.href = "/app/pricing.html";
-    return;
-  }
-
-  // Log checkout started
+  // Log checkout page view
   if (window.CNAnalytics) {
-    CNAnalytics.log("checkout_started", { tier });
+    CNAnalytics.log("checkout_page_view");
   }
 
-  // Display tier
-  const tierEl = document.getElementById("checkout-tier");
-  if (tierEl) {
-    if (tier === "pro") {
-      tierEl.textContent = "Pro – $197/year";
-    } else if (tier === "enterprise") {
-      tierEl.textContent = "Enterprise – Custom Pricing";
-    } else {
-      tierEl.textContent = tier.charAt(0).toUpperCase() + tier.slice(1);
-    }
-  }
-
-  // Complete purchase handler
+  // Handle checkout button click - use REAL Stripe checkout
   const completeBtn = document.getElementById("checkout-complete");
   if (completeBtn) {
-    completeBtn.addEventListener("click", () => {
-      if (window.CNUserTier) {
-        CNUserTier.setUserTier(tier);
-      }
-      
+    completeBtn.addEventListener("click", async () => {
+      // Log checkout started
       if (window.CNAnalytics) {
-        CNAnalytics.log("checkout_completed", { tier });
+        CNAnalytics.log("checkout_started", { tier: "pro" });
       }
       
-      // PART 3: Redirect to Claim Management Center after successful checkout
-      location.href = "/app/claim-management-center.html";
+      // Launch real Stripe checkout
+      if (window.launchClaimCheckout) {
+        await window.launchClaimCheckout();
+      } else {
+        // Fallback: redirect to paywall which has the checkout function
+        window.location.href = '/paywall/locked.html';
+      }
     });
   }
-  
-  // Abandoned checkout recovery
-  window.addEventListener("beforeunload", () => {
-    if (window.CNAnalytics) {
-      CNAnalytics.log("checkout_abandoned", { tier });
-    }
-    localStorage.setItem("checkout_abandoned", "1");
-    localStorage.setItem("checkout_abandoned_tier", tier);
-  });
 });
 </script>
 
 
 
 </body></html>
-
