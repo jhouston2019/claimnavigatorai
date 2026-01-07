@@ -393,6 +393,9 @@ function renderStructuredOutput(data) {
   if (data.missing_trades && Array.isArray(data.missing_trades)) {
     return renderMissingTrades(data);
   }
+  if (data.subject && data.body) {
+    return renderResponseAgent(data);
+  }
   if (data.assessment && Array.isArray(data.assessment)) {
     return renderDamageAssessment(data);
   }
@@ -1047,6 +1050,50 @@ function renderMissingTrades(data) {
   if (data.summary) {
     html += `<div class="output-summary">
       <h4>Summary</h4>
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Response Agent (AI Response Agent tool)
+ */
+function renderResponseAgent(data) {
+  let html = '<div class="response-agent-output structured-output">';
+  
+  html += `<div class="output-header">
+    <h3>Generated Response</h3>
+  </div>`;
+  
+  if (data.subject) {
+    html += `<div class="output-section">
+      <h4>Subject</h4>
+      <p class="subject-line"><strong>${escapeHtml(data.subject)}</strong></p>
+    </div>`;
+  }
+  
+  if (data.body) {
+    html += `<div class="output-section">
+      <h4>Letter Body</h4>
+      <div class="letter-body" style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(data.body)}</div>
+    </div>`;
+  }
+  
+  if (data.next_steps && data.next_steps.length > 0) {
+    html += `<div class="recommendations-section">
+      <h4>Next Steps</h4>
+      <ul class="recommendations-list">`;
+    data.next_steps.forEach(step => {
+      html += `<li>✓ ${escapeHtml(step)}</li>`;
+    });
+    html += `</ul></div>`;
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
       <p>${escapeHtml(data.summary)}</p>
     </div>`;
   }

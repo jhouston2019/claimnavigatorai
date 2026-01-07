@@ -239,12 +239,15 @@ Return JSON:
 
     let result;
     try {
-      result = JSON.parse(response);
+      // Clean and parse JSON response
+      const cleanedResponse = processedResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      result = JSON.parse(cleanedResponse);
     } catch (e) {
+      console.error('JSON parse error:', e);
       result = {
-        response: response,
-        recommendations: extractList(response, 'recommendation'),
-        next_steps: extractList(response, 'next step')
+        response: processedResponse,
+        recommendations: extractList(processedResponse, 'recommendation'),
+        next_steps: extractList(processedResponse, 'next step')
       };
     }
 
@@ -266,6 +269,9 @@ Return JSON:
       estimated_cost_usd: 0.002
     });
 
+    // Validate output
+    const validation = validateProfessionalOutput(JSON.stringify(result), 'analysis');
+    
     return {
       statusCode: 200,
       headers,
