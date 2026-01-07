@@ -360,9 +360,46 @@ async function renderOutput(data, format) {
 }
 
 /**
- * Render structured output (sections with headings)
+ * Render structured output (ENHANCED - routes to tool-specific renderers)
  */
 function renderStructuredOutput(data) {
+  // Route to tool-specific renderer based on data structure
+  if (data.gaps && Array.isArray(data.gaps)) {
+    return renderCoverageGaps(data);
+  }
+  if (data.discrepancies && Array.isArray(data.discrepancies)) {
+    return renderLineItemDiscrepancies(data);
+  }
+  if (data.missing && Array.isArray(data.missing)) {
+    return renderMissingItems(data);
+  }
+  if (data.omissions && Array.isArray(data.omissions)) {
+    return renderScopeOmissions(data);
+  }
+  if (data.sublimits && Array.isArray(data.sublimits)) {
+    return renderSublimitImpacts(data);
+  }
+  if (data.upgrades && Array.isArray(data.upgrades)) {
+    return renderCodeUpgrades(data);
+  }
+  if (data.deviations && Array.isArray(data.deviations)) {
+    return renderPricingDeviations(data);
+  }
+  if (data.comparables && Array.isArray(data.comparables)) {
+    return renderComparableItems(data);
+  }
+  if (data.missing_trades && Array.isArray(data.missing_trades)) {
+    return renderMissingTrades(data);
+  }
+  
+  // Fallback to generic structured output
+  return renderGenericStructured(data);
+}
+
+/**
+ * Render generic structured output (fallback)
+ */
+function renderGenericStructured(data) {
   let html = '<div class="ai-output-structured">';
   
   // Summary section
@@ -399,6 +436,628 @@ function renderStructuredOutput(data) {
 
   html += '</div>';
   return html;
+}
+
+/**
+ * TOOL-SPECIFIC RENDERERS
+ * Each function renders data in a structured, scannable format
+ */
+
+/**
+ * Render Coverage Gaps (Coverage Gap Detector, Sublimit Impact Analyzer)
+ */
+function renderCoverageGaps(data) {
+  let html = '<div class="coverage-gaps-output structured-output">';
+  
+  const gapCount = data.gaps ? data.gaps.length : 0;
+  html += `<div class="output-header">
+    <h3>Coverage Gaps Detected: ${gapCount}</h3>
+  </div>`;
+  
+  if (data.completeness_score !== undefined) {
+    html += `<div class="completeness-score">
+      <strong>Coverage Completeness:</strong> ${data.completeness_score}%
+    </div>`;
+  }
+  
+  if (data.gaps && data.gaps.length > 0) {
+    data.gaps.forEach((gap, index) => {
+      const severityClass = getSeverityClass(gap.severity);
+      const severityIcon = getSeverityIcon(gap.severity);
+      
+      html += `<div class="gap-item structured-item ${severityClass}">
+        <div class="item-header">
+          <h4>${severityIcon} Gap #${index + 1}: ${escapeHtml(gap.name || gap.title || 'Coverage Gap')}</h4>
+          <span class="severity-badge ${severityClass}">${gap.severity || 'MEDIUM'}</span>
+        </div>
+        <div class="item-details">`;
+      
+      if (gap.section) {
+        html += `<p><strong>Policy Section:</strong> ${escapeHtml(gap.section)}</p>`;
+      }
+      if (gap.impact) {
+        html += `<p><strong>Impact:</strong> ${escapeHtml(gap.impact)}</p>`;
+      }
+      if (gap.cost !== undefined) {
+        html += `<p><strong>Potential Cost:</strong> ${formatCurrency(gap.cost)}</p>`;
+      }
+      if (gap.recommendation) {
+        html += `<p><strong>Recommendation:</strong> ${escapeHtml(gap.recommendation)}</p>`;
+      }
+      
+      html += `</div></div>`;
+    });
+  } else {
+    html += '<p class="no-items">No coverage gaps detected.</p>';
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
+      <h4>Summary</h4>
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Line Item Discrepancies (Line Item Discrepancy Finder, Pricing Deviation Analyzer)
+ */
+function renderLineItemDiscrepancies(data) {
+  let html = '<div class="line-item-discrepancies-output structured-output">';
+  
+  const discrepancyCount = data.discrepancies ? data.discrepancies.length : 0;
+  html += `<div class="output-header">
+    <h3>Line Item Discrepancies Found: ${discrepancyCount}</h3>
+  </div>`;
+  
+  if (data.total_difference !== undefined) {
+    html += `<div class="total-difference">
+      <strong>Total Discrepancy:</strong> ${formatCurrency(data.total_difference)}`;
+    if (data.percentage_difference !== undefined) {
+      html += ` (${data.percentage_difference}%)`;
+    }
+    html += `</div>`;
+  }
+  
+  if (data.discrepancies && data.discrepancies.length > 0) {
+    html += `<div class="discrepancies-table">
+      <table class="structured-table">
+        <thead>
+          <tr>
+            <th>Line Item</th>
+            <th>Contractor</th>
+            <th>Carrier</th>
+            <th>Difference</th>
+            <th>%</th>
+            <th>Flag</th>
+          </tr>
+        </thead>
+        <tbody>`;
+    
+    data.discrepancies.forEach(disc => {
+      const severityClass = getSeverityClass(disc.severity);
+      const severityIcon = getSeverityIcon(disc.severity);
+      const difference = (disc.value1 || 0) - (disc.value2 || 0);
+      const percentage = disc.percentage || ((difference / (disc.value2 || 1)) * 100);
+      
+      html += `<tr class="${severityClass}">
+        <td>${escapeHtml(disc.item || disc.name || 'Item')}</td>
+        <td>${formatCurrency(disc.value1 || disc.contractor || 0)}</td>
+        <td>${formatCurrency(disc.value2 || disc.carrier || 0)}</td>
+        <td class="difference">${difference >= 0 ? '+' : ''}${formatCurrency(difference)}</td>
+        <td>${percentage >= 0 ? '+' : ''}${percentage.toFixed(1)}%</td>
+        <td class="severity-cell">${severityIcon}</td>
+      </tr>`;
+    });
+    
+    html += `</tbody></table></div>`;
+  } else {
+    html += '<p class="no-items">No discrepancies found.</p>';
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
+      <h4>Summary</h4>
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Missing Items (Missing Document Identifier, Missing Evidence Identifier)
+ */
+function renderMissingItems(data) {
+  let html = '<div class="missing-items-output structured-output">';
+  
+  html += `<div class="output-header">
+    <h3>Missing Items Analysis</h3>
+  </div>`;
+  
+  if (data.completeness_score !== undefined) {
+    const scoreClass = data.completeness_score >= 80 ? 'score-high' : 
+                       data.completeness_score >= 60 ? 'score-medium' : 'score-low';
+    html += `<div class="completeness-score ${scoreClass}">
+      <strong>Completeness Score:</strong> ${data.completeness_score}%
+    </div>`;
+  }
+  
+  if (data.priority_items && data.priority_items.length > 0) {
+    html += `<div class="priority-section">
+      <h4>🔴 HIGH PRIORITY</h4>
+      <ul class="priority-list">`;
+    data.priority_items.forEach(item => {
+      html += `<li class="priority-item">${escapeHtml(item)}</li>`;
+    });
+    html += `</ul></div>`;
+  }
+  
+  if (data.missing && data.missing.length > 0) {
+    html += `<div class="missing-section">
+      <h4>Missing Items (${data.missing.length})</h4>
+      <ul class="missing-list">`;
+    data.missing.forEach(item => {
+      html += `<li class="missing-item">❌ ${escapeHtml(item)}</li>`;
+    });
+    html += `</ul></div>`;
+  } else {
+    html += '<p class="no-items">✅ All required items present.</p>';
+  }
+  
+  if (data.recommendations && data.recommendations.length > 0) {
+    html += `<div class="recommendations-section">
+      <h4>Recommendations</h4>
+      <ul class="recommendations-list">`;
+    data.recommendations.forEach(rec => {
+      html += `<li class="recommendation-item">✓ ${escapeHtml(rec)}</li>`;
+    });
+    html += `</ul></div>`;
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Scope Omissions (Scope Omission Detector, Missing Trade Detector)
+ */
+function renderScopeOmissions(data) {
+  let html = '<div class="scope-omissions-output structured-output">';
+  
+  const omissionCount = data.omissions ? data.omissions.length : 0;
+  html += `<div class="output-header">
+    <h3>Scope Omissions Detected: ${omissionCount}</h3>
+  </div>`;
+  
+  if (data.total_omitted_value !== undefined) {
+    html += `<div class="total-value">
+      <strong>Total Omitted Value:</strong> ${formatCurrency(data.total_omitted_value)}
+    </div>`;
+  }
+  
+  if (data.omissions && data.omissions.length > 0) {
+    html += `<div class="omissions-table">
+      <table class="structured-table">
+        <thead>
+          <tr>
+            <th>Omitted Item</th>
+            <th>Category</th>
+            <th>Est. Cost</th>
+            <th>Severity</th>
+            <th>Justification</th>
+          </tr>
+        </thead>
+        <tbody>`;
+    
+    data.omissions.forEach(omission => {
+      const severityClass = getSeverityClass(omission.severity);
+      const severityIcon = getSeverityIcon(omission.severity);
+      
+      html += `<tr class="${severityClass}">
+        <td><strong>${escapeHtml(omission.item || omission.name || 'Item')}</strong></td>
+        <td>${escapeHtml(omission.category || 'General')}</td>
+        <td>${formatCurrency(omission.cost || omission.estimated_cost || 0)}</td>
+        <td class="severity-cell">${severityIcon} ${omission.severity || 'MEDIUM'}</td>
+        <td>${escapeHtml(omission.justification || omission.reason || '')}</td>
+      </tr>`;
+    });
+    
+    html += `</tbody></table></div>`;
+  } else {
+    html += '<p class="no-items">✅ No scope omissions detected.</p>';
+  }
+  
+  if (data.recommendations && data.recommendations.length > 0) {
+    html += `<div class="recommendations-section">
+      <h4>Recommendations</h4>
+      <ul class="recommendations-list">`;
+    data.recommendations.forEach(rec => {
+      html += `<li>✓ ${escapeHtml(rec)}</li>`;
+    });
+    html += `</ul></div>`;
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
+      <h4>Summary</h4>
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Sublimit Impacts (Sublimit Impact Analyzer)
+ */
+function renderSublimitImpacts(data) {
+  let html = '<div class="sublimit-impacts-output structured-output">';
+  
+  html += `<div class="output-header">
+    <h3>Sublimit Impact Analysis</h3>
+  </div>`;
+  
+  if (data.total_impact !== undefined) {
+    html += `<div class="total-impact">
+      <strong>Total Sublimit Impact:</strong> ${formatCurrency(data.total_impact)}`;
+    if (data.percentage_affected !== undefined) {
+      html += ` (${data.percentage_affected}% of claim)`;
+    }
+    html += `</div>`;
+  }
+  
+  if (data.sublimits && data.sublimits.length > 0) {
+    data.sublimits.forEach((sublimit, index) => {
+      const shortfall = (sublimit.claim_amount || 0) - (sublimit.limit || 0);
+      const severityClass = shortfall > 0 ? 'severity-high' : 'severity-low';
+      const statusIcon = shortfall > 0 ? '🔴' : '✅';
+      
+      html += `<div class="sublimit-item structured-item ${severityClass}">
+        <div class="item-header">
+          <h4>${statusIcon} ${escapeHtml(sublimit.category || sublimit.name || `Sublimit #${index + 1}`)}</h4>
+        </div>
+        <div class="item-details">
+          <p><strong>Policy Limit:</strong> ${formatCurrency(sublimit.limit || 0)}</p>
+          <p><strong>Your Claim:</strong> ${formatCurrency(sublimit.claim_amount || 0)}</p>`;
+      
+      if (shortfall !== 0) {
+        html += `<p><strong>Shortfall:</strong> <span class="${shortfall > 0 ? 'negative' : 'positive'}">${formatCurrency(shortfall)}</span></p>`;
+      }
+      
+      if (sublimit.impact) {
+        html += `<p><strong>Impact:</strong> ${escapeHtml(sublimit.impact)}</p>`;
+      }
+      if (sublimit.recommendation) {
+        html += `<p><strong>Recommendation:</strong> ${escapeHtml(sublimit.recommendation)}</p>`;
+      }
+      
+      html += `</div></div>`;
+    });
+  } else {
+    html += '<p class="no-items">✅ No sublimit issues detected.</p>';
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
+      <h4>Summary</h4>
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Code Upgrades (Code Upgrade Identifier)
+ */
+function renderCodeUpgrades(data) {
+  let html = '<div class="code-upgrades-output structured-output">';
+  
+  const upgradeCount = data.upgrades ? data.upgrades.length : 0;
+  html += `<div class="output-header">
+    <h3>Code Upgrades Required: ${upgradeCount}</h3>
+  </div>`;
+  
+  if (data.total_cost !== undefined) {
+    html += `<div class="total-cost">
+      <strong>Total Code Upgrade Cost:</strong> ${formatCurrency(data.total_cost)}`;
+    if (data.coverage_available !== undefined) {
+      html += `<br><strong>Coverage Available:</strong> ${formatCurrency(data.coverage_available)}`;
+      const shortfall = data.total_cost - data.coverage_available;
+      if (shortfall > 0) {
+        html += `<br><strong>Shortfall:</strong> <span class="negative">${formatCurrency(shortfall)}</span>`;
+      } else {
+        html += `<br><strong>Status:</strong> <span class="positive">✅ Fully Covered</span>`;
+      }
+    }
+    html += `</div>`;
+  }
+  
+  if (data.upgrades && data.upgrades.length > 0) {
+    data.upgrades.forEach((upgrade, index) => {
+      const severityClass = getSeverityClass(upgrade.severity);
+      
+      html += `<div class="upgrade-item structured-item ${severityClass}">
+        <div class="item-header">
+          <h4>Upgrade #${index + 1}: ${escapeHtml(upgrade.name || upgrade.item || 'Code Upgrade')}</h4>
+        </div>
+        <div class="item-details">`;
+      
+      if (upgrade.current_code) {
+        html += `<p><strong>Current Code:</strong> ${escapeHtml(upgrade.current_code)}</p>`;
+      }
+      if (upgrade.required_code) {
+        html += `<p><strong>Required Code:</strong> ${escapeHtml(upgrade.required_code)}</p>`;
+      }
+      if (upgrade.cost !== undefined) {
+        html += `<p><strong>Estimated Cost:</strong> ${formatCurrency(upgrade.cost)}</p>`;
+      }
+      if (upgrade.justification) {
+        html += `<p><strong>Justification:</strong> ${escapeHtml(upgrade.justification)}</p>`;
+      }
+      if (upgrade.coverage) {
+        html += `<p><strong>Coverage:</strong> ${escapeHtml(upgrade.coverage)}</p>`;
+      }
+      
+      html += `</div></div>`;
+    });
+  } else {
+    html += '<p class="no-items">✅ No code upgrades required.</p>';
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
+      <h4>Summary</h4>
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Pricing Deviations (Pricing Deviation Analyzer)
+ */
+function renderPricingDeviations(data) {
+  let html = '<div class="pricing-deviations-output structured-output">';
+  
+  html += `<div class="output-header">
+    <h3>Pricing Deviation Analysis</h3>
+  </div>`;
+  
+  if (data.total_impact !== undefined) {
+    html += `<div class="total-impact">
+      <strong>Total Impact:</strong> ${formatCurrency(data.total_impact)}`;
+    if (data.percentage_below_market !== undefined) {
+      html += ` (${data.percentage_below_market}% below market)`;
+    }
+    html += `</div>`;
+  }
+  
+  if (data.deviations && data.deviations.length > 0) {
+    html += `<div class="deviations-table">
+      <table class="structured-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Carrier Price</th>
+            <th>Market Rate</th>
+            <th>Deviation</th>
+            <th>Flag</th>
+          </tr>
+        </thead>
+        <tbody>`;
+    
+    data.deviations.forEach(dev => {
+      const deviation = ((dev.carrier_price || 0) - (dev.market_rate || 0)) / (dev.market_rate || 1) * 100;
+      const severityClass = Math.abs(deviation) > 25 ? 'severity-high' : 
+                           Math.abs(deviation) > 10 ? 'severity-medium' : 'severity-low';
+      const severityIcon = Math.abs(deviation) > 25 ? '🔴' : 
+                          Math.abs(deviation) > 10 ? '🟡' : '🟢';
+      
+      html += `<tr class="${severityClass}">
+        <td>${escapeHtml(dev.item || dev.name || 'Item')}</td>
+        <td>${formatCurrency(dev.carrier_price || 0)}</td>
+        <td>${formatCurrency(dev.market_rate || 0)}</td>
+        <td class="deviation">${deviation.toFixed(1)}%</td>
+        <td class="severity-cell">${severityIcon}</td>
+      </tr>`;
+    });
+    
+    html += `</tbody></table></div>`;
+  } else {
+    html += '<p class="no-items">✅ Pricing within market range.</p>';
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
+      <h4>Summary</h4>
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Comparable Items (Comparable Item Finder)
+ */
+function renderComparableItems(data) {
+  let html = '<div class="comparable-items-output structured-output">';
+  
+  const comparableCount = data.comparables ? data.comparables.length : 0;
+  html += `<div class="output-header">
+    <h3>Comparable Items Found: ${comparableCount}</h3>
+  </div>`;
+  
+  if (data.item_name) {
+    html += `<div class="search-item">
+      <strong>Searching for:</strong> ${escapeHtml(data.item_name)}
+    </div>`;
+  }
+  
+  if (data.recommended_rcv !== undefined) {
+    html += `<div class="recommended-value">
+      <strong>Recommended Replacement Cost:</strong> ${formatCurrency(data.recommended_rcv)}`;
+    if (data.depreciation !== undefined) {
+      html += `<br><strong>Depreciation:</strong> ${formatCurrency(data.depreciation)}`;
+    }
+    if (data.acv !== undefined) {
+      html += `<br><strong>Actual Cash Value:</strong> ${formatCurrency(data.acv)}`;
+    }
+    html += `</div>`;
+  }
+  
+  if (data.comparables && data.comparables.length > 0) {
+    data.comparables.forEach((comp, index) => {
+      const matchClass = (comp.match_percentage || 0) >= 90 ? 'match-high' : 
+                        (comp.match_percentage || 0) >= 75 ? 'match-medium' : 'match-low';
+      
+      html += `<div class="comparable-item structured-item ${matchClass}">
+        <div class="item-header">
+          <h4>Comparable #${index + 1}: ${escapeHtml(comp.name || comp.item || 'Item')}</h4>
+          ${comp.match_percentage ? `<span class="match-badge">${comp.match_percentage}% Match</span>` : ''}
+        </div>
+        <div class="item-details">
+          <p><strong>Price:</strong> ${formatCurrency(comp.price || 0)}</p>`;
+      
+      if (comp.retailer) {
+        html += `<p><strong>Retailer:</strong> ${escapeHtml(comp.retailer)}</p>`;
+      }
+      if (comp.condition) {
+        html += `<p><strong>Condition:</strong> ${escapeHtml(comp.condition)}</p>`;
+      }
+      if (comp.link) {
+        html += `<p><strong>Link:</strong> <a href="${escapeHtml(comp.link)}" target="_blank">View Item</a></p>`;
+      }
+      
+      html += `</div></div>`;
+    });
+  } else {
+    html += '<p class="no-items">No comparable items found.</p>';
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
+      <h4>Summary</h4>
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Missing Trades (Missing Trade Detector)
+ */
+function renderMissingTrades(data) {
+  let html = '<div class="missing-trades-output structured-output">';
+  
+  const tradeCount = data.missing_trades ? data.missing_trades.length : 0;
+  html += `<div class="output-header">
+    <h3>Missing Trades Detected: ${tradeCount}</h3>
+  </div>`;
+  
+  if (data.total_value !== undefined) {
+    html += `<div class="total-value">
+      <strong>Total Missing Trade Value:</strong> ${formatCurrency(data.total_value)}
+    </div>`;
+  }
+  
+  if (data.missing_trades && data.missing_trades.length > 0) {
+    data.missing_trades.forEach((trade, index) => {
+      const severityClass = getSeverityClass(trade.severity);
+      const severityIcon = getSeverityIcon(trade.severity);
+      
+      html += `<div class="trade-item structured-item ${severityClass}">
+        <div class="item-header">
+          <h4>${severityIcon} Trade #${index + 1}: ${escapeHtml(trade.trade || trade.name || 'Trade')}</h4>
+          <span class="severity-badge ${severityClass}">${trade.severity || 'MEDIUM'}</span>
+        </div>
+        <div class="item-details">`;
+      
+      if (trade.reason) {
+        html += `<p><strong>Reason:</strong> ${escapeHtml(trade.reason)}</p>`;
+      }
+      if (trade.cost !== undefined || trade.estimated_cost !== undefined) {
+        html += `<p><strong>Estimated Cost:</strong> ${formatCurrency(trade.cost || trade.estimated_cost || 0)}</p>`;
+      }
+      if (trade.justification) {
+        html += `<p><strong>Justification:</strong> ${escapeHtml(trade.justification)}</p>`;
+      }
+      if (trade.recommendation) {
+        html += `<p><strong>Recommendation:</strong> ${escapeHtml(trade.recommendation)}</p>`;
+      }
+      
+      html += `</div></div>`;
+    });
+  } else {
+    html += '<p class="no-items">✅ All required trades included.</p>';
+  }
+  
+  if (data.recommendations && data.recommendations.length > 0) {
+    html += `<div class="recommendations-section">
+      <h4>Recommendations</h4>
+      <ul class="recommendations-list">`;
+    data.recommendations.forEach(rec => {
+      html += `<li>✓ ${escapeHtml(rec)}</li>`;
+    });
+    html += `</ul></div>`;
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
+      <h4>Summary</h4>
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * UTILITY FUNCTIONS
+ */
+
+function getSeverityClass(severity) {
+  if (!severity) return 'severity-medium';
+  const sev = severity.toUpperCase();
+  if (sev === 'HIGH' || sev === 'CRITICAL') return 'severity-high';
+  if (sev === 'MEDIUM' || sev === 'MODERATE') return 'severity-medium';
+  if (sev === 'LOW' || sev === 'MINOR') return 'severity-low';
+  return 'severity-medium';
+}
+
+function getSeverityIcon(severity) {
+  if (!severity) return '🟡';
+  const sev = severity.toUpperCase();
+  if (sev === 'HIGH' || sev === 'CRITICAL') return '🔴';
+  if (sev === 'MEDIUM' || sev === 'MODERATE') return '🟡';
+  if (sev === 'LOW' || sev === 'MINOR') return '🟢';
+  return '🟡';
+}
+
+function formatCurrency(value) {
+  if (value === undefined || value === null) return '$0';
+  const num = typeof value === 'number' ? value : parseFloat(value) || 0;
+  return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
 /**
