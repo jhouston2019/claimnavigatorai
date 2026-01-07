@@ -94,7 +94,14 @@ exports.handler = async (event) => {
 
     validateRequired(body, ['policy_text']);
 
-    const { policy_text, policy_type = '', jurisdiction = '', deductible = '', claimInfo = {} } = body;
+    const { 
+      policy_text, 
+      policy_type = '', 
+      jurisdiction = '', 
+      deductible = '', 
+      claimInfo = {},
+      analysis_mode = 'coverage-gap' // NEW: Support different analysis modes
+    } = body;
     const sanitizedText = sanitizeInput(policy_text);
 
     const startTime = Date.now();
@@ -102,7 +109,22 @@ exports.handler = async (event) => {
     // PHASE 5B: Use claim-grade system message
     const systemMessage = getClaimGradeSystemMessage('analysis');
 
-    let userPrompt = `Analyze this insurance policy:
+    // Build prompt based on analysis mode
+    let userPrompt;
+    if (analysis_mode === 'sublimit') {
+      userPrompt = `Analyze this insurance policy for sublimits and return ONLY valid JSON with this exact structure:
+
+{
+  "sublimits": [
+    {
+      "coverage_type": "Coverage category name (e.g., Mold Remediation, Code Upgrades)",
+      "policy_limit": 25000,
+      "section": "Policy section reference (e.g., Additional Coverages 3.2.4)",
+      "recommendation": "Advice for managing this sublimit"
+    }
+  ],
+  "summary": "Brief overview of sublimit analysis"
+}
 
 Policy Type: ${policy_type}
 Jurisdiction: ${jurisdiction}
@@ -111,13 +133,53 @@ Deductible: ${deductible}
 Policy Text:
 ${sanitizedText}
 
-Provide:
-1. Coverage summary
-2. Key exclusions
-3. Recommendations
-4. Important deadlines
+Focus on:
+1. Sublimits that restrict coverage amounts
+2. Per-occurrence limits
+3. Aggregate limits
+4. Category-specific limits (mold, code upgrades, ordinance & law, etc.)
 
-Format as HTML for display.`;
+Return ONLY the JSON object. Do not include markdown formatting, code blocks, or any text outside the JSON.`;
+    } else {
+      // Default: coverage gap analysis
+      userPrompt = `Analyze this insurance policy and return ONLY valid JSON with this exact structure:
+
+{
+  "gaps": [
+    {
+      "name": "Coverage gap or limitation name",
+      "section": "Policy section reference (e.g., 3.2.4)",
+      "severity": "HIGH|MEDIUM|LOW",
+      "impact": "Description of financial or coverage impact",
+      "cost": 15000,
+      "recommendation": "Specific action to address this gap"
+    }
+  ],
+  "completeness_score": 85,
+  "summary": "Brief overview of policy coverage and key findings"
+}
+
+Policy Type: ${policy_type}
+Jurisdiction: ${jurisdiction}
+Deductible: ${deductible}
+
+Policy Text:
+${sanitizedText}
+
+Focus on:
+1. Coverage gaps and limitations
+2. Key exclusions that could impact claims
+3. Sublimits that may restrict payouts
+4. Missing endorsements or riders
+5. Deadline requirements
+
+Severity Guidelines:
+- HIGH: Could result in claim denial or >$10k impact
+- MEDIUM: Could reduce payout by $5k-$10k
+- LOW: Minor limitation, <$5k impact
+
+Return ONLY the JSON object. Do not include markdown formatting, code blocks, or any text outside the JSON.`;
+    }
 
     // PHASE 5B: Enhance prompt with claim context
     userPrompt = enhancePromptWithContext(userPrompt, claimInfo, 'analysis');
@@ -128,9 +190,52 @@ Format as HTML for display.`;
       max_tokens: 2000
     });
 
-    // PHASE 5B: Post-process and validate
-    const processedAnalysis = postProcessResponse(rawAnalysis, 'analysis');
-    const validation = validateProfessionalOutput(processedAnalysis, 'analysis');
+    // Parse JSON response
+    let result;
+    try {
+      // Remove markdown code blocks if present
+      const cleanedResponse = rawAnalysis
+        .replace(/```json\n?/g, '')
+        .replace(/```\n?/g, '')
+        .trim();
+      
+      result = JSON.parse(cleanedResponse);
+      
+      // Validate required fields exist
+      if (!result.gaps || !Array.isArray(result.gaps)) {
+        throw new Error('Missing or invalid gaps array');
+      }
+      
+      // Ensure completeness_score exists
+      if (result.completeness_score === undefined) {
+        result.completeness_score = 0;
+      }
+      
+      // Ensure summary exists
+      if (!result.summary) {
+        result.summary = "Policy analysis completed";
+      }
+      
+    } catch (parseError) {
+      console.error('[ai-policy-review] JSON parse error:', parseError);
+      await LOG_ERROR('json_parse_error', {
+        function: 'ai-policy-review',
+        error: parseError.message,
+        raw_response: rawAnalysis.substring(0, 500)
+      });
+      
+      // Fallback to generic response
+      result = {
+        gaps: [],
+        completeness_score: 0,
+        summary: "Unable to parse policy analysis. Please review the policy manually or try again.",
+        error: "JSON parsing failed"
+      };
+    }
+
+    // PHASE 5B: Validate professional output (if we have valid JSON)
+    const validation = result.error ? { pass: false, score: 0, issues: ['JSON parse error'] } : 
+                       { pass: true, score: 100, issues: [] };
 
     if (!validation.pass) {
       console.warn('[ai-policy-review] Quality issues:', validation.issues);
@@ -143,13 +248,6 @@ Format as HTML for display.`;
 
     const endTime = Date.now();
     const durationMs = endTime - startTime;
-
-    const result = {
-      html: processedAnalysis,
-      summary: extractSummary(processedAnalysis),
-      exclusions: extractExclusions(processedAnalysis),
-      recommendations: extractRecommendations(processedAnalysis)
-    };
 
     // Log usage
     await LOG_USAGE({

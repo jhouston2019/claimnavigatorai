@@ -49,7 +49,8 @@ export async function initTool(config) {
     outputFormat = 'structured',
     outputType = OutputTypes.ANALYSIS, // NEW: Claim output type
     supabaseTable = 'documents',
-    timelineEventType = 'ai_analysis'
+    timelineEventType = 'ai_analysis',
+    customData = {} // NEW: Custom data to send to backend
   } = config;
 
   try {
@@ -156,9 +157,10 @@ async function handleAnalyze(config) {
     // Get claim context
     const claimInfo = getClaimInfoFromContext();
 
-    // Add intake context
+    // Add intake context and custom data
     const requestData = {
       ...inputData,
+      ...customData, // Merge custom data (e.g., analysis_mode)
       context: window._intakeContext || {},
       claimInfo: claimInfo
     };
