@@ -401,6 +401,103 @@
       font-weight: 700;
       color: #fbbf24;
     }
+
+    /* Cash-First Hierarchy Summary Block */
+    .cash-hierarchy-block {
+      background: white;
+      border-radius: 12px;
+      padding: 32px 40px;
+      margin: 0 auto 24px auto;
+      max-width: 1400px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
+      border: 1px solid #d1d5db;
+      border-left: 6px solid #059669;
+    }
+
+    .cash-hierarchy-primary {
+      margin-bottom: 20px;
+    }
+
+    .cash-hierarchy-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .cash-hierarchy-value {
+      font-size: 48px;
+      font-weight: 700;
+      color: #059669;
+      font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+      line-height: 1.1;
+    }
+
+    .cash-hierarchy-secondary {
+      padding-top: 20px;
+      border-top: 2px solid #e5e7eb;
+      margin-bottom: 16px;
+    }
+
+    .cash-hierarchy-secondary-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+
+    .cash-hierarchy-secondary-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: #64748b;
+      font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+    }
+
+    .cash-hierarchy-tertiary {
+      display: none; /* Hidden by default, shown only if both values exist */
+      padding-top: 16px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .cash-hierarchy-tertiary.visible {
+      display: block;
+    }
+
+    .cash-hierarchy-tertiary-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+
+    .cash-hierarchy-tertiary-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: #475569;
+      font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .cash-hierarchy-block {
+        padding: 24px 20px;
+        margin: 0 20px 20px 20px;
+      }
+
+      .cash-hierarchy-value {
+        font-size: 36px;
+      }
+
+      .cash-hierarchy-secondary-value {
+        font-size: 20px;
+      }
+
+      .cash-hierarchy-tertiary-value {
+        font-size: 16px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -460,6 +557,22 @@
       </div>
     </div>
   </section>
+
+  <!-- Cash-First Hierarchy Summary Block -->
+  <div class="cash-hierarchy-block">
+    <div class="cash-hierarchy-primary">
+      <div class="cash-hierarchy-label">Claim Funds Collected to Date</div>
+      <div class="cash-hierarchy-value" id="cashCollected">$0.00</div>
+    </div>
+    <div class="cash-hierarchy-secondary">
+      <div class="cash-hierarchy-secondary-label">Estimated Total Damages (estimate)</div>
+      <div class="cash-hierarchy-secondary-value" id="estimatedDamages">$0.00</div>
+    </div>
+    <div class="cash-hierarchy-tertiary" id="remainingPotential">
+      <div class="cash-hierarchy-tertiary-label">Remaining Potential Claim Value</div>
+      <div class="cash-hierarchy-tertiary-value" id="remainingValue">$0.00</div>
+    </div>
+  </div>
 
   <!-- Content Area -->
   <div class="content-area">
@@ -736,6 +849,23 @@
       const deductible = 2500; // From policy
       const carrierPaid = 0; // From payment records
       const outstandingGap = coveredLoss - carrierPaid - deductible;
+
+      // CASH-FIRST HIERARCHY SUMMARY BLOCK
+      // Primary metric: Claim Funds Collected to Date (actual collected payments)
+      document.getElementById('cashCollected').textContent = formatCurrency(carrierPaid);
+      
+      // Secondary metric: Estimated Total Damages (documented loss estimate)
+      document.getElementById('estimatedDamages').textContent = formatCurrency(documentedLoss);
+      
+      // Tertiary metric: Remaining Potential Claim Value (only if both values exist)
+      const remainingPotentialElement = document.getElementById('remainingPotential');
+      if (documentedLoss > 0 && carrierPaid >= 0) {
+        const remainingValue = documentedLoss - carrierPaid;
+        document.getElementById('remainingValue').textContent = formatCurrency(remainingValue);
+        remainingPotentialElement.classList.add('visible');
+      } else {
+        remainingPotentialElement.classList.remove('visible');
+      }
 
       document.getElementById('documentedLoss').textContent = formatCurrency(documentedLoss);
       document.getElementById('coveredLoss').textContent = formatCurrency(coveredLoss);
