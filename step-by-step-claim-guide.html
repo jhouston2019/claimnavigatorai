@@ -4071,13 +4071,8 @@
       }
     }
 
-    function openTool(toolId, stepNum) {
-      console.log('=== openTool called ===');
-      console.log('Tool ID:', toolId);
-      console.log('Step Number:', stepNum);
-      console.log('Current Protocol:', window.location.protocol);
-      console.log('Current Host:', window.location.host);
-      
+    // Get tool file path from tool ID
+    function getToolPath(toolId) {
       // Comprehensive tool ID to file path mapping
       const toolMapping = {
         // Step 1 - Policy Review
@@ -4208,44 +4203,7 @@
         'endorsement-opportunity-identifier': '/app/tools/endorsement-opportunity-identifier.html'
       };
       
-      const toolPath = toolMapping[toolId];
-      
-      console.log('Tool Path from mapping:', toolPath);
-      
-      if (!toolPath) {
-        console.error(`Tool ID "${toolId}" not found in registry`);
-        alert(`⚠️ Tool "${toolId}" is not yet available.\n\nThis tool is currently being configured. Please try again later or contact support.`);
-        return;
-      }
-      
-      // Handle acknowledgment tools (stay on page)
-      if (toolPath === 'acknowledgment') {
-        console.log('Acknowledgment tool - staying on page');
-        const step = stepNum || currentStep;
-        acknowledgeStep(step);
-        return;
-      }
-      
-      // Build URL with query parameters
-      const step = stepNum || currentStep;
-      const returnUrl = encodeURIComponent('/step-by-step-claim-guide.html');
-      
-      const url = `${toolPath}?toolId=${toolId}&step=${step}&return=${returnUrl}`;
-      
-      // Navigate to tool
-      console.log('=== Navigation Details ===');
-      console.log('Tool ID:', toolId);
-      console.log('Tool Path:', toolPath);
-      console.log('Full URL:', url);
-      console.log('Navigating now...');
-      
-      // Show alert for debugging
-      if (window.location.protocol === 'file:') {
-        alert('⚠️ WARNING: You are using file:// protocol!\n\nThis will NOT work. Please access via:\nhttp://localhost:8000/step-by-step-claim-guide.html');
-        return;
-      }
-      
-      window.location.href = url;
+      return toolMapping[toolId] || '#';
     }
     
     // Acknowledge step completion
@@ -4554,13 +4512,14 @@
         
         if (data.primaryAction.tool) {
           const classification = data.primaryAction.tool.classification || 'required';
+          const toolPath = getToolPath(data.primaryAction.tool.id);
           html += `
-            <div class="task-tool-inline" onclick="openTool('${data.primaryAction.tool.id}', ${stepNum})">
+            <a href="${toolPath}" class="task-tool-inline">
               <span class="task-tool-arrow">→</span>
               <span class="task-tool-label">Use:</span>
               <span class="task-tool-title">${data.primaryAction.tool.title}</span>
               <span class="task-tool-classification ${classification}">${classification}</span>
-            </div>
+            </a>
           `;
         }
         
@@ -4577,12 +4536,12 @@
           if (data.reportSections.viewTool) {
             const classification = data.reportSections.viewTool.classification || 'required';
             html += `
-              <div class="task-tool-inline" onclick="openTool('${data.reportSections.viewTool.id}', ${stepNum})">
+              <a href="${getToolPath(data.reportSections.viewTool.id)}" class="task-tool-inline">
                 <span class="task-tool-arrow">→</span>
                 <span class="task-tool-label">View:</span>
                 <span class="task-tool-title">${data.reportSections.viewTool.title}</span>
                 <span class="task-tool-classification ${classification}">${classification}</span>
-              </div>
+              </a>
             `;
           }
           
@@ -4665,12 +4624,12 @@
           if (task.tool) {
             const classification = task.tool.classification || 'optional';
             html += `
-              <div class="task-tool-inline" onclick="openTool('${task.tool.id}', ${stepNum})">
+              <a href="${getToolPath(task.tool.id)}" class="task-tool-inline">
                 <span class="task-tool-arrow">→</span>
                 <span class="task-tool-label">Use:</span>
                 <span class="task-tool-title">${task.tool.title}</span>
                 <span class="task-tool-classification ${classification}">${classification}</span>
-              </div>
+              </a>
             `;
           }
           
@@ -4689,9 +4648,11 @@
           `;
           data.additionalTools.forEach(tool => {
             html += `
-              <li class="additional-tool-item" onclick="openTool('${tool.id}', ${stepNum})">
-                <span class="additional-tool-arrow">→</span>
-                <span class="additional-tool-title">${tool.title}</span>
+              <li class="additional-tool-item">
+                <a href="${getToolPath(tool.id)}" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit;">
+                  <span class="additional-tool-arrow">→</span>
+                  <span class="additional-tool-title">${tool.title}</span>
+                </a>
               </li>
             `;
           });
