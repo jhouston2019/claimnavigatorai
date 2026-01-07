@@ -66,6 +66,9 @@
       Payment successful! You now have access to the complete Claim Navigator toolkit.
       Let's get started by setting up your claim details.
     </p>
+    <p id="redirect-message" style="color: #9ca3af; font-size: 14px;">
+      Redirecting you to claim setup in <span id="countdown">3</span> seconds...
+    </p>
     <a href="/app/onboarding/index.html" class="btn-primary">Start Claim Setup</a>
   </div>
 
@@ -92,8 +95,8 @@
           <p style="color: #9ca3af; font-size: 14px; margin-bottom: 32px;">
             Your payment is secure. Create an account to access all your tools.
           </p>
-          <a href="/app/login.html?session_id=${sessionId}&redirect=/app/claim-management-center.html" class="btn-primary">
-            Create Account & Access Tools
+          <a href="/app/login.html?session_id=${sessionId}&redirect=/app/onboarding/index.html" class="btn-primary">
+            Create Account & Set Up Claim
           </a>
         `;
         return;
@@ -110,9 +113,17 @@
               if (window.CNToast) {
                 window.CNToast.success('Payment verified!');
               }
-              // Auto-redirect to claim management center after 3 seconds
+              // Auto-redirect to onboarding after 3 seconds
+              let countdown = 3;
+              const countdownEl = document.getElementById('countdown');
+              const countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdownEl) countdownEl.textContent = countdown;
+                if (countdown <= 0) clearInterval(countdownInterval);
+              }, 1000);
+              
               setTimeout(() => {
-                window.location.href = '/app/claim-management-center.html';
+                window.location.href = '/app/onboarding/index.html';
               }, 3000);
             }
           }
