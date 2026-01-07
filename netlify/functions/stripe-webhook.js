@@ -26,12 +26,22 @@ exports.handler = async (event, context) => {
     const session = stripeEvent.data.object;
     const userId = session.metadata?.user_id;
     const sessionId = session.id;
+    const customerEmail = session.customer_details?.email || session.customer_email;
 
+    // For guest checkouts, we'll store the session and email
+    // User will create account on success page and claim will be linked then
     if (!userId) {
-      console.error('No user_id in session metadata');
+      console.log('Guest checkout - no user_id yet. Email:', customerEmail);
+      // Store payment info for later linking when user creates account
+      // For now, just acknowledge the webhook
       return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Missing user_id' })
+        statusCode: 200,
+        body: JSON.stringify({ 
+          received: true, 
+          message: 'Guest checkout - user will create account on success page',
+          session_id: sessionId,
+          email: customerEmail
+        })
       };
     }
 

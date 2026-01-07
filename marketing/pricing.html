@@ -157,7 +157,7 @@
     
     <div class="pricing-card">
       <h2>Per Claim</h2>
-      <div class="pricing-amount">$99</div>
+      <div class="pricing-amount">$497</div>
       <p class="pricing-description">Unlock one complete claim toolkit with all professional tools</p>
       
       <div class="pricing-features">
@@ -173,7 +173,7 @@
         </ul>
       </div>
       
-      <button onclick="if(window.launchClaimCheckout) { window.launchClaimCheckout(); } else { window.location.href='/auth/signup.html'; }" class="pricing-cta">
+      <button onclick="launchDirectCheckout()" class="pricing-cta">
         Unlock My Claim
       </button>
     </div>
@@ -184,6 +184,52 @@
   </main>
 
   <script src="/app/assets/js/stripe-checkout.js"></script>
+  <script>
+    // Direct checkout without requiring login first
+    async function launchDirectCheckout() {
+      try {
+        // Show loading state
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = 'Preparing checkout...';
+        button.disabled = true;
+
+        // Create Stripe checkout session with Stripe collecting email
+        const response = await fetch('/.netlify/functions/create-checkout-session-guest', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            // No user data needed - Stripe will collect email
+            source: 'pricing_page'
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to create checkout session');
+        }
+
+        const { url } = await response.json();
+
+        if (url) {
+          // Redirect to Stripe Checkout
+          window.location.href = url;
+        } else {
+          throw new Error('No checkout URL received');
+        }
+
+      } catch (error) {
+        console.error('Checkout error:', error);
+        alert('Unable to start checkout. Please try again or contact support.');
+        
+        // Reset button
+        const button = event.target;
+        button.textContent = 'Unlock My Claim';
+        button.disabled = false;
+      }
+    }
+  </script>
 </body>
 </html>
 
