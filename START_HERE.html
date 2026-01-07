@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Navigator - Local Development</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #0a1628 0%, #0f1f3d 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      padding: 2rem;
+    }
+    
+    .container {
+      max-width: 800px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 3rem;
+      backdrop-filter: blur(10px);
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #17BEBB;
+    }
+    
+    .subtitle {
+      font-size: 1.125rem;
+      color: #e5e7eb;
+      margin-bottom: 2rem;
+    }
+    
+    .status {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .status-title {
+      font-weight: 600;
+      color: #10b981;
+      margin-bottom: 0.5rem;
+    }
+    
+    .status-text {
+      color: #e5e7eb;
+      font-size: 0.875rem;
+    }
+    
+    .links {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .link-card {
+      background: rgba(23, 190, 187, 0.1);
+      border: 1px solid rgba(23, 190, 187, 0.3);
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    
+    .link-card:hover {
+      background: rgba(23, 190, 187, 0.2);
+      border-color: rgba(23, 190, 187, 0.5);
+      transform: translateX(8px);
+    }
+    
+    .link-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #17BEBB;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .link-title::before {
+      content: '→';
+      font-size: 1.5rem;
+    }
+    
+    .link-description {
+      color: #e5e7eb;
+      font-size: 0.875rem;
+    }
+    
+    .instructions {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .instructions h2 {
+      font-size: 1.25rem;
+      color: #17BEBB;
+      margin-bottom: 1rem;
+    }
+    
+    .instructions ol {
+      margin-left: 1.5rem;
+      color: #e5e7eb;
+    }
+    
+    .instructions li {
+      margin-bottom: 0.5rem;
+      line-height: 1.6;
+    }
+    
+    .code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+      color: #17BEBB;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Claim Navigator AI</h1>
+    <div class="subtitle">Local Development Environment</div>
+    
+    <div class="status">
+      <div class="status-title">✅ Server Status: Running</div>
+      <div class="status-text">Python HTTP Server is active on port 8000</div>
+    </div>
+    
+    <div class="links">
+      <a href="http://localhost:8000/step-by-step-claim-guide.html" class="link-card">
+        <div class="link-title">13-Step Claim Guide</div>
+        <div class="link-description">Complete step-by-step guide with all clickable tool links activated</div>
+      </a>
+      
+      <a href="http://localhost:8000/app/resources.html" class="link-card">
+        <div class="link-title">Resources</div>
+        <div class="link-description">Access all resources and documentation</div>
+      </a>
+      
+      <a href="http://localhost:8000/app/dashboard.html" class="link-card">
+        <div class="link-title">Dashboard</div>
+        <div class="link-description">Main application dashboard</div>
+      </a>
+      
+      <a href="http://localhost:8000/app/tools/" class="link-card">
+        <div class="link-title">Tools Directory</div>
+        <div class="link-description">Browse all available tools</div>
+      </a>
+    </div>
+    
+    <div class="instructions">
+      <h2>📋 How to Use</h2>
+      <ol>
+        <li>Click any link above to open that page</li>
+        <li>All tool links in the step-by-step guide will now work correctly</li>
+        <li>Navigation between pages will work seamlessly</li>
+        <li>Keep the Python server running in the background</li>
+      </ol>
+      
+      <h2 style="margin-top: 1.5rem;">🛑 To Stop the Server</h2>
+      <ol>
+        <li>Find the terminal window running <span class="code">python -m http.server 8000</span></li>
+        <li>Press <span class="code">Ctrl+C</span> to stop the server</li>
+      </ol>
+    </div>
+  </div>
+  
+  <script>
+    // Check if server is actually running
+    fetch('http://localhost:8000/')
+      .then(response => {
+        if (!response.ok) {
+          document.querySelector('.status-title').textContent = '⚠️ Server Status: Issue Detected';
+          document.querySelector('.status-text').textContent = 'Server may not be running correctly. Try restarting it.';
+          document.querySelector('.status').style.background = 'rgba(239, 68, 68, 0.1)';
+          document.querySelector('.status').style.borderColor = 'rgba(239, 68, 68, 0.3)';
+          document.querySelector('.status-title').style.color = '#ef4444';
+        }
+      })
+      .catch(error => {
+        document.querySelector('.status-title').textContent = '❌ Server Status: Not Running';
+        document.querySelector('.status-text').textContent = 'Please start the server: python -m http.server 8000';
+        document.querySelector('.status').style.background = 'rgba(239, 68, 68, 0.1)';
+        document.querySelector('.status').style.borderColor = 'rgba(239, 68, 68, 0.3)';
+        document.querySelector('.status-title').style.color = '#ef4444';
+      });
+  </script>
+</body>
+</html>
+
