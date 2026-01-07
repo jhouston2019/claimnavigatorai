@@ -393,6 +393,27 @@ function renderStructuredOutput(data) {
   if (data.missing_trades && Array.isArray(data.missing_trades)) {
     return renderMissingTrades(data);
   }
+  if (data.assessment && Array.isArray(data.assessment)) {
+    return renderDamageAssessment(data);
+  }
+  if (data.coverage_map && Array.isArray(data.coverage_map)) {
+    return renderCoverageMap(data);
+  }
+  if (data.documentation) {
+    return renderDamageDocumentation(data);
+  }
+  if (data.labels && Array.isArray(data.labels)) {
+    return renderDamageLabels(data);
+  }
+  if (data.opinion) {
+    return renderExpertOpinion(data);
+  }
+  if (data.mitigation_items && Array.isArray(data.mitigation_items)) {
+    return renderMitigationDocumentation(data);
+  }
+  if (data.prompts && Array.isArray(data.prompts)) {
+    return renderRoomByRoomGuide(data);
+  }
   
   // Fallback to generic structured output
   return renderGenericStructured(data);
@@ -1026,6 +1047,450 @@ function renderMissingTrades(data) {
   if (data.summary) {
     html += `<div class="output-summary">
       <h4>Summary</h4>
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Damage Assessment (Claim Damage Assessment tool)
+ */
+function renderDamageAssessment(data) {
+  let html = '<div class="damage-assessment-output structured-output">';
+  
+  html += `<div class="output-header">
+    <h3>Damage Assessment Results</h3>
+  </div>`;
+  
+  if (data.total_estimated_damage !== undefined) {
+    html += `<div class="total-value">
+      <strong>Total Estimated Damage:</strong> ${formatCurrency(data.total_estimated_damage)}
+    </div>`;
+  }
+  
+  if (data.assessment && data.assessment.length > 0) {
+    html += `<div class="assessment-table">
+      <table class="structured-table">
+        <thead>
+          <tr>
+            <th>Area/Room</th>
+            <th>Damage Type</th>
+            <th>Severity</th>
+            <th>Estimated Cost</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>`;
+    
+    data.assessment.forEach(item => {
+      const severityClass = getSeverityClass(item.severity);
+      const severityIcon = getSeverityIcon(item.severity);
+      
+      html += `<tr class="${severityClass}">
+        <td><strong>${escapeHtml(item.area || 'Area')}</strong></td>
+        <td>${escapeHtml(item.damage_type || 'Damage')}</td>
+        <td class="severity-cell">${severityIcon} ${item.severity || 'MEDIUM'}</td>
+        <td>${formatCurrency(item.estimated_cost || 0)}</td>
+        <td>${escapeHtml(item.documentation_notes || '')}</td>
+      </tr>`;
+    });
+    
+    html += `</tbody></table></div>`;
+  } else {
+    html += '<p class="no-items">No damage assessment data available.</p>';
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
+      <h4>Summary</h4>
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Coverage Map (Coverage Mapping Visualizer tool)
+ */
+function renderCoverageMap(data) {
+  let html = '<div class="coverage-map-output structured-output">';
+  
+  html += `<div class="output-header">
+    <h3>Coverage Mapping Results</h3>
+  </div>`;
+  
+  if (data.coverage_percentage !== undefined) {
+    const scoreClass = data.coverage_percentage >= 80 ? 'score-high' : 
+                       data.coverage_percentage >= 60 ? 'score-medium' : 'score-low';
+    html += `<div class="completeness-score ${scoreClass}">
+      <strong>Coverage Percentage:</strong> ${data.coverage_percentage}%
+    </div>`;
+  }
+  
+  if (data.coverage_map && data.coverage_map.length > 0) {
+    html += `<div class="coverage-table">
+      <table class="structured-table">
+        <thead>
+          <tr>
+            <th>Claim Item</th>
+            <th>Coverage Section</th>
+            <th>Covered</th>
+            <th>Limit</th>
+            <th>Deductible</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>`;
+    
+    data.coverage_map.forEach(item => {
+      const coveredIcon = item.covered ? '✅' : '❌';
+      const rowClass = item.covered ? '' : 'severity-high';
+      
+      html += `<tr class="${rowClass}">
+        <td><strong>${escapeHtml(item.claim_item || 'Item')}</strong></td>
+        <td>${escapeHtml(item.coverage_section || 'N/A')}</td>
+        <td class="severity-cell">${coveredIcon} ${item.covered ? 'Yes' : 'No'}</td>
+        <td>${formatCurrency(item.limit || 0)}</td>
+        <td>${formatCurrency(item.deductible || 0)}</td>
+        <td>${escapeHtml(item.notes || '')}</td>
+      </tr>`;
+    });
+    
+    html += `</tbody></table></div>`;
+  } else {
+    html += '<p class="no-items">No coverage mapping data available.</p>';
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
+      <h4>Summary</h4>
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Damage Documentation (Damage Documentation Tool)
+ */
+function renderDamageDocumentation(data) {
+  let html = '<div class="damage-documentation-output structured-output">';
+  
+  html += `<div class="output-header">
+    <h3>Damage Documentation Checklist</h3>
+  </div>`;
+  
+  if (data.documentation && data.documentation.completeness_score !== undefined) {
+    const scoreClass = data.documentation.completeness_score >= 80 ? 'score-high' : 
+                       data.documentation.completeness_score >= 60 ? 'score-medium' : 'score-low';
+    html += `<div class="completeness-score ${scoreClass}">
+      <strong>Documentation Completeness:</strong> ${data.documentation.completeness_score}%
+    </div>`;
+  }
+  
+  if (data.documentation) {
+    const doc = data.documentation;
+    
+    if (doc.incident_summary) {
+      html += `<div class="output-section">
+        <h4>Incident Summary</h4>
+        <p>${escapeHtml(doc.incident_summary)}</p>
+      </div>`;
+    }
+    
+    if (doc.affected_areas && doc.affected_areas.length > 0) {
+      html += `<div class="output-section">
+        <h4>Affected Areas</h4>
+        <ul class="recommendations-list">`;
+      doc.affected_areas.forEach(area => {
+        html += `<li>📍 ${escapeHtml(area)}</li>`;
+      });
+      html += `</ul></div>`;
+    }
+    
+    if (doc.required_photos && doc.required_photos.length > 0) {
+      html += `<div class="output-section">
+        <h4>Required Photos</h4>
+        <ul class="recommendations-list">`;
+      doc.required_photos.forEach(photo => {
+        html += `<li>📷 ${escapeHtml(photo)}</li>`;
+      });
+      html += `</ul></div>`;
+    }
+    
+    if (doc.required_documents && doc.required_documents.length > 0) {
+      html += `<div class="output-section">
+        <h4>Required Documents</h4>
+        <ul class="recommendations-list">`;
+      doc.required_documents.forEach(doc => {
+        html += `<li>📄 ${escapeHtml(doc)}</li>`;
+      });
+      html += `</ul></div>`;
+    }
+  }
+  
+  if (data.missing_items && data.missing_items.length > 0) {
+    html += `<div class="priority-section">
+      <h4>🔴 Missing Items</h4>
+      <ul class="priority-list">`;
+    data.missing_items.forEach(item => {
+      html += `<li class="priority-item">❌ ${escapeHtml(item)}</li>`;
+    });
+    html += `</ul></div>`;
+  }
+  
+  if (data.recommendations && data.recommendations.length > 0) {
+    html += `<div class="recommendations-section">
+      <h4>Recommendations</h4>
+      <ul class="recommendations-list">`;
+    data.recommendations.forEach(rec => {
+      html += `<li>✓ ${escapeHtml(rec)}</li>`;
+    });
+    html += `</ul></div>`;
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Damage Labels (Damage Labeling Tool)
+ */
+function renderDamageLabels(data) {
+  let html = '<div class="damage-labels-output structured-output">';
+  
+  html += `<div class="output-header">
+    <h3>Generated Damage Labels</h3>
+  </div>`;
+  
+  if (data.labels && data.labels.length > 0) {
+    data.labels.forEach((label, index) => {
+      const severityClass = getSeverityClass(label.severity);
+      const severityIcon = getSeverityIcon(label.severity);
+      
+      html += `<div class="label-item structured-item ${severityClass}">
+        <div class="item-header">
+          <h4>${severityIcon} Label #${index + 1}: ${escapeHtml(label.label || 'Damage Label')}</h4>
+          <span class="severity-badge ${severityClass}">${label.severity || 'MEDIUM'}</span>
+        </div>
+        <div class="item-details">`;
+      
+      if (label.documentation_priority) {
+        html += `<p><strong>Documentation Priority:</strong> ${escapeHtml(label.documentation_priority)}</p>`;
+      }
+      if (label.suggested_description) {
+        html += `<p><strong>Suggested Description:</strong> ${escapeHtml(label.suggested_description)}</p>`;
+      }
+      
+      html += `</div></div>`;
+    });
+  } else {
+    html += '<p class="no-items">No labels generated.</p>';
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Expert Opinion (Expert Opinion tool)
+ */
+function renderExpertOpinion(data) {
+  let html = '<div class="expert-opinion-output structured-output">';
+  
+  html += `<div class="output-header">
+    <h3>Expert Opinion</h3>
+  </div>`;
+  
+  if (data.confidence_level) {
+    const confidenceClass = data.confidence_level === 'HIGH' ? 'score-high' : 
+                           data.confidence_level === 'MEDIUM' ? 'score-medium' : 'score-low';
+    html += `<div class="completeness-score ${confidenceClass}">
+      <strong>Confidence Level:</strong> ${data.confidence_level}
+    </div>`;
+  }
+  
+  if (data.opinion) {
+    html += `<div class="output-section">
+      <h4>Expert Analysis</h4>
+      <p>${escapeHtml(data.opinion)}</p>
+    </div>`;
+  }
+  
+  if (data.precedents && data.precedents.length > 0) {
+    html += `<div class="output-section">
+      <h4>Relevant Precedents</h4>
+      <ul class="recommendations-list">`;
+    data.precedents.forEach(precedent => {
+      html += `<li>📚 ${escapeHtml(precedent)}</li>`;
+    });
+    html += `</ul></div>`;
+  }
+  
+  if (data.recommendations && data.recommendations.length > 0) {
+    html += `<div class="recommendations-section">
+      <h4>Recommendations</h4>
+      <ul class="recommendations-list">`;
+    data.recommendations.forEach(rec => {
+      html += `<li>✓ ${escapeHtml(rec)}</li>`;
+    });
+    html += `</ul></div>`;
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Mitigation Documentation (Mitigation Documentation Tool)
+ */
+function renderMitigationDocumentation(data) {
+  let html = '<div class="mitigation-documentation-output structured-output">';
+  
+  html += `<div class="output-header">
+    <h3>Mitigation Documentation</h3>
+  </div>`;
+  
+  if (data.total_mitigation_cost !== undefined) {
+    html += `<div class="total-cost">
+      <strong>Total Mitigation Cost:</strong> ${formatCurrency(data.total_mitigation_cost)}
+    </div>`;
+  }
+  
+  if (data.documentation_completeness !== undefined) {
+    const scoreClass = data.documentation_completeness >= 80 ? 'score-high' : 
+                       data.documentation_completeness >= 60 ? 'score-medium' : 'score-low';
+    html += `<div class="completeness-score ${scoreClass}">
+      <strong>Documentation Completeness:</strong> ${data.documentation_completeness}%
+    </div>`;
+  }
+  
+  if (data.mitigation_items && data.mitigation_items.length > 0) {
+    html += `<div class="mitigation-table">
+      <table class="structured-table">
+        <thead>
+          <tr>
+            <th>Action</th>
+            <th>Date</th>
+            <th>Cost</th>
+            <th>Vendor</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>`;
+    
+    data.mitigation_items.forEach(item => {
+      const statusIcon = item.documentation_status === 'Complete' ? '✅' : '⏳';
+      
+      html += `<tr>
+        <td><strong>${escapeHtml(item.action || 'Action')}</strong></td>
+        <td>${escapeHtml(item.date || 'N/A')}</td>
+        <td>${formatCurrency(item.cost || 0)}</td>
+        <td>${escapeHtml(item.vendor || 'N/A')}</td>
+        <td>${statusIcon} ${escapeHtml(item.documentation_status || 'Pending')}</td>
+      </tr>`;
+    });
+    
+    html += `</tbody></table></div>`;
+  } else {
+    html += '<p class="no-items">No mitigation actions documented.</p>';
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
+      <h4>Summary</h4>
+      <p>${escapeHtml(data.summary)}</p>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+/**
+ * Render Room-by-Room Guide (Room-by-Room Prompt Tool)
+ */
+function renderRoomByRoomGuide(data) {
+  let html = '<div class="room-by-room-guide-output structured-output">';
+  
+  html += `<div class="output-header">
+    <h3>Room Documentation Guide</h3>
+  </div>`;
+  
+  if (data.checklist_items !== undefined) {
+    html += `<div class="completeness-score">
+      <strong>Total Checklist Items:</strong> ${data.checklist_items}
+    </div>`;
+  }
+  
+  if (data.prompts && data.prompts.length > 0) {
+    data.prompts.forEach((prompt, index) => {
+      html += `<div class="prompt-item structured-item">
+        <div class="item-header">
+          <h4>📦 ${escapeHtml(prompt.category || `Category ${index + 1}`)}</h4>
+        </div>
+        <div class="item-details">`;
+      
+      if (prompt.items_to_document && prompt.items_to_document.length > 0) {
+        html += `<p><strong>Items to Document:</strong></p>
+          <ul class="recommendations-list">`;
+        prompt.items_to_document.forEach(item => {
+          html += `<li>✓ ${escapeHtml(item)}</li>`;
+        });
+        html += `</ul>`;
+      }
+      
+      if (prompt.photos_needed && prompt.photos_needed.length > 0) {
+        html += `<p><strong>Photos Needed:</strong></p>
+          <ul class="recommendations-list">`;
+        prompt.photos_needed.forEach(photo => {
+          html += `<li>📷 ${escapeHtml(photo)}</li>`;
+        });
+        html += `</ul>`;
+      }
+      
+      if (prompt.documentation_tips && prompt.documentation_tips.length > 0) {
+        html += `<p><strong>Documentation Tips:</strong></p>
+          <ul class="recommendations-list">`;
+        prompt.documentation_tips.forEach(tip => {
+          html += `<li>💡 ${escapeHtml(tip)}</li>`;
+        });
+        html += `</ul>`;
+      }
+      
+      html += `</div></div>`;
+    });
+  } else {
+    html += '<p class="no-items">No documentation guide available.</p>';
+  }
+  
+  if (data.summary) {
+    html += `<div class="output-summary">
       <p>${escapeHtml(data.summary)}</p>
     </div>`;
   }
