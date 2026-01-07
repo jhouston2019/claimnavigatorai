@@ -4072,6 +4072,12 @@
     }
 
     function openTool(toolId, stepNum) {
+      console.log('=== openTool called ===');
+      console.log('Tool ID:', toolId);
+      console.log('Step Number:', stepNum);
+      console.log('Current Protocol:', window.location.protocol);
+      console.log('Current Host:', window.location.host);
+      
       // Comprehensive tool ID to file path mapping
       const toolMapping = {
         // Step 1 - Policy Review
@@ -4204,6 +4210,8 @@
       
       const toolPath = toolMapping[toolId];
       
+      console.log('Tool Path from mapping:', toolPath);
+      
       if (!toolPath) {
         console.error(`Tool ID "${toolId}" not found in registry`);
         alert(`⚠️ Tool "${toolId}" is not yet available.\n\nThis tool is currently being configured. Please try again later or contact support.`);
@@ -4212,6 +4220,7 @@
       
       // Handle acknowledgment tools (stay on page)
       if (toolPath === 'acknowledgment') {
+        console.log('Acknowledgment tool - staying on page');
         const step = stepNum || currentStep;
         acknowledgeStep(step);
         return;
@@ -4224,7 +4233,18 @@
       const url = `${toolPath}?toolId=${toolId}&step=${step}&return=${returnUrl}`;
       
       // Navigate to tool
-      console.log(`Opening tool: ${toolId} → ${toolPath}`);
+      console.log('=== Navigation Details ===');
+      console.log('Tool ID:', toolId);
+      console.log('Tool Path:', toolPath);
+      console.log('Full URL:', url);
+      console.log('Navigating now...');
+      
+      // Show alert for debugging
+      if (window.location.protocol === 'file:') {
+        alert('⚠️ WARNING: You are using file:// protocol!\n\nThis will NOT work. Please access via:\nhttp://localhost:8000/step-by-step-claim-guide.html');
+        return;
+      }
+      
       window.location.href = url;
     }
     
