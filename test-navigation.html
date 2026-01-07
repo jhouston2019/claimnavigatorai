@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navigation Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 { color: #0B2545; }
+    h2 { color: #17BEBB; margin-top: 0; }
+    .info {
+      background: #e3f2fd;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+    .test-link {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #17BEBB;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      margin: 5px;
+      transition: background 0.2s;
+    }
+    .test-link:hover {
+      background: #13a09d;
+    }
+    .error { color: red; }
+    .success { color: green; }
+    #results {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 Navigation Diagnostic Test</h1>
+  
+  <div class="test-section">
+    <h2>Current Page Info</h2>
+    <div class="info">
+      <strong>Protocol:</strong> <span id="protocol"></span><br>
+      <strong>Host:</strong> <span id="host"></span><br>
+      <strong>Full URL:</strong> <span id="fullUrl"></span>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 1: Direct File Access</h2>
+    <p>Click to test if tool file exists:</p>
+    <a href="app/tools/policy-uploader.html" class="test-link" target="_blank">
+      Open Policy Uploader (Relative Path)
+    </a>
+    <a href="/app/tools/policy-uploader.html" class="test-link" target="_blank">
+      Open Policy Uploader (Absolute Path)
+    </a>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 2: JavaScript Navigation</h2>
+    <p>Click to test JavaScript navigation (same as step guide):</p>
+    <button onclick="testNavigation('/app/tools/policy-uploader.html')" class="test-link">
+      Test JS Navigation
+    </button>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 3: Fetch Test</h2>
+    <p>Test if files are accessible via HTTP:</p>
+    <button onclick="testFetch()" class="test-link">Run Fetch Test</button>
+    <div id="results"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 4: Tool Registry Function</h2>
+    <p>Test the actual openTool function:</p>
+    <button onclick="testOpenTool()" class="test-link">Test openTool('policy-uploader', 1)</button>
+  </div>
+
+  <script>
+    // Display current page info
+    document.getElementById('protocol').textContent = window.location.protocol;
+    document.getElementById('host').textContent = window.location.host || 'N/A (file://)';
+    document.getElementById('fullUrl').textContent = window.location.href;
+
+    // Check if we're using file:// protocol
+    if (window.location.protocol === 'file:') {
+      document.body.insertAdjacentHTML('afterbegin', `
+        <div style="background: #ffebee; border: 2px solid #ef5350; padding: 20px; margin-bottom: 20px; border-radius: 8px;">
+          <h2 style="color: #c62828; margin-top: 0;">⚠️ WARNING: Using file:// Protocol</h2>
+          <p><strong>This won't work!</strong> You need to access this page via HTTP server.</p>
+          <p>Open instead: <a href="http://localhost:8000/test-navigation.html" style="color: #1976d2;">http://localhost:8000/test-navigation.html</a></p>
+        </div>
+      `);
+    } else {
+      document.body.insertAdjacentHTML('afterbegin', `
+        <div style="background: #e8f5e9; border: 2px solid #66bb6a; padding: 20px; margin-bottom: 20px; border-radius: 8px;">
+          <h2 style="color: #2e7d32; margin-top: 0;">✅ SUCCESS: Using HTTP Protocol</h2>
+          <p>Navigation should work correctly!</p>
+        </div>
+      `);
+    }
+
+    function testNavigation(path) {
+      console.log('Testing navigation to:', path);
+      const fullUrl = window.location.origin + path;
+      console.log('Full URL:', fullUrl);
+      window.location.href = path;
+    }
+
+    async function testFetch() {
+      const results = document.getElementById('results');
+      results.innerHTML = '<p>Testing...</p>';
+      
+      const testPaths = [
+        '/app/tools/policy-uploader.html',
+        '/app/tools/damage-documentation-tool.html',
+        '/app/tools/estimate-comparison.html'
+      ];
+      
+      let html = '<h3>Fetch Results:</h3>';
+      
+      for (const path of testPaths) {
+        try {
+          const response = await fetch(path);
+          if (response.ok) {
+            html += `<p class="success">✅ ${path} - OK (${response.status})</p>`;
+          } else {
+            html += `<p class="error">❌ ${path} - Error ${response.status}</p>`;
+          }
+        } catch (error) {
+          html += `<p class="error">❌ ${path} - ${error.message}</p>`;
+        }
+      }
+      
+      results.innerHTML = html;
+    }
+
+    function testOpenTool() {
+      // Simulate the openTool function from step guide
+      const toolMapping = {
+        'policy-uploader': '/app/tools/policy-uploader.html'
+      };
+      
+      const toolId = 'policy-uploader';
+      const toolPath = toolMapping[toolId];
+      
+      if (!toolPath) {
+        alert('Tool not found in mapping!');
+        return;
+      }
+      
+      const step = 1;
+      const returnUrl = encodeURIComponent('/step-by-step-claim-guide.html');
+      const url = `${toolPath}?toolId=${toolId}&step=${step}&return=${returnUrl}`;
+      
+      console.log('Opening tool:', toolId);
+      console.log('Tool path:', toolPath);
+      console.log('Full URL:', url);
+      
+      alert(`Will navigate to: ${url}\n\nCheck console for details.`);
+      window.location.href = url;
+    }
+  </script>
+</body>
+</html>
+
