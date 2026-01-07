@@ -70,7 +70,7 @@ window.CNDisclaimer.addToCompletion('postClaimSection');
 
 **Disclaimer Text Used:**
 ```
-Claim Navigator provides informational tools and document assistance only.
+Claim Navigator AI provides informational tools and document assistance only.
 It is not a law firm, does not provide legal advice, and does not act as a 
 public adjuster, attorney, or insurance producer. You are responsible for all 
 decisions related to your claim. For legal, coverage, or representation questions, 
@@ -436,4 +436,5 @@ No changes made to access control, step logic, AI functionality, or pricing.
 **Implementation completed by:** AI Assistant  
 **Date:** January 5, 2026  
 **Review status:** Ready for human verification
+
 

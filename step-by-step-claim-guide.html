@@ -4122,6 +4122,27 @@ image.png<!DOCTYPE html>
         completedSteps.push(stepNum);
       }
       
+      // SB-3: Log step completion to timeline
+      (async () => {
+        try {
+          const { addTimelineEvent } = await import('./app/assets/js/utils/timeline-autosync.js');
+          await addTimelineEvent({
+            type: 'step_completed',
+            date: new Date().toISOString().split('T')[0],
+            source: 'step-guide',
+            title: `Step ${stepNum} Completed`,
+            description: step.title || `Completed step ${stepNum}`,
+            metadata: {
+              step_id: stepNum,
+              step_name: step.title,
+              actor: 'user'
+            }
+          });
+        } catch (error) {
+          console.warn('Failed to log step completion:', error);
+        }
+      })();
+      
       // Save state
       saveState();
       
@@ -4769,6 +4790,28 @@ image.png<!DOCTYPE html>
       if (!completedSteps.includes(stepNum)) {
         completedSteps.push(stepNum);
       }
+      
+      // SB-3: Log step completion to timeline
+      (async () => {
+        try {
+          const step = stepData[stepNum];
+          const { addTimelineEvent } = await import('./app/assets/js/utils/timeline-autosync.js');
+          await addTimelineEvent({
+            type: 'step_completed',
+            date: new Date().toISOString().split('T')[0],
+            source: 'step-guide',
+            title: `Step ${stepNum} Completed`,
+            description: step.title || `Completed step ${stepNum}`,
+            metadata: {
+              step_id: stepNum,
+              step_name: step.title,
+              actor: 'user'
+            }
+          });
+        } catch (error) {
+          console.warn('Failed to log step completion:', error);
+        }
+      })();
       
       // Update visual state
       const item = document.querySelector(`.accordion-item[data-step="${stepNum}"]`);

@@ -123,3 +123,4 @@ Reskin the Claim Navigator landing page to match a conservative insurance/legal 
 
 The landing page now presents a calm, authoritative, and established aesthetic appropriate for the insurance/legal industry, without appearing "startup" or "AI-styled." The design emphasizes clarity, professionalism, and trustworthiness.
 
+

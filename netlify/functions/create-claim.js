@@ -145,6 +145,31 @@ exports.handler = async (event, context) => {
       };
     }
 
+    // SB-1: Log claim creation to timeline
+    try {
+      await supabase
+        .from('claim_timeline')
+        .insert({
+          user_id: userId,
+          claim_id: claim.id,
+          event_type: 'claim_created',
+          event_date: new Date().toISOString().split('T')[0],
+          source: 'system',
+          title: 'Claim Created',
+          description: `Claim created for ${claim.insured_name} - ${claim.type_of_loss}`,
+          metadata: {
+            actor: 'system',
+            claim_status: claim.status,
+            policy_number: claim.policy_number,
+            insurer: claim.insurer,
+            date_of_loss: claim.date_of_loss
+          }
+        });
+    } catch (timelineError) {
+      console.warn('Failed to log claim creation to timeline:', timelineError);
+      // Don't fail the request if timeline logging fails
+    }
+
     return {
       statusCode: 201,
       headers: {

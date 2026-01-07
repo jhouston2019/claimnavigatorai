@@ -83,6 +83,46 @@ exports.handler = async (event, context) => {
       throw new Error(`Supabase error: ${error.message}`);
     }
 
+    // SB-4: Log carrier financial events to timeline
+    if (entry_type === 'payment' && (source === 'carrier' || source === 'insurance')) {
+      try {
+        // Get claim user_id for timeline entry
+        const { data: claimData } = await supabase
+          .from('claims')
+          .select('user_id')
+          .eq('id', claim_id)
+          .single();
+
+        if (claimData?.user_id) {
+          const paymentTypes = {
+            'payment': 'Carrier Payment Received',
+            'supplement': 'Supplemental Payment Received'
+          };
+          
+          await supabase
+            .from('claim_timeline')
+            .insert({
+              user_id: claimData.user_id,
+              claim_id: claim_id,
+              event_type: 'payment_received',
+              event_date: new Date().toISOString().split('T')[0],
+              source: 'system',
+              title: paymentTypes[entry_type] || 'Payment Received',
+              description: `${description} - $${parseFloat(amount).toFixed(2)}`,
+              metadata: {
+                actor: 'system',
+                amount: parseFloat(amount),
+                entry_type: entry_type,
+                source: source,
+                running_balance: running_balance
+              }
+            });
+        }
+      } catch (timelineError) {
+        console.warn('Failed to log financial event to timeline:', timelineError);
+      }
+    }
+
     return {
       statusCode: 200,
       headers,

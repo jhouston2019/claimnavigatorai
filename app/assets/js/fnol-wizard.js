@@ -461,6 +461,27 @@ async function submitFNOL() {
 
     } catch (error) {
         console.error('FNOL submission error:', error);
+        
+        // SB-5: Log submission failure to timeline
+        try {
+            const { addTimelineEvent } = await import('./utils/timeline-autosync.js');
+            await addTimelineEvent({
+                type: 'submission_failed',
+                date: new Date().toISOString().split('T')[0],
+                source: 'fnol-wizard',
+                title: 'FNOL Submission Failed',
+                description: `Submission attempt failed: ${error.message}`,
+                metadata: {
+                    actor: 'system',
+                    failure_reason: error.message,
+                    delivery_method: fnolPayload?.submissionMethod || 'portal',
+                    target: fnolPayload?.policy?.carrier || 'unknown'
+                }
+            });
+        } catch (timelineError) {
+            console.warn('Failed to log submission failure:', timelineError);
+        }
+        
         alert('Failed to submit FNOL: ' + error.message);
         document.getElementById('loading-indicator').classList.remove('show');
         document.getElementById('wizard-actions').style.display = 'flex';

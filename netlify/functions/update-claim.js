@@ -104,6 +104,14 @@ exports.handler = async (event, context) => {
       };
     }
 
+    // SB-2: Get current claim to detect status changes
+    const { data: currentClaim } = await supabase
+      .from('claims')
+      .select('status')
+      .eq('id', claimId)
+      .eq('user_id', user.id)
+      .single();
+
     // Add updated_at timestamp
     const updateData = {
       ...claimData,
@@ -140,6 +148,40 @@ exports.handler = async (event, context) => {
         },
         body: JSON.stringify({ error: 'Claim not found or access denied' })
       };
+    }
+
+    // SB-2: Log status change if status was updated
+    if (currentClaim && claimData.status && currentClaim.status !== claimData.status) {
+      try {
+        const statusEventTypes = {
+          'new': 'claim_created',
+          'active': 'claim_reopened',
+          'completed': 'claim_closed',
+          'cancelled': 'claim_closed',
+          'paid': 'claim_closed'
+        };
+        
+        const eventType = statusEventTypes[claimData.status] || 'claim_status_changed';
+        
+        await supabase
+          .from('claim_timeline')
+          .insert({
+            user_id: user.id,
+            claim_id: claimId,
+            event_type: eventType,
+            event_date: new Date().toISOString().split('T')[0],
+            source: 'system',
+            title: `Claim Status Changed: ${currentClaim.status} → ${claimData.status}`,
+            description: `Claim status updated from ${currentClaim.status} to ${claimData.status}`,
+            metadata: {
+              actor: 'system',
+              old_status: currentClaim.status,
+              new_status: claimData.status
+            }
+          });
+      } catch (timelineError) {
+        console.warn('Failed to log status change to timeline:', timelineError);
+      }
     }
 
     return {

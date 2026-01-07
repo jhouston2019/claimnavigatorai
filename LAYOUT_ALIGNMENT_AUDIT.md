@@ -978,3 +978,301 @@ The Advanced Tools pages use a **fundamentally different visual design system** 
 
 
 
+✅ CURSOR FINAL AUDIT PROMPT — CLAIM NAVIGATOR SYSTEM VERIFICATION
+
+You are performing a full-system audit of the Claim Navigator site.
+
+This is NOT a refactor.
+This is NOT a redesign.
+This is a verification-only pass.
+
+Do not change behavior unless a failure is detected.
+If something is missing, broken, or inconsistent, report it explicitly and propose the minimal corrective change.
+
+🔒 AUDIT OBJECTIVE
+
+Confirm that Claim Navigator is:
+
+Fully functional end-to-end
+
+Tool-connected at every step
+
+Producing authoritative, expert-grade outputs
+
+Exportable and persistent
+
+Free of dead links, broken routing, or logic regressions
+
+This is an expert operating system, not a consumer app.
+
+1️⃣ STEP GUIDE STRUCTURE AUDIT (ALL 13 STEPS)
+
+Verify for each step (1–13):
+
+Step title matches canonical name
+
+Subtitle clearly states purpose and consequence
+
+Tasks intro text is present
+
+Acknowledgment button exists
+
+No steps are missing or duplicated
+
+Step order is correct
+
+No lock-step visibility gating exists
+
+Steps remain navigable after acknowledgment where specified (ongoing steps)
+
+❗ Flag any step where:
+
+Content does not match system-driven pattern
+
+Copy is vague, optional, or conversational
+
+Expert authority language is missing
+
+2️⃣ PRIMARY TOOL VALIDATION (CRITICAL)
+
+For each step with a primary tool, verify:
+
+Step	Primary Tool ID
+1	policy-intelligence
+2	compliance-review
+3	damage-documentation
+4	estimate-review
+5	estimate-comparison
+6	ale-tracker
+7	contents-inventory
+8	contents-valuation
+9	coverage-alignment
+10	claim-package-assembly
+12	carrier-response
+13	supplement-analysis
+
+Confirm:
+
+Tool button routes correctly
+
+Route includes ?step= and return= parameters
+
+Tool page loads
+
+Tool produces output
+
+Output persists on return
+
+Output renders inside step
+
+Output unlocks acknowledgment
+
+Export buttons appear only after output exists
+
+❗ Flag any step where:
+
+Primary tool is missing
+
+Tool ID mismatch exists
+
+Output does not persist
+
+Acknowledgment unlocks without report
+
+3️⃣ SUPPORTING TOOLS AUDIT
+
+For every supporting tool listed:
+
+Route resolves
+
+Tool page loads
+
+Output is generated
+
+Output persists
+
+Output rehydrates on reload
+
+Output renders under primary report
+
+Output does NOT unlock step completion
+
+❗ Flag:
+
+Dead links
+
+Tools that overwrite primary output
+
+Tools that incorrectly block progression
+
+4️⃣ REPORT OUTPUT & SCHEMA AUDIT
+
+For each primary report, verify:
+
+Output follows required schema
+
+Sections are present and populated
+
+Language is assertive and expert-level
+
+No conversational phrases (“you may want to”, “consider”, “it might be”)
+
+No hallucinated legal advice
+
+Explicit determinations are made where required
+
+Risk flags are present when applicable
+
+❗ Flag any report that:
+
+Reads like chat output
+
+Lacks conclusions
+
+Uses optional or speculative language
+
+Is missing required schema fields
+
+5️⃣ EXPORT FUNCTIONALITY AUDIT (PDF / DOC)
+
+For all steps with reports:
+
+PDF export works
+
+DOC export works
+
+Filename format is correct
+
+Report content matches on-screen output
+
+Metadata present (step, date, report name)
+
+No blank pages or formatting breaks
+
+❗ Flag:
+
+Broken export buttons
+
+Empty exports
+
+Incorrect file names
+
+Missing sections
+
+6️⃣ CROSS-STEP CONTEXT AUDIT
+
+Verify correct read-only context imports:
+
+Step 2 imports Step 1
+
+Step 5 references Step 4
+
+Step 6 imports ALE rules from Step 1
+
+Step 8 imports Step 7 inventory
+
+Step 9 imports Steps 1–8
+
+Step 10 imports Steps 1–9
+
+Step 12 imports Steps 1, 2, 9, 10
+
+Step 13 imports Steps 5, 8, 9, 10, 12
+
+❗ Flag:
+
+Missing context
+
+Incorrect dependency
+
+Circular dependency
+
+Editable prior data
+
+7️⃣ PERSISTENCE AUDIT
+
+Verify:
+
+Tool outputs persist across navigation
+
+Outputs persist after refresh
+
+Re-running tools overwrites prior output cleanly
+
+No data collisions between steps
+
+localStorage keys are step-scoped
+
+No accidental clearing of outputs
+
+❗ Flag:
+
+Data loss
+
+Output bleed between steps
+
+Broken rehydration logic
+
+8️⃣ UI & UX INTEGRITY AUDIT
+
+Confirm:
+
+No layout regressions
+
+No broken toggles
+
+Dropdowns expand/collapse correctly
+
+Reports are visually distinguishable
+
+Primary vs supporting outputs clearly differentiated
+
+No overlapping buttons or hidden content
+
+❗ Flag:
+
+Broken JS handlers
+
+Visual regressions
+
+Accessibility failures that block use
+
+9️⃣ AUTHORITY & POSITIONING CHECK
+
+Evaluate globally:
+
+Does the system feel like an expert operating system?
+
+Would this output stand up in front of an adjuster or attorney?
+
+Does any language undermine authority?
+
+❗ Flag any copy or behavior that:
+
+Feels consumer-grade
+
+Feels instructional instead of authoritative
+
+Sounds like a chatbot
+
+10️⃣ FINAL REPORT
+
+Produce:
+
+✅ Passed checks
+
+❌ Failed checks (with file + line reference)
+
+🔧 Minimal corrective actions (only if needed)
+
+Do not refactor unless failure is confirmed.
+Do not add features.
+Do not redesign.
+
+🎯 SUCCESS CONDITION
+
+If all checks pass, explicitly state:
+
+“Claim Navigator passes full system audit and is ready for real-world claim usage.”
+
+Stop execution after report is generated.

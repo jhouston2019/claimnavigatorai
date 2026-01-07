@@ -346,3 +346,4 @@ export function getJournalEntryType(outputType) {
   return mapping[outputType] || 'ai_analysis';
 }
 
+

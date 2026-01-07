@@ -114,3 +114,4 @@ To verify the fixes:
 
 The resources page now presents a professional, cohesive experience with no broken or placeholder links visible to users.
 
+

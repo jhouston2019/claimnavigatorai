@@ -548,6 +548,35 @@ FNOL ID: ${fnolId}
 
   } catch (error) {
     console.error('FNOL submission error:', error);
+    
+    // SB-5: Log submission failure to timeline
+    try {
+      const body = JSON.parse(event.body);
+      const claimId = body.claimId;
+      
+      if (claimId && user?.id) {
+        await supabase
+          .from('claim_timeline')
+          .insert({
+            user_id: user.id,
+            claim_id: claimId,
+            event_type: 'submission_failed',
+            event_date: new Date().toISOString().split('T')[0],
+            source: 'system',
+            title: 'FNOL Submission Failed',
+            description: `Backend submission failed: ${error.message}`,
+            metadata: {
+              actor: 'system',
+              failure_reason: error.message,
+              delivery_method: body.submissionMethod || 'portal',
+              target: body.policy?.carrier || 'unknown'
+            }
+          });
+      }
+    } catch (timelineError) {
+      console.warn('Failed to log submission failure:', timelineError);
+    }
+    
     return {
       statusCode: 500,
       headers,
