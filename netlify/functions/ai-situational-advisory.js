@@ -109,14 +109,107 @@ exports.handler = async (event) => {
     
     validateRequired(body, ['situation_description']);
 
-    const { situation_description, claim_type = 'general', claimInfo = {} } = body;
+    const { 
+      situation_description, 
+      claim_type = 'general', 
+      claimInfo = {},
+      analysis_mode = 'situational-advisory' // NEW: Support different analysis modes
+    } = body;
     const sanitizedSituation = sanitizeInput(situation_description);
 
     const startTime = Date.now();
 
     const systemMessage = getClaimGradeSystemMessage('analysis');
 
-    let userPrompt = `Provide advisory response for this claim situation:
+    let userPrompt;
+    
+    switch (analysis_mode) {
+      case 'damage-labeling':
+        userPrompt = `Generate professional labels and descriptions for damage documentation. Return ONLY valid JSON:
+
+{
+  "labels": [
+    {
+      "label": "Specific damage description",
+      "severity": "HIGH|MEDIUM|LOW",
+      "documentation_priority": "Required|Recommended|Optional",
+      "suggested_description": "Detailed description for insurance documentation"
+    }
+  ],
+  "summary": "Labeling suggestions generated"
+}
+
+Room/Location: ${body.roomLocation || 'Not specified'}
+Damage Type: ${claim_type}
+Context: ${sanitizedSituation}
+
+Generate 3-5 professional labels for this damage photo including:
+1. Clear, specific damage description
+2. Severity rating
+3. Documentation priority
+4. Detailed description for insurance purposes
+
+Return ONLY the JSON object. Do not include markdown formatting, code blocks, or any text outside the JSON.`;
+        break;
+      
+      case 'expert-opinion':
+        userPrompt = `Provide expert analysis for this complex insurance claim issue. Return ONLY valid JSON:
+
+{
+  "opinion": "Detailed expert analysis text",
+  "precedents": ["Relevant case or precedent 1", "Relevant case or precedent 2"],
+  "recommendations": ["Specific recommendation 1", "Specific recommendation 2"],
+  "confidence_level": "HIGH|MEDIUM|LOW",
+  "summary": "Expert opinion provided"
+}
+
+Issue Type: ${body.issueType || 'General'}
+Claim Type: ${claim_type}
+Issue Description: ${sanitizedSituation}
+Context: ${body.context || 'None'}
+
+Provide expert-level analysis including:
+1. Detailed opinion on the issue
+2. Relevant precedents or case law
+3. Strategic recommendations
+4. Confidence level in the analysis
+
+Return ONLY the JSON object. Do not include markdown formatting, code blocks, or any text outside the JSON.`;
+        break;
+      
+      case 'room-by-room-guide':
+        userPrompt = `Generate a room-by-room documentation guide. Return ONLY valid JSON:
+
+{
+  "prompts": [
+    {
+      "category": "Category name (e.g., Electronics)",
+      "items_to_document": ["Item 1", "Item 2", "Item 3"],
+      "photos_needed": ["Photo type 1", "Photo type 2"],
+      "documentation_tips": ["Tip 1", "Tip 2"]
+    }
+  ],
+  "checklist_items": 15,
+  "summary": "Room documentation guide generated"
+}
+
+Room Type: ${body.roomType || 'General'}
+Room Size: ${body.roomSize || 'Not specified'} sq ft
+Damage Type: ${claim_type}
+Description: ${sanitizedSituation}
+
+Generate a comprehensive documentation guide for this room including:
+1. Categories of items typically found in this room
+2. Specific items to document
+3. Types of photos needed
+4. Documentation tips (serial numbers, receipts, etc.)
+
+Return ONLY the JSON object. Do not include markdown formatting, code blocks, or any text outside the JSON.`;
+        break;
+      
+      case 'situational-advisory':
+      default:
+        userPrompt = `Provide advisory response for this claim situation:
 
 Claim Type: ${claim_type}
 Situation: ${sanitizedSituation}
@@ -132,6 +225,8 @@ Return JSON:
   "recommendations": ["Rec 1", "Rec 2", "Rec 3"],
   "next_steps": ["Step 1", "Step 2", "Step 3"]
 }`;
+        break;
+    }
 
     // PHASE 5B: Enhance prompt with claim context
     userPrompt = enhancePromptWithContext(userPrompt, claimInfo, 'analysis');

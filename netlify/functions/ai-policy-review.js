@@ -111,8 +111,10 @@ exports.handler = async (event) => {
 
     // Build prompt based on analysis mode
     let userPrompt;
-    if (analysis_mode === 'sublimit') {
-      userPrompt = `Analyze this insurance policy for sublimits and return ONLY valid JSON with this exact structure:
+    
+    switch (analysis_mode) {
+      case 'sublimit':
+        userPrompt = `Analyze this insurance policy for sublimits and return ONLY valid JSON with this exact structure:
 
 {
   "sublimits": [
@@ -140,9 +142,79 @@ Focus on:
 4. Category-specific limits (mold, code upgrades, ordinance & law, etc.)
 
 Return ONLY the JSON object. Do not include markdown formatting, code blocks, or any text outside the JSON.`;
-    } else {
-      // Default: coverage gap analysis
-      userPrompt = `Analyze this insurance policy and return ONLY valid JSON with this exact structure:
+        break;
+      
+      case 'coverage-mapping':
+        userPrompt = `Map this insurance policy coverage to claim items and return ONLY valid JSON with this exact structure:
+
+{
+  "coverage_map": [
+    {
+      "claim_item": "Specific claim item (e.g., Roof replacement)",
+      "coverage_section": "Policy section (e.g., Dwelling Coverage A)",
+      "covered": true,
+      "limit": 250000,
+      "deductible": 2500,
+      "notes": "Coverage details (e.g., Covered under RCV)"
+    }
+  ],
+  "coverage_percentage": 85,
+  "summary": "Brief overview of coverage mapping"
+}
+
+Policy Type: ${policy_type}
+Jurisdiction: ${jurisdiction}
+
+Policy Text:
+${sanitizedText}
+
+Map each potential claim item to its corresponding policy coverage section. Include:
+1. Whether the item is covered (true/false)
+2. Coverage limits
+3. Applicable deductibles
+4. Any special conditions or exclusions
+
+Return ONLY the JSON object. Do not include markdown formatting, code blocks, or any text outside the JSON.`;
+        break;
+      
+      case 'damage-documentation':
+        userPrompt = `Analyze this claim and generate a damage documentation checklist. Return ONLY valid JSON with this exact structure:
+
+{
+  "documentation": {
+    "incident_summary": "Brief summary of incident",
+    "affected_areas": ["Living Room", "Kitchen"],
+    "required_photos": ["Overall room view", "Close-up of damage", "Serial numbers"],
+    "required_documents": ["Contractor estimate", "Receipts", "Police report"],
+    "completeness_score": 75
+  },
+  "missing_items": ["Item 1", "Item 2"],
+  "recommendations": ["Recommendation 1", "Recommendation 2"],
+  "summary": "Documentation assessment complete"
+}
+
+Policy Type: ${policy_type}
+Claim Type: ${body.claimType || 'general'}
+
+Policy Text:
+${sanitizedText}
+
+Context: ${body.context || 'None provided'}
+
+Generate a comprehensive documentation checklist including:
+1. Required photos and angles
+2. Required documents
+3. Witness statements needed
+4. Evidence of ownership
+5. Completeness assessment
+
+Return ONLY the JSON object. Do not include markdown formatting, code blocks, or any text outside the JSON.`;
+        break;
+      
+      case 'coverage-gap':
+      default:
+        // Default: coverage gap analysis
+        userPrompt = `Analyze this insurance policy and return ONLY valid JSON with this exact structure:
 
 {
   "gaps": [
@@ -179,6 +251,7 @@ Severity Guidelines:
 - LOW: Minor limitation, <$5k impact
 
 Return ONLY the JSON object. Do not include markdown formatting, code blocks, or any text outside the JSON.`;
+        break;
     }
 
     // PHASE 5B: Enhance prompt with claim context

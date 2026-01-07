@@ -232,6 +232,10 @@ function extractStructuredData(analysisResults, analysisMode) {
       return extractPricingDeviations(analysisResults);
     case 'missing-trade':
       return extractMissingTrades(analysisResults);
+    case 'damage-assessment':
+      return extractDamageAssessment(analysisResults);
+    case 'mitigation-documentation':
+      return extractMitigationDocumentation(analysisResults);
     default:
       // Default to line item discrepancies for comparison mode
       return extractLineItemDiscrepancies(analysisResults);
@@ -450,6 +454,90 @@ function extractMissingTrades(analysisResults) {
     missing_trades: missingTrades,
     total_missing_cost: totalCost,
     summary: `${missingTrades.length} trades potentially missing from estimate(s)`
+  };
+}
+
+/**
+ * Extract damage assessment from engine results
+ */
+function extractDamageAssessment(analysisResults) {
+  const assessment = [];
+  let totalCost = 0;
+  
+  analysisResults.forEach((result, idx) => {
+    if (result.report) {
+      // Parse report to extract damage areas
+      const text = result.report.summary || result.report.potentialOmissions || '';
+      const lines = text.split('\n').filter(line => line.trim());
+      
+      lines.forEach(line => {
+        const match = line.match(/(.+?)[\s-]*\$?([\d,]+)/);
+        if (match) {
+          const area = match[1].trim().replace(/^[-•*]\s*/, '');
+          const cost = parseFloat(match[2].replace(/,/g, '')) || 0;
+          
+          if (area && cost > 0) {
+            assessment.push({
+              area: area,
+              damage_type: 'Damage identified',
+              severity: cost > 10000 ? 'HIGH' : cost > 5000 ? 'MEDIUM' : 'LOW',
+              estimated_cost: cost,
+              documentation_notes: `From ${result.filename}`
+            });
+            totalCost += cost;
+          }
+        }
+      });
+    }
+  });
+  
+  return {
+    assessment: assessment,
+    total_estimated_damage: totalCost,
+    summary: `${assessment.length} areas assessed. Total estimated damage: $${totalCost.toLocaleString()}`
+  };
+}
+
+/**
+ * Extract mitigation documentation from engine results
+ */
+function extractMitigationDocumentation(analysisResults) {
+  const mitigationItems = [];
+  let totalCost = 0;
+  
+  analysisResults.forEach((result, idx) => {
+    if (result.report && result.report.potentialOmissions) {
+      const text = result.report.potentialOmissions || '';
+      const lines = text.split('\n').filter(line => line.trim());
+      
+      lines.forEach(line => {
+        if (line.toLowerCase().includes('mitigation') || line.toLowerCase().includes('emergency')) {
+          const match = line.match(/(.+?)[\s-]*\$?([\d,]+)/);
+          if (match) {
+            const action = match[1].trim().replace(/^[-•*]\s*/, '');
+            const cost = parseFloat(match[2].replace(/,/g, '')) || 0;
+            
+            if (action && cost > 0) {
+              mitigationItems.push({
+                action: action,
+                date: new Date().toISOString().split('T')[0],
+                cost: cost,
+                vendor: 'To be documented',
+                documentation_status: 'Pending'
+              });
+              totalCost += cost;
+            }
+          }
+        }
+      });
+    }
+  });
+  
+  return {
+    mitigation_items: mitigationItems,
+    total_mitigation_cost: totalCost,
+    documentation_completeness: mitigationItems.length > 0 ? 75 : 0,
+    summary: `${mitigationItems.length} mitigation actions documented. Total cost: $${totalCost.toLocaleString()}`
   };
 }
 
