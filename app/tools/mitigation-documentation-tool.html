@@ -6,6 +6,7 @@
   <title>Mitigation Documentation Tool - Claim Navigator</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/tool-visual-alignment.css">
+  <link rel="stylesheet" href="../assets/css/structured-tool-outputs.css">
   <script src="../storage/claimStorage.js"></script>
   <script src="../assets/js/tool-registry.js"></script>
 </head>
@@ -14,7 +15,7 @@
   <!-- Tool Header -->
   <div class="tool-page-header">
     <h1 class="tool-page-title">Mitigation Documentation Tool</h1>
-    <p class="tool-page-subtitle">Document emergency mitigation actions</p>
+    <p class="tool-page-subtitle">Document mitigation efforts and costs</p>
   </div>
 
   <!-- Main Content Area -->
@@ -23,27 +24,51 @@
     <!-- Tool Content -->
     <div class="tool-card">
       <div class="tool-card-header">
-        <h2 class="tool-card-title">Step 2 Tool</h2>
+        <h2 class="tool-card-title">L3 Analysis Tool</h2>
       </div>
       <div class="tool-card-body">
-        <p>This tool is part of Step 2 of the Step-by-Step Claim Guide.</p>
+        <p>Document your mitigation efforts, emergency repairs, and associated costs to ensure proper reimbursement in your claim.</p>
         
-        
-
         <!-- Input Form -->
         <form data-tool-form class="tool-form">
           <div class="tool-form-group">
-            <label for="photoUpload" class="tool-label">Upload Mitigation Photos</label>
+            <label for="claimType" class="tool-label">Type of Damage</label>
+            <select id="claimType" name="claimType" class="tool-input" required>
+              <option value="">Select damage type...</option>
+              <option value="fire">Fire Damage</option>
+              <option value="water">Water Damage</option>
+              <option value="wind">Wind/Hurricane Damage</option>
+              <option value="hail">Hail Damage</option>
+              <option value="theft">Theft/Vandalism</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="mitigationActions" class="tool-label">Mitigation Actions Taken (max 500 chars)</label>
+            <textarea 
+              id="mitigationActions" 
+              name="mitigationActions" 
+              class="tool-textarea" 
+              rows="4" 
+              maxlength="500"
+              placeholder="Describe all mitigation actions taken (e.g., emergency board-up, water extraction, tarp installation)..."
+              required
+            ></textarea>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="mitigationCost" class="tool-label">Total Mitigation Cost ($)</label>
             <input 
-              type="file" 
-              id="photoUpload" 
-              name="photoUpload" 
+              type="number" 
+              id="mitigationCost" 
+              name="mitigationCost" 
               class="tool-input" 
-              accept="image/*,video/*"
-              multiple
+              step="0.01"
+              min="0"
+              placeholder="e.g., 2500.00"
               required
             />
-            <small>Upload photos/videos of mitigation actions taken.</small>
           </div>
 
           <div class="tool-form-group">
@@ -58,27 +83,25 @@
           </div>
 
           <div class="tool-form-group">
-            <label for="mitigationType" class="tool-label">Type of Mitigation</label>
-            <select id="mitigationType" name="mitigationType" class="tool-input" required>
-              <option value="">Select type...</option>
-              <option value="water-extraction">Water Extraction</option>
-              <option value="board-up">Board Up/Securing</option>
-              <option value="tarp">Tarping</option>
-              <option value="debris-removal">Debris Removal</option>
-              <option value="temporary-repairs">Temporary Repairs</option>
-              <option value="other">Other</option>
-            </select>
+            <label for="vendor" class="tool-label">Vendor/Contractor Name (Optional)</label>
+            <input 
+              type="text" 
+              id="vendor" 
+              name="vendor" 
+              class="tool-input" 
+              placeholder="e.g., ABC Emergency Services"
+            />
           </div>
 
           <div class="tool-form-group">
-            <label for="context" class="tool-label">Brief Description (Optional, max 500 chars)</label>
+            <label for="context" class="tool-label">Additional Details (Optional, max 500 chars)</label>
             <textarea 
               id="context" 
               name="context" 
               class="tool-textarea" 
               rows="3" 
               maxlength="500"
-              placeholder="e.g., Emergency water extraction after pipe burst..."
+              placeholder="e.g., Receipts attached, photos taken, adjuster notified..."
             ></textarea>
           </div>
 
@@ -91,7 +114,7 @@
 
         <!-- Output Area -->
         <div data-tool-output id="output" class="tool-output" style="display: none;">
-          <h3 class="tool-section-title">Documentation Results</h3>
+          <h3 class="tool-section-title">Mitigation Documentation</h3>
           <div class="tool-output-content"></div>
           
           <div class="tool-form-actions" style="margin-top: 1.5rem;">
@@ -106,7 +129,7 @@
 
         <div class="tool-section">
           <h3 class="tool-section-title">What This Tool Does</h3>
-          <p>Document emergency mitigation actions</p>
+          <p>This tool creates a comprehensive mitigation documentation report including all actions taken, costs incurred, and supporting evidence needed for reimbursement. It also assesses documentation completeness and provides recommendations.</p>
         </div>
       </div>
     </div>
@@ -114,10 +137,7 @@
     <!-- Action Buttons -->
     <div class="tool-section">
       <button class="tool-btn tool-btn-secondary" onclick="goBack()">
-        ← Back to Claim Guide
-      </button>
-      <button class="tool-btn tool-btn-primary" onclick="markComplete()">
-        Mark as Complete →
+        ← Back to Resource Center
       </button>
     </div>
 
@@ -125,13 +145,7 @@
 
   <script>
     function goBack() {
-      window.location.href = '../step-by-step-claim-guide.html?step=2';
-    }
-
-    function markComplete() {
-      saveClaimData('tool_mitigation-documentation-tool_complete', true);
-      alert('✓ Tool marked as complete!\n\nReturning to Claim Guide...');
-      goBack();
+      window.location.href = '../resource-center.html';
     }
 
     // Initialize
@@ -140,20 +154,19 @@
     });
   </script>
 
+  <script type="module">
+    import { AIToolController } from '../assets/js/controllers/index.js';
 
-<script type="module">
-  import { WorkflowViewController } from '/app/assets/js/controllers/index.js';
-
-  document.addEventListener('DOMContentLoaded', () => {
-    WorkflowViewController.initTool({
-      "toolId": "mitigation-documentation-tool",
-      "toolName": "Mitigation Documentation Tool",
-      "supabaseTable": "evidence_items",
-      "viewType": "cards",
-      "timelineEventType": "mitigation_documented"
-});
-  });
-</script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      await AIToolController.initTool({
+        toolId: 'mitigation-documentation-tool',
+        toolName: 'Mitigation Documentation Tool',
+        backendFunction: '/.netlify/functions/ai-estimate-comparison',
+        outputFormat: 'structured',
+        customData: { analysis_mode: 'mitigation-documentation' }
+      });
+    });
+  </script>
 
 </body>
 </html>

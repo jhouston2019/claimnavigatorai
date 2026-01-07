@@ -6,6 +6,7 @@
   <title>Coverage Mapping Visualizer - Claim Navigator</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/tool-visual-alignment.css">
+  <link rel="stylesheet" href="../assets/css/structured-tool-outputs.css">
   <script src="../storage/claimStorage.js"></script>
   <script src="../assets/js/tool-registry.js"></script>
 </head>
@@ -14,7 +15,7 @@
   <!-- Tool Header -->
   <div class="tool-page-header">
     <h1 class="tool-page-title">Coverage Mapping Visualizer</h1>
-    <p class="tool-page-subtitle">Visualize coverage application</p>
+    <p class="tool-page-subtitle">Visual map of policy coverage vs claim items</p>
   </div>
 
   <!-- Main Content Area -->
@@ -23,13 +24,11 @@
     <!-- Tool Content -->
     <div class="tool-card">
       <div class="tool-card-header">
-        <h2 class="tool-card-title">Step 9 Tool</h2>
+        <h2 class="tool-card-title">L3 Analysis Tool</h2>
       </div>
       <div class="tool-card-body">
-        <p>This tool is part of Step 9 of the Step-by-Step Claim Guide.</p>
+        <p>Map your claim items to specific policy coverage sections to understand what's covered, limits, and deductibles.</p>
         
-        
-
         <!-- Input Form -->
         <form data-tool-form class="tool-form">
           <div class="tool-form-group">
@@ -42,7 +41,19 @@
               accept=".pdf,.txt"
               required
             />
-            <small>Upload your policy to visualize coverage mapping.</small>
+            <small>Upload your insurance policy for coverage mapping.</small>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="estimateUpload" class="tool-label">Upload Estimate/Scope (Optional)</label>
+            <input 
+              type="file" 
+              id="estimateUpload" 
+              name="estimateUpload" 
+              class="tool-input" 
+              accept=".pdf,.txt"
+            />
+            <small>Upload contractor estimate or scope of work to map against policy.</small>
           </div>
 
           <div class="tool-form-group">
@@ -58,38 +69,38 @@
           </div>
 
           <div class="tool-form-group">
-            <label for="lossDate" class="tool-label">Date of Loss</label>
-            <input 
-              type="date" 
-              id="lossDate" 
-              name="lossDate" 
-              class="tool-input" 
-              required
-            />
+            <label for="lossCategory" class="tool-label">Loss Categories (Select Multiple)</label>
+            <select id="lossCategory" name="lossCategory" class="tool-input" multiple size="4" required>
+              <option value="structure">Structure (Coverage A)</option>
+              <option value="contents">Contents (Coverage C)</option>
+              <option value="ale">Additional Living Expenses (Coverage D)</option>
+              <option value="other">Other Structures (Coverage B)</option>
+            </select>
+            <small>Hold Ctrl/Cmd to select multiple categories.</small>
           </div>
 
           <div class="tool-form-group">
-            <label for="context" class="tool-label">Brief Context (Optional, max 500 chars)</label>
+            <label for="context" class="tool-label">Claim Items to Map (Optional, max 500 chars)</label>
             <textarea 
               id="context" 
               name="context" 
               class="tool-textarea" 
               rows="3" 
               maxlength="500"
-              placeholder="e.g., Need to map coverage for multi-peril claim..."
+              placeholder="e.g., Roof replacement, smoke damage cleanup, temporary housing..."
             ></textarea>
           </div>
 
           <div class="tool-form-actions">
             <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
-              Generate Coverage Map
+              Map Coverage
             </button>
           </div>
         </form>
 
         <!-- Output Area -->
         <div data-tool-output id="output" class="tool-output" style="display: none;">
-          <h3 class="tool-section-title">Coverage Map</h3>
+          <h3 class="tool-section-title">Coverage Mapping Results</h3>
           <div class="tool-output-content"></div>
           
           <div class="tool-form-actions" style="margin-top: 1.5rem;">
@@ -104,7 +115,7 @@
 
         <div class="tool-section">
           <h3 class="tool-section-title">What This Tool Does</h3>
-          <p>Visualize coverage application</p>
+          <p>This tool analyzes your policy and claim items to create a visual map showing which policy sections cover each claim item, coverage limits, deductibles, and any gaps or exclusions.</p>
         </div>
       </div>
     </div>
@@ -112,10 +123,7 @@
     <!-- Action Buttons -->
     <div class="tool-section">
       <button class="tool-btn tool-btn-secondary" onclick="goBack()">
-        ← Back to Claim Guide
-      </button>
-      <button class="tool-btn tool-btn-primary" onclick="markComplete()">
-        Mark as Complete →
+        ← Back to Resource Center
       </button>
     </div>
 
@@ -123,13 +131,7 @@
 
   <script>
     function goBack() {
-      window.location.href = '../step-by-step-claim-guide.html?step=9';
-    }
-
-    function markComplete() {
-      saveClaimData('tool_coverage-mapping-visualizer_complete', true);
-      alert('✓ Tool marked as complete!\n\nReturning to Claim Guide...');
-      goBack();
+      window.location.href = '../resource-center.html';
     }
 
     // Initialize
@@ -138,19 +140,19 @@
     });
   </script>
 
+  <script type="module">
+    import { AIToolController } from '../assets/js/controllers/index.js';
 
-<script type="module">
-  import { WorkflowViewController } from '/app/assets/js/controllers/index.js';
-
-  document.addEventListener('DOMContentLoaded', () => {
-    WorkflowViewController.initTool({
-      "toolId": "coverage-mapping-visualizer",
-      "toolName": "Coverage Mapping Visualizer",
-      "supabaseTable": "claim_stages",
-      "viewType": "cards"
-});
-  });
-</script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      await AIToolController.initTool({
+        toolId: 'coverage-mapping-visualizer',
+        toolName: 'Coverage Mapping Visualizer',
+        backendFunction: '/.netlify/functions/ai-policy-review',
+        outputFormat: 'structured',
+        customData: { analysis_mode: 'coverage-mapping' }
+      });
+    });
+  </script>
 
 </body>
 </html>

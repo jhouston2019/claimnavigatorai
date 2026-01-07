@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Damage Labeling Tool - Claim Navigator</title>
+  <title>AI Response Agent - Claim Navigator</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/tool-visual-alignment.css">
   <link rel="stylesheet" href="../assets/css/structured-tool-outputs.css">
@@ -14,8 +14,8 @@
   
   <!-- Tool Header -->
   <div class="tool-page-header">
-    <h1 class="tool-page-title">Damage Labeling Tool</h1>
-    <p class="tool-page-subtitle">Generate labels and descriptions for damage photos</p>
+    <h1 class="tool-page-title">AI Response Agent</h1>
+    <p class="tool-page-subtitle">Generate AI-powered responses to carrier communications</p>
   </div>
 
   <!-- Main Content Area -->
@@ -27,47 +27,56 @@
         <h2 class="tool-card-title">L3 Analysis Tool</h2>
       </div>
       <div class="tool-card-body">
-        <p>Generate professional labels and descriptions for your damage photos to improve claim documentation.</p>
+        <p>Generate professional responses to insurance carrier communications including denials, RFIs, and settlement offers.</p>
         
         <!-- Input Form -->
         <form data-tool-form class="tool-form">
           <div class="tool-form-group">
-            <label for="damagePhoto" class="tool-label">Upload Damage Photo</label>
-            <input 
-              type="file" 
-              id="damagePhoto" 
-              name="damagePhoto" 
-              class="tool-input" 
-              accept="image/*"
-              required
-            />
-            <small>Upload a photo of damage that needs labeling.</small>
-          </div>
-
-          <div class="tool-form-group">
-            <label for="roomLocation" class="tool-label">Room/Location</label>
+            <label for="carrierName" class="tool-label">Insurance Carrier Name</label>
             <input 
               type="text" 
-              id="roomLocation" 
-              name="roomLocation" 
+              id="carrierName" 
+              name="carrierName" 
               class="tool-input" 
-              placeholder="e.g., Living room, Master bedroom ceiling"
+              placeholder="e.g., State Farm"
               required
             />
           </div>
 
           <div class="tool-form-group">
-            <label for="claimType" class="tool-label">Type of Damage</label>
-            <select id="claimType" name="claimType" class="tool-input" required>
-              <option value="">Select damage type...</option>
-              <option value="fire">Fire Damage</option>
-              <option value="water">Water Damage</option>
-              <option value="wind">Wind/Hurricane Damage</option>
-              <option value="hail">Hail Damage</option>
-              <option value="mold">Mold/Mildew</option>
-              <option value="structural">Structural Damage</option>
+            <label for="communicationType" class="tool-label">Type of Communication</label>
+            <select id="communicationType" name="communicationType" class="tool-input" required>
+              <option value="">Select type...</option>
+              <option value="denial">Denial Letter</option>
+              <option value="rfi">Request for Information (RFI)</option>
+              <option value="settlement">Settlement Offer</option>
+              <option value="delay">Delay/Stalling Tactic</option>
               <option value="other">Other</option>
             </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="tone" class="tool-label">Desired Response Tone</label>
+            <select id="tone" name="tone" class="tool-input" required>
+              <option value="professional">Professional</option>
+              <option value="assertive">Assertive</option>
+              <option value="diplomatic">Diplomatic</option>
+              <option value="firm">Firm but Respectful</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="carrierLetter" class="tool-label">Carrier Communication (Paste Text)</label>
+            <textarea 
+              id="carrierLetter" 
+              name="carrierLetter" 
+              class="tool-textarea" 
+              rows="8" 
+              maxlength="2000"
+              placeholder="Paste the carrier's letter or communication here..."
+              required
+            ></textarea>
+            <small>Character count: <span id="charCount">0</span>/2000</small>
           </div>
 
           <div class="tool-form-group">
@@ -78,20 +87,20 @@
               class="tool-textarea" 
               rows="3" 
               maxlength="500"
-              placeholder="e.g., Damage occurred during storm on 1/5/2024..."
+              placeholder="e.g., Previous communications, specific concerns..."
             ></textarea>
           </div>
 
           <div class="tool-form-actions">
             <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
-              Generate Labels
+              Generate Response
             </button>
           </div>
         </form>
 
         <!-- Output Area -->
         <div data-tool-output id="output" class="tool-output" style="display: none;">
-          <h3 class="tool-section-title">Generated Labels</h3>
+          <h3 class="tool-section-title">Generated Response</h3>
           <div class="tool-output-content"></div>
           
           <div class="tool-form-actions" style="margin-top: 1.5rem;">
@@ -106,7 +115,7 @@
 
         <div class="tool-section">
           <h3 class="tool-section-title">What This Tool Does</h3>
-          <p>This tool analyzes your damage photo and generates professional labels and descriptions that clearly document the damage for insurance purposes, including severity ratings and documentation priorities.</p>
+          <p>The AI Response Agent analyzes carrier communications and generates professional, strategic responses tailored to your situation. It helps you respond effectively to denials, RFIs, settlement offers, and other carrier tactics.</p>
         </div>
       </div>
     </div>
@@ -125,9 +134,14 @@
       window.location.href = '../resource-center.html';
     }
 
+    // Character counter
+    document.getElementById('carrierLetter').addEventListener('input', function() {
+      document.getElementById('charCount').textContent = this.value.length;
+    });
+
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('Tool loaded: damage-labeling-tool');
+      console.log('Tool loaded: ai-response-agent');
     });
   </script>
 
@@ -136,14 +150,15 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       await AIToolController.initTool({
-        toolId: 'damage-labeling-tool',
-        toolName: 'Damage Labeling Tool',
-        backendFunction: '/.netlify/functions/ai-situational-advisory',
+        toolId: 'ai-response-agent',
+        toolName: 'AI Response Agent',
+        backendFunction: '/.netlify/functions/ai-response-agent',
         outputFormat: 'structured',
-        customData: { analysis_mode: 'damage-labeling' }
+        customData: { analysis_mode: 'response-generation' }
       });
     });
   </script>
 
 </body>
 </html>
+

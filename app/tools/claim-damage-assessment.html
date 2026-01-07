@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Room-by-Room Prompt Tool - Claim Navigator</title>
+  <title>Claim Damage Assessment - Claim Navigator</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/tool-visual-alignment.css">
   <link rel="stylesheet" href="../assets/css/structured-tool-outputs.css">
@@ -14,8 +14,8 @@
   
   <!-- Tool Header -->
   <div class="tool-page-header">
-    <h1 class="tool-page-title">Room-by-Room Prompt Tool</h1>
-    <p class="tool-page-subtitle">Interactive guide for room-by-room documentation</p>
+    <h1 class="tool-page-title">Claim Damage Assessment</h1>
+    <p class="tool-page-subtitle">Comprehensive damage assessment and documentation</p>
   </div>
 
   <!-- Main Content Area -->
@@ -27,41 +27,21 @@
         <h2 class="tool-card-title">L3 Analysis Tool</h2>
       </div>
       <div class="tool-card-body">
-        <p>Get a customized checklist and prompts for documenting contents and damage in each room of your property.</p>
+        <p>Generate a comprehensive damage assessment with estimated costs and documentation requirements for your claim.</p>
         
         <!-- Input Form -->
         <form data-tool-form class="tool-form">
           <div class="tool-form-group">
-            <label for="roomType" class="tool-label">Room Type</label>
-            <select id="roomType" name="roomType" class="tool-input" required>
-              <option value="">Select room type...</option>
-              <option value="living-room">Living Room</option>
-              <option value="bedroom">Bedroom</option>
-              <option value="master-bedroom">Master Bedroom</option>
-              <option value="kitchen">Kitchen</option>
-              <option value="bathroom">Bathroom</option>
-              <option value="dining-room">Dining Room</option>
-              <option value="home-office">Home Office</option>
-              <option value="garage">Garage</option>
-              <option value="basement">Basement</option>
-              <option value="attic">Attic</option>
-              <option value="laundry-room">Laundry Room</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-
-          <div class="tool-form-group">
-            <label for="roomSize" class="tool-label">Room Size (Square Feet)</label>
+            <label for="damagePhotos" class="tool-label">Upload Damage Photos (Optional)</label>
             <input 
-              type="number" 
-              id="roomSize" 
-              name="roomSize" 
+              type="file" 
+              id="damagePhotos" 
+              name="damagePhotos" 
               class="tool-input" 
-              min="0"
-              step="1"
-              placeholder="e.g., 200"
-              required
+              accept="image/*,.pdf"
+              multiple
             />
+            <small>Upload photos showing damage to different areas.</small>
           </div>
 
           <div class="tool-form-group">
@@ -71,34 +51,59 @@
               <option value="fire">Fire Damage</option>
               <option value="water">Water Damage</option>
               <option value="wind">Wind/Hurricane Damage</option>
+              <option value="hail">Hail Damage</option>
               <option value="theft">Theft/Vandalism</option>
-              <option value="contents-only">Contents Only (No Structure Damage)</option>
               <option value="other">Other</option>
             </select>
           </div>
 
           <div class="tool-form-group">
-            <label for="context" class="tool-label">Room Description (Optional, max 500 chars)</label>
+            <label for="affectedRooms" class="tool-label">Affected Rooms/Areas</label>
+            <input 
+              type="text" 
+              id="affectedRooms" 
+              name="affectedRooms" 
+              class="tool-input" 
+              placeholder="e.g., Living room, kitchen, master bedroom"
+              required
+            />
+            <small>List all rooms or areas with damage, separated by commas.</small>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="lossCategory" class="tool-label">Loss Category</label>
+            <select id="lossCategory" name="lossCategory" class="tool-input" required>
+              <option value="">Select loss category...</option>
+              <option value="structure">Structure</option>
+              <option value="contents">Contents</option>
+              <option value="both">Structure & Contents</option>
+              <option value="ale">Additional Living Expenses</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="context" class="tool-label">Damage Description (max 500 chars)</label>
             <textarea 
               id="context" 
               name="context" 
               class="tool-textarea" 
-              rows="3" 
+              rows="4" 
               maxlength="500"
-              placeholder="e.g., High-end electronics, custom furniture, collectibles..."
+              placeholder="Describe the extent and nature of the damage..."
+              required
             ></textarea>
           </div>
 
           <div class="tool-form-actions">
             <button type="submit" data-analyze-btn class="tool-btn tool-btn-primary">
-              Generate Documentation Guide
+              Assess Damage
             </button>
           </div>
         </form>
 
         <!-- Output Area -->
         <div data-tool-output id="output" class="tool-output" style="display: none;">
-          <h3 class="tool-section-title">Room Documentation Guide</h3>
+          <h3 class="tool-section-title">Damage Assessment Results</h3>
           <div class="tool-output-content"></div>
           
           <div class="tool-form-actions" style="margin-top: 1.5rem;">
@@ -113,7 +118,7 @@
 
         <div class="tool-section">
           <h3 class="tool-section-title">What This Tool Does</h3>
-          <p>This tool generates a customized documentation guide for each room, including specific items to photograph, information to collect (serial numbers, receipts), and tips for thorough documentation based on the room type and damage.</p>
+          <p>This tool analyzes your damage description and photos to generate a comprehensive assessment including estimated costs, severity ratings, and documentation requirements for each affected area.</p>
         </div>
       </div>
     </div>
@@ -134,7 +139,7 @@
 
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('Tool loaded: room-by-room-prompt-tool');
+      console.log('Tool loaded: claim-damage-assessment');
     });
   </script>
 
@@ -143,14 +148,15 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       await AIToolController.initTool({
-        toolId: 'room-by-room-prompt-tool',
-        toolName: 'Room-by-Room Prompt Tool',
-        backendFunction: '/.netlify/functions/ai-situational-advisory',
+        toolId: 'claim-damage-assessment',
+        toolName: 'Claim Damage Assessment',
+        backendFunction: '/.netlify/functions/ai-estimate-comparison',
         outputFormat: 'structured',
-        customData: { analysis_mode: 'room-by-room-guide' }
+        customData: { analysis_mode: 'damage-assessment' }
       });
     });
   </script>
 
 </body>
 </html>
+
