@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Policy Analyzer - Claim Navigator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/tool-visual-alignment.css">
+  <script src="../../storage/claimStorage.js"></script>
+  <style>
+    /* Additional styles for policy analyzer */
+    .upload-zone {
+      border: 2px dashed #d1d5db;
+      border-radius: 8px;
+      padding: 3rem;
+      text-align: center;
+      background: #f9fafb;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .upload-zone:hover {
+      border-color: #17BEBB;
+      background: #f0fdfa;
+    }
+
+    .upload-zone.dragover {
+      border-color: #17BEBB;
+      background: #ccfbf1;
+      border-style: solid;
+    }
+
+    .upload-icon {
+      font-size: 3rem;
+      color: #9ca3af;
+      margin-bottom: 1rem;
+    }
+
+    .file-list {
+      margin-top: 1rem;
+      text-align: left;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .file-icon {
+      font-size: 1.5rem;
+    }
+
+    .file-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .file-name {
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .file-size {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+
+    .remove-file {
+      color: #ef4444;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .remove-file:hover {
+      background: #fee2e2;
+    }
+
+    .analysis-progress {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .progress-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #e5e7eb;
+      border-top-color: #17BEBB;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .progress-text {
+      font-size: 1rem;
+      color: #6b7280;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-detail {
+      font-size: 0.875rem;
+      color: #9ca3af;
+    }
+
+    .report-container {
+      display: none;
+    }
+
+    .report-section {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .report-section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0B2545;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .report-section-icon {
+      font-size: 1.5rem;
+    }
+
+    .coverage-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .coverage-table th {
+      background: #f7f9fc;
+      padding: 0.75rem;
+      text-align: left;
+      font-weight: 600;
+      color: #0B2545;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .coverage-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .coverage-table tr:hover {
+      background: #f9fafb;
+    }
+
+    .coverage-name {
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .coverage-limit {
+      font-weight: 600;
+      color: #17BEBB;
+    }
+
+    .coverage-description {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-top: 0.25rem;
+    }
+
+    .endorsement-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: #dbeafe;
+      color: #1e40af;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .exclusion-item {
+      padding: 0.75rem;
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+
+    .deadline-item {
+      padding: 0.75rem;
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .deadline-text {
+      font-weight: 600;
+      color: #92400e;
+    }
+
+    .deadline-date {
+      font-size: 0.875rem;
+      color: #78350f;
+    }
+
+    .summary-box {
+      background: linear-gradient(135deg, #0B2545 0%, #123A63 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .summary-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .summary-text {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.95;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .stat-card {
+      background: #f7f9fc;
+      padding: 1rem;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #17BEBB;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-top: 0.25rem;
+    }
+
+    .alert-box {
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+
+    .alert-warning {
+      background: #fef3c7;
+      border: 1px solid #fbbf24;
+      color: #92400e;
+    }
+
+    .alert-info {
+      background: #dbeafe;
+      border: 1px solid #60a5fa;
+      color: #1e40af;
+    }
+
+    .alert-success {
+      background: #d1fae5;
+      border: 1px solid #34d399;
+      color: #065f46;
+    }
+  </style>
+</head>
+<body class="tool-page">
+  
+  <!-- Tool Header -->
+  <div class="tool-page-header">
+    <h1 class="tool-page-title">📋 Policy Analyzer & Intelligence Report</h1>
+    <p class="tool-page-subtitle">Upload your insurance policy for comprehensive AI analysis</p>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="tool-content-area">
+    
+    <!-- Step 1: Upload Section -->
+    <div id="uploadSection" class="tool-card">
+      <div class="tool-card-header">
+        <h2 class="tool-card-title">Step 1: Upload Policy Documents</h2>
+      </div>
+      <div class="tool-card-body">
+        
+        <div class="alert-box alert-info">
+          <strong>📌 What to Upload:</strong> Upload your complete insurance policy including declarations page, policy form, endorsements, and any amendments or riders.
+        </div>
+
+        <!-- Upload Zone -->
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-icon">📄</div>
+          <h3>Drag & Drop Policy Documents Here</h3>
+          <p style="color: #6b7280; margin: 0.5rem 0;">or click to browse</p>
+          <p style="font-size: 0.875rem; color: #9ca3af;">Supported: PDF, DOC, DOCX, TXT (Max 10MB per file)</p>
+          <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.txt" style="display: none;">
+        </div>
+
+        <!-- File List -->
+        <div id="fileList" class="file-list"></div>
+
+        <!-- Policy Metadata Form -->
+        <div id="metadataForm" style="display: none; margin-top: 1.5rem;">
+          <h3 class="tool-section-title">Policy Information</h3>
+          
+          <div class="tool-form-group">
+            <label for="policyNumber" class="tool-label">Policy Number</label>
+            <input type="text" id="policyNumber" class="tool-input" placeholder="e.g., HO-123456789">
+          </div>
+
+          <div class="tool-form-group">
+            <label for="insuranceCompany" class="tool-label">Insurance Company</label>
+            <input type="text" id="insuranceCompany" class="tool-input" placeholder="e.g., State Farm">
+          </div>
+
+          <div class="tool-form-group">
+            <label for="policyType" class="tool-label">Policy Type</label>
+            <select id="policyType" class="tool-input">
+              <option value="">Select type...</option>
+              <option value="HO-3">HO-3 (Homeowners)</option>
+              <option value="HO-6">HO-6 (Condo)</option>
+              <option value="HO-4">HO-4 (Renters)</option>
+              <option value="DP-3">DP-3 (Dwelling Fire)</option>
+              <option value="Commercial">Commercial Property</option>
+              <option value="BOP">Business Owners Policy</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="claimType" class="tool-label">Type of Loss/Claim</label>
+            <select id="claimType" class="tool-input">
+              <option value="">Select claim type...</option>
+              <option value="water">Water Damage</option>
+              <option value="fire">Fire Damage</option>
+              <option value="wind">Wind/Hurricane Damage</option>
+              <option value="hail">Hail Damage</option>
+              <option value="theft">Theft/Burglary</option>
+              <option value="vandalism">Vandalism</option>
+              <option value="liability">Liability</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="tool-form-actions">
+            <button id="analyzeBtn" class="tool-btn tool-btn-primary">
+              🤖 Analyze Policy with AI
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Step 2: Analysis Progress -->
+    <div id="analysisSection" class="analysis-progress">
+      <div class="progress-spinner"></div>
+      <div class="progress-text">Analyzing your policy...</div>
+      <div class="progress-detail" id="progressDetail">Extracting coverage information</div>
+    </div>
+
+    <!-- Step 3: Report Display -->
+    <div id="reportSection" class="report-container">
+      
+      <!-- Executive Summary -->
+      <div class="summary-box">
+        <div class="summary-title">📊 Policy Intelligence Report</div>
+        <div class="summary-text" id="summaryText">
+          Your policy has been analyzed. Review the comprehensive breakdown below.
+        </div>
+        
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="statCoverages">0</div>
+            <div class="stat-label">Coverages Found</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statEndorsements">0</div>
+            <div class="stat-label">Endorsements</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statExclusions">0</div>
+            <div class="stat-label">Exclusions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statDeadlines">0</div>
+            <div class="stat-label">Key Deadlines</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coverage Limits Table -->
+      <div class="report-section">
+        <h3 class="report-section-title">
+          <span class="report-section-icon">🏠</span>
+          Coverage Limits & Sublimits
+        </h3>
+        <table class="coverage-table" id="coverageTable">
+          <thead>
+            <tr>
+              <th>Coverage</th>
+              <th>Limit</th>
+              <th>Deductible</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody id="coverageTableBody">
+            <!-- Populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Endorsements -->
+      <div class="report-section">
+        <h3 class="report-section-title">
+          <span class="report-section-icon">📝</span>
+          Endorsements & Riders
+        </h3>
+        <div id="endorsementsList">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Exclusions -->
+      <div class="report-section">
+        <h3 class="report-section-title">
+          <span class="report-section-icon">⚠️</span>
+          Exclusions & Limitations
+        </h3>
+        <div id="exclusionsList">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Deadlines -->
+      <div class="report-section">
+        <h3 class="report-section-title">
+          <span class="report-section-icon">⏰</span>
+          Policy Deadlines & Time Requirements
+        </h3>
+        <div id="deadlinesList">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Policyholder Duties -->
+      <div class="report-section">
+        <h3 class="report-section-title">
+          <span class="report-section-icon">✅</span>
+          Your Policyholder Duties
+        </h3>
+        <div id="dutiesList">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="tool-btn tool-btn-secondary" onclick="exportPDF()">
+          📥 Download Report as PDF
+        </button>
+        <button class="tool-btn tool-btn-secondary" onclick="saveToDatabase()">
+          💾 Save to Claim File
+        </button>
+        <button class="tool-btn tool-btn-primary" onclick="acknowledgeAndContinue()">
+          ✓ Acknowledge & Continue to Step 2 →
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Back Button -->
+    <div class="tool-section">
+      <button class="tool-btn tool-btn-secondary" onclick="goBack()">
+        ← Back to Claim Guide
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    // Global variables
+    let uploadedFiles = [];
+    let analysisResult = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Policy Analyzer loaded');
+      setupUploadZone();
+      loadSavedAnalysis();
+    });
+
+    // Setup drag & drop upload zone
+    function setupUploadZone() {
+      const uploadZone = document.getElementById('uploadZone');
+      const fileInput = document.getElementById('fileInput');
+
+      uploadZone.addEventListener('click', () => fileInput.click());
+
+      uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('dragover');
+      });
+
+      uploadZone.addEventListener('dragleave', () => {
+        uploadZone.classList.remove('dragover');
+      });
+
+      uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+      });
+
+      fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+      });
+
+      document.getElementById('analyzeBtn').addEventListener('click', analyzePolicy);
+    }
+
+    // Handle file upload
+    function handleFiles(files) {
+      const fileList = document.getElementById('fileList');
+      const metadataForm = document.getElementById('metadataForm');
+
+      for (let file of files) {
+        // Validate file size (10MB max)
+        if (file.size > 10 * 1024 * 1024) {
+          alert(`File "${file.name}" is too large. Maximum size is 10MB.`);
+          continue;
+        }
+
+        // Validate file type
+        const validTypes = ['.pdf', '.doc', '.docx', '.txt'];
+        const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+        if (!validTypes.includes(fileExt)) {
+          alert(`File "${file.name}" is not a supported format.`);
+          continue;
+        }
+
+        uploadedFiles.push(file);
+      }
+
+      // Display files
+      renderFileList();
+
+      // Show metadata form if files uploaded
+      if (uploadedFiles.length > 0) {
+        metadataForm.style.display = 'block';
+      }
+    }
+
+    // Render file list
+    function renderFileList() {
+      const fileList = document.getElementById('fileList');
+      fileList.innerHTML = '';
+
+      uploadedFiles.forEach((file, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        fileItem.innerHTML = `
+          <div class="file-info">
+            <div class="file-icon">📄</div>
+            <div class="file-details">
+              <div class="file-name">${file.name}</div>
+              <div class="file-size">${formatFileSize(file.size)}</div>
+            </div>
+          </div>
+          <div class="remove-file" onclick="removeFile(${index})">✕</div>
+        `;
+        fileList.appendChild(fileItem);
+      });
+    }
+
+    // Remove file
+    function removeFile(index) {
+      uploadedFiles.splice(index, 1);
+      renderFileList();
+
+      if (uploadedFiles.length === 0) {
+        document.getElementById('metadataForm').style.display = 'none';
+      }
+    }
+
+    // Format file size
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    // Analyze policy
+    async function analyzePolicy() {
+      if (uploadedFiles.length === 0) {
+        alert('Please upload at least one policy document.');
+        return;
+      }
+
+      const policyNumber = document.getElementById('policyNumber').value;
+      const insuranceCompany = document.getElementById('insuranceCompany').value;
+      const policyType = document.getElementById('policyType').value;
+      const claimType = document.getElementById('claimType').value;
+
+      if (!policyNumber || !insuranceCompany || !policyType) {
+        alert('Please fill in all required policy information fields.');
+        return;
+      }
+
+      // Hide upload section, show progress
+      document.getElementById('uploadSection').style.display = 'none';
+      document.getElementById('analysisSection').style.display = 'block';
+
+      try {
+        // Simulate progress updates
+        updateProgress('Reading policy documents...');
+        await sleep(1000);
+
+        updateProgress('Extracting text from PDFs...');
+        await sleep(1500);
+
+        updateProgress('Analyzing coverage limits...');
+        await sleep(1500);
+
+        updateProgress('Identifying endorsements...');
+        await sleep(1000);
+
+        updateProgress('Detecting exclusions and deadlines...');
+        await sleep(1500);
+
+        updateProgress('Generating intelligence report...');
+        await sleep(1000);
+
+        // Call AI analysis API
+        const formData = new FormData();
+        uploadedFiles.forEach(file => formData.append('files', file));
+        formData.append('policyNumber', policyNumber);
+        formData.append('insuranceCompany', insuranceCompany);
+        formData.append('policyType', policyType);
+        formData.append('claimType', claimType);
+
+        // For demo purposes, generate mock data
+        // In production, this would call: /.netlify/functions/ai-policy-review
+        analysisResult = generateMockAnalysis(policyNumber, insuranceCompany, policyType, claimType);
+
+        // Save to localStorage
+        saveClaimData('policyAnalysis', analysisResult);
+        saveClaimData('tool_policy-analyzer_complete', true);
+
+        // Hide progress, show report
+        document.getElementById('analysisSection').style.display = 'none';
+        displayReport(analysisResult);
+
+      } catch (error) {
+        console.error('Analysis error:', error);
+        alert('An error occurred during analysis. Please try again.');
+        document.getElementById('analysisSection').style.display = 'none';
+        document.getElementById('uploadSection').style.display = 'block';
+      }
+    }
+
+    // Update progress display
+    function updateProgress(message) {
+      document.getElementById('progressDetail').textContent = message;
+    }
+
+    // Sleep utility
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Generate mock analysis (replace with real API call)
+    function generateMockAnalysis(policyNumber, insuranceCompany, policyType, claimType) {
+      return {
+        policyNumber,
+        insuranceCompany,
+        policyType,
+        claimType,
+        analyzedAt: new Date().toISOString(),
+        summary: `Your ${policyType} policy with ${insuranceCompany} provides comprehensive coverage for your property. Based on your ${claimType} claim, we've identified the applicable coverages, limits, and requirements below.`,
+        coverages: [
+          {
+            name: 'Coverage A - Dwelling',
+            limit: '$350,000',
+            deductible: '$2,500',
+            description: 'Covers physical damage to your home structure'
+          },
+          {
+            name: 'Coverage B - Other Structures',
+            limit: '$35,000',
+            deductible: '$2,500',
+            description: 'Covers detached structures like garages, fences, sheds'
+          },
+          {
+            name: 'Coverage C - Personal Property',
+            limit: '$262,500',
+            deductible: '$1,000',
+            description: 'Covers your personal belongings and contents'
+          },
+          {
+            name: 'Coverage D - Loss of Use',
+            limit: '$70,000',
+            deductible: 'N/A',
+            description: 'Covers additional living expenses if home is uninhabitable'
+          },
+          {
+            name: 'Coverage E - Personal Liability',
+            limit: '$300,000',
+            deductible: 'N/A',
+            description: 'Covers legal liability for bodily injury or property damage'
+          },
+          {
+            name: 'Coverage F - Medical Payments',
+            limit: '$5,000',
+            deductible: 'N/A',
+            description: 'Covers medical expenses for injured guests'
+          }
+        ],
+        endorsements: [
+          'Water Backup & Sump Discharge ($10,000 limit)',
+          'Replacement Cost Coverage on Contents',
+          'Increased Jewelry Limit ($10,000)',
+          'Home Computer Coverage ($5,000)',
+          'Identity Theft Coverage ($25,000)'
+        ],
+        exclusions: [
+          'Flood damage (separate flood policy required)',
+          'Earthquake damage',
+          'Mold damage exceeding $10,000',
+          'Wear and tear, deterioration',
+          'Intentional loss',
+          'War and nuclear hazard'
+        ],
+        deadlines: [
+          { task: 'Notice of Loss', timeframe: 'As soon as practicable', critical: true },
+          { task: 'Proof of Loss', timeframe: 'Within 60 days of request', critical: true },
+          { task: 'Lawsuit Filing', timeframe: 'Within 2 years of loss', critical: true },
+          { task: 'Mitigation Actions', timeframe: 'Immediately', critical: true }
+        ],
+        duties: [
+          'Give prompt notice of loss',
+          'Protect property from further damage',
+          'Cooperate with insurance company investigation',
+          'Prepare inventory of damaged property',
+          'Submit Proof of Loss when requested',
+          'Allow inspection of damaged property',
+          'Provide requested documentation'
+        ]
+      };
+    }
+
+    // Display report
+    function displayReport(result) {
+      document.getElementById('reportSection').style.display = 'block';
+
+      // Update summary
+      document.getElementById('summaryText').textContent = result.summary;
+
+      // Update stats
+      document.getElementById('statCoverages').textContent = result.coverages.length;
+      document.getElementById('statEndorsements').textContent = result.endorsements.length;
+      document.getElementById('statExclusions').textContent = result.exclusions.length;
+      document.getElementById('statDeadlines').textContent = result.deadlines.length;
+
+      // Populate coverage table
+      const tbody = document.getElementById('coverageTableBody');
+      tbody.innerHTML = '';
+      result.coverages.forEach(coverage => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+          <td>
+            <div class="coverage-name">${coverage.name}</div>
+          </td>
+          <td><span class="coverage-limit">${coverage.limit}</span></td>
+          <td>${coverage.deductible}</td>
+          <td>
+            <div class="coverage-description">${coverage.description}</div>
+          </td>
+        `;
+      });
+
+      // Populate endorsements
+      const endorsementsList = document.getElementById('endorsementsList');
+      endorsementsList.innerHTML = result.endorsements.map(e => 
+        `<span class="endorsement-badge">✓ ${e}</span>`
+      ).join('');
+
+      // Populate exclusions
+      const exclusionsList = document.getElementById('exclusionsList');
+      exclusionsList.innerHTML = result.exclusions.map(e => 
+        `<div class="exclusion-item">⚠️ ${e}</div>`
+      ).join('');
+
+      // Populate deadlines
+      const deadlinesList = document.getElementById('deadlinesList');
+      deadlinesList.innerHTML = result.deadlines.map(d => 
+        `<div class="deadline-item">
+          <span class="deadline-text">${d.task}</span>
+          <span class="deadline-date">${d.timeframe}</span>
+        </div>`
+      ).join('');
+
+      // Populate duties
+      const dutiesList = document.getElementById('dutiesList');
+      dutiesList.innerHTML = '<ul style="list-style: none; padding: 0;">' +
+        result.duties.map(d => `<li style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">✓ ${d}</li>`).join('') +
+        '</ul>';
+    }
+
+    // Load saved analysis
+    function loadSavedAnalysis() {
+      const saved = getClaimData('policyAnalysis');
+      if (saved) {
+        analysisResult = saved;
+        document.getElementById('uploadSection').style.display = 'none';
+        displayReport(saved);
+      }
+    }
+
+    // Export PDF
+    function exportPDF() {
+      alert('📥 PDF export functionality will be implemented using jsPDF library.');
+      // TODO: Implement PDF generation
+    }
+
+    // Save to database
+    function saveToDatabase() {
+      if (!analysisResult) {
+        alert('No analysis to save.');
+        return;
+      }
+
+      // Save to localStorage (in production, save to Supabase)
+      saveClaimData('policyAnalysis', analysisResult);
+      alert('✓ Policy analysis saved to your claim file!');
+    }
+
+    // Acknowledge and continue
+    function acknowledgeAndContinue() {
+      if (!analysisResult) {
+        alert('Please complete the policy analysis first.');
+        return;
+      }
+
+      saveClaimData('step1_complete', true);
+      saveClaimData('tool_policy-analyzer_complete', true);
+      
+      alert('✓ Step 1 Complete!\n\nYour policy has been analyzed and saved. Returning to Claim Guide...');
+      window.location.href = '/step-by-step-claim-guide.html?step=2';
+    }
+
+    // Go back
+    function goBack() {
+      window.location.href = '/step-by-step-claim-guide.html?step=1';
+    }
+  </script>
+
+</body>
+</html>
+

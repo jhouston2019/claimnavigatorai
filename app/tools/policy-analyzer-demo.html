@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Policy Analyzer - Demo with Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/tool-visual-alignment.css">
+  <script src="../../storage/claimStorage.js"></script>
+  <style>
+    /* Report styles */
+    .summary-box {
+      background: linear-gradient(135deg, #0B2545 0%, #123A63 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .summary-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .summary-text {
+      font-size: 1rem;
+      line-height: 1.6;
+      opacity: 0.95;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      border-radius: 6px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #17BEBB;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin-top: 0.25rem;
+    }
+
+    .report-section {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .report-section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0B2545;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .report-section-icon {
+      font-size: 1.5rem;
+    }
+
+    .coverage-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .coverage-table th {
+      background: #f7f9fc;
+      padding: 0.75rem;
+      text-align: left;
+      font-weight: 600;
+      color: #0B2545;
+      border-bottom: 2px solid #e5e7eb;
+      font-size: 0.875rem;
+    }
+
+    .coverage-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 0.875rem;
+    }
+
+    .coverage-table tr:hover {
+      background: #f9fafb;
+    }
+
+    .coverage-name {
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .coverage-limit {
+      font-weight: 600;
+      color: #17BEBB;
+    }
+
+    .coverage-description {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+
+    .endorsement-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: #dbeafe;
+      color: #1e40af;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .exclusion-item {
+      padding: 0.75rem;
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .deadline-item {
+      padding: 0.75rem;
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.875rem;
+    }
+
+    .deadline-text {
+      font-weight: 600;
+      color: #92400e;
+    }
+
+    .deadline-date {
+      font-size: 0.875rem;
+      color: #78350f;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .duty-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .duty-list li {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 0.875rem;
+    }
+
+    .duty-list li:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body class="tool-page">
+  
+  <!-- Tool Header -->
+  <div class="tool-page-header">
+    <h1 class="tool-page-title">📋 Policy Intelligence Report (Demo)</h1>
+    <p class="tool-page-subtitle">Sample report showing all coverages, endorsements, and requirements</p>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="tool-content-area">
+    
+    <!-- Executive Summary -->
+    <div class="summary-box">
+      <div class="summary-title">📊 Policy Intelligence Report</div>
+      <div class="summary-text">
+        Your HO-3 policy with State Farm provides comprehensive coverage for your property. Based on your water damage claim, we've identified the applicable coverages, limits, and requirements below.
+      </div>
+      
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-value">6</div>
+          <div class="stat-label">Coverages Found</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">5</div>
+          <div class="stat-label">Endorsements</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">6</div>
+          <div class="stat-label">Exclusions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">4</div>
+          <div class="stat-label">Key Deadlines</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coverage Limits Table -->
+    <div class="report-section">
+      <h3 class="report-section-title">
+        <span class="report-section-icon">🏠</span>
+        Coverage Limits & Sublimits
+      </h3>
+      <table class="coverage-table">
+        <thead>
+          <tr>
+            <th>Coverage</th>
+            <th>Limit</th>
+            <th>Deductible</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="coverage-name">Coverage A - Dwelling</div></td>
+            <td><span class="coverage-limit">$350,000</span></td>
+            <td>$2,500</td>
+            <td><div class="coverage-description">Covers physical damage to your home structure</div></td>
+          </tr>
+          <tr>
+            <td><div class="coverage-name">Coverage B - Other Structures</div></td>
+            <td><span class="coverage-limit">$35,000</span></td>
+            <td>$2,500</td>
+            <td><div class="coverage-description">Covers detached structures like garages, fences, sheds</div></td>
+          </tr>
+          <tr>
+            <td><div class="coverage-name">Coverage C - Personal Property</div></td>
+            <td><span class="coverage-limit">$262,500</span></td>
+            <td>$1,000</td>
+            <td><div class="coverage-description">Covers your personal belongings and contents</div></td>
+          </tr>
+          <tr>
+            <td><div class="coverage-name">Coverage D - Loss of Use</div></td>
+            <td><span class="coverage-limit">$70,000</span></td>
+            <td>N/A</td>
+            <td><div class="coverage-description">Covers additional living expenses if home is uninhabitable</div></td>
+          </tr>
+          <tr>
+            <td><div class="coverage-name">Coverage E - Personal Liability</div></td>
+            <td><span class="coverage-limit">$300,000</span></td>
+            <td>N/A</td>
+            <td><div class="coverage-description">Covers legal liability for bodily injury or property damage</div></td>
+          </tr>
+          <tr>
+            <td><div class="coverage-name">Coverage F - Medical Payments</div></td>
+            <td><span class="coverage-limit">$5,000</span></td>
+            <td>N/A</td>
+            <td><div class="coverage-description">Covers medical expenses for injured guests</div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Endorsements -->
+    <div class="report-section">
+      <h3 class="report-section-title">
+        <span class="report-section-icon">📝</span>
+        Endorsements & Riders
+      </h3>
+      <div>
+        <span class="endorsement-badge">✓ Water Backup & Sump Discharge ($10,000 limit)</span>
+        <span class="endorsement-badge">✓ Replacement Cost Coverage on Contents</span>
+        <span class="endorsement-badge">✓ Increased Jewelry Limit ($10,000)</span>
+        <span class="endorsement-badge">✓ Home Computer Coverage ($5,000)</span>
+        <span class="endorsement-badge">✓ Identity Theft Coverage ($25,000)</span>
+      </div>
+    </div>
+
+    <!-- Exclusions -->
+    <div class="report-section">
+      <h3 class="report-section-title">
+        <span class="report-section-icon">⚠️</span>
+        Exclusions & Limitations
+      </h3>
+      <div>
+        <div class="exclusion-item">⚠️ Flood damage (separate flood policy required)</div>
+        <div class="exclusion-item">⚠️ Earthquake damage</div>
+        <div class="exclusion-item">⚠️ Mold damage exceeding $10,000</div>
+        <div class="exclusion-item">⚠️ Wear and tear, deterioration</div>
+        <div class="exclusion-item">⚠️ Intentional loss</div>
+        <div class="exclusion-item">⚠️ War and nuclear hazard</div>
+      </div>
+    </div>
+
+    <!-- Deadlines -->
+    <div class="report-section">
+      <h3 class="report-section-title">
+        <span class="report-section-icon">⏰</span>
+        Policy Deadlines & Time Requirements
+      </h3>
+      <div>
+        <div class="deadline-item">
+          <span class="deadline-text">Notice of Loss</span>
+          <span class="deadline-date">As soon as practicable</span>
+        </div>
+        <div class="deadline-item">
+          <span class="deadline-text">Proof of Loss</span>
+          <span class="deadline-date">Within 60 days of request</span>
+        </div>
+        <div class="deadline-item">
+          <span class="deadline-text">Lawsuit Filing</span>
+          <span class="deadline-date">Within 2 years of loss</span>
+        </div>
+        <div class="deadline-item">
+          <span class="deadline-text">Mitigation Actions</span>
+          <span class="deadline-date">Immediately</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Policyholder Duties -->
+    <div class="report-section">
+      <h3 class="report-section-title">
+        <span class="report-section-icon">✅</span>
+        Your Policyholder Duties
+      </h3>
+      <ul class="duty-list">
+        <li>✓ Give prompt notice of loss</li>
+        <li>✓ Protect property from further damage</li>
+        <li>✓ Cooperate with insurance company investigation</li>
+        <li>✓ Prepare inventory of damaged property</li>
+        <li>✓ Submit Proof of Loss when requested</li>
+        <li>✓ Allow inspection of damaged property</li>
+        <li>✓ Provide requested documentation</li>
+      </ul>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="tool-btn tool-btn-secondary" onclick="alert('PDF export will generate a downloadable PDF of this report')">
+        📥 Download Report as PDF
+      </button>
+      <button class="tool-btn tool-btn-secondary" onclick="alert('This will save the analysis to your Supabase claim file')">
+        💾 Save to Claim File
+      </button>
+      <button class="tool-btn tool-btn-primary" onclick="window.location.href='/step-by-step-claim-guide.html?step=2'">
+        ✓ Acknowledge & Continue to Step 2 →
+      </button>
+    </div>
+
+    <!-- Back Button -->
+    <div class="tool-section" style="margin-top: 2rem;">
+      <button class="tool-btn tool-btn-secondary" onclick="window.location.href='/step-by-step-claim-guide.html?step=1'">
+        ← Back to Claim Guide
+      </button>
+    </div>
+
+  </div>
+
+</body>
+</html>
+
