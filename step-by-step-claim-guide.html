@@ -3628,6 +3628,173 @@
         font-size: 24px;
       }
     }
+
+    /* Step 3 Components */
+
+    /* Photo Guidance */
+    .photo-guidance,
+    .inventory-guidance,
+    .contractor-guidance {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .guidance-section {
+      background: var(--bg-cream);
+      border: 1px solid var(--border-light);
+      padding: 16px;
+      border-radius: 8px;
+    }
+
+    .guidance-section strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy-dark);
+      margin-bottom: 10px;
+    }
+
+    .guidance-section p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .guidance-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0 0;
+    }
+
+    .guidance-section li {
+      padding: 6px 0 6px 20px;
+      position: relative;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .guidance-section li:before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--navy-primary);
+      font-weight: bold;
+    }
+
+    .guidance-section li strong {
+      display: inline;
+      font-size: 14px;
+      color: var(--navy-dark);
+      margin: 0;
+    }
+
+    /* Example Comparison */
+    .example-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .example-comparison {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .bad-example,
+    .good-example {
+      padding: 16px;
+      border-radius: 8px;
+      border: 2px solid;
+    }
+
+    .bad-example {
+      background: #fef2f2;
+      border-color: #fca5a5;
+    }
+
+    .bad-example strong {
+      color: #dc2626;
+      font-size: 14px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .bad-example p {
+      color: #991b1b;
+      font-size: 13px;
+      margin: 0;
+      font-family: 'Courier New', monospace;
+    }
+
+    .good-example {
+      background: #f0fdf4;
+      border-color: #86efac;
+    }
+
+    .good-example strong {
+      color: #166534;
+      font-size: 14px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .good-example p {
+      color: #166534;
+      font-size: 13px;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    /* Proof Types */
+    .proof-types {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .proof-category {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px;
+      background: var(--bg-cream);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+    }
+
+    .category-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    .proof-category strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy-dark);
+      margin-bottom: 6px;
+    }
+
+    .proof-category p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* Step Completion Heading */
+    .step-completion h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy-dark);
+      margin-bottom: 16px;
+    }
   </style>
 </head>
 <body>
@@ -3812,8 +3979,8 @@
               <div class="accordion-number">3</div>
             </div>
             <div class="accordion-title-area">
-              <div class="accordion-title">Photograph all structural damage and damaged contents from multiple angles<span class="step-status upcoming">Upcoming</span></div>
-              <div class="accordion-subtitle">Upload photos and videos of all damage. The AI will organize, analyze, and assess completeness.</div>
+              <div class="accordion-title">Document Your Loss & Damage<span class="step-status upcoming">Upcoming</span></div>
+              <div class="accordion-subtitle">Photograph everything, create detailed inventory, and gather proof of ownership before the adjuster arrives.</div>
             </div>
           </div>
           <div class="accordion-toggle">▼</div>
@@ -4489,31 +4656,272 @@
       },
       3: {
         label: 'STEP 3 OF 13',
-        title: 'Photograph all structural damage and damaged contents from multiple angles',
-        subtitle: 'Upload photos and videos of all damage. The AI will organize, analyze, and assess completeness.',
-        primaryAction: {
-          title: 'Upload Damage Documentation',
-          description: 'Upload all photos and videos showing structural damage, contents damage, and cause of loss. Include multiple angles and close-ups of each damaged area. The AI will automatically label, organize, and analyze your documentation.',
-          tool: { id: 'damage-documentation', title: 'Damage Documentation Tool', classification: 'required' }
-        },
-        reportSections: {
-          title: 'Damage Documentation Report',
-          description: 'AI-organized analysis of your damage evidence',
-          viewTool: { id: 'damage-report-viewer', title: 'View Damage Documentation Report', classification: 'required' },
-          sections: [
-            'Structural Damage Summary',
-            'Contents Damage Summary',
-            'Cause of Loss Validation',
-            'Photo/Video Completeness Score',
-            'Missing Evidence Flags'
-          ]
-        },
-        infoNote: 'Note: Insurance claims are decided based on evidence. This step ensures your damage is thoroughly documented.',
-        additionalTools: [
-          { id: 'photo-upload-organizer', title: 'Photo Upload Organizer' },
-          { id: 'damage-labeling-tool', title: 'Damage Labeling Tool' },
-          { id: 'missing-evidence-identifier', title: 'Missing Evidence Identifier' }
-        ]
+        title: 'Document Your Loss & Damage',
+        subtitle: 'Photograph everything, create detailed inventory, and gather proof of ownership before the adjuster arrives.',
+        whatThisPrevents: 'This step prevents denial for insufficient proof of loss and undervaluation because you cannot prove what was damaged or its value.',
+        guardrail: 'Do not throw away damaged items or begin repairs until you have photographed everything and the adjuster has completed their inspection.',
+        skipWarning: 'Without documentation, you cannot prove what was damaged. The burden of proof is entirely on you—no photos = no payment.',
+        customContent: true,
+        htmlContent: `
+          <div class="value-statement">
+            <strong>Why This Is Critical:</strong>
+            Insurance claims are won or lost based on documentation. The burden of proof is entirely on YOU to prove what was damaged and its value. Without comprehensive photos, itemized inventory, and proof of ownership, the insurer can deny your claim or severely undervalue it. This documentation must be completed before the adjuster inspection.
+          </div>
+
+          <div class="process-phases">
+            
+            <!-- PHASE 1: Photograph All Damage -->
+            <div class="phase-card">
+              <div class="phase-header">
+                <span class="phase-number">1</span>
+                <div>
+                  <h4>Photograph All Damage Comprehensively</h4>
+                  <p>Visual proof is your strongest evidence</p>
+                </div>
+              </div>
+              
+              <div class="phase-content">
+                <p class="phase-intro">Take detailed photos of every damaged area from multiple angles. Poor documentation is the #1 reason claims are underpaid.</p>
+                
+                <div class="photo-guidance">
+                  <div class="guidance-section">
+                    <strong>What to Photograph:</strong>
+                    <ul>
+                      <li>All structural damage (roof, walls, ceilings, floors, windows, doors)</li>
+                      <li>All damaged personal property (furniture, electronics, clothing, etc.)</li>
+                      <li>Cause of loss (water source, tree damage, fire origin, etc.)</li>
+                      <li>Surrounding context (entire room, building exterior, property overview)</li>
+                    </ul>
+                  </div>
+                  
+                  <div class="guidance-section">
+                    <strong>How to Photograph:</strong>
+                    <ul>
+                      <li>Multiple angles of each damaged area (wide shot, medium, close-up)</li>
+                      <li>Use good lighting or flash—dark photos are worthless</li>
+                      <li>Include reference objects for scale (ruler, coin, hand)</li>
+                      <li>Capture serial numbers, model numbers, brand labels</li>
+                      <li>Date stamp if possible (use phone camera default settings)</li>
+                    </ul>
+                  </div>
+                  
+                  <div class="info-box">
+                    <strong>Common Mistakes to Avoid:</strong>
+                    Poor lighting, missing room context, only photographing "worst" damage (photograph EVERYTHING), not capturing model/serial numbers, deleting "bad" photos (adjusters want to see all angles).
+                  </div>
+                </div>
+                
+                <button class="btn-phase-action" onclick="window.location.href='app/tools/photo-upload-organizer.html'">📸 Upload & Organize Damage Photos</button>
+                
+                <div class="info-box" style="margin-top: 16px;">
+                  <strong>How Many Photos?</strong>
+                  Minimum 10-20 photos for small claims. For major damage, 50-100+ photos is normal. More is better—you cannot over-document.
+                </div>
+              </div>
+            </div>
+            
+            <!-- PHASE 2: Create Itemized Inventory -->
+            <div class="phase-card">
+              <div class="phase-header">
+                <span class="phase-number">2</span>
+                <div>
+                  <h4>Create Detailed Itemized Inventory</h4>
+                  <p>List every damaged item with description and value</p>
+                </div>
+              </div>
+              
+              <div class="phase-content">
+                <p class="phase-intro">Create a room-by-room inventory of all damaged property—both structural elements and personal belongings. Generic descriptions like "clothing" or "furniture" result in lowball payments.</p>
+                
+                <div class="inventory-guidance">
+                  <div class="guidance-section">
+                    <strong>For Each Damaged Item, Document:</strong>
+                    <ul>
+                      <li><strong>Description:</strong> Specific details (brand, model, size, color, material)</li>
+                      <li><strong>Age/Purchase Date:</strong> When you bought it</li>
+                      <li><strong>Purchase Price:</strong> What you originally paid</li>
+                      <li><strong>Replacement Cost:</strong> What it would cost to replace today</li>
+                      <li><strong>Condition Before Loss:</strong> Excellent, good, fair, poor</li>
+                      <li><strong>Location:</strong> Which room (for organization)</li>
+                    </ul>
+                  </div>
+                  
+                  <div class="example-comparison">
+                    <div class="bad-example">
+                      <strong>❌ Bad Inventory Entry:</strong>
+                      <p>"TV - $500"</p>
+                    </div>
+                    <div class="good-example">
+                      <strong>✓ Good Inventory Entry:</strong>
+                      <p>"Samsung 55" QLED 4K Smart TV, Model QN55Q60RAFXZA, purchased 3/2021 from Best Buy for $897.99, excellent condition, living room"</p>
+                    </div>
+                  </div>
+                  
+                  <div class="info-box">
+                    <strong>Don't Skip Small Items:</strong>
+                    Kitchenware, linens, toiletries, cleaning supplies, tools, decorations—it all adds up. A fully stocked home has $50,000-$100,000+ in contents. Document everything or you're leaving money on the table.
+                  </div>
+                </div>
+                
+                <button class="btn-phase-action" onclick="window.location.href='app/tools/inventory-builder.html'">📋 Create Digital Inventory</button>
+              </div>
+            </div>
+            
+            <!-- PHASE 3: Gather Proof of Ownership & Value -->
+            <div class="phase-card">
+              <div class="phase-header">
+                <span class="phase-number">3</span>
+                <div>
+                  <h4>Gather Proof of Ownership & Value</h4>
+                  <p>Back up your inventory with documentation</p>
+                </div>
+              </div>
+              
+              <div class="phase-content">
+                <p class="phase-intro">The insurer will question high-value items without proof. Gather any documentation that shows you owned the items and their value.</p>
+                
+                <div class="proof-types">
+                  <div class="proof-category">
+                    <span class="category-icon">🧾</span>
+                    <div>
+                      <strong>Purchase Documentation</strong>
+                      <p>Receipts, credit card statements, bank statements, invoices, order confirmations, delivery records</p>
+                    </div>
+                  </div>
+                  
+                  <div class="proof-category">
+                    <span class="category-icon">📄</span>
+                    <div>
+                      <strong>Product Documentation</strong>
+                      <p>Warranty cards, owner's manuals, product registration, appraisals, certificates of authenticity</p>
+                    </div>
+                  </div>
+                  
+                  <div class="proof-category">
+                    <span class="category-icon">📸</span>
+                    <div>
+                      <strong>Pre-Loss Photos/Videos</strong>
+                      <p>Family photos showing items in background, social media posts, home tour videos, real estate listing photos, vacation photos</p>
+                    </div>
+                  </div>
+                  
+                  <div class="proof-category">
+                    <span class="category-icon">💳</span>
+                    <div>
+                      <strong>Financial Records</strong>
+                      <p>Insurance schedules (jewelry, art), tax records (home office equipment), moving company inventories</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="info-box">
+                  <strong>Can't Find Receipts?</strong>
+                  Don't panic. Use online purchase history (Amazon, retailers), credit card statements, bank transaction history, and even ask retailers to reprint receipts using your loyalty card number. Pre-loss photos from social media can also establish ownership.
+                </div>
+                
+                <button class="btn-phase-action" onclick="window.location.href='app/tools/evidence-organizer.html'">📁 Upload Proof Documents</button>
+              </div>
+            </div>
+            
+            <!-- PHASE 4: Get Contractor Estimates -->
+            <div class="phase-card">
+              <div class="phase-header">
+                <span class="phase-number">4</span>
+                <div>
+                  <h4>Obtain Independent Contractor Estimates</h4>
+                  <p>Know the real repair cost before negotiating</p>
+                </div>
+              </div>
+              
+              <div class="phase-content">
+                <p class="phase-intro">Get at least one detailed estimate from a licensed contractor NOW—before the insurance adjuster provides theirs. This gives you leverage to challenge lowball estimates.</p>
+                
+                <div class="contractor-guidance">
+                  <div class="guidance-section">
+                    <strong>Why This Matters:</strong>
+                    <p>Insurance adjusters often use outdated pricing, exclude necessary work, or underestimate labor costs. Your contractor's estimate establishes the actual market cost for repairs. Without this, you have no way to challenge the adjuster's numbers.</p>
+                  </div>
+                  
+                  <div class="guidance-section">
+                    <strong>What Type of Contractor:</strong>
+                    <ul>
+                      <li>Licensed and insured in your state</li>
+                      <li>Specializes in your type of damage (water, fire, wind, etc.)</li>
+                      <li>Willing to provide detailed line-item estimate</li>
+                      <li>Has experience working with insurance claims</li>
+                    </ul>
+                  </div>
+                  
+                  <div class="guidance-section">
+                    <strong>What the Estimate Should Include:</strong>
+                    <ul>
+                      <li>Line-by-line breakdown (not just a total)</li>
+                      <li>Material costs (with specific products/grades)</li>
+                      <li>Labor costs (with hourly rates or per-item costs)</li>
+                      <li>Scope of work (description of each repair task)</li>
+                      <li>Code upgrade requirements (if applicable)</li>
+                      <li>Contractor's license number and insurance info</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="info-box">
+                  <strong>Should You Get Multiple Estimates?</strong>
+                  Yes, if possible. 2-3 estimates from different contractors show market consensus on pricing and make it harder for the insurer to claim your estimate is "inflated."
+                </div>
+                
+                <button class="btn-phase-action" onclick="window.location.href='app/tools/estimate-upload.html'">📊 Upload Contractor Estimate</button>
+              </div>
+            </div>
+            
+          </div>
+
+          <div class="prevents-box">
+            <strong>🛡️ What This Step Prevents:</strong>
+            <ul>
+              <li>Denial for "insufficient proof of loss" or inability to verify damage</li>
+              <li>Severe undervaluation because you can't prove what you owned or its value</li>
+              <li>Adjuster claiming damage "wasn't there" or "pre-existed" because you lack photos</li>
+              <li>Missing thousands in contents claims because you forgot items in the chaos</li>
+              <li>Accepting lowball repair estimates without contractor backup</li>
+              <li>Disputes about scope of damage (your photos vs their memory)</li>
+            </ul>
+          </div>
+
+          <div class="step-completion">
+            <h3 style="font-size: 16px; font-weight: 700; color: var(--navy-dark); margin-bottom: 16px;">Documentation Readiness Checklist</h3>
+            
+            <div class="completion-checklist">
+              <div class="completion-item" onclick="toggleCompletion(this)">
+                <span class="completion-checkbox"></span>
+                <span>Uploaded 10+ comprehensive damage photos (all angles, good lighting)</span>
+              </div>
+              <div class="completion-item" onclick="toggleCompletion(this)">
+                <span class="completion-checkbox"></span>
+                <span>Created detailed room-by-room inventory with descriptions and values</span>
+              </div>
+              <div class="completion-item" onclick="toggleCompletion(this)">
+                <span class="completion-checkbox"></span>
+                <span>Gathered proof of ownership (receipts, statements, pre-loss photos)</span>
+              </div>
+              <div class="completion-item" onclick="toggleCompletion(this)">
+                <span class="completion-checkbox"></span>
+                <span>Obtained at least one detailed contractor estimate</span>
+              </div>
+              <div class="completion-item" onclick="toggleCompletion(this)">
+                <span class="completion-checkbox"></span>
+                <span>Organized all documentation in Evidence Organizer</span>
+              </div>
+            </div>
+            
+            <div class="info-box" style="margin: 20px 0;">
+              <strong>Before Moving to Step 4:</strong>
+              Make sure your documentation is complete. Once the adjuster inspects, it's too late to add forgotten items or take additional photos of damage that's been repaired.
+            </div>
+            
+            <button class="btn-complete-step" onclick="completeAndNext(3)">✓ Documentation Complete - Continue to Step 4</button>
+          </div>
+        `
       },
       4: {
         label: 'STEP 4 OF 13',
