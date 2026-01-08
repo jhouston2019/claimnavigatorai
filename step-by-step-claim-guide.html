@@ -3381,61 +3381,13 @@
       50% { transform: scale(1.02); }
     }
 
-    /* ===== STEP 2 ENHANCED STYLES ===== */
+    /* ===== STEP 2 COMPONENTS - UNIFIED COLOR SCHEME ===== */
     
-    /* Urgency Banner */
-    .urgency-banner {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      background: #fee2e2;
-      border: 2px solid #dc2626;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 24px;
-    }
-
-    .urgency-icon {
-      font-size: 32px;
-      flex-shrink: 0;
-    }
-
-    .urgency-banner strong {
-      display: block;
-      font-size: 17px;
-      font-weight: 700;
-      color: #991b1b;
-      margin-bottom: 6px;
-    }
-
-    .urgency-banner p {
-      font-size: 14px;
-      color: #991b1b;
-      line-height: 1.6;
-      margin: 0;
-    }
-
-    /* Phase Urgent Variant */
-    .phase-urgent .phase-header {
-      background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-      color: white;
-    }
-
-    .phase-urgent .phase-header h4,
-    .phase-urgent .phase-header p {
-      color: white;
-    }
-
-    .phase-urgent .phase-number {
-      background: #fef2f2;
-      color: #dc2626;
-    }
-
     /* Action Steps */
     .action-steps {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
       margin-bottom: 24px;
     }
 
@@ -3472,53 +3424,55 @@
     /* Script Box */
     .script-box {
       background: white;
-      border: 2px solid var(--gold-accent);
+      border: 2px solid var(--border-medium);
       border-radius: 8px;
       padding: 16px;
       margin-top: 8px;
       font-size: 14px;
       font-family: 'Courier New', monospace;
-      color: var(--navy-dark);
+      color: var(--text-primary);
       line-height: 1.6;
       font-style: italic;
     }
 
-    /* Warning Box */
-    .warning-box {
-      background: #fef3c7;
-      border: 2px solid #f59e0b;
-      border-radius: 8px;
+    /* Info Box - UNIFIED STYLE */
+    .info-box {
+      background: var(--bg-cream);
+      border-left: 3px solid var(--navy-primary);
       padding: 16px;
-      margin-bottom: 20px;
+      border-radius: 6px;
+      margin-bottom: 16px;
     }
 
-    .warning-box strong {
+    .info-box strong {
       display: block;
       font-size: 14px;
       font-weight: 700;
-      color: #92400e;
-      margin-bottom: 10px;
+      color: var(--navy-dark);
+      margin-bottom: 8px;
     }
 
-    .warning-box ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
+    .info-box ul,
+    .info-box ol {
+      margin: 8px 0 0 0;
+      padding-left: 20px;
     }
 
-    .warning-box li {
-      padding: 6px 0 6px 24px;
-      position: relative;
+    .info-box li {
       font-size: 13px;
-      color: #78350f;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 6px;
+      padding-left: 0;
     }
 
-    .warning-box li:before {
-      content: "→";
-      position: absolute;
-      left: 0;
-      color: #f59e0b;
-      font-weight: bold;
+    .info-box li:before {
+      content: none;
+    }
+
+    .info-box span {
+      font-weight: 600;
+      color: var(--navy-primary);
     }
 
     /* Duties Grid */
@@ -3546,7 +3500,7 @@
       align-items: center;
       gap: 12px;
       padding: 16px;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      background: var(--bg-cream);
       border-bottom: 1px solid var(--border-light);
     }
 
@@ -3567,7 +3521,7 @@
       display: block;
       font-size: 12px;
       font-weight: 600;
-      color: #dc2626;
+      color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -3581,84 +3535,6 @@
       color: var(--text-primary);
       line-height: 1.6;
       margin-bottom: 16px;
-    }
-
-    .duty-impact {
-      background: #eff6ff;
-      border-left: 3px solid #3b82f6;
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 12px;
-    }
-
-    .duty-impact strong {
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-      color: #1e40af;
-      margin-bottom: 6px;
-    }
-
-    .duty-impact,
-    .duty-warning,
-    .duty-exception {
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .duty-warning {
-      background: #fef3c7;
-      border-left: 3px solid #f59e0b;
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 12px;
-      color: #78350f;
-    }
-
-    .duty-warning strong {
-      color: #92400e;
-      display: block;
-      margin-bottom: 6px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .duty-exception {
-      background: #f0fdf4;
-      border-left: 3px solid #22c55e;
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 12px;
-      color: #166534;
-    }
-
-    .duty-exception strong {
-      color: #166534;
-      display: block;
-      margin-bottom: 6px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .deadline-tracker {
-      background: white;
-      border: 1px solid var(--border-light);
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 12px;
-    }
-
-    .deadline-tracker strong {
-      font-size: 13px;
-      color: var(--text-secondary);
-      font-weight: 600;
-    }
-
-    .deadline-tracker span {
-      font-size: 15px;
-      color: #dc2626;
-      font-weight: 700;
-      margin-left: 8px;
     }
 
     .btn-duty-tool {
@@ -3679,31 +3555,29 @@
       color: white;
     }
 
-    /* Written Notice Box */
-    .written-notice-box {
-      background: var(--bg-cream);
-      border: 1px solid var(--border-light);
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
+    /* Written Notice Benefits */
+    .written-notice-benefits {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
     }
 
     .notice-benefit {
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .notice-benefit:last-child {
-      margin-bottom: 0;
+      padding: 16px;
+      background: var(--bg-cream);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
     }
 
     .benefit-icon {
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: #22c55e;
+      background: var(--navy-primary);
       color: white;
       display: flex;
       align-items: center;
@@ -3728,45 +3602,8 @@
       margin: 0;
     }
 
-    .notice-method {
-      background: white;
-      border: 1px solid var(--border-light);
-      padding: 16px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-
-    .notice-method strong {
-      display: block;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--navy-dark);
-      margin-bottom: 10px;
-    }
-
-    .notice-method ol {
-      margin: 0;
-      padding-left: 20px;
-    }
-
-    .notice-method li {
-      font-size: 13px;
-      color: var(--text-secondary);
-      line-height: 1.6;
-      margin-bottom: 8px;
-    }
-
-    /* Responsive adjustments for Step 2 */
+    /* Responsive adjustments */
     @media (max-width: 768px) {
-      .urgency-banner {
-        flex-direction: column;
-        gap: 12px;
-      }
-      
-      .urgency-icon {
-        font-size: 28px;
-      }
-      
       .duty-header {
         flex-direction: column;
         align-items: flex-start;
@@ -4384,23 +4221,15 @@
         skipWarning: 'Missing the reporting deadline can void your entire claim - most policies require notice within 24-72 hours.',
         customContent: true,
         htmlContent: `
-    <div class="urgency-banner">
-      <span class="urgency-icon">⚠️</span>
-      <div>
-        <strong>Critical Deadline Alert</strong>
-        <p>Most policies require notice within 24-72 hours of loss discovery. Late notice can void your entire claim. Call your insurance company today.</p>
-      </div>
-    </div>
-
     <div class="value-statement">
-      <strong>Why This Matters:</strong>
-      Once you report, your policy duties activate immediately. Missing these requirements can void coverage—even if the damage is clearly covered. Most claim denials happen because policyholders didn't know what they were required to do or when.
+      <strong>⚠️ Critical Deadline Alert:</strong>
+      Most policies require notice within 24-72 hours of loss discovery. Late notice can void your entire claim. Call your insurance company today.
     </div>
 
     <div class="process-phases">
       
       <!-- PHASE 1: Report the Loss -->
-      <div class="phase-card phase-urgent">
+      <div class="phase-card">
         <div class="phase-header">
           <span class="phase-number">1</span>
           <div>
@@ -4439,8 +4268,8 @@
             </div>
           </div>
           
-          <div class="warning-box">
-            <strong>⚠️ What NOT to Say:</strong>
+          <div class="info-box">
+            <strong>What NOT to Say:</strong>
             <ul>
               <li>Don't estimate damage amounts</li>
               <li>Don't agree to recorded statements yet</li>
@@ -4478,10 +4307,10 @@
               </div>
               <div class="duty-content">
                 <p class="duty-description">Make reasonable emergency repairs to prevent further damage. Board windows, tarp roof, turn off water, secure the property.</p>
-                <div class="duty-impact">
+                <div class="info-box">
                   <strong>Why it matters:</strong> If you don't mitigate, the insurer won't pay for additional damage that could have been prevented.
                 </div>
-                <button class="btn-duty-tool" onclick="window.location.href='../../app/tools/mitigation-documentation-tool.html'">📝 Emergency Mitigation Log</button>
+                <button class="btn-duty-tool" onclick="openTool('mitigation-log')">📝 Emergency Mitigation Log</button>
               </div>
             </div>
             
@@ -4495,13 +4324,13 @@
               </div>
               <div class="duty-content">
                 <p class="duty-description">Answer questions, allow property inspections, provide requested documents, attend examinations under oath if requested.</p>
-                <div class="duty-impact">
+                <div class="info-box">
                   <strong>Why it matters:</strong> "Lack of cooperation" is the most common reason insurers use to deny otherwise valid claims.
                 </div>
-                <div class="duty-warning">
-                  <strong>⚠️ Cooperate BUT:</strong> Don't give recorded statements without reviewing your rights. Don't sign anything without reading it first.
+                <div class="info-box">
+                  <strong>Cooperate BUT:</strong> Don't give recorded statements without reviewing your rights. Don't sign anything without reading it first.
                 </div>
-                <button class="btn-duty-tool" onclick="window.location.href='../../app/tools/compliance-review.html'">📊 Cooperation Tracker</button>
+                <button class="btn-duty-tool" onclick="openTool('cooperation-tracker')">📊 Cooperation Tracker</button>
               </div>
             </div>
             
@@ -4515,10 +4344,10 @@
               </div>
               <div class="duty-content">
                 <p class="duty-description">Take comprehensive photos, create itemized inventory of damaged property, save receipts, gather proof of ownership.</p>
-                <div class="duty-impact">
+                <div class="info-box">
                   <strong>Why it matters:</strong> The burden of proof is on YOU. Without documentation, you can't prove what was damaged or its value.
                 </div>
-                <button class="btn-duty-tool" onclick="openStep(3)">📁 Evidence Organizer (Step 3)</button>
+                <button class="btn-duty-tool" onclick="openTool('evidence-organizer')">📁 Evidence Organizer (Step 3)</button>
               </div>
             </div>
             
@@ -4532,13 +4361,13 @@
               </div>
               <div class="duty-content">
                 <p class="duty-description">Submit a sworn statement of loss with itemized damages, estimates, and supporting documentation by the policy deadline.</p>
-                <div class="duty-impact">
+                <div class="info-box">
                   <strong>Why it matters:</strong> This is your formal legal claim. Miss this deadline and your coverage is void—no exceptions.
                 </div>
-                <div class="deadline-tracker">
+                <div class="info-box">
                   <strong>Your deadline:</strong> <span id="polDeadline">[Calculated from your loss date]</span>
                 </div>
-                <button class="btn-duty-tool" onclick="window.location.href='../../app/tools/proof-of-loss-tracker.html'">📄 Proof of Loss Builder (Step 6)</button>
+                <button class="btn-duty-tool" onclick="openTool('pol-builder')">📄 Proof of Loss Builder (Step 6)</button>
               </div>
             </div>
             
@@ -4552,13 +4381,13 @@
               </div>
               <div class="duty-content">
                 <p class="duty-description">Emergency mitigation only. Don't make permanent repairs until the insurer inspects or authorizes repairs in writing.</p>
-                <div class="duty-impact">
+                <div class="info-box">
                   <strong>Why it matters:</strong> The insurer has the right to inspect damage before repairs. If you repair first, they can deny payment.
                 </div>
-                <div class="duty-exception">
+                <div class="info-box">
                   <strong>Exception:</strong> Keep all receipts for emergency repairs (tarps, water extraction, boarding). These are reimbursable even without pre-approval.
                 </div>
-                <button class="btn-duty-tool" onclick="window.location.href='../../app/tools/compliance-review.html'">📋 Pre-Repair Authorization Request</button>
+                <button class="btn-duty-tool" onclick="openTool('pre-repair-auth')">📋 Pre-Repair Authorization Request</button>
               </div>
             </div>
             
@@ -4579,7 +4408,7 @@
         <div class="phase-content">
           <p class="phase-intro">Always follow up your phone call with written notice. This creates legal proof that you reported within the required timeframe.</p>
           
-          <div class="written-notice-box">
+          <div class="written-notice-benefits">
             <div class="notice-benefit">
               <span class="benefit-icon">✓</span>
               <div>
@@ -4605,7 +4434,7 @@
             </div>
           </div>
           
-          <div class="notice-method">
+          <div class="info-box">
             <strong>How to Send:</strong>
             <ol>
               <li>Email to claims department (immediate delivery, date stamped)</li>
@@ -4614,7 +4443,7 @@
             </ol>
           </div>
           
-          <button class="btn-phase-action" onclick="window.location.href='app/tools/written-notice-generator.html'">📧 Generate Written Notice Letter</button>
+          <button class="btn-phase-action" onclick="openTool('notice-generator')">📧 Generate Written Notice Letter</button>
         </div>
       </div>
       
