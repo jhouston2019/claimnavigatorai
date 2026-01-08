@@ -3870,6 +3870,160 @@
       line-height: 1.5;
       margin: 0;
     }
+
+    /* Step 5 Components */
+
+    /* Adjuster Estimate Guidance */
+    .adjuster-estimate-guidance {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    /* Comparison Process */
+    .comparison-process {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .process-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px;
+      background: var(--bg-cream);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+    }
+
+    .step-number {
+      width: 36px;
+      height: 36px;
+      background: var(--navy-primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .process-step strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy-dark);
+      margin-bottom: 4px;
+    }
+
+    .process-step p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* Adjuster Tactics */
+    .adjuster-tactics {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .tactic-card {
+      padding: 16px;
+      background: var(--bg-cream);
+      border: 1px solid var(--border-light);
+      border-left: 4px solid #dc2626;
+      border-radius: 8px;
+    }
+
+    .tactic-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .tactic-icon {
+      font-size: 24px;
+    }
+
+    .tactic-header strong {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy-dark);
+    }
+
+    .tactic-card p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin: 8px 0 0 0;
+    }
+
+    .tactic-card p strong {
+      color: var(--navy-dark);
+      font-weight: 600;
+    }
+
+    /* Leverage Calculator */
+    .leverage-calculator {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .leverage-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px;
+      background: var(--bg-cream);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+    }
+
+    .leverage-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    .leverage-item strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy-dark);
+      margin-bottom: 6px;
+    }
+
+    .leverage-item p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin: 4px 0 0 0;
+    }
+
+    .example-calc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: white;
+      border-left: 3px solid var(--navy-primary);
+      border-radius: 4px;
+    }
+
+    .example-calc strong {
+      display: inline;
+      font-size: 13px;
+      color: var(--navy-dark);
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
@@ -4092,8 +4246,8 @@
               <div class="accordion-number">5</div>
             </div>
             <div class="accordion-title-area">
-              <div class="accordion-title">Compare your estimate to the carrier's estimate using AI analysis</div>
-              <div class="accordion-subtitle">Upload the insurance company's estimate and compare it line-by-line against your contractor estimate to identify discrepancies, scope omissions, and pricing deviations.</div>
+              <div class="accordion-title">Compare the Insurance Estimate to Contractor Pricing<span class="step-status upcoming">Upcoming</span></div>
+              <div class="accordion-subtitle">Review the adjuster's estimate line-by-line and identify where they're underpaying.</div>
             </div>
           </div>
           <div class="accordion-toggle">▼</div>
@@ -5171,32 +5325,289 @@
       },
       5: {
         label: 'STEP 5 OF 13',
-        title: 'Compare your estimate to the carrier\'s estimate using AI analysis',
-        subtitle: 'Compare your contractor estimate with the insurance company estimate to identify discrepancies.',
-        primaryAction: {
-          title: 'Upload & Compare Carrier Estimate',
-          description: 'Upload the insurance company\'s estimate. The AI automatically performs a line-by-line comparison against your contractor estimate from Step 4, identifies discrepancies, scope omissions, pricing deviations, and generates an Estimate Comparison Report.',
-          tool: { id: 'estimate-comparison', title: 'Estimate Comparison Tool', classification: 'required' }
-        },
-        reportSections: {
-          title: 'Estimate Comparison Report',
-          description: 'Line-by-line analysis of estimate differences',
-          viewTool: { id: 'estimate-comparison-viewer', title: 'View Estimate Comparison Report', classification: 'required' },
-          sections: [
-            'Comparison Summary',
-            'Scope Gaps',
-            'Pricing Deltas',
-            'Missing Line Items',
-            'Negotiation Talking Points'
-          ]
-        },
-        infoNote: 'Note: This comparison identifies underpayment, missing scope items, and pricing discrepancies between estimates.',
-        additionalTools: [
-          { id: 'line-item-discrepancy-finder', title: 'Line-Item Discrepancy Finder' },
-          { id: 'pricing-deviation-analyzer', title: 'Pricing Deviation Analyzer' },
-          { id: 'scope-omission-detector', title: 'Scope Omission Detector' },
-          { id: 'negotiation-language-generator', title: 'Negotiation Language Generator' }
-        ]
+        title: 'Compare the Insurance Estimate to Contractor Pricing',
+        subtitle: 'Review the adjuster\'s estimate line-by-line and identify where they\'re underpaying.',
+        whatThisPrevents: 'This step prevents accepting lowball estimates and missing $10,000-$30,000+ in legitimate repairs they excluded or underpriced.',
+        guardrail: 'Do not accept or sign anything related to the adjuster\'s estimate until you\'ve completed this line-by-line comparison.',
+        skipWarning: 'Without comparing estimates, you won\'t know you\'re being shorted thousands of dollars in legitimate repair costs.',
+        customContent: true,
+        htmlContent: `
+          <div class="value-statement">
+            <strong>Why This Is Critical:</strong>
+            Insurance adjusters routinely underestimate repair costs using outdated pricing, excluding necessary work, or lowballing material quality. Comparing their estimate against your contractor's actual market pricing reveals where they're shorting you—often by $10,000-$30,000+.
+          </div>
+
+          <div class="process-phases">
+            
+            <!-- PHASE 1: Receive & Review the Adjuster's Estimate -->
+            <div class="phase-card">
+              <div class="phase-header">
+                <span class="phase-number">1</span>
+                <div>
+                  <h4>Receive & Review the Adjuster's Estimate</h4>
+                  <p>Know what to expect and what to look for</p>
+                </div>
+              </div>
+              
+              <div class="phase-content">
+                <p class="phase-intro">The adjuster will send their estimate after inspecting your property. Review it carefully before accepting anything.</p>
+                
+                <div class="adjuster-estimate-guidance">
+                  <div class="guidance-section">
+                    <strong>When It Arrives:</strong>
+                    <ul>
+                      <li>Usually 7-10 days after adjuster inspection</li>
+                      <li>May arrive via email, mail, or insurance company portal</li>
+                      <li>Sometimes called "Estimate of Damages" or "Scope of Loss"</li>
+                    </ul>
+                  </div>
+                  
+                  <div class="guidance-section">
+                    <strong>What It Should Include:</strong>
+                    <ul>
+                      <li>Detailed scope of work (what they're covering)</li>
+                      <li>Line-by-line breakdown (not just a total)</li>
+                      <li>Pricing for materials and labor per item</li>
+                      <li>Square footage or unit measurements</li>
+                      <li>Depreciation calculations (if applicable)</li>
+                      <li>Total: Actual Cash Value (ACV) and Replacement Cost Value (RCV)</li>
+                    </ul>
+                  </div>
+                  
+                  <div class="guidance-section">
+                    <strong>🚩 Red Flags to Watch For:</strong>
+                    <ul>
+                      <li><strong>Vague descriptions:</strong> "Repair kitchen" instead of specific line items</li>
+                      <li><strong>Missing items:</strong> Damage you documented that's not in their estimate</li>
+                      <li><strong>Generic totals:</strong> No line-by-line breakdown to verify</li>
+                      <li><strong>Suspiciously low:</strong> Total is 30-50% less than your contractor's estimate</li>
+                      <li><strong>Excessive depreciation:</strong> Depreciating items that should be full replacement</li>
+                    </ul>
+                  </div>
+                  
+                  <div class="info-box">
+                    <strong>What If They Don't Send It?</strong>
+                    Your policy requires them to provide a written estimate. Send a written demand: "Per my policy's duty to cooperate clause, I am requesting a detailed written estimate of damages with line-by-line pricing breakdown within 7 days."
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- PHASE 2: Upload for Line-by-Line Comparison -->
+            <div class="phase-card">
+              <div class="phase-header">
+                <span class="phase-number">2</span>
+                <div>
+                  <h4>Upload for Line-by-Line Comparison</h4>
+                  <p>Let AI identify every discrepancy</p>
+                </div>
+              </div>
+              
+              <div class="phase-content">
+                <p class="phase-intro">Upload both estimates for automated comparison. The AI will identify every pricing difference, scope gap, and missing item.</p>
+                
+                <div class="comparison-process">
+                  <div class="process-step">
+                    <span class="step-number">1</span>
+                    <div>
+                      <strong>Upload Adjuster's Estimate</strong>
+                      <p>PDF, Excel, or image of their estimate</p>
+                    </div>
+                  </div>
+                  
+                  <div class="process-step">
+                    <span class="step-number">2</span>
+                    <div>
+                      <strong>Upload Your Contractor's Estimate</strong>
+                      <p>From Step 4 (if not already uploaded)</p>
+                    </div>
+                  </div>
+                  
+                  <div class="process-step">
+                    <span class="step-number">3</span>
+                    <div>
+                      <strong>AI Performs Line-by-Line Analysis</strong>
+                      <p>Compares every line item, identifies gaps and pricing differences</p>
+                    </div>
+                  </div>
+                  
+                  <div class="process-step">
+                    <span class="step-number">4</span>
+                    <div>
+                      <strong>Get Estimate Comparison Report</strong>
+                      <p>Dollar-by-dollar breakdown with visual highlighting of discrepancies</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <button class="btn-phase-action" onclick="window.location.href='app/tools/estimate-comparison.html'">📊 Compare Estimates Now</button>
+                
+                <div class="info-box" style="margin-top: 16px;">
+                  <strong>What You'll Get:</strong>
+                  Detailed report showing: Total underpayment amount, scope gaps (missing repairs), pricing differences per line item, major discrepancies highlighted, and negotiation talking points.
+                </div>
+              </div>
+            </div>
+            
+            <!-- PHASE 3: Understand Common Adjuster Tactics -->
+            <div class="phase-card">
+              <div class="phase-header">
+                <span class="phase-number">3</span>
+                <div>
+                  <h4>Understand Common Adjuster Tactics</h4>
+                  <p>Know how they're shorting you</p>
+                </div>
+              </div>
+              
+              <div class="phase-content">
+                <p class="phase-intro">Adjusters use predictable tactics to reduce payouts. Recognizing these helps you challenge them effectively.</p>
+                
+                <div class="adjuster-tactics">
+                  <div class="tactic-card">
+                    <div class="tactic-header">
+                      <span class="tactic-icon">🔍</span>
+                      <strong>Tactic 1: Scope Gaps</strong>
+                    </div>
+                    <p><strong>What it is:</strong> Entire repairs they excluded from their estimate</p>
+                    <p><strong>Example:</strong> Your contractor includes "Replace water-damaged subfloor - $2,500" but adjuster's estimate has no subfloor line item at all</p>
+                    <p><strong>Why they do it:</strong> Hoping you won't notice missing work</p>
+                  </div>
+                  
+                  <div class="tactic-card">
+                    <div class="tactic-header">
+                      <span class="tactic-icon">💰</span>
+                      <strong>Tactic 2: Pricing Games</strong>
+                    </div>
+                    <p><strong>What it is:</strong> Using artificially low pricing per unit</p>
+                    <p><strong>Example:</strong> Contractor: $75/sq ft for hardwood. Adjuster: $50/sq ft (outdated pricing from 3 years ago)</p>
+                    <p><strong>Why they do it:</strong> Software uses old pricing databases to save money</p>
+                  </div>
+                  
+                  <div class="tactic-card">
+                    <div class="tactic-header">
+                      <span class="tactic-icon">📋</span>
+                      <strong>Tactic 3: Missing Items</strong>
+                    </div>
+                    <p><strong>What it is:</strong> Damage you documented that they "didn't see"</p>
+                    <p><strong>Example:</strong> You photographed ceiling damage in 3 rooms, they only included 1 room</p>
+                    <p><strong>Why they do it:</strong> Claiming damage wasn't visible or pre-existed</p>
+                  </div>
+                  
+                  <div class="tactic-card">
+                    <div class="tactic-header">
+                      <span class="tactic-icon">📉</span>
+                      <strong>Tactic 4: Excessive Depreciation</strong>
+                    </div>
+                    <p><strong>What it is:</strong> Depreciating items that should be full replacement cost</p>
+                    <p><strong>Example:</strong> Depreciating structural materials like drywall, framing (usually not depreciated)</p>
+                    <p><strong>Why they do it:</strong> Reduces initial payout (you fight for recoverable depreciation later)</p>
+                  </div>
+                  
+                  <div class="tactic-card">
+                    <div class="tactic-header">
+                      <span class="tactic-icon">⚖️</span>
+                      <strong>Tactic 5: Code Upgrade Refusals</strong>
+                    </div>
+                    <p><strong>What it is:</strong> Refusing to cover work required by building code</p>
+                    <p><strong>Example:</strong> "We only pay to replace what was there" (ignoring code upgrades legally required)</p>
+                    <p><strong>Why they do it:</strong> Many policies DO cover code upgrades—they're hoping you don't know</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- PHASE 4: Calculate Your Leverage -->
+            <div class="phase-card">
+              <div class="phase-header">
+                <span class="phase-number">4</span>
+                <div>
+                  <h4>Calculate Your Leverage</h4>
+                  <p>Quantify the underpayment for negotiation</p>
+                </div>
+              </div>
+              
+              <div class="phase-content">
+                <p class="phase-intro">Use the comparison data to build your negotiation case. This becomes your ammunition for Step 8.</p>
+                
+                <div class="leverage-calculator">
+                  <div class="leverage-item">
+                    <span class="leverage-icon">💵</span>
+                    <div>
+                      <strong>Total Underpayment</strong>
+                      <p>Contractor estimate total minus adjuster estimate total = Your negotiation target</p>
+                      <p class="example-calc">Example: $45,000 (contractor) - $28,000 (adjuster) = <strong>$17,000 underpayment</strong></p>
+                    </div>
+                  </div>
+                  
+                  <div class="leverage-item">
+                    <span class="leverage-icon">🎯</span>
+                    <div>
+                      <strong>Major Line Item Disputes</strong>
+                      <p>Identify the 5-10 biggest dollar gaps to focus negotiation</p>
+                      <p class="example-calc">Example: Roofing labor - Contractor $8,500 vs Adjuster $4,200 = <strong>$4,300 gap</strong></p>
+                    </div>
+                  </div>
+                  
+                  <div class="leverage-item">
+                    <span class="leverage-icon">🔧</span>
+                    <div>
+                      <strong>Scope Omissions</strong>
+                      <p>List all repairs contractor included that adjuster completely excluded</p>
+                      <p class="example-calc">Example: Subfloor replacement, electrical upgrades, mold remediation = <strong>$6,800 missing work</strong></p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="info-box">
+                  <strong>This Becomes Your Negotiation Ammunition:</strong>
+                  In Step 8, you'll use this comparison report to challenge the adjuster's estimate line-by-line, demand inclusion of missing scope, and negotiate pricing to market rates. Without this analysis, you have no leverage.
+                </div>
+              </div>
+            </div>
+            
+          </div>
+
+          <div class="prevents-box">
+            <strong>🛡️ What This Step Prevents:</strong>
+            <ul>
+              <li>Accepting lowball estimate because you don't know it's low</li>
+              <li>Missing $10,000-$30,000+ in legitimate repairs they excluded</li>
+              <li>Getting stuck with their outdated pricing from years ago</li>
+              <li>Signing settlement release without realizing you're being shorted</li>
+              <li>Losing negotiation leverage because you can't prove underpayment</li>
+            </ul>
+          </div>
+
+          <div class="step-completion">
+            <h3 style="font-size: 16px; font-weight: 700; color: var(--navy-dark); margin-bottom: 16px;">Estimate Comparison Checklist</h3>
+            
+            <div class="completion-checklist">
+              <div class="completion-item" onclick="toggleCompletion(this)">
+                <span class="completion-checkbox"></span>
+                <span>Received adjuster's written estimate with line-by-line breakdown</span>
+              </div>
+              <div class="completion-item" onclick="toggleCompletion(this)">
+                <span class="completion-checkbox"></span>
+                <span>Uploaded both estimates for AI comparison analysis</span>
+              </div>
+              <div class="completion-item" onclick="toggleCompletion(this)">
+                <span class="completion-checkbox"></span>
+                <span>Reviewed Estimate Comparison Report showing all discrepancies</span>
+              </div>
+              <div class="completion-item" onclick="toggleCompletion(this)">
+                <span class="completion-checkbox"></span>
+                <span>Calculated total underpayment and identified major line item disputes</span>
+              </div>
+            </div>
+            
+            <div class="info-box" style="margin: 20px 0;">
+              <strong>Before Moving to Step 6:</strong>
+              Make sure you understand where the adjuster is shorting you. This comparison data is essential for negotiation in Step 8.
+            </div>
+            
+            <button class="btn-complete-step" onclick="completeAndNext(5)">✓ Estimates Compared - Continue to Step 6</button>
+          </div>
+        `
       },
       6: {
         label: 'STEP 6 OF 13',
