@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Written Notice of Loss Generator - Claim Navigator</title>
+  <link rel="stylesheet" href="../assets/css/tool-visual-alignment.css">
+  <style>
+    .notice-preview {
+      background: white;
+      border: 2px solid var(--border-light);
+      border-radius: 8px;
+      padding: 32px;
+      margin: 24px 0;
+      font-family: 'Times New Roman', serif;
+      line-height: 1.8;
+      min-height: 400px;
+    }
+
+    .notice-preview h3 {
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .notice-date {
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+
+    .notice-to {
+      margin-bottom: 24px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .notice-re {
+      margin-bottom: 24px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .notice-body {
+      margin-bottom: 24px;
+      font-size: 14px;
+      text-align: justify;
+    }
+
+    .notice-body p {
+      margin-bottom: 16px;
+    }
+
+    .notice-signature {
+      margin-top: 48px;
+      font-size: 14px;
+    }
+
+    .notice-signature p {
+      margin-bottom: 8px;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .action-buttons button {
+      flex: 1;
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 16px;
+      border-radius: 6px;
+      margin-bottom: 24px;
+    }
+
+    .info-box strong {
+      display: block;
+      color: #1e40af;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .info-box p {
+      color: #1e40af;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .warning-box {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 16px;
+      border-radius: 6px;
+      margin-bottom: 24px;
+    }
+
+    .warning-box strong {
+      display: block;
+      color: #92400e;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .warning-box p {
+      color: #78350f;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .success-message {
+      background: #f0fdf4;
+      border: 2px solid #22c55e;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 24px 0;
+      display: none;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    .success-message h4 {
+      color: #166534;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+
+    .success-message p {
+      color: #166534;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="tool-container">
+    
+    <!-- Tool Header -->
+    <div class="tool-header">
+      <div class="tool-header-content">
+        <div class="tool-breadcrumb">
+          <a href="../../step-by-step-claim-guide.html?step=2">← Back to Claim Guide</a>
+        </div>
+        <h1 class="tool-title">Written Notice of Loss Generator</h1>
+        <p class="tool-description">Generate a formal written notice to send to your insurance company via email and certified mail</p>
+      </div>
+    </div>
+
+    <!-- Tool Content -->
+    <div class="tool-card">
+      <div class="tool-card-body">
+        
+        <div class="info-box">
+          <strong>📧 Why Send Written Notice?</strong>
+          <p>Even after calling, always send written notice. This creates legal proof that you reported within the required timeframe and documents exactly what you reported and when.</p>
+        </div>
+
+        <div class="warning-box">
+          <strong>⚠️ Keep It Simple</strong>
+          <p>This is just notice that a loss occurred. Don't estimate damages, don't speculate about cause, don't make admissions. Just report the basic facts.</p>
+        </div>
+
+        <!-- Input Form -->
+        <form id="noticeForm" class="tool-form">
+          
+          <div class="tool-form-group">
+            <label for="policyholderName" class="tool-label">Your Name (Policyholder) *</label>
+            <input 
+              type="text" 
+              id="policyholderName" 
+              name="policyholderName" 
+              class="tool-input" 
+              required
+              placeholder="John Smith"
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="propertyAddress" class="tool-label">Property Address *</label>
+            <input 
+              type="text" 
+              id="propertyAddress" 
+              name="propertyAddress" 
+              class="tool-input" 
+              required
+              placeholder="123 Main Street, City, State 12345"
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="policyNumber" class="tool-label">Policy Number *</label>
+            <input 
+              type="text" 
+              id="policyNumber" 
+              name="policyNumber" 
+              class="tool-input" 
+              required
+              placeholder="ABC-123456789"
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="claimNumber" class="tool-label">Claim Number (if assigned)</label>
+            <input 
+              type="text" 
+              id="claimNumber" 
+              name="claimNumber" 
+              class="tool-input" 
+              placeholder="CLM-987654321"
+            />
+            <small>Leave blank if not yet assigned</small>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="dateOfLoss" class="tool-label">Date of Loss *</label>
+            <input 
+              type="date" 
+              id="dateOfLoss" 
+              name="dateOfLoss" 
+              class="tool-input" 
+              required
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="lossType" class="tool-label">Type of Loss *</label>
+            <select id="lossType" name="lossType" class="tool-input" required>
+              <option value="">Select type of loss...</option>
+              <option value="water damage">Water Damage</option>
+              <option value="fire damage">Fire Damage</option>
+              <option value="wind damage">Wind Damage</option>
+              <option value="hail damage">Hail Damage</option>
+              <option value="hurricane damage">Hurricane Damage</option>
+              <option value="tornado damage">Tornado Damage</option>
+              <option value="theft">Theft</option>
+              <option value="vandalism">Vandalism</option>
+              <option value="lightning damage">Lightning Damage</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="briefDescription" class="tool-label">Brief Description of Damage *</label>
+            <textarea 
+              id="briefDescription" 
+              name="briefDescription" 
+              class="tool-textarea" 
+              rows="4" 
+              required
+              placeholder="Example: Water leak from roof caused damage to ceiling and walls in living room and bedroom. Furniture and personal property also affected."
+            ></textarea>
+            <small>Keep it factual and brief - no estimates or speculation</small>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="phoneReportDate" class="tool-label">Date You Called to Report (if applicable)</label>
+            <input 
+              type="date" 
+              id="phoneReportDate" 
+              name="phoneReportDate" 
+              class="tool-input"
+            />
+            <small>If you already called, enter the date you spoke with them</small>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="contactPhone" class="tool-label">Your Phone Number *</label>
+            <input 
+              type="tel" 
+              id="contactPhone" 
+              name="contactPhone" 
+              class="tool-input" 
+              required
+              placeholder="(555) 123-4567"
+            />
+          </div>
+
+          <div class="tool-form-group">
+            <label for="contactEmail" class="tool-label">Your Email Address *</label>
+            <input 
+              type="email" 
+              id="contactEmail" 
+              name="contactEmail" 
+              class="tool-input" 
+              required
+              placeholder="john.smith@email.com"
+            />
+          </div>
+
+          <div class="tool-form-actions">
+            <button type="submit" class="tool-btn tool-btn-primary">
+              📄 Generate Written Notice
+            </button>
+          </div>
+        </form>
+
+        <!-- Notice Preview (hidden initially) -->
+        <div id="noticePreview" style="display: none;">
+          <h3 style="margin-top: 32px; margin-bottom: 16px; font-size: 18px; font-weight: 700;">Your Written Notice:</h3>
+          
+          <div class="notice-preview" id="noticeContent">
+            <!-- Generated content will appear here -->
+          </div>
+
+          <div class="action-buttons">
+            <button class="tool-btn tool-btn-secondary" onclick="copyToClipboard()">
+              📋 Copy to Clipboard
+            </button>
+            <button class="tool-btn tool-btn-secondary" onclick="downloadAsWord()">
+              📥 Download as Word Doc
+            </button>
+            <button class="tool-btn tool-btn-secondary" onclick="emailNotice()">
+              📧 Open in Email
+            </button>
+            <button class="tool-btn tool-btn-primary" onclick="printNotice()">
+              🖨️ Print for Certified Mail
+            </button>
+          </div>
+
+          <div class="success-message" id="successMessage">
+            <h4>✅ Next Steps:</h4>
+            <p><strong>1. Send via Email:</strong> Send this to your insurance company's claims email address (check your policy or website)</p>
+            <p><strong>2. Send via Certified Mail:</strong> Print this letter, sign it, and mail it via USPS Certified Mail with Return Receipt</p>
+            <p><strong>3. Keep Copies:</strong> Save the email confirmation and certified mail receipt in your claim file</p>
+            <p><strong>4. Document in Claim Diary:</strong> Log that you sent written notice on this date</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../assets/js/supabase-client.js"></script>
+  <script src="../assets/js/claim-data-bridge.js"></script>
+  <script>
+    // Generate notice when form is submitted
+    document.getElementById('noticeForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      generateNotice();
+    });
+
+    function generateNotice() {
+      // Get form values
+      const formData = {
+        policyholderName: document.getElementById('policyholderName').value,
+        propertyAddress: document.getElementById('propertyAddress').value,
+        policyNumber: document.getElementById('policyNumber').value,
+        claimNumber: document.getElementById('claimNumber').value,
+        dateOfLoss: document.getElementById('dateOfLoss').value,
+        lossType: document.getElementById('lossType').value,
+        briefDescription: document.getElementById('briefDescription').value,
+        phoneReportDate: document.getElementById('phoneReportDate').value,
+        contactPhone: document.getElementById('contactPhone').value,
+        contactEmail: document.getElementById('contactEmail').value
+      };
+
+      // Format dates
+      const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      const lossDate = new Date(formData.dateOfLoss).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      const phoneDate = formData.phoneReportDate ? new Date(formData.phoneReportDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : null;
+
+      // Build the notice
+      let noticeHTML = `
+        <h3>WRITTEN NOTICE OF LOSS</h3>
+        
+        <div class="notice-date">
+          ${today}
+        </div>
+        
+        <div class="notice-to">
+          <strong>TO:</strong> [Insurance Company Name]<br>
+          Claims Department<br>
+          [Insurance Company Address]
+        </div>
+        
+        <div class="notice-re">
+          <strong>RE:</strong> Notice of Loss - Policy No. ${formData.policyNumber}
+          ${formData.claimNumber ? `<br>Claim No. ${formData.claimNumber}` : ''}
+        </div>
+        
+        <div class="notice-body">
+          <p>Dear Claims Department:</p>
+          
+          <p>This letter serves as formal written notice of a loss that occurred at the property located at <strong>${formData.propertyAddress}</strong>, which is insured under Policy Number <strong>${formData.policyNumber}</strong>.</p>
+          
+          <p><strong>Date of Loss:</strong> ${lossDate}</p>
+          
+          <p><strong>Type of Loss:</strong> ${formData.lossType.charAt(0).toUpperCase() + formData.lossType.slice(1)}</p>
+          
+          <p><strong>Description of Loss:</strong> ${formData.briefDescription}</p>
+          
+          ${phoneDate ? `<p>Please note that I previously reported this loss by telephone on ${phoneDate}${formData.claimNumber ? ` and was assigned Claim Number ${formData.claimNumber}` : ''}. This letter serves as written confirmation of that report.</p>` : ''}
+          
+          <p>I am providing this written notice to ensure compliance with all policy requirements regarding timely notice of loss. I request that you acknowledge receipt of this notice and provide me with:</p>
+          
+          <ul>
+            <li>Confirmation of claim number assignment (if not already assigned)</li>
+            <li>Name and contact information for the assigned adjuster</li>
+            <li>Instructions for next steps in the claims process</li>
+            <li>Copy of my policy declarations page and full policy contract</li>
+          </ul>
+          
+          <p>I am available to discuss this matter further and will cooperate fully with your investigation. Please contact me at your earliest convenience.</p>
+        </div>
+        
+        <div class="notice-signature">
+          <p>Sincerely,</p>
+          <p style="margin-top: 48px; border-top: 1px solid #000; width: 250px; padding-top: 4px;">
+            ${formData.policyholderName}
+          </p>
+          <p><strong>Policyholder Name:</strong> ${formData.policyholderName}</p>
+          <p><strong>Property Address:</strong> ${formData.propertyAddress}</p>
+          <p><strong>Phone:</strong> ${formData.contactPhone}</p>
+          <p><strong>Email:</strong> ${formData.contactEmail}</p>
+          <p><strong>Policy Number:</strong> ${formData.policyNumber}</p>
+        </div>
+      `;
+
+      // Display the notice
+      document.getElementById('noticeContent').innerHTML = noticeHTML;
+      document.getElementById('noticePreview').style.display = 'block';
+      document.getElementById('successMessage').classList.add('show');
+
+      // Scroll to preview
+      document.getElementById('noticePreview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Save to claim data
+      saveClaimData('written_notice_generated', true);
+      saveClaimData('written_notice_date', new Date().toISOString());
+      saveClaimData('written_notice_content', noticeHTML);
+    }
+
+    function copyToClipboard() {
+      const noticeText = document.getElementById('noticeContent').innerText;
+      navigator.clipboard.writeText(noticeText).then(function() {
+        alert('✅ Notice copied to clipboard!\n\nYou can now paste it into an email or document.');
+      }, function() {
+        alert('❌ Failed to copy. Please manually select and copy the text.');
+      });
+    }
+
+    function downloadAsWord() {
+      const noticeHTML = document.getElementById('noticeContent').innerHTML;
+      const blob = new Blob(['\ufeff', noticeHTML], {
+        type: 'application/msword'
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'Written_Notice_of_Loss.doc';
+      link.click();
+      URL.revokeObjectURL(url);
+      
+      alert('✅ Document downloaded!\n\nOpen it in Microsoft Word, review it, and save as needed.');
+    }
+
+    function emailNotice() {
+      const noticeText = document.getElementById('noticeContent').innerText;
+      const subject = encodeURIComponent('Written Notice of Loss - Policy ' + document.getElementById('policyNumber').value);
+      const body = encodeURIComponent(noticeText);
+      
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      
+      setTimeout(() => {
+        alert('📧 Email opened!\n\nReplace the "To:" field with your insurance company\'s claims email address.\n\nCheck your policy documents or insurance company website for the correct email.');
+      }, 500);
+    }
+
+    function printNotice() {
+      const printWindow = window.open('', '_blank');
+      const noticeHTML = document.getElementById('noticeContent').innerHTML;
+      
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Written Notice of Loss</title>
+          <style>
+            body {
+              font-family: 'Times New Roman', serif;
+              padding: 1in;
+              line-height: 1.8;
+            }
+            h3 {
+              text-align: center;
+              margin-bottom: 24px;
+            }
+            p {
+              margin-bottom: 16px;
+            }
+            ul {
+              margin: 16px 0;
+              padding-left: 40px;
+            }
+            li {
+              margin-bottom: 8px;
+            }
+          </style>
+        </head>
+        <body>
+          ${noticeHTML}
+        </body>
+        </html>
+      `);
+      
+      printWindow.document.close();
+      printWindow.focus();
+      
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    }
+
+    // Pre-fill from saved claim data if available
+    document.addEventListener('DOMContentLoaded', function() {
+      const claimData = loadClaimData();
+      
+      if (claimData) {
+        if (claimData.policyholder_name) document.getElementById('policyholderName').value = claimData.policyholder_name;
+        if (claimData.property_address) document.getElementById('propertyAddress').value = claimData.property_address;
+        if (claimData.policy_number) document.getElementById('policyNumber').value = claimData.policy_number;
+        if (claimData.claim_number) document.getElementById('claimNumber').value = claimData.claim_number;
+        if (claimData.date_of_loss) document.getElementById('dateOfLoss').value = claimData.date_of_loss;
+        if (claimData.contact_phone) document.getElementById('contactPhone').value = claimData.contact_phone;
+        if (claimData.contact_email) document.getElementById('contactEmail').value = claimData.contact_email;
+      }
+    });
+  </script>
+
+</body>
+</html>
+
