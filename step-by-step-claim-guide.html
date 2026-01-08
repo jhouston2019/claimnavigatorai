@@ -5278,6 +5278,30 @@
       line-height: 1.5;
       margin: 0;
     }
+
+    /* Calculate button emphasis */
+    .btn-phase-action {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-phase-action::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-phase-action:hover::before {
+      width: 300px;
+      height: 300px;
+    }
   </style>
 </head>
 <body>
@@ -8026,7 +8050,7 @@
                   </div>
                 </div>
                 
-                <button class="btn-phase-action" onclick="window.location.href='app/tools/contents-valuation.html'">🧮 Calculate Your ACV/RCV Breakdown</button>
+                <button class="btn-phase-action" onclick="calculateACVRCV()">🧮 Calculate My ACV/RCV Breakdown</button>
               </div>
             </div>
             
@@ -8375,11 +8399,17 @@
           document.getElementById('adjusterName').textContent = state.claimInfo.adjusterName || 'Not set';
           document.getElementById('claimStatus').textContent = state.claimInfo.claimStatus || 'Not started';
         }
+        
+        // Inventory is loaded from localStorage when needed by calculate functions
+        console.log('Loaded inventory items:', (state.inventory || []).length);
       }
     }
 
     // Save state to storage
     function saveState() {
+      const saved = localStorage.getItem('claimNavigatorState');
+      const existingState = saved ? JSON.parse(saved) : {};
+      
       const state = {
         currentStep: currentStep,
         completedSteps: completedSteps,
@@ -8392,9 +8422,162 @@
           adjusterName: document.getElementById('adjusterName').textContent,
           claimStatus: document.getElementById('claimStatus').textContent
         },
+        inventory: existingState.inventory || [], // Preserve existing inventory data
         lastSaved: new Date().toISOString()
       };
       saveClaimData('claimNavigatorState', state);
+    }
+
+    // Calculate total RCV, depreciation, ACV, and holdback from inventory
+    function calculateInventoryTotals() {
+      const saved = localStorage.getItem('claimNavigatorState');
+      if (!saved) {
+        return {
+          totalRCV: 0,
+          totalDepreciation: 0,
+          totalACV: 0,
+          holdbackAmount: 0
+        };
+      }
+      
+      const state = JSON.parse(saved);
+      const inventory = state.inventory || [];
+      
+      let totalRCV = 0;
+      let totalDepreciation = 0;
+      
+      inventory.forEach(item => {
+        const rcv = parseFloat(item.rcv) || 0;
+        const depreciationPercent = parseFloat(item.depreciationPercent) || 0;
+        const depreciation = rcv * (depreciationPercent / 100);
+        
+        totalRCV += rcv;
+        totalDepreciation += depreciation;
+      });
+      
+      const totalACV = totalRCV - totalDepreciation;
+      const holdbackAmount = totalDepreciation;
+      
+      return {
+        totalRCV: totalRCV,
+        totalDepreciation: totalDepreciation,
+        totalACV: totalACV,
+        holdbackAmount: holdbackAmount
+      };
+    }
+
+    // Format currency for display
+    function formatCurrency(amount) {
+      return '$' + amount.toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+    }
+
+    // Update the ACV/RCV breakdown display in Step 9
+    function updateACVRCVBreakdown() {
+      const totals = calculateInventoryTotals();
+      
+      // Update all breakdown amounts in Step 9
+      const breakdownItems = document.querySelectorAll('.breakdown-item');
+      
+      breakdownItems.forEach(item => {
+        const amountEl = item.querySelector('.breakdown-amount');
+        if (!amountEl) return;
+        
+        if (item.classList.contains('total-rcv')) {
+          amountEl.textContent = formatCurrency(totals.totalRCV);
+        } else if (item.classList.contains('depreciation')) {
+          amountEl.textContent = formatCurrency(totals.totalDepreciation);
+        } else if (item.classList.contains('initial-acv')) {
+          amountEl.textContent = formatCurrency(totals.totalACV);
+        } else if (item.classList.contains('holdback-recovery')) {
+          amountEl.textContent = formatCurrency(totals.holdbackAmount);
+        }
+      });
+      
+      // Show message if no inventory data
+      if (totals.totalRCV === 0) {
+        breakdownItems.forEach(item => {
+          const amountEl = item.querySelector('.breakdown-amount');
+          if (amountEl) {
+            amountEl.textContent = '$0';
+          }
+        });
+        
+        // Show helper message
+        showInventoryWarning();
+      } else {
+        hideInventoryWarning();
+      }
+    }
+
+    // Show warning if no inventory data exists
+    function showInventoryWarning() {
+      const paymentBreakdown = document.querySelector('.payment-breakdown');
+      if (!paymentBreakdown) return;
+      
+      let warningEl = document.getElementById('inventory-warning');
+      if (!warningEl) {
+        warningEl = document.createElement('div');
+        warningEl.id = 'inventory-warning';
+        warningEl.className = 'info-box';
+        warningEl.style.marginTop = '16px';
+        warningEl.innerHTML = `
+          <strong>⚠️ No Inventory Data Found</strong>
+          <p style="margin: 8px 0 0 0;">Complete Step 8 (Contents Inventory) to calculate your ACV/RCV breakdown. Once you've documented your damaged items with values, return here to see your payment structure.</p>
+        `;
+        paymentBreakdown.insertAdjacentElement('afterend', warningEl);
+      }
+    }
+
+    // Hide inventory warning
+    function hideInventoryWarning() {
+      const warningEl = document.getElementById('inventory-warning');
+      if (warningEl) {
+        warningEl.remove();
+      }
+    }
+
+    // Manual calculate function called by button
+    function calculateACVRCV() {
+      updateACVRCVBreakdown();
+      
+      // Show success message
+      const totals = calculateInventoryTotals();
+      if (totals.totalRCV > 0) {
+        alert(`✓ Calculation Complete!\n\nTotal RCV: ${formatCurrency(totals.totalRCV)}\nDepreciation: ${formatCurrency(totals.totalDepreciation)}\nInitial ACV Payment: ${formatCurrency(totals.totalACV)}\nHoldback Recovery: ${formatCurrency(totals.holdbackAmount)}`);
+      } else {
+        alert('⚠️ No inventory data found.\n\nPlease complete Step 8 (Contents Inventory) first, then return to Step 9 to calculate your ACV/RCV breakdown.');
+      }
+    }
+
+    // Function to add sample inventory data for testing
+    function addSampleInventory() {
+      const sampleItems = [
+        { name: 'Samsung 55" TV', rcv: 899, depreciationPercent: 30 },
+        { name: 'Sectional Sofa', rcv: 1899, depreciationPercent: 50 },
+        { name: 'Queen Mattress Set', rcv: 1200, depreciationPercent: 40 },
+        { name: 'Dining Table & Chairs', rcv: 950, depreciationPercent: 35 },
+        { name: 'Kitchen Appliances', rcv: 3500, depreciationPercent: 45 },
+        { name: 'Laptop Computer', rcv: 1299, depreciationPercent: 60 },
+        { name: 'Clothing Collection', rcv: 5000, depreciationPercent: 70 },
+        { name: 'Tools & Equipment', rcv: 2800, depreciationPercent: 25 }
+      ];
+      
+      const saved = localStorage.getItem('claimNavigatorState');
+      const state = saved ? JSON.parse(saved) : {
+        currentStep: 1,
+        completedSteps: [],
+        taskCompletion: {},
+        inventory: []
+      };
+      
+      state.inventory = sampleItems;
+      localStorage.setItem('claimNavigatorState', JSON.stringify(state));
+      
+      console.log('Sample inventory added:', sampleItems);
+      alert('✓ Sample inventory data added for testing!\n\nGo to Step 9 to see calculated ACV/RCV breakdown.');
     }
 
     // Calculate real progress based on completed tasks
@@ -8956,6 +9139,14 @@
       if (data.customContent && data.htmlContent) {
         html = data.htmlContent;
         content.innerHTML = html;
+        
+        // AUTO-CALCULATE ACV/RCV when Step 9 opens
+        if (stepNum === 9) {
+          setTimeout(() => {
+            updateACVRCVBreakdown();
+          }, 100);
+        }
+        
         console.log('Step content loaded successfully (custom content)');
         return;
       }
@@ -10041,6 +10232,28 @@
             polDeadlineEl.style.fontWeight = '700';
           }
         }
+      }
+    }
+
+    // Add keyboard shortcut to load sample data (for testing)
+    // Press Ctrl+Shift+I to load sample inventory
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+        addSampleInventory();
+      }
+    });
+
+    // Open Contents Valuation Tool (called by button clicks)
+    function openTool(toolId) {
+      if (toolId === 'contents-valuation') {
+        // In production, this would navigate to the actual tool
+        // For now, show instructions
+        alert('📊 Contents Valuation Tool\n\nThis tool helps you:\n• Enter all damaged items from Step 8\n• Calculate replacement cost values (RCV)\n• Apply depreciation based on age/condition\n• Generate ACV and holdback amounts\n\nOnce you complete your inventory, your ACV/RCV breakdown will automatically update in Step 9.');
+        
+        // Simulate opening the tool - in production this would be:
+        // window.location.href = 'app/tools/contents-valuation.html';
+      } else {
+        alert('Opening tool: ' + toolId + '\n\nIn production, this would navigate to the actual tool page.');
       }
     }
 
