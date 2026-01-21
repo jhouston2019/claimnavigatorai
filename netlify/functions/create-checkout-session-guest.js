@@ -52,7 +52,7 @@ exports.handler = async (event, context) => {
               name: 'Claim Navigator - Complete Toolkit',
               description: 'One claim toolkit with all professional tools'
             },
-            unit_amount: 49700 // $497.00 in cents
+            unit_amount: 9900 // $99.00 in cents
           },
           quantity: 1
         }
