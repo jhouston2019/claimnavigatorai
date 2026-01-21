@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Claim Navigator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+            padding: 2rem;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 1.5rem 2rem;
+            border-radius: 1rem;
+            border: 1px solid #374151;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            color: #3b82f6;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .user-info {
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-secondary {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #047857;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid #374151;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-card.main .stat-number { color: #dc2626; }
+        .stat-card.app .stat-number { color: #3b82f6; }
+        .stat-card.seo .stat-number { color: #059669; }
+        .stat-card.tools .stat-number { color: #7c3aed; }
+        .stat-card.total .stat-number { color: #f59e0b; }
+
+        /* Search Bar */
+        .search-container {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid #374151;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid #4b5563;
+            border-radius: 0.5rem;
+            background: #1f2937;
+            color: #f8fafc;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-results {
+            margin-top: 1rem;
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+
+        /* Page Sections */
+        .section {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid #374151;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            margin-bottom: 1rem;
+        }
+
+        .section-header:hover {
+            opacity: 0.8;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .section-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-main { background: #7f1d1d; color: #fecaca; }
+        .badge-app { background: #1e3a8a; color: #bfdbfe; }
+        .badge-seo { background: #064e3b; color: #a7f3d0; }
+        .badge-tools { background: #581c87; color: #e9d5ff; }
+        .badge-auth { background: #78350f; color: #fde68a; }
+        .badge-marketing { background: #831843; color: #fbcfe8; }
+        .badge-public { background: #1e3a8a; color: #bfdbfe; }
+
+        .toggle-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .section.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .section-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, opacity 0.3s;
+        }
+
+        .section.collapsed .section-content {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        /* Page Cards */
+        .page-card {
+            background: #1f2937;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid #374151;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .page-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-card.main:hover { border-color: #dc2626; }
+        .page-card.app:hover { border-color: #3b82f6; }
+        .page-card.seo:hover { border-color: #059669; }
+        .page-card.tools:hover { border-color: #7c3aed; }
+        .page-card.auth:hover { border-color: #f59e0b; }
+        .page-card.marketing:hover { border-color: #ec4899; }
+        .page-card.public:hover { border-color: #3b82f6; }
+
+        .page-title {
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .page-path {
+            color: #9ca3af;
+            font-size: 0.75rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .header-left h1 {
+                font-size: 1.25rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .section-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1>🛡️ Admin Dashboard</h1>
+                <div class="user-info" id="user-info"></div>
+            </div>
+            <div class="header-right">
+                <a href="admin-console.html" class="btn btn-primary" target="_blank">Monitoring Console</a>
+                <a href="index.html" class="btn btn-secondary" target="_blank">View Main Site</a>
+                <button class="btn btn-danger" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card total">
+                <div class="stat-number" id="stat-total">0</div>
+                <div class="stat-label">Total Pages</div>
+            </div>
+            <div class="stat-card main">
+                <div class="stat-number" id="stat-main">0</div>
+                <div class="stat-label">Main Pages</div>
+            </div>
+            <div class="stat-card app">
+                <div class="stat-number" id="stat-app">0</div>
+                <div class="stat-label">App Pages</div>
+            </div>
+            <div class="stat-card seo">
+                <div class="stat-number" id="stat-seo">0</div>
+                <div class="stat-label">SEO Pages</div>
+            </div>
+            <div class="stat-card tools">
+                <div class="stat-number" id="stat-tools">0</div>
+                <div class="stat-label">Tools</div>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <div class="search-container">
+            <input type="text" 
+                   class="search-input" 
+                   id="search-input" 
+                   placeholder="🔍 Search pages by title or path..."
+                   autocomplete="off">
+            <div class="search-results" id="search-results"></div>
+        </div>
+
+        <!-- Page Sections -->
+        <div id="sections-container"></div>
+    </div>
+
+    <script>
+        // Check authentication
+        if (sessionStorage.getItem('adminAuthenticated') !== 'true') {
+            window.location.href = 'admin-login.html';
+        }
+
+        // Display login time
+        const loginTime = sessionStorage.getItem('adminLoginTime');
+        if (loginTime) {
+            const date = new Date(loginTime);
+            document.getElementById('user-info').textContent = 
+                `Logged in: ${date.toLocaleString()}`;
+        }
+
+        // Site structure data
+        const sitePages = {
+            main: [
+                { title: 'Home', path: 'index.html' },
+                { title: 'Step-by-Step Claim Guide', path: 'step-by-step-claim-guide.html' },
+                { title: 'Contact', path: 'contact.html' },
+                { title: 'Disclaimer', path: 'disclaimer.html' },
+                { title: 'Privacy Policy', path: 'privacy.html' },
+                { title: 'Terms of Service', path: 'terms.html' },
+                { title: 'Product', path: 'product.html' },
+                { title: 'Success', path: 'success.html' },
+                { title: 'Login', path: 'login.html' },
+                { title: 'Professional Dashboard', path: 'professional-dashboard.html' },
+                { title: 'Professional Login', path: 'professional-login.html' },
+                { title: 'Admin Console', path: 'admin-console.html' },
+                { title: 'Admin Login', path: 'admin-login.html' }
+            ],
+            app: [
+                { title: 'Dashboard', path: 'app/dashboard.html' },
+                { title: 'Claim Navigator Agent', path: 'app/cn-agent.html' },
+                { title: 'Claim Summary', path: 'app/claim-summary.html' },
+                { title: 'Claim Correspondence', path: 'app/claim-correspondence.html' },
+                { title: 'Claim Financial Summary', path: 'app/claim-financial-summary.html' },
+                { title: 'Claim Control Center', path: 'app/claim-control-center.html' },
+                { title: 'Document Generator', path: 'app/document-generator.html' },
+                { title: 'Document Generator V2', path: 'app/document-generator-v2/document-generator.html' },
+                { title: 'Evidence Organizer', path: 'app/evidence-organizer.html' },
+                { title: 'Resources', path: 'app/resources.html' },
+                { title: 'Document Library (Spanish)', path: 'app/document-library-spanish.html' },
+                { title: 'Access Denied', path: 'app/access-denied.html' },
+                { title: 'Checkout Success', path: 'app/checkout-success.html' },
+                { title: 'Resource Center - Document Generator', path: 'app/resource-center/document-generator.html' },
+                { title: 'Claim Analysis', path: 'app/claim-analysis.html' },
+                { title: 'Claim Timeline', path: 'app/claim-timeline.html' },
+                { title: 'Claim Journal', path: 'app/claim-journal.html' },
+                { title: 'Insurance Company Tactics', path: 'app/insurance-company-tactics.html' },
+                { title: 'Maximize Your Claim', path: 'app/maximize-your-claim.html' },
+                { title: 'Negotiation Tools', path: 'app/negotiation-tools.html' },
+                { title: 'Situational Advisory', path: 'app/situational-advisory.html' },
+                { title: 'Quick Start', path: 'app/quick-start.html' },
+                { title: 'Resource Center', path: 'app/resource-center.html' },
+                { title: 'Professional Dashboard', path: 'app/professional-dashboard.html' },
+                { title: 'Professional Network', path: 'app/professional-network.html' },
+                { title: 'Carrier Directory', path: 'app/carrier-directory.html' },
+                { title: 'State Directory', path: 'app/state-directory.html' },
+                { title: 'State Rights', path: 'app/state-rights.html' },
+                { title: 'State Rights & Deadlines', path: 'app/state-rights-deadlines.html' },
+                { title: 'Authority Hub', path: 'app/authority-hub.html' },
+                { title: 'Authority Guides', path: 'app/authority-guides.html' },
+                { title: 'Knowledge Center', path: 'app/knowledge-center.html' },
+                { title: 'Documentation Guides', path: 'app/documentation-guides.html' },
+                { title: 'Recommended Resources', path: 'app/recommended-resources.html' },
+                { title: 'Claim Playbook', path: 'app/claim-playbook.html' },
+                { title: 'Claim Stage Tracker', path: 'app/claim-stage-tracker.html' },
+                { title: 'Claim Deadlines', path: 'app/claim-deadlines.html' },
+                { title: 'Trackers', path: 'app/trackers.html' },
+                { title: 'Timeline', path: 'app/timeline.html' },
+                { title: 'Deadlines', path: 'app/deadlines.html' },
+                { title: 'Settings', path: 'app/settings.html' },
+                { title: 'Pricing', path: 'app/pricing.html' },
+                { title: 'Checkout', path: 'app/checkout.html' },
+                { title: 'Register', path: 'app/register.html' },
+                { title: 'Login', path: 'app/login.html' },
+                { title: 'How to Use', path: 'app/how-to-use.html' },
+                { title: 'Advanced Tools', path: 'app/advanced-tools.html' },
+                { title: 'AI Response Agent', path: 'app/ai-response-agent.html' },
+                { title: 'Claim Navigator Agent', path: 'app/claim-navigator-agent.html' },
+                { title: 'Carrier Negotiation Scripts', path: 'app/carrier-negotiation-scripts.html' },
+                { title: 'Demand Letter', path: 'app/demand-letter.html' },
+                { title: 'Letter Generator', path: 'app/letter-generator.html' },
+                { title: 'Statement of Loss', path: 'app/statement-of-loss.html' },
+                { title: 'Settlement', path: 'app/settlement.html' },
+                { title: 'Intake', path: 'app/intake.html' },
+                { title: 'Claim', path: 'app/claim.html' },
+                { title: 'Claims', path: 'app/claims.html' },
+                { title: 'ROM Estimator', path: 'app/rom-estimator.html' },
+                { title: 'ROM Tool', path: 'app/rom-tool.html' },
+                { title: 'ROI Calculator', path: 'app/roi-calculator.html' },
+                { title: 'Insurer Directory', path: 'app/insurer-directory.html' },
+                { title: 'Enterprise Dashboard', path: 'app/enterprise-dashboard.html' },
+                { title: 'Enterprise Claims', path: 'app/enterprise-claims.html' },
+                { title: 'Enterprise Team', path: 'app/enterprise-team.html' },
+                { title: 'Enterprise Activity', path: 'app/enterprise-activity.html' },
+                { title: 'Enterprise Create', path: 'app/enterprise-create.html' },
+                { title: 'Enterprise', path: 'app/enterprise.html' },
+                { title: 'Partner Portal', path: 'app/partner-portal.html' },
+                { title: 'Developer', path: 'app/developer.html' },
+                { title: 'API Docs', path: 'app/api-docs.html' },
+                { title: 'API Marketplace', path: 'app/api-marketplace.html' },
+                { title: 'API Pricing', path: 'app/api-pricing.html' },
+                { title: 'API Sandbox', path: 'app/api-sandbox.html' },
+                { title: 'API Usage', path: 'app/api-usage.html' },
+                { title: 'White Label Preview', path: 'app/white-label-preview.html' },
+                { title: 'Email Config', path: 'app/email-config.html' }
+            ],
+            tools: [
+                { title: 'Policy Analyzer (Complete)', path: 'app/tools/policy-analyzer-complete.html' },
+                { title: 'Policy Analyzer (Demo)', path: 'app/tools/policy-analyzer-demo.html' },
+                { title: 'Policy Intelligence Engine', path: 'app/tools/policy-intelligence-engine.html' },
+                { title: 'Policy Uploader', path: 'app/tools/policy-uploader.html' },
+                { title: 'Policy Report Viewer', path: 'app/tools/policy-report-viewer.html' },
+                { title: 'Policy Interpretation Letter', path: 'app/tools/policy-interpretation-letter.html' },
+                { title: 'Download Policy Report', path: 'app/tools/download-policy-report.html' },
+                { title: 'Damage Report Engine', path: 'app/tools/damage-report-engine.html' },
+                { title: 'Damage Documentation', path: 'app/tools/damage-documentation.html' },
+                { title: 'Damage Report Viewer', path: 'app/tools/damage-report-viewer.html' },
+                { title: 'Damage Documentation Tool', path: 'app/tools/damage-documentation-tool.html' },
+                { title: 'Damage Labeling Tool', path: 'app/tools/damage-labeling-tool.html' },
+                { title: 'Photo Upload Organizer', path: 'app/tools/photo-upload-organizer.html' },
+                { title: 'Room by Room Prompt Tool', path: 'app/tools/room-by-room-prompt-tool.html' },
+                { title: 'Estimate Review', path: 'app/tools/estimate-review.html' },
+                { title: 'Estimate Comparison', path: 'app/tools/estimate-comparison.html' },
+                { title: 'Estimate Revision Request Generator', path: 'app/tools/estimate-revision-request-generator.html' },
+                { title: 'Line Item Discrepancy Finder', path: 'app/tools/line-item-discrepancy-finder.html' },
+                { title: 'Pricing Deviation Analyzer', path: 'app/tools/pricing-deviation-analyzer.html' },
+                { title: 'Missing Trade Detector', path: 'app/tools/missing-trade-detector.html' },
+                { title: 'Scope Omission Detector', path: 'app/tools/scope-omission-detector.html' },
+                { title: 'Code Upgrade Identifier', path: 'app/tools/code-upgrade-identifier.html' },
+                { title: 'Compliance Review', path: 'app/tools/compliance-review.html' },
+                { title: 'Compliance Report Viewer', path: 'app/tools/compliance-report-viewer.html' },
+                { title: 'Compliance Auto Import', path: 'app/tools/compliance-auto-import.html' },
+                { title: 'Contractor Scope Checklist', path: 'app/tools/contractor-scope-checklist.html' },
+                { title: 'Contents Inventory', path: 'app/tools/contents-inventory.html' },
+                { title: 'Contents Valuation', path: 'app/tools/contents-valuation.html' },
+                { title: 'Contents Documentation Helper', path: 'app/tools/contents-documentation-helper.html' },
+                { title: 'Comparable Item Finder', path: 'app/tools/comparable-item-finder.html' },
+                { title: 'Depreciation Calculator', path: 'app/tools/depreciation-calculator.html' },
+                { title: 'Replacement Cost Justification Tool', path: 'app/tools/replacement-cost-justification-tool.html' },
+                { title: 'ALE Tracker', path: 'app/tools/ale-tracker.html' },
+                { title: 'ALE Eligibility Checker', path: 'app/tools/ale-eligibility-checker.html' },
+                { title: 'Remaining ALE Limit Calculator', path: 'app/tools/remaining-ale-limit-calculator.html' },
+                { title: 'Temporary Housing Documentation Helper', path: 'app/tools/temporary-housing-documentation-helper.html' },
+                { title: 'Expense Upload Tool', path: 'app/tools/expense-upload-tool.html' },
+                { title: 'Coverage Gap Detector', path: 'app/tools/coverage-gap-detector.html' },
+                { title: 'Coverage Alignment', path: 'app/tools/coverage-alignment.html' },
+                { title: 'Coverage Clarification Letter', path: 'app/tools/coverage-clarification-letter.html' },
+                { title: 'Coverage QA Chat', path: 'app/tools/coverage-qa-chat.html' },
+                { title: 'Category Coverage Checker', path: 'app/tools/category-coverage-checker.html' },
+                { title: 'Sublimit Impact Analyzer', path: 'app/tools/sublimit-impact-analyzer.html' },
+                { title: 'Endorsement Opportunity Identifier', path: 'app/tools/endorsement-opportunity-identifier.html' },
+                { title: 'Coverage Mapping Visualizer', path: 'app/tools/coverage-mapping-visualizer.html' },
+                { title: 'Deadline Calculator', path: 'app/tools/deadline-calculator.html' },
+                { title: 'Deadline Response Tracker', path: 'app/tools/deadline-response-tracker.html' },
+                { title: 'Written Notice Generator', path: 'app/tools/written-notice-generator.html' },
+                { title: 'Proof of Loss Tracker', path: 'app/tools/proof-of-loss-tracker.html' },
+                { title: 'EUO & Sworn Statement Guide', path: 'app/tools/euo-sworn-statement-guide.html' },
+                { title: 'Document Production Checklist', path: 'app/tools/document-production-checklist.html' },
+                { title: 'Mitigation Documentation Tool', path: 'app/tools/mitigation-documentation-tool.html' },
+                { title: 'Missing Document Identifier', path: 'app/tools/missing-document-identifier.html' },
+                { title: 'Missing Evidence Identifier', path: 'app/tools/missing-evidence-identifier.html' },
+                { title: 'Claim Package Assembly', path: 'app/tools/claim-package-assembly.html' },
+                { title: 'Pre-Submission Risk Review Tool', path: 'app/tools/pre-submission-risk-review-tool.html' },
+                { title: 'Submission Checklist Generator', path: 'app/tools/submission-checklist-generator.html' },
+                { title: 'Submission Method', path: 'app/tools/submission-method.html' },
+                { title: 'Submission Report Engine', path: 'app/tools/submission-report-engine.html' },
+                { title: 'Submission Confirmation Email', path: 'app/tools/submission-confirmation-email.html' },
+                { title: 'Download Submission Report', path: 'app/tools/download-submission-report.html' },
+                { title: 'Carrier Submission Cover Letter Generator', path: 'app/tools/carrier-submission-cover-letter-generator.html' },
+                { title: 'Claim Submitter', path: 'app/tools/claim-submitter.html' },
+                { title: 'Carrier Request Logger', path: 'app/tools/carrier-request-logger.html' },
+                { title: 'Carrier Response', path: 'app/tools/carrier-response.html' },
+                { title: 'Response Letter Generator', path: 'app/tools/response-letter-generator.html' },
+                { title: 'Followup Status Letter', path: 'app/tools/followup-status-letter.html' },
+                { title: 'Followup Schedule View', path: 'app/tools/followup-schedule-view.html' },
+                { title: 'Acknowledgment Status View', path: 'app/tools/acknowledgment-status-view.html' },
+                { title: 'Method Timestamp View', path: 'app/tools/method-timestamp-view.html' },
+                { title: 'Step 1 Acknowledgment', path: 'app/tools/step1-acknowledgment.html' },
+                { title: 'Step 2 Acknowledgment', path: 'app/tools/step2-acknowledgment.html' },
+                { title: 'Step 3 Acknowledgment', path: 'app/tools/step3-acknowledgment.html' },
+                { title: 'Step 11 Acknowledgment', path: 'app/tools/step11-acknowledgment.html' },
+                { title: 'Step 11 Next Moves', path: 'app/tools/step11-next-moves.html' },
+                { title: 'Supplement Analysis', path: 'app/tools/supplement-analysis.html' },
+                { title: 'Supplement Calculation Tool', path: 'app/tools/supplement-calculation-tool.html' },
+                { title: 'Supplement Cover Letter Generator', path: 'app/tools/supplement-cover-letter-generator.html' },
+                { title: 'Negotiation Strategy Generator', path: 'app/tools/negotiation-strategy-generator.html' },
+                { title: 'Negotiation Language Generator', path: 'app/tools/negotiation-language-generator.html' },
+                { title: 'Escalation Readiness Checker', path: 'app/tools/escalation-readiness-checker.html' },
+                { title: 'Expert Opinion', path: 'app/tools/expert-opinion.html' },
+                { title: 'AI Response Agent', path: 'app/tools/ai-response-agent.html' },
+                { title: 'Claim Damage Assessment', path: 'app/tools/claim-damage-assessment.html' }
+            ],
+            seo: [
+                { title: 'SEO Hub', path: 'seo/index.html' },
+                { title: 'Negotiate Insurance Claim Without Lawyer', path: 'seo/negotiate-insurance-claim-without-lawyer.html' },
+                { title: 'Handle Insurance Claim Yourself', path: 'seo/handle-insurance-claim-yourself.html' },
+                { title: 'Insurance Not Paying ALE', path: 'seo/insurance-not-paying-ale.html' },
+                { title: 'Temporary Housing Insurance Claim', path: 'seo/temporary-housing-insurance-claim.html' },
+                { title: 'Loss of Use Insurance Claim', path: 'seo/loss-of-use-insurance-claim.html' },
+                { title: 'Additional Living Expenses Insurance', path: 'seo/additional-living-expenses-insurance.html' },
+                { title: 'Actual Cash Value vs Replacement Cost', path: 'seo/actual-cash-value-vs-replacement-cost.html' },
+                { title: 'Fire Insurance Claim', path: 'seo/fire-insurance-claim.html' },
+                { title: 'Insurance Depreciation Recovery', path: 'seo/insurance-depreciation-recovery.html' },
+                { title: 'Home Insurance Claim Help', path: 'seo/home-insurance-claim-help.html' },
+                { title: 'Missing Items Insurance Claim', path: 'seo/missing-items-insurance-claim.html' },
+                { title: 'Property Insurance Claim Help', path: 'seo/property-insurance-claim-help.html' },
+                { title: 'Insurance Scope of Work', path: 'seo/insurance-scope-of-work.html' },
+                { title: 'Insurance Claim Process', path: 'seo/insurance-claim-process.html' },
+                { title: 'Contractor Estimate vs Insurance', path: 'seo/contractor-estimate-vs-insurance.html' },
+                { title: 'Insurance Claim Requirements', path: 'seo/insurance-claim-requirements.html' },
+                { title: 'Insurance Estimate Review', path: 'seo/insurance-estimate-review.html' },
+                { title: 'Missed Insurance Claim Deadline', path: 'seo/missed-insurance-claim-deadline.html' },
+                { title: 'Condo Insurance Claim', path: 'seo/condo-insurance-claim.html' },
+                { title: 'How Long Insurance Claims Take', path: 'seo/how-long-insurance-claims-take.html' },
+                { title: 'Flood Insurance Claim Help', path: 'seo/flood-insurance-claim-help.html' },
+                { title: 'Storm Damage Insurance Claim', path: 'seo/storm-damage-insurance-claim.html' },
+                { title: 'Insurance Claim Timeline', path: 'seo/insurance-claim-timeline.html' },
+                { title: 'Hail Damage Insurance Claim', path: 'seo/hail-damage-insurance-claim.html' },
+                { title: 'Insurance Claim Deadlines', path: 'seo/insurance-claim-deadlines.html' },
+                { title: 'Roof Insurance Claim', path: 'seo/roof-insurance-claim.html' },
+                { title: 'Water Damage Insurance Claim', path: 'seo/water-damage-insurance-claim.html' },
+                { title: 'Insurance Claim Support', path: 'seo/insurance-claim-support.html' },
+                { title: 'Help with Insurance Claim', path: 'seo/help-with-insurance-claim.html' },
+                { title: 'Insurance Claim Dispute', path: 'seo/insurance-claim-dispute.html' },
+                { title: 'Insurance Claim Stalling', path: 'seo/insurance-claim-stalling.html' },
+                { title: 'Insurance Claim Assistance', path: 'seo/insurance-claim-assistance.html' },
+                { title: 'Insurance Claim Delay', path: 'seo/insurance-claim-delay.html' },
+                { title: 'Insurance Company Not Responding', path: 'seo/insurance-company-not-responding.html' },
+                { title: 'Insurance Claim Help', path: 'seo/insurance-claim-help.html' },
+                { title: 'Insurance Settlement Too Low', path: 'seo/insurance-settlement-too-low.html' },
+                { title: 'Insurance Claim Denied', path: 'seo/insurance-claim-denied.html' },
+                { title: 'Insurance Claim Guidance', path: 'seo/insurance-claim-guidance.html' },
+                { title: 'Lowball Insurance Offer', path: 'seo/lowball-insurance-offer.html' },
+                { title: 'Insurance Claim Denial Help', path: 'seo/insurance-claim-denial-help.html' }
+            ],
+            auth: [
+                { title: 'Login', path: 'auth/login.html' },
+                { title: 'Sign Up', path: 'auth/signup.html' },
+                { title: 'Password Reset', path: 'auth/reset.html' },
+                { title: 'New Password', path: 'auth/new-password.html' }
+            ],
+            marketing: [
+                { title: 'Marketing Hub', path: 'marketing/index.html' },
+                { title: 'Features', path: 'marketing/features.html' },
+                { title: 'How It Works', path: 'marketing/how-it-works.html' },
+                { title: 'Pricing', path: 'marketing/pricing.html' },
+                { title: 'FAQ', path: 'marketing/faq.html' }
+            ],
+            public: [
+                { title: 'Proof of Loss Document', path: 'public/documents/proof-of-loss.html' }
+            ]
+        };
+
+        // Calculate statistics
+        function updateStatistics() {
+            const stats = {
+                main: sitePages.main.length,
+                app: sitePages.app.length,
+                seo: sitePages.seo.length,
+                tools: sitePages.tools.length,
+                total: 0
+            };
+
+            stats.total = Object.values(sitePages).reduce((sum, pages) => sum + pages.length, 0);
+
+            document.getElementById('stat-total').textContent = stats.total;
+            document.getElementById('stat-main').textContent = stats.main;
+            document.getElementById('stat-app').textContent = stats.app;
+            document.getElementById('stat-seo').textContent = stats.seo;
+            document.getElementById('stat-tools').textContent = stats.tools;
+        }
+
+        // Render page sections
+        function renderSections() {
+            const container = document.getElementById('sections-container');
+            
+            const sections = [
+                { id: 'main', title: 'Main Pages', badge: 'badge-main', cardClass: 'main', icon: '🏠' },
+                { id: 'app', title: 'App Pages', badge: 'badge-app', cardClass: 'app', icon: '📱' },
+                { id: 'tools', title: 'Tools', badge: 'badge-tools', cardClass: 'tools', icon: '🛠️' },
+                { id: 'seo', title: 'SEO Pages', badge: 'badge-seo', cardClass: 'seo', icon: '🔍' },
+                { id: 'auth', title: 'Authentication', badge: 'badge-auth', cardClass: 'auth', icon: '🔐' },
+                { id: 'marketing', title: 'Marketing', badge: 'badge-marketing', cardClass: 'marketing', icon: '📢' },
+                { id: 'public', title: 'Public Documents', badge: 'badge-public', cardClass: 'public', icon: '📄' }
+            ];
+
+            sections.forEach(section => {
+                const pages = sitePages[section.id] || [];
+                if (pages.length === 0) return;
+
+                const sectionEl = document.createElement('div');
+                sectionEl.className = 'section';
+                sectionEl.dataset.section = section.id;
+
+                sectionEl.innerHTML = `
+                    <div class="section-header" onclick="toggleSection('${section.id}')">
+                        <div class="section-title">
+                            <span>${section.icon}</span>
+                            <span>${section.title}</span>
+                            <span class="section-badge ${section.badge}">${pages.length}</span>
+                        </div>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="section-content" data-section-content="${section.id}">
+                        ${pages.map(page => `
+                            <div class="page-card ${section.cardClass}" 
+                                 data-title="${page.title.toLowerCase()}" 
+                                 data-path="${page.path.toLowerCase()}"
+                                 onclick="openPage('${page.path}')">
+                                <div class="page-title">${page.title}</div>
+                                <div class="page-path">${page.path}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                container.appendChild(sectionEl);
+            });
+        }
+
+        // Toggle section collapse
+        function toggleSection(sectionId) {
+            const section = document.querySelector(`[data-section="${sectionId}"]`);
+            section.classList.toggle('collapsed');
+        }
+
+        // Open page in new tab
+        function openPage(path) {
+            window.open(path, '_blank');
+        }
+
+        // Search functionality
+        const searchInput = document.getElementById('search-input');
+        const searchResults = document.getElementById('search-results');
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            
+            if (query === '') {
+                // Show all cards
+                document.querySelectorAll('.page-card').forEach(card => {
+                    card.classList.remove('hidden');
+                });
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('hidden');
+                });
+                searchResults.textContent = '';
+                return;
+            }
+
+            // Filter cards
+            let visibleCount = 0;
+            const sections = document.querySelectorAll('.section');
+            
+            sections.forEach(section => {
+                const cards = section.querySelectorAll('.page-card');
+                let sectionHasVisible = false;
+
+                cards.forEach(card => {
+                    const title = card.dataset.title;
+                    const path = card.dataset.path;
+                    
+                    if (title.includes(query) || path.includes(query)) {
+                        card.classList.remove('hidden');
+                        sectionHasVisible = true;
+                        visibleCount++;
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+
+                // Hide section if no visible cards
+                if (sectionHasVisible) {
+                    section.classList.remove('hidden');
+                    section.classList.remove('collapsed');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+
+            searchResults.textContent = `Found ${visibleCount} page${visibleCount !== 1 ? 's' : ''} matching "${query}"`;
+        });
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.removeItem('adminAuthenticated');
+                sessionStorage.removeItem('adminLoginTime');
+                window.location.href = 'admin-login.html';
+            }
+        }
+
+        // Initialize
+        updateStatistics();
+        renderSections();
+    </script>
+</body>
+</html>
