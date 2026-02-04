@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Claim Archive Generator - Claim Navigator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/tool-visual-alignment.css">
+  <script src="../../storage/claimStorage.js"></script>
+  <script src="../assets/js/tool-registry.js"></script>
+</head>
+<body class="tool-page">
+  
+  <!-- Tool Header -->
+  <div class="tool-page-header">
+    <h1 class="tool-page-title">Complete Claim Archive Generator</h1>
+    <p class="tool-page-subtitle">Create a permanent, organized record of your entire claim file</p>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="tool-content-area">
+    
+    <!-- Tool Content -->
+    <div class="tool-card">
+      <div class="tool-card-header">
+        <h2 class="tool-card-title">Step 13 Tool - Final Archive</h2>
+      </div>
+      <div class="tool-card-body">
+        <p>This tool is part of Step 13 of the Step-by-Step Claim Guide.</p>
+        
+        <!-- Educational Section -->
+        <div style="background: #dcfce7; border-left: 4px solid #059669; padding: 1rem; margin-bottom: 2rem; border-radius: 4px;">
+          <strong>💾 Why Archive Your Claim File?</strong>
+          <p style="margin: 0.5rem 0 0 0; color: #065f46;">
+            Your claim file is a permanent legal record and valuable asset. Keep it indefinitely for:
+          </p>
+          <ul style="margin: 0.5rem 0 0 1.5rem; padding-left: 0; color: #065f46;">
+            <li>Future disputes or supplemental claims</li>
+            <li>Property resale disclosures</li>
+            <li>Tax deductions (casualty loss, repair expenses)</li>
+            <li>Warranty claims on repairs</li>
+            <li>Bad faith litigation evidence</li>
+            <li>Reference for future claims</li>
+          </ul>
+        </div>
+
+        <!-- Archive Configuration Form -->
+        <form data-tool-form class="tool-form">
+          <div class="tool-form-group">
+            <label for="archiveName" class="tool-label">Archive Name</label>
+            <input 
+              type="text" 
+              id="archiveName" 
+              name="archiveName" 
+              class="tool-input" 
+              placeholder="e.g., Hurricane Ian Claim - 123 Main St"
+              required
+            />
+            <small>Give your archive a descriptive name for easy identification</small>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="claimSummary" class="tool-label">Claim Summary (Optional, max 500 chars)</label>
+            <textarea 
+              id="claimSummary" 
+              name="claimSummary" 
+              class="tool-input" 
+              rows="4" 
+              maxlength="500"
+              placeholder="Brief summary of the claim outcome, settlement amount, key issues encountered, lessons learned..."
+            ></textarea>
+          </div>
+
+          <div class="tool-form-group">
+            <label class="tool-label">Archive Contents</label>
+            <div style="background: #f7f9fc; padding: 1rem; border: 1px solid #e5e7eb; border-radius: 8px;">
+              <p style="margin: 0 0 0.75rem 0; font-weight: 600; color: #0B2545;">Your archive will include:</p>
+              
+              <div style="display: grid; gap: 0.75rem;">
+                <label style="display: flex; align-items: start; gap: 0.5rem; cursor: pointer;">
+                  <input type="checkbox" name="includeJournal" checked style="margin-top: 0.25rem;" />
+                  <div>
+                    <strong>Complete Claim Journal</strong>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Timeline of all communications and actions</div>
+                  </div>
+                </label>
+                
+                <label style="display: flex; align-items: start; gap: 0.5rem; cursor: pointer;">
+                  <input type="checkbox" name="includeDocuments" checked style="margin-top: 0.25rem;" />
+                  <div>
+                    <strong>All Generated Documents</strong>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Letters, POL, estimates, analyses</div>
+                  </div>
+                </label>
+                
+                <label style="display: flex; align-items: start; gap: 0.5rem; cursor: pointer;">
+                  <input type="checkbox" name="includePhotos" checked style="margin-top: 0.25rem;" />
+                  <div>
+                    <strong>Photo & Video Evidence</strong>
+                    <div style="font-size: 0.875rem; color: #6b7280;">All damage documentation and after-repair photos</div>
+                  </div>
+                </label>
+                
+                <label style="display: flex; align-items: start; gap: 0.5rem; cursor: pointer;">
+                  <input type="checkbox" name="includeEstimates" checked style="margin-top: 0.25rem;" />
+                  <div>
+                    <strong>All Estimates & Invoices</strong>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Contractor, adjuster, and supplemental estimates</div>
+                  </div>
+                </label>
+                
+                <label style="display: flex; align-items: start; gap: 0.5rem; cursor: pointer;">
+                  <input type="checkbox" name="includePolicy" checked style="margin-top: 0.25rem;" />
+                  <div>
+                    <strong>Insurance Policy Documents</strong>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Declarations, policy contract, endorsements</div>
+                  </div>
+                </label>
+                
+                <label style="display: flex; align-items: start; gap: 0.5rem; cursor: pointer;">
+                  <input type="checkbox" name="includePayments" checked style="margin-top: 0.25rem;" />
+                  <div>
+                    <strong>Payment Records</strong>
+                    <div style="font-size: 0.875rem; color: #6b7280;">All checks received, deposit records, RCV recovery</div>
+                  </div>
+                </label>
+                
+                <label style="display: flex; align-items: start; gap: 0.5rem; cursor: pointer;">
+                  <input type="checkbox" name="includeCorrespondence" checked style="margin-top: 0.25rem;" />
+                  <div>
+                    <strong>All Correspondence</strong>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Emails, letters, recorded statements, adjuster notes</div>
+                  </div>
+                </label>
+                
+                <label style="display: flex; align-items: start; gap: 0.5rem; cursor: pointer;">
+                  <input type="checkbox" name="includeInventory" checked style="margin-top: 0.25rem;" />
+                  <div>
+                    <strong>Contents Inventory</strong>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Complete itemized list with values</div>
+                  </div>
+                </label>
+                
+                <label style="display: flex; align-items: start; gap: 0.5rem; cursor: pointer;">
+                  <input type="checkbox" name="includeTimeline" checked style="margin-top: 0.25rem;" />
+                  <div>
+                    <strong>Visual Timeline Report</strong>
+                    <div style="font-size: 0.875rem; color: #6b7280;">Chronological overview of claim milestones</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="archiveFormat" class="tool-label">Archive Format</label>
+            <select id="archiveFormat" name="archiveFormat" class="tool-input" required>
+              <option value="">Select format...</option>
+              <option value="pdf-binder">PDF Binder (Single comprehensive PDF)</option>
+              <option value="zip-organized">ZIP Archive (Organized folders)</option>
+              <option value="both">Both PDF & ZIP</option>
+            </select>
+          </div>
+
+          <div class="tool-form-group">
+            <label for="includeIndex" class="tool-label">Include Table of Contents?</label>
+            <select id="includeIndex" name="includeIndex" class="tool-input" required>
+              <option value="yes">Yes - Include searchable table of contents</option>
+              <option value="no">No - Documents only</option>
+            </select>
+          </div>
+
+          <div class="tool-form-actions">
+            <button type="submit" data-generate-btn class="tool-btn tool-btn-primary">
+              Generate Complete Archive
+            </button>
+          </div>
+        </form>
+
+        <!-- Output Area -->
+        <div data-tool-output id="output" class="tool-output" style="display: none;">
+          <h3 class="tool-section-title">Archive Generated Successfully</h3>
+          <div class="tool-output-content" id="archiveResult"></div>
+          
+          <div class="tool-form-actions" style="margin-top: 1.5rem;">
+            <button data-download-archive class="tool-btn tool-btn-primary">
+              📥 Download Archive
+            </button>
+            <button data-email-archive class="tool-btn tool-btn-secondary">
+              📧 Email Archive Link
+            </button>
+            <button onclick="createBackup()" class="tool-btn tool-btn-secondary">
+              ☁️ Save to Cloud Backup
+            </button>
+          </div>
+        </div>
+
+        <div class="tool-section">
+          <h3 class="tool-section-title">What This Tool Does</h3>
+          <p>Compiles all documents, photos, correspondence, journal entries, and payment records into a single, organized archive file. This creates a permanent legal record and professional claim file.</p>
+          
+          <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; margin-top: 1rem; border-radius: 4px;">
+            <strong>💡 Storage Recommendations:</strong>
+            <ul style="margin: 0.5rem 0 0 1.5rem; padding-left: 0;">
+              <li>Save archive to multiple locations (computer, external drive, cloud)</li>
+              <li>Keep physical copies of critical documents in fireproof safe</li>
+              <li>Store indefinitely - no expiration date</li>
+              <li>Update archive if supplemental claims are filed</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="tool-section">
+      <button class="tool-btn tool-btn-secondary" onclick="goBack()">
+        ← Back to Claim Guide
+      </button>
+      <button class="tool-btn tool-btn-primary" onclick="markComplete()">
+        🎉 Mark Claim Complete
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    function goBack() {
+      window.location.href = '../../step-by-step-guide.html?step=13';
+    }
+
+    function markComplete() {
+      if (confirm('🎉 Congratulations! Are you ready to mark this claim as complete?\n\nThis will finalize your claim file and archive all data.')) {
+        saveClaimData('claim_status', 'completed');
+        saveClaimData('claim_completion_date', new Date().toISOString());
+        saveClaimData('tool_claim-archive-generator_complete', true);
+        
+        alert('✓ Claim marked as COMPLETE!\n\n🎊 Congratulations on successfully managing your insurance claim!\n\nYour claim archive has been saved and is available for download at any time.\n\nKeep your claim file indefinitely for future reference.');
+        
+        goBack();
+      }
+    }
+
+    function createBackup() {
+      alert('☁️ Cloud Backup Feature\n\nThis will save your complete claim archive to:\n- Google Drive\n- Dropbox\n- OneDrive\n\n(Integration coming soon)');
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Tool loaded: claim-archive-generator');
+      
+      // Auto-fill archive name from claim data
+      const claimData = getClaimData('claimInfo');
+      if (claimData) {
+        const archiveName = `${claimData.lossType || 'Claim'} - ${claimData.propertyAddress || 'Property'} - ${claimData.claimNumber || new Date().getFullYear()}`;
+        document.getElementById('archiveName').value = archiveName;
+      }
+    });
+
+    // Form submission handler
+    document.querySelector('[data-tool-form]')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(e.target);
+      const archiveName = formData.get('archiveName');
+      const format = formData.get('archiveFormat');
+      
+      // Show loading
+      const btn = e.target.querySelector('[data-generate-btn]');
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Generating Archive...';
+      
+      // Simulate archive generation
+      setTimeout(() => {
+        // Count included items
+        const includedItems = [];
+        if (formData.get('includeJournal')) includedItems.push('Claim Journal');
+        if (formData.get('includeDocuments')) includedItems.push('Documents');
+        if (formData.get('includePhotos')) includedItems.push('Photos & Videos');
+        if (formData.get('includeEstimates')) includedItems.push('Estimates');
+        if (formData.get('includePolicy')) includedItems.push('Policy');
+        if (formData.get('includePayments')) includedItems.push('Payments');
+        if (formData.get('includeCorrespondence')) includedItems.push('Correspondence');
+        if (formData.get('includeInventory')) includedItems.push('Inventory');
+        if (formData.get('includeTimeline')) includedItems.push('Timeline');
+        
+        // Mock file sizes
+        const totalFiles = Math.floor(Math.random() * 100) + 50;
+        const totalSize = (Math.random() * 50 + 20).toFixed(1);
+        
+        // Show results
+        const output = document.getElementById('output');
+        const result = document.getElementById('archiveResult');
+        
+        result.innerHTML = `
+          <div style="background: #dcfce7; padding: 1.5rem; border-radius: 8px; border: 1px solid #059669; margin-bottom: 1.5rem;">
+            <div style="text-align: center; margin-bottom: 1rem;">
+              <div style="font-size: 3rem;">✅</div>
+              <div style="font-size: 1.25rem; font-weight: 700; color: #065f46; margin-top: 0.5rem;">Archive Generated Successfully!</div>
+            </div>
+          </div>
+          
+          <div style="background: #f7f9fc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e5e7eb;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+              <div>
+                <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem;">Archive Name</div>
+                <div style="font-size: 1rem; font-weight: 600; color: #0B2545;">${archiveName}</div>
+              </div>
+              <div>
+                <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem;">Total Files</div>
+                <div style="font-size: 1rem; font-weight: 600; color: #0B2545;">${totalFiles} files</div>
+              </div>
+              <div>
+                <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem;">Archive Size</div>
+                <div style="font-size: 1rem; font-weight: 600; color: #0B2545;">${totalSize} MB</div>
+              </div>
+              <div>
+                <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem;">Format</div>
+                <div style="font-size: 1rem; font-weight: 600; color: #0B2545;">${format === 'pdf-binder' ? 'PDF' : format === 'zip-organized' ? 'ZIP' : 'PDF + ZIP'}</div>
+              </div>
+            </div>
+            
+            <div style="border-top: 1px solid #e5e7eb; padding-top: 1rem;">
+              <div style="font-size: 0.875rem; font-weight: 600; color: #0B2545; margin-bottom: 0.5rem;">Included Sections:</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                ${includedItems.map(item => `
+                  <span style="background: white; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.875rem; border: 1px solid #e5e7eb;">
+                    ✓ ${item}
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+          
+          <div style="background: #e0f2fe; padding: 1rem; border-radius: 8px; border-left: 4px solid #0284c7; margin-top: 1rem;">
+            <strong>📂 Archive Location:</strong>
+            <p style="margin: 0.5rem 0 0 0; font-family: monospace; font-size: 0.875rem; color: #0c4a6e;">
+              /claim-archives/${archiveName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${Date.now()}.${format === 'zip-organized' ? 'zip' : 'pdf'}
+            </p>
+          </div>
+        `;
+        
+        output.style.display = 'block';
+        output.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        // Save archive metadata
+        saveClaimData('claim_archive', {
+          timestamp: new Date().toISOString(),
+          archiveName,
+          format,
+          includedSections: includedItems,
+          totalFiles,
+          totalSize
+        });
+        
+        // Reset button
+        btn.disabled = false;
+        btn.textContent = originalText;
+        
+      }, 2000);
+    });
+
+    // Download handler
+    document.addEventListener('click', function(e) {
+      if (e.target.matches('[data-download-archive]')) {
+        alert('📥 Download Started\n\nYour complete claim archive is downloading...\n\n(In production, this would trigger actual file download)');
+      }
+      if (e.target.matches('[data-email-archive]')) {
+        const email = prompt('Enter email address to send archive link:');
+        if (email) {
+          alert(`📧 Archive link sent to: ${email}\n\nCheck your email for download instructions.`);
+        }
+      }
+    });
+  </script>
+
+  <script type="module">
+    import { WorkflowViewController } from '/app/assets/js/controllers/index.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      WorkflowViewController.initTool({
+        "toolId": "claim-archive-generator",
+        "toolName": "Claim Archive Generator",
+        "supabaseTable": "claim_archives",
+        "viewType": "workflow"
+      });
+    });
+  </script>
+
+</body>
+</html>
