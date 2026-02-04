@@ -860,6 +860,238 @@ tr:hover {
 }
 
 /* ============================================
+   ENHANCED RESPONSIVE DESIGN
+   ============================================ */
+
+/* Mobile-first form improvements */
+@media (max-width: 768px) {
+  /* Stack form groups vertically with better spacing */
+  .tool-form-group {
+    margin-bottom: 1.25rem !important;
+  }
+
+  /* Make form inputs more touch-friendly */
+  .tool-input,
+  .tool-textarea,
+  .tool-select {
+    min-height: 44px !important; /* iOS recommended touch target */
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+
+  /* Improve textarea usability on mobile */
+  .tool-textarea {
+    min-height: 100px !important;
+  }
+
+  /* Make buttons full-width on mobile */
+  .tool-form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .tool-form-actions .tool-btn {
+    width: 100% !important;
+    justify-content: center;
+  }
+
+  /* Stack action buttons vertically */
+  .tool-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .tool-section .tool-btn {
+    width: 100%;
+  }
+
+  /* Better spacing for cards on mobile */
+  .tool-card {
+    margin-bottom: 1rem !important;
+  }
+
+  /* Improve table responsiveness */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Better spacing for output sections */
+  .tool-output {
+    padding: 1rem !important;
+  }
+
+  /* Improve checkbox/radio touch targets */
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.5rem;
+  }
+
+  /* Better label spacing */
+  .tool-label {
+    margin-bottom: 0.5rem !important;
+    display: block;
+  }
+
+  /* Improve select dropdowns on mobile */
+  .tool-select {
+    background-size: 16px;
+    padding-right: 2.5rem !important;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .tool-content-area {
+    padding: 28px 32px;
+  }
+
+  /* Two-column form layout for tablets */
+  .tool-form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .tool-form-row .tool-form-group {
+    margin-bottom: 0;
+  }
+
+  /* Full-width for specific inputs on tablet */
+  .tool-form-group[data-full-width],
+  .tool-textarea {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Landscape phone specific fixes */
+@media (max-width: 896px) and (orientation: landscape) {
+  .tool-page-header {
+    padding: 16px 20px !important;
+  }
+
+  .tool-page-title {
+    font-size: 20px !important;
+  }
+
+  .tool-content-area {
+    padding: 16px !important;
+  }
+}
+
+/* Small mobile devices (< 360px) */
+@media (max-width: 360px) {
+  .tool-page-title {
+    font-size: 20px !important;
+  }
+
+  .tool-btn {
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+  }
+
+  .tool-card {
+    padding: 12px !important;
+  }
+}
+
+/* Large desktop improvements */
+@media (min-width: 1400px) {
+  .tool-content-area {
+    max-width: 1600px;
+  }
+
+  /* Three-column layout for large screens */
+  .tool-form-wide .tool-form-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Dark mode support (if user prefers) */
+@media (prefers-color-scheme: dark) {
+  /* Optional: Add dark mode styles here if needed */
+  /* Currently keeping light theme for consistency */
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .tool-card {
+    border: 2px solid var(--border-dark) !important;
+  }
+
+  .tool-btn {
+    border: 2px solid currentColor !important;
+  }
+
+  .tool-input,
+  .tool-textarea,
+  .tool-select {
+    border: 2px solid var(--border-dark) !important;
+  }
+}
+
+/* Print styles for when users want to print tool outputs */
+@media print {
+  .tool-page-header {
+    background: white !important;
+    color: black !important;
+    border-bottom: 2px solid black !important;
+  }
+
+  .tool-page-title {
+    color: black !important;
+  }
+
+  .tool-btn,
+  .tool-form-actions,
+  #autosaveIndicator {
+    display: none !important;
+  }
+
+  .tool-card {
+    page-break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+
+  .tool-output {
+    page-break-inside: avoid;
+  }
+}
+
+/* Focus visible for better keyboard navigation */
+*:focus-visible {
+  outline: 3px solid var(--accent-blue) !important;
+  outline-offset: 2px;
+}
+
+/* Improve touch feedback */
+@media (hover: none) and (pointer: coarse) {
+  .tool-btn:active {
+    transform: scale(0.98);
+  }
+
+  .tool-card:active {
+    transform: scale(0.99);
+  }
+}
+
+/* ============================================
    END OF TOOL VISUAL ALIGNMENT LAYER
    ============================================ */
 
