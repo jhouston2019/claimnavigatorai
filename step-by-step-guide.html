@@ -28,9 +28,115 @@
     console.log('Authentication checks disabled for local testing');
     document.documentElement.style.visibility = 'visible';
     document.documentElement.style.opacity = '1';
+    
+    /* ORIGINAL AUTH CODE - COMMENTED OUT
+    // Block rendering immediately
+    document.documentElement.style.visibility = 'hidden';
+    document.documentElement.style.opacity = '0';
+    
+    // Enforce access control before page loads
+    (async function() {
+      try {
+        // Wait for auth system to load
+        let attempts = 0;
+        while (!window.CNAuth && attempts < 50) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
+        }
+        
+        if (!window.CNAuth) {
+          console.error('CN Auth system failed to load');
+          window.location.href = '/app/access-denied.html';
+          return;
+        }
+        
+        // Check authentication
+        const user = await window.CNAuth.currentUser();
+        if (!user) {
+          console.warn('CN Access Denied: No authenticated user');
+          window.location.href = '/app/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+          return;
+        }
+        
+        // Wait for Supabase client
+        attempts = 0;
+        while (!window.getSupabaseClient && attempts < 50) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          attempts++;
+        }
+        
+        const supabase = await window.getSupabaseClient();
+        if (!supabase) {
+          console.error('CN Access Denied: Supabase unavailable');
+          window.location.href = '/app/access-denied.html';
+          return;
+        }
+        
+        // Check for active claim
+        const { data: claims, error } = await supabase
+          .from('claims')
+          .select('id, status')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .limit(1);
+        
+        if (error) {
+          console.error('CN Access Denied: Database error', error);
+          window.location.href = '/app/access-denied.html';
+          return;
+        }
+        
+        if (!claims || claims.length === 0) {
+          console.warn('CN Access Denied: No active claim');
+          window.location.href = '/paywall/locked.html';
+          return;
+        }
+        
+        // Access granted - show page
+        document.documentElement.style.visibility = 'visible';
+        document.documentElement.style.opacity = '1';
+        
+      } catch (error) {
+        console.error('CN Access Denied: Exception', error);
+        window.location.href = '/app/access-denied.html';
+      }
+    })();
+    */
   </script>
   
   <style>
+    /* ===================================================================
+       TYPOGRAPHIC HIERARCHY SCALE
+       
+       LEVEL 1 (Impossible to Miss):
+       - Critical deadlines: 24px
+       - Deadline numbers: 28px
+       - Action buttons: 18px
+       
+       LEVEL 2 (Primary Content):
+       - Value statements: 16px
+       - Phase descriptions: 15px
+       
+       LEVEL 3 (Secondary Content):
+       - Phase headers: 18px (reduced from dominant)
+       - Card headers: 15px
+       - Body text: 14px
+       
+       LEVEL 4 (Supporting Detail):
+       - Helper text: 13px
+       - Scripts/examples: 13px
+       - Table content: 13px
+       
+       SPACING SCALE:
+       - Around critical warnings: 48px
+       - Around action buttons: 48px  
+       - Between phases: 40px
+       - Between sections: 32px
+       - Between elements: 24px
+       - Between cards: 16px
+       
+       =================================================================== */
+
     * {
       margin: 0;
       padding: 0;
@@ -1096,13 +1202,13 @@
             </div>
             <div class="accordion-title-area">
               <div class="accordion-title">Upload your insurance policy for AI-powered coverage analysis<span class="step-status in-progress">In Progress</span></div>
-              <div class="accordion-subtitle">Upload your insurance policy for AI-assisted analysis of coverages, limits, endorsements, loss settlement terms, ALE eligibility, and contents rules.</div>
+              <div class="accordion-subtitle">Upload your insurance policy for AI-assisted analysis of coverages, limits, endorsements, loss settlement terms, ALE eligibility, and contents rules. Review your coverage terms to understand what is covered and how your claim will be paid.</div>
             </div>
           </div>
           <div class="accordion-toggle">▼</div>
         </div>
         <div class="accordion-content">
-          <p>Step 1 content will load here...</p>
+          <p>Click to expand Step 1 and view complete guidance...</p>
         </div>
       </div>
 
@@ -1121,7 +1227,7 @@
           <div class="accordion-toggle">▼</div>
         </div>
         <div class="accordion-content">
-          <p>Step 2 content will load here...</p>
+          <p>Click to expand Step 2 and view complete guidance...</p>
         </div>
       </div>
 
@@ -1140,7 +1246,197 @@
           <div class="accordion-toggle">▼</div>
         </div>
         <div class="accordion-content">
-          <p>Step 3 content will load here...</p>
+          <p>Click to expand Step 3 and view complete guidance...</p>
+        </div>
+      </div>
+
+      <div class="accordion-item" data-step="4">
+        <div class="accordion-header" onclick="openStep(4)">
+          <div class="accordion-left">
+            <div class="accordion-number-container">
+              <span class="accordion-step-label">STEP</span>
+              <div class="accordion-number">4</div>
+            </div>
+            <div class="accordion-title-area">
+              <div class="accordion-title">Get Your Own Contractor Estimate<span class="step-status upcoming">Upcoming</span></div>
+              <div class="accordion-subtitle">Hire a licensed contractor for detailed repair estimate before negotiating with the insurance company.</div>
+            </div>
+          </div>
+          <div class="accordion-toggle">▼</div>
+        </div>
+        <div class="accordion-content">
+          <p>Click to expand Step 4 and view complete guidance...</p>
+        </div>
+      </div>
+
+      <div class="accordion-item" data-step="5">
+        <div class="accordion-header" onclick="openStep(5)">
+          <div class="accordion-left">
+            <div class="accordion-number-container">
+              <span class="accordion-step-label">STEP</span>
+              <div class="accordion-number">5</div>
+            </div>
+            <div class="accordion-title-area">
+              <div class="accordion-title">Compare the Insurance Estimate to Contractor Pricing<span class="step-status upcoming">Upcoming</span></div>
+              <div class="accordion-subtitle">Review the adjuster's estimate line-by-line and identify where they're underpaying.</div>
+            </div>
+          </div>
+          <div class="accordion-toggle">▼</div>
+        </div>
+        <div class="accordion-content">
+          <p>Click to expand Step 5 and view complete guidance...</p>
+        </div>
+      </div>
+
+      <div class="accordion-item" data-step="6">
+        <div class="accordion-header" onclick="openStep(6)">
+          <div class="accordion-left">
+            <div class="accordion-number-container">
+              <span class="accordion-step-label">STEP</span>
+              <div class="accordion-number">6</div>
+            </div>
+            <div class="accordion-title-area">
+              <div class="accordion-title">Verify Coverage for Your Documented Losses<span class="step-status upcoming">Upcoming</span></div>
+              <div class="accordion-subtitle">Check what's covered, what's excluded, and calculate your maximum recovery under policy limits.</div>
+            </div>
+          </div>
+          <div class="accordion-toggle">▼</div>
+        </div>
+        <div class="accordion-content">
+          <p>Click to expand Step 6 and view complete guidance...</p>
+        </div>
+      </div>
+
+      <div class="accordion-item" data-step="7">
+        <div class="accordion-header" onclick="openStep(7)">
+          <div class="accordion-left">
+            <div class="accordion-number-container">
+              <span class="accordion-step-label">STEP</span>
+              <div class="accordion-number">7</div>
+            </div>
+            <div class="accordion-title-area">
+              <div class="accordion-title">Track Additional Living Expenses (ALE)<span class="step-status upcoming">Upcoming</span></div>
+              <div class="accordion-subtitle">Document all increased costs from being displaced and maximize your ALE recovery.</div>
+            </div>
+          </div>
+          <div class="accordion-toggle">▼</div>
+        </div>
+        <div class="accordion-content">
+          <p>Click to expand Step 7 and view complete guidance...</p>
+        </div>
+      </div>
+
+      <div class="accordion-item" data-step="8">
+        <div class="accordion-header" onclick="openStep(8)">
+          <div class="accordion-left">
+            <div class="accordion-number-container">
+              <span class="accordion-step-label">STEP</span>
+              <div class="accordion-number">8</div>
+            </div>
+            <div class="accordion-title-area">
+              <div class="accordion-title">Finalize Your Contents Inventory with Complete Values<span class="step-status upcoming">Upcoming</span></div>
+              <div class="accordion-subtitle">Ensure every damaged item is listed, described in detail, and properly valued before claim submission.</div>
+            </div>
+          </div>
+          <div class="accordion-toggle">▼</div>
+        </div>
+        <div class="accordion-content">
+          <p>Click to expand Step 8 and view complete guidance...</p>
+        </div>
+      </div>
+
+      <div class="accordion-item" data-step="9">
+        <div class="accordion-header" onclick="openStep(9)">
+          <div class="accordion-left">
+            <div class="accordion-number-container">
+              <span class="accordion-step-label">STEP</span>
+              <div class="accordion-number">9</div>
+            </div>
+            <div class="accordion-title-area">
+              <div class="accordion-title">Understand ACV vs RCV and Your Payment Structure<span class="step-status upcoming">Upcoming</span></div>
+              <div class="accordion-subtitle">Learn how two-stage insurance payment works and how to recover your full depreciation holdback.</div>
+            </div>
+          </div>
+          <div class="accordion-toggle">▼</div>
+        </div>
+        <div class="accordion-content">
+          <p>Click to expand Step 9 and view complete guidance...</p>
+        </div>
+      </div>
+
+      <div class="accordion-item" data-step="10">
+        <div class="accordion-header" onclick="openStep(10)">
+          <div class="accordion-left">
+            <div class="accordion-number-container">
+              <span class="accordion-step-label">STEP</span>
+              <div class="accordion-number">10</div>
+            </div>
+            <div class="accordion-title-area">
+              <div class="accordion-title">Review the Settlement Offer & Identify Underpayment<span class="step-status upcoming">Upcoming</span></div>
+              <div class="accordion-subtitle">Compare the insurer's offer to your documented losses and calculate where you're being shorted.</div>
+            </div>
+          </div>
+          <div class="accordion-toggle">▼</div>
+        </div>
+        <div class="accordion-content">
+          <p>Click to expand Step 10 and view complete guidance...</p>
+        </div>
+      </div>
+
+      <div class="accordion-item" data-step="11">
+        <div class="accordion-header" onclick="openStep(11)">
+          <div class="accordion-left">
+            <div class="accordion-number-container">
+              <span class="accordion-step-label">STEP</span>
+              <div class="accordion-number">11</div>
+            </div>
+            <div class="accordion-title-area">
+              <div class="accordion-title">Negotiate the Settlement Amount<span class="step-status upcoming">Upcoming</span></div>
+              <div class="accordion-subtitle">Use your documented evidence and underpayment analysis to negotiate a fair settlement.</div>
+            </div>
+          </div>
+          <div class="accordion-toggle">▼</div>
+        </div>
+        <div class="accordion-content">
+          <p>Click to expand Step 11 and view complete guidance...</p>
+        </div>
+      </div>
+
+      <div class="accordion-item" data-step="12">
+        <div class="accordion-header" onclick="openStep(12)">
+          <div class="accordion-left">
+            <div class="accordion-number-container">
+              <span class="accordion-step-label">STEP</span>
+              <div class="accordion-number">12</div>
+            </div>
+            <div class="accordion-title-area">
+              <div class="accordion-title">Submit Your Formal Proof of Loss Statement<span class="step-status upcoming">Upcoming</span></div>
+              <div class="accordion-subtitle">File the sworn legal claim document with complete supporting evidence by the policy deadline.</div>
+            </div>
+          </div>
+          <div class="accordion-toggle">▼</div>
+        </div>
+        <div class="accordion-content">
+          <p>Click to expand Step 12 and view complete guidance...</p>
+        </div>
+      </div>
+
+      <div class="accordion-item" data-step="13">
+        <div class="accordion-header" onclick="openStep(13)">
+          <div class="accordion-left">
+            <div class="accordion-number-container">
+              <span class="accordion-step-label">STEP</span>
+              <div class="accordion-number">13</div>
+            </div>
+            <div class="accordion-title-area">
+              <div class="accordion-title">Track Payment & Recover Depreciation Holdback<span class="step-status upcoming">Final Step</span></div>
+              <div class="accordion-subtitle">Monitor all payments, complete repairs, and submit for withheld depreciation recovery.</div>
+            </div>
+          </div>
+          <div class="accordion-toggle">▼</div>
+        </div>
+        <div class="accordion-content">
+          <p>Click to expand Step 13 and view complete guidance...</p>
         </div>
       </div>
 
@@ -1193,7 +1489,26 @@
     }
 
     function editClaimInfo() {
-      alert('Edit claim info functionality');
+      const claimNumber = prompt('Claim Number:', document.getElementById('claimNumber').textContent);
+      if (claimNumber !== null) document.getElementById('claimNumber').textContent = claimNumber;
+      
+      const dateOfLoss = prompt('Date of Loss:', document.getElementById('dateOfLoss').textContent);
+      if (dateOfLoss !== null) {
+        document.getElementById('dateOfLoss').textContent = dateOfLoss;
+        const lossDate = new Date(dateOfLoss);
+        const today = new Date();
+        const daysDiff = Math.floor((today - lossDate) / (1000 * 60 * 60 * 24));
+        document.getElementById('daysSinceLoss').textContent = daysDiff + ' days';
+      }
+      
+      const insurerName = prompt('Insurance Company:', document.getElementById('insurerName').textContent);
+      if (insurerName !== null) document.getElementById('insurerName').textContent = insurerName;
+      
+      const adjusterName = prompt('Adjuster Name:', document.getElementById('adjusterName').textContent);
+      if (adjusterName !== null) document.getElementById('adjusterName').textContent = adjusterName;
+      
+      const claimStatus = prompt('Claim Status:', document.getElementById('claimStatus').textContent);
+      if (claimStatus !== null) document.getElementById('claimStatus').textContent = claimStatus;
     }
 
     function openStep(stepNum) {
@@ -1210,11 +1525,11 @@
     }
 
     function downloadClaimFile() {
-      alert('Download claim file');
+      alert('Your complete claim file will be downloaded as a ZIP archive containing all documents, photos, and correspondence.');
     }
 
     function viewClaimArchive() {
-      alert('View claim archive');
+      alert('Opening your claim archive viewer...');
     }
 
     document.addEventListener('DOMContentLoaded', function() {
