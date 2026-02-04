@@ -34,3 +34,4 @@ console.log('Guard snippet for manual addition to protected pages:');
 console.log(GUARD_SNIPPET);
 
 
+

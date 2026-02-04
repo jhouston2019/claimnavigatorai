@@ -685,3 +685,4 @@ This visual documentation shows how the `step-by-step-claim-guide.html` file orc
 
 The architecture allows for flexible step management while maintaining a consistent user experience across all 14 claim steps.
 
+

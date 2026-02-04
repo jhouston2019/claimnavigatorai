@@ -5,8 +5,9 @@
 
 // Environment-safe configuration
 // These will be replaced by build process or environment variables
-const SUPABASE_URL = window.SUPABASE_URL || import.meta.env?.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
-const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || import.meta.env?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+// For local development, set these in window object or use environment variables
+const SUPABASE_URL = window.SUPABASE_URL || 'https://your-project.supabase.co';
+const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || 'your-anon-key';
 
 // Dynamic import for Supabase
 let supabaseClient = null;

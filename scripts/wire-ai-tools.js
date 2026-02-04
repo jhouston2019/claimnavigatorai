@@ -54,3 +54,4 @@ console.log(`\n✅ All ${tools.length} AI tools wired.`);
 console.log('\n📋 Run verification: grep -R "being configured" app/tools');
 
 
+
