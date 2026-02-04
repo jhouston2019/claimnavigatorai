@@ -84,52 +84,14 @@
         return;
       }
       
-      // Wait for Supabase client
-      const hasSupabase = await waitForDependency(() => window.getSupabaseClient);
-      if (!hasSupabase) {
-        console.error('CN Access Denied: Supabase failed to load');
-        logAccessAttempt('supabase_load_failed', user.id);
-        window.location.href = '/app/access-denied.html';
-        return;
-      }
-      
-      const supabase = await window.getSupabaseClient();
-      if (!supabase) {
-        console.error('CN Access Denied: Supabase client unavailable');
-        logAccessAttempt('no_supabase_client', user.id);
-        window.location.href = '/app/access-denied.html';
-        return;
-      }
-      
-      // Check for active claim
-      const { data: claims, error } = await supabase
-        .from('claims')
-        .select('id, status')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .limit(1);
-      
-      if (error) {
-        console.error('CN Access Denied: Database error', error);
-        logAccessAttempt('db_error', user.id);
-        window.location.href = '/app/access-denied.html';
-        return;
-      }
-      
-      if (!claims || claims.length === 0) {
-        console.warn('CN Access Denied: No active claim');
-        logAccessAttempt('no_active_claim', user.id);
-        window.location.href = '/paywall/locked.html';
-        return;
-      }
-      
-      // Access granted - show page
+      // Access granted - logged in users have access to all claim guide pages
       console.log('CN Access Granted:', user.id);
       document.documentElement.style.visibility = 'visible';
       document.documentElement.style.opacity = '1';
       
       // Store access grant for session
       sessionStorage.setItem('cn_access_granted', Date.now().toString());
+      sessionStorage.setItem('cn_user_id', user.id);
       
     } catch (error) {
       console.error('CN Access Denied: Exception', error);
