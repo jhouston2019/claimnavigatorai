@@ -115,15 +115,27 @@
   </style>
 </head>
 <body>
+  <script>
+    // Admin-only page protection
+    if (sessionStorage.getItem('adminAuthenticated') !== 'true') {
+      window.location.href = '/app/access-denied.html';
+    }
+  </script>
+
   <header class="page-header">
     <h1 class="page-title">Resources</h1>
-    <p class="page-subtitle">Complete index of all tools and documents</p>
+    <p class="page-subtitle">Complete index of all tools and documents - Admin Only</p>
   </header>
 
   <div class="container">
-    <a href="../step-by-step-claim-guide.html" class="back-button">
-      ← Back to Claim Management Center
-    </a>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <a href="/admin-dashboard.html" class="back-button">
+        ← Back to Admin Dashboard
+      </a>
+      <a href="/admin-login.html" class="back-button" onclick="sessionStorage.removeItem('adminAuthenticated'); sessionStorage.removeItem('adminLoginTime');">
+        Logout →
+      </a>
+    </div>
 
     <div class="resources-container">
       <ul class="resources-list">
