@@ -10,6 +10,18 @@
 (function() {
   'use strict';
   
+  // DEV MODE: Check for bypass flag
+  const isDevelopment = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1' ||
+                       sessionStorage.getItem('cn_dev_bypass') === 'true';
+  
+  if (isDevelopment) {
+    console.log('CN Access Guard: Development mode - bypassing authentication');
+    document.documentElement.style.visibility = 'visible';
+    document.documentElement.style.opacity = '1';
+    return;
+  }
+  
   // Block rendering immediately
   document.documentElement.style.visibility = 'hidden';
   document.documentElement.style.opacity = '0';
