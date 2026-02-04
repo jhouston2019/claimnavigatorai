@@ -14538,6 +14538,13 @@ Enclosed please find [list attachments]. I request a revised offer of $XX,XXX wi
     document.addEventListener('DOMContentLoaded', function() {
       console.log('Page initialized');
       
+      // CRITICAL: Pre-load all step content so accordions work
+      console.log('Pre-loading all step content...');
+      for (let i = 1; i <= 13; i++) {
+        loadStepContent(i);
+      }
+      console.log('All step content pre-loaded');
+      
       // Close dropdown when clicking outside
       document.addEventListener('click', function(e) {
         const dropdown = document.getElementById('uploadDropdown');
