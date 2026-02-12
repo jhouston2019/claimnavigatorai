@@ -2139,22 +2139,24 @@
     }
     
     // =====================================================
-    // STEP 10: SUPPLEMENT GENERATION
+    // STEP 10: SUPPLEMENT GENERATION V2
     // =====================================================
     
     function openSupplementGeneratorTool() {
       const modal = new ClaimCommandCenter.StepToolModal({
         stepNumber: 10,
-        toolType: 'supplement_letter',
-        title: 'Step 10: Generate Supplement Letter',
+        toolType: 'supplement_v2',
+        title: 'Step 10: Generate Structured Supplement',
+        description: 'Generate professional supplement letter using deterministic data from estimate comparison',
         requiredDocuments: [],
+        showUploadSection: false, // No uploads needed - uses database data
         onRun: async (uploadedFiles) => {
           const token = await ClaimCommandCenter.getAuthToken();
           if (!token) {
             throw new Error('Not authenticated');
           }
           
-          const response = await fetch(`${API_BASE_URL}/.netlify/functions/generate-supplement`, {
+          const response = await fetch(`${API_BASE_URL}/.netlify/functions/generate-supplement-v2`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
