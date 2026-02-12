@@ -54,6 +54,20 @@ async function buildSupplement(claimId, supabaseClient) {
     .eq('claim_id', claimId)
     .single();
   
+  // Get policy coverage data
+  const { data: policyCoverage, error: policyError } = await supabaseClient
+    .from('claim_policy_coverage')
+    .select('*')
+    .eq('claim_id', claimId)
+    .single();
+  
+  // Get policy triggers
+  const { data: policyTriggers, error: triggersError } = await supabaseClient
+    .from('claim_policy_triggers')
+    .select('*')
+    .eq('claim_id', claimId)
+    .single();
+  
   // Get line items for reference
   const { data: contractorLines, error: cLineError } = await supabaseClient
     .from('claim_estimate_line_items')
@@ -84,14 +98,16 @@ async function buildSupplement(claimId, supabaseClient) {
   );
   
   // =====================================================
-  // STEP 4: BUILD STRUCTURED SECTIONS
+  // STEP 4: BUILD STRUCTURED SECTIONS (WITH POLICY INTEGRATION)
   // =====================================================
   
   const sections = buildSupplementSections(
     categoryData,
     comparison,
     financialSummary,
-    claim
+    claim,
+    policyCoverage,
+    policyTriggers
   );
   
   // =====================================================
@@ -269,20 +285,24 @@ function extractOPGap(categoryBreakdown) {
 }
 
 /**
- * Build structured supplement sections
+ * Build structured supplement sections WITH POLICY INTEGRATION
  * @param {object} categoryData 
  * @param {object} comparison 
  * @param {object} financialSummary 
  * @param {object} claim 
+ * @param {object} policyCoverage 
+ * @param {object} policyTriggers 
  * @returns {object}
  */
-function buildSupplementSections(categoryData, comparison, financialSummary, claim) {
+function buildSupplementSections(categoryData, comparison, financialSummary, claim, policyCoverage, policyTriggers) {
   const sections = {
     header: buildHeaderSection(claim),
-    introduction: buildIntroductionSection(),
-    categories: buildCategorySections(categoryData),
+    introduction: buildIntroductionSectionWithPolicy(policyCoverage),
+    categories: buildCategorySectionsWithPolicy(categoryData, policyCoverage, policyTriggers),
     op_section: buildOPSection(comparison),
-    depreciation_section: buildDepreciationSection(financialSummary),
+    depreciation_section: buildDepreciationSectionWithPolicy(financialSummary, policyCoverage),
+    ordinance_section: buildOrdinanceSection(policyTriggers, policyCoverage),
+    matching_section: buildMatchingSection(policyTriggers, policyCoverage),
     header_validation: buildHeaderValidationSection(comparison),
     summary: buildSummarySection(categoryData, comparison, financialSummary)
   };
@@ -303,7 +323,25 @@ function buildHeaderSection(claim) {
 }
 
 /**
- * Build introduction section
+ * Build introduction section WITH POLICY REFERENCE
+ */
+function buildIntroductionSectionWithPolicy(policyCoverage) {
+  let text = 'This supplement is submitted in response to discrepancies identified during a structured reconciliation of the carrier estimate against contractor scope. The following scope deficiencies and valuation gaps have been identified through deterministic line-item analysis.';
+  
+  // Add policy reference if available
+  if (policyCoverage && policyCoverage.dwelling_limit) {
+    text += `\n\nPer Coverage A – Dwelling (Limit: $${policyCoverage.dwelling_limit.toFixed(2)}), the carrier is obligated to provide adequate compensation for covered repairs and replacements.`;
+  }
+  
+  if (policyCoverage && policyCoverage.settlement_type === 'RCV') {
+    text += ` This policy provides Replacement Cost Value (RCV) coverage, requiring payment of actual replacement costs without depreciation for covered items.`;
+  }
+  
+  return { text };
+}
+
+/**
+ * Build introduction section (LEGACY)
  */
 function buildIntroductionSection() {
   return {
@@ -434,6 +472,77 @@ function buildHeaderValidationSection(comparison) {
   // Would check validation data from comparison
   // Placeholder for now
   return null;
+}
+
+/**
+ * Build category sections WITH POLICY REFERENCES
+ */
+function buildCategorySectionsWithPolicy(categoryData, policyCoverage, policyTriggers) {
+  // Use original builder as base
+  const sections = buildCategorySections(categoryData);
+  
+  // Add policy references where applicable
+  if (policyTriggers && policyTriggers.ordinance_trigger) {
+    // Find code upgrade category
+    const codeSection = sections.find(s => 
+      s.category_name.toLowerCase().includes('code') ||
+      s.category_name.toLowerCase().includes('ordinance')
+    );
+    
+    if (codeSection) {
+      codeSection.policy_reference = `Per Ordinance & Law endorsement at ${policyCoverage.ordinance_law_percent}%, coverage available: $${policyTriggers.ordinance_trigger_amount.toFixed(2)}`;
+    }
+  }
+  
+  return sections;
+}
+
+/**
+ * Build depreciation section WITH POLICY REFERENCE
+ */
+function buildDepreciationSectionWithPolicy(financialSummary, policyCoverage) {
+  const depSection = buildDepreciationSection(financialSummary);
+  
+  if (depSection && policyCoverage) {
+    if (policyCoverage.settlement_type === 'RCV' && !policyCoverage.roof_acv_endorsement) {
+      depSection.description += ` Per policy terms, this is a Replacement Cost Value (RCV) policy. Depreciation should not be applied to covered items.`;
+    } else if (policyCoverage.roof_acv_endorsement) {
+      depSection.description += ` Note: Policy includes Roof ACV endorsement. Depreciation on roofing items may be appropriate, but non-roof items should receive RCV.`;
+    }
+  }
+  
+  return depSection;
+}
+
+/**
+ * Build ordinance & law section
+ */
+function buildOrdinanceSection(policyTriggers, policyCoverage) {
+  if (!policyTriggers || !policyTriggers.ordinance_trigger) {
+    return null;
+  }
+  
+  return {
+    title: 'Ordinance & Law Coverage',
+    amount: policyTriggers.ordinance_trigger_amount,
+    description: policyTriggers.ordinance_trigger_note,
+    policy_reference: `Per Ordinance & Law endorsement at ${policyCoverage.ordinance_law_percent}%`
+  };
+}
+
+/**
+ * Build matching endorsement section
+ */
+function buildMatchingSection(policyTriggers, policyCoverage) {
+  if (!policyTriggers || !policyTriggers.matching_trigger) {
+    return null;
+  }
+  
+  return {
+    title: 'Matching Endorsement',
+    description: policyTriggers.matching_trigger_note,
+    policy_reference: 'Per matching endorsement in policy'
+  };
 }
 
 /**

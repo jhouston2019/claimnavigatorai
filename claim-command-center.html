@@ -1749,8 +1749,61 @@
       return 0;
     }
 
+    // Get policy-based escalation context
+    async function getPolicyEscalationContext(stepNumber) {
+      try {
+        const token = await ClaimCommandCenter.getAuthToken();
+        if (!token) return null;
+        
+        // Get policy triggers
+        const { data: triggers } = await supabase
+          .from('claim_policy_triggers')
+          .select('*')
+          .eq('claim_id', currentClaimId)
+          .single();
+        
+        if (!triggers) return null;
+        
+        // Get financial summary for underpayment
+        const { data: financial } = await supabase
+          .from('claim_financial_summary')
+          .select('underpayment_estimate')
+          .eq('claim_id', currentClaimId)
+          .single();
+        
+        const underpayment = financial?.underpayment_estimate || 0;
+        
+        // Step-specific escalation context
+        if (stepNumber === 9 && underpayment > 0) {
+          // Step 9: Estimate comparison complete, supplement not generated
+          let context = `An estimated underpayment of $${underpayment.toFixed(2)} has been identified.`;
+          
+          if (triggers.ordinance_trigger) {
+            context += ` Ordinance & Law coverage at ${triggers.ordinance_trigger_amount ? '$' + triggers.ordinance_trigger_amount.toFixed(2) : 'available'} applies.`;
+          }
+          
+          if (triggers.matching_trigger) {
+            context += ` Matching endorsement coverage applies.`;
+          }
+          
+          context += ` Generate a structured supplement now.`;
+          return context;
+        }
+        
+        if (stepNumber === 2) {
+          // Step 2: Policy analysis not complete
+          return `Policy coverage data is required for accurate supplement generation. Complete policy analysis to identify coverage triggers.`;
+        }
+        
+        return null;
+      } catch (error) {
+        console.error('Failed to get policy escalation context:', error);
+        return null;
+      }
+    }
+    
     // Get escalation message
-    function getEscalationMessage(tier, stepNumber, stepTitle, daysInactive) {
+    async function getEscalationMessage(tier, stepNumber, stepTitle, daysInactive) {
       let message = '';
       let showDays = false;
 
@@ -1776,6 +1829,12 @@
 
       if (showDays && daysInactive > 0) {
         message += `\n\nIt has been ${daysInactive} day${daysInactive === 1 ? '' : 's'} since your last session.`;
+      }
+      
+      // Add policy-based context
+      const policyContext = await getPolicyEscalationContext(stepNumber);
+      if (policyContext) {
+        message += `\n\n${policyContext}`;
       }
 
       if (tier === 3) {
@@ -1804,20 +1863,20 @@
       document.getElementById('modalInstruction').textContent = nextStep.instruction;
       document.getElementById('modalButton').textContent = `Start Step ${nextStep.step}`;
 
-      // Update escalation message
+      // Update escalation message (async)
       const escalationBlock = document.getElementById('modalEscalationBlock');
-      const escalationMessage = getEscalationMessage(
+      getEscalationMessage(
         currentEscalationTier, 
         nextStep.step, 
         nextStep.title, 
         daysSinceLastVisit
-      );
-
-      if (escalationMessage) {
-        escalationBlock.innerHTML = `<div class="modal-escalation-message tier-${currentEscalationTier}">${escalationMessage.replace(/\n/g, '<br>')}</div>`;
-      } else {
-        escalationBlock.innerHTML = '';
-      }
+      ).then(escalationMessage => {
+        if (escalationMessage) {
+          escalationBlock.innerHTML = `<div class="modal-escalation-message tier-${currentEscalationTier}">${escalationMessage.replace(/\n/g, '<br>')}</div>`;
+        } else {
+          escalationBlock.innerHTML = '';
+        }
+      });
 
       // Handle Tier 3 behavior
       const modal = document.getElementById('nextActionModal');
@@ -2037,8 +2096,9 @@
     function openPolicyAnalysisTool() {
       const modal = new ClaimCommandCenter.StepToolModal({
         stepNumber: 2,
-        toolType: 'policy_analysis',
-        title: 'Step 2: Policy Analysis',
+        toolType: 'policy_analysis_v2',
+        title: 'Step 2: Policy Analysis - Structured Coverage Extraction',
+        description: 'Extract structured coverage data and identify policy triggers',
         requiredDocuments: [
           { key: 'policy', label: 'Insurance Policy PDF' }
         ],
@@ -2048,7 +2108,7 @@
             throw new Error('Not authenticated');
           }
           
-          const response = await fetch(`${API_BASE_URL}/.netlify/functions/analyze-policy`, {
+          const response = await fetch(`${API_BASE_URL}/.netlify/functions/analyze-policy-v2`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

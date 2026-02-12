@@ -377,6 +377,7 @@ class StructuredOutputPanel {
     
     switch (this.toolType) {
       case 'policy_analysis':
+      case 'policy_analysis_v2':
         container.innerHTML = this.renderPolicyAnalysis();
         break;
       case 'estimate_comparison':
@@ -396,56 +397,109 @@ class StructuredOutputPanel {
   }
   
   renderPolicyAnalysis() {
-    const analysis = this.data.analysis || this.data;
+    const data = this.data;
+    const coverage = data.coverage || {};
+    const endorsements = data.endorsements || {};
+    const triggers = data.triggers || {};
+    const recommendations = data.recommendations || [];
+    const sublimits = data.sublimits || {};
+    const policyType = data.policy_type || {};
+    const metadata = data.metadata || {};
     
     return `
       <div class="output-section">
-        <h3 class="output-title">Policy Coverage Summary</h3>
+        <h3 class="output-title">📋 Policy Coverage - Structured Extraction</h3>
         
-        <div class="output-grid">
-          <div class="output-card">
-            <div class="output-label">Dwelling Limit</div>
-            <div class="output-value">${formatCurrency(analysis.coverage_limits?.dwelling)}</div>
-          </div>
-          
-          <div class="output-card">
-            <div class="output-label">Contents Limit</div>
-            <div class="output-value">${formatCurrency(analysis.coverage_limits?.contents)}</div>
-          </div>
-          
-          <div class="output-card">
-            <div class="output-label">ALE Limit</div>
-            <div class="output-value">${formatCurrency(analysis.ale_limit?.amount)}</div>
-          </div>
-          
-          <div class="output-card">
-            <div class="output-label">Deductible</div>
-            <div class="output-value">${formatCurrency(analysis.deductible?.amount)}</div>
-          </div>
-          
-          <div class="output-card">
-            <div class="output-label">Settlement Type</div>
-            <div class="output-value">${analysis.settlement_type || 'N/A'}</div>
-          </div>
-          
-          <div class="output-card">
-            <div class="output-label">Ordinance & Law</div>
-            <div class="output-value">${analysis.ordinance_law?.included ? '✓ Included' : '✗ Not Included'}</div>
+        <div class="output-subsection">
+          <h4>Coverage Limits</h4>
+          <div class="output-grid">
+            <div class="output-card">
+              <div class="output-label">Coverage A (Dwelling)</div>
+              <div class="output-value">${coverage.dwelling_limit ? formatCurrency(coverage.dwelling_limit) : 'Not found'}</div>
+            </div>
+            <div class="output-card">
+              <div class="output-label">Coverage C (Contents)</div>
+              <div class="output-value">${coverage.contents_limit ? formatCurrency(coverage.contents_limit) : 'Not found'}</div>
+            </div>
+            <div class="output-card">
+              <div class="output-label">Coverage D (ALE)</div>
+              <div class="output-value">${coverage.ale_limit ? formatCurrency(coverage.ale_limit) : 'Not found'}</div>
+            </div>
+            <div class="output-card">
+              <div class="output-label">Deductible</div>
+              <div class="output-value">${coverage.deductible ? formatCurrency(coverage.deductible) : 'Not found'}</div>
+            </div>
           </div>
         </div>
         
-        ${analysis.risk_notes && analysis.risk_notes.length > 0 ? `
-          <div class="output-alert">
-            <h4>⚠️ Risk Notes</h4>
-            <ul>
-              ${analysis.risk_notes.map(note => `<li>${note}</li>`).join('')}
-            </ul>
+        <div class="output-subsection">
+          <h4>Settlement Type</h4>
+          <div class="output-card">
+            <div class="output-value">${coverage.settlement_type || 'Not detected'}</div>
+          </div>
+        </div>
+        
+        ${coverage.ordinance_law_percent ? `
+          <div class="output-subsection">
+            <h4>Ordinance & Law</h4>
+            <div class="output-card">
+              <div class="output-value">${coverage.ordinance_law_percent}% coverage available</div>
+            </div>
           </div>
         ` : ''}
         
-        <button class="btn btn-primary" onclick="downloadPolicyAnalysis()">
-          Download Full Analysis
-        </button>
+        <div class="output-subsection">
+          <h4>Detected Endorsements</h4>
+          <div class="output-list">
+            ${endorsements.matching ? '<div class="output-item">✓ Matching endorsement</div>' : ''}
+            ${endorsements.replacement_cost ? '<div class="output-item">✓ Replacement cost endorsement</div>' : ''}
+            ${endorsements.roof_acv ? '<div class="output-item">⚠ Roof ACV endorsement</div>' : ''}
+            ${endorsements.cosmetic_exclusion ? '<div class="output-item">⚠ Cosmetic exclusion</div>' : ''}
+            ${!endorsements.matching && !endorsements.replacement_cost && !endorsements.roof_acv && !endorsements.cosmetic_exclusion ? '<div class="output-item">No special endorsements detected</div>' : ''}
+          </div>
+        </div>
+        
+        ${Object.keys(sublimits).some(k => sublimits[k]) ? `
+          <div class="output-subsection">
+            <h4>Sublimits</h4>
+            <div class="output-grid">
+              ${sublimits.water ? `<div class="output-card"><div class="output-label">Water damage</div><div class="output-value">${formatCurrency(sublimits.water)}</div></div>` : ''}
+              ${sublimits.mold ? `<div class="output-card"><div class="output-label">Mold</div><div class="output-value">${formatCurrency(sublimits.mold)}</div></div>` : ''}
+              ${sublimits.sewer_backup ? `<div class="output-card"><div class="output-label">Sewer backup</div><div class="output-value">${formatCurrency(sublimits.sewer_backup)}</div></div>` : ''}
+            </div>
+          </div>
+        ` : ''}
+        
+        ${triggers.ordinance_trigger || triggers.matching_trigger || triggers.depreciation_trigger || triggers.sublimit_trigger ? `
+          <div class="output-subsection">
+            <h4>Coverage Triggers</h4>
+            <div class="output-list">
+              ${triggers.ordinance_trigger ? `<div class="output-item alert-success">✓ Ordinance coverage applies to code upgrades</div>` : ''}
+              ${triggers.matching_trigger ? `<div class="output-item alert-success">✓ Matching endorsement applies</div>` : ''}
+              ${triggers.depreciation_trigger ? `<div class="output-item alert-warning">⚠ Depreciation issue detected</div>` : ''}
+              ${triggers.sublimit_trigger ? `<div class="output-item alert-warning">⚠ ${triggers.sublimit_trigger_type} sublimit may cap recovery</div>` : ''}
+            </div>
+          </div>
+        ` : ''}
+        
+        ${recommendations.length > 0 ? `
+          <div class="output-subsection">
+            <h4>Recommendations</h4>
+            <div class="output-list">
+              ${recommendations.map(rec => `
+                <div class="output-item priority-${rec.priority}">
+                  <strong>${rec.title}</strong>
+                  <p>${rec.action}</p>
+                  ${rec.estimated_recovery ? `<p>Estimated Recovery: ${formatCurrency(rec.estimated_recovery)}</p>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+        
+        <div class="output-metadata">
+          <small>Parsed by: ${metadata.parsed_by || 'regex'} | Processing time: ${metadata.processing_time_ms || 0}ms | Engine v${metadata.engine_version || '2.0'}</small>
+        </div>
       </div>
     `;
   }
