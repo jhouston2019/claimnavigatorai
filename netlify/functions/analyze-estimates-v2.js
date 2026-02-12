@@ -222,21 +222,26 @@ exports.handler = async (event) => {
     console.log(`[Estimate Engine] Unmatched carrier: ${matchResult.unmatchedCarrier.length}`);
 
     // =====================================================
-    // PHASE 5: AI SEMANTIC MATCHING (FALLBACK ONLY)
+    // PHASE 5: AI SEMANTIC MATCHING (FALLBACK ONLY) WITH TRACE LOGGING
     // =====================================================
     let semanticMatches = [];
+    let aiDecisionTraces = [];
     
     if (matchResult.unmatchedContractor.length > 0 && matchResult.unmatchedCarrier.length > 0) {
       console.log('[Estimate Engine] Phase 5: AI semantic matching for unmatched items...');
       
       try {
-        semanticMatches = await semanticMatch(
+        const semanticResult = await semanticMatch(
           matchResult.unmatchedContractor,
           matchResult.unmatchedCarrier,
           openai
         );
         
+        semanticMatches = semanticResult.matches || [];
+        aiDecisionTraces = semanticResult.traces || [];
+        
         console.log(`[Estimate Engine] AI matched ${semanticMatches.length} additional items`);
+        console.log(`[Estimate Engine] AI decision traces: ${aiDecisionTraces.length}`);
         
         // Add semantic matches to main matches
         matchResult.matches.push(...semanticMatches);
@@ -249,6 +254,17 @@ exports.handler = async (event) => {
           const caIndex = matchResult.unmatchedCarrier.findIndex(i => i.id === match.carrier.id);
           if (caIndex !== -1) matchResult.unmatchedCarrier.splice(caIndex, 1);
         }
+        
+        // Store AI decision traces in database for audit
+        if (aiDecisionTraces.length > 0) {
+          await supabase.from('claim_ai_decision_traces').insert(
+            aiDecisionTraces.map(trace => ({
+              claim_id: body.claim_id,
+              user_id: userId,
+              ...trace
+            }))
+          );
+        }
       } catch (aiError) {
         console.error('AI semantic matching failed:', aiError);
         // Continue without semantic matches
@@ -256,18 +272,22 @@ exports.handler = async (event) => {
     }
 
     // =====================================================
-    // PHASE 6: RECONCILIATION (DETERMINISTIC MATH)
+    // PHASE 6: RECONCILIATION (WITH UNIT NORMALIZATION & O&P)
     // =====================================================
-    console.log('[Estimate Engine] Phase 6: Reconciling estimates...');
+    console.log('[Estimate Engine] Phase 6: Reconciling estimates with unit normalization...');
     
     const reconciliation = reconcileEstimates(
       matchResult.matches,
       matchResult.unmatchedContractor,
-      matchResult.unmatchedCarrier
+      matchResult.unmatchedCarrier,
+      contractorParsed.lineItems,  // Pass all items for O&P detection
+      carrierParsed.lineItems
     );
 
     console.log(`[Estimate Engine] Found ${reconciliation.discrepancies.length} discrepancies`);
     console.log(`[Estimate Engine] Underpayment: $${reconciliation.totals.underpayment_amount}`);
+    console.log(`[Estimate Engine] Unit conversions applied: ${reconciliation.stats.unit_conversions_applied}`);
+    console.log(`[Estimate Engine] O&P Gap: $${reconciliation.opAnalysis.gap.total_op_gap}`);
 
     // Validate reconciliation
     const validation = validateReconciliation(reconciliation);
@@ -388,6 +408,8 @@ exports.handler = async (event) => {
       },
       discrepancies: reconciliation.discrepancies,
       category_breakdown: reconciliation.categoryBreakdown,
+      op_analysis: reconciliation.opAnalysis,                    // NEW: O&P gap analysis
+      unit_conversion_warnings: reconciliation.unitConversionWarnings, // NEW: Unit conversion tracking
       summary,
       stats: {
         parsing: {
@@ -408,8 +430,8 @@ exports.handler = async (event) => {
         reconciliation: reconciliation.stats
       },
       processing_time_ms: Date.now() - startTime,
-      engine_version: '2.0',
-      method: 'deterministic'
+      engine_version: '2.1',  // Updated version
+      method: 'deterministic_with_normalization'
     });
 
   } catch (error) {

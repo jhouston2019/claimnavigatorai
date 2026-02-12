@@ -64,12 +64,57 @@ function parseEstimate(pdfText, estimateType) {
   
   const duration = Date.now() - startTime;
   
+  // Validate header total against line item sum
+  const validation = validateHeaderTotal(lineItems, estimateMetadata);
+  
   return {
     lineItems,
     metadata: {
       ...metadata,
       parsing_duration_ms: duration
-    }
+    },
+    validation
+  };
+}
+
+/**
+ * Validate that header total matches sum of line items
+ * @param {Array} lineItems 
+ * @param {object} metadata 
+ * @returns {object} Validation result
+ */
+function validateHeaderTotal(lineItems, metadata) {
+  // Sum all non-total line items
+  const lineItemSum = lineItems
+    .filter(item => !item.is_total && !item.is_subtotal)
+    .reduce((sum, item) => sum + (item.total || 0), 0);
+  
+  // Get grand total from line items
+  const grandTotalItem = lineItems.find(item => item.is_total);
+  const headerTotal = grandTotalItem ? grandTotalItem.total : null;
+  
+  if (!headerTotal) {
+    return {
+      validated: false,
+      reason: 'No grand total found in estimate',
+      line_item_sum: parseFloat(lineItemSum.toFixed(2)),
+      header_total: null,
+      difference: null
+    };
+  }
+  
+  const difference = Math.abs(headerTotal - lineItemSum);
+  const threshold = Math.max(headerTotal * 0.01, 10); // 1% or $10, whichever is larger
+  
+  const isValid = difference <= threshold;
+  
+  return {
+    validated: isValid,
+    line_item_sum: parseFloat(lineItemSum.toFixed(2)),
+    header_total: parseFloat(headerTotal.toFixed(2)),
+    difference: parseFloat(difference.toFixed(2)),
+    threshold: parseFloat(threshold.toFixed(2)),
+    warning: !isValid ? `Estimate total inconsistent with line item math. Difference: $${difference.toFixed(2)}` : null
   };
 }
 

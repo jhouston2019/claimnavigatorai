@@ -356,12 +356,60 @@ CREATE POLICY "Users can update their own comparisons" ON public.claim_estimate_
     FOR UPDATE USING (auth.uid() = user_id);
 
 -- =====================================================
--- 8. COMMENTS
+-- 8. AI DECISION TRACE LOGGING
+-- =====================================================
+CREATE TABLE IF NOT EXISTS public.claim_ai_decision_traces (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    claim_id UUID NOT NULL REFERENCES public.claims(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL,
+    
+    timestamp TIMESTAMPTZ DEFAULT NOW(),
+    match_type TEXT, -- 'semantic'
+    
+    contractor_line INTEGER,
+    contractor_description TEXT,
+    carrier_line INTEGER,
+    carrier_description TEXT,
+    
+    ai_confidence NUMERIC(3,2),
+    ai_reason TEXT,
+    ai_model TEXT,
+    
+    processing_time_ms INTEGER,
+    prompt_tokens INTEGER,
+    completion_tokens INTEGER,
+    total_tokens INTEGER,
+    
+    raw_ai_response JSONB,
+    
+    status TEXT DEFAULT 'success', -- 'success' | 'failed'
+    error TEXT,
+    
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ai_traces_claim_id ON public.claim_ai_decision_traces(claim_id);
+CREATE INDEX IF NOT EXISTS idx_ai_traces_timestamp ON public.claim_ai_decision_traces(timestamp);
+
+-- RLS for AI traces
+ALTER TABLE public.claim_ai_decision_traces ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can view their own AI traces" ON public.claim_ai_decision_traces;
+CREATE POLICY "Users can view their own AI traces" ON public.claim_ai_decision_traces
+    FOR SELECT USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can insert their own AI traces" ON public.claim_ai_decision_traces;
+CREATE POLICY "Users can insert their own AI traces" ON public.claim_ai_decision_traces
+    FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- =====================================================
+-- 9. COMMENTS
 -- =====================================================
 
 COMMENT ON TABLE public.claim_estimate_line_items IS 'Parsed line items from contractor and carrier estimates - source of truth';
 COMMENT ON TABLE public.claim_estimate_metadata IS 'Estimate-level metadata and totals';
 COMMENT ON TABLE public.claim_estimate_comparison IS 'Deterministic comparison results with match statistics';
+COMMENT ON TABLE public.claim_ai_decision_traces IS 'Audit log of AI semantic matching decisions for legal/technical protection';
 
 COMMENT ON COLUMN public.claim_estimate_line_items.description_normalized IS 'Normalized description for deterministic matching';
 COMMENT ON COLUMN public.claim_estimate_line_items.confidence_score IS 'Parser confidence (0.00-1.00)';

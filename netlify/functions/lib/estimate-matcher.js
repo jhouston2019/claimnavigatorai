@@ -247,12 +247,12 @@ function removeMatchedItems(array, matchedItems) {
 }
 
 /**
- * AI Semantic Matching (fallback only)
+ * AI Semantic Matching (fallback only) WITH DECISION TRACE LOGGING
  * Only called for unmatched items after deterministic attempts
  */
 async function semanticMatch(unmatchedContractor, unmatchedCarrier, openaiClient) {
   if (unmatchedContractor.length === 0 || unmatchedCarrier.length === 0) {
-    return [];
+    return { matches: [], traces: [] };
   }
   
   // Limit to top 20 unmatched items to avoid token limits
@@ -260,8 +260,11 @@ async function semanticMatch(unmatchedContractor, unmatchedCarrier, openaiClient
   const carrierSubset = unmatchedCarrier.slice(0, 20);
   
   const prompt = buildSemanticMatchPrompt(contractorSubset, carrierSubset);
+  const traces = []; // Store AI decision traces
   
   try {
+    const startTime = Date.now();
+    
     const completion = await openaiClient.chat.completions.create({
       model: 'gpt-4-turbo-preview',
       messages: [
@@ -278,6 +281,7 @@ async function semanticMatch(unmatchedContractor, unmatchedCarrier, openaiClient
       response_format: { type: 'json_object' }
     });
     
+    const processingTime = Date.now() - startTime;
     const response = JSON.parse(completion.choices[0].message.content);
     
     // Convert AI matches to standard format
@@ -293,13 +297,41 @@ async function semanticMatch(unmatchedContractor, unmatchedCarrier, openaiClient
           match_method: 'semantic',
           match_confidence: match.confidence
         });
+        
+        // LOG AI DECISION TRACE
+        traces.push({
+          timestamp: new Date().toISOString(),
+          match_type: 'semantic',
+          contractor_line: contractor.line_number,
+          contractor_description: contractor.description,
+          carrier_line: carrier.line_number,
+          carrier_description: carrier.description,
+          ai_confidence: match.confidence,
+          ai_reason: match.reason || 'No reason provided',
+          ai_model: 'gpt-4-turbo-preview',
+          processing_time_ms: processingTime,
+          prompt_tokens: completion.usage?.prompt_tokens || null,
+          completion_tokens: completion.usage?.completion_tokens || null,
+          total_tokens: completion.usage?.total_tokens || null,
+          raw_ai_response: match // Store full AI response for audit
+        });
       }
     }
     
-    return matches;
+    return { matches, traces };
   } catch (error) {
     console.error('Semantic matching failed:', error);
-    return [];
+    
+    // Log error trace
+    traces.push({
+      timestamp: new Date().toISOString(),
+      match_type: 'semantic',
+      error: error.message,
+      ai_model: 'gpt-4-turbo-preview',
+      status: 'failed'
+    });
+    
+    return { matches: [], traces };
   }
 }
 
