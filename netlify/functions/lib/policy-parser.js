@@ -1,10 +1,14 @@
 /**
- * Policy Parser Engine v2
+ * Policy Parser Engine v2.1 - INTELLIGENCE UPGRADE
+ * Form-aware, commercial-grade contract extraction
  * Deterministic extraction with AI fallback
  * NO SUMMARIES - STRUCTURED DATA ONLY
  */
 
 const crypto = require('crypto');
+const { detectPolicyForms, determineCoverageBasis } = require('./policy-form-detector');
+const { parsePolicySections, extractCommercialCoverageSections } = require('./policy-section-parser');
+const { detectEndorsements, categorizeEndorsementImpact } = require('./endorsement-detector');
 
 /**
  * Parse policy PDF text into structured coverage data
@@ -20,8 +24,23 @@ function parsePolicyDocument(policyText) {
   // Calculate hash for deduplication
   const textHash = calculateHash(policyText);
   
-  // Extract coverage data deterministically
+  // PHASE 1: Form Detection
+  const formDetection = detectPolicyForms(normalizedText);
+  const policyType = formDetection.policy_type;
+  
+  // PHASE 2: Section Parsing
+  const sections = parsePolicySections(policyText);
+  
+  // PHASE 3: Endorsement Detection
+  const endorsements = detectEndorsements(normalizedText, sections.endorsements);
+  const endorsementImpact = categorizeEndorsementImpact(endorsements);
+  
+  // PHASE 4: Extract coverage data deterministically
   const coverage = {
+    // Form Detection
+    policy_type: policyType,
+    form_numbers: formDetection.form_numbers,
+    coverage_basis: determineCoverageBasis(formDetection.form_numbers, normalizedText),
     // Coverage Limits
     dwelling_limit: extractDwellingLimit(normalizedText),
     other_structures_limit: extractOtherStructuresLimit(normalizedText),
@@ -39,21 +58,48 @@ function parsePolicyDocument(policyText) {
     ordinance_law_percent: extractOrdinanceLawPercent(normalizedText),
     ordinance_law_limit: extractOrdinanceLawLimit(normalizedText),
     
-    // Endorsements
-    matching_endorsement: detectMatchingEndorsement(normalizedText),
-    cosmetic_exclusion: detectCosmeticExclusion(normalizedText),
-    roof_acv_endorsement: detectRoofACVEndorsement(normalizedText),
-    replacement_cost_endorsement: detectReplacementCostEndorsement(normalizedText),
+    // Coinsurance & Commercial Fields
+    coinsurance_percent: extractCoinsurancePercent(normalizedText),
+    agreed_value: endorsements.agreed_value,
+    functional_replacement_cost: endorsements.functional_replacement_cost,
+    blanket_limit: endorsements.blanket_coverage.limit,
+    
+    // Deductible Fields
+    percentage_deductible_flag: detectPercentageDeductible(normalizedText),
+    wind_hail_deductible: extractWindHailDeductible(normalizedText),
+    wind_hail_deductible_percent: extractWindHailDeductiblePercent(normalizedText),
+    
+    // Endorsements (from detector)
+    matching_endorsement: endorsements.matching_endorsement,
+    cosmetic_exclusion: endorsements.cosmetic_exclusion,
+    roof_acv_endorsement: endorsements.roof_acv_endorsement,
+    replacement_cost_endorsement: endorsements.extended_replacement_cost.detected || endorsements.guaranteed_replacement_cost,
     named_peril_policy: detectNamedPerilPolicy(normalizedText),
     open_peril_policy: detectOpenPerilPolicy(normalizedText),
+    vacancy_clause: endorsements.vacancy_clause.detected,
     
     // Sublimits
     water_sublimit: extractWaterSublimit(normalizedText),
     mold_sublimit: extractMoldSublimit(normalizedText),
     sewer_backup_sublimit: extractSewerBackupSublimit(normalizedText),
     
+    // Commercial Property Limits (if CP or BOP)
+    building_limit: policyType === 'CP' || policyType === 'BOP' ? extractBuildingLimit(normalizedText) : null,
+    business_personal_property_limit: policyType === 'CP' || policyType === 'BOP' ? extractBusinessPersonalPropertyLimit(normalizedText) : null,
+    loss_of_income_limit: policyType === 'CP' || policyType === 'BOP' ? extractLossOfIncomeLimit(normalizedText) : null,
+    extra_expense_limit: policyType === 'CP' || policyType === 'BOP' ? extractExtraExpenseLimit(normalizedText) : null,
+    
+    // Ordinance Law Type
+    ordinance_law_limit_type: endorsements.ordinance_law_endorsement.limit_type,
+    
+    // Location Schedules (if present)
+    per_location_schedule: extractLocationSchedules(sections.schedules),
+    
     // Special Endorsements
     special_endorsements: extractSpecialEndorsements(normalizedText),
+    
+    // Endorsement Impact Categories
+    endorsement_impact: endorsementImpact,
     
     // Exclusions
     exclusion_flags: extractExclusions(normalizedText),
@@ -330,6 +376,129 @@ function extractMoldSublimit(text) {
 }
 
 /**
+ * Extract coinsurance percentage
+ */
+function extractCoinsurancePercent(text) {
+  const patterns = [
+    /coinsurance[:\s]+(\d{2,3})%/i,
+    /(\d{2,3})%\s+coinsurance/i,
+    /coinsurance\s+clause[:\s]+(\d{2,3})%/i
+  ];
+  
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match) {
+      const percent = parseFloat(match[1]);
+      if (percent >= 50 && percent <= 100) {
+        return percent;
+      }
+    }
+  }
+  
+  return null;
+}
+
+/**
+ * Detect percentage deductible
+ */
+function detectPercentageDeductible(text) {
+  const patterns = [
+    /(\d{1,2})%\s+deductible/i,
+    /deductible[:\s]+(\d{1,2})%/i,
+    /percentage\s+deductible/i
+  ];
+  
+  return patterns.some(pattern => pattern.test(text));
+}
+
+/**
+ * Extract wind/hail deductible (flat amount)
+ */
+function extractWindHailDeductible(text) {
+  const patterns = [
+    /wind.*?(?:and|&|or)\s+hail.*?deductible[:\s]+\$?([\d,]+)/i,
+    /windstorm.*?deductible[:\s]+\$?([\d,]+)/i,
+    /hurricane.*?deductible[:\s]+\$?([\d,]+)/i
+  ];
+  
+  return extractNumericValue(text, patterns);
+}
+
+/**
+ * Extract wind/hail deductible (percentage)
+ */
+function extractWindHailDeductiblePercent(text) {
+  const patterns = [
+    /wind.*?(?:and|&|or)\s+hail.*?deductible[:\s]+(\d{1,2})%/i,
+    /windstorm.*?deductible[:\s]+(\d{1,2})%/i,
+    /hurricane.*?deductible[:\s]+(\d{1,2})%/i
+  ];
+  
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match) {
+      const percent = parseFloat(match[1]);
+      if (percent >= 1 && percent <= 10) {
+        return percent;
+      }
+    }
+  }
+  
+  return null;
+}
+
+/**
+ * Extract building limit (commercial)
+ */
+function extractBuildingLimit(text) {
+  const patterns = [
+    /building\s+limit[:\s]+\$?([\d,]+)/i,
+    /limit\s+of\s+insurance.*?building[:\s]+\$?([\d,]+)/i,
+    /building.*?amount\s+of\s+insurance[:\s]+\$?([\d,]+)/i
+  ];
+  
+  return extractNumericValue(text, patterns);
+}
+
+/**
+ * Extract business personal property limit
+ */
+function extractBusinessPersonalPropertyLimit(text) {
+  const patterns = [
+    /business\s+personal\s+property\s+limit[:\s]+\$?([\d,]+)/i,
+    /your\s+business\s+personal\s+property[:\s]+\$?([\d,]+)/i,
+    /bpp\s+limit[:\s]+\$?([\d,]+)/i
+  ];
+  
+  return extractNumericValue(text, patterns);
+}
+
+/**
+ * Extract loss of income limit
+ */
+function extractLossOfIncomeLimit(text) {
+  const patterns = [
+    /business\s+income\s+limit[:\s]+\$?([\d,]+)/i,
+    /loss\s+of\s+income[:\s]+\$?([\d,]+)/i,
+    /business\s+interruption[:\s]+\$?([\d,]+)/i
+  ];
+  
+  return extractNumericValue(text, patterns);
+}
+
+/**
+ * Extract extra expense limit
+ */
+function extractExtraExpenseLimit(text) {
+  const patterns = [
+    /extra\s+expense\s+limit[:\s]+\$?([\d,]+)/i,
+    /extra\s+expense[:\s]+\$?([\d,]+)/i
+  ];
+  
+  return extractNumericValue(text, patterns);
+}
+
+/**
  * Extract sewer backup sublimit
  */
 function extractSewerBackupSublimit(text) {
@@ -385,6 +554,35 @@ function extractExclusions(text) {
   }
   
   return exclusions;
+}
+
+/**
+ * Extract location schedules (commercial policies)
+ */
+function extractLocationSchedules(scheduleText) {
+  if (!scheduleText) return [];
+  
+  const locations = [];
+  
+  // Pattern: Location number/name followed by address and limits
+  // This is a simplified extractor - real implementation would be more complex
+  const lines = scheduleText.split('\n');
+  
+  for (const line of lines) {
+    // Look for lines with dollar amounts (likely location limits)
+    const amountMatch = line.match(/\$?([\d,]+)/);
+    if (amountMatch) {
+      const amount = parseFloat(amountMatch[1].replace(/,/g, ''));
+      if (amount > 10000) { // Likely a coverage limit
+        locations.push({
+          description: line.substring(0, 100).trim(),
+          limit: amount
+        });
+      }
+    }
+  }
+  
+  return locations.length > 0 ? locations : [];
 }
 
 /**

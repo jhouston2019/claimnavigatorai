@@ -1,17 +1,21 @@
 /**
- * Policy Trigger Engine
+ * Policy Trigger Engine v2
  * Cross-references policy coverage with estimate discrepancies
  * Identifies coverage-based recovery opportunities
+ * COMMERCIAL-GRADE with coinsurance and deductible logic
  */
+
+const { validateCoinsurance, generateCoinsuranceRecommendation } = require('./coinsurance-validator');
 
 /**
  * Calculate policy triggers
  * @param {object} policyCoverage - Policy coverage data
  * @param {Array} discrepancies - Estimate discrepancies
  * @param {object} comparison - Estimate comparison data
+ * @param {number} estimatedReplacementCost - Estimated replacement cost (for coinsurance)
  * @returns {object} Trigger analysis
  */
-function calculatePolicyTriggers(policyCoverage, discrepancies, comparison) {
+function calculatePolicyTriggers(policyCoverage, discrepancies, comparison, estimatedReplacementCost = null) {
   const triggers = {
     ordinance_trigger: false,
     ordinance_trigger_amount: 0,
@@ -32,7 +36,23 @@ function calculatePolicyTriggers(policyCoverage, discrepancies, comparison) {
     settlement_type_trigger_note: null,
     
     coverage_limit_trigger: false,
-    coverage_limit_trigger_note: null
+    coverage_limit_trigger_note: null,
+    
+    // NEW: Commercial triggers
+    coinsurance_penalty_trigger: false,
+    coinsurance_penalty_note: null,
+    
+    percentage_deductible_trigger: false,
+    percentage_deductible_amount: 0,
+    
+    blanket_coverage_trigger: false,
+    blanket_coverage_note: null,
+    
+    vacancy_trigger: false,
+    vacancy_trigger_note: null,
+    
+    functional_replacement_trigger: false,
+    functional_replacement_note: null
   };
   
   // =====================================================
@@ -167,6 +187,66 @@ function calculatePolicyTriggers(policyCoverage, discrepancies, comparison) {
     triggers.coverage_limit_trigger_note = `Total contractor estimate ($${totalContractorEstimate.toFixed(2)}) exceeds Coverage A dwelling limit ($${dwellingLimit.toFixed(2)}). Review policy for extended replacement cost or other applicable endorsements.`;
   }
   
+  // =====================================================
+  // TRIGGER 6: COINSURANCE PENALTY
+  // =====================================================
+  if (policyCoverage.coinsurance_percent && !policyCoverage.agreed_value) {
+    const buildingLimit = policyCoverage.building_limit || policyCoverage.dwelling_limit;
+    const replacementCost = estimatedReplacementCost || comparison?.contractor_total;
+    
+    if (buildingLimit && replacementCost) {
+      const coinsuranceValidation = validateCoinsurance(
+        buildingLimit,
+        policyCoverage.coinsurance_percent,
+        replacementCost
+      );
+      
+      if (coinsuranceValidation.coinsurance_penalty_risk) {
+        triggers.coinsurance_penalty_trigger = true;
+        triggers.coinsurance_penalty_note = `Coinsurance penalty risk: Building limit ($${buildingLimit.toFixed(2)}) is below required ${policyCoverage.coinsurance_percent}% coinsurance amount ($${coinsuranceValidation.required_limit.toFixed(2)}). Claim payment will be reduced to ${coinsuranceValidation.penalty_percentage.toFixed(1)}% of loss amount.`;
+      }
+    }
+  }
+  
+  // =====================================================
+  // TRIGGER 7: PERCENTAGE DEDUCTIBLE
+  // =====================================================
+  if (policyCoverage.percentage_deductible_flag) {
+    const buildingLimit = policyCoverage.building_limit || policyCoverage.dwelling_limit;
+    const deductiblePercent = policyCoverage.wind_hail_deductible_percent || 
+                              (policyCoverage.deductible_type === 'percentage' ? 2 : null);
+    
+    if (buildingLimit && deductiblePercent) {
+      const deductibleAmount = buildingLimit * (deductiblePercent / 100);
+      triggers.percentage_deductible_trigger = true;
+      triggers.percentage_deductible_amount = parseFloat(deductibleAmount.toFixed(2));
+    }
+  }
+  
+  // =====================================================
+  // TRIGGER 8: BLANKET COVERAGE
+  // =====================================================
+  if (policyCoverage.blanket_limit) {
+    triggers.blanket_coverage_trigger = true;
+    triggers.blanket_coverage_note = `Blanket coverage of $${policyCoverage.blanket_limit.toFixed(2)} applies across multiple locations. Recovery potential may be shared.`;
+  }
+  
+  // =====================================================
+  // TRIGGER 9: VACANCY CLAUSE
+  // =====================================================
+  if (policyCoverage.vacancy_clause) {
+    triggers.vacancy_trigger = true;
+    triggers.vacancy_trigger_note = `Vacancy clause present in policy. Verify property was not vacant at time of loss, as coverage may be voided.`;
+  }
+  
+  // =====================================================
+  // TRIGGER 10: FUNCTIONAL REPLACEMENT COST
+  // =====================================================
+  if (policyCoverage.functional_replacement_cost) {
+    triggers.functional_replacement_trigger = true;
+    triggers.functional_replacement_note = `Functional Replacement Cost endorsement applies. Carrier may substitute functionally equivalent materials instead of like-kind-and-quality. This may reduce recovery.`;
+  }
+  
   return triggers;
 }
 
@@ -232,6 +312,61 @@ function generatePolicyRecommendations(triggers, policyCoverage) {
       title: 'Coverage Limit Exceeded',
       description: triggers.coverage_limit_trigger_note,
       action: 'Review policy for extended replacement cost endorsement or other applicable coverage extensions',
+      estimated_recovery: null
+    });
+  }
+  
+  if (triggers.coinsurance_penalty_trigger) {
+    recommendations.push({
+      priority: 'critical',
+      category: 'coinsurance',
+      title: 'Coinsurance Penalty Risk',
+      description: triggers.coinsurance_penalty_note,
+      action: 'Document replacement cost valuation. Consider requesting agreed value endorsement or policy limit increase.',
+      estimated_recovery: null
+    });
+  }
+  
+  if (triggers.percentage_deductible_trigger) {
+    recommendations.push({
+      priority: 'high',
+      category: 'deductible',
+      title: 'Percentage Deductible Applies',
+      description: `Deductible is ${triggers.percentage_deductible_amount ? '$' + triggers.percentage_deductible_amount.toFixed(2) : 'percentage-based'}`,
+      action: 'Calculate actual deductible amount based on building limit',
+      estimated_recovery: null
+    });
+  }
+  
+  if (triggers.vacancy_trigger) {
+    recommendations.push({
+      priority: 'critical',
+      category: 'vacancy',
+      title: 'Vacancy Clause Risk',
+      description: triggers.vacancy_trigger_note,
+      action: 'Document property occupancy status at time of loss with evidence (utility bills, occupancy records)',
+      estimated_recovery: null
+    });
+  }
+  
+  if (triggers.functional_replacement_trigger) {
+    recommendations.push({
+      priority: 'medium',
+      category: 'functional_replacement',
+      title: 'Functional Replacement Cost Applies',
+      description: triggers.functional_replacement_note,
+      action: 'Challenge functional equivalent substitutions that reduce quality or value',
+      estimated_recovery: null
+    });
+  }
+  
+  if (triggers.blanket_coverage_trigger) {
+    recommendations.push({
+      priority: 'medium',
+      category: 'blanket',
+      title: 'Blanket Coverage Applies',
+      description: triggers.blanket_coverage_note,
+      action: 'Review allocation of blanket limit across locations',
       estimated_recovery: null
     });
   }

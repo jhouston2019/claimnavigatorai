@@ -1,15 +1,17 @@
 /**
  * API Endpoint: /analyze-policy-v2
- * Policy Review Engine v2 - Structured Coverage Extraction
+ * Policy Intelligence Engine - COMMERCIAL-GRADE
+ * Form-aware, coinsurance validation, commercial property support
  * Deterministic regex → AI fallback → Validation
  */
 
 const { createClient } = require('@supabase/supabase-js');
 const OpenAI = require('openai');
 const pdfParse = require('pdf-parse');
-const { sendSuccess, sendError, validateAuth, parseBody, getClientIP, getUserAgent, logAPIRequest } = require('./api/lib/api-utils');
+const { sendSuccess, sendError, validateAuth, parseBody, getClientIP, getUserAgent, logAPIRequest } = require('./lib/api-utils');
 const { parsePolicyDocument, validateCoverageData, extractWithAI, mergePolicyData, calculateHash } = require('./lib/policy-parser');
 const { calculatePolicyTriggers, generatePolicyRecommendations } = require('./lib/policy-trigger-engine');
+const { validateCoinsurance } = require('./lib/coinsurance-validator');
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -183,9 +185,57 @@ exports.handler = async (event) => {
     }
 
     // =====================================================
-    // PHASE 6: CALCULATE POLICY TRIGGERS
+    // PHASE 6: COINSURANCE VALIDATION (if applicable)
     // =====================================================
-    console.log('[Policy v2] Phase 6: Calculating policy triggers...');
+    let coinsuranceValidation = null;
+    
+    if (storedCoverage.coinsurance_percent && !storedCoverage.agreed_value) {
+      console.log('[Policy v2] Phase 6a: Validating coinsurance...');
+      
+      const buildingLimit = storedCoverage.building_limit || storedCoverage.dwelling_limit;
+      
+      // Get contractor estimate as replacement cost proxy
+      const { data: comparison } = await supabase
+        .from('claim_estimate_comparison')
+        .select('contractor_total')
+        .eq('claim_id', body.claim_id)
+        .single();
+      
+      const replacementCost = comparison?.contractor_total || body.estimated_replacement_cost;
+      
+      if (buildingLimit && replacementCost) {
+        coinsuranceValidation = validateCoinsurance(
+          buildingLimit,
+          storedCoverage.coinsurance_percent,
+          replacementCost
+        );
+        
+        // Store coinsurance validation
+        await supabase
+          .from('claim_coinsurance_validation')
+          .upsert({
+            claim_id: body.claim_id,
+            user_id: userId,
+            policy_coverage_id: storedCoverage.id,
+            coinsurance_percent: storedCoverage.coinsurance_percent,
+            building_limit: buildingLimit,
+            estimated_replacement_cost: replacementCost,
+            required_limit: coinsuranceValidation.required_limit,
+            shortfall: coinsuranceValidation.shortfall,
+            coinsurance_penalty_risk: coinsuranceValidation.coinsurance_penalty_risk,
+            penalty_percentage: coinsuranceValidation.penalty_percentage
+          }, {
+            onConflict: 'claim_id'
+          });
+        
+        console.log(`[Policy v2] Coinsurance penalty risk: ${coinsuranceValidation.coinsurance_penalty_risk}`);
+      }
+    }
+    
+    // =====================================================
+    // PHASE 7: CALCULATE POLICY TRIGGERS
+    // =====================================================
+    console.log('[Policy v2] Phase 7: Calculating policy triggers...');
     
     // Get discrepancies for trigger calculation
     const { data: discrepancies } = await supabase
@@ -200,10 +250,13 @@ exports.handler = async (event) => {
       .eq('claim_id', body.claim_id)
       .single();
 
+    const replacementCost = comparison?.contractor_total || body.estimated_replacement_cost;
+
     const triggers = calculatePolicyTriggers(
       storedCoverage,
       discrepancies || [],
-      comparison
+      comparison,
+      replacementCost
     );
 
     console.log('[Policy v2] Triggers calculated:');
@@ -228,7 +281,7 @@ exports.handler = async (event) => {
     const recommendations = generatePolicyRecommendations(triggers, storedCoverage);
 
     // =====================================================
-    // PHASE 7: UPDATE STEP STATUS
+    // PHASE 8: UPDATE STEP STATUS
     // =====================================================
     await supabase
       .from('claim_steps')
@@ -256,19 +309,47 @@ exports.handler = async (event) => {
     console.log(`[Policy v2] Analysis complete in ${Date.now() - startTime}ms`);
 
     // =====================================================
-    // PHASE 8: RETURN STRUCTURED DATA
+    // PHASE 9: RETURN STRUCTURED DATA
     // =====================================================
     return sendSuccess({
+      policy_type: storedCoverage.policy_type,
+      form_numbers: storedCoverage.form_numbers,
+      
       coverage: {
+        // Residential
         dwelling_limit: storedCoverage.dwelling_limit,
         other_structures_limit: storedCoverage.other_structures_limit,
         contents_limit: storedCoverage.contents_limit,
         ale_limit: storedCoverage.ale_limit,
+        
+        // Commercial
+        building_limit: storedCoverage.building_limit,
+        business_personal_property_limit: storedCoverage.business_personal_property_limit,
+        loss_of_income_limit: storedCoverage.loss_of_income_limit,
+        extra_expense_limit: storedCoverage.extra_expense_limit,
+        
+        // Deductible
         deductible: storedCoverage.deductible,
         deductible_type: storedCoverage.deductible_type,
+        percentage_deductible_flag: storedCoverage.percentage_deductible_flag,
+        wind_hail_deductible: storedCoverage.wind_hail_deductible,
+        wind_hail_deductible_percent: storedCoverage.wind_hail_deductible_percent,
+        
+        // Settlement
         settlement_type: storedCoverage.settlement_type,
+        
+        // Ordinance & Law
         ordinance_law_percent: storedCoverage.ordinance_law_percent,
-        ordinance_law_limit: storedCoverage.ordinance_law_limit
+        ordinance_law_limit: storedCoverage.ordinance_law_limit,
+        ordinance_law_limit_type: storedCoverage.ordinance_law_limit_type,
+        
+        // Coinsurance
+        coinsurance_percent: storedCoverage.coinsurance_percent,
+        agreed_value: storedCoverage.agreed_value,
+        
+        // Special
+        blanket_limit: storedCoverage.blanket_limit,
+        functional_replacement_cost: storedCoverage.functional_replacement_cost
       },
       
       endorsements: {
@@ -276,7 +357,11 @@ exports.handler = async (event) => {
         cosmetic_exclusion: storedCoverage.cosmetic_exclusion,
         roof_acv: storedCoverage.roof_acv_endorsement,
         replacement_cost: storedCoverage.replacement_cost_endorsement,
-        special: storedCoverage.special_endorsements
+        vacancy_clause: storedCoverage.vacancy_clause,
+        functional_replacement_cost: storedCoverage.functional_replacement_cost,
+        agreed_value: storedCoverage.agreed_value,
+        special: storedCoverage.special_endorsements,
+        impact: storedCoverage.endorsement_impact
       },
       
       policy_type: {
@@ -294,13 +379,16 @@ exports.handler = async (event) => {
       
       triggers: triggers,
       
+      coinsurance_validation: coinsuranceValidation,
+      
       recommendations: recommendations,
       
       metadata: {
         parsed_by: storedCoverage.parsed_by,
         ai_confidence: storedCoverage.ai_confidence,
         processing_time_ms: Date.now() - startTime,
-        engine_version: '2.0'
+        engine_version: '2.1',
+        intelligence_upgrade: true
       }
     });
 

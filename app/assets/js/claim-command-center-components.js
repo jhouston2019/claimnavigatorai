@@ -398,44 +398,97 @@ class StructuredOutputPanel {
   
   renderPolicyAnalysis() {
     const data = this.data;
+    const policyType = data.policy_type || 'OTHER';
+    const formNumbers = data.form_numbers || [];
     const coverage = data.coverage || {};
     const endorsements = data.endorsements || {};
     const triggers = data.triggers || {};
     const recommendations = data.recommendations || [];
     const sublimits = data.sublimits || {};
-    const policyType = data.policy_type || {};
+    const coinsuranceValidation = data.coinsurance_validation || {};
     const metadata = data.metadata || {};
+    
+    const isCommercial = policyType === 'CP' || policyType === 'BOP';
     
     return `
       <div class="output-section">
-        <h3 class="output-title">📋 Policy Coverage - Structured Extraction</h3>
+        <h3 class="output-title">📋 Policy Intelligence - ${getPolicyTypeLabel(policyType)}</h3>
+        
+        ${formNumbers.length > 0 ? `
+          <div class="output-subsection">
+            <h4>Policy Forms Detected</h4>
+            <div class="output-list">
+              ${formNumbers.map(form => `<div class="output-item">${form}</div>`).join('')}
+            </div>
+          </div>
+        ` : ''}
         
         <div class="output-subsection">
           <h4>Coverage Limits</h4>
           <div class="output-grid">
-            <div class="output-card">
-              <div class="output-label">Coverage A (Dwelling)</div>
-              <div class="output-value">${coverage.dwelling_limit ? formatCurrency(coverage.dwelling_limit) : 'Not found'}</div>
-            </div>
-            <div class="output-card">
-              <div class="output-label">Coverage C (Contents)</div>
-              <div class="output-value">${coverage.contents_limit ? formatCurrency(coverage.contents_limit) : 'Not found'}</div>
-            </div>
-            <div class="output-card">
-              <div class="output-label">Coverage D (ALE)</div>
-              <div class="output-value">${coverage.ale_limit ? formatCurrency(coverage.ale_limit) : 'Not found'}</div>
-            </div>
+            ${isCommercial ? `
+              <div class="output-card">
+                <div class="output-label">Building</div>
+                <div class="output-value">${coverage.building_limit ? formatCurrency(coverage.building_limit) : 'Not found'}</div>
+              </div>
+              <div class="output-card">
+                <div class="output-label">Business Personal Property</div>
+                <div class="output-value">${coverage.business_personal_property_limit ? formatCurrency(coverage.business_personal_property_limit) : 'Not found'}</div>
+              </div>
+              <div class="output-card">
+                <div class="output-label">Loss of Income</div>
+                <div class="output-value">${coverage.loss_of_income_limit ? formatCurrency(coverage.loss_of_income_limit) : 'Not found'}</div>
+              </div>
+              <div class="output-card">
+                <div class="output-label">Extra Expense</div>
+                <div class="output-value">${coverage.extra_expense_limit ? formatCurrency(coverage.extra_expense_limit) : 'Not found'}</div>
+              </div>
+            ` : `
+              <div class="output-card">
+                <div class="output-label">Coverage A (Dwelling)</div>
+                <div class="output-value">${coverage.dwelling_limit ? formatCurrency(coverage.dwelling_limit) : 'Not found'}</div>
+              </div>
+              <div class="output-card">
+                <div class="output-label">Coverage C (Contents)</div>
+                <div class="output-value">${coverage.contents_limit ? formatCurrency(coverage.contents_limit) : 'Not found'}</div>
+              </div>
+              <div class="output-card">
+                <div class="output-label">Coverage D (ALE)</div>
+                <div class="output-value">${coverage.ale_limit ? formatCurrency(coverage.ale_limit) : 'Not found'}</div>
+              </div>
+            `}
             <div class="output-card">
               <div class="output-label">Deductible</div>
               <div class="output-value">${coverage.deductible ? formatCurrency(coverage.deductible) : 'Not found'}</div>
             </div>
+            ${coverage.wind_hail_deductible || coverage.wind_hail_deductible_percent ? `
+              <div class="output-card">
+                <div class="output-label">Wind/Hail Deductible</div>
+                <div class="output-value">${coverage.wind_hail_deductible ? formatCurrency(coverage.wind_hail_deductible) : coverage.wind_hail_deductible_percent + '%'}</div>
+              </div>
+            ` : ''}
           </div>
         </div>
         
         <div class="output-subsection">
-          <h4>Settlement Type</h4>
-          <div class="output-card">
-            <div class="output-value">${coverage.settlement_type || 'Not detected'}</div>
+          <h4>Settlement Type & Special Provisions</h4>
+          <div class="output-grid">
+            <div class="output-card">
+              <div class="output-label">Settlement Type</div>
+              <div class="output-value">${coverage.settlement_type || 'Not detected'}</div>
+            </div>
+            ${coverage.coinsurance_percent ? `
+              <div class="output-card">
+                <div class="output-label">Coinsurance</div>
+                <div class="output-value">${coverage.coinsurance_percent}%${coverage.agreed_value ? ' (Waived by Agreed Value)' : ''}</div>
+              </div>
+            ` : ''}
+            ${coverage.blanket_limit ? `
+              <div class="output-card">
+                <div class="output-label">Blanket Coverage</div>
+                <div class="output-value">${formatCurrency(coverage.blanket_limit)}</div>
+              </div>
+            ` : ''}
           </div>
         </div>
         
@@ -444,6 +497,30 @@ class StructuredOutputPanel {
             <h4>Ordinance & Law</h4>
             <div class="output-card">
               <div class="output-value">${coverage.ordinance_law_percent}% coverage available</div>
+            </div>
+          </div>
+        ` : ''}
+        
+        ${coinsuranceValidation && coinsuranceValidation.coinsurance_penalty_risk ? `
+          <div class="output-subsection">
+            <h4>⚠ Coinsurance Penalty Risk</h4>
+            <div class="output-alert alert-critical">
+              <p><strong>Building limit is below coinsurance requirement</strong></p>
+              <div class="output-grid">
+                <div class="output-card">
+                  <div class="output-label">Required Limit</div>
+                  <div class="output-value">${formatCurrency(coinsuranceValidation.required_limit)}</div>
+                </div>
+                <div class="output-card">
+                  <div class="output-label">Shortfall</div>
+                  <div class="output-value">${formatCurrency(coinsuranceValidation.shortfall)}</div>
+                </div>
+                <div class="output-card">
+                  <div class="output-label">Penalty %</div>
+                  <div class="output-value">${coinsuranceValidation.penalty_percentage.toFixed(1)}%</div>
+                </div>
+              </div>
+              <p>Claim payment will be reduced to ${coinsuranceValidation.penalty_percentage.toFixed(1)}% of loss amount.</p>
             </div>
           </div>
         ` : ''}
@@ -470,7 +547,7 @@ class StructuredOutputPanel {
           </div>
         ` : ''}
         
-        ${triggers.ordinance_trigger || triggers.matching_trigger || triggers.depreciation_trigger || triggers.sublimit_trigger ? `
+        ${Object.keys(triggers).some(k => triggers[k] === true) ? `
           <div class="output-subsection">
             <h4>Coverage Triggers</h4>
             <div class="output-list">
@@ -478,6 +555,11 @@ class StructuredOutputPanel {
               ${triggers.matching_trigger ? `<div class="output-item alert-success">✓ Matching endorsement applies</div>` : ''}
               ${triggers.depreciation_trigger ? `<div class="output-item alert-warning">⚠ Depreciation issue detected</div>` : ''}
               ${triggers.sublimit_trigger ? `<div class="output-item alert-warning">⚠ ${triggers.sublimit_trigger_type} sublimit may cap recovery</div>` : ''}
+              ${triggers.coinsurance_penalty_trigger ? `<div class="output-item alert-critical">⚠ Coinsurance penalty risk present</div>` : ''}
+              ${triggers.percentage_deductible_trigger ? `<div class="output-item alert-warning">⚠ Percentage deductible applies (${triggers.percentage_deductible_amount ? formatCurrency(triggers.percentage_deductible_amount) : 'amount TBD'})</div>` : ''}
+              ${triggers.vacancy_trigger ? `<div class="output-item alert-critical">⚠ Vacancy clause may void coverage</div>` : ''}
+              ${triggers.functional_replacement_trigger ? `<div class="output-item alert-warning">⚠ Functional replacement cost applies</div>` : ''}
+              ${triggers.blanket_coverage_trigger ? `<div class="output-item alert-info">ℹ Blanket coverage applies</div>` : ''}
             </div>
           </div>
         ` : ''}
@@ -835,3 +917,15 @@ window.ClaimCommandCenter = {
   formatDate,
   showToast
 };
+
+// Helper function for policy type labels
+function getPolicyTypeLabel(policyType) {
+  const labels = {
+    'HO': 'Homeowners Policy',
+    'DP': 'Dwelling Property Policy',
+    'CP': 'Commercial Property Policy',
+    'BOP': 'Businessowners Policy',
+    'OTHER': 'Policy Analysis'
+  };
+  return labels[policyType] || 'Policy Analysis';
+}
