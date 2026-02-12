@@ -1,0 +1,2354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Command Center - Claim Navigator AI</title>
+  <link rel="stylesheet" href="/app/assets/css/tool-visual-alignment.css">
+  <link rel="stylesheet" href="/app/assets/css/claim-command-center-tools.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* CSS Variables */
+    :root {
+      --navy-primary: #1e3a5f;
+      --navy-dark: #0f1f3d;
+      --gold-accent: #d4af37;
+      --bg-page: #e3e5eb;
+      --bg-white: #ffffff;
+      --bg-cream: #fafaf8;
+      --border-light: #e8edf2;
+      --border-medium: #d1dce6;
+      --border-dark: #b8c5d3;
+      --text-primary: #1a202c;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --accent-blue: #3b82f6;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.15);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.2);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.25);
+    }
+
+    /* Command Center Specific Styles */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #e3e5eb;
+      color: #1a202c;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    /* Navigation Bar */
+    .command-nav {
+      background: #1e3a5f;
+      border-bottom: none;
+      padding: 6px 32px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .nav-brand {
+      font-size: 13px;
+      font-weight: 600;
+      color: #ffffff;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .nav-brand:hover {
+      color: #e3e5eb;
+    }
+
+    .nav-progress {
+      font-size: 13px;
+      font-weight: 600;
+      color: #ffffff;
+      text-shadow: 0.25px 0.25px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-links {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      width: 100%;
+    }
+
+    .nav-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      text-shadow: 0.25px 0.25px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-link:hover {
+      color: #ffffff;
+    }
+
+    /* Claim Info Bar */
+    .claim-info-bar {
+      background: #0f1f3d;
+      padding: 6px 32px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.9);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .claim-info-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .claim-info-label {
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+    }
+
+    .claim-info-value {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .claim-info-value.active {
+      color: #10b981;
+    }
+
+    .claim-info-value.warning {
+      color: #fbbf24;
+    }
+
+    .claim-info-edit {
+      margin-left: auto;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .claim-info-edit:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .claim-info-alert {
+      background: #fef3c7;
+      padding: 6px 32px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #92400e;
+      border-bottom: 1px solid #fbbf24;
+    }
+
+    .claim-info-alert strong {
+      font-weight: 700;
+    }
+
+    .command-center-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 32px 40px 32px;
+      background: #e3e5eb;
+    }
+
+
+    /* Header Section */
+    .command-center-header {
+      background: #1e3a5f;
+      padding: 10px 32px;
+      text-align: center;
+      border-bottom: 3px solid #d4af37;
+      margin-bottom: 0;
+    }
+
+    .command-center-title {
+      font-size: 29px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0 0 12px 0;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      text-shadow: 0.25px 0.25px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .command-center-subtitle {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.95);
+      margin: 0 0 8px 0;
+      line-height: 1.5;
+    }
+
+    .command-center-instruction {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.85);
+      margin: 0;
+      font-style: italic;
+    }
+
+
+    /* Table of Contents */
+    .toc-section {
+      background: #ffffff;
+      border: 1px solid #e8edf2;
+      border-left: 4px solid #1e3a5f;
+      border-radius: 12px;
+      padding: 32px 40px 50px 40px;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      min-height: 300px;
+      position: relative;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .toc-section::after {
+      content: 'Click any step to jump directly to it';
+      position: absolute;
+      bottom: 16px;
+      right: 24px;
+      font-size: 12px;
+      color: #9ca3af;
+      font-style: italic;
+    }
+
+    .toc-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin: 0 0 20px 0;
+      text-align: center;
+      text-transform: uppercase;
+      text-shadow: 0.25px 0.25px 0 rgba(0, 0, 0, 0.15);
+    }
+
+    .toc-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(9, auto);
+      grid-auto-flow: column;
+      gap: 12px 32px;
+      counter-reset: toc-counter;
+    }
+
+    .toc-item {
+      font-size: 18px;
+      color: #1a202c;
+      padding: 0;
+      margin: 0;
+    }
+
+    .toc-link {
+      color: #b8941f;
+      text-decoration: none;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      display: block;
+      padding: 10px 14px 10px 28px;
+      border-radius: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: #f8f9fb;
+      border: 2px solid #e8edf2;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      position: relative;
+      text-shadow: 0.25px 0.25px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .toc-link:hover {
+      color: #ffffff;
+      background: #1e3a5f;
+      border-color: #1e3a5f;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(30,58,95,0.2);
+      text-shadow: 0.25px 0.25px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .toc-link:active {
+      transform: translateY(0);
+    }
+
+    /* Status indicator dot */
+    .toc-link::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #d1dce6;
+      transition: all 0.3s ease;
+    }
+
+    .toc-link:hover::before {
+      background: #d4af37;
+      box-shadow: 0 0 8px rgba(212,175,55,0.5);
+    }
+
+    /* Current step styling */
+    .toc-link.current {
+      background: #e3f2fd;
+      border-color: #3b82f6;
+      color: #1e40af;
+    }
+
+    .toc-link.current::before {
+      background: #3b82f6;
+      box-shadow: 0 0 8px rgba(59,130,246,0.5);
+    }
+
+    /* Completed step styling */
+    .toc-link.completed {
+      background: #f0fdf4;
+      border-color: #10b981;
+      color: #065f46;
+    }
+
+    .toc-link.completed::before {
+      background: #10b981;
+      content: '✓';
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 700;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    /* Step Block Component */
+    .step-block {
+      background: #ffffff;
+      border: 1px solid #e8edf2;
+      border-left: 4px solid #b8c5d3;
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: all 0.2s ease;
+      scroll-margin-top: 20px;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .step-block:hover {
+      border-left-color: #3b82f6;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+
+    .step-header {
+      font-size: 26px;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin: 0 0 24px 0;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #e8edf2;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .step-section {
+      margin-bottom: 24px;
+    }
+
+    .step-section:last-of-type {
+      margin-bottom: 28px;
+    }
+
+    .step-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f1f3d;
+      margin: 0 0 10px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .step-section-content {
+      font-size: 15px;
+      color: #4a5568;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .step-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .step-bullets li {
+      font-size: 15px;
+      color: #4a5568;
+      line-height: 1.7;
+      padding-left: 24px;
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    .step-bullets li:before {
+      content: "•";
+      position: absolute;
+      left: 8px;
+      color: #3b82f6;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .step-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      background: #1e3a5f;
+      color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .step-button:hover {
+      background: #0f1f3d;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .step-button:active {
+      transform: translateY(0);
+    }
+
+    /* Claim Process Briefing Section */
+    .briefing-section {
+      background: #ffffff;
+      border: 1px solid #e8edf2;
+      border-left: 4px solid #b8c5d3;
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: all 0.2s ease;
+      scroll-margin-top: 20px;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .briefing-section:hover {
+      border-left-color: #3b82f6;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+
+    .briefing-header {
+      display: grid;
+      grid-template-columns: 30px 1fr 30px;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .briefing-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin: 0;
+      text-transform: uppercase;
+      text-align: center;
+      grid-column: 2;
+    }
+
+    .briefing-preview {
+      font-size: 15px;
+      color: #4a5568;
+      margin: 12px 0 0 0;
+      line-height: 1.6;
+      grid-column: 1 / 4;
+      text-align: center;
+    }
+
+    .briefing-caret {
+      font-size: 20px;
+      color: #1e3a5f;
+      transition: transform 0.3s ease;
+      grid-column: 3;
+      text-align: right;
+    }
+
+    .briefing-caret.expanded {
+      transform: rotate(180deg);
+    }
+
+    .briefing-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .briefing-content.expanded {
+      max-height: 5000px;
+    }
+
+    .briefing-inner {
+      padding-top: 24px;
+      margin-top: 20px;
+    }
+
+    .briefing-section-heading {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin: 24px 0 12px 0;
+    }
+
+    .briefing-section-heading:first-child {
+      margin-top: 0;
+    }
+
+    .briefing-text {
+      font-size: 15px;
+      color: #4a5568;
+      line-height: 1.7;
+      margin: 0 0 16px 0;
+    }
+
+    .briefing-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0;
+    }
+
+    .briefing-bullets li {
+      font-size: 15px;
+      color: #4a5568;
+      line-height: 1.7;
+      padding-left: 24px;
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    .briefing-bullets li:before {
+      content: "•";
+      position: absolute;
+      left: 8px;
+      color: #d4af37;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .briefing-emphasis {
+      font-weight: 600;
+      color: #1e3a5f;
+    }
+
+    /* Next Action Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+    }
+
+    .modal-overlay.hidden {
+      display: none;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      border-radius: 12px;
+      max-width: 520px;
+      width: 90%;
+      padding: 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      position: relative;
+    }
+
+    .modal-overlay.tier-3 {
+      pointer-events: all;
+    }
+
+    .modal-overlay.tier-3 .modal-box {
+      pointer-events: all;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #718096;
+      cursor: pointer;
+      padding: 4px 8px;
+      line-height: 1;
+      transition: color 0.2s ease;
+    }
+
+    .modal-close:hover {
+      color: #1e3a5f;
+    }
+
+    .modal-header {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin: 0 0 16px 0;
+      text-align: center;
+    }
+
+    .modal-step-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #4a5568;
+      margin: 0 0 16px 0;
+      text-align: center;
+    }
+
+    .modal-instruction {
+      font-size: 15px;
+      color: #4a5568;
+      line-height: 1.7;
+      margin: 0 0 24px 0;
+      text-align: center;
+    }
+
+    .modal-escalation-message {
+      font-size: 15px;
+      color: #1a202c;
+      line-height: 1.7;
+      margin: 0 0 20px 0;
+      padding: 16px;
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      border-radius: 6px;
+      text-align: left;
+    }
+
+    .modal-escalation-message.tier-2 {
+      background: #fee2e2;
+      border-left-color: #ef4444;
+    }
+
+    .modal-escalation-message.tier-3 {
+      background: #fee2e2;
+      border-left-color: #dc2626;
+      font-weight: 500;
+    }
+
+    .modal-days-inactive {
+      font-size: 14px;
+      color: #dc2626;
+      font-weight: 600;
+      margin-top: 12px;
+      display: block;
+    }
+
+    .modal-button {
+      display: block;
+      width: 100%;
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      background: #1e3a5f;
+      color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .modal-button:hover {
+      background: #0f1f3d;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .modal-secondary-link {
+      display: block;
+      text-align: center;
+      font-size: 14px;
+      color: #3b82f6;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .modal-secondary-link:hover {
+      color: #1e3a5f;
+      text-decoration: underline;
+    }
+
+    .modal-dismiss-link {
+      display: block;
+      text-align: center;
+      font-size: 13px;
+      color: #718096;
+      text-decoration: none;
+      margin-top: 12px;
+      transition: color 0.2s ease;
+    }
+
+    .modal-dismiss-link:hover {
+      color: #4a5568;
+      text-decoration: underline;
+    }
+
+    /* Mark Complete Button */
+    .mark-complete-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 2px solid #10b981;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      background: #ffffff;
+      color: #10b981;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-top: 16px;
+    }
+
+    .mark-complete-button:hover {
+      background: #10b981;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(16,185,129,0.3);
+    }
+
+    .mark-complete-button.completed {
+      background: #10b981;
+      color: #ffffff;
+      border-color: #059669;
+      cursor: default;
+    }
+
+    .mark-complete-button.completed:hover {
+      transform: none;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .modal-box {
+        width: calc(100% - 32px);
+        padding: 24px;
+        margin: 16px;
+        max-width: calc(100% - 32px);
+      }
+
+      .modal-header {
+        font-size: 20px;
+      }
+
+      .modal-step-title {
+        font-size: 16px;
+      }
+
+      .modal-instruction {
+        font-size: 14px;
+      }
+
+      .modal-escalation-message {
+        font-size: 14px;
+        padding: 12px;
+      }
+
+      .modal-button {
+        width: 100%;
+        padding: 12px 20px;
+      }
+
+      .modal-dismiss-link {
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .toc-list {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(9, auto);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .command-nav {
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px 20px;
+        text-align: center;
+      }
+
+      .nav-links {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .claim-info-bar {
+        flex-wrap: wrap;
+        padding: 12px 20px;
+        gap: 16px;
+        font-size: 12px;
+      }
+
+      .claim-info-edit {
+        width: 100%;
+        margin-left: 0;
+      }
+
+      .claim-info-alert {
+        padding: 10px 20px;
+        font-size: 12px;
+      }
+      .command-center-container {
+        padding: 24px 20px;
+      }
+
+      .command-center-header {
+        padding: 32px 20px;
+      }
+
+      .command-center-title {
+        font-size: 28px;
+      }
+
+      .command-center-subtitle {
+        font-size: 16px;
+      }
+
+      .step-block {
+        padding: 24px 20px;
+      }
+
+      .step-header {
+        font-size: 22px;
+      }
+
+      .step-button {
+        max-width: 100%;
+      }
+
+      .toc-section {
+        padding: 20px 20px;
+      }
+
+      .toc-list {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(9, auto);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .command-center-title {
+        font-size: 24px;
+      }
+
+      .step-header {
+        font-size: 20px;
+      }
+
+      .toc-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="command-nav">
+    <a href="/app/resource-center.html" class="nav-brand">← Back to Resources</a>
+    <div class="nav-links">
+      <span class="nav-progress">Progress: 0 of 18 Steps Completed</span>
+      <a href="/app/claim-summary.html" class="nav-link">Claim Summary</a>
+      <a href="/app/upload-documents.html" class="nav-link">Upload Documents</a>
+      <a href="/app/claim-journal.html" class="nav-link">Claim Journal</a>
+      <a href="/app/claim-financial-summary.html" class="nav-link">Financial Summary</a>
+      <a href="/app/claim-deadlines.html" class="nav-link">Claim Deadlines</a>
+      <a href="/app/messages.html" class="nav-link">Messages</a>
+    </div>
+  </nav>
+
+  <!-- Header Section -->
+  <div class="command-center-header">
+    <h1 class="command-center-title">Claim Command Center</h1>
+    <p class="command-center-subtitle">Step-by-step guidance to manage your claim correctly and avoid losing money.</p>
+    <p class="command-center-instruction">Start at Step 1. Complete each step in order.</p>
+  </div>
+
+  <!-- Claim Information Bar -->
+  <div class="claim-info-bar">
+    <div class="claim-info-item">
+      <span class="claim-info-label">Claim Number:</span>
+      <span class="claim-info-value">CLM-2024-089456</span>
+    </div>
+    <div class="claim-info-item">
+      <span class="claim-info-label">Insurance Company:</span>
+      <span class="claim-info-value">State Farm</span>
+    </div>
+    <div class="claim-info-item">
+      <span class="claim-info-label">Claim Status:</span>
+      <span class="claim-info-value active">Active</span>
+    </div>
+    <div class="claim-info-item">
+      <span class="claim-info-label">Date of Loss:</span>
+      <span class="claim-info-value">November 15, 2024</span>
+    </div>
+    <div class="claim-info-item">
+      <span class="claim-info-label">Days Since Loss:</span>
+      <span class="claim-info-value">85 days</span>
+    </div>
+    <div class="claim-info-item">
+      <span class="claim-info-label">Adjuster Name:</span>
+      <span class="claim-info-value">Mike Johnson</span>
+    </div>
+    <button class="claim-info-edit">✏️ Edit</button>
+  </div>
+
+  <!-- Upcoming Deadline Alert -->
+  <div class="claim-info-alert">
+    <span>⚠️</span>
+    <span><strong>Upcoming Deadline:</strong> Proof of Loss due in 15 days (January 14, 2025)</span>
+  </div>
+
+  <!-- Main Container -->
+  <div class="command-center-container">
+    <!-- Table of Contents -->
+    <div class="toc-section">
+      <h2 class="toc-title">Your Step-by-Step Claim Roadmap</h2>
+      <ol class="toc-list">
+        <li class="toc-item"><a href="#step-0" class="toc-link">Step 1. Review the Claim Process Guide</a></li>
+        <li class="toc-item"><a href="#step-1" class="toc-link">Step 2. Review Your Policy with AI Expert Policy Analyzer</a></li>
+        <li class="toc-item"><a href="#step-2" class="toc-link">Step 3. Report the Loss Properly</a></li>
+        <li class="toc-item"><a href="#step-3" class="toc-link">Step 4. Prepare for Recorded Statements</a></li>
+        <li class="toc-item"><a href="#step-4" class="toc-link">Step 5. Document All Damage</a></li>
+        <li class="toc-item"><a href="#step-5" class="toc-link">Step 6. Manage the Inspection</a></li>
+        <li class="toc-item"><a href="#step-6" class="toc-link">Step 7. Obtain a Contractor Estimate</a></li>
+        <li class="toc-item"><a href="#step-7" class="toc-link">Step 8. Review Your Estimates with AI Expert Estimate Analyzer</a></li>
+        <li class="toc-item"><a href="#step-8" class="toc-link">Step 9. Identify Code & Coverage Issues</a></li>
+        <li class="toc-item"><a href="#step-9" class="toc-link">Step 10. Structure and Submit Supplements</a></li>
+        <li class="toc-item"><a href="#step-10" class="toc-link">Step 11. Track Additional Living Expenses</a></li>
+        <li class="toc-item"><a href="#step-11" class="toc-link">Step 12. Build Your Contents Inventory</a></li>
+        <li class="toc-item"><a href="#step-12" class="toc-link">Step 13. Review the Settlement Breakdown</a></li>
+        <li class="toc-item"><a href="#step-13" class="toc-link">Step 14. Negotiate in Writing</a></li>
+        <li class="toc-item"><a href="#step-14" class="toc-link">Step 15. Escalate if Necessary</a></li>
+        <li class="toc-item"><a href="#step-15" class="toc-link">Step 16. Recover Depreciation</a></li>
+        <li class="toc-item"><a href="#step-16" class="toc-link">Step 17. Review Release Language</a></li>
+        <li class="toc-item"><a href="#step-17" class="toc-link">Step 18. Confirm Final Payment</a></li>
+      </ol>
+    </div>
+
+    <!-- Step 1: Claim Process Guide -->
+    <div class="briefing-section" id="step-0">
+      <div class="briefing-header" onclick="toggleBriefing()">
+        <span></span>
+        <h2 class="briefing-title">Step 1: Review the Claim Process Guide</h2>
+        <span class="briefing-caret" id="briefing-caret">▼</span>
+        <p class="briefing-preview" id="briefing-preview">This is not just a guide. It is a structured claim management system with AI-powered analysis, estimate comparison, and document generation.</p>
+      </div>
+      
+      <div class="briefing-content" id="briefing-content">
+        <div class="briefing-inner">
+          <h3 class="briefing-section-heading">Why this matters</h3>
+          
+          <p class="briefing-text">You have experienced a property loss. You are now entering a formal insurance claim process.</p>
+          
+          <p class="briefing-text">An insurance claim is not automatic reimbursement. It is a structured financial review governed by your policy contract. Payment is based on:</p>
+          
+          <ul class="briefing-bullets">
+            <li>What your policy covers</li>
+            <li>What damage can be verified</li>
+            <li>What can be documented</li>
+            <li>What can be supported with pricing</li>
+            <li>Whether policy conditions are satisfied</li>
+          </ul>
+          
+          <p class="briefing-text"><span class="briefing-emphasis">The insurance company does not build your claim for you. You are responsible for presenting it properly.</span></p>
+          
+          <p class="briefing-text"><span class="briefing-emphasis">This Command Center exists to help you do that correctly.</span></p>
+          
+          <h3 class="briefing-section-heading">The Reality of Insurance Claims</h3>
+          
+          <p class="briefing-text">Insurance carriers evaluate claims using:</p>
+          
+          <ul class="briefing-bullets">
+            <li>Policy language</li>
+            <li>Written documentation</li>
+            <li>Photos and videos</li>
+            <li>Contractor estimates</li>
+            <li>Invoices and receipts</li>
+            <li>Payment records</li>
+            <li>Timelines</li>
+            <li>Compliance with policy conditions</li>
+          </ul>
+          
+          <p class="briefing-text"><span class="briefing-emphasis">Verbal explanations are not enough.</span></p>
+          
+          <p class="briefing-text">If something is not documented, it may not be paid.<br>
+          If something cannot be supported, it may be reduced.<br>
+          If something is submitted incorrectly, it may be delayed.<br>
+          If deadlines are missed, rights may be limited.</p>
+          
+          <p class="briefing-text">Claims are built on documentation, structure, and clarity.</p>
+          
+          <h3 class="briefing-section-heading">What the Insurance Company Must Determine</h3>
+          
+          <p class="briefing-text">Before issuing payment, the insurer must determine:</p>
+          
+          <ul class="briefing-bullets">
+            <li>That a covered cause of loss occurred</li>
+            <li>The date and circumstances of the loss</li>
+            <li>The full scope of physical damage</li>
+            <li>The reasonable cost to repair or replace</li>
+            <li>Whether claimed items fall within policy coverage</li>
+            <li>Whether policy conditions have been satisfied</li>
+          </ul>
+          
+          <p class="briefing-text">Adjusters rely on structured estimates and documented evidence. They do not automatically include every item unless it is identified and supported.</p>
+          
+          <h3 class="briefing-section-heading">How This Command Center Helps You</h3>
+          
+          <p class="briefing-text"><span class="briefing-emphasis">This is not just a guide. It is a structured claim management system.</span></p>
+          
+          <p class="briefing-text">As you move through the steps, the system will:</p>
+          
+          <ul class="briefing-bullets">
+            <li>Analyze your insurance policy using AI-powered coverage extraction</li>
+            <li>Identify coverage limits, exclusions, deductibles, and endorsements</li>
+            <li>Review contractor and carrier estimates line-by-line</li>
+            <li>Detect missing scope, pricing gaps, and depreciation differences</li>
+            <li>Generate structured written responses and supplement letters</li>
+            <li>Organize and store your documentation</li>
+            <li>Track deadlines and payment stages</li>
+            <li>Summarize settlement breakdowns</li>
+            <li>Identify recovery opportunities</li>
+          </ul>
+          
+          <p class="briefing-text"><span class="briefing-emphasis">You are not manually building everything alone. The system assists you with analysis, structure, and written documentation at each stage.</span></p>
+          
+          <h3 class="briefing-section-heading">Your Responsibilities Under Most Policies</h3>
+          
+          <p class="briefing-text">Most homeowner policies require you to:</p>
+          
+          <ul class="briefing-bullets">
+            <li>Give prompt notice of the loss</li>
+            <li>Protect the property from further damage</li>
+            <li>Allow inspection of the damaged property</li>
+            <li>Provide records and documents when requested</li>
+            <li>Submit proof of loss when required</li>
+            <li>Document personal property values</li>
+            <li>Support supplemental damage claims</li>
+            <li>Cooperate with the insurer's investigation</li>
+          </ul>
+          
+          <p class="briefing-text">This Command Center is structured to help you complete those responsibilities in the correct order.</p>
+          
+          <h3 class="briefing-section-heading">How Claim Payments Typically Work</h3>
+          
+          <p class="briefing-text">Insurance payments are often structured in stages.</p>
+          
+          <p class="briefing-text">You may receive:</p>
+          
+          <ul class="briefing-bullets">
+            <li>An initial Actual Cash Value (ACV) payment</li>
+            <li>Withheld depreciation recoverable after repairs</li>
+            <li>Supplemental payments for missed or newly discovered damage</li>
+            <li>Separate payments for contents and structure</li>
+            <li>Additional Living Expense reimbursements</li>
+          </ul>
+          
+          <p class="briefing-text"><span class="briefing-emphasis">The first check is often not the final amount.</span></p>
+          
+          <p class="briefing-text">This system helps you:</p>
+          
+          <ul class="briefing-bullets">
+            <li>Track withheld depreciation</li>
+            <li>Compare payments against estimates</li>
+            <li>Identify missing amounts</li>
+            <li>Confirm final settlement accuracy</li>
+          </ul>
+          
+          <h3 class="briefing-section-heading">Where Policyholders Commonly Lose Money</h3>
+          
+          <p class="briefing-text">Money is most often lost when:</p>
+          
+          <ul class="briefing-bullets">
+            <li>Damage is not fully documented</li>
+            <li>Estimates are not compared line-by-line</li>
+            <li>Code upgrades are overlooked</li>
+            <li>Supplements are poorly structured</li>
+            <li>Deadlines are missed</li>
+            <li>Depreciation is never recovered</li>
+            <li>Settlement breakdowns are not analyzed</li>
+            <li>Broad release language is signed without review</li>
+          </ul>
+          
+          <p class="briefing-text">Most claim problems begin early — during reporting, inspection, and estimate review.</p>
+          
+          <p class="briefing-text"><span class="briefing-emphasis">This is why the steps in this Command Center must be followed in order.</span></p>
+          
+          <h3 class="briefing-section-heading">Supporting Tools Available</h3>
+          
+          <p class="briefing-text">In addition to the step-by-step process, you have access to system tools:</p>
+          
+          <ul class="briefing-bullets">
+            <li>Claim Summary — Overview of claim details</li>
+            <li>Upload Documents — Secure storage for policies, estimates, receipts, invoices, and correspondence</li>
+            <li>Claim Journal — Log inspections, calls, and events</li>
+            <li>Financial Summary — Track payments, depreciation, and outstanding balances</li>
+            <li>Claim Deadlines — Monitor required submission dates</li>
+            <li>Messages — Store written communication</li>
+          </ul>
+          
+          <p class="briefing-text">These tools support the claim lifecycle but do not replace the sequence of steps.</p>
+          
+          <h3 class="briefing-section-heading">How to Use This Command Center</h3>
+          
+          <p class="briefing-text">Start here.</p>
+          
+          <p class="briefing-text">Move to Step 2.</p>
+          
+          <p class="briefing-text">Complete each step in order.</p>
+          
+          <p class="briefing-text">Upload documents when prompted.</p>
+          
+          <p class="briefing-text">Use the AI-powered analysis and structured outputs generated at each stage.</p>
+          
+          <p class="briefing-text">Keep records of everything submitted.</p>
+          
+          <p class="briefing-text"><span class="briefing-emphasis">You are not reading an article.<br>You are managing a structured financial process with system support.</span></p>
+          
+          <h3 class="briefing-section-heading">What Claim Commander Provides in This Step</h3>
+          
+          <ul class="briefing-bullets">
+            <li>Full claim lifecycle overview</li>
+            <li>Explanation of documentation requirements</li>
+            <li>Payment structure breakdown</li>
+            <li>Underpayment risk summary</li>
+            <li>Overview of AI-powered analysis tools</li>
+            <li>System usage guidance</li>
+          </ul>
+        </div>
+      </div>
+      <button class="mark-complete-button" onclick="markStepComplete(1)" style="margin-top: 16px;">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step-block" id="step-1">
+      <h2 class="step-header">STEP 2: Review Your Policy with AI Expert Policy Analyzer</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">Your policy defines what's covered, how much you can claim, and what exclusions apply. Missing a covered item or misunderstanding a limit can cost you thousands. Knowing your policy prevents the adjuster from denying valid claims.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Upload your full insurance policy (declarations page and all endorsements). Read through coverage limits, deductibles, and exclusions. Note any special provisions or riders.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>Plain-English summary of your coverage</li>
+          <li>Highlighted limits and exclusions</li>
+          <li>Red flags for common denial tactics</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="openPolicyAnalysisTool()">Run Policy Analysis</button>
+      <button class="mark-complete-button" onclick="markStepComplete(2)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step-block" id="step-2">
+      <h2 class="step-header">STEP 3: Report the Loss Properly</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">How you report your claim sets the tone for the entire process. Vague or incomplete reports give adjusters room to minimize your claim. A clear, factual report protects your rights and establishes the scope of damage from day one.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Describe the incident clearly: what happened, when it happened, and what was damaged. Avoid speculation or exaggeration. Stick to observable facts.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>Guided loss report template</li>
+          <li>Checklist of required information</li>
+          <li>Language review to avoid red flags</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="console.log('UI placeholder: Report the Loss Properly')">Report the Loss</button>
+      <button class="mark-complete-button" onclick="markStepComplete(3)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step-block" id="step-3">
+      <h2 class="step-header">STEP 4: Prepare for Recorded Statements</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">Insurance companies use recorded statements to lock you into a version of events. Any inconsistency or unclear answer can be used to deny your claim later. Preparation prevents costly mistakes.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Review your loss report and timeline. Practice answering common questions clearly and concisely. Know what you can say "I don't know" to. Never guess or speculate.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>List of common adjuster questions</li>
+          <li>Safe answer frameworks</li>
+          <li>Red flag phrases to avoid</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="console.log('UI placeholder: Prepare for Recorded Statements')">Prepare for Statement</button>
+      <button class="mark-complete-button" onclick="markStepComplete(4)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="step-block" id="step-4">
+      <h2 class="step-header">STEP 5: Document All Damage</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">Photos and videos are your proof. Without clear documentation, the adjuster can claim damage didn't exist or was pre-existing. Thorough documentation protects your claim and prevents disputes.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Take wide-angle and close-up photos of all damage. Include date stamps if possible. Photograph serial numbers, model numbers, and receipts. Document the entire affected area, not just obvious damage.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>Photo checklist by room/area</li>
+          <li>Organized digital evidence folder</li>
+          <li>Metadata preservation guidance</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="console.log('UI placeholder: Document All Damage')">Document Damage</button>
+      <button class="mark-complete-button" onclick="markStepComplete(5)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 6 -->
+    <div class="step-block" id="step-5">
+      <h2 class="step-header">STEP 6: Manage the Inspection</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">The adjuster's inspection determines what gets paid. If you're unprepared or miss hidden damage, you'll be fighting uphill for months. Being present and informed ensures nothing is overlooked.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Be present during the inspection. Point out all damage areas. Ask questions about what's being noted. Take your own notes and photos of what the adjuster examines.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>Pre-inspection checklist</li>
+          <li>Questions to ask the adjuster</li>
+          <li>Inspection follow-up template</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="console.log('UI placeholder: Manage the Inspection')">Manage Inspection</button>
+      <button class="mark-complete-button" onclick="markStepComplete(6)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 7 -->
+    <div class="step-block" id="step-6">
+      <h2 class="step-header">STEP 7: Obtain a Contractor Estimate</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">The insurance company's estimate is often low. A licensed contractor's estimate gives you leverage and reveals what the insurer left out. This is your best defense against underpayment.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Hire a licensed, insured contractor to inspect the damage and provide a detailed written estimate. Ensure the estimate includes line-item pricing, labor, materials, and code upgrade costs.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>Contractor vetting checklist</li>
+          <li>Estimate quality review</li>
+          <li>Red flags in contractor proposals</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="console.log('UI placeholder: Obtain a Contractor Estimate')">Get Contractor Estimate</button>
+      <button class="mark-complete-button" onclick="markStepComplete(7)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 8 -->
+    <div class="step-block" id="step-7">
+      <h2 class="step-header">STEP 8: Review Your Estimates with AI Expert Estimate Analyzer</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">Insurance estimates often omit items, use cheaper materials, or underestimate labor. A line-by-line comparison reveals exactly where the insurer is shorting you, giving you specific items to challenge.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Upload both the insurance estimate and contractor estimate. Review each line item for discrepancies in quantity, unit cost, or scope. Highlight missing items or undervalued work.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>Side-by-side estimate comparison</li>
+          <li>Highlighted discrepancies</li>
+          <li>Dollar value of each gap</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="openEstimateComparisonTool()">Analyze Estimates</button>
+      <button class="mark-complete-button" onclick="markStepComplete(8)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 9 -->
+    <div class="step-block" id="step-8">
+      <h2 class="step-header">STEP 9: Identify Code & Coverage Issues</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">Building code upgrades and ordinance/law coverage can add thousands to your claim. Many policyholders don't know these exist or how to trigger them. Identifying these early maximizes your recovery.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Check if repairs require code upgrades (electrical, plumbing, structural). Review your policy for ordinance/law coverage. Document any code compliance requirements from your contractor or building department.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>Code upgrade identification</li>
+          <li>Coverage trigger analysis</li>
+          <li>Documentation requirements</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="console.log('UI placeholder: Identify Code & Coverage Issues')">Identify Code Issues</button>
+      <button class="mark-complete-button" onclick="markStepComplete(9)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 10 -->
+    <div class="step-block" id="step-9">
+      <h2 class="step-header">STEP 10: Structure and Submit Supplements</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">Supplemental claims recover money for damage discovered after the initial estimate. Poorly written supplements get denied. A well-structured supplement with supporting evidence gets paid.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Document newly discovered damage with photos and contractor notes. Write a clear description of what was found, why it wasn't in the original estimate, and why it's covered. Include cost breakdowns.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>Supplement letter template</li>
+          <li>Evidence organization</li>
+          <li>Submission tracking</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="openSupplementGeneratorTool()">Generate Supplement Letter</button>
+      <button class="mark-complete-button" onclick="markStepComplete(10)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 11 -->
+    <div class="step-block" id="step-10">
+      <h2 class="step-header">STEP 11: Track Additional Living Expenses</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">If your home is uninhabitable, your policy likely covers temporary housing and related expenses. Without detailed records, you'll leave money on the table. Tracking every expense ensures full reimbursement.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Save all receipts for temporary housing, meals, storage, pet boarding, and increased commuting costs. Track dates and amounts. Compare to your normal pre-loss expenses.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>ALE expense tracker</li>
+          <li>Reimbursable expense categories</li>
+          <li>Claim submission format</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="console.log('UI placeholder: Track Additional Living Expenses')">Track ALE</button>
+      <button class="mark-complete-button" onclick="markStepComplete(11)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 12 -->
+    <div class="step-block" id="step-11">
+      <h2 class="step-header">STEP 12: Build Your Contents Inventory</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">Personal property claims are often undervalued because policyholders forget items or can't prove ownership. A detailed inventory with values and proof maximizes your contents recovery.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">List every damaged or destroyed item by room. Include purchase dates, original cost, and replacement cost. Attach photos, receipts, or credit card statements as proof.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>Room-by-room inventory template</li>
+          <li>Valuation guidance</li>
+          <li>Proof of ownership checklist</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="console.log('UI placeholder: Build Your Contents Inventory')">Build Inventory</button>
+      <button class="mark-complete-button" onclick="markStepComplete(12)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 13 -->
+    <div class="step-block" id="step-12">
+      <h2 class="step-header">STEP 13: Review the Settlement Breakdown</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">Settlement letters are complex and often confusing. Understanding exactly what's being paid, what's being withheld, and why prevents you from accepting a lowball offer or missing withheld depreciation.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Read the settlement letter carefully. Identify the actual cash value (ACV) payment, recoverable depreciation, and any deductions. Compare to your contractor estimate and policy limits.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>Settlement breakdown analysis</li>
+          <li>Highlighted discrepancies</li>
+          <li>Recovery opportunities</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="openSettlementAnalysisTool()">Analyze Settlement</button>
+      <button class="mark-complete-button" onclick="markStepComplete(13)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 14 -->
+    <div class="step-block" id="step-13">
+      <h2 class="step-header">STEP 14 — Negotiate in Writing</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">Verbal negotiations disappear. Written demands create a paper trail, establish your position, and force the insurer to respond on the record. This is critical if you need to escalate or pursue legal action.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Draft a clear, professional demand letter citing specific policy provisions, contractor estimates, and evidence. Request a specific dollar amount. Set a reasonable response deadline.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>Demand letter template</li>
+          <li>Policy citation guidance</li>
+          <li>Evidence attachment checklist</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="openDemandLetterTool()">Generate Demand Letter</button>
+      <button class="mark-complete-button" onclick="markStepComplete(14)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 15 -->
+    <div class="step-block" id="step-14">
+      <h2 class="step-header">STEP 15: Escalate if Necessary</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">Adjusters have managers. Managers have supervisors. State regulators oversee insurers. Knowing when and how to escalate can break a deadlock and get your claim moving again.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Request escalation to a supervisor or manager. File a complaint with your state's Department of Insurance if the insurer is acting in bad faith. Document all escalation attempts.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>Escalation letter template</li>
+          <li>State DOI complaint guide</li>
+          <li>Bad faith red flags</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="console.log('UI placeholder: Escalate if Necessary')">Escalate Claim</button>
+      <button class="mark-complete-button" onclick="markStepComplete(15)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 16 -->
+    <div class="step-block" id="step-15">
+      <h2 class="step-header">STEP 16 — Recover Depreciation</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">Replacement cost policies withhold depreciation until repairs are complete. Many policyholders never recover this money because they don't submit proof of completion. This step ensures you get every dollar owed.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Complete repairs and obtain final invoices from your contractor. Submit proof of payment and completion to the insurer. Request release of all withheld depreciation.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>Depreciation recovery checklist</li>
+          <li>Required documentation list</li>
+          <li>Submission letter template</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="console.log('UI placeholder: Recover Depreciation')">Recover Depreciation</button>
+      <button class="mark-complete-button" onclick="markStepComplete(16)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 17 -->
+    <div class="step-block" id="step-16">
+      <h2 class="step-header">STEP 17: Review Release Language</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">Signing a release closes your claim permanently. Broad release language can waive your right to future claims or legal action. Understanding what you're signing prevents costly mistakes.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Read the release carefully. Ensure it only releases the specific claim and doesn't waive future rights. If the language is too broad, request a revision or consult an attorney.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>Release language review</li>
+          <li>Red flag terms</li>
+          <li>Revision request template</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="openReleaseAnalysisTool()">Analyze Release Document</button>
+      <button class="mark-complete-button" onclick="markStepComplete(17)">Mark Step Complete</button>
+    </div>
+
+    <!-- Step 18 -->
+    <div class="step-block" id="step-17">
+      <h2 class="step-header">STEP 18: Confirm Final Payment</h2>
+      
+      <div class="step-section">
+        <h3 class="step-section-title">Why this matters</h3>
+        <p class="step-section-content">The final payment should match the agreed settlement amount. Discrepancies, missing checks, or incorrect payees can delay closure. Verifying everything ensures you receive what you're owed.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What you do</h3>
+        <p class="step-section-content">Compare the final payment to the settlement letter. Verify all checks are received and deposited. Confirm no amounts are missing or incorrectly allocated. Keep copies of all payment records.</p>
+      </div>
+
+      <div class="step-section">
+        <h3 class="step-section-title">What Claim Commander provides</h3>
+        <ul class="step-bullets">
+          <li>Payment verification checklist</li>
+          <li>Discrepancy resolution guide</li>
+          <li>Final claim closure confirmation</li>
+        </ul>
+      </div>
+
+      <button class="step-button" onclick="console.log('UI placeholder: Confirm Final Payment')">Confirm Payment</button>
+      <button class="mark-complete-button" onclick="markStepComplete(18)">Mark Step Complete</button>
+    </div>
+  </div>
+
+  <!-- Next Action Modal -->
+  <div class="modal-overlay hidden" id="nextActionModal">
+    <div class="modal-box">
+      <button class="modal-close" id="modalCloseBtn" onclick="dismissModal()">&times;</button>
+      <h2 class="modal-header">Next Action Required</h2>
+      <p class="modal-step-title" id="modalStepTitle">You have not completed Step 1 — Review the Claim Process Guide.</p>
+      <div id="modalEscalationBlock"></div>
+      <p class="modal-instruction" id="modalInstruction">Begin with Step 1 to understand your responsibilities and how this system works.</p>
+      <button class="modal-button" id="modalButton" onclick="continueToStep()">Start Step 1</button>
+      <a href="#" class="modal-dismiss-link" id="modalDismissLink" onclick="dismissModal(); return false;">Dismiss for Now</a>
+    </div>
+  </div>
+
+  <script>
+    // LocalStorage keys
+    const STORAGE_KEYS = {
+      DISMISSALS: 'claim_next_action_dismissals',
+      LAST_VISIT: 'claim_last_visit_timestamp',
+      STEP_STATUS: 'claim_step_status'
+    };
+
+    // Step completion state (mock data for UI stage)
+    let stepStatus = [
+      { step: 1, completed: false, title: 'Review the Claim Process Guide', instruction: 'Begin this step to continue building your claim properly.' },
+      { step: 2, completed: false, title: 'Review Your Policy with AI Expert Policy Analyzer', instruction: 'Upload your full insurance policy to begin coverage analysis.' },
+      { step: 3, completed: false, title: 'Report the Loss Properly', instruction: 'Submit a clear, factual loss report to establish the scope of your claim.' },
+      { step: 4, completed: false, title: 'Prepare for Recorded Statements', instruction: 'Review common questions and prepare clear answers before your recorded statement.' },
+      { step: 5, completed: false, title: 'Document All Damage', instruction: 'Take comprehensive photos and videos of all damage to protect your claim.' },
+      { step: 6, completed: false, title: 'Manage the Inspection', instruction: 'Be present during inspection and document what the adjuster examines.' },
+      { step: 7, completed: false, title: 'Obtain a Contractor Estimate', instruction: 'Get a detailed written estimate from a licensed contractor.' },
+      { step: 8, completed: false, title: 'Review Your Estimates with AI Expert Estimate Analyzer', instruction: 'Run a line-by-line estimate analysis to identify discrepancies.' },
+      { step: 9, completed: false, title: 'Identify Code & Coverage Issues', instruction: 'Review your policy for code upgrade coverage and document requirements.' },
+      { step: 10, completed: false, title: 'Structure and Submit Supplements', instruction: 'Document newly discovered damage and submit structured supplement claims.' },
+      { step: 11, completed: false, title: 'Track Additional Living Expenses', instruction: 'Log all temporary housing and related expenses for reimbursement.' },
+      { step: 12, completed: false, title: 'Build Your Contents Inventory', instruction: 'Create a detailed inventory of all damaged personal property with values.' },
+      { step: 13, completed: false, title: 'Review the Settlement Breakdown', instruction: 'Analyze the settlement letter to identify withheld amounts and discrepancies.' },
+      { step: 14, completed: false, title: 'Negotiate in Writing', instruction: 'Draft a formal demand letter with supporting evidence and policy citations.' },
+      { step: 15, completed: false, title: 'Escalate if Necessary', instruction: 'Request supervisor review or file a state DOI complaint if needed.' },
+      { step: 16, completed: false, title: 'Recover Depreciation', instruction: 'Submit proof of completed repairs to recover withheld depreciation.' },
+      { step: 17, completed: false, title: 'Review Release Language', instruction: 'Review settlement release language before signing to protect your rights.' },
+      { step: 18, completed: false, title: 'Confirm Final Payment', instruction: 'Verify final payment matches settlement agreement and all amounts are received.' }
+    ];
+
+    let currentNextStep = null;
+    let currentEscalationTier = 0;
+    let dismissalCount = 0;
+    let daysSinceLastVisit = 0;
+
+    // Initialize data from localStorage
+    function initializeData() {
+      // Load step status
+      const savedStatus = localStorage.getItem(STORAGE_KEYS.STEP_STATUS);
+      if (savedStatus) {
+        try {
+          const parsed = JSON.parse(savedStatus);
+          stepStatus.forEach((step, index) => {
+            if (parsed[index]) {
+              step.completed = parsed[index].completed;
+            }
+          });
+        } catch (e) {
+          console.error('Error parsing step status:', e);
+        }
+      }
+
+      // Calculate days since last visit
+      const lastVisit = localStorage.getItem(STORAGE_KEYS.LAST_VISIT);
+      const now = Date.now();
+      
+      if (lastVisit) {
+        const lastVisitTime = parseInt(lastVisit, 10);
+        const diffMs = now - lastVisitTime;
+        daysSinceLastVisit = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      } else {
+        daysSinceLastVisit = 0; // First visit
+      }
+
+      // Update last visit timestamp
+      localStorage.setItem(STORAGE_KEYS.LAST_VISIT, now.toString());
+
+      // Load dismissal count
+      dismissalCount = parseInt(localStorage.getItem(STORAGE_KEYS.DISMISSALS) || '0', 10);
+    }
+
+    // Save step status to localStorage
+    function saveStepStatus() {
+      localStorage.setItem(STORAGE_KEYS.STEP_STATUS, JSON.stringify(stepStatus));
+    }
+
+    // Find next incomplete step
+    function findNextIncompleteStep() {
+      return stepStatus.find(s => !s.completed);
+    }
+
+    // Determine escalation tier
+    function determineEscalationTier(dismissals, daysInactive) {
+      // Tier 3: 5+ dismissals OR 8+ days
+      if (dismissals >= 5 || daysInactive >= 8) {
+        return 3;
+      }
+      // Tier 2: 3-4 dismissals OR 5-7 days
+      if (dismissals >= 3 || daysInactive >= 5) {
+        return 2;
+      }
+      // Tier 1: 1-2 dismissals OR 2-4 days
+      if (dismissals >= 1 || daysInactive >= 2) {
+        return 1;
+      }
+      // Tier 0: First visit / no dismissals / < 2 days
+      return 0;
+    }
+
+    // Get escalation message
+    function getEscalationMessage(tier, stepNumber, stepTitle, daysInactive) {
+      let message = '';
+      let showDays = false;
+
+      switch (tier) {
+        case 0:
+          // No escalation message for Tier 0
+          return '';
+        
+        case 1:
+          message = `Step ${stepNumber} remains incomplete.\n\nDelaying required steps slows documentation and may affect claim progress.`;
+          break;
+        
+        case 2:
+          message = `You have delayed Step ${stepNumber}.\n\nIncomplete documentation increases the risk of underpayment or extended review.`;
+          showDays = daysInactive >= 5;
+          break;
+        
+        case 3:
+          message = `Step ${stepNumber} is still incomplete.\n\nYour claim cannot be properly supported until this step is completed.`;
+          showDays = true;
+          break;
+      }
+
+      if (showDays && daysInactive > 0) {
+        message += `\n\nIt has been ${daysInactive} day${daysInactive === 1 ? '' : 's'} since your last session.`;
+      }
+
+      if (tier === 3) {
+        message += '\n\nProceed now.';
+      }
+
+      return message;
+    }
+
+    // Show modal with next action
+    function showNextActionModal() {
+      const nextStep = findNextIncompleteStep();
+      
+      if (!nextStep) {
+        // All steps complete
+        showCompletionModal();
+        return;
+      }
+
+      currentNextStep = nextStep;
+      currentEscalationTier = determineEscalationTier(dismissalCount, daysSinceLastVisit);
+
+      // Update modal content
+      document.getElementById('modalStepTitle').textContent = 
+        `You have not completed Step ${nextStep.step} — ${nextStep.title}.`;
+      document.getElementById('modalInstruction').textContent = nextStep.instruction;
+      document.getElementById('modalButton').textContent = `Start Step ${nextStep.step}`;
+
+      // Update escalation message
+      const escalationBlock = document.getElementById('modalEscalationBlock');
+      const escalationMessage = getEscalationMessage(
+        currentEscalationTier, 
+        nextStep.step, 
+        nextStep.title, 
+        daysSinceLastVisit
+      );
+
+      if (escalationMessage) {
+        escalationBlock.innerHTML = `<div class="modal-escalation-message tier-${currentEscalationTier}">${escalationMessage.replace(/\n/g, '<br>')}</div>`;
+      } else {
+        escalationBlock.innerHTML = '';
+      }
+
+      // Handle Tier 3 behavior
+      const modal = document.getElementById('nextActionModal');
+      const closeBtn = document.getElementById('modalCloseBtn');
+      const dismissLink = document.getElementById('modalDismissLink');
+
+      if (currentEscalationTier === 3) {
+        modal.classList.add('tier-3');
+        closeBtn.style.display = 'none';
+        dismissLink.style.display = 'block';
+      } else {
+        modal.classList.remove('tier-3');
+        closeBtn.style.display = 'block';
+        dismissLink.style.display = 'none';
+      }
+
+      // Show modal
+      modal.classList.remove('hidden');
+      setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    // Close modal (internal)
+    function closeModal() {
+      const modal = document.getElementById('nextActionModal');
+      modal.classList.remove('show');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('tier-3');
+      }, 200);
+    }
+
+    // Dismiss modal (user action)
+    function dismissModal() {
+      // Increment dismissal count
+      dismissalCount += 1;
+      localStorage.setItem(STORAGE_KEYS.DISMISSALS, dismissalCount.toString());
+      
+      closeModal();
+      return false;
+    }
+
+    // Continue to step (user action)
+    function continueToStep() {
+      if (!currentNextStep) return;
+      
+      // Reset dismissal count
+      dismissalCount = 0;
+      localStorage.setItem(STORAGE_KEYS.DISMISSALS, '0');
+      
+      closeModal();
+      
+      setTimeout(() => {
+        const stepId = currentNextStep.step === 1 ? 'step-0' : `step-${currentNextStep.step - 1}`;
+        const element = document.getElementById(stepId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 250);
+    }
+
+    // Mark step complete
+    function markStepComplete(stepNumber) {
+      const step = stepStatus.find(s => s.step === stepNumber);
+      if (step) {
+        step.completed = true;
+        
+        // Save to localStorage
+        saveStepStatus();
+        
+        // Reset dismissal count
+        dismissalCount = 0;
+        localStorage.setItem(STORAGE_KEYS.DISMISSALS, '0');
+        
+        // Update button UI
+        const button = event.target;
+        button.textContent = '✓ Step Completed';
+        button.classList.add('completed');
+        button.disabled = true;
+        
+        // Update progress counter
+        const completedCount = stepStatus.filter(s => s.completed).length;
+        document.querySelectorAll('.nav-progress').forEach(el => {
+          el.textContent = `Progress: ${completedCount} of 18 Steps Completed`;
+        });
+        
+        // Show next action modal after brief delay (at Tier 0)
+        setTimeout(() => {
+          showNextActionModal();
+        }, 1000);
+      }
+    }
+
+    // Show completion modal
+    function showCompletionModal() {
+      const modal = document.getElementById('nextActionModal');
+      const closeBtn = document.getElementById('modalCloseBtn');
+      const dismissLink = document.getElementById('modalDismissLink');
+      
+      document.querySelector('#nextActionModal .modal-header').textContent = 'Claim Steps Complete';
+      document.getElementById('modalStepTitle').textContent = 'All steps have been completed.';
+      document.getElementById('modalEscalationBlock').innerHTML = '';
+      document.getElementById('modalInstruction').textContent = 'Review your Financial Summary and confirm final payment.';
+      document.getElementById('modalButton').textContent = 'View Financial Summary';
+      document.getElementById('modalButton').onclick = function() {
+        window.location.href = '/app/claim-financial-summary.html';
+      };
+      
+      // Show close button, hide dismiss link
+      closeBtn.style.display = 'block';
+      dismissLink.style.display = 'none';
+      modal.classList.remove('tier-3');
+      
+      modal.classList.remove('hidden');
+      setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    // Close modal when clicking outside (only for Tier 0-2)
+    document.addEventListener('click', function(e) {
+      const modal = document.getElementById('nextActionModal');
+      if (e.target === modal && !modal.classList.contains('tier-3')) {
+        dismissModal();
+      }
+    });
+
+    // Initialize and show modal on page load
+    window.addEventListener('load', function() {
+      initializeData();
+      
+      setTimeout(() => {
+        showNextActionModal();
+      }, 500);
+    });
+
+    // Toggle briefing section
+    function toggleBriefing() {
+      const content = document.getElementById('briefing-content');
+      const caret = document.getElementById('briefing-caret');
+      const preview = document.getElementById('briefing-preview');
+      
+      if (content.classList.contains('expanded')) {
+        content.classList.remove('expanded');
+        caret.classList.remove('expanded');
+        preview.style.display = 'block';
+      } else {
+        content.classList.add('expanded');
+        caret.classList.add('expanded');
+        preview.style.display = 'none';
+      }
+    }
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
+
+  <!-- Claim Command Center Tool Integration -->
+  <script src="/app/assets/js/claim-command-center-components.js"></script>
+  <script>
+    // =====================================================
+    // TOOL INTEGRATION FUNCTIONS
+    // =====================================================
+    
+    const API_BASE_URL = window.location.origin;
+    let currentClaimId = null;
+    
+    // Initialize on page load
+    window.addEventListener('load', async function() {
+      // Get claim ID from URL or localStorage
+      const params = new URLSearchParams(window.location.search);
+      currentClaimId = params.get('claim_id') || localStorage.getItem('current_claim_id');
+      
+      if (!currentClaimId) {
+        console.warn('No claim ID found');
+        return;
+      }
+      
+      // Load and display financial summary
+      await loadFinancialSummary();
+    });
+    
+    // =====================================================
+    // FINANCIAL SUMMARY
+    // =====================================================
+    
+    async function loadFinancialSummary() {
+      if (!currentClaimId) return;
+      
+      try {
+        const financialPanel = new ClaimCommandCenter.FinancialSummaryPanel(currentClaimId);
+        await financialPanel.load();
+        
+        // Insert financial summary at top of container
+        const container = document.querySelector('.command-center-container');
+        if (container && financialPanel.data) {
+          const summaryElement = financialPanel.render();
+          container.insertBefore(summaryElement, container.firstChild);
+        }
+      } catch (error) {
+        console.error('Failed to load financial summary:', error);
+      }
+    }
+    
+    // =====================================================
+    // STEP 2: POLICY ANALYSIS
+    // =====================================================
+    
+    function openPolicyAnalysisTool() {
+      const modal = new ClaimCommandCenter.StepToolModal({
+        stepNumber: 2,
+        toolType: 'policy_analysis',
+        title: 'Step 2: Policy Analysis',
+        requiredDocuments: [
+          { key: 'policy', label: 'Insurance Policy PDF' }
+        ],
+        onRun: async (uploadedFiles) => {
+          const token = await ClaimCommandCenter.getAuthToken();
+          if (!token) {
+            throw new Error('Not authenticated');
+          }
+          
+          const response = await fetch(`${API_BASE_URL}/.netlify/functions/analyze-policy`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              claim_id: currentClaimId,
+              policy_pdf_url: uploadedFiles.policy.url,
+              document_id: uploadedFiles.policy.documentId
+            })
+          });
+          
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error?.message || 'Analysis failed');
+          }
+          
+          const result = await response.json();
+          
+          // Reload financial summary
+          await loadFinancialSummary();
+          
+          return result.data;
+        },
+        onClose: () => {
+          // Refresh page to show updated step status
+          location.reload();
+        }
+      });
+      
+      modal.render();
+      modal.show();
+    }
+    
+    // =====================================================
+    // STEP 8: ESTIMATE COMPARISON
+    // =====================================================
+    
+    function openEstimateComparisonTool() {
+      const modal = new ClaimCommandCenter.StepToolModal({
+        stepNumber: 8,
+        toolType: 'estimate_comparison',
+        title: 'Step 8: Estimate Comparison',
+        requiredDocuments: [
+          { key: 'contractor_estimate', label: 'Contractor Estimate PDF' },
+          { key: 'carrier_estimate', label: 'Carrier Estimate PDF' }
+        ],
+        onRun: async (uploadedFiles) => {
+          const token = await ClaimCommandCenter.getAuthToken();
+          if (!token) {
+            throw new Error('Not authenticated');
+          }
+          
+          const response = await fetch(`${API_BASE_URL}/.netlify/functions/analyze-estimates-v2`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              claim_id: currentClaimId,
+              contractor_estimate_pdf_url: uploadedFiles.contractor_estimate.url,
+              carrier_estimate_pdf_url: uploadedFiles.carrier_estimate.url,
+              contractor_document_id: uploadedFiles.contractor_estimate.documentId,
+              carrier_document_id: uploadedFiles.carrier_estimate.documentId
+            })
+          });
+          
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error?.message || 'Analysis failed');
+          }
+          
+          const result = await response.json();
+          
+          // Reload financial summary
+          await loadFinancialSummary();
+          
+          return result.data;
+        },
+        onClose: () => {
+          location.reload();
+        }
+      });
+      
+      modal.render();
+      modal.show();
+    }
+    
+    // =====================================================
+    // STEP 10: SUPPLEMENT GENERATION
+    // =====================================================
+    
+    function openSupplementGeneratorTool() {
+      const modal = new ClaimCommandCenter.StepToolModal({
+        stepNumber: 10,
+        toolType: 'supplement_letter',
+        title: 'Step 10: Generate Supplement Letter',
+        requiredDocuments: [],
+        onRun: async (uploadedFiles) => {
+          const token = await ClaimCommandCenter.getAuthToken();
+          if (!token) {
+            throw new Error('Not authenticated');
+          }
+          
+          const response = await fetch(`${API_BASE_URL}/.netlify/functions/generate-supplement`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              claim_id: currentClaimId
+            })
+          });
+          
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error?.message || 'Generation failed');
+          }
+          
+          const result = await response.json();
+          return result.data;
+        },
+        onClose: () => {
+          location.reload();
+        }
+      });
+      
+      modal.render();
+      modal.show();
+    }
+    
+    // =====================================================
+    // STEP 13: SETTLEMENT ANALYSIS
+    // =====================================================
+    
+    function openSettlementAnalysisTool() {
+      const modal = new ClaimCommandCenter.StepToolModal({
+        stepNumber: 13,
+        toolType: 'settlement_analysis',
+        title: 'Step 13: Settlement Analysis',
+        requiredDocuments: [
+          { key: 'settlement_letter', label: 'Settlement Letter PDF' }
+        ],
+        onRun: async (uploadedFiles) => {
+          const token = await ClaimCommandCenter.getAuthToken();
+          if (!token) {
+            throw new Error('Not authenticated');
+          }
+          
+          const response = await fetch(`${API_BASE_URL}/.netlify/functions/analyze-settlement`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              claim_id: currentClaimId,
+              settlement_pdf_url: uploadedFiles.settlement_letter.url,
+              document_id: uploadedFiles.settlement_letter.documentId
+            })
+          });
+          
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error?.message || 'Analysis failed');
+          }
+          
+          const result = await response.json();
+          
+          // Reload financial summary
+          await loadFinancialSummary();
+          
+          return result.data;
+        },
+        onClose: () => {
+          location.reload();
+        }
+      });
+      
+      modal.render();
+      modal.show();
+    }
+    
+    // =====================================================
+    // STEP 14: DEMAND LETTER
+    // =====================================================
+    
+    function openDemandLetterTool() {
+      const modal = new ClaimCommandCenter.StepToolModal({
+        stepNumber: 14,
+        toolType: 'demand_letter',
+        title: 'Step 14: Generate Demand Letter',
+        requiredDocuments: [],
+        onRun: async (uploadedFiles) => {
+          const token = await ClaimCommandCenter.getAuthToken();
+          if (!token) {
+            throw new Error('Not authenticated');
+          }
+          
+          const response = await fetch(`${API_BASE_URL}/.netlify/functions/generate-demand-letter`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              claim_id: currentClaimId
+            })
+          });
+          
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error?.message || 'Generation failed');
+          }
+          
+          const result = await response.json();
+          return result.data;
+        },
+        onClose: () => {
+          location.reload();
+        }
+      });
+      
+      modal.render();
+      modal.show();
+    }
+    
+    // =====================================================
+    // STEP 17: RELEASE ANALYSIS
+    // =====================================================
+    
+    function openReleaseAnalysisTool() {
+      const modal = new ClaimCommandCenter.StepToolModal({
+        stepNumber: 17,
+        toolType: 'release_analysis',
+        title: 'Step 17: Release Document Analysis',
+        requiredDocuments: [
+          { key: 'release', label: 'Release Document PDF' }
+        ],
+        onRun: async (uploadedFiles) => {
+          const token = await ClaimCommandCenter.getAuthToken();
+          if (!token) {
+            throw new Error('Not authenticated');
+          }
+          
+          const response = await fetch(`${API_BASE_URL}/.netlify/functions/analyze-release`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              claim_id: currentClaimId,
+              release_pdf_url: uploadedFiles.release.url,
+              document_id: uploadedFiles.release.documentId
+            })
+          });
+          
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error?.message || 'Analysis failed');
+          }
+          
+          const result = await response.json();
+          return result.data;
+        },
+        onClose: () => {
+          location.reload();
+        }
+      });
+      
+      modal.render();
+      modal.show();
+    }
+    
+    // =====================================================
+    // HELPER FUNCTIONS
+    // =====================================================
+    
+    function generateSupplement() {
+      openSupplementGeneratorTool();
+    }
+    
+    function downloadComparison() {
+      ClaimCommandCenter.showToast('Download feature coming soon', 'info');
+    }
+    
+    function downloadPolicyAnalysis() {
+      ClaimCommandCenter.showToast('Download feature coming soon', 'info');
+    }
+    
+    function downloadSettlementAnalysis() {
+      ClaimCommandCenter.showToast('Download feature coming soon', 'info');
+    }
+    
+    function downloadReleaseAnalysis() {
+      ClaimCommandCenter.showToast('Download feature coming soon', 'info');
+    }
+  </script>
+</body>
+</html>
