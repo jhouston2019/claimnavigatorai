@@ -39,7 +39,7 @@
 {
   event: 'checkout_completed',
   session_id: stripeSessionId,
-  amount: 99.00,
+  amount: 149.00,
   timestamp: new Date().toISOString()
 }
 ```

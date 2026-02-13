@@ -35,7 +35,7 @@ git push origin main
 2. Go to your site
 3. Create test account or login
 4. Navigate to `/paywall/locked.html`
-5. Click "Unlock Claim - $99"
+5. Click "Unlock Claim - $149"
 6. Use test card: **4242 4242 4242 4242**
 7. Complete payment
 8. Verify redirected to success page

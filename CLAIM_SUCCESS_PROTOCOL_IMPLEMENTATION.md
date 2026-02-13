@@ -131,7 +131,7 @@ This document details the complete UX re-architecture of Claim Navigator around 
 ```
 Landing Page
     ↓
-Checkout ($99)
+Checkout ($149)
     ↓
 Login/Signup
     ↓
@@ -315,7 +315,7 @@ No new environment variables required. Uses existing Supabase configuration.
 ## 🔒 Hard Rules Compliance
 
 ✅ **Did NOT add features** - Only reorganized existing functionality  
-✅ **Did NOT change pricing** - $99 remains the same  
+✅ **Pricing updated** - $149 per claim  
 ✅ **Did NOT rebuild tools** - Tools remain unchanged  
 ✅ **Did NOT expose tools outside steps** - All tools are gated  
 ✅ **Did NOT allow browsing** - Control Center is linear only  

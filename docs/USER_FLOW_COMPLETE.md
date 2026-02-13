@@ -34,7 +34,7 @@
 │  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  │
 │                                                                 │
 │  User sees:                                                     │
-│  • Clear pricing: $99 one-time                                  │
+│  • Clear pricing: $149 one-time                                 │
 │  • Complete feature list                                        │
 │  • What's included                                              │
 │  • No hidden fees message                                       │
@@ -94,7 +94,7 @@
 │  Function:                                                      │
 │  1. Validates user data                                         │
 │  2. Creates Stripe checkout session                            │
-│  3. Sets price: $99.00 (9900 cents)                            │
+│  3. Sets price: $149.00 (14900 cents)                          │
 │  4. Sets metadata: { user_id, type: 'claim_purchase' }         │
 │  5. Returns Stripe checkout URL                                │
 │                                                                 │
@@ -111,7 +111,7 @@
 │  User sees:                                                     │
 │  • Stripe's secure checkout page                               │
 │  • Product: "Claim Navigator - One Claim"                      │
-│  • Price: $99.00                                                │
+│  • Price: $149.00                                               │
 │  • Payment form (card details)                                  │
 │                                                                 │
 │  User enters:                                                   │

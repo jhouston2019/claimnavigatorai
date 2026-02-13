@@ -83,7 +83,7 @@ stripe_session_id: sessionId,  // ✅ Correct field name
 
 ## 📊 PAYMENT FLOW (How It Works)
 
-1. **User clicks "Unlock Claim - $99"** → `/paywall/locked.html`
+1. **User clicks "Unlock Claim - $149"** → `/paywall/locked.html`
 2. **Frontend calls** → `/.netlify/functions/create-checkout-session`
 3. **User redirected to** → Stripe Checkout (hosted)
 4. **User enters payment** → Stripe processes
@@ -104,7 +104,7 @@ From your Netlify variables, you have multiple products:
 - **Professional Lead Purchase** (price ID configured)
 - **Additional AI Response** (price ID configured)
 
-**Primary Product:** Claim Navigator - One Claim at **$99.00**
+**Primary Product:** Claim Navigator - One Claim at **$149.00**
 
 ---
 

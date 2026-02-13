@@ -25,7 +25,7 @@
 
 ### Revenue Loss
 - **COMPLETE REVENUE LOSS** - Core product is completely open
-- All users can bypass $99 payment
+- All users can bypass $149 payment
 - No payment enforcement whatsoever
 
 ### Security Impact

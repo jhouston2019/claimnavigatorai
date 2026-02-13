@@ -128,7 +128,7 @@ ALTER TABLE claims
 
 2. **Trigger Payment:**
    - Navigate to `/paywall/locked.html`
-   - Click "Unlock Claim - $99"
+   - Click "Unlock Claim - $149"
    - Should redirect to Stripe checkout
 
 3. **Complete Payment:**

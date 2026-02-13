@@ -7,7 +7,7 @@
 │                         LANDING PAGE                                │
 │                    (Marketing / Product Info)                       │
 │                                                                     │
-│                    [Get Your Claim Toolkit - $99]                  │
+│                    [Get Your Claim Toolkit - $149]                 │
 └────────────────────────────────┬────────────────────────────────────┘
                                  │
                                  ▼

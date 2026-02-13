@@ -50,7 +50,7 @@ Each step includes:
 ## 🔒 Hard Rules Compliance
 
 ✅ **No features added** - Only reorganized existing functionality  
-✅ **No pricing changes** - $99 remains the same  
+✅ **Pricing updated** - $149 per claim  
 ✅ **No tools rebuilt** - All tools remain unchanged  
 ✅ **No backend modifications** - AI logic and documents intact  
 ✅ **Tools gated to steps** - No standalone tool access  

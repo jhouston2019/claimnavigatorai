@@ -175,7 +175,7 @@ Communicating Effectively
 ## 🔒 Hard Rules Compliance
 
 ✅ **No features added** - Only reorganized existing  
-✅ **No pricing changes** - $99 remains the same  
+✅ **Pricing updated** - $149 per claim  
 ✅ **No tools rebuilt** - All tools unchanged  
 ✅ **No backend modifications** - AI logic intact  
 ✅ **Tools gated to steps** - No standalone access  
@@ -320,7 +320,7 @@ A linear, enforced, outcome-driven system that eliminates browsing behavior and 
 **Implementation**: Cursor AI Assistant  
 **Type**: Front-of-house UX refactor only  
 **Backend**: Unchanged (all tools, AI logic, documents intact)  
-**Pricing**: Unchanged ($99)  
+**Pricing**: Updated ($149)  
 
 ---
 

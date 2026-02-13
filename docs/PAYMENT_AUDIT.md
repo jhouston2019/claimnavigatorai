@@ -49,7 +49,7 @@ The payment system is **architecturally complete with Stripe API keys configured
   - `netlify/functions/stripe-webhook.js`
   - `app/assets/js/stripe-checkout.js`
 
-**Pricing Model:** Per-claim licensing at **$99.00 per claim**
+**Pricing Model:** Per-claim licensing at **$149.00 per claim**
 
 ---
 
@@ -59,7 +59,7 @@ The payment system is **architecturally complete with Stripe API keys configured
 
 1. **Primary:** `/paywall/locked.html`
    - Shown when unauthenticated users try to access paid tools
-   - Button: "Unlock Claim - $99"
+   - Button: "Unlock Claim - $149"
    - Calls: `window.launchClaimCheckout()`
 
 2. **Marketing:** `/marketing/pricing.html`
@@ -121,7 +121,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...
 1. Receives: `{ user_id, email }`
 2. Creates Stripe checkout session with:
    - Product: "Claim Navigator - One Claim"
-   - Price: $99.00 (9900 cents)
+   - Price: $149.00 (14900 cents)
    - Mode: One-time payment
    - Metadata: `{ user_id, type: 'claim_purchase' }`
 3. Returns: Stripe checkout URL
@@ -424,7 +424,7 @@ metadata JSONB
 
 3. Create Product (optional):
    - Name: "Claim Navigator - One Claim"
-   - Price: $99.00 one-time
+   - Price: $149.00 one-time
    - Get price ID: price_...
 ```
 

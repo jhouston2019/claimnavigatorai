@@ -81,12 +81,12 @@ const supabase = createClient(
 
 ### 3. **STRIPE PRICE MISMATCH**
 **Location:** `netlify/functions/create-checkout-session.js` vs homepage  
-**Issue:** Function hardcodes $99 but homepage advertises $997.
+**Issue:** Function hardcodes $149 (updated from $99).
 
 **Evidence:**
 ```javascript
 // netlify/functions/create-checkout-session.js line 38
-unit_amount: 9900 // $99.00 in cents
+unit_amount: 14900 // $149.00 in cents
 ```
 
 ```html
@@ -303,7 +303,7 @@ success_url: `${process.env.URL || 'http://localhost:8888'}/claim/success.html?s
 ### Before You Can Launch:
 - [ ] Fix homepage checkout flow (Critical #1)
 - [ ] Inject or replace all Supabase environment variables (Critical #2)
-- [ ] Fix price mismatch $99 vs $997 (Critical #3)
+- [ ] Pricing updated to $149 (Critical #3)
 - [ ] Complete post-purchase user creation flow (Critical #4)
 - [ ] Apply Supabase schema and verify tables exist (Critical #5)
 
