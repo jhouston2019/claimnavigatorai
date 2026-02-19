@@ -353,11 +353,18 @@ class StepToolModal {
     // Render output based on tool type
     const outputComponent = new StructuredOutputPanel({
       data: result,
-      toolType: this.toolType
+      toolType: this.toolType,
+      claimId: this.getClaimId()
     });
     
     outputEl.innerHTML = '';
-    outputEl.appendChild(outputComponent.render());
+    const renderedOutput = outputComponent.render();
+    outputEl.appendChild(renderedOutput);
+    
+    // For estimate comparison, render proof requirements
+    if (this.toolType === 'estimate_comparison') {
+      outputComponent.renderProofRequirements(renderedOutput, this.getClaimId());
+    }
   }
 }
 
@@ -369,6 +376,7 @@ class StructuredOutputPanel {
   constructor(config) {
     this.data = config.data;
     this.toolType = config.toolType;
+    this.claimId = config.claimId;
   }
   
   render() {
@@ -587,6 +595,434 @@ class StructuredOutputPanel {
   }
   
   renderEstimateComparison() {
+    // NEW: Financial Exposure Engine output + Enforcement Layers
+    const exposure = this.data.exposure || {};
+    const enforcement = this.data.enforcement || {};
+    const comparison = this.data.comparison || {};
+    const categoryBreakdown = exposure.categoryBreakdown || [];
+    const opExposure = exposure.opExposure || {};
+    const structuredDeltas = exposure.structuredLineItemDeltas || [];
+    
+    // Enforcement layer data
+    const codeUpgrades = enforcement.codeUpgrades || {};
+    const coverageCrosswalk = enforcement.coverageCrosswalk || {};
+    const carrierPatterns = enforcement.carrierPatterns || {};
+    const totalWithEnforcement = enforcement.totalProjectedRecoveryWithEnforcement || exposure.totalProjectedRecovery || 0;
+    
+    // Fallback to legacy format if no exposure data
+    if (!exposure.totalProjectedRecovery && comparison.contractor_total) {
+      return this.renderLegacyEstimateComparison();
+    }
+    
+    return `
+      <div class="output-section">
+        <h3 class="output-title">💰 Financial Enforcement Analysis</h3>
+        
+        <!-- PRIMARY: TOTAL PROJECTED RECOVERY (WITH ENFORCEMENT) -->
+        <div class="output-hero-metric">
+          <div class="hero-label">Estimated Underpayment</div>
+          <div class="hero-value">${formatCurrency(totalWithEnforcement)}</div>
+          <div class="hero-subtitle">Action Required to Recover This Amount</div>
+        </div>
+        
+        <!-- ENFORCEMENT BREAKDOWN -->
+        ${(codeUpgrades.totalCodeUpgradeExposure > 0 || coverageCrosswalk.coverageExposureAdjustments !== 0) ? `
+          <div class="output-subsection">
+            <h4>Enforcement Layer Breakdown</h4>
+            <div class="output-grid">
+              <div class="output-card">
+                <div class="output-label">Base Exposure</div>
+                <div class="output-value">${formatCurrency(exposure.totalProjectedRecovery || 0)}</div>
+                <div class="output-sublabel">RCV Delta + O&P</div>
+              </div>
+              ${codeUpgrades.totalCodeUpgradeExposure > 0 ? `
+                <div class="output-card highlight-warning">
+                  <div class="output-label">Code Upgrades</div>
+                  <div class="output-value">${formatCurrency(codeUpgrades.totalCodeUpgradeExposure)}</div>
+                  <div class="output-sublabel">${codeUpgrades.flagCount} requirement(s)</div>
+                </div>
+              ` : ''}
+              ${coverageCrosswalk.coverageExposureAdjustments !== 0 ? `
+                <div class="output-card ${coverageCrosswalk.coverageExposureAdjustments > 0 ? 'highlight-success' : 'highlight-danger'}">
+                  <div class="output-label">Coverage Adjustments</div>
+                  <div class="output-value">${formatCurrency(coverageCrosswalk.coverageExposureAdjustments)}</div>
+                  <div class="output-sublabel">${coverageCrosswalk.conflictCount} conflict(s)</div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        ` : ''}
+        
+        <!-- FINANCIAL BREAKDOWN -->
+        <div class="output-subsection">
+          <h4>Financial Breakdown</h4>
+          <div class="output-grid">
+            <div class="output-card">
+              <div class="output-label">RCV Delta</div>
+              <div class="output-value">${formatCurrency(exposure.rcvDeltaTotal || 0)}</div>
+              <div class="output-sublabel">Replacement Cost Value</div>
+            </div>
+            <div class="output-card">
+              <div class="output-label">ACV Delta</div>
+              <div class="output-value">${formatCurrency(exposure.acvDeltaTotal || 0)}</div>
+              <div class="output-sublabel">Actual Cash Value</div>
+            </div>
+            <div class="output-card">
+              <div class="output-label">Recoverable Depreciation</div>
+              <div class="output-value">${formatCurrency(exposure.recoverableDepreciationTotal || 0)}</div>
+              <div class="output-sublabel">RCV - ACV</div>
+            </div>
+            <div class="output-card ${opExposure.qualifiesForOP ? 'highlight-success' : ''}">
+              <div class="output-label">O&P Exposure</div>
+              <div class="output-value">${formatCurrency(opExposure.opAmount || 0)}</div>
+              <div class="output-sublabel">${opExposure.qualifiesForOP ? '✓ Qualifies' : 'Not Applicable'}</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- O&P ANALYSIS -->
+        ${opExposure.qualifiesForOP ? `
+          <div class="output-subsection">
+            <h4>🔹 Overhead & Profit Qualification</h4>
+            <div class="output-alert alert-success">
+              <p><strong>${opExposure.tradeCount} distinct trades detected</strong></p>
+              <p>${opExposure.reason}</p>
+              ${opExposure.tradesDetected && opExposure.tradesDetected.length > 0 ? `
+                <div class="output-list">
+                  <strong>Trades:</strong> ${opExposure.tradesDetected.join(', ')}
+                </div>
+              ` : ''}
+              ${opExposure.opAmount > 0 ? `
+                <p><strong>Estimated O&P Exposure: ${formatCurrency(opExposure.opAmount)}</strong></p>
+              ` : ''}
+            </div>
+          </div>
+        ` : ''}
+        
+        <!-- CATEGORY BREAKDOWN -->
+        ${categoryBreakdown.length > 0 ? `
+          <div class="output-subsection">
+            <h4>Category-Level Exposure</h4>
+            <table class="output-table sortable">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>RCV Delta</th>
+                  <th>ACV Delta</th>
+                  <th>Depreciation</th>
+                  <th>% Underpaid</th>
+                  <th>Discrepancies</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${categoryBreakdown.map(cat => `
+                  <tr>
+                    <td><strong>${cat.category}</strong></td>
+                    <td class="${cat.rcvDelta > 0 ? 'negative' : ''}">${formatCurrency(cat.rcvDelta)}</td>
+                    <td class="${cat.acvDelta > 0 ? 'negative' : ''}">${formatCurrency(cat.acvDelta)}</td>
+                    <td>${formatCurrency(cat.depreciationDelta)}</td>
+                    <td>${cat.percentUnderpaid.toFixed(1)}%</td>
+                    <td>${cat.discrepancyCount}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        ` : ''}
+        
+        <!-- DEPRECIATION SUMMARY -->
+        ${exposure.recoverableDepreciationTotal > 0 ? `
+          <div class="output-subsection">
+            <h4>Depreciation Recovery</h4>
+            <div class="output-alert alert-info">
+              <p><strong>${formatCurrency(exposure.recoverableDepreciationTotal)} in depreciation is recoverable</strong></p>
+              <p>This amount can be recovered upon completion of repairs (RCV policy). <strong>Depreciation extracted from actual estimate values</strong> (not simulated).</p>
+            </div>
+          </div>
+        ` : `
+          <div class="output-subsection">
+            <h4>Depreciation Status</h4>
+            <div class="output-alert alert-info">
+              <p><strong>No depreciation detected in estimates.</strong></p>
+              <p>Estimates may not include separate RCV/ACV values, or both estimates use RCV pricing.</p>
+            </div>
+          </div>
+        `}
+        
+        <!-- CODE UPGRADE REQUIREMENTS -->
+        ${codeUpgrades.flagCount > 0 ? `
+          <div class="output-subsection">
+            <h4>🏗️ Code Compliance Requirements</h4>
+            <div class="output-alert alert-warning">
+              <p><strong>${codeUpgrades.flagCount} code upgrade requirement(s) detected</strong></p>
+              <p>Total Code Upgrade Exposure: <strong>${formatCurrency(codeUpgrades.totalCodeUpgradeExposure)}</strong></p>
+            </div>
+            <table class="output-table">
+              <thead>
+                <tr>
+                  <th>Issue</th>
+                  <th>Priority</th>
+                  <th>Explanation</th>
+                  <th>Estimated Cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${codeUpgrades.codeUpgradeFlags.map(flag => `
+                  <tr>
+                    <td><strong>${flag.issue}</strong></td>
+                    <td><span class="badge badge-${flag.priority}">${flag.priority}</span></td>
+                    <td>${flag.explanation}</td>
+                    <td>${formatCurrency(flag.estimatedCostImpact)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        ` : ''}
+        
+        <!-- COVERAGE CONFLICTS -->
+        ${coverageCrosswalk.conflictCount > 0 ? `
+          <div class="output-subsection">
+            <h4>📋 Policy Coverage Analysis</h4>
+            <div class="output-alert ${coverageCrosswalk.coverageExposureAdjustments >= 0 ? 'alert-info' : 'alert-danger'}">
+              <p><strong>${coverageCrosswalk.conflictCount} coverage conflict(s) detected</strong></p>
+              ${coverageCrosswalk.coverageExposureAdjustments !== 0 ? `
+                <p>Coverage Adjustment: <strong>${formatCurrency(coverageCrosswalk.coverageExposureAdjustments)}</strong></p>
+              ` : ''}
+            </div>
+            <table class="output-table">
+              <thead>
+                <tr>
+                  <th>Issue</th>
+                  <th>Category</th>
+                  <th>Priority</th>
+                  <th>Explanation</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${coverageCrosswalk.coverageConflicts.map(conflict => `
+                  <tr>
+                    <td><strong>${conflict.issue}</strong></td>
+                    <td>${conflict.category}</td>
+                    <td><span class="badge badge-${conflict.priority}">${conflict.priority}</span></td>
+                    <td>${conflict.explanation}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        ` : ''}
+        
+        <!-- CARRIER PATTERN DETECTION -->
+        ${carrierPatterns.patternCount > 0 ? `
+          <div class="output-subsection">
+            <h4>🔍 Carrier Behavior Patterns</h4>
+            <div class="output-alert alert-${carrierPatterns.riskLevel === 'critical' ? 'danger' : carrierPatterns.riskLevel === 'high' ? 'warning' : 'info'}">
+              <p><strong>${carrierPatterns.patternCount} systemic pattern(s) detected</strong></p>
+              <p>Risk Level: <span class="badge badge-${carrierPatterns.riskLevel}">${carrierPatterns.riskLevel.toUpperCase()}</span> | Severity Score: ${carrierPatterns.severityScore}</p>
+              <p><small>Pattern detection is informational and provides negotiation leverage. Does not affect financial calculations.</small></p>
+            </div>
+            <table class="output-table">
+              <thead>
+                <tr>
+                  <th>Pattern</th>
+                  <th>Category</th>
+                  <th>Confidence</th>
+                  <th>Explanation</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${carrierPatterns.patternFlags.map(pattern => `
+                  <tr>
+                    <td><strong>${pattern.pattern}</strong></td>
+                    <td>${pattern.category}</td>
+                    <td><span class="badge badge-${pattern.confidence}">${pattern.confidence}</span></td>
+                    <td>${pattern.explanation}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        ` : ''}
+        
+        <!-- LINE ITEM RECONCILIATION TABLE -->
+        ${structuredDeltas.length > 0 ? `
+          <div class="output-subsection">
+            <h4>Line Item Reconciliation (${structuredDeltas.length} items)</h4>
+            <div class="output-table-container">
+              <table class="output-table">
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Type</th>
+                    <th>Carrier Qty</th>
+                    <th>Contractor Qty</th>
+                    <th>Carrier $</th>
+                    <th>Contractor $</th>
+                    <th>RCV Delta</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${structuredDeltas.slice(0, 50).map(item => `
+                    <tr>
+                      <td>${item.description}</td>
+                      <td>${item.category}</td>
+                      <td><span class="badge badge-${item.discrepancyType}">${item.discrepancyType.replace(/_/g, ' ')}</span></td>
+                      <td>${item.carrierQty}</td>
+                      <td>${item.contractorQty}</td>
+                      <td>${formatCurrency(item.carrierTotal)}</td>
+                      <td>${formatCurrency(item.contractorTotal)}</td>
+                      <td class="${item.rcvDelta > 0 ? 'negative' : 'positive'}">${formatCurrency(item.rcvDelta)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+              ${structuredDeltas.length > 50 ? `
+                <p class="output-note">Showing first 50 of ${structuredDeltas.length} line items. Download full report for complete details.</p>
+              ` : ''}
+            </div>
+          </div>
+        ` : ''}
+        
+        <!-- LEGACY COMPARISON DATA (for reference) -->
+        <div class="output-subsection">
+          <h4>Estimate Totals</h4>
+          <div class="output-grid">
+            <div class="output-card">
+              <div class="output-label">Contractor Total</div>
+              <div class="output-value">${formatCurrency(comparison.contractor_total || 0)}</div>
+            </div>
+            <div class="output-card">
+              <div class="output-label">Carrier Total</div>
+              <div class="output-value">${formatCurrency(comparison.carrier_total || 0)}</div>
+            </div>
+            <div class="output-card">
+              <div class="output-label">Net Difference</div>
+              <div class="output-value">${formatCurrency(comparison.net_difference || 0)}</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- WHAT YOU MUST PROVE SECTION -->
+        <div id="proof-requirements-section"></div>
+        
+        <!-- ACTIONS -->
+        <div class="output-actions">
+          <button class="btn btn-primary" onclick="generateStructuredSupplementPacket()">
+            📄 Generate Structured Supplement Packet
+          </button>
+          <button class="btn btn-secondary" onclick="generateSupplement()">
+            Generate Supplement Letter
+          </button>
+          <button class="btn btn-secondary" onclick="downloadReconciliationReport()">
+            Download Full Report
+          </button>
+        </div>
+        
+        <div class="output-metadata">
+          <small>Financial Enforcement Engine v3.0 | Deterministic Calculation | ${structuredDeltas.length} line items analyzed | ${codeUpgrades.flagCount || 0} code flags | ${coverageCrosswalk.conflictCount || 0} coverage conflicts | ${carrierPatterns.patternCount || 0} carrier patterns</small>
+        </div>
+      </div>
+    `;
+  }
+  
+  async renderProofRequirements(container, claimId) {
+    // Load evidence gaps
+    const { data: gaps } = await supabaseClient
+      .from('claim_evidence_gaps')
+      .select('*')
+      .eq('claim_id', claimId)
+      .eq('resolved', false)
+      .order('severity', { ascending: false });
+    
+    if (!gaps || gaps.length === 0) return;
+    
+    // Load high-value discrepancies
+    const { data: discrepancies } = await supabaseClient
+      .from('claim_estimate_discrepancies')
+      .select('*')
+      .eq('claim_id', claimId)
+      .in('delta_type', ['missing_item', 'pricing_difference'])
+      .gte('difference_amount', 1000)
+      .order('difference_amount', { ascending: false })
+      .limit(10);
+    
+    // Load policy triggers
+    const { data: triggers } = await supabaseClient
+      .from('claim_policy_triggers')
+      .select('*')
+      .eq('claim_id', claimId)
+      .single();
+    
+    const proofSection = container.querySelector('#proof-requirements-section');
+    if (!proofSection) return;
+    
+    let html = `
+      <div class="evidence-gap-section">
+        <h4 class="evidence-gap-title">What You Must Prove</h4>
+    `;
+    
+    // Group discrepancies by type
+    const disputedItems = discrepancies || [];
+    
+    for (const item of disputedItems.slice(0, 5)) {
+      html += `
+        <div class="proof-requirement-card">
+          <div class="proof-requirement-header">
+            To recover ${formatCurrency(item.difference_amount)} for ${item.description}:
+          </div>
+          <ul class="proof-requirement-list">
+            <li>Damage documentation</li>
+            <li>Causation explanation</li>
+            <li>Pricing support</li>
+            ${item.category && item.category.includes('Code') ? '<li>Code citation</li>' : ''}
+            ${item.delta_type === 'missing_item' ? '<li>Contractor narrative explaining omission</li>' : ''}
+          </ul>
+        </div>
+      `;
+    }
+    
+    // Add code trigger requirements
+    if (triggers) {
+      if (triggers.ordinance_trigger) {
+        html += `
+          <div class="proof-requirement-card">
+            <div class="proof-requirement-header">
+              Ordinance coverage available${triggers.ordinance_trigger_amount ? ` (${formatCurrency(triggers.ordinance_trigger_amount)})` : ''}:
+            </div>
+            <ul class="proof-requirement-list">
+              <li>Building department citation</li>
+              <li>Contractor code reference</li>
+              <li>Documentation of code requirement</li>
+            </ul>
+          </div>
+        `;
+      }
+      
+      if (triggers.matching_trigger) {
+        html += `
+          <div class="proof-requirement-card">
+            <div class="proof-requirement-header">
+              Matching endorsement applies:
+            </div>
+            <ul class="proof-requirement-list">
+              <li>Photo evidence of material mismatch</li>
+              <li>Contractor statement</li>
+            </ul>
+          </div>
+        `;
+      }
+    }
+    
+    html += `
+      </div>
+    `;
+    
+    proofSection.innerHTML = html;
+  }
+  
+  renderLegacyEstimateComparison() {
     const comparison = this.data.comparison || this.data;
     
     return `
@@ -607,56 +1043,6 @@ class StructuredOutputPanel {
             <span class="financial-value underpayment">${formatCurrency(comparison.underpayment_estimate)}</span>
           </div>
         </div>
-        
-        ${comparison.missing_items && comparison.missing_items.length > 0 ? `
-          <div class="output-table-section">
-            <h4>Missing Items (${comparison.missing_items.length})</h4>
-            <table class="output-table">
-              <thead>
-                <tr>
-                  <th>Description</th>
-                  <th>Category</th>
-                  <th>Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${comparison.missing_items.map(item => `
-                  <tr>
-                    <td>${item.description}</td>
-                    <td>${item.category}</td>
-                    <td>${formatCurrency(item.contractor_total)}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        ` : ''}
-        
-        ${comparison.pricing_discrepancies && comparison.pricing_discrepancies.length > 0 ? `
-          <div class="output-table-section">
-            <h4>Pricing Discrepancies (${comparison.pricing_discrepancies.length})</h4>
-            <table class="output-table">
-              <thead>
-                <tr>
-                  <th>Description</th>
-                  <th>Contractor Price</th>
-                  <th>Carrier Price</th>
-                  <th>Difference</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${comparison.pricing_discrepancies.map(item => `
-                  <tr>
-                    <td>${item.description}</td>
-                    <td>${formatCurrency(item.contractor_unit_price)}</td>
-                    <td>${formatCurrency(item.carrier_unit_price)}</td>
-                    <td class="negative">${formatCurrency(item.amount_difference)}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        ` : ''}
         
         <div class="output-actions">
           <button class="btn btn-primary" onclick="generateSupplement()">
@@ -788,6 +1174,8 @@ class FinancialSummaryPanel {
   constructor(claimId) {
     this.claimId = claimId;
     this.data = null;
+    this.evidenceGaps = [];
+    this.policyTriggers = null;
   }
   
   async load() {
@@ -800,11 +1188,110 @@ class FinancialSummaryPanel {
       
       if (error) throw error;
       this.data = data;
+      
+      // Load evidence gaps
+      await this.loadEvidenceGaps();
+      
+      // Load policy triggers
+      await this.loadPolicyTriggers();
+      
       return data;
     } catch (error) {
       console.error('Failed to load financial summary:', error);
       return null;
     }
+  }
+  
+  async loadEvidenceGaps() {
+    try {
+      const { data, error } = await supabaseClient
+        .from('claim_evidence_gaps')
+        .select('*')
+        .eq('claim_id', this.claimId)
+        .eq('resolved', false)
+        .in('severity', ['high', 'critical'])
+        .order('severity', { ascending: false })
+        .order('delta_amount', { ascending: false });
+      
+      if (!error && data) {
+        this.evidenceGaps = data;
+      }
+    } catch (error) {
+      console.error('Failed to load evidence gaps:', error);
+    }
+  }
+  
+  async loadPolicyTriggers() {
+    try {
+      const { data, error } = await supabaseClient
+        .from('claim_policy_triggers')
+        .select('*')
+        .eq('claim_id', this.claimId)
+        .single();
+      
+      if (!error && data) {
+        this.policyTriggers = data;
+      }
+    } catch (error) {
+      console.error('Failed to load policy triggers:', error);
+    }
+  }
+  
+  async getRequiredActions() {
+    const actions = [];
+    
+    // Add evidence gaps
+    for (const gap of this.evidenceGaps) {
+      actions.push({
+        type: 'evidence_gap',
+        severity: gap.severity,
+        description: gap.description,
+        delta_amount: gap.delta_amount,
+        gap_id: gap.id
+      });
+    }
+    
+    // Add code trigger actions
+    if (this.policyTriggers) {
+      if (this.policyTriggers.ordinance_trigger) {
+        const hasCodeDoc = this.evidenceGaps.some(g => 
+          g.gap_type === 'code_citation_missing' || 
+          g.gap_type === 'code_documentation_missing'
+        );
+        if (hasCodeDoc) {
+          actions.push({
+            type: 'code_trigger',
+            severity: 'critical',
+            description: 'Building code citation required for ordinance coverage',
+            delta_amount: this.policyTriggers.ordinance_trigger_amount
+          });
+        }
+      }
+    }
+    
+    // Add high-value delta actions
+    const { data: highValueDeltas } = await supabaseClient
+      .from('claim_estimate_discrepancies')
+      .select('description, difference_amount, delta_type')
+      .eq('claim_id', this.claimId)
+      .gte('difference_amount', 2500)
+      .order('difference_amount', { ascending: false })
+      .limit(5);
+    
+    if (highValueDeltas) {
+      for (const delta of highValueDeltas) {
+        if (delta.delta_type === 'missing_item') {
+          actions.push({
+            type: 'high_value_delta',
+            severity: 'high',
+            description: `Documentation required for ${delta.description}`,
+            delta_amount: delta.difference_amount
+          });
+        }
+      }
+    }
+    
+    return actions;
   }
   
   render() {
@@ -821,7 +1308,7 @@ class FinancialSummaryPanel {
       
       <div class="financial-summary-grid">
         <div class="financial-card highlight">
-          <div class="financial-card-label">Underpayment Identified</div>
+          <div class="financial-card-label">Estimated Underpayment</div>
           <div class="financial-card-value underpayment">
             ${formatCurrency(this.data.underpayment_estimate)}
           </div>
@@ -849,6 +1336,8 @@ class FinancialSummaryPanel {
         </div>
       </div>
       
+      <div id="required-actions-section-${this.claimId}"></div>
+      
       <div class="financial-summary-details">
         <div class="detail-row">
           <span>Contractor Total:</span>
@@ -869,7 +1358,46 @@ class FinancialSummaryPanel {
       </div>
     `;
     
+    // Render required actions if underpayment exists
+    if (this.data.underpayment_estimate > 0) {
+      this.renderRequiredActions(container);
+    }
+    
     return container;
+  }
+  
+  async renderRequiredActions(container) {
+    const actions = await this.getRequiredActions();
+    
+    if (actions.length === 0) return;
+    
+    const actionsSection = container.querySelector(`#required-actions-section-${this.claimId}`);
+    
+    let actionsHTML = `
+      <div class="required-actions-section">
+        <h4 class="required-actions-title">Next Required Action</h4>
+        <ul class="required-actions-list">
+    `;
+    
+    for (const action of actions) {
+      const highlightClass = action.severity === 'critical' ? 'critical' : 
+                            action.severity === 'high' ? 'high' : 'medium';
+      
+      actionsHTML += `
+        <li class="required-action-item ${highlightClass}">
+          <span class="action-icon">${action.severity === 'critical' ? '🔴' : '🟡'}</span>
+          <span class="action-description">${action.description}</span>
+          ${action.delta_amount ? `<span class="action-amount">${formatCurrency(action.delta_amount)}</span>` : ''}
+        </li>
+      `;
+    }
+    
+    actionsHTML += `
+        </ul>
+      </div>
+    `;
+    
+    actionsSection.innerHTML = actionsHTML;
   }
   
   renderEmpty() {

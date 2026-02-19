@@ -15,18 +15,23 @@ function parseEstimate(pdfText, estimateType) {
   // Split into lines
   const lines = pdfText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
   
-  const lineItems = [];
+  const rawLineItems = [];
   const metadata = {
     estimate_type: estimateType,
     total_lines_parsed: 0,
     lines_with_quantities: 0,
     lines_with_prices: 0,
-    parse_success_rate: 0
+    parse_success_rate: 0,
+    rcv_acv_pairs_detected: 0,
+    depreciation_extracted: false,
+    summary_depreciation_allocated: false,
+    summary_depreciation_total: 0
   };
   
   let lineNumber = 0;
   let currentSection = null;
   
+  // PHASE 1: Parse all lines (including RCV/ACV prefixes)
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     
@@ -45,13 +50,16 @@ function parseEstimate(pdfText, estimateType) {
     
     if (parsed) {
       lineNumber++;
-      lineItems.push(parsed);
+      rawLineItems.push(parsed);
       metadata.total_lines_parsed++;
       
       if (parsed.quantity) metadata.lines_with_quantities++;
       if (parsed.unit_price) metadata.lines_with_prices++;
     }
   }
+  
+  // PHASE 2: Pair RCV/ACV entries
+  const lineItems = pairRCVandACV(rawLineItems, metadata);
   
   // Calculate parse success rate
   metadata.parse_success_rate = metadata.total_lines_parsed > 0
@@ -180,20 +188,28 @@ function parseStandardFormat(line, lineNumber, section) {
       const tolerance = expectedTotal * 0.01;
       
       if (Math.abs(total - expectedTotal) <= tolerance) {
+        const descLower = description.toLowerCase();
+        const isOP = descLower.includes('overhead') || descLower.includes('profit') || 
+                     descLower.includes('o&p') || descLower.includes('o & p');
+        const isTax = descLower.includes('tax');
+        
         return {
           line_number: lineNumber,
           section: section,
           category: categorizeLineItem(description, unit),
           description: description,
           description_normalized: normalizeDescription(description),
+          base_description: description,
           quantity: quantity,
           unit: unit,
           unit_price: unitPrice,
           total: total,
+          line_type: null,
           raw_line_text: line,
           confidence_score: 0.95,
           parsed_by: 'regex',
-          is_tax: false,
+          is_tax: isTax,
+          is_op: isOP,
           is_subtotal: false,
           is_total: false
         };
@@ -207,6 +223,7 @@ function parseStandardFormat(line, lineNumber, section) {
 /**
  * Xactimate format parser
  * Format: "RCV  Qty Unit  $UnitPrice  $Total"
+ * NOW EXTRACTS: line_type (RCV/ACV) for pairing
  */
 function parseXactimateFormat(line, lineNumber, section) {
   const pattern = /^(RCV|ACV|O&P|Tax)?\s*(.+?)\s+(\d+(?:\.\d{1,2})?)\s+([A-Z]{1,4})\s+\$?([\d,]+(?:\.\d{2})?)\s+\$?([\d,]+(?:\.\d{2})?)$/i;
@@ -214,26 +231,41 @@ function parseXactimateFormat(line, lineNumber, section) {
   const match = line.match(pattern);
   if (match) {
     const prefix = match[1] || '';
+    const prefixUpper = prefix.toUpperCase();
     const description = match[2].trim();
     const quantity = parseFloat(match[3]);
     const unit = match[4].toUpperCase();
     const unitPrice = parseFloat(match[5].replace(/,/g, ''));
     const total = parseFloat(match[6].replace(/,/g, ''));
     
+    // Determine line type
+    let lineType = null;
+    if (prefixUpper === 'RCV') lineType = 'RCV';
+    else if (prefixUpper === 'ACV') lineType = 'ACV';
+    
+    // Determine if O&P or Tax
+    const isOP = prefixUpper === 'O&P' || 
+                 description.toLowerCase().includes('overhead') || 
+                 description.toLowerCase().includes('profit');
+    const isTax = prefixUpper === 'TAX' || description.toLowerCase().includes('tax');
+    
     return {
       line_number: lineNumber,
       section: section,
       category: categorizeLineItem(description, unit),
-      description: `${prefix} ${description}`.trim(),
+      description: description, // Base description without prefix
       description_normalized: normalizeDescription(description),
+      base_description: description, // For pairing
       quantity: quantity,
       unit: unit,
       unit_price: unitPrice,
       total: total,
+      line_type: lineType, // NEW: 'RCV' | 'ACV' | null
       raw_line_text: line,
       confidence_score: 0.90,
       parsed_by: 'regex',
-      is_tax: prefix.toLowerCase() === 'tax',
+      is_tax: isTax,
+      is_op: isOP,
       is_subtotal: false,
       is_total: false
     };
@@ -258,20 +290,28 @@ function parseTabularFormat(line, lineNumber, section) {
       : quantity * unitPrice;
     
     if (!isNaN(quantity) && !isNaN(unitPrice) && !isNaN(total)) {
+      const descLower = description.toLowerCase();
+      const isOP = descLower.includes('overhead') || descLower.includes('profit') || 
+                   descLower.includes('o&p') || descLower.includes('o & p');
+      const isTax = descLower.includes('tax');
+      
       return {
         line_number: lineNumber,
         section: section,
         category: categorizeLineItem(description, unit),
         description: description,
         description_normalized: normalizeDescription(description),
+        base_description: description,
         quantity: quantity,
         unit: unit,
         unit_price: unitPrice,
         total: total,
+        line_type: null,
         raw_line_text: line,
         confidence_score: 0.85,
         parsed_by: 'regex',
-        is_tax: false,
+        is_tax: isTax,
+        is_op: isOP,
         is_subtotal: false,
         is_total: false
       };
@@ -296,20 +336,28 @@ function parseCompactFormat(line, lineNumber, section) {
     const unitPrice = parseFloat(match[4].replace(/,/g, ''));
     const total = parseFloat(match[5].replace(/,/g, ''));
     
+    const descLower = description.toLowerCase();
+    const isOP = descLower.includes('overhead') || descLower.includes('profit') || 
+                 descLower.includes('o&p') || descLower.includes('o & p');
+    const isTax = descLower.includes('tax');
+    
     return {
       line_number: lineNumber,
       section: section,
       category: categorizeLineItem(description, unit),
       description: description,
       description_normalized: normalizeDescription(description),
+      base_description: description,
       quantity: quantity,
       unit: unit,
       unit_price: unitPrice,
       total: total,
+      line_type: null,
       raw_line_text: line,
       confidence_score: 0.80,
       parsed_by: 'regex',
-      is_tax: false,
+      is_tax: isTax,
+      is_op: isOP,
       is_subtotal: false,
       is_total: false
     };
@@ -437,6 +485,212 @@ function normalizeDescription(description) {
     .replace(/[^\w\s]/g, '') // Remove punctuation
     .replace(/\s+/g, ' ')     // Normalize whitespace
     .trim();
+}
+
+/**
+ * Pair RCV and ACV entries into single line items with real depreciation
+ * UPGRADED: Handles summary depreciation allocation
+ * @param {Array} rawLineItems - Parsed line items with line_type
+ * @param {object} metadata - Metadata object to update
+ * @returns {Array} Paired line items with rcv_total, acv_total, depreciation
+ */
+function pairRCVandACV(rawLineItems, metadata) {
+  const pairedItems = [];
+  const skipIndices = new Set();
+  
+  // PHASE 1: Detect summary depreciation lines
+  const summaryDepreciation = detectSummaryDepreciation(rawLineItems);
+  
+  for (let i = 0; i < rawLineItems.length; i++) {
+    if (skipIndices.has(i)) continue;
+    
+    const currentItem = rawLineItems[i];
+    
+    // Skip summary depreciation lines (will be allocated)
+    if (currentItem.is_summary_depreciation) {
+      skipIndices.add(i);
+      continue;
+    }
+    
+    // Check if this is an RCV line
+    if (currentItem.line_type === 'RCV') {
+      // Look ahead for matching ACV line
+      let acvItem = null;
+      
+      for (let j = i + 1; j < Math.min(i + 5, rawLineItems.length); j++) {
+        const nextItem = rawLineItems[j];
+        
+        if (nextItem.line_type === 'ACV' &&
+            nextItem.base_description === currentItem.base_description &&
+            Math.abs(nextItem.quantity - currentItem.quantity) < 0.01) {
+          acvItem = nextItem;
+          skipIndices.add(j);
+          break;
+        }
+      }
+      
+      // Create paired item
+      const paired = {
+        ...currentItem,
+        rcv_total: currentItem.total,
+        acv_total: acvItem ? acvItem.total : currentItem.total,
+        depreciation: acvItem ? (currentItem.total - acvItem.total) : 0,
+        has_acv_pair: !!acvItem,
+        line_type: null // Clear line_type after pairing
+      };
+      
+      // Remove 'total' field to avoid confusion
+      delete paired.total;
+      
+      pairedItems.push(paired);
+      
+      if (acvItem) {
+        metadata.rcv_acv_pairs_detected++;
+        metadata.depreciation_extracted = true;
+      }
+    }
+    // Check if this is an ACV line without RCV (orphaned)
+    else if (currentItem.line_type === 'ACV') {
+      // Orphaned ACV - treat as standalone with no depreciation
+      const paired = {
+        ...currentItem,
+        rcv_total: currentItem.total,
+        acv_total: currentItem.total,
+        depreciation: 0,
+        has_acv_pair: false,
+        line_type: null
+      };
+      delete paired.total;
+      pairedItems.push(paired);
+    }
+    // Regular line item (no RCV/ACV prefix)
+    else {
+      // No RCV/ACV prefix - use total as both RCV and ACV
+      const paired = {
+        ...currentItem,
+        rcv_total: currentItem.total,
+        acv_total: currentItem.total,
+        depreciation: 0,
+        has_acv_pair: false,
+        line_type: null
+      };
+      delete paired.total;
+      pairedItems.push(paired);
+    }
+  }
+  
+  // PHASE 2: Allocate summary depreciation if detected
+  if (summaryDepreciation.total > 0) {
+    allocateSummaryDepreciation(pairedItems, summaryDepreciation, metadata);
+  }
+  
+  return pairedItems;
+}
+
+/**
+ * Detect summary depreciation lines
+ * Handles formats like:
+ * - "Depreciation  -1750.00"
+ * - "Less Depreciation  1750.00"
+ * - "Total Depreciation  1750.00"
+ * @param {Array} rawLineItems - Raw line items
+ * @returns {object} Summary depreciation info
+ */
+function detectSummaryDepreciation(rawLineItems) {
+  let totalDepreciation = 0;
+  const depreciationLines = [];
+  
+  for (let i = 0; i < rawLineItems.length; i++) {
+    const item = rawLineItems[i];
+    const desc = item.description?.toLowerCase() || '';
+    
+    // Detect depreciation line
+    if ((desc.includes('depreciation') || desc.includes('depr')) &&
+        !desc.includes('recoverable') && // Exclude "recoverable depreciation"
+        (desc.includes('total') || desc.includes('less') || desc === 'depreciation')) {
+      
+      // Mark as summary depreciation
+      item.is_summary_depreciation = true;
+      
+      // Extract amount (may be negative)
+      let amount = Math.abs(item.total || 0);
+      totalDepreciation += amount;
+      
+      depreciationLines.push({
+        index: i,
+        amount: amount,
+        description: item.description
+      });
+    }
+  }
+  
+  return {
+    total: totalDepreciation,
+    lines: depreciationLines,
+    detected: depreciationLines.length > 0
+  };
+}
+
+/**
+ * Allocate summary depreciation proportionally to line items
+ * @param {Array} pairedItems - Paired line items
+ * @param {object} summaryDepreciation - Summary depreciation info
+ * @param {object} metadata - Metadata to update
+ */
+function allocateSummaryDepreciation(pairedItems, summaryDepreciation, metadata) {
+  // Calculate total RCV (excluding items that already have depreciation)
+  let totalRCV = 0;
+  const itemsNeedingDepreciation = [];
+  
+  for (const item of pairedItems) {
+    // Detect if this is a labor-only line
+    const isLaborOnly = item.category === 'Labor' || 
+                        item.description?.toLowerCase().includes('labor') ||
+                        item.description?.toLowerCase().includes('installation') ||
+                        item.description?.toLowerCase().includes('remove') ||
+                        item.description?.toLowerCase().includes('demo');
+    
+    // Only allocate to items without existing depreciation
+    // Exclude: tax, O&P, totals, labor-only items
+    if (item.depreciation === 0 && 
+        !item.is_tax && 
+        !item.is_op && 
+        !item.is_total && 
+        !isLaborOnly) {
+      totalRCV += item.rcv_total;
+      itemsNeedingDepreciation.push(item);
+    }
+  }
+  
+  if (totalRCV === 0) return; // Nothing to allocate
+  
+  // Allocate depreciation proportionally
+  let allocatedTotal = 0;
+  
+  for (let i = 0; i < itemsNeedingDepreciation.length; i++) {
+    const item = itemsNeedingDepreciation[i];
+    const proportion = item.rcv_total / totalRCV;
+    
+    // Last item gets remainder to avoid rounding errors
+    let itemDepreciation;
+    if (i === itemsNeedingDepreciation.length - 1) {
+      itemDepreciation = summaryDepreciation.total - allocatedTotal;
+    } else {
+      itemDepreciation = summaryDepreciation.total * proportion;
+    }
+    
+    // Update item with allocated depreciation
+    item.depreciation = parseFloat(itemDepreciation.toFixed(2));
+    item.acv_total = parseFloat((item.rcv_total - item.depreciation).toFixed(2));
+    item.has_summary_depreciation = true;
+    
+    allocatedTotal += itemDepreciation;
+  }
+  
+  // Update metadata
+  metadata.depreciation_extracted = true;
+  metadata.summary_depreciation_allocated = true;
+  metadata.summary_depreciation_total = summaryDepreciation.total;
 }
 
 /**

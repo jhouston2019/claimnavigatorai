@@ -61,6 +61,13 @@ function reconcileEstimates(matches, unmatchedContractor, unmatchedCarrier, allC
       carrier_unit_price: 0,
       contractor_total: item.total,
       carrier_total: 0,
+      // RCV/ACV fields (NEW)
+      contractor_rcv_total: item.rcv_total || item.total,
+      contractor_acv_total: item.acv_total || item.total,
+      contractor_depreciation: item.depreciation || 0,
+      carrier_rcv_total: 0,
+      carrier_acv_total: 0,
+      carrier_depreciation: 0,
       difference_amount: item.total,
       quantity_delta: item.quantity,
       unit_price_delta: item.unit_price,
@@ -85,6 +92,13 @@ function reconcileEstimates(matches, unmatchedContractor, unmatchedCarrier, allC
       carrier_unit_price: item.unit_price,
       contractor_total: 0,
       carrier_total: item.total,
+      // RCV/ACV fields (NEW)
+      contractor_rcv_total: 0,
+      contractor_acv_total: 0,
+      contractor_depreciation: 0,
+      carrier_rcv_total: item.rcv_total || item.total,
+      carrier_acv_total: item.acv_total || item.total,
+      carrier_depreciation: item.depreciation || 0,
       difference_amount: -item.total,
       quantity_delta: -item.quantity,
       unit_price_delta: -item.unit_price,
@@ -154,6 +168,13 @@ function calculateDiscrepancyWithNormalization(contractor, carrier, match) {
       carrier_unit_price: carrier.unit_price,
       contractor_total: contractor.total,
       carrier_total: carrier.total,
+      // RCV/ACV fields (NEW)
+      contractor_rcv_total: contractor.rcv_total || contractor.total,
+      contractor_acv_total: contractor.acv_total || contractor.total,
+      contractor_depreciation: contractor.depreciation || 0,
+      carrier_rcv_total: carrier.rcv_total || carrier.total,
+      carrier_acv_total: carrier.acv_total || carrier.total,
+      carrier_depreciation: carrier.depreciation || 0,
       difference_amount: contractor.total - carrier.total,
       quantity_delta: 0,
       unit_price_delta: 0,
@@ -198,6 +219,14 @@ function calculateDiscrepancyWithNormalization(contractor, carrier, match) {
     carrier_unit_price: normalized.carrier_unit_price,
     contractor_total: normalized.contractor_total,
     carrier_total: normalized.carrier_total,
+    
+    // RCV/ACV/Depreciation fields (NEW - pass through from parsed estimates)
+    contractor_rcv_total: contractor.rcv_total || contractor.total,
+    contractor_acv_total: contractor.acv_total || contractor.total,
+    contractor_depreciation: contractor.depreciation || 0,
+    carrier_rcv_total: carrier.rcv_total || carrier.total,
+    carrier_acv_total: carrier.acv_total || carrier.total,
+    carrier_depreciation: carrier.depreciation || 0,
     
     // Deltas (using normalized values)
     difference_amount: normalized.total_delta,

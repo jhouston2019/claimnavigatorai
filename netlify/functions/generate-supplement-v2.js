@@ -66,16 +66,39 @@ exports.handler = async (event) => {
     console.log(`[Supplement v2] Starting generation for claim ${claim.claim_number}`);
 
     // =====================================================
+    // STEP 0: CHECK FOR UNRESOLVED EVIDENCE GAPS
+    // =====================================================
+    console.log('[Supplement v2] Step 0: Checking evidence gaps...');
+    
+    const { data: evidenceGaps } = await supabase
+      .from('claim_evidence_gaps')
+      .select('*')
+      .eq('claim_id', body.claim_id)
+      .eq('resolved', false)
+      .in('severity', ['high', 'critical']);
+    
+    const hasHighSeverityGaps = evidenceGaps && evidenceGaps.length > 0;
+    
+    if (hasHighSeverityGaps) {
+      console.log(`[Supplement v2] WARNING: ${evidenceGaps.length} high-severity evidence gaps detected`);
+    }
+
+    // =====================================================
     // STEP 1: BUILD STRUCTURED SUPPLEMENT FROM DATABASE
     // =====================================================
     console.log('[Supplement v2] Step 1: Building structured supplement...');
     
     const supplementData = await buildSupplement(body.claim_id, supabase);
     
+    // Inject evidence gap data
+    supplementData.evidence_gaps = evidenceGaps || [];
+    supplementData.has_high_severity_gaps = hasHighSeverityGaps;
+    
     console.log(`[Supplement v2] Structured data built:`);
     console.log(`  - Total request: $${supplementData.totals.total_supplement_request}`);
     console.log(`  - Categories: ${supplementData.metadata.categories_affected}`);
     console.log(`  - Discrepancies: ${supplementData.metadata.total_discrepancies}`);
+    console.log(`  - Evidence gaps: ${evidenceGaps?.length || 0}`);
 
     // =====================================================
     // STEP 2: FORMAT AS HTML AND TEXT

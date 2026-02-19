@@ -172,6 +172,8 @@ function formatSupplementHTML(supplementData) {
 
   ${sections.depreciation_section ? formatDepreciationSection(sections.depreciation_section) : ''}
 
+  ${formatProofDocumentationSection(supplementData)}
+
   <div class="summary-section">
     <div class="summary-title">Summary of Supplement Request</div>
     <div class="summary-breakdown">
@@ -253,6 +255,40 @@ function formatDepreciationSection(depSection) {
 }
 
 /**
+ * Format proof documentation section
+ */
+function formatProofDocumentationSection(supplementData) {
+  const evidenceGaps = supplementData.evidence_gaps || [];
+  const hasGaps = evidenceGaps.length > 0;
+  
+  if (!hasGaps) {
+    return `
+      <div class="section">
+        <div class="section-title">Supporting Documentation Attached</div>
+        <ul>
+          <li>Moisture report</li>
+          <li>Code citation</li>
+          <li>Contractor narrative</li>
+          <li>Photo documentation</li>
+        </ul>
+      </div>
+    `;
+  }
+  
+  // Has unresolved gaps
+  return `
+    <div class="section">
+      <div class="section-title">Supporting Documentation</div>
+      <p><strong>Additional documentation forthcoming.</strong></p>
+      <p>The following items are being prepared and will be submitted:</p>
+      <ul>
+        ${evidenceGaps.map(gap => `<li>${gap.description}</li>`).join('')}
+      </ul>
+    </div>
+  `;
+}
+
+/**
  * Format discrepancy type
  */
 function formatDiscrepancyType(type) {
@@ -323,6 +359,28 @@ function formatSupplementText(supplementData) {
     text += `${sections.depreciation_section.description}\n\n`;
   }
   
+  // Proof Documentation
+  const evidenceGaps = supplementData.evidence_gaps || [];
+  const hasGaps = evidenceGaps.length > 0;
+  
+  text += `\nSUPPORTING DOCUMENTATION\n`;
+  text += `${'-'.repeat(60)}\n`;
+  
+  if (!hasGaps) {
+    text += `Attached:\n`;
+    text += `  - Moisture report\n`;
+    text += `  - Code citation\n`;
+    text += `  - Contractor narrative\n`;
+    text += `  - Photo documentation\n\n`;
+  } else {
+    text += `Additional documentation forthcoming.\n\n`;
+    text += `The following items are being prepared and will be submitted:\n`;
+    for (const gap of evidenceGaps) {
+      text += `  - ${gap.description}\n`;
+    }
+    text += `\n`;
+  }
+  
   // Summary
   text += `\nSUMMARY OF SUPPLEMENT REQUEST\n`;
   text += `${'='.repeat(60)}\n\n`;
@@ -336,7 +394,7 @@ function formatSupplementText(supplementData) {
   text += `\nTOTAL SUPPLEMENT REQUESTED: $${formatCurrency(sections.summary.total_supplement_requested)}\n\n`;
   
   // Closing
-  text += `${sections.summary.closing}\n\n`;
+  text += `\n${sections.summary.closing}\n\n`;
   
   // Signature
   text += `Respectfully,\n`;
@@ -358,7 +416,7 @@ async function polishWithAI(text, openaiClient) {
       messages: [
         {
           role: 'system',
-          content: 'You are a professional insurance supplement writer. Polish the language for professionalism and clarity. DO NOT modify any numbers, dollar amounts, or calculations. Return only the polished text.'
+          content: 'You are a professional insurance supplement writer. Polish the language for professionalism and clarity. Use direct, assertive language. Remove weak phrases like "may indicate", "possible", "could suggest", "might". Replace with definitive statements: "indicates", "is", "shows", "requires". DO NOT modify any numbers, dollar amounts, or calculations. Return only the polished text.'
         },
         {
           role: 'user',

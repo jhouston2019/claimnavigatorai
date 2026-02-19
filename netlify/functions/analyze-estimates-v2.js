@@ -11,6 +11,10 @@ const { sendSuccess, sendError, validateAuth, parseBody, getClientIP, getUserAge
 const { parseEstimate } = require('./lib/estimate-parser');
 const { matchLineItems, semanticMatch } = require('./lib/estimate-matcher');
 const { reconcileEstimates, validateReconciliation, generateSummary } = require('./lib/estimate-reconciler');
+const { calculateExposure } = require('./lib/financial-exposure-engine');
+const { analyzeCodeUpgrades } = require('./lib/code-upgrade-engine');
+const { analyzePolicyCrosswalk } = require('./lib/policy-estimate-crosswalk');
+const { analyzeCarrierPatterns } = require('./lib/carrier-pattern-engine');
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -299,6 +303,123 @@ exports.handler = async (event) => {
     }
 
     // =====================================================
+    // PHASE 6A: FINANCIAL EXPOSURE CALCULATION
+    // =====================================================
+    console.log('[Estimate Engine] Phase 6A: Calculating financial exposure...');
+    
+    const exposureSummary = calculateExposure(
+      reconciliation,
+      contractorParsed.lineItems,
+      carrierParsed.lineItems
+    );
+    
+    console.log(`[Estimate Engine] Total Projected Recovery: $${exposureSummary.totalProjectedRecovery}`);
+    console.log(`[Estimate Engine] RCV Delta: $${exposureSummary.rcvDeltaTotal}`);
+    console.log(`[Estimate Engine] ACV Delta: $${exposureSummary.acvDeltaTotal}`);
+    console.log(`[Estimate Engine] Recoverable Depreciation: $${exposureSummary.recoverableDepreciationTotal}`);
+    console.log(`[Estimate Engine] O&P Exposure: $${exposureSummary.opExposure.opAmount}`);
+    console.log(`[Estimate Engine] O&P Qualifies: ${exposureSummary.opExposure.qualifiesForOP}`);
+    
+    // Validate financial exposure
+    if (!exposureSummary.validation.valid) {
+      console.error('Financial exposure validation failed:', exposureSummary.validation.errors);
+      return sendError('Financial exposure validation failed', 'CALC-002', 500, {
+        errors: exposureSummary.validation.errors,
+        warnings: exposureSummary.validation.warnings
+      });
+    }
+    
+    if (exposureSummary.validation.warnings.length > 0) {
+      console.warn('Financial exposure warnings:', exposureSummary.validation.warnings);
+    }
+
+    // =====================================================
+    // PHASE 6B: CODE UPGRADE DETECTION
+    // =====================================================
+    console.log('[Estimate Engine] Phase 6B: Analyzing code upgrade requirements...');
+    
+    const codeUpgrades = analyzeCodeUpgrades({
+      lineItems: contractorParsed.lineItems,
+      reconciliation: reconciliation,
+      exposure: exposureSummary,
+      propertyMetadata: body.property_metadata || {},
+      regionalData: body.regional_data || {}
+    });
+    
+    console.log(`[Estimate Engine] Code Upgrade Flags: ${codeUpgrades.flagCount}`);
+    console.log(`[Estimate Engine] Code Upgrade Exposure: $${codeUpgrades.totalCodeUpgradeExposure}`);
+
+    // =====================================================
+    // PHASE 6C: POLICY-TO-ESTIMATE CROSSWALK
+    // =====================================================
+    console.log('[Estimate Engine] Phase 6C: Cross-referencing policy coverage...');
+    
+    // Fetch policy data if available
+    let parsedPolicy = {};
+    if (claim.policy_id) {
+      const { data: policyData } = await supabase
+        .from('policies')
+        .select('*')
+        .eq('id', claim.policy_id)
+        .single();
+      
+      if (policyData) {
+        parsedPolicy = policyData;
+      }
+    }
+    
+    const coverageCrosswalk = analyzePolicyCrosswalk({
+      parsedPolicy: parsedPolicy,
+      reconciliation: reconciliation,
+      exposure: exposureSummary,
+      lineItems: contractorParsed.lineItems
+    });
+    
+    console.log(`[Estimate Engine] Coverage Conflicts: ${coverageCrosswalk.conflictCount}`);
+    console.log(`[Estimate Engine] Coverage Adjustments: $${coverageCrosswalk.coverageExposureAdjustments}`);
+
+    // =====================================================
+    // PHASE 6D: CARRIER PATTERN DETECTION
+    // =====================================================
+    console.log('[Estimate Engine] Phase 6D: Analyzing carrier patterns...');
+    
+    // Fetch historical data for this carrier (if available)
+    const carrierName = body.carrier_name || claim.carrier_name || 'Unknown';
+    const { data: historicalData } = await supabase
+      .from('claim_estimate_comparison')
+      .select('*')
+      .eq('carrier_name', carrierName)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    
+    const carrierPatterns = analyzeCarrierPatterns({
+      carrierName: carrierName,
+      reconciliation: reconciliation,
+      exposure: exposureSummary,
+      historicalData: historicalData || [],
+      supabase: supabase
+    });
+    
+    console.log(`[Estimate Engine] Carrier Patterns Detected: ${carrierPatterns.patternCount}`);
+    console.log(`[Estimate Engine] Carrier Risk Level: ${carrierPatterns.riskLevel}`);
+    console.log(`[Estimate Engine] Severity Score: ${carrierPatterns.severityScore}`);
+
+    // =====================================================
+    // PHASE 6E: CALCULATE TOTAL PROJECTED RECOVERY (WITH ENFORCEMENT LAYERS)
+    // =====================================================
+    console.log('[Estimate Engine] Phase 6E: Calculating total with enforcement layers...');
+    
+    const totalProjectedRecoveryWithEnforcement = 
+      exposureSummary.totalProjectedRecovery +
+      codeUpgrades.totalCodeUpgradeExposure +
+      coverageCrosswalk.coverageExposureAdjustments;
+    
+    console.log(`[Estimate Engine] FINAL Total Projected Recovery: $${totalProjectedRecoveryWithEnforcement}`);
+    console.log(`[Estimate Engine]   - Base Exposure: $${exposureSummary.totalProjectedRecovery}`);
+    console.log(`[Estimate Engine]   - Code Upgrades: $${codeUpgrades.totalCodeUpgradeExposure}`);
+    console.log(`[Estimate Engine]   - Coverage Adjustments: $${coverageCrosswalk.coverageExposureAdjustments}`);
+
+    // =====================================================
     // PHASE 7: STORE DISCREPANCIES
     // =====================================================
     console.log('[Estimate Engine] Phase 7: Storing discrepancies...');
@@ -367,6 +488,73 @@ exports.handler = async (event) => {
       onConflict: 'claim_id'
     });
 
+    // Store financial exposure report
+    const { error: exposureError } = await supabase
+      .from('claim_financial_exposure_reports')
+      .upsert({
+        claim_id: body.claim_id,
+        user_id: userId,
+        total_projected_recovery: exposureSummary.totalProjectedRecovery,
+        rcv_delta_total: exposureSummary.rcvDeltaTotal,
+        acv_delta_total: exposureSummary.acvDeltaTotal,
+        recoverable_depreciation_total: exposureSummary.recoverableDepreciationTotal,
+        op_qualifies: exposureSummary.opExposure.qualifiesForOP,
+        op_amount: exposureSummary.opExposure.opAmount,
+        op_trades_detected: exposureSummary.opExposure.tradesDetected,
+        op_trade_count: exposureSummary.opExposure.tradeCount,
+        op_reason: exposureSummary.opExposure.reason,
+        op_calculation: exposureSummary.opExposure.calculation,
+        category_breakdown: exposureSummary.categoryBreakdown,
+        structured_line_item_deltas: exposureSummary.structuredLineItemDeltas,
+        negotiation_payload: exposureSummary.negotiationPayload,
+        negotiation_points: exposureSummary.negotiationPayload.negotiationPoints,
+        validation_status: exposureSummary.validation.valid ? 'valid' : 
+                          (exposureSummary.validation.warnings.length > 0 ? 'warnings' : 'errors'),
+        validation_errors: exposureSummary.validation.errors,
+        validation_warnings: exposureSummary.validation.warnings,
+        calculation_method: exposureSummary.metadata.calculation_method,
+        engine_version: exposureSummary.metadata.engine_version,
+        processing_time_ms: exposureSummary.metadata.processing_time_ms,
+        total_discrepancies_analyzed: exposureSummary.metadata.total_discrepancies_analyzed
+      }, {
+        onConflict: 'claim_id'
+      });
+    
+    if (exposureError) {
+      console.error('Failed to store financial exposure report:', exposureError);
+      // Continue - not critical
+    }
+
+    // Store enforcement report (code upgrades, coverage conflicts, carrier patterns)
+    const { error: enforcementError } = await supabase
+      .from('claim_enforcement_reports')
+      .upsert({
+        claim_id: body.claim_id,
+        user_id: userId,
+        total_projected_recovery_with_enforcement: totalProjectedRecoveryWithEnforcement,
+        base_exposure: exposureSummary.totalProjectedRecovery,
+        code_upgrade_exposure: codeUpgrades.totalCodeUpgradeExposure,
+        coverage_adjustment_exposure: coverageCrosswalk.coverageExposureAdjustments,
+        code_upgrade_flags: codeUpgrades.codeUpgradeFlags,
+        code_upgrade_flag_count: codeUpgrades.flagCount,
+        coverage_conflicts: coverageCrosswalk.coverageConflicts,
+        coverage_conflict_count: coverageCrosswalk.conflictCount,
+        carrier_pattern_flags: carrierPatterns.patternFlags,
+        carrier_pattern_count: carrierPatterns.patternCount,
+        carrier_severity_score: carrierPatterns.severityScore,
+        carrier_risk_level: carrierPatterns.riskLevel,
+        carrier_name: carrierName,
+        engine_version: '1.0',
+        calculation_method: 'deterministic'
+      }, {
+        onConflict: 'claim_id'
+      });
+    
+    if (enforcementError) {
+      console.error('Failed to store enforcement report:', enforcementError);
+      // Continue - not critical
+    }
+
     // Update step status
     await supabase
       .from('claim_steps')
@@ -399,6 +587,28 @@ exports.handler = async (event) => {
     console.log(`[Estimate Engine] Analysis complete in ${Date.now() - startTime}ms`);
 
     return sendSuccess({
+      // FINANCIAL EXPOSURE (PRIMARY OUTPUT WITH ENFORCEMENT LAYERS)
+      exposure: {
+        totalProjectedRecovery: exposureSummary.totalProjectedRecovery,
+        totalProjectedRecoveryWithEnforcement: totalProjectedRecoveryWithEnforcement,
+        rcvDeltaTotal: exposureSummary.rcvDeltaTotal,
+        acvDeltaTotal: exposureSummary.acvDeltaTotal,
+        recoverableDepreciationTotal: exposureSummary.recoverableDepreciationTotal,
+        opExposure: exposureSummary.opExposure,
+        categoryBreakdown: exposureSummary.categoryBreakdown,
+        structuredLineItemDeltas: exposureSummary.structuredLineItemDeltas,
+        negotiationPayload: exposureSummary.negotiationPayload
+      },
+      
+      // ENFORCEMENT LAYERS
+      enforcement: {
+        totalProjectedRecoveryWithEnforcement: totalProjectedRecoveryWithEnforcement,
+        codeUpgrades: codeUpgrades,
+        coverageCrosswalk: coverageCrosswalk,
+        carrierPatterns: carrierPatterns
+      },
+      
+      // LEGACY COMPARISON (BACKWARD COMPATIBILITY)
       comparison: {
         contractor_total: reconciliation.totals.contractor_total,
         carrier_total: reconciliation.totals.carrier_total,
@@ -406,11 +616,15 @@ exports.handler = async (event) => {
         overpayment_estimate: reconciliation.totals.overpayment_amount,
         net_difference: reconciliation.totals.net_difference
       },
+      
+      // DETAILED RECONCILIATION DATA
       discrepancies: reconciliation.discrepancies,
       category_breakdown: reconciliation.categoryBreakdown,
-      op_analysis: reconciliation.opAnalysis,                    // NEW: O&P gap analysis
-      unit_conversion_warnings: reconciliation.unitConversionWarnings, // NEW: Unit conversion tracking
+      op_analysis: reconciliation.opAnalysis,
+      unit_conversion_warnings: reconciliation.unitConversionWarnings,
       summary,
+      
+      // STATISTICS
       stats: {
         parsing: {
           contractor_lines: contractorParsed.lineItems.length,
@@ -429,9 +643,11 @@ exports.handler = async (event) => {
         },
         reconciliation: reconciliation.stats
       },
+      
+      // METADATA
       processing_time_ms: Date.now() - startTime,
-      engine_version: '2.1',  // Updated version
-      method: 'deterministic_with_normalization'
+      engine_version: '2.2',  // Updated version with Financial Exposure Engine
+      method: 'deterministic_with_financial_exposure'
     });
 
   } catch (error) {

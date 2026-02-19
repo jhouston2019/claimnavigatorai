@@ -326,7 +326,7 @@ function buildHeaderSection(claim) {
  * Build introduction section WITH POLICY REFERENCE
  */
 function buildIntroductionSectionWithPolicy(policyCoverage) {
-  let text = 'This supplement is submitted in response to discrepancies identified during a structured reconciliation of the carrier estimate against contractor scope. The following scope deficiencies and valuation gaps have been identified through deterministic line-item analysis.';
+  let text = 'This supplement addresses discrepancies identified during structured reconciliation of the carrier estimate against contractor scope. The following scope deficiencies and valuation gaps were identified through deterministic line-item analysis.';
   
   // Add policy reference if available
   if (policyCoverage && policyCoverage.dwelling_limit) {
@@ -345,7 +345,7 @@ function buildIntroductionSectionWithPolicy(policyCoverage) {
  */
 function buildIntroductionSection() {
   return {
-    text: 'This supplement is submitted in response to discrepancies identified during a structured reconciliation of the carrier estimate against contractor scope. The following scope deficiencies and valuation gaps have been identified through deterministic line-item analysis.'
+    text: 'This supplement addresses discrepancies identified during structured reconciliation of the carrier estimate against contractor scope. The following scope deficiencies and valuation gaps were identified through deterministic line-item analysis.'
   };
 }
 
@@ -440,7 +440,7 @@ function buildOPSection(comparison) {
   return {
     title: 'Overhead & Profit Gap',
     amount: opGap,
-    description: 'Carrier estimate does not apply general contractor overhead and profit at appropriate rates for a multi-trade project. Industry standard O&P of 20% (10% overhead + 10% profit) should be applied to the total scope.'
+    description: 'Carrier estimate does not apply general contractor overhead and profit at appropriate rates for a multi-trade project. Industry standard O&P of 20% (10% overhead + 10% profit) applies to the total scope.'
   };
 }
 
@@ -461,7 +461,7 @@ function buildDepreciationSection(financialSummary) {
   return {
     title: 'Depreciation Miscalculation',
     amount: depreciationImpact,
-    description: 'Carrier depreciation exceeds reasonable useful life standards for the affected materials. Request adjustment to industry-standard depreciation schedules or full RCV payment per policy terms.'
+    description: 'Carrier depreciation exceeds reasonable useful life standards for the affected materials. Adjustment to industry-standard depreciation schedules or full RCV payment per policy terms is required.'
   };
 }
 
@@ -564,7 +564,7 @@ function buildSummarySection(categoryData, comparison, financialSummary) {
       op_gap: parseFloat(opGap.toFixed(2)),
       depreciation_adjustment: parseFloat(depreciationImpact.toFixed(2))
     },
-    closing: 'Please review the above discrepancies and issue revised payment accordingly. All calculations are based on deterministic line-item reconciliation and industry-standard pricing.'
+    closing: 'Review the above discrepancies and issue revised payment accordingly. All calculations are based on deterministic line-item reconciliation and industry-standard pricing.'
   };
 }
 
