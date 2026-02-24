@@ -12,6 +12,8 @@ const { sendSuccess, sendError, validateAuth, parseBody, getClientIP, getUserAge
 const { parsePolicyDocument, validateCoverageData, extractWithAI, mergePolicyData, calculateHash } = require('./lib/policy-parser');
 const { calculatePolicyTriggers, generatePolicyRecommendations } = require('./lib/policy-trigger-engine');
 const { validateCoinsurance } = require('./lib/coinsurance-validator');
+const { calculateJurisdictionDeadlines } = require('./lib/jurisdiction-deadline-engine');
+const { validatePolicyStructure, validatePolicyCoverageData } = require('./lib/input-validator');
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -99,6 +101,16 @@ exports.handler = async (event) => {
       });
     }
 
+    // =====================================================
+    // PHASE 1.5: INPUT VALIDATION
+    // =====================================================
+    console.log('[Policy v2] Phase 1.5: Validating policy structure...');
+    
+    const policyStructureValidation = validatePolicyStructure(policyText);
+    if (!policyStructureValidation.valid) {
+      console.warn('[Policy v2] Policy structure validation failed:', policyStructureValidation.errors);
+    }
+    
     // Check if already processed (hash match)
     const textHash = calculateHash(policyText);
     const { data: existingPolicy } = await supabase
@@ -281,6 +293,29 @@ exports.handler = async (event) => {
     const recommendations = generatePolicyRecommendations(triggers, storedCoverage);
 
     // =====================================================
+    // PHASE 7.5: JURISDICTION-SPECIFIC DEADLINES
+    // =====================================================
+    console.log('[Policy v2] Phase 7.5: Calculating jurisdiction deadlines...');
+    
+    let jurisdictionAnalysis = null;
+    if (claim.date_of_loss && claim.state) {
+      jurisdictionAnalysis = calculateJurisdictionDeadlines(
+        claim.date_of_loss,
+        claim.state,
+        {
+          claim_acknowledgment_date: claim.claim_acknowledgment_date,
+          investigation_completion_date: claim.investigation_completion_date,
+          payment_date: claim.payment_date,
+          proof_of_loss_date: claim.proof_of_loss_date
+        }
+      );
+      
+      console.log(`[Policy v2] Jurisdiction: ${claim.state}`);
+      console.log(`[Policy v2] Deadline warnings: ${jurisdictionAnalysis.warnings.length}`);
+      console.log(`[Policy v2] Policyholder friendliness: ${jurisdictionAnalysis.policyholder_friendliness}`);
+    }
+
+    // =====================================================
     // PHASE 8: UPDATE STEP STATUS
     // =====================================================
     await supabase
@@ -311,9 +346,19 @@ exports.handler = async (event) => {
     // =====================================================
     // PHASE 9: RETURN STRUCTURED DATA
     // =====================================================
+    
+    // Validate coverage data completeness
+    const coverageValidation = validatePolicyCoverageData(storedCoverage);
+    
     return sendSuccess({
       policy_type: storedCoverage.policy_type,
       form_numbers: storedCoverage.form_numbers,
+      
+      // Input quality
+      input_quality: {
+        structure_validation: policyStructureValidation,
+        coverage_validation: coverageValidation
+      },
       
       coverage: {
         // Residential
@@ -381,14 +426,27 @@ exports.handler = async (event) => {
       
       coinsurance_validation: coinsuranceValidation,
       
+      // Jurisdiction-specific deadlines
+      jurisdiction: jurisdictionAnalysis,
+      
       recommendations: recommendations,
       
       metadata: {
         parsed_by: storedCoverage.parsed_by,
         ai_confidence: storedCoverage.ai_confidence,
         processing_time_ms: Date.now() - startTime,
-        engine_version: '2.1',
-        intelligence_upgrade: true
+        engine_version: '3.0',
+        intelligence_upgrade: true,
+        jurisdiction_analysis: jurisdictionAnalysis ? true : false,
+        analysis_layers: [
+          'form_detection',
+          'coverage_extraction',
+          'endorsement_detection',
+          'trigger_calculation',
+          'coinsurance_validation',
+          'jurisdiction_deadlines',
+          'recommendations'
+        ]
       }
     });
 

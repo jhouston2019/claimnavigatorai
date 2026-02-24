@@ -15,6 +15,10 @@ const { calculateExposure } = require('./lib/financial-exposure-engine');
 const { analyzeCodeUpgrades } = require('./lib/code-upgrade-engine');
 const { analyzePolicyCrosswalk } = require('./lib/policy-estimate-crosswalk');
 const { analyzeCarrierPatterns } = require('./lib/carrier-pattern-engine');
+const { validatePricing } = require('./lib/pricing-validation-engine');
+const { detectDepreciationAbuse } = require('./lib/depreciation-abuse-detector');
+const { detectCarrierTactics } = require('./lib/carrier-tactic-detector');
+const { validateEstimateStructure, generateInputQualityReport } = require('./lib/input-validator');
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -80,6 +84,14 @@ exports.handler = async (event) => {
     console.log(`[Estimate Engine] Starting analysis for claim ${claim.claim_number}`);
 
     // =====================================================
+    // PHASE 0: INPUT VALIDATION
+    // =====================================================
+    console.log('[Estimate Engine] Phase 0: Validating input structure...');
+    
+    // Validate contractor estimate structure (will be done after PDF parsing)
+    let contractorValidation, carrierValidation;
+
+    // =====================================================
     // PHASE 1: PARSE CONTRACTOR ESTIMATE
     // =====================================================
     console.log('[Estimate Engine] Phase 1: Parsing contractor estimate...');
@@ -106,6 +118,12 @@ exports.handler = async (event) => {
       });
     }
 
+    // Validate contractor estimate structure
+    contractorValidation = validateEstimateStructure(contractorText);
+    if (!contractorValidation.valid) {
+      console.warn('[Estimate Engine] Contractor estimate structure validation failed:', contractorValidation.errors);
+    }
+    
     const contractorParsed = parseEstimate(contractorText, 'contractor');
     console.log(`[Estimate Engine] Parsed ${contractorParsed.lineItems.length} contractor line items`);
 
@@ -136,6 +154,12 @@ exports.handler = async (event) => {
       });
     }
 
+    // Validate carrier estimate structure
+    carrierValidation = validateEstimateStructure(carrierText);
+    if (!carrierValidation.valid) {
+      console.warn('[Estimate Engine] Carrier estimate structure validation failed:', carrierValidation.errors);
+    }
+    
     const carrierParsed = parseEstimate(carrierText, 'carrier');
     console.log(`[Estimate Engine] Parsed ${carrierParsed.lineItems.length} carrier line items`);
 
@@ -405,19 +429,78 @@ exports.handler = async (event) => {
     console.log(`[Estimate Engine] Severity Score: ${carrierPatterns.severityScore}`);
 
     // =====================================================
-    // PHASE 6E: CALCULATE TOTAL PROJECTED RECOVERY (WITH ENFORCEMENT LAYERS)
+    // PHASE 6E: PRICING VALIDATION
     // =====================================================
-    console.log('[Estimate Engine] Phase 6E: Calculating total with enforcement layers...');
+    console.log('[Estimate Engine] Phase 6E: Validating pricing against market data...');
+    
+    const claimState = claim.state || body.state || null;
+    const pricingValidation = await validatePricing(
+      contractorParsed.lineItems,
+      carrierParsed.lineItems,
+      matchResult.matches,
+      claimState
+    );
+    
+    console.log(`[Estimate Engine] Pricing validation complete. Critical items: ${pricingValidation.carrier_pricing.summary.critical_items.length}`);
+    console.log(`[Estimate Engine] Total pricing risk: $${pricingValidation.report.overall_assessment.total_pricing_risk.toFixed(2)}`);
+
+    // =====================================================
+    // PHASE 6F: DEPRECIATION ABUSE DETECTION
+    // =====================================================
+    console.log('[Estimate Engine] Phase 6F: Detecting depreciation abuse...');
+    
+    const depreciationAnalysis = await detectDepreciationAbuse(
+      carrierParsed.lineItems,
+      parsedPolicy,
+      contractorParsed.lineItems
+    );
+    
+    console.log(`[Estimate Engine] Depreciation abuses detected: ${depreciationAnalysis.deterministic.summary.abuses_detected}`);
+    console.log(`[Estimate Engine] Depreciation recovery potential: $${depreciationAnalysis.deterministic.summary.total_recovery_potential.toFixed(2)}`);
+
+    // =====================================================
+    // PHASE 6G: CARRIER TACTIC DETECTION
+    // =====================================================
+    console.log('[Estimate Engine] Phase 6G: Detecting carrier tactics...');
+    
+    const carrierTactics = await detectCarrierTactics(
+      contractorParsed.lineItems,
+      carrierParsed.lineItems,
+      matchResult.matches,
+      reconciliation.discrepancies,
+      parsedPolicy,
+      reconciliation.categoryBreakdown,
+      reconciliation.opAnalysis
+    );
+    
+    console.log(`[Estimate Engine] Carrier tactics detected: ${carrierTactics.summary.total_tactics_detected}`);
+    console.log(`[Estimate Engine] Tactic recovery potential: $${carrierTactics.summary.total_recovery_potential.toFixed(2)}`);
+
+    // =====================================================
+    // PHASE 6H: INPUT QUALITY REPORT
+    // =====================================================
+    const inputQualityReport = generateInputQualityReport(contractorValidation, carrierValidation);
+
+    // =====================================================
+    // PHASE 6I: CALCULATE TOTAL PROJECTED RECOVERY (WITH ALL LAYERS)
+    // =====================================================
+    console.log('[Estimate Engine] Phase 6I: Calculating total with all enforcement layers...');
     
     const totalProjectedRecoveryWithEnforcement = 
       exposureSummary.totalProjectedRecovery +
       codeUpgrades.totalCodeUpgradeExposure +
-      coverageCrosswalk.coverageExposureAdjustments;
+      coverageCrosswalk.coverageExposureAdjustments +
+      (pricingValidation.report.overall_assessment.total_pricing_risk || 0) +
+      (depreciationAnalysis.deterministic.summary.total_recovery_potential || 0) +
+      (carrierTactics.summary.total_recovery_potential || 0);
     
     console.log(`[Estimate Engine] FINAL Total Projected Recovery: $${totalProjectedRecoveryWithEnforcement}`);
     console.log(`[Estimate Engine]   - Base Exposure: $${exposureSummary.totalProjectedRecovery}`);
     console.log(`[Estimate Engine]   - Code Upgrades: $${codeUpgrades.totalCodeUpgradeExposure}`);
     console.log(`[Estimate Engine]   - Coverage Adjustments: $${coverageCrosswalk.coverageExposureAdjustments}`);
+    console.log(`[Estimate Engine]   - Pricing Issues: $${pricingValidation.report.overall_assessment.total_pricing_risk || 0}`);
+    console.log(`[Estimate Engine]   - Depreciation Abuse: $${depreciationAnalysis.deterministic.summary.total_recovery_potential || 0}`);
+    console.log(`[Estimate Engine]   - Carrier Tactics: $${carrierTactics.summary.total_recovery_potential || 0}`);
 
     // =====================================================
     // PHASE 7: STORE DISCREPANCIES
@@ -535,6 +618,9 @@ exports.handler = async (event) => {
         base_exposure: exposureSummary.totalProjectedRecovery,
         code_upgrade_exposure: codeUpgrades.totalCodeUpgradeExposure,
         coverage_adjustment_exposure: coverageCrosswalk.coverageExposureAdjustments,
+        pricing_risk_exposure: pricingValidation.report.overall_assessment.total_pricing_risk || 0,
+        depreciation_abuse_exposure: depreciationAnalysis.deterministic.summary.total_recovery_potential || 0,
+        carrier_tactic_exposure: carrierTactics.summary.total_recovery_potential || 0,
         code_upgrade_flags: codeUpgrades.codeUpgradeFlags,
         code_upgrade_flag_count: codeUpgrades.flagCount,
         coverage_conflicts: coverageCrosswalk.coverageConflicts,
@@ -544,8 +630,11 @@ exports.handler = async (event) => {
         carrier_severity_score: carrierPatterns.severityScore,
         carrier_risk_level: carrierPatterns.riskLevel,
         carrier_name: carrierName,
-        engine_version: '1.0',
-        calculation_method: 'deterministic'
+        pricing_issues_count: pricingValidation.pricing_issues.length,
+        depreciation_abuses_count: depreciationAnalysis.deterministic.summary.abuses_detected,
+        carrier_tactics_count: carrierTactics.summary.total_tactics_detected,
+        engine_version: '2.3',
+        calculation_method: 'deterministic_with_advanced_detection'
       }, {
         onConflict: 'claim_id'
       });
@@ -605,8 +694,14 @@ exports.handler = async (event) => {
         totalProjectedRecoveryWithEnforcement: totalProjectedRecoveryWithEnforcement,
         codeUpgrades: codeUpgrades,
         coverageCrosswalk: coverageCrosswalk,
-        carrierPatterns: carrierPatterns
+        carrierPatterns: carrierPatterns,
+        pricingValidation: pricingValidation,
+        depreciationAbuse: depreciationAnalysis,
+        carrierTactics: carrierTactics
       },
+      
+      // INPUT QUALITY
+      input_quality: inputQualityReport,
       
       // LEGACY COMPARISON (BACKWARD COMPATIBILITY)
       comparison: {
@@ -646,8 +741,21 @@ exports.handler = async (event) => {
       
       // METADATA
       processing_time_ms: Date.now() - startTime,
-      engine_version: '2.2',  // Updated version with Financial Exposure Engine
-      method: 'deterministic_with_financial_exposure'
+      engine_version: '3.0',  // Updated version with Advanced Detection Engines
+      method: 'deterministic_with_advanced_detection',
+      analysis_layers: [
+        'parsing',
+        'matching',
+        'reconciliation',
+        'financial_exposure',
+        'code_upgrades',
+        'coverage_crosswalk',
+        'carrier_patterns',
+        'pricing_validation',
+        'depreciation_abuse_detection',
+        'carrier_tactic_recognition',
+        'input_quality_validation'
+      ]
     });
 
   } catch (error) {

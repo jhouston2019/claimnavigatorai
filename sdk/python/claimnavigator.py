@@ -1,12 +1,23 @@
 """
-Claim Navigator Python SDK
+Claim Navigator Python SDK v3.0
 Enterprise client library for Claim Navigator API
 
 Usage:
     from claimnavigator import ClaimNavigator
     
     client = ClaimNavigator(api_key='your-key', base_url='https://...')
-    result = client.create_fnol({...})
+    
+    # Policy analysis with jurisdiction deadlines
+    policy = client.analyze_policy_v3(claim_id='...', policy_pdf_url='...')
+    
+    # Estimate analysis with advanced detection
+    estimates = client.analyze_estimates_v3(
+        claim_id='...',
+        contractor_estimate_pdf_url='...',
+        carrier_estimate_pdf_url='...',
+        state='CA',
+        carrier_name='State Farm'
+    )
 """
 
 import requests
@@ -15,7 +26,7 @@ from urllib.parse import urlencode
 
 
 class ClaimNavigator:
-    """Claim Navigator API client"""
+    """Claim Navigator API client v3.0"""
     
     def __init__(self, api_key: str = '', base_url: str = 'https://your-site.netlify.app/.netlify/functions/api', timeout: int = 30):
         """
@@ -319,5 +330,134 @@ class ClaimNavigator:
             params['claim_id'] = claim_id
         
         return self._request('checklist/generate', 'POST', params)
+    
+    # =====================================================
+    # V3.0 ADVANCED ANALYSIS METHODS
+    # =====================================================
+    
+    def analyze_policy_v3(self, claim_id: str, policy_pdf_url: str, force_reprocess: bool = False) -> Dict[str, Any]:
+        """
+        Analyze insurance policy with advanced features (v3.0)
+        
+        Features:
+        - Form-aware detection (HO, DP, CP, BOP)
+        - 30+ coverage field extraction
+        - Policy trigger engine
+        - Coinsurance validation
+        - Jurisdiction-specific deadlines
+        - Input quality validation
+        
+        Args:
+            claim_id: Claim ID
+            policy_pdf_url: URL to policy PDF
+            force_reprocess: Force reprocessing even if already analyzed
+            
+        Returns:
+            Policy analysis with coverage, triggers, deadlines, and recommendations
+        """
+        params = {
+            'claim_id': claim_id,
+            'policy_pdf_url': policy_pdf_url,
+            'force_reprocess': force_reprocess
+        }
+        return self._request('analyze-policy-v2', 'POST', params)
+    
+    def analyze_estimates_v3(self, claim_id: str, contractor_estimate_pdf_url: str, 
+                            carrier_estimate_pdf_url: str, state: Optional[str] = None,
+                            carrier_name: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Analyze contractor and carrier estimates with advanced detection (v3.0)
+        
+        Features:
+        - Multi-phase matching (exact, fuzzy, category, AI semantic)
+        - Unit normalization (SF ↔ SQ, LF ↔ FT)
+        - O&P gap detection
+        - Financial exposure calculation
+        - Code upgrade detection
+        - Coverage crosswalk analysis
+        - Pricing validation against market data
+        - Depreciation abuse detection
+        - Carrier tactic recognition
+        - Input quality validation
+        
+        Args:
+            claim_id: Claim ID
+            contractor_estimate_pdf_url: URL to contractor estimate PDF
+            carrier_estimate_pdf_url: URL to carrier estimate PDF
+            state: State code for geographic pricing adjustments (optional)
+            carrier_name: Carrier name for pattern analysis (optional)
+            
+        Returns:
+            Comprehensive estimate analysis with discrepancies, pricing validation,
+            depreciation abuse detection, carrier tactics, and recovery projections
+        """
+        params = {
+            'claim_id': claim_id,
+            'contractor_estimate_pdf_url': contractor_estimate_pdf_url,
+            'carrier_estimate_pdf_url': carrier_estimate_pdf_url
+        }
+        if state:
+            params['state'] = state
+        if carrier_name:
+            params['carrier_name'] = carrier_name
+        
+        return self._request('analyze-estimates-v2', 'POST', params)
+    
+    def validate_pricing(self, line_items: list, state: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Validate line item pricing against market data
+        
+        Args:
+            line_items: List of line items with description, quantity, unit, unit_price
+            state: State code for geographic adjustments (optional)
+            
+        Returns:
+            Pricing validation results with market comparisons
+        """
+        params = {
+            'line_items': line_items,
+            'state': state
+        }
+        return self._request('pricing/validate', 'POST', params)
+    
+    def detect_depreciation_abuse(self, line_items: list, policy_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Detect depreciation abuse patterns
+        
+        Args:
+            line_items: List of line items with depreciation data
+            policy_data: Policy coverage data including settlement_type
+            
+        Returns:
+            Depreciation abuse analysis with recovery potential
+        """
+        params = {
+            'line_items': line_items,
+            'policy_data': policy_data
+        }
+        return self._request('depreciation/detect', 'POST', params)
+    
+    def calculate_deadlines(self, date_of_loss: str, state: str, 
+                           claim_dates: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
+        """
+        Calculate jurisdiction-specific deadlines
+        
+        Args:
+            date_of_loss: Date of loss (YYYY-MM-DD)
+            state: State code
+            claim_dates: Optional dict with claim_acknowledgment_date, 
+                        investigation_completion_date, payment_date, proof_of_loss_date
+            
+        Returns:
+            Jurisdiction deadlines, warnings, requirements, and compliance checklist
+        """
+        params = {
+            'date_of_loss': date_of_loss,
+            'state': state
+        }
+        if claim_dates:
+            params['claim_dates'] = claim_dates
+        
+        return self._request('deadlines/calculate', 'POST', params)
 
 
