@@ -1,5 +1,5 @@
 /**
- * CLAIM NAVIGATOR TOOL REGISTRY
+ * Claim Command Pro TOOL REGISTRY
  * 
  * This registry maps step guide tool IDs back to the step-by-step claim guide.
  * All tools are embedded within the step-by-step guide interface.

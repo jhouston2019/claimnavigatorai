@@ -32,7 +32,7 @@ exports.handler = async (event, context) => {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: 'Claim Navigator - One Claim',
+              name: 'Claim Command Pro - One Claim',
               description: 'Unlock one complete claim toolkit with all professional tools'
             },
             unit_amount: 14900 // $149.00 in cents

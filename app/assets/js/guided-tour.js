@@ -11,7 +11,7 @@
     {
       id: "welcome",
       selector: null,
-      title: "Welcome to Claim Navigator",
+      title: "Welcome to Claim Command Pro",
       body: "I'll guide you through the most important tools so you know exactly where to start.",
       position: "center"
     },
@@ -180,6 +180,6 @@
     );
   }
 
-  window.startClaimNavigatorTour = startTour;
+  window.startClaimCommandProTour = startTour;
 })();
 

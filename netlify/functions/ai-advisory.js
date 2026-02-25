@@ -122,7 +122,7 @@ exports.handler = async (event) => {
       apiKey: process.env.OPENAI_API_KEY 
     });
 
-    const prompt = `You are Claim Navigator, an expert insurance claim advisor with extensive experience in property, commercial, and catastrophe claims.
+    const prompt = `You are Claim Command Pro, an expert insurance claim advisor with extensive experience in property, commercial, and catastrophe claims.
 
 Analyze the following claim situation and provide structured advice in JSON format with these exact fields:
 {

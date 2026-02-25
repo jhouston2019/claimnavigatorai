@@ -316,7 +316,7 @@ Total: 80+ tool mappings
 └─────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐
-│ LOCALSTORAGE: 'claimNavigatorState'                             │
+│ LOCALSTORAGE: 'ClaimCommandProState'                             │
 ├──────────────────────────────────────────────────────────────────┤
 │ {                                                                │
 │   currentStep: 2,                                                │
@@ -562,7 +562,7 @@ Tool output saved       →    hasPrimaryToolOutput() → Enable Acknowledge
 1. PAGE INITIALIZATION
    DOMContentLoaded
    └─→ loadSavedState()
-       ├─→ getClaimData('claimNavigatorState')
+       ├─→ getClaimData('ClaimCommandProState')
        ├─→ Parse JSON
        ├─→ Populate variables (currentStep, completedSteps, etc.)
        └─→ Update DOM elements with claim info
@@ -604,7 +604,7 @@ Tool output saved       →    hasPrimaryToolOutput() → Enable Acknowledge
        │   └─→ import timeline-autosync.js
        │       └─→ addTimelineEvent({...})
        ├─→ saveState()
-       │   └─→ saveClaimData('claimNavigatorState', state)
+       │   └─→ saveClaimData('ClaimCommandProState', state)
        ├─→ updateUI()
        ├─→ Show success alert
        └─→ Auto-open next step (setTimeout 500ms)
@@ -623,8 +623,8 @@ Tool output saved       →    hasPrimaryToolOutput() → Enable Acknowledge
          },
          lastSaved: new Date().toISOString()
        }
-   └─→ saveClaimData('claimNavigatorState', state)
-       └─→ localStorage.setItem('claimNavigatorState', JSON.stringify(state))
+   └─→ saveClaimData('ClaimCommandProState', state)
+       └─→ localStorage.setItem('ClaimCommandProState', JSON.stringify(state))
 ```
 
 ---

@@ -37,7 +37,7 @@ Already updated in `claim-command-center.html`:
 
 Run the test suite:
 ```bash
-cd "d:\Axis\Axis Projects - Projects\Projects - Stage 1\claim navigator ai 3"
+cd "d:\Axis\Axis Projects - Projects\Projects - Stage 1\Claim Command Pro ai 3"
 node tests/estimate-parser.test.js
 ```
 

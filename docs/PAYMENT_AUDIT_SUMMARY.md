@@ -104,7 +104,7 @@ From your Netlify variables, you have multiple products:
 - **Professional Lead Purchase** (price ID configured)
 - **Additional AI Response** (price ID configured)
 
-**Primary Product:** Claim Navigator - One Claim at **$149.00**
+**Primary Product:** Claim Command Pro - One Claim at **$149.00**
 
 ---
 

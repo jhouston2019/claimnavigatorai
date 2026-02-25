@@ -51,7 +51,7 @@ This implementation includes comprehensive documentation. Start here:
 
 ## 🎯 What Is This?
 
-The **Claim Success Protocol™** is a UX re-architecture of Claim Navigator that transforms the user experience from **browsing-based** to **linear, enforced, outcome-driven**.
+The **Claim Success Protocol™** is a UX re-architecture of Claim Command Pro that transforms the user experience from **browsing-based** to **linear, enforced, outcome-driven**.
 
 ### The Problem (Before)
 - Users logged in to a dashboard with many tool cards

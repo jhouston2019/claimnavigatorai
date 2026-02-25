@@ -1,4 +1,4 @@
-# 🚨 SHIP AUDIT REPORT - Claim Navigator
+# 🚨 SHIP AUDIT REPORT - Claim Command Pro
 **Date:** December 22, 2025  
 **Scope:** Launch Readiness Assessment  
 **Approach:** Identify ONLY what blocks launch - not improvements
@@ -14,7 +14,7 @@
 **Evidence:**
 ```html
 <!-- index.html -->
-<a href="https://Claim Navigator.com/.netlify/functions/create-checkout-session" class="btn-primary checkout-btn">Get Your Claim Toolkit</a>
+<a href="https://Claim Command Pro.com/.netlify/functions/create-checkout-session" class="btn-primary checkout-btn">Get Your Claim Toolkit</a>
 ```
 
 ```javascript
@@ -192,7 +192,7 @@ const { data: existingClaim } = await supabase
 **Required Events:**
 - `checkout.session.completed`
 
-**Endpoint:** `https://Claim Navigator.com/.netlify/functions/stripe-webhook`
+**Endpoint:** `https://Claim Command Pro.com/.netlify/functions/stripe-webhook`
 
 **Impact:** Payments succeed but users never get access.
 

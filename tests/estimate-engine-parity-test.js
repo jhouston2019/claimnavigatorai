@@ -1,6 +1,6 @@
 /**
  * ESTIMATE ENGINE PARITY TEST
- * Verifies Claim Navigator estimate engine produces identical results to Estimate Review Pro
+ * Verifies Claim Command Pro estimate engine produces identical results to Estimate Review Pro
  */
 
 const EstimateEngine = require('../app/assets/js/intelligence/estimate-engine');
@@ -110,7 +110,7 @@ Install new roof materials`,
 function runParityTests() {
   console.log('═'.repeat(80));
   console.log('ESTIMATE ENGINE PARITY TEST SUITE');
-  console.log('Verifying Claim Navigator behavior matches Estimate Review Pro');
+  console.log('Verifying Claim Command Pro behavior matches Estimate Review Pro');
   console.log('═'.repeat(80));
   console.log('');
 

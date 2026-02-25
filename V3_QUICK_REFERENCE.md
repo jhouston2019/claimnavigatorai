@@ -1,4 +1,4 @@
-# Claim Navigator v3.0 - Quick Reference Guide
+# Claim Command Pro v3.0 - Quick Reference Guide
 
 ## What's New in v3.0
 
@@ -126,11 +126,11 @@ pip install requests
 
 ### Import
 ```python
-from claimnavigator import ClaimNavigator
+from ClaimCommandPro import ClaimCommandPro
 
-client = ClaimNavigator(
+client = ClaimCommandPro(
     api_key='your-api-key',
-    base_url='https://claimnavigator.netlify.app/.netlify/functions/api'
+    base_url='https://ClaimCommandPro.netlify.app/.netlify/functions/api'
 )
 ```
 

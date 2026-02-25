@@ -14,7 +14,7 @@
 │  • Policy Review                            │
 │  • Settlement Analysis                      │
 │  • Claim Journal                            │
-│  • Claim Navigator Agent                    │
+│  • Claim Command Pro Agent                    │
 │  • Claim Stage Tracker                      │
 │  • Deadlines                                │
 │  • Document Generator                       │

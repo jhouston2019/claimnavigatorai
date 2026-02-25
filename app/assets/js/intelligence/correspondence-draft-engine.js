@@ -50,7 +50,7 @@ function generateCorrespondenceDraft(params) {
     body: '',
     attachments: [],
     metadata: {
-      generatedBy: 'ClaimNavigator',
+      generatedBy: 'ClaimCommandPro',
       generatedAt: new Date().toISOString(),
       requiresUserReview: true,
       requiresUserConfirmation: true,

@@ -1,7 +1,7 @@
 // Global Claim Information Storage and Watermarking System
 class GlobalClaimInfoManager {
     constructor() {
-        this.storageKey = 'claimnavigator_global_claim_info';
+        this.storageKey = 'ClaimCommandPro_global_claim_info';
         this.claimInfo = {};
         this.init();
     }
@@ -202,7 +202,7 @@ class GlobalClaimInfoManager {
         return `
 <div style="border-top: 2px solid #1e3a8a; background: #f0f4ff; padding: 10px; margin-top: 30px; border-radius: 8px; font-family: Arial, sans-serif;">
     <div style="text-align: center; font-size: 9px; color: #6b7280;">
-        <strong style="color: #1e3a8a; font-size: 10px;">Claim Navigator - GENERATED DOCUMENT</strong><br>
+        <strong style="color: #1e3a8a; font-size: 10px;">Claim Command Pro - GENERATED DOCUMENT</strong><br>
         Generated on ${today} | ${claimInfo.address || ''}
     </div>
 </div>

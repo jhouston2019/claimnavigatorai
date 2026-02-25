@@ -1,13 +1,13 @@
-# HurricaneClaimNavigator Clone Guide
+# HurricaneClaimCommandPro Clone Guide
 
-This guide will help you clone Claim Navigator into HurricaneClaimNavigator while preserving the existing branding and color scheme.
+This guide will help you clone Claim Command Pro into HurricaneClaimCommandPro while preserving the existing branding and color scheme.
 
-## Step 1: Prepare the HurricaneClaimNavigator Repository
+## Step 1: Prepare the HurricaneClaimCommandPro Repository
 
-1. **Clone the HurricaneClaimNavigator repository:**
+1. **Clone the HurricaneClaimCommandPro repository:**
    ```bash
-   git clone https://github.com/jhouston2019/hurricaneclaimnavigator.git
-   cd hurricaneclaimnavigator
+   git clone https://github.com/jhouston2019/hurricaneClaimCommandPro.git
+   cd hurricaneClaimCommandPro
    ```
 
 2. **Backup the existing index.html and branding files:**
@@ -18,58 +18,58 @@ This guide will help you clone Claim Navigator into HurricaneClaimNavigator whil
 
 ## Step 2: Copy Core Application Files
 
-Copy these directories and files from Claim Navigator to HurricaneClaimNavigator:
+Copy these directories and files from Claim Command Pro to HurricaneClaimCommandPro:
 
 ### Essential Directories:
 ```bash
 # Copy the entire app directory
-cp -r ../Claim Navigator/app ./
+cp -r ../Claim Command Pro/app ./
 
 # Copy netlify functions
-cp -r ../Claim Navigator/netlify ./
+cp -r ../Claim Command Pro/netlify ./
 
 # Copy assets (but preserve existing CSS)
-cp -r ../Claim Navigator/assets/data ./
-cp -r ../Claim Navigator/assets/docs ./
-cp -r ../Claim Navigator/assets/js ./
+cp -r ../Claim Command Pro/assets/data ./
+cp -r ../Claim Command Pro/assets/docs ./
+cp -r ../Claim Command Pro/assets/js ./
 
 # Copy document libraries
-cp -r ../Claim Navigator/docs ./
-cp -r ../Claim Navigator/"Document Library - Final English" ./
-cp -r ../Claim Navigator/"Document Library - Final Spanish" ./
+cp -r ../Claim Command Pro/docs ./
+cp -r ../Claim Command Pro/"Document Library - Final English" ./
+cp -r ../Claim Command Pro/"Document Library - Final Spanish" ./
 
 # Copy public directory
-cp -r ../Claim Navigator/public ./
+cp -r ../Claim Command Pro/public ./
 
 # Copy scripts
-cp -r ../Claim Navigator/scripts ./
+cp -r ../Claim Command Pro/scripts ./
 
 # Copy supabase
-cp -r ../Claim Navigator/supabase ./
+cp -r ../Claim Command Pro/supabase ./
 ```
 
 ### Essential Files:
 ```bash
 # Configuration files
-cp ../Claim Navigator/package.json ./
-cp ../Claim Navigator/package-lock.json ./
-cp ../Claim Navigator/netlify.toml ./
-cp ../Claim Navigator/manifest.json ./
+cp ../Claim Command Pro/package.json ./
+cp ../Claim Command Pro/package-lock.json ./
+cp ../Claim Command Pro/netlify.toml ./
+cp ../Claim Command Pro/manifest.json ./
 
 # Static files
-cp ../Claim Navigator/_redirects ./
-cp ../Claim Navigator/404.html ./
-cp ../Claim Navigator/robots.txt ./
-cp ../Claim Navigator/sitemap.xml ./
+cp ../Claim Command Pro/_redirects ./
+cp ../Claim Command Pro/404.html ./
+cp ../Claim Command Pro/robots.txt ./
+cp ../Claim Command Pro/sitemap.xml ./
 
 # Legal pages
-cp ../Claim Navigator/terms.html ./
-cp ../Claim Navigator/privacy.html ./
-cp ../Claim Navigator/disclaimer.html ./
-cp ../Claim Navigator/success.html ./
+cp ../Claim Command Pro/terms.html ./
+cp ../Claim Command Pro/privacy.html ./
+cp ../Claim Command Pro/disclaimer.html ./
+cp ../Claim Command Pro/success.html ./
 
 # Other pages
-cp ../Claim Navigator/product.html ./
+cp ../Claim Command Pro/product.html ./
 ```
 
 ## Step 3: Adapt Branding and Messaging
@@ -77,7 +77,7 @@ cp ../Claim Navigator/product.html ./
 ### Update package.json:
 ```json
 {
-  "name": "hurricaneclaimnavigator",
+  "name": "hurricaneClaimCommandPro",
   "version": "1.0.0",
   "description": "AI-powered hurricane claim documentation tools with Netlify Functions",
   // ... rest of the content
@@ -87,15 +87,15 @@ cp ../Claim Navigator/product.html ./
 ### Update manifest.json:
 ```json
 {
-  "name": "HurricaneClaimNavigator - AI-Powered Hurricane Claim Documentation Tools",
-  "short_name": "HurricaneClaimNavigator",
+  "name": "HurricaneClaimCommandPro - AI-Powered Hurricane Claim Documentation Tools",
+  "short_name": "HurricaneClaimCommandPro",
   "description": "AI-powered documentation tools for hurricane damage insurance claims. Save time and maximize your claim potential.",
   // ... rest of the content
 }
 ```
 
 ### Update netlify.toml:
-- Change the redirect URLs from `Claim Navigator.netlify.app` to your hurricane site URL
+- Change the redirect URLs from `Claim Command Pro.netlify.app` to your hurricane site URL
 - Update any site-specific configurations
 
 ## Step 4: Update Content for Hurricane Context
@@ -129,8 +129,8 @@ cp ../Claim Navigator/product.html ./
 ```toml
 # Redirect www to non-www
 [[redirects]]
-  from = "https://www.hurricaneclaimnavigator.netlify.app/*"
-  to = "https://hurricaneclaimnavigator.netlify.app/:splat"
+  from = "https://www.hurricaneClaimCommandPro.netlify.app/*"
+  to = "https://hurricaneClaimCommandPro.netlify.app/:splat"
   status = 301
   force = true
 ```
@@ -140,7 +140,7 @@ cp ../Claim Navigator/product.html ./
 ### Update the main index.html content:
 
 1. **Hero Section:**
-   - Change title to "HurricaneClaimNavigator is your AI-Powered hurricane claim solution"
+   - Change title to "HurricaneClaimCommandPro is your AI-Powered hurricane claim solution"
    - Update subtitle to focus on hurricane damage claims
    - Modify the tagline to emphasize hurricane-specific challenges
 
@@ -179,14 +179,14 @@ cp ../Claim Navigator/product.html ./
 4. **Deploy:**
    ```bash
    git add .
-   git commit -m "Clone Claim Navigator functionality for hurricane claims"
+   git commit -m "Clone Claim Command Pro functionality for hurricane claims"
    git push origin main
    ```
 
 ## Step 8: Post-Deployment Tasks
 
 1. **Update Supabase:**
-   - Set up a new Supabase project for HurricaneClaimNavigator
+   - Set up a new Supabase project for HurricaneClaimCommandPro
    - Run the schema setup scripts
    - Populate the document database
 
@@ -221,10 +221,10 @@ cp ../Claim Navigator/product.html ./
 
 ## Preserving Existing Branding
 
-The existing HurricaneClaimNavigator branding should be preserved by:
+The existing HurricaneClaimCommandPro branding should be preserved by:
 1. Keeping the existing color scheme in CSS
 2. Maintaining the existing logo and visual identity
 3. Preserving the existing layout structure
 4. Only updating text content and messaging
 
-This approach ensures that HurricaneClaimNavigator maintains its unique identity while gaining all the functionality of Claim Navigator.
+This approach ensures that HurricaneClaimCommandPro maintains its unique identity while gaining all the functionality of Claim Command Pro.

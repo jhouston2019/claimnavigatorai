@@ -303,8 +303,8 @@ cover code upgrade costs...
 
 ### 1. Run Database Migration
 ```bash
-cd "d:\Axis\Axis Projects - Projects\Projects - Stage 1\claim navigator ai 3"
-psql -U postgres -d claimnavigator -f supabase/migrations/20260212_policy_coverage_schema.sql
+cd "d:\Axis\Axis Projects - Projects\Projects - Stage 1\Claim Command Pro ai 3"
+psql -U postgres -d ClaimCommandPro -f supabase/migrations/20260212_policy_coverage_schema.sql
 ```
 
 ### 2. Verify Deployment

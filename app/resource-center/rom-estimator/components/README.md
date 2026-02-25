@@ -1,6 +1,6 @@
 # components for rom-estimator
 
-This directory contains resources and tools for components for rom-estimator functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for components for rom-estimator functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

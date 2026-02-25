@@ -1,5 +1,5 @@
 # API Load Test Report Template
-## Claim Navigator API Layer
+## Claim Command Pro API Layer
 
 **Test Date:** [YYYY-MM-DD]  
 **Test Duration:** [Duration]  

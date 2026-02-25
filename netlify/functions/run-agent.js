@@ -248,9 +248,9 @@ async function requestExpertOpinion(userId, claimId, message) {
       httpMethod: 'POST',
       body: JSON.stringify({
         name: 'Auto-Agent',
-        email: process.env.FROM_EMAIL || 'no-reply@claimnavigator.ai',
+        email: process.env.FROM_EMAIL || 'no-reply@ClaimCommandPro.ai',
         claim_id: claimId,
-        message: message || 'Automated expert opinion request from ClaimNavigator Agent'
+        message: message || 'Automated expert opinion request from ClaimCommandPro Agent'
       })
     };
 

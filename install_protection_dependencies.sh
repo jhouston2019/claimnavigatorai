@@ -1,9 +1,9 @@
 #!/bin/bash
-# Claim Navigator PDF Protection Dependencies Installer
-# Repository: https://github.com/jhouston2019/Claim Navigator.git
+# Claim Command Pro PDF Protection Dependencies Installer
+# Repository: https://github.com/jhouston2019/Claim Command Pro.git
 
 echo "========================================"
-echo "Claim Navigator PDF Protection Setup"
+echo "Claim Command Pro PDF Protection Setup"
 echo "========================================"
 echo
 

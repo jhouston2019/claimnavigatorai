@@ -1,17 +1,17 @@
-# Claim Navigator PDF Protection Implementation
+# Claim Command Pro PDF Protection Implementation
 
-**Repository:** https://github.com/jhouston2019/Claim Navigator.git  
+**Repository:** https://github.com/jhouston2019/Claim Command Pro.git  
 **Implementation Date:** December 2024  
 **Total Documents Protected:** 247+ PDF files across English and Spanish libraries
 
 ## Overview
 
-This implementation provides comprehensive PDF protection for the Claim Navigator document library, including password protection, watermarking, and restricted permissions to ensure document security and intellectual property protection.
+This implementation provides comprehensive PDF protection for the Claim Command Pro document library, including password protection, watermarking, and restricted permissions to ensure document security and intellectual property protection.
 
 ## Security Features Implemented
 
 ### 🔐 Password Protection
-- **User Password:** `Claim Navigator2025`
+- **User Password:** `Claim Command Pro2025`
 - **Owner Password:** `AdminClaimNav2025`
 - **Encryption:** 128-bit AES encryption
 - **Access Control:** Users need password to open documents
@@ -25,7 +25,7 @@ This implementation provides comprehensive PDF protection for the Claim Navigato
 - **High-Resolution Printing:** Disabled by default
 
 ### 💧 Watermarking
-- **Text:** "Claim Navigator - Protected Document"
+- **Text:** "Claim Command Pro - Protected Document"
 - **Position:** Bottom of each page
 - **Opacity:** 30% (subtle but visible)
 - **Font:** Helvetica, 14pt
@@ -33,13 +33,13 @@ This implementation provides comprehensive PDF protection for the Claim Navigato
 
 ## Document Locations Protected
 
-### Main Claim Navigator Library
+### Main Claim Command Pro Library
 - `./Document Library - Final English/` (122 PDF files)
 - `./Document Library - Final Spanish/` (138 PDF files)
 
-### AutoClaimNavigator Library
-- `./autoclaimnavigator/Document Library - Final English/` (122 PDF files)
-- `./autoclaimnavigator/Document Library - Final Spanish/` (138 PDF files)
+### AutoClaimCommandPro Library
+- `./autoClaimCommandPro/Document Library - Final English/` (122 PDF files)
+- `./autoClaimCommandPro/Document Library - Final Spanish/` (138 PDF files)
 
 **Total:** 247+ PDF documents protected
 
@@ -129,7 +129,7 @@ python protect_pdf_library.py --backup-dir custom_backup_location
 ## Watermark Specifications
 
 ### Visual Properties
-- **Text:** "Claim Navigator - Protected Document"
+- **Text:** "Claim Command Pro - Protected Document"
 - **Font:** Helvetica, 14pt
 - **Color:** Gray (RGB: 128, 128, 128)
 - **Opacity:** 30% (0.3 alpha)
@@ -155,7 +155,7 @@ backup_original/
 │   ├── archivo1.pdf
 │   ├── archivo2.pdf
 │   └── ...
-└── autoclaimnavigator/
+└── autoClaimCommandPro/
     ├── Document Library - Final English/
     └── Document Library - Final Spanish/
 ```
@@ -175,10 +175,10 @@ If you need to restore original files:
 
 ### Sample Log Output
 ```
-2024-12-XX 10:30:15 - INFO - Starting Claim Navigator PDF Protection Process
-2024-12-XX 10:30:15 - INFO - User Password: Claim Navigator2025
+2024-12-XX 10:30:15 - INFO - Starting Claim Command Pro PDF Protection Process
+2024-12-XX 10:30:15 - INFO - User Password: Claim Command Pro2025
 2024-12-XX 10:30:15 - INFO - Owner Password: AdminClaimNav2025
-2024-12-XX 10:30:15 - INFO - Watermark: Claim Navigator - Protected Document
+2024-12-XX 10:30:15 - INFO - Watermark: Claim Command Pro - Protected Document
 2024-12-XX 10:30:16 - INFO - Processing directory: ./Document Library - Final English
 2024-12-XX 10:30:16 - INFO - Found 122 PDF files in ./Document Library - Final English
 2024-12-XX 10:30:45 - INFO - Successfully protected: ./Document Library - Final English/file1.pdf
@@ -295,7 +295,7 @@ tail -f pdf_protection.log
 
 ## Conclusion
 
-This implementation provides comprehensive PDF protection for the Claim Navigator document library, ensuring:
+This implementation provides comprehensive PDF protection for the Claim Command Pro document library, ensuring:
 
 ✅ **Security:** Password protection and restricted permissions  
 ✅ **Identification:** Watermarks for document tracking  
@@ -307,6 +307,6 @@ The system protects 247+ PDF documents across English and Spanish libraries whil
 
 ---
 
-**Repository:** https://github.com/jhouston2019/Claim Navigator.git  
+**Repository:** https://github.com/jhouston2019/Claim Command Pro.git  
 **Implementation Date:** December 2024  
 **Status:** Production Ready

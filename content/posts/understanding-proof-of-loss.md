@@ -1,7 +1,7 @@
 ---
 title: "Understanding Proof of Loss"
 date: "2025-01-14"
-author: "ClaimNavigator Team"
+author: "ClaimCommandPro Team"
 category: "Claims Process"
 snippet: "Learn what a Proof of Loss is, when you need to submit it, and how to ensure yours is complete and accurate."
 ---
@@ -36,7 +36,7 @@ Your Proof of Loss should include:
 - **Lack of Documentation**: Provide receipts, photos, and estimates for all claimed items
 - **Incorrect Valuations**: Use replacement cost for structures, actual cash value for contents
 
-## How ClaimNavigator Can Help
+## How ClaimCommandPro Can Help
 
 Our [Document Generator](/app/document-generator-v2/document-generator.html) includes a Proof of Loss template that guides you through the process. Our AI tools can help you:
 
@@ -49,7 +49,7 @@ Our [Document Generator](/app/document-generator-v2/document-generator.html) inc
 
 1. Gather all documentation (receipts, photos, estimates)
 2. Create a detailed inventory of all damaged or lost items
-3. Use ClaimNavigator's tools to generate your Proof of Loss
+3. Use ClaimCommandPro's tools to generate your Proof of Loss
 4. Review carefully before submitting to your insurer
 5. Keep copies of everything you submit
 

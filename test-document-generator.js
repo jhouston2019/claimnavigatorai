@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * Test script for Claim Navigator Document Generator
+ * Test script for Claim Command Pro Document Generator
  * Tests the generate-document function with sample data
  */
 
 const testDocumentGeneration = async () => {
-    console.log('🧪 Testing Claim Navigator Document Generator...\n');
+    console.log('🧪 Testing Claim Command Pro Document Generator...\n');
     
     // Test data
     const testData = {

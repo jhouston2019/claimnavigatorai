@@ -8,7 +8,7 @@ The `step-by-step-claim-guide.html` file is a **6,192-line single-page applicati
 ## File Structure
 
 ### 1. **Header Section (Lines 1-106)**
-- **Meta tags & Title**: "Claim Management Center - Claim Navigator"
+- **Meta tags & Title**: "Claim Management Center - Claim Command Pro"
 - **External Dependencies**:
   - Google Fonts (Inter font family)
   - Custom CSS: `tool-visual-alignment.css`, `workflow-tools-ai.css`
@@ -457,7 +457,7 @@ Calls saveState()
   ↓
 Serializes state object to JSON
   ↓
-Stores in localStorage: 'claimNavigatorState'
+Stores in localStorage: 'ClaimCommandProState'
   ↓
 Logs event to timeline (async)
   ↓

@@ -1,4 +1,4 @@
--- Claim Navigator Infrastructure Migration
+-- Claim Command Pro Infrastructure Migration
 -- Consolidated migration for all new feature tables
 -- Run this via Supabase CLI or Dashboard
 

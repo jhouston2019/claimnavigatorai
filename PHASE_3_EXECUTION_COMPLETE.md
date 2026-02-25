@@ -329,7 +329,7 @@ Pass Rate: 100%
 
 ## 🟢 EARNED SYSTEM CLAIM
 
-> **"Claim Navigator can ingest carrier responses, detect scope regression, and advance claim state without negotiating, advising, or exposing the policyholder."**
+> **"Claim Command Pro can ingest carrier responses, detect scope regression, and advance claim state without negotiating, advising, or exposing the policyholder."**
 
 **Status:** ✅ VERIFIED
 

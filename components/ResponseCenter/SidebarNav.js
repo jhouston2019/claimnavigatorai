@@ -107,7 +107,7 @@ class SidebarNav {
           <div class="user-info">
             <div class="user-avatar">👤</div>
             <div class="user-details">
-              <div class="user-name">Claim Navigator</div>
+              <div class="user-name">Claim Command Pro</div>
               <div class="user-status">Premium Access</div>
             </div>
           </div>

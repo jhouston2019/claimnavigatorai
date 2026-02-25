@@ -1,14 +1,14 @@
 <?php
 /**
- * Claim Navigator PHP SDK
- * Enterprise client library for Claim Navigator API
+ * Claim Command Pro PHP SDK
+ * Enterprise client library for Claim Command Pro API
  * 
  * Usage:
- *   $client = new ClaimNavigator(['apiKey' => 'your-key', 'baseUrl' => 'https://...']);
+ *   $client = new ClaimCommandPro(['apiKey' => 'your-key', 'baseUrl' => 'https://...']);
  *   $result = $client->createFNOL([...]);
  */
 
-class ClaimNavigator {
+class ClaimCommandPro {
     private $apiKey;
     private $baseUrl;
     private $timeout;

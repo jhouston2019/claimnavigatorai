@@ -1,5 +1,5 @@
 /**
- * Claim Navigator Feature Gating System
+ * Claim Command Pro Feature Gating System
  * Blocks access to Pro/Enterprise features based on user tier
  */
 

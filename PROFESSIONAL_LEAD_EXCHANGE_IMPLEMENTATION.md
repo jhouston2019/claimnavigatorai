@@ -1,6 +1,6 @@
 # Professional Lead Exchange Implementation
 
-This document outlines the complete implementation of the Professional Lead Exchange system for Claim Navigator.
+This document outlines the complete implementation of the Professional Lead Exchange system for Claim Command Pro.
 
 ## Overview
 

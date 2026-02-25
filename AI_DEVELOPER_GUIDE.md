@@ -706,13 +706,13 @@ Include:
 ## 📞 Support
 
 ### Developer Support
-- **Email:** dev@claimnavigator.com
+- **Email:** dev@ClaimCommandPro.com
 - **Slack:** #ai-development
 - **Documentation:** /docs/ai-integration
 
 ### Emergency Contact
 - **On-Call:** 1-800-XXX-XXXX
-- **Escalation:** CTO@claimnavigator.com
+- **Escalation:** CTO@ClaimCommandPro.com
 
 ---
 

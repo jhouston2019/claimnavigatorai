@@ -1,6 +1,6 @@
-# Claim Navigator SaaS Engine Specification - Phase 4
+# Claim Command Pro SaaS Engine Specification - Phase 4
 **Generated:** 2025-01-27  
-**Purpose:** Complete architecture and implementation guide for transforming Claim Navigator into a production SaaS platform
+**Purpose:** Complete architecture and implementation guide for transforming Claim Command Pro into a production SaaS platform
 
 ---
 
@@ -8,7 +8,7 @@
 
 ### Root Structure
 ```
-Claim Navigator/
+Claim Command Pro/
 ├── index.html                    # Landing page (marketing)
 ├── app/                          # Application directory
 │   ├── index.html               # App home
@@ -218,7 +218,7 @@ CREATE TABLE payments (
   stripe_checkout_session_id TEXT UNIQUE,
   stripe_subscription_id TEXT,
   status TEXT NOT NULL, -- 'pending', 'completed', 'failed', 'canceled'
-  plan TEXT, -- 'claim_navigator_toolkit'
+  plan TEXT, -- 'CLAIM_COMMAND_PRO_toolkit'
   amount_paid INTEGER, -- in cents
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -308,13 +308,13 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGci...
 STRIPE_SECRET_KEY=sk_live_...
 STRIPE_PUBLIC_KEY=pk_live_...
 STRIPE_WEBHOOK_SECRET=whsec_...
-STRIPE_PRICE_CLAIM_NAVIGATOR=price_...
+STRIPE_PRICE_CLAIM_COMMAND_PRO=price_...
 
 # OpenAI
 OPENAI_API_KEY=sk-...
 
 # Site
-SITE_URL=https://Claim Navigator.com
+SITE_URL=https://Claim Command Pro.com
 ```
 
 ---

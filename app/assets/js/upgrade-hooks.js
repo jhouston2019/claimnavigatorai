@@ -1,5 +1,5 @@
 /**
- * Claim Navigator Upgrade Hooks System
+ * Claim Command Pro Upgrade Hooks System
  * Centralized upgrade trigger and messaging system
  */
 

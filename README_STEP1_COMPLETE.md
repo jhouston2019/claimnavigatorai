@@ -174,7 +174,7 @@ http://localhost:3000/app/tools/policy-analyzer-complete.html
 ## 📁 File Structure
 
 ```
-claim-navigator-ai-3/
+claim-command-pro-ai-3/
 ├── app/
 │   └── tools/
 │       ├── policy-analyzer-complete.html    ← NEW TOOL

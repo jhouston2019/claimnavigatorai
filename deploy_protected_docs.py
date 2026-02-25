@@ -121,8 +121,8 @@ def create_manual_deployment_instructions():
 - Total: 260 protected documents
 
 ## Security Features Applied
-- Password: Claim Navigator2025
-- Watermark: "Claim Navigator - Protected Document"
+- Password: Claim Command Pro2025
+- Watermark: "Claim Command Pro - Protected Document"
 - Restrictions: No printing, copying, or modification
 - Encryption: 128-bit AES
 
@@ -175,7 +175,7 @@ If you need help:
 
 def main():
     """Main deployment function"""
-    logger.info("Claim Navigator Protected Documents - Response Center Deployment")
+    logger.info("Claim Command Pro Protected Documents - Response Center Deployment")
     logger.info("=" * 70)
     
     # Step 1: Check protected documents
@@ -192,7 +192,7 @@ def main():
     if run_netlify_deployment():
         logger.info("✅ Protected documents deployed successfully!")
         logger.info("🔒 Protected documents are now live in the response center!")
-        logger.info("📝 Users will need password 'Claim Navigator2025' to access documents")
+        logger.info("📝 Users will need password 'Claim Command Pro2025' to access documents")
         logger.info("💧 All documents have watermarks for identification")
         logger.info("🚫 Printing and copying are disabled by default")
     else:

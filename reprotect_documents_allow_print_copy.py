@@ -93,8 +93,8 @@ def reprotect_documents():
     logger.info(f"Success rate: {(total_successful/total_processed*100):.1f}%" if total_processed > 0 else "0%")
     logger.info("=" * 60)
     logger.info("🔒 New security settings:")
-    logger.info("   ✅ Password protection: Claim Navigator2025")
-    logger.info("   ✅ Watermark: Claim Navigator - Protected Document")
+    logger.info("   ✅ Password protection: Claim Command Pro2025")
+    logger.info("   ✅ Watermark: Claim Command Pro - Protected Document")
     logger.info("   ✅ Allow printing: YES")
     logger.info("   ✅ Allow copying: YES")
     logger.info("   ❌ Disable modification: YES")
@@ -104,7 +104,7 @@ def reprotect_documents():
 
 def main():
     """Main function"""
-    logger.info("Claim Navigator Document Re-Protection")
+    logger.info("Claim Command Pro Document Re-Protection")
     logger.info("=" * 50)
     logger.info("Updating protection settings to allow printing and copying")
     logger.info("=" * 50)

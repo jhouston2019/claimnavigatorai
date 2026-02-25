@@ -3,7 +3,7 @@ Generated: $(date)
 
 ## Summary
 
-This audit scans for font color contrast issues across the ClaimNavigator AI codebase.
+This audit scans for font color contrast issues across the ClaimCommandPro AI codebase.
 
 ## Audit Criteria
 

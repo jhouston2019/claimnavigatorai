@@ -1,6 +1,6 @@
 # ui for claim-journal
 
-This directory contains resources and tools for ui for claim-journal functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for ui for claim-journal functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

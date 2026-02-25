@@ -1,18 +1,18 @@
 ---
-title: "Welcome to ClaimNavigator"
+title: "Welcome to ClaimCommandPro"
 date: "2025-01-15"
-author: "ClaimNavigator Team"
+author: "ClaimCommandPro Team"
 category: "Getting Started"
-snippet: "Learn how ClaimNavigator can help you navigate your insurance claim with confidence and get the settlement you deserve."
+snippet: "Learn how ClaimCommandPro can help you navigate your insurance claim with confidence and get the settlement you deserve."
 ---
 
-# Welcome to ClaimNavigator
+# Welcome to ClaimCommandPro
 
-Navigating an insurance claim can be overwhelming, especially when you're dealing with property damage, lost belongings, or business interruption. **ClaimNavigator** is here to help you every step of the way.
+Navigating an insurance claim can be overwhelming, especially when you're dealing with property damage, lost belongings, or business interruption. **ClaimCommandPro** is here to help you every step of the way.
 
-## What is ClaimNavigator?
+## What is ClaimCommandPro?
 
-ClaimNavigator is an AI-powered platform designed to help property owners, business owners, and policyholders successfully navigate their insurance claims. Our comprehensive toolkit includes:
+ClaimCommandPro is an AI-powered platform designed to help property owners, business owners, and policyholders successfully navigate their insurance claims. Our comprehensive toolkit includes:
 
 - **Document Generation**: Create professional claim documents, letters, and forms
 - **AI-Powered Analysis**: Get expert responses to insurer communications
@@ -22,12 +22,12 @@ ClaimNavigator is an AI-powered platform designed to help property owners, busin
 
 ## Getting Started
 
-1. **Create an Account**: Sign up to access all ClaimNavigator features
+1. **Create an Account**: Sign up to access all ClaimCommandPro features
 2. **Start a Claim**: Enter your claim information and policy details
 3. **Use Our Tools**: Leverage our AI-powered tools to generate documents and responses
 4. **Track Progress**: Monitor deadlines, expenses, and claim stages
 
-## Why Choose ClaimNavigator?
+## Why Choose ClaimCommandPro?
 
 - **Save Time**: Automate document creation and response drafting
 - **Reduce Stress**: Never miss a deadline with our tracking system

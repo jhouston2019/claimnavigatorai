@@ -7,7 +7,7 @@
 
 ## Overview
 
-All workflow tools in the Claim Navigator system now have comprehensive AI assistance capabilities. Each tool features:
+All workflow tools in the Claim Command Pro system now have comprehensive AI assistance capabilities. Each tool features:
 
 - **Dedicated AI Chat Interface** - Persistent AI assistant in bottom-right corner
 - **Tool-Specific Expertise** - AI trained on specific tool functionality and insurance domain knowledge

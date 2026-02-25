@@ -7,7 +7,7 @@
 
 ## SUMMARY
 
-Phase 4 transformed Claim Navigator from a static marketing/resource site into a production-grade SaaS platform with authentication, payments, AI tools, and a user dashboard. All existing design and styling has been preserved.
+Phase 4 transformed Claim Command Pro from a static marketing/resource site into a production-grade SaaS platform with authentication, payments, AI tools, and a user dashboard. All existing design and styling has been preserved.
 
 ---
 
@@ -81,7 +81,7 @@ Phase 4 transformed Claim Navigator from a static marketing/resource site into a
 
 ### Configuration
 10. **`env.example`** - Updated with new variables
-    - Added `STRIPE_PRICE_CLAIM_NAVIGATOR`
+    - Added `STRIPE_PRICE_CLAIM_COMMAND_PRO`
     - Added `SITE_URL`
     - Updated checkout URLs
 
@@ -225,7 +225,7 @@ SUPABASE_SERVICE_ROLE_KEY
 STRIPE_SECRET_KEY
 STRIPE_PUBLIC_KEY
 STRIPE_WEBHOOK_SECRET
-STRIPE_PRICE_CLAIM_NAVIGATOR
+STRIPE_PRICE_CLAIM_COMMAND_PRO
 
 # OpenAI
 OPENAI_API_KEY
@@ -251,8 +251,8 @@ SITE_URL
 
 ### Stripe Configuration
 - [ ] Create product in Stripe
-- [ ] Create price for Claim Navigator toolkit
-- [ ] Set `STRIPE_PRICE_CLAIM_NAVIGATOR` env var
+- [ ] Create price for Claim Command Pro toolkit
+- [ ] Set `STRIPE_PRICE_CLAIM_COMMAND_PRO` env var
 - [ ] Configure webhook endpoint: `/.netlify/functions/stripe-webhook`
 - [ ] Enable `checkout.session.completed` event
 

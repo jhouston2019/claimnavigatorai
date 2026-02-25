@@ -1,4 +1,4 @@
-# 🔧 CLAIM NAVIGATOR - QUICK FIX GUIDE
+# 🔧 Claim Command Pro - QUICK FIX GUIDE
 
 **Problem:** All 12 primary tools return 404 errors  
 **Impact:** System completely non-functional  
@@ -77,7 +77,7 @@ function openTool(toolId, stepNum) {
 ```javascript
 // Load saved state from storage
 function loadSavedState() {
-  const state = getClaimData('claimNavigatorState');
+  const state = getClaimData('ClaimCommandProState');
   // ... existing code
 }
 ```
@@ -181,7 +181,7 @@ Each tool must follow this pattern:
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Policy Intelligence Engine - Claim Navigator</title>
+  <title>Policy Intelligence Engine - Claim Command Pro</title>
   <script src="/storage/claimStorage.js"></script>
 </head>
 <body>
@@ -350,5 +350,5 @@ If issues persist after implementing these fixes:
 ---
 
 **Last Updated:** January 3, 2026  
-**See Also:** `CLAIM_NAVIGATOR_SYSTEM_AUDIT_REPORT.md` for detailed analysis
+**See Also:** `CLAIM_COMMAND_PRO_SYSTEM_AUDIT_REPORT.md` for detailed analysis
 

@@ -1,6 +1,6 @@
 # sewer backup
 
-This directory contains resources and tools for sewer backup functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for sewer backup functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

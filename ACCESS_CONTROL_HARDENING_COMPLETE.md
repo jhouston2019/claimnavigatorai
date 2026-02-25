@@ -374,7 +374,7 @@ The following pages may need guards added in future phases:
 **FAIL CLOSED: ACTIVE**  
 **PRODUCTION READY: YES**
 
-All objectives achieved. Claim Navigator now enforces paid-only access with fail-closed logic. Unpaid and unauthorized users cannot render or access any protected content.
+All objectives achieved. Claim Command Pro now enforces paid-only access with fail-closed logic. Unpaid and unauthorized users cannot render or access any protected content.
 
 ---
 

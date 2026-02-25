@@ -110,7 +110,7 @@
 │                                                                 │
 │  User sees:                                                     │
 │  • Stripe's secure checkout page                               │
-│  • Product: "Claim Navigator - One Claim"                      │
+│  • Product: "Claim Command Pro - One Claim"                      │
 │  • Price: $149.00                                               │
 │  • Payment form (card details)                                  │
 │                                                                 │

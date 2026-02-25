@@ -68,7 +68,7 @@ function getNamespacedKey(key) {
     return `${sessionId}_${key}`;
   }
   
-  // For non-claim keys (like claimNavigatorState), leave as-is
+  // For non-claim keys (like ClaimCommandProState), leave as-is
   return key;
 }
 
@@ -162,10 +162,10 @@ function listClaimData(prefix) {
  * Update last activity timestamp
  */
 function updateLastActivity() {
-  const state = localStorage.getItem('claimNavigatorState');
+  const state = localStorage.getItem('ClaimCommandProState');
   let stateObj = state ? JSON.parse(state) : {};
   stateObj.lastSaved = new Date().toISOString();
-  localStorage.setItem('claimNavigatorState', JSON.stringify(stateObj));
+  localStorage.setItem('ClaimCommandProState', JSON.stringify(stateObj));
 }
 
 /**

@@ -316,7 +316,7 @@ grep -r "validateProfessionalOutput" netlify/functions/ai-*.js | wc -l
 **Quality Enforcement:** ACTIVE  
 **Professional Output:** GUARANTEED  
 
-**Every AI tool in Claim Navigator now produces professional, claim-grade output suitable for carrier submission, negotiation, documentation, and record-keeping.**
+**Every AI tool in Claim Command Pro now produces professional, claim-grade output suitable for carrier submission, negotiation, documentation, and record-keeping.**
 
 **This is not cosmetic. This is not preparation. This is complete implementation.**
 

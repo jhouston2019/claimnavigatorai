@@ -1,5 +1,5 @@
 /**
- * Claim Navigator Demo Mode Engine
+ * Claim Command Pro Demo Mode Engine
  * Core switch for enabling/disabling demo mode across the application
  */
 

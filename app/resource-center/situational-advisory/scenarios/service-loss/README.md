@@ -1,6 +1,6 @@
 # service loss
 
-This directory contains resources and tools for service loss functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for service loss functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

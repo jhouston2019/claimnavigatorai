@@ -1,6 +1,6 @@
 # vendor disruption
 
-This directory contains resources and tools for vendor disruption functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for vendor disruption functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

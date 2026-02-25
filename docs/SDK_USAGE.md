@@ -1,5 +1,5 @@
 # SDK Usage Guide
-## Claim Navigator API Client Libraries
+## Claim Command Pro API Client Libraries
 
 **Date:** 2025-01-28  
 **Version:** 1.0
@@ -8,7 +8,7 @@
 
 ## Overview
 
-This document provides usage examples for the Claim Navigator SDKs in JavaScript, Python, and PHP.
+This document provides usage examples for the Claim Command Pro SDKs in JavaScript, Python, and PHP.
 
 ---
 
@@ -18,24 +18,24 @@ This document provides usage examples for the Claim Navigator SDKs in JavaScript
 
 **Browser:**
 ```html
-<script src="https://your-site.netlify.app/sdk/js/claimnavigator.js"></script>
+<script src="https://your-site.netlify.app/sdk/js/ClaimCommandPro.js"></script>
 ```
 
 **Node.js:**
 ```javascript
-const ClaimNavigator = require('./sdk/js/claimnavigator.js');
+const ClaimCommandPro = require('./sdk/js/ClaimCommandPro.js');
 ```
 
 **ES Modules:**
 ```javascript
-import ClaimNavigator from './sdk/js/claimnavigator.js';
+import ClaimCommandPro from './sdk/js/ClaimCommandPro.js';
 ```
 
 ### Basic Usage
 
 ```javascript
 // Initialize client
-const client = new ClaimNavigator({
+const client = new ClaimCommandPro({
   apiKey: 'cn_your_api_key_here',
   baseUrl: 'https://your-site.netlify.app/.netlify/functions/api',
   timeout: 30000
@@ -124,17 +124,17 @@ try {
 ### Installation
 
 ```bash
-# Copy claimnavigator.py to your project
-cp sdk/python/claimnavigator.py /path/to/your/project/
+# Copy ClaimCommandPro.py to your project
+cp sdk/python/ClaimCommandPro.py /path/to/your/project/
 ```
 
 ### Basic Usage
 
 ```python
-from claimnavigator import ClaimNavigator
+from ClaimCommandPro import ClaimCommandPro
 
 # Initialize client
-client = ClaimNavigator(
+client = ClaimCommandPro(
     api_key='cn_your_api_key_here',
     base_url='https://your-site.netlify.app/.netlify/functions/api',
     timeout=30
@@ -217,7 +217,7 @@ except Exception as e:
 
 ```php
 // Include the SDK file
-require_once 'sdk/php/ClaimNavigator.php';
+require_once 'sdk/php/ClaimCommandPro.php';
 ```
 
 ### Basic Usage
@@ -225,7 +225,7 @@ require_once 'sdk/php/ClaimNavigator.php';
 ```php
 <?php
 // Initialize client
-$client = new ClaimNavigator([
+$client = new ClaimCommandPro([
     'apiKey' => 'cn_your_api_key_here',
     'baseUrl' => 'https://your-site.netlify.app/.netlify/functions/api',
     'timeout' => 30

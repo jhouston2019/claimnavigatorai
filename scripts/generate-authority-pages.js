@@ -13,7 +13,7 @@ const stateTemplate = `<!doctype html>
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>{{state}} Fire Claim Guide • Claim Navigator</title>
+  <title>{{state}} Fire Claim Guide • Claim Command Pro</title>
   <meta name="description" content="Insurance claim deadlines, proof of loss requirements, and contact information for {{state}}. Fire damage claim guide with state-specific regulations.">
   <meta name="keywords" content="{{state}} fire claim, {{state}} insurance, {{state}} deadline, {{state}} DOI, fire damage claim {{state}}">
   <link rel="stylesheet" href="/app/assets/css/style.css">
@@ -62,7 +62,7 @@ const stateTemplate = `<!doctype html>
 <body class="resource-center state-guide-page">
   <header class="header">
     <div class="bar container">
-      <div class="brand"><div class="logo"></div><div>Claim Navigator</div></div>
+      <div class="brand"><div class="logo"></div><div>Claim Command Pro</div></div>
       <nav class="nav">
         <a href="/app/index.html">Home</a>
         <a href="/app/resource-center.html">Resource Center</a>
@@ -97,12 +97,12 @@ const stateTemplate = `<!doctype html>
 
         <div class="info-item">
           <strong>Important Notes</strong>
-          <p>Deadlines may vary based on policy language and specific circumstances. Always review your insurance policy carefully. If you have questions or need assistance with your claim, contact your state insurance department or use ClaimNavigator's tools below.</p>
+          <p>Deadlines may vary based on policy language and specific circumstances. Always review your insurance policy carefully. If you have questions or need assistance with your claim, contact your state insurance department or use ClaimCommandPro's tools below.</p>
         </div>
       </div>
 
       <div class="tools-section">
-        <h3>ClaimNavigator Tools for {{state}} Claims</h3>
+        <h3>ClaimCommandPro Tools for {{state}} Claims</h3>
         <p style="color: #dbeafe !important; margin-bottom: 1rem;">Use these tools to stay compliant and organized with your {{state}} fire claim:</p>
         <ul>
           <li><a href="/app/deadlines.html">Deadline Tracker</a> - Track and manage critical claim deadlines with AI detection</li>
@@ -125,7 +125,7 @@ const pillarTemplate = `<!doctype html>
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>{{title}} • Claim Navigator</title>
+  <title>{{title}} • Claim Command Pro</title>
   <meta name="description" content="{{desc}}">
   <meta name="keywords" content="{{keywords}}">
   <link rel="stylesheet" href="/app/assets/css/style.css">
@@ -161,7 +161,7 @@ const pillarTemplate = `<!doctype html>
 <body class="resource-center pillar-guide-page">
   <header class="header">
     <div class="bar container">
-      <div class="brand"><div class="logo"></div><div>Claim Navigator</div></div>
+      <div class="brand"><div class="logo"></div><div>Claim Command Pro</div></div>
       <nav class="nav">
         <a href="/app/index.html">Home</a>
         <a href="/app/resource-center.html">Resource Center</a>
@@ -183,7 +183,7 @@ const pillarTemplate = `<!doctype html>
       </div>
 
       <div class="tools-section">
-        <h3>ClaimNavigator Tools for {{title}}</h3>
+        <h3>ClaimCommandPro Tools for {{title}}</h3>
         <p style="color: #dbeafe !important; margin-bottom: 1rem;">Use these tools to manage your claim effectively:</p>
         <ul>
           <li><a href="/app/deadlines.html">Deadline Tracker</a> - Track and manage critical claim deadlines with AI detection</li>

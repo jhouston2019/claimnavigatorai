@@ -1,25 +1,25 @@
-# HurricaneClaimNavigator Clone Summary
+# HurricaneClaimCommandPro Clone Summary
 
 ## Quick Start Instructions
 
-### 1. Clone the HurricaneClaimNavigator Repository
+### 1. Clone the HurricaneClaimCommandPro Repository
 ```bash
-git clone https://github.com/jhouston2019/hurricaneclaimnavigator.git
-cd hurricaneclaimnavigator
+git clone https://github.com/jhouston2019/hurricaneClaimCommandPro.git
+cd hurricaneClaimCommandPro
 ```
 
 ### 2. Run the Clone Script
 
 **For Linux/Mac:**
 ```bash
-# From the Claim Navigator directory
+# From the Claim Command Pro directory
 chmod +x clone-to-hurricane.sh
 ./clone-to-hurricane.sh
 ```
 
 **For Windows PowerShell:**
 ```powershell
-# From the Claim Navigator directory
+# From the Claim Command Pro directory
 .\clone-to-hurricane.ps1
 ```
 
@@ -31,7 +31,7 @@ chmod +x clone-to-hurricane.sh
    - Update all messaging to focus on hurricane claims
 
 2. **Update Configuration Files:**
-   - Set up new Supabase project for HurricaneClaimNavigator
+   - Set up new Supabase project for HurricaneClaimCommandPro
    - Update environment variables in `netlify.toml`
    - Configure Stripe for hurricane-specific products
 
@@ -40,7 +40,7 @@ chmod +x clone-to-hurricane.sh
    npm install
    npm run dev  # Test locally
    git add .
-   git commit -m "Clone Claim Navigator functionality for hurricane claims"
+   git commit -m "Clone Claim Command Pro functionality for hurricane claims"
    git push origin main
    ```
 
@@ -108,7 +108,7 @@ chmod +x clone-to-hurricane.sh
 
 ## Key Messaging Changes
 
-### From Claim Navigator to HurricaneClaimNavigator:
+### From Claim Command Pro to HurricaneClaimCommandPro:
 
 | Original | Hurricane Version |
 |----------|------------------|
@@ -163,4 +163,4 @@ chmod +x clone-to-hurricane.sh
    - Set up monitoring
    - Launch marketing campaign
 
-The clone process preserves your existing branding while adding all the powerful functionality of Claim Navigator, specifically tailored for hurricane damage claims.
+The clone process preserves your existing branding while adding all the powerful functionality of Claim Command Pro, specifically tailored for hurricane damage claims.

@@ -1,6 +1,6 @@
 # Documentation Guides
 
-This directory contains resources and tools for Documentation Guides functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for Documentation Guides functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

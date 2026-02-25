@@ -411,7 +411,7 @@ Use them whenever you need to communicate formally with your insurer!
 
 **Last Updated:** January 6, 2026  
 **Version:** 1.0  
-**For Support:** Contact Claim Navigator Support Team
+**For Support:** Contact Claim Command Pro Support Team
 
 
 

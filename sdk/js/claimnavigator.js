@@ -1,13 +1,13 @@
 /**
- * Claim Navigator JavaScript SDK
- * Enterprise client library for Claim Navigator API
+ * Claim Command Pro JavaScript SDK
+ * Enterprise client library for Claim Command Pro API
  * 
  * Usage:
- *   const client = new ClaimNavigator({ apiKey: 'your-key', baseUrl: 'https://...' });
+ *   const client = new ClaimCommandPro({ apiKey: 'your-key', baseUrl: 'https://...' });
  *   const result = await client.createFNOL({ ... });
  */
 
-class ClaimNavigator {
+class ClaimCommandPro {
   constructor(options = {}) {
     this.apiKey = options.apiKey || '';
     this.baseUrl = options.baseUrl || 'https://your-site.netlify.app/.netlify/functions/api';
@@ -166,10 +166,10 @@ class ClaimNavigator {
 
 // Export for different module systems
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = ClaimNavigator;
+  module.exports = ClaimCommandPro;
 }
 if (typeof window !== 'undefined') {
-  window.ClaimNavigator = ClaimNavigator;
+  window.ClaimCommandPro = ClaimCommandPro;
 }
 
 

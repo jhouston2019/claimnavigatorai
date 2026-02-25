@@ -120,7 +120,7 @@ class ProtectedDocumentUploader:
 
 def main():
     """Main function"""
-    logger.info("Claim Navigator Protected Documents Upload")
+    logger.info("Claim Command Pro Protected Documents Upload")
     logger.info("=" * 50)
     
     # Check if we're in the right directory
@@ -137,7 +137,7 @@ def main():
     if failed == 0:
         logger.info("✅ All protected documents uploaded successfully!")
         logger.info("🔒 Protected documents are now live in the response center!")
-        logger.info("📝 Users will need password 'Claim Navigator2025' to access documents")
+        logger.info("📝 Users will need password 'Claim Command Pro2025' to access documents")
     else:
         logger.warning(f"⚠️ {failed} files failed to upload. Check the log for details.")
     

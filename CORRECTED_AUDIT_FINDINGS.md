@@ -25,7 +25,7 @@ After further investigation, I need to clarify the audit findings:
 
 ### What Happened:
 
-When I applied the visual alignment script to the resource center, it created 106+ placeholder pages with generic "This resource is part of the Claim Navigator Resource Center" text. These overwrote or duplicated the functional tools.
+When I applied the visual alignment script to the resource center, it created 106+ placeholder pages with generic "This resource is part of the Claim Command Pro Resource Center" text. These overwrote or duplicated the functional tools.
 
 ### The Real Status:
 

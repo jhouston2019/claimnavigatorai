@@ -1,5 +1,5 @@
 # API Load Test Plan
-## Claim Navigator API Layer
+## Claim Command Pro API Layer
 
 **Date:** 2025-01-28  
 **Version:** 1.0  
@@ -9,7 +9,7 @@
 
 ## Overview
 
-This document outlines the load and stress testing strategy for the Claim Navigator API layer. The goal is to validate system performance, identify bottlenecks, and ensure the API can handle enterprise-level traffic.
+This document outlines the load and stress testing strategy for the Claim Command Pro API layer. The goal is to validate system performance, identify bottlenecks, and ensure the API can handle enterprise-level traffic.
 
 ---
 

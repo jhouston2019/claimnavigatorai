@@ -1,5 +1,5 @@
 /**
- * Claim Navigator Analytics
+ * Claim Command Pro Analytics
  * Tracks user interactions and conversions
  */
 

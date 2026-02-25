@@ -1,5 +1,5 @@
 @echo off
-echo Starting Claim Navigator AI...
+echo Starting Claim Command Pro AI...
 echo.
 
 REM Change to the project directory
@@ -15,7 +15,7 @@ REM Open browser
 start http://localhost:8000/START_HERE.html
 
 echo.
-echo Claim Navigator AI is now running!
+echo Claim Command Pro AI is now running!
 echo Browser should open automatically.
 echo.
 echo To stop the server, close this window.

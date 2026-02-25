@@ -1,5 +1,5 @@
 # Error Taxonomy
-## Claim Navigator API Layer
+## Claim Command Pro API Layer
 
 **Date:** 2025-01-28  
 **Version:** 1.0
@@ -8,7 +8,7 @@
 
 ## Overview
 
-This document defines the standardized error code system for the Claim Navigator API. All API endpoints use these error codes consistently to provide clear, actionable error information.
+This document defines the standardized error code system for the Claim Command Pro API. All API endpoints use these error codes consistently to provide clear, actionable error information.
 
 ---
 
@@ -17,7 +17,7 @@ This document defines the standardized error code system for the Claim Navigator
 Error codes follow the pattern: `CN-XXXX`
 
 Where:
-- `CN` = ClaimNavigator prefix
+- `CN` = ClaimCommandPro prefix
 - `XXXX` = 4-digit numeric code
 
 ---

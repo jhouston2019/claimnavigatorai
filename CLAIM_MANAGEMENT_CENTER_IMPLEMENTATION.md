@@ -177,7 +177,7 @@ To verify implementation:
 
 ### NOTES
 
-- Page uses localStorage for state persistence (key: `claimNavigatorState`)
+- Page uses localStorage for state persistence (key: `ClaimCommandProState`)
 - Progress tracking calculates based on completed tasks
 - Financial summary updates dynamically based on step completion
 - All 10 steps have accordion behavior with dynamic content loading

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-PDF Batch Processor for AutoClaimNavigator - Add Watermarks and Password Protection
-This script processes all PDFs in the autoclaimnavigator docs folder, adding watermarks and password protection.
+PDF Batch Processor for AutoClaimCommandPro - Add Watermarks and Password Protection
+This script processes all PDFs in the autoClaimCommandPro docs folder, adding watermarks and password protection.
 """
 
 import os
@@ -18,12 +18,12 @@ import io
 # ============= CONFIGURATION =============
 # Modify these settings as needed
 
-# Paths - specifically for autoclaimnavigator
-INPUT_FOLDER = "./autoclaimnavigator/docs"  # Folder containing your original PDFs
-OUTPUT_FOLDER = "./autoclaimnavigator/docs/protected"  # Where to save protected PDFs
+# Paths - specifically for autoClaimCommandPro
+INPUT_FOLDER = "./autoClaimCommandPro/docs"  # Folder containing your original PDFs
+OUTPUT_FOLDER = "./autoClaimCommandPro/docs/protected"  # Where to save protected PDFs
 
 # Watermark Settings
-WATERMARK_TEXT = "AutoClaim Navigator - Protected Document"
+WATERMARK_TEXT = "AutoClaim Command Pro - Protected Document"
 WATERMARK_OPACITY = 0.3  # 0.0 (invisible) to 1.0 (fully opaque)
 WATERMARK_FONT_SIZE = 14
 WATERMARK_COLOR = (0.5, 0.5, 0.5)  # RGB values (0-1), this is gray
@@ -134,7 +134,7 @@ def process_pdf(input_path, output_path):
 def main():
     """Main function to process all PDFs in the input folder."""
     print("=" * 50)
-    print("AUTOCLAIMNAVIGATOR PDF BATCH PROCESSOR")
+    print("AUTOClaimCommandPro PDF BATCH PROCESSOR")
     print("=" * 50)
     print(f"Input folder: {INPUT_FOLDER}")
     print(f"Output folder: {OUTPUT_FOLDER}")

@@ -1,13 +1,13 @@
 /**
- * Claim Navigator Guided Demo Tour
+ * Claim Command Pro Guided Demo Tour
  * Step-by-step tour overlay for sales demos
  */
 
 window.CNDemoTour = {
   steps: [
     {
-      title: "Welcome to Claim Navigator",
-      text: "This is the Claim Navigator guided demo. It shows the insurance claim flow with real tools that help policyholders get fair settlements."
+      title: "Welcome to Claim Command Pro",
+      text: "This is the Claim Command Pro guided demo. It shows the insurance claim flow with real tools that help policyholders get fair settlements."
     },
     {
       title: "6-Stage Roadmap",

@@ -284,7 +284,7 @@ let taskCompletion = {};  // e.g., {1: [true, true, true], 2: [true, false]}
 
 // LOAD STATE ON PAGE LOAD
 function loadSavedState() {
-  const state = getClaimData('claimNavigatorState');
+  const state = getClaimData('ClaimCommandProState');
   if (state) {
     currentStep = state.currentStep || 1;
     completedSteps = state.completedSteps || [];
@@ -318,7 +318,7 @@ function saveState() {
     },
     lastSaved: new Date().toISOString()
   };
-  saveClaimData('claimNavigatorState', state);
+  saveClaimData('ClaimCommandProState', state);
 }
 
 // EXAMPLE STATE OBJECT IN LOCALSTORAGE

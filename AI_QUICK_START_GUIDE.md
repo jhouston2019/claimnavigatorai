@@ -2,7 +2,7 @@
 
 ## 🎯 What's New?
 
-All 37 workflow tools in Claim Navigator now have **full AI assistance**! Every tool features an intelligent AI assistant that provides expert guidance on insurance claim processes.
+All 37 workflow tools in Claim Command Pro now have **full AI assistance**! Every tool features an intelligent AI assistant that provides expert guidance on insurance claim processes.
 
 ---
 
@@ -274,7 +274,7 @@ The AI provides guidance, but:
 ## 📞 Support
 
 ### Need Help?
-- **Email:** support@claimnavigator.com
+- **Email:** support@ClaimCommandPro.com
 - **Chat:** Available in-app
 - **Phone:** 1-800-XXX-XXXX
 

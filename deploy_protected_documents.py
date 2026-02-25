@@ -98,7 +98,7 @@ def verify_upload():
 
 def main():
     """Main deployment function"""
-    logger.info("Claim Navigator Protected Documents Deployment")
+    logger.info("Claim Command Pro Protected Documents Deployment")
     logger.info("=" * 60)
     
     # Check environment
@@ -136,8 +136,8 @@ def main():
         logger.info("DEPLOYMENT COMPLETE")
         logger.info("=" * 60)
         logger.info("🔒 Protected documents are now live in the response center!")
-        logger.info("📝 Users will need password 'Claim Navigator2025' to access documents")
-        logger.info("💧 All documents have watermarks: 'Claim Navigator - Protected Document'")
+        logger.info("📝 Users will need password 'Claim Command Pro2025' to access documents")
+        logger.info("💧 All documents have watermarks: 'Claim Command Pro - Protected Document'")
         logger.info("🚫 Printing and copying are disabled by default")
         logger.info("=" * 60)
         

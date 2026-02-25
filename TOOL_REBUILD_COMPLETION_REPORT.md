@@ -170,7 +170,7 @@ Each tool follows this consistent structure:
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>[Tool Name] - Claim Navigator</title>
+  <title>[Tool Name] - Claim Command Pro</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/app/assets/css/tool-visual-alignment.css">
   <script src="/app/storage/claimStorage.js"></script>
@@ -266,7 +266,7 @@ All tools use these standardized classes from `tool-visual-alignment.css`:
 **Deletions:** 395 lines  
 
 **Pushed to:** `origin/main`  
-**Repository:** https://github.com/jhouston2019/Claim Navigator.git
+**Repository:** https://github.com/jhouston2019/Claim Command Pro.git
 
 ---
 

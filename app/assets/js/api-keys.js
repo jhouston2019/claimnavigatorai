@@ -1,5 +1,5 @@
 /**
- * Claim Navigator API Keys & Usage Module
+ * Claim Command Pro API Keys & Usage Module
  * Manages API keys, usage tracking, and quotas
  */
 

@@ -1,10 +1,10 @@
-# Local Development Guide — Claim Navigator
+# Local Development Guide — Claim Command Pro
 
 ## ⚠️ CRITICAL: DO NOT USE file:// PROTOCOL
 
 Opening HTML files directly in a browser (via `file://`) will cause **ERR_FILE_NOT_FOUND** errors due to relative path resolution issues.
 
-**Always run Claim Navigator via a local HTTP server.**
+**Always run Claim Command Pro via a local HTTP server.**
 
 ---
 

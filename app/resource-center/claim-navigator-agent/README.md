@@ -1,6 +1,6 @@
-# Claim Navigator Agent
+# Claim Command Pro Agent
 
-This directory contains resources and tools for Claim Navigator Agent functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for Claim Command Pro Agent functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

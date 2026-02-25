@@ -154,7 +154,7 @@ Upload → Analyze → Report → Actions
 ## 🎨 Design Highlights
 
 ### **Visual Design**
-- Matches Claim Navigator brand (Navy #0B2545, Teal #17BEBB)
+- Matches Claim Command Pro brand (Navy #0B2545, Teal #17BEBB)
 - Professional card-based layout
 - Clean typography (Inter font)
 - Consistent spacing and alignment

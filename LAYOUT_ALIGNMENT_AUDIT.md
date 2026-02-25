@@ -84,7 +84,7 @@ Dark overlay + image
   <div class="rc-container rc-hero-content">
     <div class="rc-hero-text">
       <p class="rc-hero-eyebrow">Resource Center</p>
-      <h1 class="rc-hero-title">Claim Navigator Resource Center</h1>
+      <h1 class="rc-hero-title">Claim Command Pro Resource Center</h1>
       <p class="rc-hero-subtitle">Your central hub...</p>
       <div class="rc-hero-actions">
         <a href="..." class="rc-btn-primary">Start Claim Flow</a>
@@ -978,9 +978,9 @@ The Advanced Tools pages use a **fundamentally different visual design system** 
 
 
 
-✅ CURSOR FINAL AUDIT PROMPT — CLAIM NAVIGATOR SYSTEM VERIFICATION
+✅ CURSOR FINAL AUDIT PROMPT — Claim Command Pro SYSTEM VERIFICATION
 
-You are performing a full-system audit of the Claim Navigator site.
+You are performing a full-system audit of the Claim Command Pro site.
 
 This is NOT a refactor.
 This is NOT a redesign.
@@ -991,7 +991,7 @@ If something is missing, broken, or inconsistent, report it explicitly and propo
 
 🔒 AUDIT OBJECTIVE
 
-Confirm that Claim Navigator is:
+Confirm that Claim Command Pro is:
 
 Fully functional end-to-end
 
@@ -1273,7 +1273,7 @@ Do not redesign.
 
 If all checks pass, explicitly state:
 
-“Claim Navigator passes full system audit and is ready for real-world claim usage.”
+“Claim Command Pro passes full system audit and is ready for real-world claim usage.”
 
 Stop execution after report is generated.
 

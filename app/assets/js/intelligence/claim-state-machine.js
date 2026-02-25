@@ -1,6 +1,6 @@
 /**
  * CLAIM STATE MACHINE
- * Canonical claim state management for Claim Navigator
+ * Canonical claim state management for Claim Command Pro
  * 
  * Turns step-based workflow into state-aware system with:
  * - Explicit state transitions

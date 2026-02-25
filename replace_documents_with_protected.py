@@ -15,10 +15,10 @@ ORIGINAL_DOCS_FOLDER = "./docs"
 PROTECTED_DOCS_FOLDER = "./docs/protected"
 BACKUP_FOLDER = "./docs/backup_original"
 
-# AutoClaimNavigator paths
-AUTOCLAIM_ORIGINAL_FOLDER = "./autoclaimnavigator/docs"
-AUTOCLAIM_PROTECTED_FOLDER = "./autoclaimnavigator/docs/protected"
-AUTOCLAIM_BACKUP_FOLDER = "./autoclaimnavigator/docs/backup_original"
+# AutoClaimCommandPro paths
+AUTOCLAIM_ORIGINAL_FOLDER = "./autoClaimCommandPro/docs"
+AUTOCLAIM_PROTECTED_FOLDER = "./autoClaimCommandPro/docs/protected"
+AUTOCLAIM_BACKUP_FOLDER = "./autoClaimCommandPro/docs/backup_original"
 
 # =========================================
 
@@ -131,7 +131,7 @@ def main():
         return False
     
     if not os.path.exists(AUTOCLAIM_PROTECTED_FOLDER):
-        print(f"Error: AutoClaimNavigator protected documents folder not found: {AUTOCLAIM_PROTECTED_FOLDER}")
+        print(f"Error: AutoClaimCommandPro protected documents folder not found: {AUTOCLAIM_PROTECTED_FOLDER}")
         print("Please run the protection scripts first.")
         return False
     
@@ -155,9 +155,9 @@ def main():
     else:
         error_count += 1
     
-    # Replace AutoClaimNavigator documents
+    # Replace AutoClaimCommandPro documents
     print(f"\n{'='*40}")
-    print("REPLACING AUTOCLAIMNAVIGATOR DOCUMENTS")
+    print("REPLACING AUTOClaimCommandPro DOCUMENTS")
     print(f"{'='*40}")
     
     if replace_documents(AUTOCLAIM_ORIGINAL_FOLDER, AUTOCLAIM_PROTECTED_FOLDER, AUTOCLAIM_BACKUP_FOLDER):
@@ -180,8 +180,8 @@ def main():
         print(f"   - {BACKUP_FOLDER}")
         print(f"   - {AUTOCLAIM_BACKUP_FOLDER}")
         print(f"\n🔒 All documents now require passwords:")
-        print(f"   - Main System: Claim Navigator2025")
-        print(f"   - AutoClaimNavigator: AutoClaimNav2025")
+        print(f"   - Main System: Claim Command Pro2025")
+        print(f"   - AutoClaimCommandPro: AutoClaimNav2025")
         print(f"\n🏷️ All documents are watermarked for identification.")
     
     return success_count > 0

@@ -1,6 +1,6 @@
 /**
  * Consistent Navigation Bar Template for All Tool Pages
- * Provides standardized navigation across all Claim Navigator tools.
+ * Provides standardized navigation across all Claim Command Pro tools.
  *
  * Usage:
  *   <script src="/assets/js/navigation-template.js"></script>

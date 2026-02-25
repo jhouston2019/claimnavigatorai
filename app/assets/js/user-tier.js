@@ -1,5 +1,5 @@
 /**
- * Claim Navigator User Tier System
+ * Claim Command Pro User Tier System
  * Central source of truth for user tier management
  */
 

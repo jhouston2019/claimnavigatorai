@@ -265,7 +265,7 @@ Additional Tools (Optional)
 ## Color Scheme
 
 ### Primary Teal
-- **Base:** `#17BEBB` (Claim Navigator brand color)
+- **Base:** `#17BEBB` (Claim Command Pro brand color)
 - **Hover:** `#13a09d` (Darker teal)
 - **Background:** `rgba(23, 190, 187, 0.05)` (Very light)
 - **Background Hover:** `rgba(23, 190, 187, 0.1)` (Light)

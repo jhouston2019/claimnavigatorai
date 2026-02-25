@@ -1,10 +1,10 @@
 # Per-Claim Licensing System Setup Guide
 
-This guide explains how to set up and use the complete per-claim licensing system for Claim Navigator.
+This guide explains how to set up and use the complete per-claim licensing system for Claim Command Pro.
 
 ## Overview
 
-The per-claim licensing system transforms Claim Navigator from a general tool to a claim-specific service where:
+The per-claim licensing system transforms Claim Command Pro from a general tool to a claim-specific service where:
 - **One payment = One claim license**
 - **Each claim gets personalized documents**
 - **Complete access control and audit tracking**

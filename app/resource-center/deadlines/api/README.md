@@ -1,6 +1,6 @@
 # api for deadlines
 
-This directory contains resources and tools for api for deadlines functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for api for deadlines functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

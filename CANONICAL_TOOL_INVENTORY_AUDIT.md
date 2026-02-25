@@ -1,4 +1,4 @@
-# Claim Navigator — Canonical Tool Inventory Audit
+# Claim Command Pro — Canonical Tool Inventory Audit
 **Date:** January 3, 2026  
 **Auditor:** AI Assistant  
 **Scope:** Read-only audit of implemented, functional, and reachable tools
@@ -220,11 +220,11 @@ This audit identifies **all tools currently implemented, functional, and reachab
 
 ---
 
-### 17. **Claim Navigator Agent (CN Agent)**
+### 17. **Claim Command Pro Agent (CN Agent)**
 - **Purpose:** AI copilot for drafting emails, detecting deadlines, creating alerts
 - **File Path:** `app/cn-agent.html`
 - **Entry Points:**
-  - Navigation dropdown: "Claim Navigator Agent" with 9 sub-functions
+  - Navigation dropdown: "Claim Command Pro Agent" with 9 sub-functions
   - Resource Library: Core Claim Tools dropdown
 - **Status:** ✅ **Implemented & Working**
 - **Features:**
@@ -627,7 +627,7 @@ These tools exist in `tool-registry.js` but are **not explicitly called by the 1
 14. ROM Estimator
 15. Claim Stage Tracker
 16. Situational Advisory
-17. Claim Navigator Agent (CN Agent)
+17. Claim Command Pro Agent (CN Agent)
 
 ### Tools Reachable from Resource Library: **52 Tools**
 - All 17 primary tools PLUS:
@@ -663,7 +663,7 @@ These tools exist in `tool-registry.js` but are **not explicitly called by the 1
 
 ### **AI-Powered Tools:** 2
 - AI Response Agent
-- Claim Navigator Agent (CN Agent)
+- Claim Command Pro Agent (CN Agent)
 
 ### **Organization Tools:** 4
 - Evidence Organizer
@@ -777,7 +777,7 @@ These tools exist in `tool-registry.js` but are **not explicitly called by the 1
 
 ## CONCLUSION
 
-The Claim Navigator system contains a **comprehensive, fully-implemented tool ecosystem** with:
+The Claim Command Pro system contains a **comprehensive, fully-implemented tool ecosystem** with:
 
 ✅ **52 standalone tools** all functional and reachable  
 ✅ **17 primary tools** directly integrated into the 10-step claim protocol  
@@ -788,7 +788,7 @@ The Claim Navigator system contains a **comprehensive, fully-implemented tool ec
 
 **No refactoring, renaming, or redesign was performed during this audit.**
 
-This inventory serves as the **canonical source of truth** for all working Claim Navigator tools as of January 3, 2026.
+This inventory serves as the **canonical source of truth** for all working Claim Command Pro tools as of January 3, 2026.
 
 ---
 

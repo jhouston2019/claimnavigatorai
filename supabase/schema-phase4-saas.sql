@@ -1,4 +1,4 @@
--- Claim Navigator Phase 4 SaaS Schema
+-- Claim Command Pro Phase 4 SaaS Schema
 -- Complete database schema for production SaaS platform
 -- Run this in Supabase SQL Editor
 
@@ -175,7 +175,7 @@ CREATE TABLE IF NOT EXISTS payments (
   stripe_checkout_session_id TEXT UNIQUE,
   stripe_subscription_id TEXT,
   status TEXT NOT NULL, -- 'pending', 'completed', 'failed', 'canceled'
-  plan TEXT, -- 'claim_navigator_toolkit'
+  plan TEXT, -- 'CLAIM_COMMAND_PRO_toolkit'
   amount_paid INTEGER, -- in cents
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()

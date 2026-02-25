@@ -9,7 +9,7 @@
 
 All CTA buttons on the main landing page (`index.html`) were linking directly to:
 ```
-https://claimnavigator.com/.netlify/functions/create-checkout-session
+https://ClaimCommandPro.com/.netlify/functions/create-checkout-session
 ```
 
 **Why This Was Broken:**
@@ -48,7 +48,7 @@ https://claimnavigator.com/.netlify/functions/create-checkout-session
 ### 1. **Header Navigation CTA** (Line 1372)
 **Before:**
 ```html
-<a href="https://claimnavigator.com/.netlify/functions/create-checkout-session">
+<a href="https://ClaimCommandPro.com/.netlify/functions/create-checkout-session">
   Get Your Claim Toolkit
 </a>
 ```

@@ -21,7 +21,7 @@ exports.handler = async (event, context) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
-    const githubBaseUrl = 'https://raw.githubusercontent.com/jhouston2019/Claim Navigator/main/docs';
+    const githubBaseUrl = 'https://raw.githubusercontent.com/jhouston2019/Claim Command Pro/main/docs';
 
     const results = {
       english: { updated: 0, failed: 0, errors: [] },

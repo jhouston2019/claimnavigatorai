@@ -22,7 +22,7 @@
 
 ## ✅ PHASE 1: CLAIM STATE MACHINE (COMPLETE)
 
-**Objective:** Turn Claim Navigator from "step guide" into state-aware system
+**Objective:** Turn Claim Command Pro from "step guide" into state-aware system
 
 **Created:**
 - `app/assets/js/intelligence/claim-state-machine.js` (450 lines)

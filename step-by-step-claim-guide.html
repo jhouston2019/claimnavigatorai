@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Claim Management Center - Claim Navigator</title>
+  <title>Claim Management Center - Claim Command Pro</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/app/assets/css/tool-visual-alignment.css">
   <link rel="stylesheet" href="/app/assets/css/workflow-tools-ai.css">
@@ -7818,7 +7818,7 @@
   <!-- Global Navigation Header -->
   <header class="global-header">
     <nav class="global-nav">
-      <a href="/" class="nav-brand">Claim Navigator</a>
+      <a href="/" class="nav-brand">Claim Command Pro</a>
       
       <ul class="nav-menu">
         <li class="nav-item">
@@ -12661,7 +12661,7 @@ Enclosed please find [list attachments]. I request a revised offer of $XX,XXX wi
 
     // Load saved state from storage
     function loadSavedState() {
-      const state = getClaimData('claimNavigatorState');
+      const state = getClaimData('ClaimCommandProState');
       if (state) {
         currentStep = state.currentStep || 1;
         completedSteps = state.completedSteps || [];
@@ -12684,7 +12684,7 @@ Enclosed please find [list attachments]. I request a revised offer of $XX,XXX wi
 
     // Save state to storage
     function saveState() {
-      const saved = localStorage.getItem('claimNavigatorState');
+      const saved = localStorage.getItem('ClaimCommandProState');
       const existingState = saved ? JSON.parse(saved) : {};
       
       const state = {
@@ -12702,12 +12702,12 @@ Enclosed please find [list attachments]. I request a revised offer of $XX,XXX wi
         inventory: existingState.inventory || [], // Preserve existing inventory data
         lastSaved: new Date().toISOString()
       };
-      saveClaimData('claimNavigatorState', state);
+      saveClaimData('ClaimCommandProState', state);
     }
 
     // Calculate total RCV, depreciation, ACV, and holdback from inventory
     function calculateInventoryTotals() {
-      const saved = localStorage.getItem('claimNavigatorState');
+      const saved = localStorage.getItem('ClaimCommandProState');
       if (!saved) {
         return {
           totalRCV: 0,
@@ -12842,7 +12842,7 @@ Enclosed please find [list attachments]. I request a revised offer of $XX,XXX wi
         { name: 'Tools & Equipment', rcv: 2800, depreciationPercent: 25 }
       ];
       
-      const saved = localStorage.getItem('claimNavigatorState');
+      const saved = localStorage.getItem('ClaimCommandProState');
       const state = saved ? JSON.parse(saved) : {
         currentStep: 1,
         completedSteps: [],
@@ -12851,7 +12851,7 @@ Enclosed please find [list attachments]. I request a revised offer of $XX,XXX wi
       };
       
       state.inventory = sampleItems;
-      localStorage.setItem('claimNavigatorState', JSON.stringify(state));
+      localStorage.setItem('ClaimCommandProState', JSON.stringify(state));
       
       console.log('Sample inventory added:', sampleItems);
       alert('✓ Sample inventory data added for testing!\n\nGo to Step 9 to see calculated ACV/RCV breakdown.');
@@ -14290,7 +14290,7 @@ Enclosed please find [list attachments]. I request a revised offer of $XX,XXX wi
       // Header
       doc.setFontSize(18);
       doc.setFont(undefined, 'bold');
-      doc.text('ClaimNavigator AI', margin, yPos);
+      doc.text('ClaimCommandPro AI', margin, yPos);
       yPos += lineHeight + 3;
       
       doc.setFontSize(14);
@@ -14369,7 +14369,7 @@ Enclosed please find [list attachments]. I request a revised offer of $XX,XXX wi
       }
       
       // Save PDF
-      const filename = `ClaimNavigator_Step_${stepNum}_${reportName}.pdf`;
+      const filename = `ClaimCommandPro_Step_${stepNum}_${reportName}.pdf`;
       doc.save(filename);
       
       // Log export activity
@@ -14393,7 +14393,7 @@ Enclosed please find [list attachments]. I request a revised offer of $XX,XXX wi
       let docContent = '';
       
       // Header
-      docContent += `ClaimNavigator AI\n`;
+      docContent += `ClaimCommandPro AI\n`;
       docContent += `Step ${stepNum} Report\n`;
       docContent += `${step.title}\n\n`;
       docContent += `Claim Number: ${claimNumber}\n`;
@@ -14418,7 +14418,7 @@ Enclosed please find [list attachments]. I request a revised offer of $XX,XXX wi
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `ClaimNavigator_Step_${stepNum}_${reportName}.doc`;
+      a.download = `ClaimCommandPro_Step_${stepNum}_${reportName}.doc`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

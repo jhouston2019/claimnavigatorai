@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Restore and Protect Documents Script
-This script restores original documents from the autoclaimnavigator folder and then protects them.
+This script restores original documents from the autoClaimCommandPro folder and then protects them.
 """
 
 import os
@@ -11,7 +11,7 @@ import sys
 
 # ============= CONFIGURATION =============
 # Source paths (where original documents are)
-SOURCE_DOCS_FOLDER = "./autoclaimnavigator/docs"  # Use autoclaimnavigator as source
+SOURCE_DOCS_FOLDER = "./autoClaimCommandPro/docs"  # Use autoClaimCommandPro as source
 TARGET_DOCS_FOLDER = "./docs"  # Main docs folder
 TARGET_PROTECTED_FOLDER = "./docs/protected"  # Where to save protected versions
 
@@ -66,7 +66,7 @@ def main():
         print(f"Error: Source documents folder not found: {SOURCE_DOCS_FOLDER}")
         return False
     
-    # Step 1: Copy documents from autoclaimnavigator to main docs folder
+    # Step 1: Copy documents from autoClaimCommandPro to main docs folder
     print(f"\n{'='*40}")
     print("STEP 1: RESTORING DOCUMENTS")
     print(f"{'='*40}")
@@ -139,7 +139,7 @@ def main():
     print("RESTORE AND PROTECT COMPLETE")
     print(f"{'='*60}")
     print(f"✅ Documents have been restored and protected!")
-    print(f"🔒 All documents now require password: Claim Navigator2025")
+    print(f"🔒 All documents now require password: Claim Command Pro2025")
     print(f"🏷️ All documents are watermarked for identification.")
     
     return True

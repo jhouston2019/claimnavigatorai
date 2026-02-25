@@ -1,6 +1,6 @@
 # Claim Playbook
 
-This directory contains resources and tools for Claim Playbook functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for Claim Playbook functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

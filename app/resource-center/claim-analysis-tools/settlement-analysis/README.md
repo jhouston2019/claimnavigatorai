@@ -1,6 +1,6 @@
 # settlement analysis
 
-This directory contains resources and tools for settlement analysis functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for settlement analysis functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

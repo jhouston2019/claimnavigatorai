@@ -1,5 +1,5 @@
 /**
- * Claim Navigator Organization Management Module
+ * Claim Command Pro Organization Management Module
  * Handles organization identity, team members, and seat licensing
  */
 

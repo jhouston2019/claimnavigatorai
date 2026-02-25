@@ -87,7 +87,7 @@ Calculation: Actual deductible = building_limit × (percent / 100)
 
 ### 1. Run Database Migration
 ```bash
-cd "d:\Axis\Axis Projects - Projects\Projects - Stage 1\claim navigator ai 3"
+cd "d:\Axis\Axis Projects - Projects\Projects - Stage 1\Claim Command Pro ai 3"
 
 # Connect to Supabase
 psql -U postgres -h db.your-project.supabase.co -d postgres

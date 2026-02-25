@@ -654,7 +654,7 @@ The tool router bridge successfully connects the Step Guide to the Resource Cent
 
 ### Impact
 
-**The Claim Navigator system is now operational and can process insurance claims end-to-end.**
+**The Claim Command Pro system is now operational and can process insurance claims end-to-end.**
 
 ---
 

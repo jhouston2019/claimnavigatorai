@@ -603,7 +603,7 @@ of loss amount.
 
 ### 1. Run Database Migration
 ```bash
-psql -U postgres -d claimnavigator -f supabase/migrations/20260212_policy_intelligence_schema.sql
+psql -U postgres -d ClaimCommandPro -f supabase/migrations/20260212_policy_intelligence_schema.sql
 ```
 
 ### 2. Test Commercial Policy

@@ -1,6 +1,6 @@
 # no response for 30 days
 
-This directory contains resources and tools for no response for 30 days functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for no response for 30 days functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

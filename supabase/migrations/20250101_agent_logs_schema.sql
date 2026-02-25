@@ -1,4 +1,4 @@
--- ClaimNavigator Agent Logs and Reminders Schema
+-- ClaimCommandPro Agent Logs and Reminders Schema
 -- This migration creates tables for the CN Agent (AI Copilot) feature
 
 -- Enable UUID extension if not already enabled
@@ -60,8 +60,8 @@ CREATE TRIGGER update_claim_reminders_updated_at
     EXECUTE FUNCTION update_updated_at_column();
 
 -- Add comments for documentation
-COMMENT ON TABLE agent_logs IS 'Logs all activities performed by the ClaimNavigator Agent (AI Copilot)';
-COMMENT ON TABLE claim_reminders IS 'Reminders and alerts created by the ClaimNavigator Agent for users';
+COMMENT ON TABLE agent_logs IS 'Logs all activities performed by the ClaimCommandPro Agent (AI Copilot)';
+COMMENT ON TABLE claim_reminders IS 'Reminders and alerts created by the ClaimCommandPro Agent for users';
 
 COMMENT ON COLUMN agent_logs.action IS 'Action performed: email_draft, email_send, create_alert, detect_deadline, detect_payment, detect_invoice';
 COMMENT ON COLUMN agent_logs.status IS 'Status of the action: success, error, or pending';

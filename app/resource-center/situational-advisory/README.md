@@ -1,6 +1,6 @@
 # Situational Advisory
 
-This directory contains resources and tools for Situational Advisory functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for Situational Advisory functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

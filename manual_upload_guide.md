@@ -43,8 +43,8 @@ supabase storage upload documents/es/ "./Document Library - Final Spanish/*.pdf"
 ```
 
 ### 🔒 **Security Features Applied**
-- **Password:** `Claim Navigator2025`
-- **Watermark:** "Claim Navigator - Protected Document"
+- **Password:** `Claim Command Pro2025`
+- **Watermark:** "Claim Command Pro - Protected Document"
 - **Restrictions:** No printing, copying, or modification
 - **Encryption:** 128-bit AES
 

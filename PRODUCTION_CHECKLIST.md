@@ -1,4 +1,4 @@
-# Claim Navigator Production Checklist
+# Claim Command Pro Production Checklist
 
 ## Pre-Deployment Testing
 

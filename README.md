@@ -1,4 +1,4 @@
-# Claim Navigator - AI Response & Analysis Agent
+# Claim Command Pro - AI Response & Analysis Agent
 
 A professional-grade AI-powered tool for analyzing insurer correspondence and generating expert responses for insurance claims.
 
@@ -44,7 +44,7 @@ Then open: `http://localhost:3000/app/resource-center.html`
 ## Project Structure
 
 ```
-Claim Navigator/
+Claim Command Pro/
 ├── app/
 │   └── ai-response-agent.html    # Frontend interface
 ├── netlify/
@@ -170,4 +170,4 @@ Enable debug logging by adding `console.log` statements in the Netlify function 
 
 ## License
 
-This project is proprietary software for Claim Navigator.
+This project is proprietary software for Claim Command Pro.

@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-Claim Navigator PDF Protection System
+Claim Command Pro PDF Protection System
 =====================================
 
-This script protects all PDF documents in the Claim Navigator library with:
-- Password protection (User: Claim Navigator2025, Owner: AdminClaimNav2025)
-- Watermarking with "Claim Navigator - Protected Document"
+This script protects all PDF documents in the Claim Command Pro library with:
+- Password protection (User: Claim Command Pro2025, Owner: AdminClaimNav2025)
+- Watermarking with "Claim Command Pro - Protected Document"
 - Restricted permissions (no printing/copying)
 - Backup of original documents
 
-Author: Claim Navigator Team
-Repository: https://github.com/jhouston2019/Claim Navigator.git
+Author: Claim Command Pro Team
+Repository: https://github.com/jhouston2019/Claim Command Pro.git
 """
 
 import os
@@ -38,7 +38,7 @@ except ImportError as e:
 # Configuration
 USER_PASSWORD = "ClaimNav1"
 OWNER_PASSWORD = "AdminClaimNav2025"
-WATERMARK_TEXT = "Claim Navigator - Protected Document"
+WATERMARK_TEXT = "Claim Command Pro - Protected Document"
 WATERMARK_OPACITY = 0.3
 WATERMARK_FONT_SIZE = 14
 WATERMARK_COLOR = gray
@@ -47,8 +47,8 @@ WATERMARK_COLOR = gray
 DOCUMENT_DIRS = [
     "./Document Library - Final English",
     "./Document Library - Final Spanish",
-    "./autoclaimnavigator/Document Library - Final English", 
-    "./autoclaimnavigator/Document Library - Final Spanish"
+    "./autoClaimCommandPro/Document Library - Final English", 
+    "./autoClaimCommandPro/Document Library - Final Spanish"
 ]
 
 # Setup logging
@@ -219,7 +219,7 @@ class PDFProtector:
     
     def run_protection(self) -> None:
         """Run the complete protection process"""
-        logger.info("Starting Claim Navigator PDF Protection Process")
+        logger.info("Starting Claim Command Pro PDF Protection Process")
         logger.info(f"User Password: {USER_PASSWORD}")
         logger.info(f"Owner Password: {OWNER_PASSWORD}")
         logger.info(f"Watermark: {WATERMARK_TEXT}")
@@ -258,7 +258,7 @@ class PDFProtector:
 
 def main():
     """Main function"""
-    parser = argparse.ArgumentParser(description='Protect Claim Navigator PDF Library')
+    parser = argparse.ArgumentParser(description='Protect Claim Command Pro PDF Library')
     parser.add_argument('--backup-dir', default='backup_original', 
                        help='Directory for original file backups')
     parser.add_argument('--dry-run', action='store_true',

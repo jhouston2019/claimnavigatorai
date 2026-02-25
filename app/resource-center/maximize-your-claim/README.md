@@ -1,6 +1,6 @@
 # Maximize Your Claim
 
-This directory contains resources and tools for Maximize Your Claim functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for Maximize Your Claim functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

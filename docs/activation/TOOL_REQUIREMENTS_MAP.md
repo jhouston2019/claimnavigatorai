@@ -1,4 +1,4 @@
-# Claim Navigator Tool Requirements Map
+# Claim Command Pro Tool Requirements Map
 **Generated:** 2025-01-27  
 **Purpose:** Complete mapping of all tool pages, their inputs, functions, and integration requirements
 

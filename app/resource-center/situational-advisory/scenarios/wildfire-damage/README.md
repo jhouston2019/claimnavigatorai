@@ -1,6 +1,6 @@
 # wildfire damage
 
-This directory contains resources and tools for wildfire damage functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for wildfire damage functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

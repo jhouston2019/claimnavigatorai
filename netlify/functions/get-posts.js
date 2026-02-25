@@ -74,7 +74,7 @@ exports.handler = async (event, context) => {
             title: metadata.title || slug.replace(/-/g, ' '),
             snippet: metadata.snippet || snippet,
             date: metadata.date || fs.statSync(filePath).mtime.toISOString().split('T')[0],
-            author: metadata.author || 'ClaimNavigator Team',
+            author: metadata.author || 'ClaimCommandPro Team',
             category: metadata.category || 'General'
           };
         } else {
@@ -87,7 +87,7 @@ exports.handler = async (event, context) => {
             title: slug.replace(/-/g, ' '),
             snippet,
             date: fs.statSync(filePath).mtime.toISOString().split('T')[0],
-            author: 'ClaimNavigator Team',
+            author: 'ClaimCommandPro Team',
             category: 'General'
           };
         }

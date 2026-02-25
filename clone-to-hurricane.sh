@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # HurricaneClaimNavigator Clone Script
-# This script copies Claim Navigator files to HurricaneClaimNavigator while preserving branding
+# This script copies Claim Command Pro files to HurricaneClaimNavigator while preserving branding
 
 set -e  # Exit on any error
 
@@ -9,8 +9,8 @@ echo "🚀 Starting HurricaneClaimNavigator clone process..."
 
 # Check if we're in the right directory
 if [ ! -f "package.json" ] || [ ! -d "app" ]; then
-    echo "❌ Error: This script must be run from the Claim Navigator root directory"
-    echo "Please navigate to the Claim Navigator directory and run this script"
+    echo "❌ Error: This script must be run from the Claim Command Pro root directory"
+    echo "Please navigate to the Claim Command Pro directory and run this script"
     exit 1
 fi
 
@@ -40,7 +40,7 @@ if [ -d "assets/css" ]; then
     echo "✅ Backed up assets/css"
 fi
 
-# Go back to Claim Navigator directory
+# Go back to Claim Command Pro directory
 cd - > /dev/null
 
 echo "📋 Copying core application files..."
@@ -108,18 +108,18 @@ cd "$HURRICANE_DIR"
 
 # Update package.json
 echo "📝 Updating package.json..."
-sed -i.bak 's/"name": "Claim Navigator"/"name": "hurricaneclaimnavigator"/' package.json
+sed -i.bak 's/"name": "Claim Command Pro"/"name": "hurricaneclaimnavigator"/' package.json
 sed -i.bak 's/"description": "AI-powered claim documentation tools with Netlify Functions"/"description": "AI-powered hurricane claim documentation tools with Netlify Functions"/' package.json
 
 # Update manifest.json
 echo "📝 Updating manifest.json..."
-sed -i.bak 's/"name": "Claim Navigator - AI-Powered Claim Documentation Tools"/"name": "HurricaneClaimNavigator - AI-Powered Hurricane Claim Documentation Tools"/' manifest.json
-sed -i.bak 's/"short_name": "Claim Navigator"/"short_name": "HurricaneClaimNavigator"/' manifest.json
+sed -i.bak 's/"name": "Claim Command Pro - AI-Powered Claim Documentation Tools"/"name": "HurricaneClaimNavigator - AI-Powered Hurricane Claim Documentation Tools"/' manifest.json
+sed -i.bak 's/"short_name": "Claim Command Pro"/"short_name": "HurricaneClaimNavigator"/' manifest.json
 sed -i.bak 's/"description": "AI-powered documentation tools for property and business interruption insurance claims. Save time and maximize your claim potential."/"description": "AI-powered documentation tools for hurricane damage insurance claims. Save time and maximize your claim potential."/' manifest.json
 
 # Update netlify.toml redirects
 echo "📝 Updating netlify.toml..."
-sed -i.bak 's/Claim Navigator\.netlify\.app/hurricaneclaimnavigator.netlify.app/g' netlify.toml
+sed -i.bak 's/Claim Command Pro\.netlify\.app/hurricaneclaimnavigator.netlify.app/g' netlify.toml
 
 # Clean up backup files
 rm -f package.json.bak manifest.json.bak netlify.toml.bak

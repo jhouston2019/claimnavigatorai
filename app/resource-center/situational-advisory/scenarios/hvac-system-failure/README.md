@@ -1,6 +1,6 @@
 # hvac system failure
 
-This directory contains resources and tools for hvac system failure functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for hvac system failure functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

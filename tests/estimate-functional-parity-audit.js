@@ -2,7 +2,7 @@
  * ESTIMATE FUNCTIONAL PARITY AUDIT
  * Final gate: Behavioral equivalence testing
  * 
- * Tests that Claim Navigator produces identical outputs to Estimate Review Pro
+ * Tests that Claim Command Pro produces identical outputs to Estimate Review Pro
  * for all supported estimate analysis scenarios.
  */
 

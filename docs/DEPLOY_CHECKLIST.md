@@ -1,4 +1,4 @@
-# Claim Navigator Deployment Checklist
+# Claim Command Pro Deployment Checklist
 
 This checklist ensures all infrastructure components are properly configured for production deployment.
 
@@ -13,7 +13,7 @@ Set the following environment variables in Netlify Dashboard â†’ Site Settings â
 - [ ] `SUPABASE_ANON_KEY` - Supabase anonymous key
 - [ ] `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key (admin access)
 - [ ] `STRIPE_SECRET_KEY` - Stripe secret key (sk_live_... for production)
-- [ ] `SITE_URL` - Your production site URL (https://Claim Navigator.com)
+- [ ] `SITE_URL` - Your production site URL (https://Claim Command Pro.com)
 
 #### Optional Variables
 - [ ] `STRIPE_PUBLIC_KEY` - Stripe publishable key for frontend
@@ -70,7 +70,7 @@ Set the following environment variables in Netlify Dashboard â†’ Site Settings â
 - [ ] Verify webhook signature validation
 
 #### Products to Create
-- [ ] Claim Navigator DIY Toolkit
+- [ ] Claim Command Pro DIY Toolkit
 - [ ] Appeal Builder Premium Access
 - [ ] Professional Lead Exchange
 

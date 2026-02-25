@@ -1,4 +1,4 @@
-// API client utilities for Claim Navigator Resource Center
+// API client utilities for Claim Command Pro Resource Center
 // Provides centralized API communication functions
 
 /**

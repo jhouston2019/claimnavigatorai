@@ -102,7 +102,7 @@ Checklist of required duties:
 ## 🎨 Design Features
 
 ### **Visual Hierarchy**
-- Navy/Teal color scheme matching Claim Navigator brand
+- Navy/Teal color scheme matching Claim Command Pro brand
 - Card-based layout for sections
 - Professional table styling with hover effects
 - Badge-style endorsements

@@ -1,6 +1,6 @@
 # Claim Analysis Tools
 
-This directory contains resources and tools for Claim Analysis Tools functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for Claim Analysis Tools functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

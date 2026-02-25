@@ -1,5 +1,5 @@
 /**
- * Claim Navigator Global Scripts
+ * Claim Command Pro Global Scripts
  * Attribution tracking, retention loops, and global behaviors
  */
 

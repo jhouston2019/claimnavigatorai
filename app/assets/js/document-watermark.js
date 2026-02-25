@@ -46,11 +46,11 @@ function buildDocShell(bodyHtml) {
 
   const footer = `
     <div class="cn-doc-footer">
-      <div style="margin-bottom:2px;">Claim Navigator — Professional Claim Tools</div>
+      <div style="margin-bottom:2px;">Claim Command Pro — Professional Claim Tools</div>
       <div>Generated for ${claimantName || "Claimant"} • Claim # ${claimNumber || "N/A"}</div>
       <div style="margin-top:4px; font-size:10px;">
-        Informational use only. Claim Navigator is not a law firm or public adjuster and does not provide legal advice.
-        Review all content before sending to your insurer. © ${new Date().getFullYear()} Claim Navigator.
+        Informational use only. Claim Command Pro is not a law firm or public adjuster and does not provide legal advice.
+        Review all content before sending to your insurer. © ${new Date().getFullYear()} Claim Command Pro.
       </div>
     </div>
   `;

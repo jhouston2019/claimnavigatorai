@@ -1,11 +1,11 @@
 """
-Claim Navigator Python SDK v3.0
-Enterprise client library for Claim Navigator API
+Claim Command Pro Python SDK v3.0
+Enterprise client library for Claim Command Pro API
 
 Usage:
-    from claimnavigator import ClaimNavigator
+    from claimnavigator import ClaimCommandPro
     
-    client = ClaimNavigator(api_key='your-key', base_url='https://...')
+    client = ClaimCommandPro(api_key='your-key', base_url='https://...')
     
     # Policy analysis with jurisdiction deadlines
     policy = client.analyze_policy_v3(claim_id='...', policy_pdf_url='...')
@@ -25,12 +25,12 @@ from typing import Optional, Dict, Any
 from urllib.parse import urlencode
 
 
-class ClaimNavigator:
-    """Claim Navigator API client v3.0"""
+class ClaimCommandPro:
+    """Claim Command Pro API client v3.0"""
     
     def __init__(self, api_key: str = '', base_url: str = 'https://your-site.netlify.app/.netlify/functions/api', timeout: int = 30):
         """
-        Initialize ClaimNavigator client
+        Initialize ClaimCommandPro client
         
         Args:
             api_key: API key for authentication

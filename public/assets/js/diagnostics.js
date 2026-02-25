@@ -1,4 +1,4 @@
-// Diagnostics utilities for Claim Navigator Resource Center
+// Diagnostics utilities for Claim Command Pro Resource Center
 // Provides automated testing and health checks
 
 /**

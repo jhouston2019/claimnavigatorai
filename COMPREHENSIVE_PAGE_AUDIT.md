@@ -42,7 +42,7 @@
 | `deadlines.html` | ✅ FUNCTIONAL | 🎨 YES | Comprehensive deadline information with state-level rules, carrier obligations, timeline management guidance. Informational but thorough. |
 | `claim-stage-tracker.html` | ✅ FUNCTIONAL | 🎨 YES | Interactive stage tracker with Supabase integration, progress bar, timeline view, claim selector dropdown. Full database-backed functionality. |
 | `claim-timeline.html` | ✅ FUNCTIONAL | 🎨 YES | 15-step claim sequence guide with descriptions and tool links for each phase. Well-structured informational resource. |
-| `claim-navigator-agent.html` | ⚠️ PARTIAL | 🎨 YES | Describes 6 automation engines (email, deadline detection, alerts, SOL sync, FNOL autofill, coverage detection) with "Open Tool" buttons, but buttons appear to be placeholder links. |
+| `claim-command-pro-agent.html` | ⚠️ PARTIAL | 🎨 YES | Describes 6 automation engines (email, deadline detection, alerts, SOL sync, FNOL autofill, coverage detection) with "Open Tool" buttons, but buttons appear to be placeholder links. |
 
 ### Documentation & Forms
 
@@ -186,7 +186,7 @@ These pages have the updated visual design but contain only generic placeholder 
 
 | Page | Status | Styled | Notes |
 |------|--------|--------|-------|
-| `bi-calculator/index.html` | ❌ PLACEHOLDER | 🎨 YES | Generic "This resource is part of the Claim Navigator Resource Center" text. No calculator functionality. |
+| `bi-calculator/index.html` | ❌ PLACEHOLDER | 🎨 YES | Generic "This resource is part of the Claim Command Pro Resource Center" text. No calculator functionality. |
 | `damage-assessment/index.html` | ❌ PLACEHOLDER | 🎨 YES | Generic placeholder content. |
 | `estimate-comparison/index.html` | ❌ PLACEHOLDER | 🎨 YES | Generic placeholder content. |
 | `expert-opinion/index.html` | ❌ PLACEHOLDER | 🎨 YES | Generic placeholder content. |

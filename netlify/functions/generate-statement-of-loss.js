@@ -250,7 +250,7 @@ async function generateStatementOfLoss(claimId, toEmail = null) {
 
         await sgMail.send({
           to: toEmail,
-          from: process.env.FROM_EMAIL || 'no-reply@claimnavigator.ai',
+          from: process.env.FROM_EMAIL || 'no-reply@ClaimCommandPro.ai',
           subject: 'Statement of Loss',
           html: '<p>Attached is your Statement of Loss.</p>',
           attachments: [

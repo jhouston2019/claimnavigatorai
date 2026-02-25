@@ -1,5 +1,5 @@
 /**
- * ClaimNavigator AI - Expert-Level Analysis Engine Configuration
+ * ClaimCommandPro AI - Expert-Level Analysis Engine Configuration
  * 
  * This module enforces expert reasoning, cross-step awareness, and schema-locked outputs.
  * AI operates as a constrained expert analysis engine, not a conversational assistant.

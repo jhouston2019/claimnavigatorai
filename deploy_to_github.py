@@ -61,13 +61,13 @@ def create_github_deployment_instructions():
 
 ## The Challenge
 The documents are stored in the GitHub repository at:
-- https://github.com/jhouston2019/Claim Navigator
-- They are served from: https://Claim Navigator.com/docs/
+- https://github.com/jhouston2019/Claim Command Pro
+- They are served from: https://Claim Command Pro.com/docs/
 
 ## Deployment Strategy
 
 ### Option 1: Manual GitHub Upload (Recommended)
-1. Go to your GitHub repository: https://github.com/jhouston2019/Claim Navigator
+1. Go to your GitHub repository: https://github.com/jhouston2019/Claim Command Pro
 2. Navigate to the docs/ directory (or wherever the original documents are stored)
 3. For each protected document:
    - Click on the file
@@ -84,7 +84,7 @@ The documents are stored in the GitHub repository at:
 5. Commit and push: git add . && git commit -m "Deploy protected documents" && git push
 
 ### Option 3: Git Commands (If you have Git access)
-1. Clone the repository: git clone https://github.com/jhouston2019/Claim Navigator.git
+1. Clone the repository: git clone https://github.com/jhouston2019/Claim Command Pro.git
 2. Copy protected documents to the docs directory
 3. Commit and push: git add . && git commit -m "Deploy protected documents" && git push
 
@@ -96,14 +96,14 @@ docs/
 ```
 
 ## Security Features Applied
-- Password: Claim Navigator2025
-- Watermark: "Claim Navigator - Protected Document"
+- Password: Claim Command Pro2025
+- Watermark: "Claim Command Pro - Protected Document"
 - Restrictions: No printing, copying, or modification
 - Encryption: 128-bit AES
 
 ## Verification
 After deployment, verify that:
-1. Documents are accessible at https://Claim Navigator.com/docs/
+1. Documents are accessible at https://Claim Command Pro.com/docs/
 2. Documents require password to open
 3. Watermark appears at bottom of each page
 4. Printing and copying are disabled
@@ -129,7 +129,7 @@ After deployment, verify that:
 
 def main():
     """Main function"""
-    logger.info("Claim Navigator Protected Documents - GitHub Deployment")
+    logger.info("Claim Command Pro Protected Documents - GitHub Deployment")
     logger.info("=" * 70)
     
     # Check protected documents
@@ -145,7 +145,7 @@ def main():
     logger.info("GITHUB DEPLOYMENT READY")
     logger.info("=" * 70)
     logger.info("✅ Protected documents are ready for GitHub deployment")
-    logger.info("🌐 Target: https://github.com/jhouston2019/Claim Navigator")
+    logger.info("🌐 Target: https://github.com/jhouston2019/Claim Command Pro")
     logger.info("📁 Documents location: ./Document Library - Final English/ and ./Document Library - Final Spanish/")
     logger.info("🔒 Security features: Password protection, watermarks, restrictions")
     logger.info("📋 Instructions: GITHUB_DEPLOYMENT_INSTRUCTIONS.txt")

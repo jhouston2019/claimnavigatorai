@@ -45,7 +45,7 @@ Transformed the Core Functional Tools section to use the standardized `resources
 6. **Policy Review** - Analyze your insurance policy coverage, limits, and exclusions
 7. **Settlement Analysis** - Evaluate settlement offers and calculate fair claim values
 8. **Claim Journal** - Track all claim activities, communications, and important events
-9. **Claim Navigator Agent** - Your AI assistant for navigating the entire claim process
+9. **Claim Command Pro Agent** - Your AI assistant for navigating the entire claim process
 10. **Claim Stage Tracker** - Monitor your claim progress through each stage of the process
 11. **Deadlines** - Track critical claim deadlines and policy compliance requirements
 12. **Document Generator** - Create professional claim documents, letters, and forms instantly

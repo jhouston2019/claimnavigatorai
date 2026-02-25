@@ -120,7 +120,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...
 **Flow:**
 1. Receives: `{ user_id, email }`
 2. Creates Stripe checkout session with:
-   - Product: "Claim Navigator - One Claim"
+   - Product: "Claim Command Pro - One Claim"
    - Price: $149.00 (14900 cents)
    - Mode: One-time payment
    - Metadata: `{ user_id, type: 'claim_purchase' }`
@@ -423,7 +423,7 @@ metadata JSONB
    - Get webhook secret: whsec_...
 
 3. Create Product (optional):
-   - Name: "Claim Navigator - One Claim"
+   - Name: "Claim Command Pro - One Claim"
    - Price: $149.00 one-time
    - Get price ID: price_...
 ```

@@ -1,4 +1,4 @@
-# CLAIM NAVIGATOR — CANONICAL TOOL LAYER MAP
+# Claim Command Pro — CANONICAL TOOL LAYER MAP
 
 ## Legend
 
@@ -120,7 +120,7 @@
 - Carrier Response Engine
 - Carrier Communication Letters
 - Carrier Submission Cover Letter Generator
-- Claim Navigator Agent
+- Claim Command Pro Agent
 - Claim Package Assembly
 - Claim Playbook
 - Contents Documentation Helper

@@ -63,8 +63,8 @@ def create_deployment_summary():
 - Total: 260 protected documents
 
 ### Security Features Applied
-- Password: Claim Navigator2025
-- Watermark: "Claim Navigator - Protected Document"
+- Password: Claim Command Pro2025
+- Watermark: "Claim Command Pro - Protected Document"
 - Restrictions: No printing, copying, or modification
 - Encryption: 128-bit AES
 
@@ -115,7 +115,7 @@ After deployment, verify that:
 
 def main():
     """Main function"""
-    logger.info("Claim Navigator Protected Documents - Simple Deployment")
+    logger.info("Claim Command Pro Protected Documents - Simple Deployment")
     logger.info("=" * 70)
     
     # Check protected documents

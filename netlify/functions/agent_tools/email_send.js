@@ -16,8 +16,8 @@ async function sendEmail(to, subject, body) {
 
     sgMail.setApiKey(apiKey);
 
-    const fromEmail = process.env.FROM_EMAIL || 'no-reply@claimnavigator.ai';
-    const fromName = process.env.FROM_NAME || 'ClaimNavigator Agent';
+    const fromEmail = process.env.FROM_EMAIL || 'no-reply@ClaimCommandPro.ai';
+    const fromName = process.env.FROM_NAME || 'ClaimCommandPro Agent';
 
     const msg = {
       to: to,

@@ -1,6 +1,6 @@
 # Recommended Resources
 
-This directory contains resources and tools for Recommended Resources functionality in the Claim Navigator Resource Center.
+This directory contains resources and tools for Recommended Resources functionality in the Claim Command Pro Resource Center.
 
 ## Purpose
 

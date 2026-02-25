@@ -386,7 +386,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `claim-navigator-claim-export-${Date.now()}.json`;
+      a.download = `claim-command-pro-claim-export-${Date.now()}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

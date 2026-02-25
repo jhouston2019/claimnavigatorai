@@ -1,4 +1,4 @@
-// Authentication utilities for Claim Navigator
+// Authentication utilities for Claim Command Pro
 // This file provides shared authentication functionality across the app
 
 let supabase = null;

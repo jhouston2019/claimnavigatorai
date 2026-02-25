@@ -1,4 +1,4 @@
-// UI helper utilities for Claim Navigator Resource Center
+// UI helper utilities for Claim Command Pro Resource Center
 // Provides common UI interaction functions
 
 /**

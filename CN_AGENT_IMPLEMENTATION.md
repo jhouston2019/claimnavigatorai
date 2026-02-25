@@ -1,8 +1,8 @@
-# ClaimNavigator Agent (AI Copilot) - Implementation Summary
+# ClaimCommandPro Agent (AI Copilot) - Implementation Summary
 
 ## 🎯 Overview
 
-The ClaimNavigator Agent is a functional AI automation layer integrated into the Resource Center, providing intelligent automation for email drafting, sending, alert creation, and document analysis.
+The ClaimCommandPro Agent is a functional AI automation layer integrated into the Resource Center, providing intelligent automation for email drafting, sending, alert creation, and document analysis.
 
 ## 📁 Files Created
 
@@ -60,8 +60,8 @@ SUPABASE_URL=your_supabase_url
 SUPABASE_KEY=your_supabase_service_role_key (or SUPABASE_SERVICE_ROLE_KEY)
 OPENAI_API_KEY=your_openai_api_key
 SENDGRID_API_KEY=your_sendgrid_api_key
-FROM_EMAIL=no-reply@claimnavigator.ai
-FROM_NAME=ClaimNavigator Agent
+FROM_EMAIL=no-reply@ClaimCommandPro.ai
+FROM_NAME=ClaimCommandPro Agent
 ```
 
 ## 📊 Database Tables
@@ -105,7 +105,7 @@ Push to your main branch or trigger a new deployment in Netlify.
 
 ## 🧪 Testing Flow
 
-1. **Access CN Agent**: Navigate to `/app/cn-agent.html` or click "ClaimNavigator Agent" in Resource Center
+1. **Access CN Agent**: Navigate to `/app/cn-agent.html` or click "ClaimCommandPro Agent" in Resource Center
 
 2. **Set Claim Context**: 
    - Add `?claim_id=YOUR_CLAIM_ID&user_id=YOUR_USER_ID` to URL

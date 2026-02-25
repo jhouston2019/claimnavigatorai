@@ -1,5 +1,5 @@
 /**
- * Unified Authentication Module for Claim Navigator
+ * Unified Authentication Module for Claim Command Pro
  * Handles login, register, logout, and auth checks
  */
 

@@ -52,7 +52,7 @@ test('Generates draft with correct metadata', () => {
     }
   });
 
-  assert(draft.metadata.generatedBy === 'ClaimNavigator', 'Should identify generator');
+  assert(draft.metadata.generatedBy === 'ClaimCommandPro', 'Should identify generator');
   assert(draft.metadata.requiresUserReview === true, 'Should require user review');
   assert(draft.metadata.requiresUserConfirmation === true, 'Should require confirmation');
   assert(draft.metadata.executed === false, 'Should not be executed');

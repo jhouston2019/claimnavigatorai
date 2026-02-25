@@ -1,9 +1,9 @@
-# Claim Navigator Landing Page Reskin - Summary
+# Claim Command Pro Landing Page Reskin - Summary
 
 ## Date: January 5, 2026
 
 ## Objective
-Reskin the Claim Navigator landing page to match a conservative insurance/legal industry aesthetic while preserving all existing copy, sections, and functionality.
+Reskin the Claim Command Pro landing page to match a conservative insurance/legal industry aesthetic while preserving all existing copy, sections, and functionality.
 
 ## Changes Implemented
 

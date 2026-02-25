@@ -18,7 +18,7 @@ exports.handler = async (event) => {
   }
 
   // Nuclear Fix: internally inject admin email so no browser header needed
-  const adminCheck = requireAdmin(event, "Claim Navigator@gmail.com");
+  const adminCheck = requireAdmin(event, "Claim Command Pro@gmail.com");
 
   if (!adminCheck.authorized) {
     return {

@@ -228,7 +228,7 @@
         <html>
           <head><title>CN Console Logs</title></head>
           <body style="font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff;">
-            <h2>Claim Navigator Console Logs (Last 20)</h2>
+            <h2>Claim Command Pro Console Logs (Last 20)</h2>
             <pre style="background: #2a2a2a; padding: 15px; border-radius: 4px; overflow-x: auto;">${logsText || 'No logs available'}</pre>
           </body>
         </html>
