@@ -602,7 +602,7 @@ if 'systematic_underpayment' in tactics['summary']['tactic_types']:
 
 ### Git Repository
 
-**Repo:** https://github.com/jhouston2019/ClaimCommandProai  
+**Repo:** https://github.com/jhouston2019/claimcommandpro  
 **Branch:** main  
 **Commit:** a5b5df8  
 **Status:** ✅ PUSHED
