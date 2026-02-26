@@ -469,6 +469,22 @@ Return ONLY the JSON object. Do not include markdown formatting, code blocks, or
       // Don't fail the request, just log it
     }
 
+    // Schedule email automation sequence
+    try {
+      const { scheduleEmailSequence } = require('./email-automation');
+      await scheduleEmailSequence(email.toLowerCase(), {
+        email: email.toLowerCase(),
+        riskCategory: result.risk_category || 'MODERATE',
+        gaps: result.gaps || [],
+        policyType: policy_type,
+        jurisdiction: jurisdiction
+      });
+      console.log('[ai-policy-review-free] Email sequence scheduled');
+    } catch (emailError) {
+      console.error('[ai-policy-review-free] Failed to schedule emails:', emailError);
+      // Don't fail the request if email scheduling fails
+    }
+
     // Log usage
     await LOG_USAGE({
       function: 'ai-policy-review-free',
