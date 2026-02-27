@@ -607,6 +607,9 @@ class StructuredOutputPanel {
     const codeUpgrades = enforcement.codeUpgrades || {};
     const coverageCrosswalk = enforcement.coverageCrosswalk || {};
     const carrierPatterns = enforcement.carrierPatterns || {};
+    const lossExpectation = enforcement.lossExpectation || {};
+    const tradeCompleteness = enforcement.tradeCompleteness || {};
+    const laborAnalysis = enforcement.laborAnalysis || {};
     const totalWithEnforcement = enforcement.totalProjectedRecoveryWithEnforcement || exposure.totalProjectedRecovery || 0;
     
     // Fallback to legacy format if no exposure data
@@ -748,6 +751,142 @@ class StructuredOutputPanel {
             </div>
           </div>
         `}
+        
+        <!-- LOSS TYPE INTELLIGENCE -->
+        ${lossExpectation.success ? `
+          <div class="output-subsection">
+            <h4>${this.getLossTypeIcon(lossExpectation.lossType)} Loss Type Intelligence</h4>
+            <div class="output-grid">
+              <div class="output-card">
+                <div class="output-label">Loss Type</div>
+                <div class="output-value">${lossExpectation.lossType}</div>
+                <div class="output-sublabel">${lossExpectation.confidence}% confidence</div>
+              </div>
+              <div class="output-card ${this.getSeverityClass(lossExpectation.severity)}">
+                <div class="output-label">Severity</div>
+                <div class="output-value">${lossExpectation.severity}</div>
+                <div class="output-sublabel">${lossExpectation.severityJustification || ''}</div>
+              </div>
+            </div>
+            
+            ${lossExpectation.missingTrades.length > 0 ? `
+              <div class="output-alert alert-warning">
+                <p><strong>⚠️ ${lossExpectation.missingTrades.length} Expected Trade(s) Missing</strong></p>
+                <ul class="output-list">
+                  ${lossExpectation.missingTrades.map(trade => `
+                    <li><strong>${trade.trade}</strong> - ${trade.reason}</li>
+                  `).join('')}
+                </ul>
+              </div>
+            ` : ''}
+            
+            ${lossExpectation.unexpectedTrades.length > 0 ? `
+              <div class="output-alert alert-info">
+                <p><strong>🔍 ${lossExpectation.unexpectedTrades.length} Unexpected Trade(s) Found</strong></p>
+                <ul class="output-list">
+                  ${lossExpectation.unexpectedTrades.map(trade => `
+                    <li><strong>${trade.trade}</strong> - ${trade.reason}</li>
+                  `).join('')}
+                </ul>
+              </div>
+            ` : ''}
+          </div>
+        ` : ''}
+        
+        <!-- TRADE COMPLETENESS SCORING -->
+        ${tradeCompleteness.success ? `
+          <div class="output-subsection">
+            <h4>🔧 Trade Completeness Analysis</h4>
+            <div class="output-grid">
+              <div class="output-card ${this.getIntegrityClass(tradeCompleteness.integrityScore)}">
+                <div class="output-label">Integrity Score</div>
+                <div class="output-value">${tradeCompleteness.integrityScore}/100</div>
+                <div class="output-sublabel">${tradeCompleteness.classification}</div>
+              </div>
+              <div class="output-card">
+                <div class="output-label">Trades Analyzed</div>
+                <div class="output-value">${tradeCompleteness.tradeScores.length}</div>
+                <div class="output-sublabel">${tradeCompleteness.incompleteTrades.length} incomplete</div>
+              </div>
+            </div>
+            
+            ${tradeCompleteness.incompleteTrades.length > 0 ? `
+              <div class="output-alert alert-warning">
+                <p><strong>⚠️ ${tradeCompleteness.incompleteTrades.length} Incomplete Trade(s)</strong></p>
+                <table class="output-table">
+                  <thead>
+                    <tr>
+                      <th>Trade</th>
+                      <th>Score</th>
+                      <th>Missing Elements</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${tradeCompleteness.incompleteTrades.map(trade => `
+                      <tr>
+                        <td><strong>${trade.trade}</strong></td>
+                        <td><span class="badge badge-${trade.score < 60 ? 'danger' : 'warning'}">${trade.score}/100</span></td>
+                        <td>${trade.missingElements.join(', ')}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            ` : ''}
+          </div>
+        ` : ''}
+        
+        <!-- LABOR RATE VALIDATION -->
+        ${laborAnalysis.success ? `
+          <div class="output-subsection">
+            <h4>💼 Labor Rate Analysis</h4>
+            <div class="output-grid">
+              <div class="output-card ${this.getLaborScoreClass(laborAnalysis.laborScore)}">
+                <div class="output-label">Labor Score</div>
+                <div class="output-value">${laborAnalysis.laborScore}/100</div>
+                <div class="output-sublabel">${laborAnalysis.region} market</div>
+              </div>
+              <div class="output-card">
+                <div class="output-label">Recovery Potential</div>
+                <div class="output-value">${formatCurrency(laborAnalysis.totalRecoveryPotential)}</div>
+                <div class="output-sublabel">${laborAnalysis.undervaluedItems.length} undervalued items</div>
+              </div>
+            </div>
+            
+            ${laborAnalysis.undervaluedItems.length > 0 ? `
+              <div class="output-alert alert-warning">
+                <p><strong>⚠️ ${laborAnalysis.undervaluedItems.length} Undervalued Labor Item(s)</strong></p>
+                <table class="output-table">
+                  <thead>
+                    <tr>
+                      <th>Description</th>
+                      <th>Trade</th>
+                      <th>Current Rate</th>
+                      <th>Market Range</th>
+                      <th>Variance</th>
+                      <th>Recovery</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${laborAnalysis.undervaluedItems.slice(0, 20).map(item => `
+                      <tr>
+                        <td>${item.description}</td>
+                        <td>${item.trade}</td>
+                        <td>${formatCurrency(item.hourlyRate)}/hr</td>
+                        <td>${formatCurrency(item.marketRate.min)}-${formatCurrency(item.marketRate.max)}</td>
+                        <td class="negative">${item.variance.toFixed(1)}%</td>
+                        <td>${formatCurrency(item.recoveryPotential)}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+                ${laborAnalysis.undervaluedItems.length > 20 ? `
+                  <p class="output-note">Showing first 20 of ${laborAnalysis.undervaluedItems.length} undervalued items.</p>
+                ` : ''}
+              </div>
+            ` : ''}
+          </div>
+        ` : ''}
         
         <!-- CODE UPGRADE REQUIREMENTS -->
         ${codeUpgrades.flagCount > 0 ? `
@@ -921,7 +1060,7 @@ class StructuredOutputPanel {
         </div>
         
         <div class="output-metadata">
-          <small>Financial Enforcement Engine v3.0 | Deterministic Calculation | ${structuredDeltas.length} line items analyzed | ${codeUpgrades.flagCount || 0} code flags | ${coverageCrosswalk.conflictCount || 0} coverage conflicts | ${carrierPatterns.patternCount || 0} carrier patterns</small>
+          <small>Financial Enforcement Engine v3.1 | Deterministic + Loss Intelligence | ${structuredDeltas.length} line items analyzed | ${lossExpectation.success ? lossExpectation.lossType + ' (' + lossExpectation.severity + ')' : ''} | ${tradeCompleteness.success ? 'Integrity: ' + tradeCompleteness.integrityScore + '/100' : ''} | ${laborAnalysis.success ? 'Labor: ' + laborAnalysis.laborScore + '/100' : ''}</small>
         </div>
       </div>
     `;
@@ -1163,6 +1302,46 @@ class StructuredOutputPanel {
         <pre class="output-json">${JSON.stringify(this.data, null, 2)}</pre>
       </div>
     `;
+  }
+  
+  getLossTypeIcon(lossType) {
+    const icons = {
+      'Water': '💧',
+      'Fire': '🔥',
+      'Wind': '🌪️',
+      'Hail': '🧊',
+      'Collision': '🚗',
+      'Unknown': '❓'
+    };
+    return icons[lossType] || '📋';
+  }
+  
+  getSeverityClass(severity) {
+    const severityLower = (severity || '').toLowerCase();
+    if (severityLower.includes('catastrophic') || severityLower.includes('total loss')) {
+      return 'highlight-danger';
+    }
+    if (severityLower.includes('major') || severityLower.includes('severe')) {
+      return 'highlight-warning';
+    }
+    if (severityLower.includes('moderate')) {
+      return 'highlight-info';
+    }
+    return '';
+  }
+  
+  getIntegrityClass(score) {
+    if (score >= 90) return 'highlight-success';
+    if (score >= 70) return 'highlight-info';
+    if (score >= 50) return 'highlight-warning';
+    return 'highlight-danger';
+  }
+  
+  getLaborScoreClass(score) {
+    if (score >= 80) return 'highlight-success';
+    if (score >= 60) return 'highlight-info';
+    if (score >= 40) return 'highlight-warning';
+    return 'highlight-danger';
   }
 }
 

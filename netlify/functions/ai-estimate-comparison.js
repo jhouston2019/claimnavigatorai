@@ -13,6 +13,17 @@ const {
   validateProfessionalOutput
 } = require('./utils/prompt-hardening');
 
+// ============================================================================
+// COMPREHENSIVE INTELLIGENCE ENGINES
+// ============================================================================
+const LossExpectationEngine = require('./lib/loss-expectation-engine');
+const TradeCompletenessEngine = require('./lib/trade-completeness-engine');
+const CodeUpgradeEngine = require('./lib/code-upgrade-engine');
+const PricingValidationEngine = require('./lib/pricing-validation-engine');
+const DepreciationValidator = require('./lib/depreciation-validator');
+const LaborRateValidator = require('./lib/labor-rate-validator');
+const CarrierTacticDetector = require('./lib/carrier-tactic-detector');
+
 
 exports.handler = async (event) => {
   // ✅ PHASE 5B: FULLY HARDENED
@@ -161,8 +172,110 @@ exports.handler = async (event) => {
         filename: estimate.filename,
         classification: engineResult.classification,
         analysis: engineResult.analysis,
-        report: engineResult.report
+        report: engineResult.report,
+        lineItems: engineResult.lineItems || []  // Extract line items for advanced analysis
       });
+    }
+
+    // ========================================================================
+    // COMPREHENSIVE INTELLIGENCE ANALYSIS
+    // Run all advanced engines if we have line items
+    // ========================================================================
+    let comprehensiveAnalysis = null;
+    
+    if (analysisResults.length > 0 && analysisResults[0].lineItems && analysisResults[0].lineItems.length > 0) {
+      try {
+        const allLineItems = analysisResults.flatMap(r => r.lineItems || []);
+        const totalCost = allLineItems.reduce((sum, item) => sum + (item.total || 0), 0);
+        const region = body.region || body.state || 'DEFAULT';
+        
+        // STEP 1: Loss Type & Severity Inference
+        let lossExpectation = null;
+        try {
+          lossExpectation = LossExpectationEngine.analyzeLossExpectation({
+            lineItems: allLineItems,
+            totalCost,
+            metadata: { claimType, context }
+          });
+        } catch (error) {
+          console.warn('Loss expectation analysis failed:', error.message);
+        }
+        
+        // STEP 2: Trade Completeness Scoring
+        let tradeCompleteness = null;
+        try {
+          tradeCompleteness = TradeCompletenessEngine.analyzeTradeCompleteness({
+            lineItems: allLineItems,
+            metadata: {}
+          });
+        } catch (error) {
+          console.warn('Trade completeness analysis failed:', error.message);
+        }
+        
+        // STEP 3: Code Upgrade Detection
+        let codeUpgrades = null;
+        try {
+          codeUpgrades = CodeUpgradeEngine.analyzeCodeUpgrades({
+            lineItems: allLineItems,
+            reconciliation: {},
+            exposure: {},
+            propertyMetadata: {},
+            regionalData: {}
+          });
+        } catch (error) {
+          console.warn('Code upgrade analysis failed:', error.message);
+        }
+        
+        // STEP 4: Pricing Validation
+        let pricingAnalysis = null;
+        try {
+          pricingAnalysis = await PricingValidationEngine.validatePricing({
+            lineItems: allLineItems,
+            state: region,
+            metadata: {}
+          });
+        } catch (error) {
+          console.warn('Pricing validation failed:', error.message);
+        }
+        
+        // STEP 5: Labor Rate Validation
+        let laborAnalysis = null;
+        try {
+          laborAnalysis = await LaborRateValidator.validateLaborRates({
+            lineItems: allLineItems,
+            region: region,
+            metadata: {}
+          });
+        } catch (error) {
+          console.warn('Labor rate validation failed:', error.message);
+        }
+        
+        // Combine all analyses
+        comprehensiveAnalysis = {
+          lossExpectation,
+          tradeCompleteness,
+          codeUpgrades,
+          pricingAnalysis,
+          laborAnalysis,
+          metadata: {
+            total_line_items: allLineItems.length,
+            total_cost: totalCost,
+            region: region,
+            engines_used: [
+              'estimate-engine',
+              lossExpectation ? 'loss-expectation' : null,
+              tradeCompleteness ? 'trade-completeness' : null,
+              codeUpgrades ? 'code-upgrade' : null,
+              pricingAnalysis ? 'pricing-validation' : null,
+              laborAnalysis ? 'labor-validation' : null
+            ].filter(Boolean)
+          }
+        };
+        
+      } catch (error) {
+        console.error('Comprehensive analysis failed:', error);
+        // Continue without comprehensive analysis
+      }
     }
 
     // Extract structured data from engine results
@@ -175,6 +288,11 @@ exports.handler = async (event) => {
       mitigationDate,
       notes
     });
+    
+    // Add comprehensive analysis to structured data if available
+    if (comprehensiveAnalysis) {
+      structuredData.comprehensiveAnalysis = comprehensiveAnalysis;
+    }
 
     const endTime = Date.now();
     const durationMs = endTime - startTime;

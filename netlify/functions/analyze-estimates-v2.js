@@ -19,6 +19,9 @@ const { validatePricing } = require('./lib/pricing-validation-engine');
 const { detectDepreciationAbuse } = require('./lib/depreciation-abuse-detector');
 const { detectCarrierTactics } = require('./lib/carrier-tactic-detector');
 const { validateEstimateStructure, generateInputQualityReport } = require('./lib/input-validator');
+const { analyzeLossExpectation } = require('./lib/loss-expectation-engine');
+const { analyzeTradeCompleteness } = require('./lib/trade-completeness-engine');
+const { validateLaborRates } = require('./lib/labor-rate-validator');
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -477,14 +480,76 @@ exports.handler = async (event) => {
     console.log(`[Estimate Engine] Tactic recovery potential: $${carrierTactics.summary.total_recovery_potential.toFixed(2)}`);
 
     // =====================================================
-    // PHASE 6H: INPUT QUALITY REPORT
+    // PHASE 6H: LOSS EXPECTATION ANALYSIS
+    // =====================================================
+    console.log('[Estimate Engine] Phase 6H: Analyzing loss type and expected trades...');
+    
+    let lossExpectation = { success: false, error: 'Not executed' };
+    try {
+      lossExpectation = analyzeLossExpectation({
+        lineItems: contractorParsed.lineItems,
+        claimMetadata: {
+          claim_number: claim.claim_number,
+          loss_date: claim.loss_date,
+          property_type: claim.property_type
+        }
+      });
+      
+      console.log(`[Estimate Engine] Loss Type: ${lossExpectation.lossType} (${lossExpectation.severity})`);
+      console.log(`[Estimate Engine] Missing Trades: ${lossExpectation.missingTrades.length}`);
+      console.log(`[Estimate Engine] Unexpected Trades: ${lossExpectation.unexpectedTrades.length}`);
+    } catch (lossError) {
+      console.error('[Estimate Engine] Loss expectation analysis failed:', lossError);
+      lossExpectation = { success: false, error: lossError.message };
+    }
+
+    // =====================================================
+    // PHASE 6I: TRADE COMPLETENESS SCORING
+    // =====================================================
+    console.log('[Estimate Engine] Phase 6I: Scoring trade completeness...');
+    
+    let tradeCompleteness = { success: false, error: 'Not executed' };
+    try {
+      tradeCompleteness = analyzeTradeCompleteness({
+        lineItems: contractorParsed.lineItems
+      });
+      
+      console.log(`[Estimate Engine] Trade Integrity Score: ${tradeCompleteness.integrityScore}/100 (${tradeCompleteness.classification})`);
+      console.log(`[Estimate Engine] Incomplete Trades: ${tradeCompleteness.incompleteTrades.length}`);
+    } catch (tradeError) {
+      console.error('[Estimate Engine] Trade completeness analysis failed:', tradeError);
+      tradeCompleteness = { success: false, error: tradeError.message };
+    }
+
+    // =====================================================
+    // PHASE 6J: LABOR RATE VALIDATION
+    // =====================================================
+    console.log('[Estimate Engine] Phase 6J: Validating labor rates...');
+    
+    let laborAnalysis = { success: false, error: 'Not executed' };
+    try {
+      laborAnalysis = await validateLaborRates({
+        lineItems: contractorParsed.lineItems,
+        region: claimState || 'national'
+      });
+      
+      console.log(`[Estimate Engine] Labor Score: ${laborAnalysis.laborScore}/100`);
+      console.log(`[Estimate Engine] Undervalued Labor Items: ${laborAnalysis.undervaluedItems.length}`);
+      console.log(`[Estimate Engine] Labor Recovery Potential: $${laborAnalysis.totalRecoveryPotential.toFixed(2)}`);
+    } catch (laborError) {
+      console.error('[Estimate Engine] Labor rate validation failed:', laborError);
+      laborAnalysis = { success: false, error: laborError.message };
+    }
+
+    // =====================================================
+    // PHASE 6K: INPUT QUALITY REPORT
     // =====================================================
     const inputQualityReport = generateInputQualityReport(contractorValidation, carrierValidation);
 
     // =====================================================
-    // PHASE 6I: CALCULATE TOTAL PROJECTED RECOVERY (WITH ALL LAYERS)
+    // PHASE 6L: CALCULATE TOTAL PROJECTED RECOVERY (WITH ALL LAYERS)
     // =====================================================
-    console.log('[Estimate Engine] Phase 6I: Calculating total with all enforcement layers...');
+    console.log('[Estimate Engine] Phase 6L: Calculating total with all enforcement layers...');
     
     const totalProjectedRecoveryWithEnforcement = 
       exposureSummary.totalProjectedRecovery +
@@ -492,7 +557,8 @@ exports.handler = async (event) => {
       coverageCrosswalk.coverageExposureAdjustments +
       (pricingValidation.report.overall_assessment.total_pricing_risk || 0) +
       (depreciationAnalysis.deterministic.summary.total_recovery_potential || 0) +
-      (carrierTactics.summary.total_recovery_potential || 0);
+      (carrierTactics.summary.total_recovery_potential || 0) +
+      (laborAnalysis.success ? laborAnalysis.totalRecoveryPotential : 0);
     
     console.log(`[Estimate Engine] FINAL Total Projected Recovery: $${totalProjectedRecoveryWithEnforcement}`);
     console.log(`[Estimate Engine]   - Base Exposure: $${exposureSummary.totalProjectedRecovery}`);
@@ -501,6 +567,7 @@ exports.handler = async (event) => {
     console.log(`[Estimate Engine]   - Pricing Issues: $${pricingValidation.report.overall_assessment.total_pricing_risk || 0}`);
     console.log(`[Estimate Engine]   - Depreciation Abuse: $${depreciationAnalysis.deterministic.summary.total_recovery_potential || 0}`);
     console.log(`[Estimate Engine]   - Carrier Tactics: $${carrierTactics.summary.total_recovery_potential || 0}`);
+    console.log(`[Estimate Engine]   - Labor Rate Issues: $${laborAnalysis.success ? laborAnalysis.totalRecoveryPotential : 0}`);
 
     // =====================================================
     // PHASE 7: STORE DISCREPANCIES
@@ -621,6 +688,7 @@ exports.handler = async (event) => {
         pricing_risk_exposure: pricingValidation.report.overall_assessment.total_pricing_risk || 0,
         depreciation_abuse_exposure: depreciationAnalysis.deterministic.summary.total_recovery_potential || 0,
         carrier_tactic_exposure: carrierTactics.summary.total_recovery_potential || 0,
+        labor_rate_exposure: laborAnalysis.success ? laborAnalysis.totalRecoveryPotential : 0,
         code_upgrade_flags: codeUpgrades.codeUpgradeFlags,
         code_upgrade_flag_count: codeUpgrades.flagCount,
         coverage_conflicts: coverageCrosswalk.coverageConflicts,
@@ -697,7 +765,10 @@ exports.handler = async (event) => {
         carrierPatterns: carrierPatterns,
         pricingValidation: pricingValidation,
         depreciationAbuse: depreciationAnalysis,
-        carrierTactics: carrierTactics
+        carrierTactics: carrierTactics,
+        lossExpectation: lossExpectation,
+        tradeCompleteness: tradeCompleteness,
+        laborAnalysis: laborAnalysis
       },
       
       // INPUT QUALITY
@@ -741,7 +812,7 @@ exports.handler = async (event) => {
       
       // METADATA
       processing_time_ms: Date.now() - startTime,
-      engine_version: '3.0',  // Updated version with Advanced Detection Engines
+      engine_version: '3.1',  // Updated version with Loss Intelligence + Trade Completeness + Labor Validation
       method: 'deterministic_with_advanced_detection',
       analysis_layers: [
         'parsing',
@@ -754,6 +825,9 @@ exports.handler = async (event) => {
         'pricing_validation',
         'depreciation_abuse_detection',
         'carrier_tactic_recognition',
+        'loss_expectation_analysis',
+        'trade_completeness_scoring',
+        'labor_rate_validation',
         'input_quality_validation'
       ]
     });
