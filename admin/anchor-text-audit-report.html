@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anchor Text Audit Report - Claim Command Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c5282;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .meta {
+            color: #666;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .summary {
+            background: #edf2f7;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+        }
+        
+        .summary h2 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .stat {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #4299e1;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 24px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .anchor-item {
+            background: #f7fafc;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #e53e3e;
+        }
+        
+        .anchor-item.warning {
+            border-left-color: #ed8936;
+        }
+        
+        .anchor-item.info {
+            border-left-color: #4299e1;
+        }
+        
+        .anchor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .anchor-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .anchor-count {
+            background: #e53e3e;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .anchor-count.warning {
+            background: #ed8936;
+        }
+        
+        .anchor-count.info {
+            background: #4299e1;
+        }
+        
+        .file-list {
+            margin-top: 10px;
+        }
+        
+        .file-list-header {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .file-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .file-list li {
+            padding: 6px 0;
+            color: #718096;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .show-more {
+            color: #4299e1;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 5px;
+            display: inline-block;
+        }
+        
+        .show-more:hover {
+            text-decoration: underline;
+        }
+        
+        .recommendations {
+            background: #fffaf0;
+            border: 2px solid #ed8936;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 30px;
+        }
+        
+        .recommendations h3 {
+            color: #c05621;
+            margin-bottom: 15px;
+        }
+        
+        .recommendations ul {
+            padding-left: 20px;
+        }
+        
+        .recommendations li {
+            margin-bottom: 8px;
+            color: #744210;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        th {
+            background: #edf2f7;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .priority-high {
+            color: #e53e3e;
+            font-weight: bold;
+        }
+        
+        .priority-medium {
+            color: #ed8936;
+            font-weight: bold;
+        }
+        
+        .priority-low {
+            color: #4299e1;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Anchor Text Audit Report</h1>
+        <div class="meta">
+            <strong>Site:</strong> Claim Command Pro<br>
+            <strong>Generated:</strong> D:\Axis\Axis Projects - Projects\Projects - Stage 1\claim command pro<br>
+            <strong>Scope:</strong> /seo/, /cities/, /complaints/, /case-studies/, /guides/, /research/, /tools/, /about/, /downloads/
+        </div>
+
+        <div class="summary">
+            <h2>Executive Summary</h2>
+            <div class="summary-stats">
+                <div class="stat">
+                    <div class="stat-label">Total Unique Anchors</div>
+                    <div class="stat-value">581</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Total Anchor Instances</div>
+                    <div class="stat-value">5,129</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Overused (>25 times)</div>
+                    <div class="stat-value">31</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Critical (>50 times)</div>
+                    <div class="stat-value">26</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚠️ Overused Anchor Text (>25 Occurrences)</h2>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"home"</span>
+                    <span class="anchor-count ">426 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 230 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\index.html</li>
+                        <li>seo\_template.html</li>
+                        <li>seo\how-to-increase-insurance-settlement.html</li>
+                        <li>seo\how-to-maximize-insurance-payout.html</li>
+                        <li>seo\insurance-claim-supplement-help.html</li>
+                        <li>seo\texas-insurance-claim-help.html</li>
+                        <li>seo\state-farm-claim-help.html</li>
+                        <li>seo\get-more-money-from-insurance-claim.html</li>
+                        <li>seo\how-to-write-insurance-supplement.html</li>
+                        <li>seo\florida-insurance-claim-help.html</li>
+                        <li class='show-more'>... and 220 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"pricing"</span>
+                    <span class="anchor-count ">357 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 276 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\insurance-claim-help.html</li>
+                        <li>seo\insurance-claim-assistance.html</li>
+                        <li>seo\help-with-insurance-claim.html</li>
+                        <li>seo\insurance-claim-support.html</li>
+                        <li>seo\insurance-claim-guidance.html</li>
+                        <li>seo\insurance-claim-denied.html</li>
+                        <li>seo\insurance-claim-denial-help.html</li>
+                        <li>seo\lowball-insurance-offer.html</li>
+                        <li>seo\insurance-settlement-too-low.html</li>
+                        <li>seo\insurance-claim-delay.html</li>
+                        <li class='show-more'>... and 266 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"claim command pro"</span>
+                    <span class="anchor-count ">279 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 279 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\insurance-claim-help.html</li>
+                        <li>seo\insurance-claim-assistance.html</li>
+                        <li>seo\help-with-insurance-claim.html</li>
+                        <li>seo\insurance-claim-support.html</li>
+                        <li>seo\insurance-claim-guidance.html</li>
+                        <li>seo\insurance-claim-denied.html</li>
+                        <li>seo\insurance-claim-denial-help.html</li>
+                        <li>seo\lowball-insurance-offer.html</li>
+                        <li>seo\insurance-settlement-too-low.html</li>
+                        <li>seo\insurance-claim-delay.html</li>
+                        <li class='show-more'>... and 269 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"resources"</span>
+                    <span class="anchor-count ">245 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 167 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\_template.html</li>
+                        <li>seo\how-to-increase-insurance-settlement.html</li>
+                        <li>seo\how-to-maximize-insurance-payout.html</li>
+                        <li>seo\insurance-claim-supplement-help.html</li>
+                        <li>seo\texas-insurance-claim-help.html</li>
+                        <li>seo\state-farm-claim-help.html</li>
+                        <li>seo\get-more-money-from-insurance-claim.html</li>
+                        <li>seo\how-to-write-insurance-supplement.html</li>
+                        <li>seo\florida-insurance-claim-help.html</li>
+                        <li>seo\insurance-settlement-calculator.html</li>
+                        <li class='show-more'>... and 157 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"start review"</span>
+                    <span class="anchor-count ">196 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 196 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\_template.html</li>
+                        <li>seo\how-to-increase-insurance-settlement.html</li>
+                        <li>seo\how-to-maximize-insurance-payout.html</li>
+                        <li>seo\insurance-claim-supplement-help.html</li>
+                        <li>seo\texas-insurance-claim-help.html</li>
+                        <li>seo\state-farm-claim-help.html</li>
+                        <li>seo\get-more-money-from-insurance-claim.html</li>
+                        <li>seo\how-to-write-insurance-supplement.html</li>
+                        <li>seo\florida-insurance-claim-help.html</li>
+                        <li>seo\insurance-settlement-calculator.html</li>
+                        <li class='show-more'>... and 186 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"start your claim review"</span>
+                    <span class="anchor-count ">183 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 180 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\how-to-increase-insurance-settlement.html</li>
+                        <li>seo\how-to-maximize-insurance-payout.html</li>
+                        <li>seo\insurance-claim-supplement-help.html</li>
+                        <li>seo\texas-insurance-claim-help.html</li>
+                        <li>seo\state-farm-claim-help.html</li>
+                        <li>seo\get-more-money-from-insurance-claim.html</li>
+                        <li>seo\how-to-write-insurance-supplement.html</li>
+                        <li>seo\florida-insurance-claim-help.html</li>
+                        <li>seo\insurance-settlement-calculator.html</li>
+                        <li>seo\allstate-claim-help.html</li>
+                        <li class='show-more'>... and 170 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"terms of service"</span>
+                    <span class="anchor-count ">176 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 176 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\_template.html</li>
+                        <li>seo\how-to-increase-insurance-settlement.html</li>
+                        <li>seo\how-to-maximize-insurance-payout.html</li>
+                        <li>seo\insurance-claim-supplement-help.html</li>
+                        <li>seo\texas-insurance-claim-help.html</li>
+                        <li>seo\state-farm-claim-help.html</li>
+                        <li>seo\get-more-money-from-insurance-claim.html</li>
+                        <li>seo\how-to-write-insurance-supplement.html</li>
+                        <li>seo\florida-insurance-claim-help.html</li>
+                        <li>seo\insurance-settlement-calculator.html</li>
+                        <li class='show-more'>... and 166 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"privacy policy"</span>
+                    <span class="anchor-count ">176 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 176 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\_template.html</li>
+                        <li>seo\how-to-increase-insurance-settlement.html</li>
+                        <li>seo\how-to-maximize-insurance-payout.html</li>
+                        <li>seo\insurance-claim-supplement-help.html</li>
+                        <li>seo\texas-insurance-claim-help.html</li>
+                        <li>seo\state-farm-claim-help.html</li>
+                        <li>seo\get-more-money-from-insurance-claim.html</li>
+                        <li>seo\how-to-write-insurance-supplement.html</li>
+                        <li>seo\florida-insurance-claim-help.html</li>
+                        <li>seo\insurance-settlement-calculator.html</li>
+                        <li class='show-more'>... and 166 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"legal disclaimer"</span>
+                    <span class="anchor-count ">176 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 176 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\_template.html</li>
+                        <li>seo\how-to-increase-insurance-settlement.html</li>
+                        <li>seo\how-to-maximize-insurance-payout.html</li>
+                        <li>seo\insurance-claim-supplement-help.html</li>
+                        <li>seo\texas-insurance-claim-help.html</li>
+                        <li>seo\state-farm-claim-help.html</li>
+                        <li>seo\get-more-money-from-insurance-claim.html</li>
+                        <li>seo\how-to-write-insurance-supplement.html</li>
+                        <li>seo\florida-insurance-claim-help.html</li>
+                        <li>seo\insurance-settlement-calculator.html</li>
+                        <li class='show-more'>... and 166 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"michael chen"</span>
+                    <span class="anchor-count ">128 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 128 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\insurance-claim-help.html</li>
+                        <li>seo\insurance-claim-denied.html</li>
+                        <li>seo\lowball-insurance-offer.html</li>
+                        <li>seo\insurance-settlement-too-low.html</li>
+                        <li>seo\property-insurance-claim-help.html</li>
+                        <li>seo\fire-insurance-claim.html</li>
+                        <li>seo\water-damage-insurance-claim.html</li>
+                        <li>seo\roof-insurance-claim.html</li>
+                        <li>seo\storm-damage-insurance-claim.html</li>
+                        <li>seo\insurance-estimate-review.html</li>
+                        <li class='show-more'>... and 118 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"complaint guides"</span>
+                    <span class="anchor-count ">100 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 50 file(s) - Top 10:</div>
+                    <ul>
+                        <li>complaints\texas-insurance-complaint-guide.html</li>
+                        <li>complaints\florida-insurance-complaint-guide.html</li>
+                        <li>complaints\california-insurance-complaint-guide.html</li>
+                        <li>complaints\georgia-insurance-complaint-guide.html</li>
+                        <li>complaints\illinois-insurance-complaint-guide.html</li>
+                        <li>complaints\north-carolina-insurance-complaint-guide.html</li>
+                        <li>complaints\colorado-insurance-complaint-guide.html</li>
+                        <li>complaints\louisiana-insurance-complaint-guide.html</li>
+                        <li>complaints\arizona-insurance-complaint-guide.html</li>
+                        <li>complaints\washington-insurance-complaint-guide.html</li>
+                        <li class='show-more'>... and 40 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"terms"</span>
+                    <span class="anchor-count ">90 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 90 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\insurance-claim-help.html</li>
+                        <li>seo\insurance-claim-assistance.html</li>
+                        <li>seo\help-with-insurance-claim.html</li>
+                        <li>seo\insurance-claim-support.html</li>
+                        <li>seo\insurance-claim-guidance.html</li>
+                        <li>seo\insurance-claim-denied.html</li>
+                        <li>seo\insurance-claim-denial-help.html</li>
+                        <li>seo\lowball-insurance-offer.html</li>
+                        <li>seo\insurance-settlement-too-low.html</li>
+                        <li>seo\insurance-claim-delay.html</li>
+                        <li class='show-more'>... and 80 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"privacy"</span>
+                    <span class="anchor-count ">90 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 90 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\insurance-claim-help.html</li>
+                        <li>seo\insurance-claim-assistance.html</li>
+                        <li>seo\help-with-insurance-claim.html</li>
+                        <li>seo\insurance-claim-support.html</li>
+                        <li>seo\insurance-claim-guidance.html</li>
+                        <li>seo\insurance-claim-denied.html</li>
+                        <li>seo\insurance-claim-denial-help.html</li>
+                        <li>seo\lowball-insurance-offer.html</li>
+                        <li>seo\insurance-settlement-too-low.html</li>
+                        <li>seo\insurance-claim-delay.html</li>
+                        <li class='show-more'>... and 80 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"disclaimer"</span>
+                    <span class="anchor-count ">90 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 90 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\insurance-claim-help.html</li>
+                        <li>seo\insurance-claim-assistance.html</li>
+                        <li>seo\help-with-insurance-claim.html</li>
+                        <li>seo\insurance-claim-support.html</li>
+                        <li>seo\insurance-claim-guidance.html</li>
+                        <li>seo\insurance-claim-denied.html</li>
+                        <li>seo\insurance-claim-denial-help.html</li>
+                        <li>seo\lowball-insurance-offer.html</li>
+                        <li>seo\insurance-settlement-too-low.html</li>
+                        <li>seo\insurance-claim-delay.html</li>
+                        <li class='show-more'>... and 80 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"property damage documentation blueprint"</span>
+                    <span class="anchor-count ">83 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 82 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\insurance-claim-denied.html</li>
+                        <li>seo\property-insurance-claim-help.html</li>
+                        <li>seo\fire-insurance-claim.html</li>
+                        <li>seo\water-damage-insurance-claim.html</li>
+                        <li>seo\storm-damage-insurance-claim.html</li>
+                        <li>seo\how-to-increase-insurance-settlement.html</li>
+                        <li>seo\how-to-maximize-insurance-payout.html</li>
+                        <li>seo\insurance-claim-supplement-help.html</li>
+                        <li>seo\get-more-money-from-insurance-claim.html</li>
+                        <li>seo\insurance-scope-missing-items.html</li>
+                        <li class='show-more'>... and 72 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"complete insurance claim negotiation guide"</span>
+                    <span class="anchor-count ">80 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 76 file(s) - Top 10:</div>
+                    <ul>
+                        <li>cities\new-york-insurance-claim-help.html</li>
+                        <li>cities\portland-insurance-claim-help.html</li>
+                        <li>cities\houston-insurance-claim-help.html</li>
+                        <li>cities\philadelphia-insurance-claim-help.html</li>
+                        <li>cities\milwaukee-insurance-claim-help.html</li>
+                        <li>cities\dallas-insurance-claim-help.html</li>
+                        <li>cities\honolulu-insurance-claim-help.html</li>
+                        <li>cities\jacksonville-insurance-claim-help.html</li>
+                        <li>cities\fort-worth-insurance-claim-help.html</li>
+                        <li>cities\henderson-insurance-claim-help.html</li>
+                        <li class='show-more'>... and 66 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"storm damage insurance claim"</span>
+                    <span class="anchor-count ">78 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 70 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\index.html</li>
+                        <li>seo\florida-insurance-claim-help.html</li>
+                        <li>seo\georgia-insurance-claim-help.html</li>
+                        <li>seo\north-carolina-insurance-claim-help.html</li>
+                        <li>seo\louisiana-insurance-claim-help.html</li>
+                        <li>seo\hurricane-insurance-claim.html</li>
+                        <li>seo\tree-damage-insurance-claim.html</li>
+                        <li>seo\warehouse-insurance-claim.html</li>
+                        <li>cities\wichita-insurance-claim-help.html</li>
+                        <li>cities\los-angeles-insurance-claim-help.html</li>
+                        <li class='show-more'>... and 60 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"get claim command pro →"</span>
+                    <span class="anchor-count ">76 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 76 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\insurance-claim-help.html</li>
+                        <li>seo\insurance-claim-assistance.html</li>
+                        <li>seo\help-with-insurance-claim.html</li>
+                        <li>seo\insurance-claim-support.html</li>
+                        <li>seo\insurance-claim-guidance.html</li>
+                        <li>seo\insurance-claim-denied.html</li>
+                        <li>seo\insurance-claim-denial-help.html</li>
+                        <li>seo\lowball-insurance-offer.html</li>
+                        <li>seo\insurance-settlement-too-low.html</li>
+                        <li>seo\insurance-claim-delay.html</li>
+                        <li class='show-more'>... and 66 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"faq"</span>
+                    <span class="anchor-count ">76 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 76 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\insurance-claim-help.html</li>
+                        <li>seo\insurance-claim-assistance.html</li>
+                        <li>seo\help-with-insurance-claim.html</li>
+                        <li>seo\insurance-claim-support.html</li>
+                        <li>seo\insurance-claim-guidance.html</li>
+                        <li>seo\insurance-claim-denied.html</li>
+                        <li>seo\insurance-claim-denial-help.html</li>
+                        <li>seo\lowball-insurance-offer.html</li>
+                        <li>seo\insurance-settlement-too-low.html</li>
+                        <li>seo\insurance-claim-delay.html</li>
+                        <li class='show-more'>... and 66 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"cities"</span>
+                    <span class="anchor-count ">76 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 51 file(s) - Top 10:</div>
+                    <ul>
+                        <li>cities\chula-vista-insurance-claim-help.html</li>
+                        <li>cities\wichita-insurance-claim-help.html</li>
+                        <li>cities\toledo-insurance-claim-help.html</li>
+                        <li>cities\cleveland-insurance-claim-help.html</li>
+                        <li>cities\fort-wayne-insurance-claim-help.html</li>
+                        <li>cities\st-petersburg-insurance-claim-help.html</li>
+                        <li>cities\tampa-bay-insurance-claim-help.html</li>
+                        <li>cities\laredo-insurance-claim-help.html</li>
+                        <li>cities\bakersfield-insurance-claim-help.html</li>
+                        <li>cities\jersey-city-insurance-claim-help.html</li>
+                        <li class='show-more'>... and 41 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"insurance appraisal strategy guide"</span>
+                    <span class="anchor-count ">75 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 67 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\insurance-appraisal-clause-explained.html</li>
+                        <li>seo\insurance-appraisal-process.html</li>
+                        <li>cities\new-york-insurance-claim-help.html</li>
+                        <li>cities\wichita-insurance-claim-help.html</li>
+                        <li>cities\los-angeles-insurance-claim-help.html</li>
+                        <li>cities\madison-insurance-claim-help.html</li>
+                        <li>cities\lubbock-insurance-claim-help.html</li>
+                        <li>cities\reno-insurance-claim-help.html</li>
+                        <li>cities\buffalo-insurance-claim-help.html</li>
+                        <li>cities\north-las-vegas-insurance-claim-help.html</li>
+                        <li class='show-more'>... and 57 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"claim command pro pricing"</span>
+                    <span class="anchor-count ">75 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 75 file(s) - Top 10:</div>
+                    <ul>
+                        <li>cities\wichita-insurance-claim-help.html</li>
+                        <li>cities\cleveland-insurance-claim-help.html</li>
+                        <li>cities\tampa-bay-insurance-claim-help.html</li>
+                        <li>cities\bakersfield-insurance-claim-help.html</li>
+                        <li>cities\aurora-insurance-claim-help.html</li>
+                        <li>cities\anaheim-insurance-claim-help.html</li>
+                        <li>cities\honolulu-insurance-claim-help.html</li>
+                        <li>cities\santa-ana-insurance-claim-help.html</li>
+                        <li>cities\riverside-insurance-claim-help.html</li>
+                        <li>cities\corpus-christi-insurance-claim-help.html</li>
+                        <li class='show-more'>... and 65 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"water damage insurance claim"</span>
+                    <span class="anchor-count ">71 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 60 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\index.html</li>
+                        <li>seo\washington-insurance-claim-help.html</li>
+                        <li>seo\mold-insurance-claim.html</li>
+                        <li>seo\burst-pipe-insurance-claim.html</li>
+                        <li>seo\slab-leak-insurance-claim.html</li>
+                        <li>cities\new-york-insurance-claim-help.html</li>
+                        <li>cities\chula-vista-insurance-claim-help.html</li>
+                        <li>cities\portland-insurance-claim-help.html</li>
+                        <li>cities\toledo-insurance-claim-help.html</li>
+                        <li>cities\cleveland-insurance-claim-help.html</li>
+                        <li class='show-more'>... and 50 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"how to increase insurance settlement"</span>
+                    <span class="anchor-count ">61 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 60 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\index.html</li>
+                        <li>seo\how-to-maximize-insurance-payout.html</li>
+                        <li>seo\texas-insurance-claim-help.html</li>
+                        <li>seo\state-farm-claim-help.html</li>
+                        <li>seo\florida-insurance-claim-help.html</li>
+                        <li>seo\california-insurance-claim-help.html</li>
+                        <li>seo\georgia-insurance-claim-help.html</li>
+                        <li>seo\insurance-estimate-too-low.html</li>
+                        <li>seo\liberty-mutual-claim-help.html</li>
+                        <li>seo\illinois-insurance-claim-help.html</li>
+                        <li class='show-more'>... and 50 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"insurance bad faith claim"</span>
+                    <span class="anchor-count ">60 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 55 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\index.html</li>
+                        <li>seo\hire-attorney-for-insurance-claim.html</li>
+                        <li>seo\file-complaint-department-of-insurance.html</li>
+                        <li>complaints\index.html</li>
+                        <li>complaints\texas-insurance-complaint-guide.html</li>
+                        <li>complaints\florida-insurance-complaint-guide.html</li>
+                        <li>complaints\california-insurance-complaint-guide.html</li>
+                        <li>complaints\georgia-insurance-complaint-guide.html</li>
+                        <li>complaints\illinois-insurance-complaint-guide.html</li>
+                        <li>complaints\north-carolina-insurance-complaint-guide.html</li>
+                        <li class='show-more'>... and 45 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item ">
+                <div class="anchor-header">
+                    <span class="anchor-text">"get claim command pro"</span>
+                    <span class="anchor-count ">52 uses · CRITICAL</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 52 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\insurance-claim-help.html</li>
+                        <li>seo\insurance-claim-assistance.html</li>
+                        <li>seo\help-with-insurance-claim.html</li>
+                        <li>seo\insurance-claim-support.html</li>
+                        <li>seo\insurance-claim-guidance.html</li>
+                        <li>seo\insurance-claim-denied.html</li>
+                        <li>seo\insurance-claim-denial-help.html</li>
+                        <li>seo\lowball-insurance-offer.html</li>
+                        <li>seo\insurance-settlement-too-low.html</li>
+                        <li>seo\insurance-claim-delay.html</li>
+                        <li class='show-more'>... and 42 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item warning">
+                <div class="anchor-header">
+                    <span class="anchor-text">"roof insurance claim"</span>
+                    <span class="anchor-count warning">40 uses · HIGH</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 36 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\index.html</li>
+                        <li>seo\texas-insurance-claim-help.html</li>
+                        <li>seo\florida-insurance-claim-help.html</li>
+                        <li>seo\illinois-insurance-claim-help.html</li>
+                        <li>seo\north-carolina-insurance-claim-help.html</li>
+                        <li>seo\colorado-insurance-claim-help.html</li>
+                        <li>seo\washington-insurance-claim-help.html</li>
+                        <li>seo\hurricane-insurance-claim.html</li>
+                        <li>seo\commercial-roof-claim-help.html</li>
+                        <li>seo\tree-damage-insurance-claim.html</li>
+                        <li class='show-more'>... and 26 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item warning">
+                <div class="anchor-header">
+                    <span class="anchor-text">"insurance claim supplement help"</span>
+                    <span class="anchor-count warning">40 uses · HIGH</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 38 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\index.html</li>
+                        <li>seo\how-to-write-insurance-supplement.html</li>
+                        <li>seo\insurance-scope-missing-items.html</li>
+                        <li>seo\insurance-code-upgrade-not-included.html</li>
+                        <li>seo\mold-insurance-claim.html</li>
+                        <li>seo\business-income-insurance-claim.html</li>
+                        <li>seo\smoke-damage-insurance-claim.html</li>
+                        <li>complaints\california-insurance-complaint-guide.html</li>
+                        <li>complaints\illinois-insurance-complaint-guide.html</li>
+                        <li>complaints\north-carolina-insurance-complaint-guide.html</li>
+                        <li class='show-more'>... and 28 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item info">
+                <div class="anchor-header">
+                    <span class="anchor-text">"complete negotiation guide"</span>
+                    <span class="anchor-count info">31 uses · MEDIUM</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 31 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\insurance-claim-help.html</li>
+                        <li>seo\lowball-insurance-offer.html</li>
+                        <li>cities\chula-vista-insurance-claim-help.html</li>
+                        <li>cities\portland-insurance-claim-help.html</li>
+                        <li>cities\toledo-insurance-claim-help.html</li>
+                        <li>cities\fort-wayne-insurance-claim-help.html</li>
+                        <li>cities\memphis-insurance-claim-help.html</li>
+                        <li>cities\st-petersburg-insurance-claim-help.html</li>
+                        <li>cities\laredo-insurance-claim-help.html</li>
+                        <li>cities\milwaukee-insurance-claim-help.html</li>
+                        <li class='show-more'>... and 21 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item info">
+                <div class="anchor-header">
+                    <span class="anchor-text">"get started today"</span>
+                    <span class="anchor-count info">31 uses · MEDIUM</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 31 file(s) - Top 10:</div>
+                    <ul>
+                        <li>cities\new-york-insurance-claim-help.html</li>
+                        <li>cities\los-angeles-insurance-claim-help.html</li>
+                        <li>cities\chicago-insurance-claim-help.html</li>
+                        <li>cities\houston-insurance-claim-help.html</li>
+                        <li>cities\phoenix-insurance-claim-help.html</li>
+                        <li>cities\philadelphia-insurance-claim-help.html</li>
+                        <li>cities\san-antonio-insurance-claim-help.html</li>
+                        <li>cities\san-diego-insurance-claim-help.html</li>
+                        <li>cities\dallas-insurance-claim-help.html</li>
+                        <li>cities\san-jose-insurance-claim-help.html</li>
+                        <li class='show-more'>... and 21 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="anchor-item info">
+                <div class="anchor-header">
+                    <span class="anchor-text">"hail damage insurance claim"</span>
+                    <span class="anchor-count info">28 uses · MEDIUM</span>
+                </div>
+                <div class="file-list">
+                    <div class="file-list-header">Found in 28 file(s) - Top 10:</div>
+                    <ul>
+                        <li>seo\index.html</li>
+                        <li>seo\texas-insurance-claim-help.html</li>
+                        <li>seo\georgia-insurance-claim-help.html</li>
+                        <li>seo\illinois-insurance-claim-help.html</li>
+                        <li>seo\travelers-claim-help.html</li>
+                        <li>seo\colorado-insurance-claim-help.html</li>
+                        <li>seo\arizona-insurance-claim-help.html</li>
+                        <li>seo\roof-insurance-claim-help-near-me.html</li>
+                        <li>cities\wichita-insurance-claim-help.html</li>
+                        <li>cities\los-angeles-insurance-claim-help.html</li>
+                        <li class='show-more'>... and 18 more files</li>
+
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="recommendations">
+            <h3>📋 Recommended Actions</h3>
+            <ul>
+                <li><strong>CRITICAL Priority (>50 uses):</strong> Rewrite 40% of instances into semantic variants immediately</li>
+                <li><strong>HIGH Priority (36-50 uses):</strong> Rewrite 30% of instances into semantic variants</li>
+                <li><strong>MEDIUM Priority (26-35 uses):</strong> Rewrite 20% of instances into semantic variants</li>
+                <li><strong>Preserve Context:</strong> Ensure all rewrites maintain contextual meaning and natural flow</li>
+                <li><strong>Avoid Over-Optimization:</strong> Do not create unnatural phrasing or keyword stuffing</li>
+                <li><strong>Maintain Link Integrity:</strong> Only change anchor text, not link destinations</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>💡 Suggested Semantic Variants</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Original Anchor</th>
+                        <th>Suggested Variants</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>insurance claim help</td>
+                        <td>claim assistance, claim guidance, claim support, help with your claim, professional claim help</td>
+                    </tr>
+                    <tr>
+                        <td>increase insurance settlement</td>
+                        <td>maximize your settlement, improve settlement outcome, boost claim recovery, enhance settlement value, get more from your claim</td>
+                    </tr>
+                    <tr>
+                        <td>insurance complaint</td>
+                        <td>file a complaint, complaint process, dispute resolution, regulatory complaint, file your dispute</td>
+                    </tr>
+                    <tr>
+                        <td>insurance claim supplement</td>
+                        <td>supplement your claim, claim supplement process, supplemental claim, additional claim documentation</td>
+                    </tr>
+                    <tr>
+                        <td>insurance appraisal</td>
+                        <td>appraisal process, invoke appraisal, appraisal clause, claim appraisal, independent appraisal</td>
+                    </tr>
+                    <tr>
+                        <td>property damage</td>
+                        <td>property damage claim, damage assessment, property loss, structural damage, damage documentation</td>
+                    </tr>
+                    <tr>
+                        <td>claim documentation</td>
+                        <td>document your claim, claim evidence, documentation process, claim records, supporting documentation</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>

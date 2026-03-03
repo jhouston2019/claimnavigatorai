@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEO Pruning Framework - Claim Command Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f5f5;
+      color: #1a202c;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 32px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 32px;
+    }
+
+    .warning-box {
+      background: #fef3c7;
+      border: 2px solid #fbbf24;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 32px;
+    }
+
+    .warning-box strong {
+      color: #92400e;
+      font-size: 16px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .warning-box p {
+      color: #78350f;
+      font-size: 14px;
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1e3a5f;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .criteria-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .criteria-card {
+      background: #f8f9fa;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 20px;
+    }
+
+    .criteria-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e3a5f;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .criteria-icon {
+      font-size: 20px;
+    }
+
+    .criteria-desc {
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .criteria-example {
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: #64748b;
+      font-style: italic;
+    }
+
+    .checklist {
+      background: #f8f9fa;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 24px;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .checklist-item:last-child {
+      border-bottom: none;
+    }
+
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #d1d5db;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .checklist-text {
+      font-size: 14px;
+      color: #1a202c;
+    }
+
+    .checklist-text strong {
+      color: #1e3a5f;
+    }
+
+    .merge-map {
+      background: #f8f9fa;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 24px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      overflow-x: auto;
+    }
+
+    .merge-arrow {
+      color: #17BEBB;
+      font-weight: bold;
+    }
+
+    .merge-comment {
+      color: #64748b;
+      font-style: italic;
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      padding: 16px;
+      margin-top: 16px;
+      font-size: 14px;
+    }
+
+    .info-box strong {
+      color: #1e40af;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .criteria-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SEO Pruning Framework</h1>
+    <p class="subtitle">Decision support tool for content consolidation and optimization</p>
+
+    <div class="warning-box">
+      <strong>⚠️ Important: Guidance Only</strong>
+      <p>This framework provides decision criteria for content consolidation. DO NOT delete pages without careful analysis. Always implement 301 redirects when merging content. This is internal documentation for strategic planning only.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Merge Criteria</div>
+      <p style="font-size: 14px; color: #4b5563; margin-bottom: 20px;">
+        Pages meeting multiple criteria below may be candidates for consolidation into stronger, more comprehensive content.
+      </p>
+
+      <div class="criteria-grid">
+        <div class="criteria-card">
+          <div class="criteria-title">
+            <span class="criteria-icon">📊</span>
+            Low Traffic Performance
+          </div>
+          <div class="criteria-desc">
+            Pages with less than 20 impressions in the last 90 days and no meaningful click-through activity.
+          </div>
+          <div class="criteria-example">
+            Example: Page has 8 impressions, 0 clicks in 90 days
+          </div>
+        </div>
+
+        <div class="criteria-card">
+          <div class="criteria-title">
+            <span class="criteria-icon">🔍</span>
+            Poor Ranking Position
+          </div>
+          <div class="criteria-desc">
+            Pages ranking beyond position 50 for all tracked keywords with no upward trend over 6 months.
+          </div>
+          <div class="criteria-example">
+            Example: Best ranking is position 67, no movement in 6 months
+          </div>
+        </div>
+
+        <div class="criteria-card">
+          <div class="criteria-title">
+            <span class="criteria-icon">⚔️</span>
+            Keyword Cannibalization
+          </div>
+          <div class="criteria-desc">
+            Multiple pages targeting the same primary keyword, splitting authority and confusing search engines.
+          </div>
+          <div class="criteria-example">
+            Example: 3 pages all targeting "insurance claim help Texas"
+          </div>
+        </div>
+
+        <div class="criteria-card">
+          <div class="criteria-title">
+            <span class="criteria-icon">🔄</span>
+            Overlapping Topic Clusters
+          </div>
+          <div class="criteria-desc">
+            Pages covering nearly identical topics without sufficient differentiation or unique value.
+          </div>
+          <div class="criteria-example">
+            Example: "How to file claim" and "Filing insurance claim" pages
+          </div>
+        </div>
+
+        <div class="criteria-card">
+          <div class="criteria-title">
+            <span class="criteria-icon">📏</span>
+            Thin Content
+          </div>
+          <div class="criteria-desc">
+            Pages with less than 500 words, minimal unique value, or outdated information that could be consolidated.
+          </div>
+          <div class="criteria-example">
+            Example: 300-word page with generic information
+          </div>
+        </div>
+
+        <div class="criteria-card">
+          <div class="criteria-title">
+            <span class="criteria-icon">🔗</span>
+            Weak Backlink Profile
+          </div>
+          <div class="criteria-desc">
+            Pages with zero external backlinks and minimal internal link equity that could benefit from consolidation.
+          </div>
+          <div class="criteria-example">
+            Example: No backlinks, only 2 internal links from footer
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Content Consolidation Checklist</div>
+      
+      <div class="checklist">
+        <div class="checklist-item">
+          <div class="checkbox"></div>
+          <div class="checklist-text">
+            <strong>Identify merge target:</strong> Choose the stronger page with better rankings, more backlinks, or higher authority to serve as the consolidation destination.
+          </div>
+        </div>
+
+        <div class="checklist-item">
+          <div class="checkbox"></div>
+          <div class="checklist-text">
+            <strong>Extract valuable content:</strong> Review the weaker page and identify any unique information, data, examples, or insights worth preserving.
+          </div>
+        </div>
+
+        <div class="checklist-item">
+          <div class="checkbox"></div>
+          <div class="checklist-text">
+            <strong>Merge into stronger URL:</strong> Integrate the valuable content from the weak page into the target page, maintaining logical flow and structure.
+          </div>
+        </div>
+
+        <div class="checklist-item">
+          <div class="checkbox"></div>
+          <div class="checklist-text">
+            <strong>Implement 301 redirect:</strong> Set up a permanent redirect from the old URL to the consolidated page to preserve any existing link equity.
+          </div>
+        </div>
+
+        <div class="checklist-item">
+          <div class="checkbox"></div>
+          <div class="checklist-text">
+            <strong>Update internal links:</strong> Find and update all internal links pointing to the old URL to point directly to the consolidated page.
+          </div>
+        </div>
+
+        <div class="checklist-item">
+          <div class="checkbox"></div>
+          <div class="checklist-text">
+            <strong>Update sitemap:</strong> Remove the old URL from sitemap.xml and ensure the consolidated page is included and properly prioritized.
+          </div>
+        </div>
+
+        <div class="checklist-item">
+          <div class="checkbox"></div>
+          <div class="checklist-text">
+            <strong>Monitor performance:</strong> Track rankings, traffic, and indexing status for 30-60 days after consolidation to ensure no negative impact.
+          </div>
+        </div>
+
+        <div class="checklist-item">
+          <div class="checkbox"></div>
+          <div class="checklist-text">
+            <strong>Request re-indexing:</strong> Submit the consolidated page to Google Search Console for re-crawling and indexing.
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>Best Practice:</strong> Never consolidate more than 3-5 pages per week. Monitor the impact of each consolidation before proceeding with additional merges.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Sample Merge Map Structure</div>
+      <p style="font-size: 14px; color: #4b5563; margin-bottom: 16px;">
+        Use this format to document planned content consolidations:
+      </p>
+
+      <div class="merge-map">
+<span class="merge-comment"># Content Consolidation Map</span>
+<span class="merge-comment"># Format: [Old URL] → [Target URL] | Reason | Date</span>
+
+<span class="merge-comment">## City Pages - Low Traffic Consolidation</span>
+/cities/small-city-1.html <span class="merge-arrow">→</span> /cities/state-overview.html | &lt;20 impressions, position 78 | 2025-03-15
+/cities/small-city-2.html <span class="merge-arrow">→</span> /cities/state-overview.html | &lt;20 impressions, position 92 | 2025-03-15
+
+<span class="merge-comment">## Case Studies - Keyword Cannibalization</span>
+/case-studies/water-damage-1.html <span class="merge-arrow">→</span> /case-studies/water-damage-complete-guide.html | Duplicate topic | 2025-03-20
+/case-studies/water-damage-2.html <span class="merge-arrow">→</span> /case-studies/water-damage-complete-guide.html | Duplicate topic | 2025-03-20
+
+<span class="merge-comment">## Complaint Guides - Thin Content</span>
+/complaints/state-x-short.html <span class="merge-arrow">→</span> /complaints/state-x-comprehensive.html | 280 words, merge into main | 2025-03-25
+
+<span class="merge-comment">## Implementation Notes</span>
+<span class="merge-comment"># 1. Extract unique content from source pages</span>
+<span class="merge-comment"># 2. Enhance target pages with consolidated content</span>
+<span class="merge-comment"># 3. Set up 301 redirects in .htaccess or server config</span>
+<span class="merge-comment"># 4. Update internal links site-wide</span>
+<span class="merge-comment"># 5. Update sitemap.xml</span>
+<span class="merge-comment"># 6. Monitor GSC for 30 days post-consolidation</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Decision Matrix</div>
+      <p style="font-size: 14px; color: #4b5563; margin-bottom: 16px;">
+        Use this matrix to evaluate consolidation decisions:
+      </p>
+
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <thead>
+          <tr style="background: #f8f9fa; border-bottom: 2px solid #e5e7eb;">
+            <th style="padding: 12px; text-align: left; font-weight: 600; color: #1e3a5f;">Criteria</th>
+            <th style="padding: 12px; text-align: center; font-weight: 600; color: #1e3a5f;">Keep Separate</th>
+            <th style="padding: 12px; text-align: center; font-weight: 600; color: #1e3a5f;">Consider Merge</th>
+            <th style="padding: 12px; text-align: center; font-weight: 600; color: #1e3a5f;">Strong Merge Candidate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid #e5e7eb;">
+            <td style="padding: 12px;">90-day impressions</td>
+            <td style="padding: 12px; text-align: center; background: #dcfce7;">100+</td>
+            <td style="padding: 12px; text-align: center; background: #fef3c7;">20-99</td>
+            <td style="padding: 12px; text-align: center; background: #fee2e2;">&lt;20</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e5e7eb;">
+            <td style="padding: 12px;">Best ranking position</td>
+            <td style="padding: 12px; text-align: center; background: #dcfce7;">Top 30</td>
+            <td style="padding: 12px; text-align: center; background: #fef3c7;">31-50</td>
+            <td style="padding: 12px; text-align: center; background: #fee2e2;">50+</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e5e7eb;">
+            <td style="padding: 12px;">Backlinks</td>
+            <td style="padding: 12px; text-align: center; background: #dcfce7;">5+</td>
+            <td style="padding: 12px; text-align: center; background: #fef3c7;">1-4</td>
+            <td style="padding: 12px; text-align: center; background: #fee2e2;">0</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e5e7eb;">
+            <td style="padding: 12px;">Word count</td>
+            <td style="padding: 12px; text-align: center; background: #dcfce7;">1000+</td>
+            <td style="padding: 12px; text-align: center; background: #fef3c7;">500-999</td>
+            <td style="padding: 12px; text-align: center; background: #fee2e2;">&lt;500</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px;">Topic uniqueness</td>
+            <td style="padding: 12px; text-align: center; background: #dcfce7;">Unique</td>
+            <td style="padding: 12px; text-align: center; background: #fef3c7;">Similar</td>
+            <td style="padding: 12px; text-align: center; background: #fee2e2;">Duplicate</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</body>
+</html>

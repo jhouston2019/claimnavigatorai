@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rank Flow Map - Claim Command Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f5f5;
+      color: #1a202c;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 32px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 32px;
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 32px;
+      font-size: 14px;
+    }
+
+    .info-box strong {
+      color: #1e40af;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1e3a5f;
+      margin-bottom: 16px;
+      margin-top: 40px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .flow-diagram {
+      background: #f8f9fa;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 40px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+
+    .flow-container {
+      min-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .flow-level {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .level-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .node-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .node {
+      background: white;
+      border: 2px solid #d1d5db;
+      border-radius: 8px;
+      padding: 16px 24px;
+      text-align: center;
+      position: relative;
+      min-width: 180px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .node-core {
+      background: #dbeafe;
+      border-color: #3b82f6;
+    }
+
+    .node-pillar {
+      background: #e0f2fe;
+      border-color: #0ea5e9;
+    }
+
+    .node-cluster {
+      background: #f0fdf4;
+      border-color: #22c55e;
+    }
+
+    .node-support {
+      background: #fef3c7;
+      border-color: #eab308;
+    }
+
+    .node-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e3a5f;
+      margin-bottom: 4px;
+    }
+
+    .node-desc {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .arrow-down {
+      text-align: center;
+      color: #17BEBB;
+      font-size: 24px;
+      font-weight: bold;
+      margin: -10px 0;
+    }
+
+    .arrow-horizontal {
+      color: #17BEBB;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .legend-box {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      border: 2px solid;
+      flex-shrink: 0;
+    }
+
+    .legend-text {
+      font-size: 13px;
+      color: #1a202c;
+    }
+
+    .strategy-card {
+      background: #f8f9fa;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .strategy-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e3a5f;
+      margin-bottom: 12px;
+    }
+
+    .strategy-desc {
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+
+    .strategy-example {
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .flow-diagram {
+        padding: 20px;
+      }
+
+      .node {
+        min-width: 140px;
+        padding: 12px 16px;
+      }
+
+      .node-title {
+        font-size: 12px;
+      }
+
+      .node-desc {
+        font-size: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Rank Flow Map</h1>
+    <p class="subtitle">Visual documentation of internal authority flow and link architecture</p>
+
+    <div class="info-box">
+      <strong>Internal Documentation:</strong> This map illustrates how authority flows through the site architecture. Use this to guide internal linking strategy and identify opportunities to strengthen topical clusters.
+    </div>
+
+    <div class="section-title">Authority Flow Diagram</div>
+
+    <div class="flow-diagram">
+      <div class="flow-container">
+        
+        <!-- Level 1: Core Authority -->
+        <div class="flow-level">
+          <div class="level-label">Level 1: Core Authority Hub</div>
+          <div class="node-row">
+            <div class="node node-core">
+              <div class="node-title">Homepage</div>
+              <div class="node-desc">Primary authority source</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="arrow-down">↓</div>
+
+        <!-- Level 2: Pillar Pages -->
+        <div class="flow-level">
+          <div class="level-label">Level 2: Pillar Content</div>
+          <div class="node-row">
+            <div class="node node-pillar">
+              <div class="node-title">Knowledge Hub</div>
+              <div class="node-desc">/knowledge-hub/</div>
+            </div>
+            <div class="node node-pillar">
+              <div class="node-title">Insurance Claim Help</div>
+              <div class="node-desc">/seo/insurance-claim-help.html</div>
+            </div>
+            <div class="node node-pillar">
+              <div class="node-title">Claim Denied Guide</div>
+              <div class="node-desc">/seo/insurance-claim-denied.html</div>
+            </div>
+            <div class="node node-pillar">
+              <div class="node-title">DIY Claims Guide</div>
+              <div class="node-desc">/seo/handle-insurance-claim-yourself.html</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="arrow-down">↓</div>
+
+        <!-- Level 3: Topic Clusters -->
+        <div class="flow-level">
+          <div class="level-label">Level 3: Topic Clusters</div>
+          <div class="node-row">
+            <div class="node node-cluster">
+              <div class="node-title">State Complaint Guides</div>
+              <div class="node-desc">/complaints/[state].html</div>
+            </div>
+            <div class="node node-cluster">
+              <div class="node-title">City-Specific Pages</div>
+              <div class="node-desc">/cities/[city].html</div>
+            </div>
+            <div class="node node-cluster">
+              <div class="node-title">Case Studies</div>
+              <div class="node-desc">/case-studies/[type].html</div>
+            </div>
+            <div class="node node-cluster">
+              <div class="node-title">Damage Type Guides</div>
+              <div class="node-desc">/guides/[damage-type].html</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="arrow-down">↓</div>
+
+        <!-- Level 4: Supporting Content -->
+        <div class="flow-level">
+          <div class="level-label">Level 4: Supporting Content</div>
+          <div class="node-row">
+            <div class="node node-support">
+              <div class="node-title">Blog Posts</div>
+              <div class="node-desc">Timely content</div>
+            </div>
+            <div class="node node-support">
+              <div class="node-title">FAQ Pages</div>
+              <div class="node-desc">Long-tail queries</div>
+            </div>
+            <div class="node node-support">
+              <div class="node-title">Tool Documentation</div>
+              <div class="node-desc">Feature pages</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section-title">Link Flow Legend</div>
+    
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-box node-core"></div>
+        <div class="legend-text"><strong>Core Authority:</strong> Homepage, primary hub</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box node-pillar"></div>
+        <div class="legend-text"><strong>Pillar Pages:</strong> High-authority guides</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box node-cluster"></div>
+        <div class="legend-text"><strong>Topic Clusters:</strong> Related content groups</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box node-support"></div>
+        <div class="legend-text"><strong>Supporting Content:</strong> Supplementary pages</div>
+      </div>
+    </div>
+
+    <div class="section-title">Link Flow Strategies</div>
+
+    <div class="strategy-card">
+      <div class="strategy-title">1. Case Study → Pillar Page Flow</div>
+      <div class="strategy-desc">
+        Every case study should link back to its relevant pillar page (e.g., water damage case study links to main insurance claim help guide). This passes authority upward and reinforces topical relevance.
+      </div>
+      <div class="strategy-example">
+        <strong>Example:</strong> /case-studies/water-damage-recovery.html → /seo/insurance-claim-help.html<br>
+        <strong>Anchor text:</strong> "Learn more about proving water damage claims"
+      </div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="strategy-title">2. City Page → State Complaint Guide Flow</div>
+      <div class="strategy-desc">
+        City-specific pages should link to their state's complaint guide, creating a natural escalation path for users and consolidating authority at the state level.
+      </div>
+      <div class="strategy-example">
+        <strong>Example:</strong> /cities/houston-insurance-claim-help.html → /complaints/texas-insurance-complaint-guide.html<br>
+        <strong>Anchor text:</strong> "File a complaint with the Texas Department of Insurance"
+      </div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="strategy-title">3. Complaint Guide → Knowledge Hub Flow</div>
+      <div class="strategy-desc">
+        State complaint guides should link to the central knowledge hub for comprehensive claim guidance, creating an upward authority funnel.
+      </div>
+      <div class="strategy-example">
+        <strong>Example:</strong> /complaints/florida-insurance-complaint-guide.html → /knowledge-hub/<br>
+        <strong>Anchor text:</strong> "Access our complete claim documentation toolkit"
+      </div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="strategy-title">4. Pillar Page → Related Clusters</div>
+      <div class="strategy-desc">
+        Pillar pages should link to 3-5 highly relevant cluster pages, distributing authority to supporting content while maintaining topical cohesion.
+      </div>
+      <div class="strategy-example">
+        <strong>Example:</strong> /seo/insurance-claim-denied.html → /case-studies/denial-overturned-hail-damage.html<br>
+        <strong>Anchor text:</strong> "See how this denial was overturned"
+      </div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="strategy-title">5. Homepage → Pillar Distribution</div>
+      <div class="strategy-desc">
+        Homepage should link to all major pillar pages in prominent positions (navigation, hero section, or featured content areas) to distribute maximum authority.
+      </div>
+      <div class="strategy-example">
+        <strong>Example:</strong> index.html → /seo/insurance-claim-help.html, /knowledge-hub/, /seo/insurance-claim-denied.html<br>
+        <strong>Placement:</strong> Main navigation + hero CTA + featured content section
+      </div>
+    </div>
+
+    <div class="section-title">Internal Linking Best Practices</div>
+
+    <div style="background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 6px; padding: 24px; margin-top: 16px;">
+      <ul style="list-style-position: inside; color: #1a202c; font-size: 14px; line-height: 2;">
+        <li><strong>Contextual links:</strong> Place links within body content, not just navigation or footer</li>
+        <li><strong>Descriptive anchors:</strong> Use keyword-rich, descriptive anchor text that indicates destination content</li>
+        <li><strong>Link depth:</strong> Aim for every page to be reachable within 3 clicks from homepage</li>
+        <li><strong>Bidirectional linking:</strong> Create two-way links between related content when appropriate</li>
+        <li><strong>Authority flow:</strong> Link from low-authority pages to high-authority pages to consolidate ranking power</li>
+        <li><strong>Avoid over-optimization:</strong> Vary anchor text and link naturally; avoid keyword stuffing</li>
+        <li><strong>Update regularly:</strong> Add links to new content from existing high-authority pages</li>
+        <li><strong>Monitor orphan pages:</strong> Ensure no pages lack internal links (check via crawl tools)</li>
+      </ul>
+    </div>
+
+    <div class="section-title">Authority Consolidation Priorities</div>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 14px;">
+      <thead>
+        <tr style="background: #f8f9fa; border-bottom: 2px solid #e5e7eb;">
+          <th style="padding: 12px; text-align: left; font-weight: 600; color: #1e3a5f;">Priority</th>
+          <th style="padding: 12px; text-align: left; font-weight: 600; color: #1e3a5f;">Action</th>
+          <th style="padding: 12px; text-align: left; font-weight: 600; color: #1e3a5f;">Expected Impact</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid #e5e7eb;">
+          <td style="padding: 12px;"><strong style="color: #dc2626;">High</strong></td>
+          <td style="padding: 12px;">Add contextual links from all case studies to relevant pillar pages</td>
+          <td style="padding: 12px;">Strengthen pillar page rankings within 30-60 days</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #e5e7eb;">
+          <td style="padding: 12px;"><strong style="color: #dc2626;">High</strong></td>
+          <td style="padding: 12px;">Link all city pages to their respective state complaint guides</td>
+          <td style="padding: 12px;">Consolidate state-level authority, improve complaint guide rankings</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #e5e7eb;">
+          <td style="padding: 12px;"><strong style="color: #ea580c;">Medium</strong></td>
+          <td style="padding: 12px;">Add knowledge hub links from all state complaint guides</td>
+          <td style="padding: 12px;">Increase knowledge hub authority and conversions</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #e5e7eb;">
+          <td style="padding: 12px;"><strong style="color: #ea580c;">Medium</strong></td>
+          <td style="padding: 12px;">Create bidirectional links between related pillar pages</td>
+          <td style="padding: 12px;">Improve topical relevance signals and user navigation</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px;"><strong style="color: #65a30d;">Low</strong></td>
+          <td style="padding: 12px;">Add supporting content links from blog posts to clusters</td>
+          <td style="padding: 12px;">Gradual improvement in cluster page authority</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</body>
+</html>

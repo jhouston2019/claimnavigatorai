@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prospect Generator - Claim Command Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f5f5;
+      color: #1a202c;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 32px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 32px;
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1e3a5f;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .input-group {
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a202c;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #17BEBB;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      background: #17BEBB;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: #13a09d;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #1e3a5f;
+      border: 1px solid #d1d5db;
+    }
+
+    .btn-secondary:hover {
+      background: #f3f4f6;
+    }
+
+    .output-box {
+      background: #f8f9fa;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 20px;
+      margin-top: 16px;
+    }
+
+    .query-item {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .query-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .query-text {
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      color: #1a202c;
+      background: #f8f9fa;
+      padding: 8px 12px;
+      border-radius: 4px;
+      word-break: break-all;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .category-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 16px;
+    }
+
+    .category-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e3a5f;
+      margin-bottom: 8px;
+    }
+
+    .category-desc {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .info-box strong {
+      color: #1e40af;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .category-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Prospect Generator</h1>
+    <p class="subtitle">Generate targeted Google search queries to find outreach prospects</p>
+
+    <div class="info-box">
+      <strong>Note:</strong> This tool generates search query variations only. It does not create or fabricate contact data. Use these queries to manually research and identify legitimate outreach opportunities.
+    </div>
+
+    <div class="section">
+      <div class="section-title">Input Keywords</div>
+      
+      <div class="input-group">
+        <label for="primaryKeyword">Primary Keyword</label>
+        <input type="text" id="primaryKeyword" placeholder="e.g., insurance claim help, property damage claims">
+      </div>
+
+      <div class="input-group">
+        <label for="secondaryKeywords">Secondary Keywords (comma-separated)</label>
+        <textarea id="secondaryKeywords" placeholder="e.g., homeowners insurance, claim denied, lowball offer"></textarea>
+      </div>
+
+      <div class="input-group">
+        <label for="location">Location (optional)</label>
+        <input type="text" id="location" placeholder="e.g., Texas, Florida, nationwide">
+      </div>
+
+      <button class="btn" onclick="generateQueries()">Generate Search Queries</button>
+    </div>
+
+    <div class="section" id="outputSection" style="display: none;">
+      <div class="section-title">Generated Search Queries</div>
+      
+      <div class="output-box" id="queriesOutput"></div>
+
+      <button class="btn btn-secondary" onclick="copyAllQueries()" style="margin-top: 16px;">Copy All Queries</button>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Outreach Target Categories</div>
+      
+      <div class="category-grid">
+        <div class="category-card">
+          <div class="category-title">Local News Sites</div>
+          <div class="category-desc">Regional news outlets covering property damage, insurance disputes, and consumer protection stories.</div>
+        </div>
+
+        <div class="category-card">
+          <div class="category-title">Consumer Advocacy Blogs</div>
+          <div class="category-desc">Blogs focused on consumer rights, insurance education, and homeowner protection.</div>
+        </div>
+
+        <div class="category-card">
+          <div class="category-title">Legal & Financial Sites</div>
+          <div class="category-desc">Websites covering legal rights, financial planning, and insurance claim processes.</div>
+        </div>
+
+        <div class="category-card">
+          <div class="category-title">Home Improvement Blogs</div>
+          <div class="category-desc">Sites covering home repairs, disaster recovery, and property maintenance.</div>
+        </div>
+
+        <div class="category-card">
+          <div class="category-title">Industry Publications</div>
+          <div class="category-desc">Trade publications covering insurance, public adjusting, and claims management.</div>
+        </div>
+
+        <div class="category-card">
+          <div class="category-title">Community Forums</div>
+          <div class="category-desc">Online communities discussing insurance claims, homeowner issues, and disaster recovery.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">CSV Export Template</div>
+      <p style="font-size: 14px; color: #64748b; margin-bottom: 16px;">
+        Use the template structure provided in <a href="prospect-template.csv" style="color: #17BEBB; text-decoration: none; font-weight: 600;">prospect-template.csv</a> to organize your research findings.
+      </p>
+      
+      <div class="output-box">
+        <div style="font-family: 'Courier New', monospace; font-size: 13px; color: #1a202c;">
+          Website, Contact Name, Email, Domain Authority, Topic Relevance, Outreach Status, Notes
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function generateQueries() {
+      const primary = document.getElementById('primaryKeyword').value.trim();
+      const secondary = document.getElementById('secondaryKeywords').value.trim();
+      const location = document.getElementById('location').value.trim();
+
+      if (!primary) {
+        alert('Please enter a primary keyword');
+        return;
+      }
+
+      const secondaryList = secondary ? secondary.split(',').map(s => s.trim()).filter(s => s) : [];
+      const queries = [];
+
+      // Basic search queries
+      queries.push({
+        label: 'Basic Search',
+        query: `"${primary}"`
+      });
+
+      // Intitle searches
+      queries.push({
+        label: 'Title Search',
+        query: `intitle:"${primary}"`
+      });
+
+      // Blog post searches
+      queries.push({
+        label: 'Blog Posts',
+        query: `"${primary}" inurl:blog`
+      });
+
+      queries.push({
+        label: 'Article Search',
+        query: `"${primary}" (article OR guide OR tips)`
+      });
+
+      // Resource page searches
+      queries.push({
+        label: 'Resource Pages',
+        query: `"${primary}" (resources OR links OR helpful)`
+      });
+
+      // Statistics and data searches
+      queries.push({
+        label: 'Statistics Pages',
+        query: `"${primary}" (statistics OR data OR research)`
+      });
+
+      // News searches
+      queries.push({
+        label: 'News Articles',
+        query: `"${primary}" site:news OR site:.org`
+      });
+
+      // Secondary keyword combinations
+      if (secondaryList.length > 0) {
+        secondaryList.forEach(sec => {
+          queries.push({
+            label: `Combined: ${sec}`,
+            query: `"${primary}" "${sec}"`
+          });
+        });
+      }
+
+      // Location-based searches
+      if (location) {
+        queries.push({
+          label: `Location: ${location}`,
+          query: `"${primary}" "${location}"`
+        });
+
+        queries.push({
+          label: `Local News: ${location}`,
+          query: `"${primary}" "${location}" (news OR local)`
+        });
+      }
+
+      // Guest post opportunities
+      queries.push({
+        label: 'Guest Post Opportunities',
+        query: `"${primary}" ("write for us" OR "guest post" OR "contribute")`
+      });
+
+      // Broken link opportunities
+      queries.push({
+        label: 'Potential Broken Links',
+        query: `"${primary}" "404" OR "page not found"`
+      });
+
+      displayQueries(queries);
+    }
+
+    function displayQueries(queries) {
+      const output = document.getElementById('queriesOutput');
+      const section = document.getElementById('outputSection');
+      
+      output.innerHTML = '';
+      
+      queries.forEach(q => {
+        const item = document.createElement('div');
+        item.className = 'query-item';
+        item.innerHTML = `
+          <div class="query-label">${q.label}</div>
+          <div class="query-text">${q.query}</div>
+        `;
+        output.appendChild(item);
+      });
+
+      section.style.display = 'block';
+      section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function copyAllQueries() {
+      const queries = document.querySelectorAll('.query-text');
+      const text = Array.from(queries).map(q => q.textContent).join('\n\n');
+      
+      navigator.clipboard.writeText(text).then(() => {
+        alert('All queries copied to clipboard!');
+      }).catch(() => {
+        alert('Failed to copy. Please copy manually.');
+      });
+    }
+  </script>
+</body>
+</html>
