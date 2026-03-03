@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Documentation Checklist Generator — Claim Command Pro</title>
+  <meta name="description" content="Generate a custom claim documentation checklist based on damage type, property type, and claim stage.">
+  <link rel="canonical" href="https://claimcommandpro.com/tools/claim-documentation-checklist-generator.html">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #17BEBB;
+      --primary-hover: #13a09d;
+      --text-dark: #1f2937;
+      --text-muted: #4b5563;
+      --bg-light: #F7F9FC;
+      --border: #e5e7eb;
+      --shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #ffffff;
+      color: var(--text-dark);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .container { max-width: 720px; margin: 0 auto; padding: 0 20px; }
+    header {
+      background: linear-gradient(135deg, #0B2545 0%, #123A63 100%);
+      color: #fff;
+      padding: 2rem 0;
+      text-align: center;
+      border-bottom: 3px solid var(--primary);
+    }
+    header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+    header p { opacity: 0.9; font-size: 1rem; }
+    main { padding: 2.5rem 0 3rem; }
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .card h2 { font-size: 1.2rem; margin-bottom: 1.25rem; color: var(--text-dark); }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    .form-group select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1rem;
+      background: #fff;
+      cursor: pointer;
+    }
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .checklist-output {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .checklist-output h3 { font-size: 1.05rem; margin-bottom: 1rem; color: var(--text-dark); }
+    .checklist-output ul { list-style: none; padding-left: 0; }
+    .checklist-output li {
+      padding: 0.5rem 0;
+      padding-left: 1.75rem;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+    .checklist-output li:last-child { border-bottom: none; }
+    .checklist-output li::before {
+      content: '☐';
+      position: absolute;
+      left: 0;
+      font-size: 1.1rem;
+    }
+    .checklist-meta { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .action-buttons {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+    .btn {
+      padding: 0.6rem 1.25rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #fff !important;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary {
+      background: #fff;
+      color: var(--text-dark);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--bg-light); }
+    .cta-section { text-align: center; margin: 2rem 0; }
+    .disclaimer {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2rem;
+      padding: 1.25rem;
+      background: var(--bg-light);
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+    }
+    .author-box { background: var(--bg-light); border: 1px solid var(--border); border-left: 4px solid var(--primary); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 2rem 0; }
+    .author-box-inner { display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+    .author-box-avatar { flex-shrink: 0; width: 48px; height: 48px; background: linear-gradient(135deg, #0B2545 0%, #123A63 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .author-box-initials { color: #fff; font-weight: 700; font-size: 1rem; letter-spacing: 0.5px; }
+    .author-box-content { flex: 1; min-width: 200px; }
+    .author-box-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-bottom: 0.35rem; }
+    .author-box-name { color: var(--primary); text-decoration: none; font-weight: 600; font-size: 1.05rem; }
+    .author-box-name:hover { text-decoration: underline; }
+    .author-box-sep { color: #9ca3af; font-size: 0.85rem; }
+    .author-box-positioning { color: var(--text-muted); font-size: 0.9rem; }
+    .author-box-specialization { color: var(--text-muted); font-size: 0.9rem; margin: 0.25rem 0 0.5rem; line-height: 1.5; }
+    .author-box-reviewed { color: #9ca3af; font-size: 0.85rem; margin: 0; }
+    .breadcrumb { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .breadcrumb a { color: var(--primary); text-decoration: none; }
+    .content-section {
+      margin-bottom: 2.5rem;
+      max-width: 720px;
+    }
+    .content-section h2 { font-size: 1.35rem; margin: 2rem 0 1rem; color: var(--text-dark); }
+    .content-section h3 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--text-dark); }
+    .content-section p { margin-bottom: 1rem; color: var(--text-muted); }
+    .content-section ul { margin: 1rem 0; padding-left: 1.5rem; color: var(--text-muted); }
+    .content-section li { margin-bottom: 0.5rem; }
+    .content-section strong { color: var(--text-dark); }
+    .faq-item { margin-bottom: 1.25rem; }
+    .faq-item h4 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-dark); }
+    .faq-item p { font-size: 0.95rem; margin-bottom: 0; }
+    .generator-anchor { scroll-margin-top: 1rem; }
+    @media print {
+      header { background: #0B2545; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .form-group, .action-buttons, .cta-section, .disclaimer, .breadcrumb, footer { display: none !important; }
+      .checklist-output { border: none; background: #fff; }
+    }
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.4rem; }
+      .card { padding: 1.25rem; }
+      .action-buttons { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> &gt; <a href="/tools/">Tools</a> &gt; Documentation Checklist Generator
+      </nav>
+      <h1>Claim Documentation Checklist Generator</h1>
+      <p>Custom checklist based on your damage type, property, and claim stage</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="content-section">
+      <p><strong>The Claim Documentation Checklist Generator</strong> builds a custom, actionable checklist for your specific loss—by damage type, property type, and claim stage. Strong documentation is the single most important factor in recovering full value from an insurance claim. Gaps in documentation routinely cost policyholders $5,000–$20,000 or more. This tool ensures you capture what matters so you have evidence when you need it.</p>
+
+      <h2>What This Tool Does and Why It Matters</h2>
+      <p>Every claim type and stage requires different documentation. A fire claim needs cause-of-loss evidence; a water claim needs moisture readings; a wind/hail claim needs storm-date verification. The checklist generator adapts to your situation—select your damage type (fire, water, wind, hail, mold, theft, lightning, vandalism, or other), property type (residential, commercial, condo, rental, mobile home, multi-family), and claim stage (pre-filing, active, denied, or settlement)—and receive a tailored checklist you can print or download.</p>
+      <p>Why it matters: insurers often deny or underpay claims due to "insufficient documentation." Policyholders who document early and thoroughly recover significantly more. This tool turns vague advice into a concrete to-do list.</p>
+
+      <h2>Usage Examples with Realistic Scenarios</h2>
+      <p><strong>Scenario 1: Pre-filing a hail claim.</strong> Select: Hail, Residential, Pre-filing. The checklist includes photographing hail damage, documenting storm date, obtaining contractor inspection, saving weather reports, and reporting promptly. Following these steps before filing strengthens your causation evidence—critical when insurers argue "pre-existing wear."</p>
+      <p><strong>Scenario 2: Active water claim.</strong> Select: Water, Residential, Active. You get items like submit photos and repair estimates, provide moisture/mold assessment, document temporary repairs, inventory damaged contents, and track ALE if displaced. This keeps your claim moving and prevents gaps insurers exploit.</p>
+      <p><strong>Scenario 3: Denied wind claim.</strong> Select: Wind, Residential, Denied. The checklist includes obtain denial letter, verify wear-and-tear vs. storm distinction, gather storm causation evidence, consider roof certification or engineer, prepare appeal with documentation, and check appraisal clause option. A structured approach turns denials into reversals.</p>
+
+      <h2>Realistic Dollar Scenario Walkthrough</h2>
+      <p>Sarah has a water damage claim. She selects <strong>Water, Condo, Active</strong>. The generator adds condo-specific items: HOA policy review, unit vs. common element determination, HOA communication records. She prints the checklist and works through each item.</p>
+      <p>Because she documented the water source (failed pipe in her unit), moisture levels, and mitigation costs, her supplement request was backed by evidence. The carrier had initially offered $12,000. With strong documentation, she negotiated to $19,500—a <strong>$7,500</strong> recovery. The checklist ensured she didn't miss the HOA coordination, which avoided a coverage dispute that could have delayed or reduced her claim.</p>
+
+      <h2>Why Insurance Estimates Are Wrong (Documentation Angle)</h2>
+      <p>Carrier estimates are wrong partly because policyholders don't provide the right documentation:</p>
+      <ul>
+        <li><strong>Scope is built on what's submitted:</strong> If you don't submit contractor estimates with line-item detail, the adjuster builds scope from their inspection only—often minimal.</li>
+        <li><strong>Causation requires evidence:</strong> Denials for "wear and tear" or "gradual damage" succeed when you lack storm reports, moisture logs, or expert opinions. Document cause early.</li>
+        <li><strong>Missing proof of loss:</strong> Many policies require a sworn Proof of Loss. Failing to submit it on time can forfeit coverage. The checklist reminds you of deadlines.</li>
+        <li><strong>Incomplete inventories:</strong> Contents claims are underpaid when itemized inventories and replacement-cost documentation are missing. The checklist prompts you to inventory and document values.</li>
+      </ul>
+      <p>Better documentation directly increases recovery. A $15,000 gap often becomes recoverable when you add photos, contractor line items, and policy citations.</p>
+
+      <h2>When to Escalate</h2>
+      <p>Use the checklist to identify when you've done your part—then escalate if the insurer doesn't respond fairly:</p>
+      <ul>
+        <li><strong>You've completed the checklist but the carrier still lowballs:</strong> Submit a formal supplement with all items documented. Escalate to claims manager.</li>
+        <li><strong>Denial despite strong documentation:</strong> Use the Denied-stage checklist to prepare an appeal. Consider appraisal clause or department of insurance complaint.</li>
+        <li><strong>Settlement stage with scope gaps:</strong> Don't sign a release until scope matches your documented loss. The checklist helps you verify before you release.</li>
+      </ul>
+
+      <h2>The Bottom Line on Documentation</h2>
+      <p>Documentation is the difference between a $12,000 offer and a $19,500 settlement. Insurers pay what they can verify. When you provide photos, contractor line items, moisture logs, and policy citations, you give them a basis to approve higher amounts. The checklist generator ensures you don't skip critical items. Use it early, use it at each stage, and treat it as your claim's backbone. Every unchecked item is potential money left unclaimed.</p>
+
+      <h2>Common Mistakes to Avoid</h2>
+      <ul>
+        <li><strong>Documenting too late.</strong> Photos and evidence are best captured immediately after the loss. Use the pre-filing checklist before or right after reporting.</li>
+        <li><strong>Using a generic checklist.</strong> A fire checklist differs from a hail checklist. Use the generator to get damage-specific items.</li>
+        <li><strong>Ignoring property-type add-ons.</strong> Condos, commercial, and rental properties have unique documentation needs. Select the correct property type.</li>
+        <li><strong>Not printing or saving the checklist.</strong> Print or download so you can check off items and retain for your records.</li>
+      </ul>
+    </article>
+
+    <h2 id="generator" class="content-section generator-anchor" style="font-size:1.25rem; margin-top:2rem;">Generate Your Checklist</h2>
+    <div class="card">
+      <h2>Select Your Claim Details</h2>
+      <div class="form-group">
+        <label for="damageType">Damage Type</label>
+        <select id="damageType">
+          <option value="fire">Fire</option>
+          <option value="water">Water</option>
+          <option value="wind">Wind</option>
+          <option value="hail">Hail</option>
+          <option value="mold">Mold</option>
+          <option value="theft">Theft</option>
+          <option value="lightning">Lightning</option>
+          <option value="vandalism">Vandalism</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="propertyType">Property Type</label>
+        <select id="propertyType">
+          <option value="residential">Residential</option>
+          <option value="commercial">Commercial</option>
+          <option value="condo">Condo</option>
+          <option value="rental">Rental</option>
+          <option value="mobile">Mobile Home</option>
+          <option value="multi">Multi-Family</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="claimStage">Claim Stage</label>
+        <select id="claimStage">
+          <option value="prefiling">Pre-filing</option>
+          <option value="active">Active</option>
+          <option value="denied">Denied</option>
+          <option value="settlement">Settlement</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="results" class="card" style="display:none;">
+      <h2>Your Documentation Checklist</h2>
+      <div class="checklist-output" id="checklistBox">
+        <p class="checklist-meta" id="meta"></p>
+        <ul id="checklistList"></ul>
+      </div>
+      <div class="action-buttons">
+        <button class="btn btn-secondary" onclick="window.print()">Print Checklist</button>
+        <button class="btn btn-secondary" onclick="downloadText()">Download as Text</button>
+        <a href="/pricing" class="btn btn-primary">Get Full Claim Support</a>
+      </div>
+    </div>
+
+    <section class="content-section" style="margin-top:2.5rem;">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <h4>Why does the checklist vary by damage type?</h4>
+        <p>Different damage types require different evidence. Fire claims need cause-of-loss documentation; water claims need moisture readings; wind/hail need timestamped photos. The checklist adapts to your situation.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Can I use this for a denied claim?</h4>
+        <p>Yes. The Denied stage includes appeal-specific items: denial letter analysis, policy trigger identification, rebuttal documentation, and escalation steps.</p>
+      </div>
+      <div class="faq-item">
+        <h4>What does "pre-filing" mean?</h4>
+        <p>Pre-filing is the period before or immediately after you report the claim. Documentation at this stage—photos, mitigation, cause identification—strengthens your case before the adjuster inspects.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Why does property type matter?</h4>
+        <p>Condos require HOA and master policy review; commercial claims need business interruption docs; rentals need tenant/landlord documentation. The generator adds property-specific items to your checklist.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Can I use the checklist for a supplement?</h4>
+        <p>Yes. Select Active claim stage. The checklist includes items like contractor estimates, photos, and documentation to support a supplement request. Use it to ensure your supplement package is complete.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Should I print the checklist?</h4>
+        <p>Yes. Printing or downloading helps you check off items and retain a record. The generator offers Print and Download as Text options for your completed checklist.</p>
+      </div>
+      <div class="faq-item">
+        <h4>What if my damage type isn't listed?</h4>
+        <p>Select "Other." You'll get a general checklist covering photographing damage, identifying cause, mitigating further loss, reporting, and documenting. Adapt items as needed for your specific loss.</p>
+      </div>
+      <div class="faq-item">
+        <h4>How often should I update my checklist?</h4>
+        <p>Re-run the generator when your claim stage changes (e.g., from Active to Denied, or to Settlement). Each stage has different documentation priorities.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Does the checklist guarantee my claim will be paid?</h4>
+        <p>No. Documentation supports your claim; coverage depends on your policy and the loss. The checklist improves your odds of full recovery by ensuring you provide what insurers need to pay.</p>
+      </div>
+    </section>
+
+    <div class="disclaimer">
+      <strong>Disclaimer:</strong> This checklist is for guidance only. Required documentation varies by policy, insurer, and jurisdiction. Claim Command Pro does not guarantee coverage or claim outcomes. Consult your policy and consider professional assistance for complex claims.
+    </div>
+
+    <div class="author-box">
+      <div class="author-box-inner">
+        <div class="author-box-avatar"><span class="author-box-initials">MC</span></div>
+        <div class="author-box-content">
+          <div class="author-box-meta">
+            <a href="/about/founder.html" class="author-box-name">Michael Chen</a>
+            <span class="author-box-sep">•</span>
+            <span class="author-box-positioning">15+ years property claim documentation expertise</span>
+          </div>
+          <p class="author-box-specialization">Specialization: Insurance estimate analysis and supplement strategy</p>
+          <p class="author-box-reviewed">Last reviewed: February 28, 2026</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer style="text-align:center; padding:2rem; background:var(--bg-light); color:var(--text-muted); font-size:0.9rem;">
+    <a href="/" style="color:var(--primary);">Claim Command Pro</a> — Insurance claim guidance tools
+  </footer>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Claim Documentation Checklist Generator",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web Browser",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "description": "Generate a custom claim documentation checklist based on damage type, property type, and claim stage."
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://claimcommandpro.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://claimcommandpro.com/tools/" },
+      { "@type": "ListItem", "position": 3, "name": "Claim Documentation Checklist Generator", "item": "https://claimcommandpro.com/tools/claim-documentation-checklist-generator.html" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to Document Your Insurance Claim",
+    "description": "Generate a custom claim documentation checklist based on damage type, property type, and claim stage.",
+    "step": [
+      { "@type": "HowToStep", "name": "Select your damage type", "text": "Choose the type of damage: fire, water, wind, hail, mold, theft, lightning, vandalism, or other." },
+      { "@type": "HowToStep", "name": "Select your property type", "text": "Choose residential, commercial, condo, rental, mobile home, or multi-family to get property-specific items." },
+      { "@type": "HowToStep", "name": "Select your claim stage", "text": "Choose pre-filing, active, denied, or settlement. The checklist adapts to what you need at each stage." },
+      { "@type": "HowToStep", "name": "Review your custom checklist", "text": "Review the generated checklist. Print or download as text so you can track progress." },
+      { "@type": "HowToStep", "name": "Complete each item", "text": "Work through each checklist item. Strong documentation improves your odds of full recovery." }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Why does the checklist vary by damage type?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Different damage types require different evidence. Fire claims need cause-of-loss documentation; water claims need moisture readings; wind/hail need timestamped photos. The checklist adapts to your situation." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use this for a denied claim?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Denied stage includes appeal-specific items: denial letter analysis, policy trigger identification, rebuttal documentation, and escalation steps." }
+      },
+      {
+        "@type": "Question",
+        "name": "What does pre-filing mean?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Pre-filing is the period before or immediately after you report the claim. Documentation at this stage—photos, mitigation, cause identification—strengthens your case before the adjuster inspects." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why does property type matter?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Condos require HOA and master policy review; commercial claims need business interruption docs; rentals need tenant/landlord documentation. The generator adds property-specific items to your checklist." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use the checklist for a supplement?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Select Active claim stage. The checklist includes items like contractor estimates, photos, and documentation to support a supplement request. Use it to ensure your supplement package is complete." }
+      },
+      {
+        "@type": "Question",
+        "name": "Should I print the checklist?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Printing or downloading helps you check off items and retain a record. The generator offers Print and Download as Text options for your completed checklist." }
+      },
+      {
+        "@type": "Question",
+        "name": "What if my damage type isn't listed?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Select Other. You'll get a general checklist covering photographing damage, identifying cause, mitigating further loss, reporting, and documenting. Adapt items as needed for your specific loss." }
+      },
+      {
+        "@type": "Question",
+        "name": "How often should I update my checklist?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Re-run the generator when your claim stage changes (e.g., from Active to Denied, or to Settlement). Each stage has different documentation priorities." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does the checklist guarantee my claim will be paid?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Documentation supports your claim; coverage depends on your policy and the loss. The checklist improves your odds of full recovery by ensuring you provide what insurers need to pay." }
+      }
+    ]
+  }
+  </script>
+
+  <script>
+    const CHECKLISTS = {
+      fire: {
+        prefiling: ['Photograph all fire damage (structure, contents)', 'Document smoke and soot extent', 'Obtain fire department report', 'Secure property to prevent further damage', 'Contact insurer to report loss', 'Review policy for fire coverage limits'],
+        active: ['Submit Proof of Loss with supporting documentation', 'Provide contractor repair estimates', 'Document cause of loss', 'Inventory damaged contents', 'Submit receipts for ALE if applicable', 'Respond to adjuster requests within deadlines'],
+        denied: ['Obtain copy of denial letter', 'Identify stated reason for denial', 'Compare denial reason to policy language', 'Gather rebuttal evidence (expert reports if needed)', 'Prepare appeal letter with documentation', 'Check state deadline for appeal'],
+        settlement: ['Review settlement amount vs. documented loss', 'Verify RCV vs. ACV application', 'Confirm recoverable depreciation terms', 'Execute release only after full review', 'Document final payment received', 'Retain all claim correspondence']
+      },
+      water: {
+        prefiling: ['Photograph water intrusion source and extent', 'Document moisture levels if available', 'Mitigate further damage (extract, dry)', 'Save damaged materials for inspection', 'Identify and document cause (pipe, roof, appliance)', 'Report to insurer promptly'],
+        active: ['Submit photos and repair estimates', 'Provide moisture/mold assessment if applicable', 'Document temporary repairs', 'Inventory damaged contents', 'Keep receipts for mitigation', 'Track ALE if displaced'],
+        denied: ['Obtain denial letter and stated reason', 'Verify policy exclusions cited', 'Gather evidence of sudden/accidental loss', 'Prepare timeline of loss and mitigation', 'Consider expert opinion on cause', 'File appeal before deadline'],
+        settlement: ['Verify scope matches contractor estimates', 'Confirm depreciation recovery process', 'Review deductible application', 'Document payment and any withholdings', 'Retain records for tax purposes']
+      },
+      wind: {
+        prefiling: ['Photograph wind damage (roof, siding, windows)', 'Document date and time of storm', 'Save weather reports or news clips', 'Check for interior water damage', 'Secure openings to prevent further damage', 'Report claim to insurer'],
+        active: ['Submit contractor roof/siding estimates', 'Provide before/after photos', 'Document storm date alignment with policy', 'Include any engineer reports', 'Respond to reinspection requests', 'Track supplement deadlines'],
+        denied: ['Obtain denial and stated basis', 'Verify wear-and-tear vs. storm distinction', 'Gather evidence of storm causation', 'Consider roof certification or engineer', 'Prepare appeal with documentation', 'Check appraisal clause option'],
+        settlement: ['Compare final scope to estimate', 'Verify all line items addressed', 'Confirm code upgrade coverage', 'Review depreciation recovery', 'Document payment']
+      },
+      hail: {
+        prefiling: ['Photograph hail damage (roof, siding, vehicles)', 'Document hail size and storm date', 'Obtain contractor inspection', 'Save weather/hail report', 'Check for matching interior damage', 'Report promptly'],
+        active: ['Submit contractor estimates with line items', 'Provide hail impact photos', 'Document matching interior damage', 'Respond to carrier reinspection', 'Track O&P and code upgrade items', 'Submit supplement if scope incomplete'],
+        denied: ['Obtain denial letter', 'Verify pre-existing vs. hail damage', 'Consider roof certification', 'Gather rebuttal documentation', 'Prepare appeal with evidence', 'Review appraisal clause'],
+        settlement: ['Verify full scope paid', 'Confirm O&P if applicable', 'Check depreciation recovery', 'Document final payment', 'Retain all estimates']
+      },
+      mold: {
+        prefiling: ['Document water source that caused mold', 'Photograph mold extent', 'Obtain mold assessment if safe', 'Verify policy mold coverage/sublimits', 'Mitigate moisture source first', 'Report to insurer'],
+        active: ['Submit remediation estimate', 'Provide cause documentation (water loss)', 'Include lab results if available', 'Document scope of affected areas', 'Respond to carrier questions', 'Track sublimit and caps'],
+        denied: ['Obtain denial and exclusions cited', 'Verify coverage for mold resulting from covered peril', 'Gather evidence of covered cause', 'Prepare appeal with policy analysis', 'Check state mold claim requirements'],
+        settlement: ['Verify sublimit application', 'Confirm remediation scope paid', 'Document withholdings', 'Retain remediation records']
+      },
+      theft: {
+        prefiling: ['File police report immediately', 'List stolen items with serial numbers', 'Photograph forced entry if applicable', 'Secure property', 'Report to insurer', 'Preserve evidence'],
+        active: ['Submit police report', 'Provide itemized inventory with values', 'Include receipts or replacement cost documentation', 'Respond to examination under oath if requested', 'Document proof of loss', 'Track claim timeline'],
+        denied: ['Obtain denial letter', 'Verify policy theft provisions', 'Gather rebuttal evidence', 'Prepare appeal', 'Consider proof of ownership documentation'],
+        settlement: ['Review ACV vs. RCV payout', 'Verify item values', 'Document payment', 'Retain police and inventory records']
+      },
+      lightning: {
+        prefiling: ['Photograph lightning damage', 'Document power surge damage to electronics', 'Obtain electrician assessment', 'Report to insurer', 'Mitigate any fire/smoke'],
+        active: ['Submit repair estimates', 'Provide proof of lightning (weather, witness)', 'Document damaged electronics and systems', 'Include electrician report', 'Respond to adjuster requests'],
+        denied: ['Obtain denial', 'Verify lightning coverage', 'Gather causation evidence', 'Prepare appeal'],
+        settlement: ['Verify scope and depreciation', 'Document payment', 'Retain records']
+      },
+      vandalism: {
+        prefiling: ['File police report', 'Photograph vandalism', 'Secure property', 'Report to insurer', 'Preserve evidence'],
+        active: ['Submit police report', 'Provide repair estimates', 'Document damage extent', 'Respond to requests', 'Track deadlines'],
+        denied: ['Obtain denial', 'Verify vandalism coverage', 'Prepare appeal with evidence'],
+        settlement: ['Verify scope paid', 'Document payment']
+      },
+      other: {
+        prefiling: ['Photograph all damage', 'Identify cause of loss', 'Mitigate further damage', 'Report to insurer', 'Review policy for coverage', 'Document timeline'],
+        active: ['Submit Proof of Loss', 'Provide repair estimates', 'Document cause', 'Respond to requests', 'Track deadlines'],
+        denied: ['Obtain denial letter', 'Verify coverage', 'Gather rebuttal evidence', 'Prepare appeal'],
+        settlement: ['Review settlement', 'Verify scope', 'Document payment']
+      }
+    };
+
+    const PROPERTY_ADDONS = {
+      residential: [],
+      commercial: ['Commercial property inventory', 'Business interruption documentation if applicable', 'Tenant notification records'],
+      condo: ['HOA policy and master policy review', 'Unit vs. common element determination', 'HOA communication records'],
+      rental: ['Landlord policy vs. tenant responsibility', 'Tenant lease and communication', 'Rental income documentation if loss'],
+      mobile: ['Mobile home titling/ownership docs', 'Tie-down and skirting documentation'],
+      multi: ['Per-unit damage documentation', 'Common area vs. unit allocation']
+    };
+
+    const DAMAGE_LABELS = { fire:'Fire', water:'Water', wind:'Wind', hail:'Hail', mold:'Mold', theft:'Theft', lightning:'Lightning', vandalism:'Vandalism', other:'Other' };
+    const PROPERTY_LABELS = { residential:'Residential', commercial:'Commercial', condo:'Condo', rental:'Rental', mobile:'Mobile Home', multi:'Multi-Family' };
+    const STAGE_LABELS = { prefiling:'Pre-filing', active:'Active', denied:'Denied', settlement:'Settlement' };
+
+    function buildChecklist() {
+      const damage = document.getElementById('damageType').value;
+      const property = document.getElementById('propertyType').value;
+      const stage = document.getElementById('claimStage').value;
+
+      const base = CHECKLISTS[damage] ? CHECKLISTS[damage][stage] : CHECKLISTS.other[stage];
+      const addons = PROPERTY_ADDONS[property] || [];
+      const items = [...(base || []), ...addons];
+
+      document.getElementById('meta').textContent = `${DAMAGE_LABELS[damage]} • ${PROPERTY_LABELS[property]} • ${STAGE_LABELS[stage]}`;
+      const ul = document.getElementById('checklistList');
+      ul.innerHTML = items.map(i => '<li>' + i + '</li>').join('');
+      document.getElementById('results').style.display = 'block';
+    }
+
+    function downloadText() {
+      const meta = document.getElementById('meta').textContent;
+      const items = Array.from(document.querySelectorAll('#checklistList li')).map(li => '[ ] ' + li.textContent);
+      const text = 'Claim Documentation Checklist\n' + meta + '\n\n' + items.join('\n') + '\n\n— Generated by Claim Command Pro';
+      const blob = new Blob([text], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'claim-documentation-checklist.txt';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    ['damageType','propertyType','claimStage'].forEach(id => {
+      document.getElementById(id).addEventListener('change', buildChecklist);
+    });
+
+    document.addEventListener('DOMContentLoaded', buildChecklist);
+  </script>
+</body>
+</html>

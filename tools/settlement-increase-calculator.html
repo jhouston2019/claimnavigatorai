@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settlement Increase Calculator — Claim Command Pro</title>
+  <meta name="description" content="Estimate your insurance claim negotiation gap and potential recovery range. Compare carrier vs. contractor estimates.">
+  <link rel="canonical" href="https://claimcommandpro.com/tools/settlement-increase-calculator.html">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #17BEBB;
+      --primary-hover: #13a09d;
+      --text-dark: #1f2937;
+      --text-muted: #4b5563;
+      --bg-light: #F7F9FC;
+      --border: #e5e7eb;
+      --shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #ffffff;
+      color: var(--text-dark);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .container { max-width: 680px; margin: 0 auto; padding: 0 20px; }
+    header {
+      background: linear-gradient(135deg, #0B2545 0%, #123A63 100%);
+      color: #fff;
+      padding: 2rem 0;
+      text-align: center;
+      border-bottom: 3px solid var(--primary);
+    }
+    header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+    header p { opacity: 0.9; font-size: 1rem; }
+    main { padding: 2.5rem 0 3rem; }
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .card h2 { font-size: 1.2rem; margin-bottom: 1.25rem; color: var(--text-dark); }
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(23, 190, 187, 0.2);
+    }
+    .result-box {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .result-box h3 { font-size: 1rem; margin-bottom: 1rem; color: var(--text-muted); }
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-value { font-weight: 700; color: var(--primary); font-size: 1.15rem; }
+    .cta-section {
+      text-align: center;
+      margin: 2rem 0;
+    }
+    .btn-primary {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff !important;
+      padding: 0.9rem 2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .disclaimer {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2rem;
+      padding: 1.25rem;
+      background: var(--bg-light);
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+    }
+    .author-box { background: var(--bg-light); border: 1px solid var(--border); border-left: 4px solid var(--primary); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 2rem 0; }
+    .author-box-inner { display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+    .author-box-avatar { flex-shrink: 0; width: 48px; height: 48px; background: linear-gradient(135deg, #0B2545 0%, #123A63 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .author-box-initials { color: #fff; font-weight: 700; font-size: 1rem; letter-spacing: 0.5px; }
+    .author-box-content { flex: 1; min-width: 200px; }
+    .author-box-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-bottom: 0.35rem; }
+    .author-box-name { color: var(--primary); text-decoration: none; font-weight: 600; font-size: 1.05rem; }
+    .author-box-name:hover { text-decoration: underline; }
+    .author-box-sep { color: #9ca3af; font-size: 0.85rem; }
+    .author-box-positioning { color: var(--text-muted); font-size: 0.9rem; }
+    .author-box-specialization { color: var(--text-muted); font-size: 0.9rem; margin: 0.25rem 0 0.5rem; line-height: 1.5; }
+    .author-box-reviewed { color: #9ca3af; font-size: 0.85rem; margin: 0; }
+    .breadcrumb {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .breadcrumb a { color: var(--primary); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .content-section {
+      margin-bottom: 2.5rem;
+      max-width: 680px;
+    }
+    .content-section h2 { font-size: 1.35rem; margin: 2rem 0 1rem; color: var(--text-dark); }
+    .content-section h3 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--text-dark); }
+    .content-section p { margin-bottom: 1rem; color: var(--text-muted); }
+    .content-section ul { margin: 1rem 0; padding-left: 1.5rem; color: var(--text-muted); }
+    .content-section li { margin-bottom: 0.5rem; }
+    .content-section strong { color: var(--text-dark); }
+    .faq-item { margin-bottom: 1.25rem; }
+    .faq-item h4 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-dark); }
+    .faq-item p { font-size: 0.95rem; margin-bottom: 0; }
+    .calculator-anchor { scroll-margin-top: 1rem; }
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.4rem; }
+      .card { padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> &gt; <a href="/tools/">Tools</a> &gt; Settlement Increase Calculator
+      </nav>
+      <h1>Settlement Increase Calculator</h1>
+      <p>Estimate your negotiation gap and potential recovery range</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="content-section">
+      <p><strong>The Settlement Increase Calculator</strong> helps you quantify the gap between what your insurance company offered and what repairs actually cost. When your carrier's estimate is $18,200 and your contractor's is $36,750, you're not just looking at a number—you're looking at thousands of dollars that could either stay with the insurer or flow to your rebuild. This tool gives you a clear dollar frame for that gap and a realistic recovery range so you know what you're fighting for.</p>
+
+      <h2>What This Tool Does and Why It Matters</h2>
+      <p>Insurance companies use proprietary software (like Xactimate) with pricing databases, labor rates, and scope assumptions that often differ from real-world contractor bids. The result: a systematic gap between carrier estimates and what quality repairs actually cost. This calculator takes your carrier estimate, your contractor estimate, and optional amounts for missing line items and withheld depreciation, then outputs your <strong>negotiation gap</strong> and a <strong>potential recovery range</strong> (low to high). The low end assumes partial recovery; the high end assumes strong documentation and a favorable insurer response.</p>
+      <p>Why does this matter? Because policyholders who accept the first offer often leave $5,000–$25,000 or more on the table. Knowing your gap in dollars—not just "it feels low"—gives you leverage and clarity when you negotiate, file a supplement, or escalate to appraisal.</p>
+
+      <h2>Usage Examples with Realistic Scenarios</h2>
+      <p><strong>Scenario 1: Roof claim after hail.</strong> Your carrier's estimate: $14,500. Your contractor's bid: $22,000. The carrier scope excluded overhead and profit (O&P) and under-priced shingles. You enter 14500 and 22000; missing items $2,800; depreciation $0 (ACV policy). The calculator shows a gap of about $10,300 and a recovery range of roughly $4,100–$9,300.</p>
+      <p><strong>Scenario 2: Water damage claim.</strong> Carrier: $28,000. Contractor: $41,500. The scope omitted drywall behind cabinets and proper drying protocol. You add $3,200 to "Missing Line Items" and $1,800 to "Depreciation Withheld" (RCV policy). Total gap approaches $18,500. Recovery range: ~$7,400–$16,650.</p>
+      <p><strong>Scenario 3: Fire/smoke loss.</strong> Carrier: $67,000. Contractor: $94,000. Missing items include code upgrades ($4,500) and contents cleaning ($2,200). Depreciation withheld: $8,200. Gap: ~$41,700. Recovery range: ~$16,700–$37,500.</p>
+
+      <h2>Realistic Dollar Scenario Walkthrough</h2>
+      <p>Maria has a wind-damaged roof. Her carrier's estimate is <strong>$18,200</strong>. Her contractor's estimate is <strong>$36,750</strong>. She knows the carrier scope is missing ridge vent replacement ($1,200) and under-counted flashing. She adds $1,200 to Missing Line Items. Her policy is RCV; the carrier withheld <strong>$3,400</strong> in recoverable depreciation. She enters: Carrier $18,200, Contractor $36,750, Missing $1,200, Depreciation $3,400.</p>
+      <p><strong>Results:</strong> Negotiation gap = $23,750. Potential recovery low = ~$9,500. Potential recovery high = ~$21,375. Percentage underpaid = ~65%. Maria now knows she's fighting for up to $21,000+. She uses this to prioritize documentation and decide whether to push for a supplement, mediation, or appraisal.</p>
+
+      <h2>Why Insurance Estimates Are Wrong</h2>
+      <p>Carrier estimates are wrong for several structural reasons:</p>
+      <ul>
+        <li><strong>Below-market pricing:</strong> Insurance software uses regional or national pricing that lags behind local labor and material costs.</li>
+        <li><strong>Scope limitations:</strong> Adjusters are trained to limit scope to visible damage, often omitting matching, code upgrades, and hidden damage.</li>
+        <li><strong>Depreciation tactics:</strong> On ACV policies, excessive depreciation reduces payouts; on RCV, withheld depreciation creates cash-flow pressure to settle low.</li>
+        <li><strong>Line-item omissions:</strong> Overhead and profit, debris removal, permits, and specialty work are routinely under-scoped or omitted.</li>
+      </ul>
+      <p>Understanding these drivers helps you build a supplement and negotiation strategy, not just "ask for more."</p>
+
+      <h2>When to Escalate</h2>
+      <p>Use the calculator's recovery range to decide when to escalate:</p>
+      <ul>
+        <li><strong>Gap under $3,000:</strong> Often resolvable with a polite written rebuttal and contractor estimate.</li>
+        <li><strong>Gap $3,000–$15,000:</strong> Supplement with documentation, photos, and line-item comparison. Consider professional review.</li>
+        <li><strong>Gap over $15,000:</strong> Strong case for supplement, mediation, or invoking the policy's appraisal clause. Document everything.</li>
+        <li><strong>Carrier unresponsive or hostile:</strong> File a complaint with your state department of insurance; consider legal or professional representation.</li>
+      </ul>
+
+      <h2>The Bottom Line on Dollar Framing</h2>
+      <p>Policyholders who quantify their gap in dollars—rather than relying on intuition—negotiate from a stronger position. When you can say "my contractor's estimate is $36,750, yours is $18,200, and the gap is $18,550," you're speaking the adjuster's language. You're also creating a clear target for supplementation: close that gap. Use this calculator before every supplement, mediation, or appraisal discussion. The numbers inform your strategy.</p>
+
+      <h2>Common Mistakes to Avoid</h2>
+      <ul>
+        <li><strong>Accepting the first offer without comparing to contractor bids.</strong> Always get at least one detailed contractor estimate before settling.</li>
+        <li><strong>Ignoring missing line items.</strong> If your contractor's estimate includes items the carrier omitted, add them to the calculator and to your supplement.</li>
+        <li><strong>Forgetting recoverable depreciation.</strong> On RCV policies, depreciation is often recoverable after repairs; include it in your total gap.</li>
+        <li><strong>Settling before repairs are complete.</strong> RCV depreciation recovery typically requires proof of completion; rushing settlement can lock you out of that recovery.</li>
+      </ul>
+    </article>
+
+    <h2 id="calculator" class="content-section calculator-anchor" style="font-size:1.25rem; margin-top:2rem;">Use the Calculator</h2>
+    <div class="card">
+      <h2>Enter Your Estimate Details</h2>
+      <div class="form-group">
+        <label for="carrier">Original Carrier Estimate ($)</label>
+        <input type="number" id="carrier" min="0" step="100" placeholder="e.g., 18200" inputmode="decimal">
+      </div>
+      <div class="form-group">
+        <label for="contractor">Contractor Estimate ($)</label>
+        <input type="number" id="contractor" min="0" step="100" placeholder="e.g., 36750" inputmode="decimal">
+      </div>
+      <div class="form-group">
+        <label for="missing">Missing Line Items Value ($)</label>
+        <input type="number" id="missing" min="0" step="100" placeholder="e.g., 0" value="0" inputmode="decimal">
+      </div>
+      <div class="form-group">
+        <label for="depreciation">Depreciation Withheld ($)</label>
+        <input type="number" id="depreciation" min="0" step="100" placeholder="e.g., 0" value="0" inputmode="decimal">
+      </div>
+    </div>
+
+    <div id="results" class="card" style="display:none;">
+      <h2>Your Results</h2>
+      <div class="result-box">
+        <h3>Negotiation & Recovery</h3>
+        <div class="result-row">
+          <span>Estimated Negotiation Gap</span>
+          <span class="result-value" id="gap">—</span>
+        </div>
+        <div class="result-row">
+          <span>Potential Recovery (Low)</span>
+          <span class="result-value" id="low">—</span>
+        </div>
+        <div class="result-row">
+          <span>Potential Recovery (High)</span>
+          <span class="result-value" id="high">—</span>
+        </div>
+        <div class="result-row">
+          <span>Percentage Underpaid</span>
+          <span class="result-value" id="pct">—</span>
+        </div>
+      </div>
+      <div class="cta-section">
+        <a href="/pricing" class="btn-primary">Get Professional Help Maximizing Your Claim</a>
+      </div>
+    </div>
+
+    <section class="content-section" style="margin-top:2.5rem;">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <h4>What is the negotiation gap?</h4>
+        <p>The negotiation gap is the difference between what the insurer offered and what your contractor estimates. It includes pricing differences, missing line items, and withheld depreciation.</p>
+      </div>
+      <div class="faq-item">
+        <h4>What is potential recovery range?</h4>
+        <p>Potential recovery is an estimated range of what you might recover through structured negotiation. Low assumes partial recovery; high assumes strong documentation and favorable insurer response.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Should I include missing line items in the calculator?</h4>
+        <p>Yes. If your contractor's estimate includes items the carrier omitted (O&P, permits, code upgrades, etc.), add the dollar value of those items to get an accurate gap.</p>
+      </div>
+      <div class="faq-item">
+        <h4>When should I add withheld depreciation?</h4>
+        <p>On RCV policies, insurers often withhold recoverable depreciation until repairs are completed. Add that amount if you haven't yet received it—it's part of your total gap.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Why does the recovery range go from 40% to 90% of the gap?</h4>
+        <p>Real-world outcomes vary. Strong documentation, clear policy support, and responsive insurers yield higher recovery. Weak documentation or adversarial carriers may limit recovery to the low end.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Can I use this for commercial claims?</h4>
+        <p>Yes. The logic applies to commercial property claims as well. Enter carrier and contractor estimates; the gap and recovery range help you plan negotiation and escalation.</p>
+      </div>
+      <div class="faq-item">
+        <h4>What if my carrier estimate is higher than my contractor?</h4>
+        <p>If the carrier estimate equals or exceeds the contractor estimate, your gap may be zero. Focus on verifying scope completeness and depreciation recovery rather than scope increase.</p>
+      </div>
+      <div class="faq-item">
+        <h4>How do I get professional help with my supplement?</h4>
+        <p>Claim Command Pro offers structured guidance and documentation review. Use the CTA below the calculator to explore professional support for maximizing your recovery.</p>
+      </div>
+    </section>
+
+    <div class="disclaimer">
+      <strong>Disclaimer:</strong> This calculator provides estimates only. Actual recoveries depend on policy terms, documentation quality, and insurer response. Claim Command Pro does not guarantee specific outcomes. Results are illustrative and should not replace professional claim assistance.
+    </div>
+
+    <div class="author-box">
+      <div class="author-box-inner">
+        <div class="author-box-avatar"><span class="author-box-initials">MC</span></div>
+        <div class="author-box-content">
+          <div class="author-box-meta">
+            <a href="/about/founder.html" class="author-box-name">Michael Chen</a>
+            <span class="author-box-sep">•</span>
+            <span class="author-box-positioning">15+ years property claim documentation expertise</span>
+          </div>
+          <p class="author-box-specialization">Specialization: Insurance estimate analysis and supplement strategy</p>
+          <p class="author-box-reviewed">Last reviewed: February 28, 2026</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer style="text-align:center; padding:2rem; background:var(--bg-light); color:var(--text-muted); font-size:0.9rem;">
+    <a href="/" style="color:var(--primary);">Claim Command Pro</a> — Insurance claim guidance tools
+  </footer>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Settlement Increase Calculator",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web Browser",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "description": "Estimate your insurance claim negotiation gap and potential recovery range by comparing carrier and contractor estimates."
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://claimcommandpro.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://claimcommandpro.com/tools/" },
+      { "@type": "ListItem", "position": 3, "name": "Settlement Increase Calculator", "item": "https://claimcommandpro.com/tools/settlement-increase-calculator.html" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to Estimate Your Insurance Claim Negotiation Gap",
+    "description": "Estimate your insurance claim negotiation gap and potential recovery range by comparing carrier and contractor estimates.",
+    "step": [
+      { "@type": "HowToStep", "name": "Gather your estimates", "text": "Collect your carrier's estimate and at least one contractor repair estimate. Note any missing line items and withheld depreciation." },
+      { "@type": "HowToStep", "name": "Enter carrier estimate", "text": "Enter the total dollar amount of your insurer's estimate in the Carrier Estimate field." },
+      { "@type": "HowToStep", "name": "Enter contractor estimate", "text": "Enter the total dollar amount from your contractor's estimate in the Contractor Estimate field." },
+      { "@type": "HowToStep", "name": "Add missing items and depreciation", "text": "If the carrier omitted line items or withheld recoverable depreciation, enter those amounts in the optional fields." },
+      { "@type": "HowToStep", "name": "Review results", "text": "Review your negotiation gap, potential recovery range (low to high), and percentage underpaid. Use this to plan supplementation and escalation." }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the negotiation gap?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The negotiation gap is the difference between what the insurer offered and what your contractor estimates. It includes pricing differences, missing line items, and withheld depreciation." }
+      },
+      {
+        "@type": "Question",
+        "name": "What is potential recovery range?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Potential recovery is an estimated range of what you might recover through structured negotiation. Low assumes partial recovery; high assumes strong documentation and favorable insurer response." }
+      },
+      {
+        "@type": "Question",
+        "name": "Should I include missing line items in the calculator?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. If your contractor's estimate includes items the carrier omitted (O&P, permits, code upgrades, etc.), add the dollar value of those items to get an accurate gap." }
+      },
+      {
+        "@type": "Question",
+        "name": "When should I add withheld depreciation?",
+        "acceptedAnswer": { "@type": "Answer", "text": "On RCV policies, insurers often withhold recoverable depreciation until repairs are completed. Add that amount if you haven't yet received it—it's part of your total gap." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why does the recovery range go from 40% to 90% of the gap?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Real-world outcomes vary. Strong documentation, clear policy support, and responsive insurers yield higher recovery. Weak documentation or adversarial carriers may limit recovery to the low end." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use this for commercial claims?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. The logic applies to commercial property claims as well. Enter carrier and contractor estimates; the gap and recovery range help you plan negotiation and escalation." }
+      },
+      {
+        "@type": "Question",
+        "name": "What if my carrier estimate is higher than my contractor?",
+        "acceptedAnswer": { "@type": "Answer", "text": "If the carrier estimate equals or exceeds the contractor estimate, your gap may be zero. Focus on verifying scope completeness and depreciation recovery rather than scope increase." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I get professional help with my supplement?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Claim Command Pro offers structured guidance and documentation review. Use the CTA below the calculator to explore professional support for maximizing your recovery." }
+      }
+    ]
+  }
+  </script>
+
+  <script>
+    function formatCurrency(n) { return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }); }
+    function formatPct(n) { return (Number(n).toFixed(1)) + '%'; }
+
+    function calculate() {
+      const carrier = parseFloat(document.getElementById('carrier').value) || 0;
+      const contractor = parseFloat(document.getElementById('contractor').value) || 0;
+      const missing = parseFloat(document.getElementById('missing').value) || 0;
+      const depreciation = parseFloat(document.getElementById('depreciation').value) || 0;
+
+      if (carrier < 0 || contractor < 0 || missing < 0 || depreciation < 0) {
+        document.getElementById('results').style.display = 'none';
+        return;
+      }
+
+      const gap = Math.max(0, (contractor - carrier) + missing + depreciation);
+      const lowRecovery = Math.round(gap * 0.4);
+      const highRecovery = Math.round(gap * 0.9);
+      const pctUnderpaid = contractor > 0 ? ((gap / contractor) * 100) : 0;
+
+      document.getElementById('gap').textContent = formatCurrency(gap);
+      document.getElementById('low').textContent = formatCurrency(lowRecovery);
+      document.getElementById('high').textContent = formatCurrency(highRecovery);
+      document.getElementById('pct').textContent = formatPct(pctUnderpaid);
+
+      if (carrier > 0 || contractor > 0) {
+        document.getElementById('results').style.display = 'block';
+      }
+    }
+
+    ['carrier','contractor','missing','depreciation'].forEach(id => {
+      document.getElementById(id).addEventListener('input', calculate);
+      document.getElementById(id).addEventListener('change', calculate);
+    });
+
+    document.addEventListener('DOMContentLoaded', calculate);
+  </script>
+</body>
+</html>

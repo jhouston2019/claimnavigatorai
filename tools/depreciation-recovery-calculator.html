@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Depreciation Recovery Calculator — Claim Command Pro</title>
+  <meta name="description" content="Calculate withheld depreciation and net recoverable amount for your insurance claim.">
+  <link rel="canonical" href="https://claimcommandpro.com/tools/depreciation-recovery-calculator.html">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #17BEBB;
+      --primary-hover: #13a09d;
+      --text-dark: #1f2937;
+      --text-muted: #4b5563;
+      --bg-light: #F7F9FC;
+      --border: #e5e7eb;
+      --shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #ffffff;
+      color: var(--text-dark);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .container { max-width: 680px; margin: 0 auto; padding: 0 20px; }
+    header {
+      background: linear-gradient(135deg, #0B2545 0%, #123A63 100%);
+      color: #fff;
+      padding: 2rem 0;
+      text-align: center;
+      border-bottom: 3px solid var(--primary);
+    }
+    header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+    header p { opacity: 0.9; font-size: 1rem; }
+    main { padding: 2.5rem 0 3rem; }
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .card h2 { font-size: 1.2rem; margin-bottom: 1.25rem; color: var(--text-dark); }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(23, 190, 187, 0.2);
+    }
+    .result-box {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .result-box h3 { font-size: 1rem; margin-bottom: 1rem; color: var(--text-muted); }
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-value { font-weight: 700; color: var(--primary); font-size: 1.15rem; }
+    .result-note { font-size: 0.9rem; color: var(--text-muted); margin-top: 1rem; }
+    .cta-section { text-align: center; margin: 2rem 0; }
+    .btn-primary {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff !important;
+      padding: 0.9rem 2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .disclaimer {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2rem;
+      padding: 1.25rem;
+      background: var(--bg-light);
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+    }
+    .author-box { background: var(--bg-light); border: 1px solid var(--border); border-left: 4px solid var(--primary); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 2rem 0; }
+    .author-box-inner { display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+    .author-box-avatar { flex-shrink: 0; width: 48px; height: 48px; background: linear-gradient(135deg, #0B2545 0%, #123A63 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .author-box-initials { color: #fff; font-weight: 700; font-size: 1rem; letter-spacing: 0.5px; }
+    .author-box-content { flex: 1; min-width: 200px; }
+    .author-box-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-bottom: 0.35rem; }
+    .author-box-name { color: var(--primary); text-decoration: none; font-weight: 600; font-size: 1.05rem; }
+    .author-box-name:hover { text-decoration: underline; }
+    .author-box-sep { color: #9ca3af; font-size: 0.85rem; }
+    .author-box-positioning { color: var(--text-muted); font-size: 0.9rem; }
+    .author-box-specialization { color: var(--text-muted); font-size: 0.9rem; margin: 0.25rem 0 0.5rem; line-height: 1.5; }
+    .author-box-reviewed { color: #9ca3af; font-size: 0.85rem; margin: 0; }
+    .breadcrumb { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .breadcrumb a { color: var(--primary); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .content-section {
+      margin-bottom: 2.5rem;
+      max-width: 680px;
+    }
+    .content-section h2 { font-size: 1.35rem; margin: 2rem 0 1rem; color: var(--text-dark); }
+    .content-section h3 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--text-dark); }
+    .content-section p { margin-bottom: 1rem; color: var(--text-muted); }
+    .content-section ul { margin: 1rem 0; padding-left: 1.5rem; color: var(--text-muted); }
+    .content-section li { margin-bottom: 0.5rem; }
+    .content-section strong { color: var(--text-dark); }
+    .faq-item { margin-bottom: 1.25rem; }
+    .faq-item h4 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-dark); }
+    .faq-item p { font-size: 0.95rem; margin-bottom: 0; }
+    .calculator-anchor { scroll-margin-top: 1rem; }
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.4rem; }
+      .card { padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="/">Home</a> &gt; <a href="/tools/">Tools</a> &gt; Depreciation Recovery Calculator
+      </nav>
+      <h1>Depreciation Recovery Calculator</h1>
+      <p>Calculate withheld depreciation and net recoverable amount</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="content-section">
+      <p><strong>The Depreciation Recovery Calculator</strong> tells you exactly how much money the insurance company is holding back—and what you can realistically recover. On Replacement Cost Value (RCV) policies, insurers typically pay the Actual Cash Value (ACV) first—replacement cost minus depreciation—and hold the depreciation until you complete repairs and submit proof. That withheld amount can be $5,000, $15,000, or more. This tool puts a clear dollar figure on what you're owed so you know what to pursue.</p>
+
+      <h2>What This Tool Does and Why It Matters</h2>
+      <p>Replacement cost policies are structured in two phases: an initial payment (ACV) and a recoverable depreciation payment. The insurer applies a depreciation percentage to your RCV to calculate ACV, then withholds that depreciation until you prove repairs are complete. This calculator takes your <strong>Total RCV</strong>, <strong>Depreciation Percentage</strong>, and <strong>Deductible</strong>, and outputs your withheld depreciation amount and net recoverable amount—what you can expect to receive after repairs.</p>
+      <p>Why it matters: policyholders often miss this second payment. They settle, sign releases, or never submit the required documentation. The money sits with the insurer. Knowing your recoverable amount—in dollars—helps you prioritize documentation and follow-through so you don't leave thousands on the table.</p>
+
+      <h2>Usage Examples with Realistic Scenarios</h2>
+      <p><strong>Scenario 1: Roof claim, RCV policy.</strong> Total RCV: $28,000. Depreciation applied: 12%. Deductible: $2,500. Enter 28000, 12, 2500. Withheld depreciation = $3,360. Net recoverable = $860 (withheld minus deductible, since you've already paid deductible on initial payment). Typical timeline: 2–6 weeks after proof submission.</p>
+      <p><strong>Scenario 2: Water damage, full interior.</strong> RCV: $52,000. Depreciation: 18%. Deductible: $1,000. Withheld = $9,360. Net recoverable = $8,360. Timeline: 4–8 weeks typical for larger amounts.</p>
+      <p><strong>Scenario 3: Fire/smoke loss.</strong> RCV: $78,000. Depreciation: 15%. Deductible: $5,000. Withheld = $11,700. Net recoverable = $6,700. Document repair completion and invoice proof to trigger release.</p>
+
+      <h2>Realistic Dollar Scenario Walkthrough</h2>
+      <p>James has an RCV policy. His roof claim has a total replacement cost value of <strong>$45,000</strong>. The insurer applied <strong>14%</strong> depreciation (roof age and condition). His deductible is <strong>$2,500</strong>. He enters: RCV $45,000, Depreciation 14%, Deductible $2,500.</p>
+      <p><strong>Results:</strong> Withheld depreciation = $6,300. Net recoverable amount = $3,800 (the $2,500 deductible was applied to the initial ACV payment). Timeline: 4–8 weeks typical. James now knows he has $3,800 coming—if he completes repairs and submits proof. He schedules contractor completion, gathers invoices and photos, and submits a formal depreciation recovery request. Without this calculation, he might have forgotten to pursue it.</p>
+
+      <h2>Why Insurance Estimates Are Wrong (Depreciation-Specific)</h2>
+      <p>Depreciation is a lever insurers use to reduce payouts:</p>
+      <ul>
+        <li><strong>Excessive depreciation rates:</strong> A 10-year-old roof in good condition might warrant 15–20% depreciation; some insurers apply 35–45%.</li>
+        <li><strong>Double-counting:</strong> Ensure depreciation isn't applied to items that shouldn't be depreciated (e.g., labor, permits).</li>
+        <li><strong>Opaque calculations:</strong> Insurers don't always break out depreciation by line item. Request a detailed breakdown to verify.</li>
+        <li><strong>Delayed release:</strong> Some carriers delay releasing recoverable depreciation until you chase them. Document your submission and follow up.</li>
+      </ul>
+      <p>Understanding these tactics helps you challenge unreasonable depreciation and secure timely recovery.</p>
+
+      <h2>When to Escalate</h2>
+      <p>Use these triggers to escalate:</p>
+      <ul>
+        <li><strong>Insurer refuses to release after valid proof:</strong> Send a formal demand letter; cite policy language. Escalate to claims manager.</li>
+        <li><strong>Depreciation rate seems excessive:</strong> Request the depreciation methodology. Consider an independent assessment or appraisal clause.</li>
+        <li><strong>Delay beyond 60 days:</strong> File a complaint with your state department of insurance. Document all correspondence.</li>
+        <li><strong>ACV policy (no recoverable depreciation):</strong> On ACV-only policies, you cannot recover depreciation. Focus on challenging the depreciation rate applied to your initial payment.</li>
+      </ul>
+
+      <h2>The Bottom Line on Dollar Framing</h2>
+      <p>Recoverable depreciation is real money—often $3,000 to $15,000 or more on moderate to large claims. Insurers don't volunteer it; you must complete repairs, submit proof, and formally request it. This calculator tells you exactly how much is at stake. Use the result to prioritize: if your net recoverable is $8,000, that's $8,000 worth of follow-through. Document completion, keep copies of everything, and don't assume the check will arrive without asking.</p>
+
+      <h2>Common Mistakes to Avoid</h2>
+      <ul>
+        <li><strong>Settling and signing a release before repairs.</strong> A broad release can waive your right to recover depreciation. Read releases carefully.</li>
+        <li><strong>Not submitting proof of completion.</strong> Most policies require invoices, photos, or contractor certification. Send a complete package.</li>
+        <li><strong>Assuming depreciation is automatic.</strong> You must request it. Many insurers won't release it unless you formally ask.</li>
+        <li><strong>Confusing ACV and RCV.</strong> If your policy is ACV-only, there is no recoverable depreciation. This calculator applies to RCV policies.</li>
+      </ul>
+    </article>
+
+    <h2 id="calculator" class="content-section calculator-anchor" style="font-size:1.25rem; margin-top:2rem;">Use the Calculator</h2>
+    <div class="card">
+      <h2>Enter Your Claim Values</h2>
+      <div class="form-group">
+        <label for="rcv">Total RCV — Replacement Cost Value ($)</label>
+        <input type="number" id="rcv" min="0" step="100" placeholder="e.g., 50000" inputmode="decimal">
+      </div>
+      <div class="form-group">
+        <label for="depPct">Depreciation Percentage (%)</label>
+        <input type="number" id="depPct" min="0" max="100" step="0.5" placeholder="e.g., 15" inputmode="decimal">
+      </div>
+      <div class="form-group">
+        <label for="deductible">Deductible ($)</label>
+        <input type="number" id="deductible" min="0" step="100" placeholder="e.g., 2500" value="0" inputmode="decimal">
+      </div>
+    </div>
+
+    <div id="results" class="card" style="display:none;">
+      <h2>Your Results</h2>
+      <div class="result-box">
+        <h3>Depreciation & Recovery</h3>
+        <div class="result-row">
+          <span>Withheld Depreciation Amount</span>
+          <span class="result-value" id="withheld">—</span>
+        </div>
+        <div class="result-row">
+          <span>Net Recoverable Amount</span>
+          <span class="result-value" id="recoverable">—</span>
+        </div>
+        <div class="result-row">
+          <span>Timeline for Recovery</span>
+          <span class="result-value" id="timeline">—</span>
+        </div>
+      </div>
+      <p class="result-note">Recoverable depreciation is typically released after repairs are completed and proof is submitted. Actual timelines vary by insurer and state.</p>
+      <div class="cta-section">
+        <a href="/pricing" class="btn-primary">Get Help Recovering Your Depreciation</a>
+      </div>
+    </div>
+
+    <section class="content-section" style="margin-top:2.5rem;">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <h4>What is recoverable depreciation?</h4>
+        <p>Recoverable depreciation is the amount the insurer withholds from your initial payment. Once you complete repairs and submit proof, you can typically recover this amount under RCV policies.</p>
+      </div>
+      <div class="faq-item">
+        <h4>When can I recover depreciation?</h4>
+        <p>Most RCV policies allow recovery after repairs are completed and documentation is submitted. Timelines vary by insurer, typically 2–8 weeks after proof submission.</p>
+      </div>
+      <div class="faq-item">
+        <h4>How do I find my depreciation percentage?</h4>
+        <p>Check your estimate or settlement letter. Insurers often list depreciation by line item or as a total percentage. If not disclosed, request a detailed breakdown in writing.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Why does the deductible reduce my recoverable amount?</h4>
+        <p>The deductible is typically applied once to the claim. If it was already applied to your initial ACV payment, the net recoverable is withheld depreciation minus any remaining deductible obligation.</p>
+      </div>
+      <div class="faq-item">
+        <h4>What proof do insurers require for depreciation recovery?</h4>
+        <p>Common requirements: contractor invoices showing work completed, before/after photos, and sometimes a signed completion certificate. Check your policy or ask your adjuster.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Can I recover depreciation if I haven't repaired yet?</h4>
+        <p>Generally no. RCV policies require proof that repairs were completed at replacement cost. Some policies have exceptions; review your policy language.</p>
+      </div>
+      <div class="faq-item">
+        <h4>What if I have an ACV (Actual Cash Value) policy?</h4>
+        <p>ACV policies do not have recoverable depreciation. You receive only the depreciated amount. This calculator applies to RCV policies. If unsure, check your policy declarations.</p>
+      </div>
+      <div class="faq-item">
+        <h4>The insurer is delaying my depreciation release. What can I do?</h4>
+        <p>Send a formal written request with proof of completion. If they delay beyond 30–60 days, escalate to a claims manager and consider filing a complaint with your state department of insurance.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Can I dispute the depreciation percentage?</h4>
+        <p>Yes. If the percentage seems excessive for the age and condition of the damaged property, request the insurer's methodology. You may provide contractor or appraiser input to support a lower rate.</p>
+      </div>
+    </section>
+
+    <div class="disclaimer">
+      <strong>Disclaimer:</strong> This calculator provides estimates based on standard RCV policy logic. Actual recoverable amounts depend on your policy terms, repair completion, and documentation. Claim Command Pro does not guarantee specific outcomes. Consult your policy or a claims professional for your specific situation.
+    </div>
+
+    <div class="author-box">
+      <div class="author-box-inner">
+        <div class="author-box-avatar"><span class="author-box-initials">MC</span></div>
+        <div class="author-box-content">
+          <div class="author-box-meta">
+            <a href="/about/founder.html" class="author-box-name">Michael Chen</a>
+            <span class="author-box-sep">•</span>
+            <span class="author-box-positioning">15+ years property claim documentation expertise</span>
+          </div>
+          <p class="author-box-specialization">Specialization: Insurance estimate analysis and supplement strategy</p>
+          <p class="author-box-reviewed">Last reviewed: February 28, 2026</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer style="text-align:center; padding:2rem; background:var(--bg-light); color:var(--text-muted); font-size:0.9rem;">
+    <a href="/" style="color:var(--primary);">Claim Command Pro</a> — Insurance claim guidance tools
+  </footer>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Depreciation Recovery Calculator",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web Browser",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "description": "Calculate withheld depreciation and net recoverable amount for RCV insurance claims."
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://claimcommandpro.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://claimcommandpro.com/tools/" },
+      { "@type": "ListItem", "position": 3, "name": "Depreciation Recovery Calculator", "item": "https://claimcommandpro.com/tools/depreciation-recovery-calculator.html" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to Calculate Recoverable Depreciation on Your Insurance Claim",
+    "description": "Calculate withheld depreciation and net recoverable amount for RCV insurance claims.",
+    "step": [
+      { "@type": "HowToStep", "name": "Identify your policy type", "text": "Confirm you have an RCV (Replacement Cost Value) policy. ACV policies do not have recoverable depreciation." },
+      { "@type": "HowToStep", "name": "Find your RCV and depreciation", "text": "Locate the total RCV from your estimate and the depreciation percentage applied. Check your settlement letter or request a breakdown from your insurer." },
+      { "@type": "HowToStep", "name": "Enter RCV and depreciation percentage", "text": "Enter the total RCV and depreciation percentage in the calculator." },
+      { "@type": "HowToStep", "name": "Enter your deductible", "text": "Enter your policy deductible. The calculator will determine the net recoverable amount." },
+      { "@type": "HowToStep", "name": "Complete repairs and submit proof", "text": "Complete repairs at replacement cost, gather invoices and photos, and submit a formal depreciation recovery request to your insurer." }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is recoverable depreciation?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Recoverable depreciation is the amount the insurer withholds from your initial payment. Once you complete repairs and submit proof, you can typically recover this amount under RCV policies." }
+      },
+      {
+        "@type": "Question",
+        "name": "When can I recover depreciation?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Most RCV policies allow recovery after repairs are completed and documentation is submitted. Timelines vary by insurer, typically 2–8 weeks after proof submission." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I find my depreciation percentage?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Check your estimate or settlement letter. Insurers often list depreciation by line item or as a total percentage. If not disclosed, request a detailed breakdown in writing." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why does the deductible reduce my recoverable amount?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The deductible is typically applied once to the claim. If it was already applied to your initial ACV payment, the net recoverable is withheld depreciation minus any remaining deductible obligation." }
+      },
+      {
+        "@type": "Question",
+        "name": "What proof do insurers require for depreciation recovery?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Common requirements: contractor invoices showing work completed, before/after photos, and sometimes a signed completion certificate. Check your policy or ask your adjuster." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I recover depreciation if I haven't repaired yet?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Generally no. RCV policies require proof that repairs were completed at replacement cost. Some policies have exceptions; review your policy language." }
+      },
+      {
+        "@type": "Question",
+        "name": "What if I have an ACV (Actual Cash Value) policy?",
+        "acceptedAnswer": { "@type": "Answer", "text": "ACV policies do not have recoverable depreciation. You receive only the depreciated amount. This calculator applies to RCV policies. If unsure, check your policy declarations." }
+      },
+      {
+        "@type": "Question",
+        "name": "The insurer is delaying my depreciation release. What can I do?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Send a formal written request with proof of completion. If they delay beyond 30–60 days, escalate to a claims manager and consider filing a complaint with your state department of insurance." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I dispute the depreciation percentage?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. If the percentage seems excessive for the age and condition of the damaged property, request the insurer's methodology. You may provide contractor or appraiser input to support a lower rate." }
+      }
+    ]
+  }
+  </script>
+
+  <script>
+    function formatCurrency(n) { return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }); }
+
+    function getTimeline(amount) {
+      if (amount <= 0) return 'N/A';
+      if (amount < 5000) return '2–4 weeks typical';
+      if (amount < 15000) return '2–6 weeks typical';
+      return '4–8 weeks typical';
+    }
+
+    function calculate() {
+      const rcv = parseFloat(document.getElementById('rcv').value) || 0;
+      const depPct = parseFloat(document.getElementById('depPct').value) || 0;
+      const deductible = parseFloat(document.getElementById('deductible').value) || 0;
+
+      if (rcv < 0 || depPct < 0 || depPct > 100 || deductible < 0) {
+        document.getElementById('results').style.display = 'none';
+        return;
+      }
+
+      const withheld = Math.round(rcv * (depPct / 100));
+      const recoverable = Math.max(0, withheld - deductible);
+      const timeline = getTimeline(recoverable);
+
+      document.getElementById('withheld').textContent = formatCurrency(withheld);
+      document.getElementById('recoverable').textContent = formatCurrency(recoverable);
+      document.getElementById('timeline').textContent = timeline;
+
+      if (rcv > 0) {
+        document.getElementById('results').style.display = 'block';
+      }
+    }
+
+    ['rcv','depPct','deductible'].forEach(id => {
+      document.getElementById(id).addEventListener('input', calculate);
+      document.getElementById(id).addEventListener('change', calculate);
+    });
+
+    document.addEventListener('DOMContentLoaded', calculate);
+  </script>
+</body>
+</html>
