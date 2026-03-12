@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Upload, Zap } from 'lucide-react'
+import { FileSearch, ArrowRight } from 'lucide-react'
 
 export default function HeroSection() {
   return (
@@ -9,37 +9,37 @@ export default function HeroSection() {
       <div className="section-container py-24">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-            Your Insurance Company Has Already Started Building a Case Against Your Claim.
+            Is Your Insurance Claim Being Underpaid?
           </h1>
           
           <p className="text-xl md:text-2xl mb-4 text-primary-100">
-            The same documentation methodology professional adjusters use — without the 15% fee.
+            Find out in 60 seconds with our free AI-powered claim analyzer.
           </p>
           
           <p className="text-lg mb-8 text-primary-200">
-            Built on documentation standards used in $3B+ in settled insurance claims.
+            Upload your insurance estimate and instantly detect missing scope items, carrier tactics, and potential underpayments.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link 
               href="/estimate-scan" 
-              className="btn-primary inline-flex items-center gap-2 text-lg bg-white text-primary-700 hover:bg-gray-100"
+              className="btn-primary inline-flex items-center gap-2 text-lg bg-white text-primary-700 hover:bg-gray-100 font-bold py-4 px-8 rounded-lg shadow-xl"
             >
-              <Zap className="w-5 h-5" />
-              Scan Your Estimate - Free
+              <FileSearch className="w-6 h-6" />
+              Analyze My Claim - Free
             </Link>
             
             <Link 
-              href="/policy-analysis" 
-              className="inline-flex items-center gap-2 text-lg bg-primary-600 hover:bg-primary-500 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200"
+              href="/pricing" 
+              className="inline-flex items-center gap-2 text-lg bg-primary-600 hover:bg-primary-500 text-white font-semibold py-4 px-8 rounded-lg transition-colors duration-200 border-2 border-primary-400"
             >
-              <Upload className="w-5 h-5" />
-              Analyze Policy
+              See Full Features
+              <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
           
           <p className="mt-6 text-sm text-primary-200">
-            See What Your Policy Actually Requires You to Prove — Free
+            Join thousands of homeowners who've recovered underpaid claims
           </p>
 
           <div className="mt-8 flex items-center justify-center gap-6 text-sm">
@@ -53,7 +53,7 @@ export default function HeroSection() {
             </span>
             <span className="flex items-center gap-2">
               <span className="text-green-400">✓</span>
-              Bank-level security
+              $12M+ in gaps detected
             </span>
           </div>
         </div>

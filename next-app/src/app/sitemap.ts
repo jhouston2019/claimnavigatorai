@@ -13,11 +13,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/login',
     '/estimate-issues',
     '/denial-tactics',
+    '/guides/insurance-claim-denied',
+    '/guides/insurance-estimate-too-low',
+    '/guides/insurance-claim-taking-too-long',
+    '/guides/contractor-estimate-vs-insurance-estimate',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
-    priority: route === '' ? 1 : 0.8,
+    priority: route === '' ? 1 : route.startsWith('/guides/') ? 0.7 : 0.8,
   }))
 
   // Dynamic estimate issue pages
