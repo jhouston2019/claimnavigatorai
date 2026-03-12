@@ -13,6 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/login',
     '/estimate-issues',
     '/denial-tactics',
+    '/example-report',
     '/guides/insurance-claim-denied',
     '/guides/insurance-estimate-too-low',
     '/guides/insurance-claim-taking-too-long',
