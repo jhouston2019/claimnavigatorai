@@ -1,12 +1,26 @@
 'use client'
 
-import { ChevronRight } from 'lucide-react'
+import Link from 'next/link'
+import { ChevronRight, FileText } from 'lucide-react'
 
 export default function ThreeStepProcess() {
   return (
     <section className="bg-gray-50">
       <div className="section-container">
         <div className="max-w-5xl mx-auto">
+          {/* Example Report Link */}
+          <div className="text-center mb-8">
+            <Link 
+              href="/example-report"
+              className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-bold px-6 py-3 rounded-sm transition-colors"
+            >
+              <FileText className="w-5 h-5" />
+              See Example Report
+            </Link>
+            <p className="text-sm text-gray-600 mt-2">
+              View a complete claim analysis with real line items and pricing
+            </p>
+          </div>
           {/* Desktop: Horizontal Layout */}
           <div className="hidden md:flex items-start justify-between gap-6">
             {/* Step 1 */}

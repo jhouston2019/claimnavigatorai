@@ -41,9 +41,17 @@ export default function FinalCTASection() {
           </div>
 
           {/* Fine Print */}
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 mb-4">
             One free policy analysis per email. No credit card required.
           </p>
+
+          {/* Example Report Link */}
+          <Link
+            href="/example-report"
+            className="text-sm text-gray-400 hover:text-white underline"
+          >
+            See an example report with real line items →
+          </Link>
         </div>
       </div>
     </section>
