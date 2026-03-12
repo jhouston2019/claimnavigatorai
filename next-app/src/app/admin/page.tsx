@@ -163,7 +163,7 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Quick Links */}
-          <div className="grid md:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-4 gap-6 mb-8">
             <Link href="/admin/issues" className="card hover:shadow-xl transition-shadow">
               <BookOpen className="w-10 h-10 text-primary-600 mb-3" />
               <h3 className="text-lg font-bold mb-2">Estimate Issues</h3>
@@ -195,6 +195,32 @@ export default function AdminDashboardPage() {
                 Detailed event tracking
               </p>
             </Link>
+          </div>
+
+          {/* Intelligence Network */}
+          <div className="card bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold mb-2">Claim Intelligence Network</h2>
+                <p className="text-blue-100 mb-4">
+                  View industry analytics, carrier patterns, and anonymized claim data
+                </p>
+                <Link 
+                  href="/admin/intelligence" 
+                  className="inline-flex items-center gap-2 bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+                >
+                  <TrendingUp className="w-5 h-5" />
+                  View Intelligence Dashboard
+                </Link>
+              </div>
+              <div className="hidden lg:block">
+                <div className="bg-white/10 rounded-lg p-6 backdrop-blur-sm">
+                  <p className="text-sm text-blue-100 mb-1">Real-time Data</p>
+                  <p className="text-3xl font-bold">{stats?.totalUsers || 0}</p>
+                  <p className="text-sm text-blue-200">Claims Analyzed</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

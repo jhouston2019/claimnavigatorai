@@ -24,6 +24,9 @@ interface ScanResult {
     riskLevel: string
     message: string
   }
+  claimType?: string
+  state?: string
+  carrierName?: string
 }
 
 export default function EstimateScanResultsPage() {
@@ -32,6 +35,7 @@ export default function EstimateScanResultsPage() {
   const scanId = searchParams.get('id')
   const [loading, setLoading] = useState(true)
   const [result, setResult] = useState<ScanResult | null>(null)
+  const [industryInsight, setIndustryInsight] = useState<string | null>(null)
 
   useEffect(() => {
     if (!scanId) {
@@ -48,10 +52,32 @@ export default function EstimateScanResultsPage() {
       
       const data = await response.json()
       setResult(data.scan_result)
+      
+      // Fetch industry insight
+      if (data.scan_result) {
+        fetchIndustryInsight(data.scan_result)
+      }
     } catch (err) {
       console.error('Failed to load results:', err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchIndustryInsight = async (scanResult: ScanResult) => {
+    try {
+      const params = new URLSearchParams()
+      if (scanResult.claimType) params.append('claimType', scanResult.claimType)
+      if (scanResult.state) params.append('state', scanResult.state)
+      if (scanResult.carrierName) params.append('carrierName', scanResult.carrierName)
+      
+      const response = await fetch(`/api/intelligence/claim-insight?${params}`)
+      if (response.ok) {
+        const data = await response.json()
+        setIndustryInsight(data.insight)
+      }
+    } catch (err) {
+      console.error('Failed to load industry insight:', err)
     }
   }
 
@@ -130,6 +156,24 @@ export default function EstimateScanResultsPage() {
               </div>
             </div>
           </div>
+
+          {/* Industry Insight Panel */}
+          {industryInsight && (
+            <div className="card mb-6 bg-blue-50 border-2 border-blue-300">
+              <div className="flex items-start gap-4">
+                <TrendingUp className="w-8 h-8 text-blue-600 flex-shrink-0" />
+                <div>
+                  <h3 className="text-lg font-bold text-blue-900 mb-2">Industry Insight</h3>
+                  <p className="text-blue-800 text-base">
+                    {industryInsight}
+                  </p>
+                  <p className="text-sm text-blue-600 mt-2">
+                    Based on analysis of thousands of anonymized claims
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="grid md:grid-cols-3 gap-6 mb-6">
             {/* Carrier Estimate */}

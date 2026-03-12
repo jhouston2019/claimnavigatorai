@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { runLimitedEstimateAnalysis } from '@/lib/openai'
+import { captureClaimIntelligence } from '@/lib/intelligence'
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,6 +36,21 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) throw error
+
+    // Capture anonymized intelligence data
+    await captureClaimIntelligence({
+      carrierName: scanResult.carrierName,
+      state: scanResult.state,
+      city: scanResult.city,
+      claimType: scanResult.claimType,
+      propertyType: scanResult.propertyType,
+      carrierEstimateValue: scanResult.carrierEstimate,
+      predictedScopeValue: scanResult.estimatedScopeHigh,
+      potentialGapValue: scanResult.potentialGapHigh,
+      missingScopeItems: scanResult.detectedIssues,
+      detectedCarrierTactics: scanResult.carrierTactics,
+      severityScore: scanResult.claimSeverityScore,
+    })
 
     // Capture email for marketing
     await supabaseAdmin.from('email_captures').insert({

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { uploadFile } from '@/lib/storage'
 import { detectUnderpayment } from '@/lib/openai'
+import { captureClaimIntelligence } from '@/lib/intelligence'
 
 export async function POST(request: NextRequest) {
   try {
@@ -58,6 +59,22 @@ export async function POST(request: NextRequest) {
       contractorText,
       policyText,
       hasPhotos: photos.length > 0,
+    })
+
+    // Capture anonymized intelligence data
+    await captureClaimIntelligence({
+      carrierName: detectionResult.carrierName,
+      state: detectionResult.state,
+      city: detectionResult.city,
+      claimType: detectionResult.claimType,
+      propertyType: detectionResult.propertyType,
+      carrierEstimateValue: detectionResult.carrierEstimateTotal,
+      contractorEstimateValue: detectionResult.contractorEstimateTotal,
+      predictedScopeValue: detectionResult.predictedScopeValue,
+      potentialGapValue: detectionResult.underpaymentAmount,
+      missingScopeItems: detectionResult.missingItems,
+      detectedCarrierTactics: detectionResult.carrierTactics,
+      severityScore: detectionResult.severityScore,
     })
 
     // Create claim if needed

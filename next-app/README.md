@@ -30,7 +30,7 @@ Open [http://localhost:3000](http://localhost:3000)
 - Partial results with strong upgrade CTA
 - Conversion tracking
 
-#### 2. Programmatic SEO Engine 🆕
+#### 2. Programmatic SEO Engine
 **Routes**: `/estimate-issues/[slug]`
 
 **Purpose**: Generate hundreds of SEO pages to drive organic traffic
@@ -68,36 +68,76 @@ Open [http://localhost:3000](http://localhost:3000)
 - View performance metrics
 - Track conversions per issue
 
-#### 3. Free Policy Analysis
+#### 3. Claim Intelligence Network 🆕
+**Routes**: `/dashboard/intelligence`, `/admin/intelligence`
+
+**Purpose**: Transform user scan data into industry intelligence
+
+**Features**:
+- Automatic anonymized data capture from all scans
+- Industry benchmarks (avg gap, underpayment %)
+- Carrier behavior analytics
+- Regional pricing intelligence
+- Tactic frequency analysis
+- Missing scope analytics
+- Contextual insights on scan results
+- Real-time intelligence dashboard
+- Admin analytics panel
+- Materialized views for performance
+- Full data privacy compliance
+
+**User Dashboard**: `/dashboard/intelligence`
+- Industry benchmark cards
+- Carrier behavior charts
+- Regional pricing data
+- Tactic distribution pie chart
+- Missing scope bar charts
+- Privacy notice
+
+**Admin Panel**: `/admin/intelligence`
+- Platform intelligence metrics
+- Top carriers by volume
+- Tactic distribution analysis
+- Missing scope rankings
+- System health status
+
+**Claim Insight Panel**:
+- Shows on scan results page
+- Contextual industry insights
+- Example: "Roof claims in Texas are underpaid by an average of $12,400"
+- Based on thousands of anonymized claims
+
+#### 4. Free Policy Analysis
 **Route**: `/policy-analysis`
 
 ### PAID FEATURES (Command Center - $299)
 
-#### 4. Insurance Claim Underpayment Detector
+#### 5. Insurance Claim Underpayment Detector
 **Route**: `/underpayment-detector`
 
-#### 5. Insurance Estimate Analyzer
+#### 6. Insurance Estimate Analyzer
 **Route**: `/estimate-analyzer`
 
-#### 6. Documentation Packet Generator
+#### 7. Documentation Packet Generator
 **Route**: `/documentation-builder`
 
-#### 7. AI Claim Strategy Advisor
+#### 8. AI Claim Strategy Advisor
 **Route**: `/strategy-advisor`
 
-#### 8. User Dashboard
+#### 9. User Dashboard
 **Route**: `/dashboard`
 
 ### ADMIN FEATURES
 
-#### 9. Admin Dashboard
+#### 10. Admin Dashboard
 **Route**: `/admin`
 
-**NEW Metrics**:
+**Metrics**:
 - Estimate scan funnel
 - Issue page performance
 - SEO traffic attribution
 - Conversion by source
+- Intelligence network stats
 
 #### 10. Estimate Issues Manager 🆕
 **Route**: `/admin/issues`
@@ -177,7 +217,7 @@ Upgrade to Command Center ($299)
 
 ## 📊 Database Schema
 
-### New Tables (Programmatic SEO)
+### Core Tables
 ```sql
 estimate_issues
   - Complete issue information
@@ -194,6 +234,20 @@ estimate_scans
 
 scan_conversions
   - Attribution tracking
+
+claim_intelligence (NEW)
+  - Anonymized claim data
+  - Carrier information
+  - Regional data
+  - Gap values
+  - Detected tactics
+  - Missing scope items
+  
+carrier_statistics (Materialized View)
+  - Pre-aggregated carrier metrics
+  
+regional_statistics (Materialized View)
+  - Pre-aggregated regional pricing
 ```
 
 ## 🔧 Tech Stack
@@ -221,27 +275,42 @@ Hosting:         Vercel
 next-app/
 ├── src/
 │   ├── app/
-│   │   ├── estimate-issues/          # 🆕 Programmatic SEO
+│   │   ├── estimate-issues/          # Programmatic SEO
 │   │   │   ├── [slug]/page.tsx      # Dynamic issue pages
 │   │   │   └── page.tsx             # Issue index
 │   │   ├── estimate-scan/            # Free conversion tool
+│   │   ├── dashboard/
+│   │   │   ├── page.tsx             # User dashboard
+│   │   │   └── intelligence/        # 🆕 Intelligence dashboard
+│   │   │       └── page.tsx
 │   │   ├── admin/
-│   │   │   ├── issues/page.tsx      # 🆕 Issue management
+│   │   │   ├── issues/page.tsx      # Issue management
+│   │   │   ├── intelligence/        # 🆕 Intelligence admin
+│   │   │   │   └── page.tsx
 │   │   │   ├── case-studies/
 │   │   │   ├── seo-pages/
 │   │   │   └── analytics/
 │   │   ├── api/
 │   │   │   ├── estimate-scan/
-│   │   │   ├── track-issue-click/   # 🆕
-│   │   │   ├── track-issue-conversion/  # 🆕
+│   │   │   ├── intelligence/        # 🆕 Intelligence APIs
+│   │   │   │   ├── carrier-patterns/
+│   │   │   │   ├── regional-pricing/
+│   │   │   │   ├── tactics/
+│   │   │   │   ├── missing-scope/
+│   │   │   │   ├── benchmarks/
+│   │   │   │   └── claim-insight/
+│   │   │   ├── track-issue-click/
+│   │   │   ├── track-issue-conversion/
 │   │   │   └── admin/
-│   │   │       ├── generate-issue-content/  # 🆕 AI generation
-│   │   │       └── seed-issues/     # 🆕 Seed data
-│   │   └── sitemap.ts               # 🆕 Auto-generated
+│   │   │       ├── generate-issue-content/
+│   │   │       └── seed-issues/
+│   │   └── sitemap.ts
 │   └── lib/
-│       └── openai.ts                # Updated with runLimitedEstimateAnalysis
+│       ├── openai.ts
+│       └── intelligence.ts          # 🆕 Intelligence library
 └── supabase/migrations/
-    └── 004_add_estimate_issues.sql  # 🆕 Schema
+    ├── 004_add_estimate_issues.sql
+    └── 005_add_claim_intelligence.sql  # 🆕 Intelligence schema
 ```
 
 ## 🚀 Deployment
@@ -252,7 +321,8 @@ next-app/
 -- 001_initial_schema.sql
 -- 002_add_underpayment_detection.sql
 -- 003_add_estimate_scans.sql
--- 004_add_estimate_issues.sql (NEW)
+-- 004_add_estimate_issues.sql
+-- 005_add_claim_intelligence.sql (NEW)
 ```
 
 ### Step 2: Seed Issues

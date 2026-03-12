@@ -170,6 +170,27 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* Intelligence Network */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-4">Industry Intelligence</h2>
+            <Link href="/dashboard/intelligence" className="card hover:shadow-xl transition-shadow bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200">
+              <div className="flex items-center gap-4">
+                <div className="bg-blue-600 rounded-lg p-3">
+                  <TrendingUp className="w-8 h-8 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">Claim Intelligence Network</h3>
+                  <p className="text-gray-700">
+                    View industry insights, carrier behavior patterns, and regional pricing data
+                  </p>
+                </div>
+                <div className="text-blue-600 font-semibold">
+                  View Dashboard →
+                </div>
+              </div>
+            </Link>
+          </div>
+
           {/* Upcoming Deadlines */}
           {deadlines.length > 0 && (
             <div className="card mb-8">
