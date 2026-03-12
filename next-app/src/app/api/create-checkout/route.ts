@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createCheckoutSession } from '@/lib/stripe'
-import { supabase } from '@/lib/supabase'
+import { supabase, supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await request.json()
+    const { userId, source } = await request.json()
 
     if (!userId) {
       return NextResponse.json({ error: 'User ID required' }, { status: 400 })
@@ -28,6 +28,13 @@ export async function POST(request: NextRequest) {
       `${baseUrl}/success`,
       `${baseUrl}/pricing`
     )
+
+    // Track checkout initiated
+    await supabaseAdmin.from('analytics_events').insert({
+      event_type: 'checkout_initiated',
+      user_id: userId,
+      metadata: { source: source || 'pricing_page' },
+    })
 
     return NextResponse.json({ url: session.url })
   } catch (error) {

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-import { Users, DollarSign, FileText, TrendingUp } from 'lucide-react'
+import { Users, DollarSign, FileText, TrendingUp, Zap, Target } from 'lucide-react'
 
 export default function AdminDashboardPage() {
   const router = useRouter()
@@ -45,14 +45,24 @@ export default function AdminDashboardPage() {
 
       <div className="section-container">
         <div className="max-w-7xl mx-auto">
-          {/* Stats Grid */}
+          {/* Primary Stats */}
           <div className="grid md:grid-cols-4 gap-6 mb-8">
             <div className="card">
               <div className="flex items-center gap-3">
                 <Users className="w-10 h-10 text-primary-600" />
                 <div>
                   <p className="text-sm text-gray-600">Total Users</p>
-                  <p className="text-2xl font-bold">{stats?.totalUsers || 0}</p>
+                  <p className="text-3xl font-bold">{stats?.totalUsers || 0}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="flex items-center gap-3">
+                <Users className="w-10 h-10 text-green-600" />
+                <div>
+                  <p className="text-sm text-gray-600">Paid Users</p>
+                  <p className="text-3xl font-bold">{stats?.paidUsers || 0}</p>
                 </div>
               </div>
             </div>
@@ -62,19 +72,9 @@ export default function AdminDashboardPage() {
                 <DollarSign className="w-10 h-10 text-green-600" />
                 <div>
                   <p className="text-sm text-gray-600">Revenue</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-3xl font-bold">
                     ${stats?.revenue?.toLocaleString() || 0}
                   </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="card">
-              <div className="flex items-center gap-3">
-                <FileText className="w-10 h-10 text-blue-600" />
-                <div>
-                  <p className="text-sm text-gray-600">Analyses</p>
-                  <p className="text-2xl font-bold">{stats?.totalAnalyses || 0}</p>
                 </div>
               </div>
             </div>
@@ -84,7 +84,79 @@ export default function AdminDashboardPage() {
                 <TrendingUp className="w-10 h-10 text-purple-600" />
                 <div>
                   <p className="text-sm text-gray-600">Conversion Rate</p>
-                  <p className="text-2xl font-bold">{stats?.conversionRate || 0}%</p>
+                  <p className="text-3xl font-bold">{stats?.conversionRate || 0}%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Estimate Scan Funnel */}
+          <div className="card mb-8 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200">
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+              <Zap className="w-6 h-6 text-blue-600" />
+              Estimate Scan Funnel (Free Tool)
+            </h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="bg-white rounded-lg p-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <FileText className="w-8 h-8 text-blue-600" />
+                  <div>
+                    <p className="text-sm text-gray-600">Total Scans</p>
+                    <p className="text-3xl font-bold text-gray-900">{stats?.estimateScans || 0}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg p-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <Target className="w-8 h-8 text-green-600" />
+                  <div>
+                    <p className="text-sm text-gray-600">Conversions</p>
+                    <p className="text-3xl font-bold text-gray-900">{stats?.scanConversions || 0}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg p-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <TrendingUp className="w-8 h-8 text-purple-600" />
+                  <div>
+                    <p className="text-sm text-gray-600">Scan → Paid</p>
+                    <p className="text-3xl font-bold text-gray-900">{stats?.scanConversionRate || 0}%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Feature Usage */}
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            <div className="card">
+              <div className="flex items-center gap-3">
+                <FileText className="w-8 h-8 text-blue-600" />
+                <div>
+                  <p className="text-sm text-gray-600">Policy Analyses</p>
+                  <p className="text-2xl font-bold">{stats?.totalAnalyses || 0}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="flex items-center gap-3">
+                <FileText className="w-8 h-8 text-orange-600" />
+                <div>
+                  <p className="text-sm text-gray-600">Estimate Analyses</p>
+                  <p className="text-2xl font-bold">{stats?.estimateAnalyses || 0}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="flex items-center gap-3">
+                <FileText className="w-8 h-8 text-purple-600" />
+                <div>
+                  <p className="text-sm text-gray-600">Doc Packets</p>
+                  <p className="text-2xl font-bold">{stats?.docPackets || 0}</p>
                 </div>
               </div>
             </div>
@@ -107,9 +179,9 @@ export default function AdminDashboardPage() {
             </Link>
 
             <Link href="/admin/analytics" className="card hover:shadow-xl transition-shadow">
-              <h3 className="text-lg font-bold mb-2">Analytics</h3>
+              <h3 className="text-lg font-bold mb-2">Detailed Analytics</h3>
               <p className="text-gray-600 text-sm">
-                View detailed analytics and user behavior
+                View event log and user behavior
               </p>
             </Link>
           </div>

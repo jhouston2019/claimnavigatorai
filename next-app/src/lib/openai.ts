@@ -65,6 +65,48 @@ Return as JSON with keys: carrierAmount (number), estimatedTrueScope (number), g
   return JSON.parse(completion.choices[0].message.content || '{}')
 }
 
+export async function runLimitedEstimateAnalysis(estimateText: string) {
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4-turbo-preview',
+    messages: [
+      {
+        role: 'system',
+        content: `You are an insurance estimate analyzer. Provide a LIMITED diagnostic scan that identifies potential issues but withholds detailed analysis to encourage upgrade.`
+      },
+      {
+        role: 'user',
+        content: `Analyze this insurance estimate and provide a LIMITED diagnostic scan:
+
+Estimate:
+${estimateText}
+
+Provide:
+1. Carrier estimate total value (extract from document)
+2. Estimated true scope range (low and high estimates)
+3. Potential gap range (low and high)
+4. Top 3-5 detected issues (show only the most obvious ones)
+5. Carrier tactics detected (phrases like "wear and tear", "pre-existing", etc.)
+6. Claim severity score (0-100, where higher = more likely underpaid)
+7. Timeline risk assessment (estimate days in claim, risk level)
+
+Return as JSON with keys: 
+- carrierEstimateValue (number)
+- estimatedScopeRange (object: {low: number, high: number})
+- potentialGapLow (number)
+- potentialGapHigh (number)
+- detectedIssues (array of 3-5 strings - only show most obvious)
+- detectedCarrierTactics (array of objects: {tactic: string, explanation: string})
+- claimSeverityScore (number 0-100)
+- timelineRisk (object: {daysInClaim: number, riskLevel: string, message: string})`
+      }
+    ],
+    response_format: { type: 'json_object' },
+    temperature: 0.4,
+  })
+
+  return JSON.parse(completion.choices[0].message.content || '{}')
+}
+
 export async function detectUnderpayment(data: {
   carrierText: string
   contractorText?: string
