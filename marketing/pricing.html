@@ -152,39 +152,52 @@
   </nav>
 
   <main class="pricing-section">
-    <h1>Simple, Transparent Pricing</h1>
-    <p>One claim. One complete toolkit.</p>
+    <h1>Claim Analysis Report</h1>
+    <p>Get the complete analysis with actionable guidance</p>
     
     <div class="pricing-card">
-      <h2>Per Claim</h2>
-      <div class="pricing-amount">$149</div>
-      <p class="pricing-description">Unlock one complete claim toolkit with all professional tools</p>
+      <h2>Full Claim Analysis</h2>
+      <div class="pricing-amount">$297</div>
+      <p class="pricing-description">Complete claim analysis report with professional tools and guidance</p>
       
       <div class="pricing-features">
         <ul>
+          <li>Complete Insurer Reasoning Breakdown</li>
+          <li>Full Claim Dispute Analysis</li>
+          <li>Line-by-Line Estimate Comparison</li>
+          <li>Policy Coverage Analysis</li>
+          <li>Complete Documentation Checklist</li>
+          <li>Step-by-Step Next Actions</li>
+          <li>Shareable Professional Report</li>
+          <li>Access to Premium Claim Tools</li>
           <li>Document Generator (60+ templates)</li>
-          <li>AI Response Agent</li>
           <li>Evidence Organizer</li>
-          <li>Claim Health Engine</li>
-          <li>Claim Portfolio Generator</li>
-          <li>Complete Claim Roadmap</li>
-          <li>State-specific guidance</li>
-          <li>Professional document watermarking</li>
+          <li>Download & Print Options</li>
         </ul>
       </div>
       
       <button onclick="launchDirectCheckout()" class="pricing-cta">
-        Unlock My Claim
+        Get Full Report — $297
       </button>
     </div>
     
-    <p style="color: #9ca3af; font-size: 14px;">
-      No monthly fees. No hidden costs. Pay once per claim.
+    <p style="color: #9ca3af; font-size: 14px; margin-top: 20px;">
+      If you recover even $5,000 more, that's a 17x return on investment.
+    </p>
+    
+    <p style="color: #9ca3af; font-size: 14px; margin-top: 10px;">
+      No monthly fees. One-time payment per claim.
     </p>
   </main>
 
   <script src="/app/assets/js/stripe-checkout.js"></script>
   <script>
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const source = urlParams.get('source');
+    const issue = urlParams.get('issue');
+    const type = urlParams.get('type');
+    
     // Direct checkout without requiring login first
     async function launchDirectCheckout() {
       try {
@@ -194,6 +207,15 @@
         button.textContent = 'Preparing checkout...';
         button.disabled = true;
 
+        // Store analyzer data in session storage for post-purchase redirect
+        if (source === 'analyzer' && issue && type) {
+          sessionStorage.setItem('analyzerData', JSON.stringify({
+            issue: issue,
+            type: type,
+            timestamp: Date.now()
+          }));
+        }
+
         // Create Stripe checkout session with Stripe collecting email
         const response = await fetch('/.netlify/functions/create-checkout-session-guest', {
           method: 'POST',
@@ -201,8 +223,11 @@
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            // No user data needed - Stripe will collect email
-            source: 'pricing_page'
+            source: source || 'pricing_page',
+            metadata: {
+              claim_issue: issue,
+              damage_type: type
+            }
           })
         });
 
@@ -225,7 +250,7 @@
         
         // Reset button
         const button = event.target;
-        button.textContent = 'Unlock My Claim';
+        button.textContent = originalText;
         button.disabled = false;
       }
     }

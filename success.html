@@ -167,6 +167,32 @@
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+    // Check if this is from the analyzer flow
+    const analyzerData = sessionStorage.getItem('analyzerData');
+    if (analyzerData) {
+      try {
+        const data = JSON.parse(analyzerData);
+        // Show redirect message
+        const container = document.querySelector('.container');
+        if (container) {
+          const redirectMsg = document.createElement('div');
+          redirectMsg.className = 'success';
+          redirectMsg.innerHTML = '<p style="font-weight:600; font-size:1.1rem;">✓ Payment successful! Redirecting to your claim analysis report...</p>';
+          container.insertBefore(redirectMsg, container.firstChild);
+        }
+        
+        // Redirect to claim report after 3 seconds
+        setTimeout(() => {
+          window.location.href = `/app/claim-report.html?issue=${data.issue}&type=${data.type}`;
+        }, 3000);
+        
+        // Clear analyzer data
+        sessionStorage.removeItem('analyzerData');
+      } catch (e) {
+        console.error('Error parsing analyzer data:', e);
+      }
+    }
+
     // Initialize Supabase client with dynamic configuration
     let supabase = null;
     

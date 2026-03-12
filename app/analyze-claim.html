@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analyze My Claim - Claim Command Pro</title>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0B2545 0%, #123A63 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      padding: 2rem 1rem;
+    }
+    
+    .analyzer-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .analyzer-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .analyzer-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #ffffff;
+    }
+    
+    .analyzer-header p {
+      font-size: 1.2rem;
+      color: #e8eef5;
+      line-height: 1.6;
+    }
+    
+    .analyzer-step {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      display: none;
+    }
+    
+    .analyzer-step.active {
+      display: block;
+    }
+    
+    .step-title {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #ffffff;
+    }
+    
+    .step-description {
+      font-size: 1.1rem;
+      color: #e8eef5;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+    
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .option-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    
+    .option-card:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: #17BEBB;
+      transform: translateY(-2px);
+    }
+    
+    .option-card.selected {
+      background: rgba(23, 190, 187, 0.2);
+      border-color: #17BEBB;
+    }
+    
+    .option-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: #ffffff;
+    }
+    
+    .option-card p {
+      font-size: 0.9rem;
+      color: #e8eef5;
+      margin: 0;
+    }
+    
+    .upload-zone {
+      border: 2px dashed rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.03);
+      margin-bottom: 2rem;
+    }
+    
+    .upload-zone:hover {
+      border-color: #17BEBB;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    
+    .upload-zone.dragover {
+      border-color: #17BEBB;
+      background: rgba(23, 190, 187, 0.1);
+    }
+    
+    .upload-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    
+    .upload-text {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: #ffffff;
+    }
+    
+    .upload-hint {
+      font-size: 0.95rem;
+      color: #e8eef5;
+    }
+    
+    .file-list {
+      margin-top: 1.5rem;
+    }
+    
+    .file-item {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .file-name {
+      font-size: 0.95rem;
+      color: #ffffff;
+    }
+    
+    .file-remove {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #FCA5A5;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    
+    .file-remove:hover {
+      background: rgba(239, 68, 68, 0.3);
+    }
+    
+    .btn-primary {
+      background: #17BEBB;
+      color: #ffffff;
+      padding: 1rem 2rem;
+      border-radius: 6px;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    
+    .btn-primary:hover {
+      background: #13a09d;
+      transform: translateY(-1px);
+    }
+    
+    .btn-primary:disabled {
+      background: rgba(255, 255, 255, 0.2);
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-secondary {
+      background: transparent;
+      color: #ffffff;
+      padding: 1rem 2rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-right: 1rem;
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .step-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+    }
+    
+    .progress-bar {
+      background: rgba(255, 255, 255, 0.1);
+      height: 6px;
+      border-radius: 3px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      background: #17BEBB;
+      height: 100%;
+      transition: width 0.3s;
+    }
+    
+    .insight-preview {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .insight-block {
+      background: rgba(23, 190, 187, 0.1);
+      border-left: 4px solid #17BEBB;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-radius: 4px;
+    }
+    
+    .insight-block h3 {
+      color: #17BEBB;
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .insight-block p {
+      color: #e8eef5;
+      line-height: 1.6;
+      margin: 0;
+    }
+    
+    .insight-quote {
+      background: rgba(255, 255, 255, 0.08);
+      border-left: 3px solid #FCA5A5;
+      padding: 1rem 1.5rem;
+      margin: 1rem 0;
+      font-style: italic;
+      color: #FCA5A5;
+    }
+    
+    .paywall-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px solid #17BEBB;
+      border-radius: 12px;
+      padding: 2.5rem;
+      text-align: center;
+      margin-top: 2rem;
+    }
+    
+    .paywall-card h2 {
+      color: #ffffff;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    .paywall-price {
+      color: #17BEBB;
+      font-size: 3rem;
+      font-weight: 900;
+      margin: 1.5rem 0;
+    }
+    
+    .paywall-features {
+      text-align: left;
+      margin: 2rem 0;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .paywall-features ul {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .paywall-features li {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e8eef5;
+    }
+    
+    .paywall-features li:before {
+      content: "✓ ";
+      color: #17BEBB;
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+      .analyzer-header h1 {
+        font-size: 1.8rem;
+      }
+      
+      .step-title {
+        font-size: 1.4rem;
+      }
+      
+      .option-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .step-nav {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .btn-secondary {
+        margin-right: 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="analyzer-container">
+    <div class="analyzer-header">
+      <h1>Analyze Your Claim</h1>
+      <p>Answer a few questions and upload your documents to get an instant insight preview</p>
+    </div>
+    
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 25%;"></div>
+    </div>
+    
+    <!-- Step 1: Claim Issue -->
+    <div class="analyzer-step active" id="step1">
+      <h2 class="step-title">What's happening with your claim?</h2>
+      <p class="step-description">Select the issue that best describes your situation</p>
+      
+      <div class="option-grid">
+        <div class="option-card" data-value="denied">
+          <h3>Claim Denied</h3>
+          <p>Insurance company rejected the claim</p>
+        </div>
+        <div class="option-card" data-value="wear-tear">
+          <h3>Wear and Tear</h3>
+          <p>Insurer says damage is maintenance-related</p>
+        </div>
+        <div class="option-card" data-value="lowball">
+          <h3>Estimate Too Low</h3>
+          <p>Offer is far below repair costs</p>
+        </div>
+        <div class="option-card" data-value="delayed">
+          <h3>Taking Too Long</h3>
+          <p>Claim is stalled or under investigation</p>
+        </div>
+        <div class="option-card" data-value="missed-damage">
+          <h3>Adjuster Missed Damage</h3>
+          <p>Scope doesn't include all damage</p>
+        </div>
+        <div class="option-card" data-value="engineer-dispute">
+          <h3>Engineer Report Dispute</h3>
+          <p>Disagreement over engineer findings</p>
+        </div>
+        <div class="option-card" data-value="other">
+          <h3>Other Dispute</h3>
+          <p>Different claim issue</p>
+        </div>
+      </div>
+      
+      <div class="step-nav">
+        <div></div>
+        <button class="btn-primary" id="step1Next" disabled>Continue</button>
+      </div>
+    </div>
+    
+    <!-- Step 2: Claim Type -->
+    <div class="analyzer-step" id="step2">
+      <h2 class="step-title">What type of damage?</h2>
+      <p class="step-description">Select the primary type of property damage</p>
+      
+      <div class="option-grid">
+        <div class="option-card" data-value="roof">
+          <h3>Roof Damage</h3>
+          <p>Hail, wind, or storm damage to roof</p>
+        </div>
+        <div class="option-card" data-value="water">
+          <h3>Water Damage</h3>
+          <p>Leak, flood, or water intrusion</p>
+        </div>
+        <div class="option-card" data-value="fire">
+          <h3>Fire Damage</h3>
+          <p>Fire or smoke damage</p>
+        </div>
+        <div class="option-card" data-value="storm">
+          <h3>Storm Damage</h3>
+          <p>Hurricane, tornado, or severe weather</p>
+        </div>
+        <div class="option-card" data-value="other">
+          <h3>Other Damage</h3>
+          <p>Different property damage type</p>
+        </div>
+      </div>
+      
+      <div class="step-nav">
+        <button class="btn-secondary" id="step2Back">Back</button>
+        <button class="btn-primary" id="step2Next" disabled>Continue</button>
+      </div>
+    </div>
+    
+    <!-- Step 3: Document Upload -->
+    <div class="analyzer-step" id="step3">
+      <h2 class="step-title">Upload your claim documents</h2>
+      <p class="step-description">Upload any documents you have. The more you provide, the better the analysis.</p>
+      
+      <div class="upload-zone" id="uploadZone">
+        <div class="upload-icon">📄</div>
+        <div class="upload-text">Click to upload or drag files here</div>
+        <div class="upload-hint">Denial letters, estimates, engineer reports, policy, correspondence</div>
+        <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display:none;">
+      </div>
+      
+      <div class="file-list" id="fileList"></div>
+      
+      <div style="background: rgba(23, 190, 187, 0.1); border: 1px solid rgba(23, 190, 187, 0.3); border-radius: 8px; padding: 1.5rem; margin-top: 1.5rem;">
+        <p style="color: #17BEBB; font-weight: 600; margin-bottom: 0.5rem;">💡 Tip: Upload what you have</p>
+        <p style="color: #e8eef5; margin: 0; font-size: 0.95rem;">
+          Even if you don't have all documents, upload what you have. The system will identify what's missing and show you what to obtain.
+        </p>
+      </div>
+      
+      <div class="step-nav">
+        <button class="btn-secondary" id="step3Back">Back</button>
+        <button class="btn-primary" id="step3Next">Generate Instant Insight</button>
+      </div>
+    </div>
+    
+    <!-- Step 4: Instant Insight Preview -->
+    <div class="analyzer-step" id="step4">
+      <h2 class="step-title">Your Instant Claim Insight</h2>
+      <p class="step-description">Here's what we found in your documents</p>
+      
+      <div class="insight-preview">
+        <div class="insight-block">
+          <h3>Key Insurer Statement Identified</h3>
+          <div class="insight-quote" id="insurerQuote">
+            "Damage observed is consistent with long-term deterioration rather than a sudden storm event."
+          </div>
+          <p id="insurerExplanation">
+            This language indicates the insurer is disputing causation—arguing the damage existed before the reported storm rather than being caused by a covered weather event.
+          </p>
+        </div>
+        
+        <div class="insight-block">
+          <h3>Likely Dispute Category</h3>
+          <p id="disputeCategory">
+            <strong style="color:#17BEBB;">Causation Dispute</strong><br>
+            The insurer is not disputing that damage exists, but is arguing it was not caused by the covered event. This requires proof of damage timing and condition before the loss.
+          </p>
+        </div>
+        
+        <div class="insight-block">
+          <h3>Potential Documentation Gap</h3>
+          <p id="docGap">
+            Missing: Pre-loss condition documentation, weather event verification, and contractor causation statement. These items are critical to proving the damage occurred during the covered event.
+          </p>
+        </div>
+        
+        <div class="insight-block" id="estimateBlock" style="display:none;">
+          <h3>Estimate / Scope Issue Detected</h3>
+          <p id="estimateIssue">
+            Preliminary comparison shows potential pricing gap of approximately $12,000-$18,000 based on uploaded estimates. Full line-item analysis available in complete report.
+          </p>
+        </div>
+      </div>
+      
+      <div style="background: rgba(23, 190, 187, 0.15); border: 1px solid rgba(23, 190, 187, 0.4); border-radius: 8px; padding: 1.5rem; margin-top: 1.5rem; text-align: center;">
+        <p style="color: #ffffff; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;">
+          This preview proves the system understands your claim.
+        </p>
+        <p style="color: #e8eef5; margin: 0;">
+          Unlock the full report to see the complete analysis, documentation checklist, and next actions.
+        </p>
+      </div>
+      
+      <!-- Paywall -->
+      <div class="paywall-card">
+        <h2>Unlock Full Claim Analysis</h2>
+        <div class="paywall-price">$297</div>
+        <p style="color: #e8eef5; font-size: 1.1rem; margin-bottom: 2rem;">
+          Get the complete report with actionable guidance
+        </p>
+        
+        <div class="paywall-features">
+          <ul>
+            <li>Complete Insurer Reasoning Breakdown</li>
+            <li>Full Claim Dispute Analysis</li>
+            <li>Line-by-Line Estimate Comparison</li>
+            <li>Policy Coverage Signals</li>
+            <li>Complete Documentation Checklist</li>
+            <li>Step-by-Step Next Actions</li>
+            <li>Shareable Professional Report</li>
+            <li>Download & Print Options</li>
+          </ul>
+        </div>
+        
+        <button class="btn-primary" id="unlockReport" style="margin-top: 1.5rem;">
+          Unlock Full Report — $297
+        </button>
+        
+        <p style="color: #e8eef5; font-size: 0.9rem; margin-top: 1.5rem;">
+          If you recover even $5,000 more, that's a 17x return on investment.
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // State management
+    const analyzerState = {
+      claimIssue: null,
+      claimType: null,
+      files: []
+    };
+    
+    // Step navigation
+    let currentStep = 1;
+    
+    function showStep(stepNumber) {
+      document.querySelectorAll('.analyzer-step').forEach(step => {
+        step.classList.remove('active');
+      });
+      document.getElementById(`step${stepNumber}`).classList.add('active');
+      currentStep = stepNumber;
+      
+      // Update progress bar
+      const progress = (stepNumber / 4) * 100;
+      document.getElementById('progressFill').style.width = `${progress}%`;
+    }
+    
+    // Step 1: Claim Issue Selection
+    document.querySelectorAll('#step1 .option-card').forEach(card => {
+      card.addEventListener('click', function() {
+        document.querySelectorAll('#step1 .option-card').forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+        analyzerState.claimIssue = this.dataset.value;
+        document.getElementById('step1Next').disabled = false;
+      });
+    });
+    
+    document.getElementById('step1Next').addEventListener('click', () => {
+      showStep(2);
+    });
+    
+    // Step 2: Claim Type Selection
+    document.querySelectorAll('#step2 .option-card').forEach(card => {
+      card.addEventListener('click', function() {
+        document.querySelectorAll('#step2 .option-card').forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+        analyzerState.claimType = this.dataset.value;
+        document.getElementById('step2Next').disabled = false;
+      });
+    });
+    
+    document.getElementById('step2Back').addEventListener('click', () => {
+      showStep(1);
+    });
+    
+    document.getElementById('step2Next').addEventListener('click', () => {
+      showStep(3);
+    });
+    
+    // Step 3: Document Upload
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileList = document.getElementById('fileList');
+    
+    uploadZone.addEventListener('click', () => {
+      fileInput.click();
+    });
+    
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.classList.add('dragover');
+    });
+    
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.classList.remove('dragover');
+    });
+    
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+      handleFiles(e.target.files);
+    });
+    
+    function handleFiles(files) {
+      Array.from(files).forEach(file => {
+        analyzerState.files.push(file);
+        addFileToList(file);
+      });
+    }
+    
+    function addFileToList(file) {
+      const fileItem = document.createElement('div');
+      fileItem.className = 'file-item';
+      fileItem.innerHTML = `
+        <span class="file-name">${file.name}</span>
+        <button class="file-remove" onclick="removeFile('${file.name}')">Remove</button>
+      `;
+      fileList.appendChild(fileItem);
+    }
+    
+    window.removeFile = function(fileName) {
+      analyzerState.files = analyzerState.files.filter(f => f.name !== fileName);
+      renderFileList();
+    };
+    
+    function renderFileList() {
+      fileList.innerHTML = '';
+      analyzerState.files.forEach(file => {
+        addFileToList(file);
+      });
+    }
+    
+    document.getElementById('step3Back').addEventListener('click', () => {
+      showStep(2);
+    });
+    
+    document.getElementById('step3Next').addEventListener('click', () => {
+      // Simulate analysis
+      generateInsightPreview();
+      showStep(4);
+    });
+    
+    // Generate insight preview based on uploaded documents and selections
+    function generateInsightPreview() {
+      const { claimIssue, claimType, files } = analyzerState;
+      
+      // Customize insight based on claim issue
+      const insurerQuote = document.getElementById('insurerQuote');
+      const insurerExplanation = document.getElementById('insurerExplanation');
+      const disputeCategory = document.getElementById('disputeCategory');
+      const docGap = document.getElementById('docGap');
+      
+      // Customize based on claim issue
+      if (claimIssue === 'denied') {
+        insurerQuote.textContent = '"Claim denied. Damage is not covered under policy terms."';
+        insurerExplanation.textContent = 'This is a coverage dispute. The insurer is arguing the damage type or cause is excluded from the policy. This requires policy language analysis and coverage trigger identification.';
+        disputeCategory.innerHTML = '<strong style="color:#17BEBB;">Coverage Dispute</strong><br>The insurer is disputing whether the policy covers this type of damage. Resolution requires policy interpretation and coverage analysis.';
+        docGap.textContent = 'Missing: Policy declarations page, specific policy exclusion language cited, and evidence showing damage falls within covered perils. These items are critical to proving coverage applies.';
+      } else if (claimIssue === 'wear-tear') {
+        insurerQuote.textContent = '"Damage observed is consistent with long-term deterioration rather than a sudden event."';
+        insurerExplanation.textContent = 'This language indicates the insurer is disputing causation—arguing the damage existed before the reported event rather than being caused by a covered occurrence.';
+        disputeCategory.innerHTML = '<strong style="color:#17BEBB;">Causation Dispute</strong><br>The insurer is not disputing that damage exists, but is arguing it was not caused by the covered event. This requires proof of damage timing and pre-loss condition.';
+        docGap.textContent = 'Missing: Pre-loss condition documentation, event verification, and contractor causation statement. These items are critical to proving the damage occurred during the covered event.';
+      } else if (claimIssue === 'lowball') {
+        insurerQuote.textContent = '"Our estimate reflects the scope of covered damage and appropriate pricing."';
+        insurerExplanation.textContent = 'This indicates a scope or pricing dispute. The insurer is arguing their estimate is accurate, but contractor estimates show a significant gap.';
+        disputeCategory.innerHTML = '<strong style="color:#17BEBB;">Scope / Pricing Disagreement</strong><br>The insurer and contractor disagree on the extent of damage or the cost to repair. This requires line-by-line estimate comparison and market rate validation.';
+        docGap.textContent = 'Missing: Detailed contractor estimate with line items, photos of all damage, and market rate documentation. These items are critical to proving the full scope and cost of repairs.';
+        
+        // Show estimate block if files were uploaded
+        if (files.length > 0) {
+          document.getElementById('estimateBlock').style.display = 'block';
+        }
+      }
+    }
+    
+    // Unlock report button
+    document.getElementById('unlockReport').addEventListener('click', async () => {
+      // Redirect to checkout with analyzer data
+      const button = document.getElementById('unlockReport');
+      button.textContent = 'Preparing checkout...';
+      button.disabled = true;
+      
+      try {
+        // In production, this would save the analyzer data and create a checkout session
+        // For now, redirect to the pricing page
+        window.location.href = '/marketing/pricing.html?source=analyzer&issue=' + analyzerState.claimIssue + '&type=' + analyzerState.claimType;
+      } catch (error) {
+        console.error('Checkout error:', error);
+        alert('Unable to start checkout. Please try again or contact support.');
+        button.textContent = 'Unlock Full Report — $297';
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

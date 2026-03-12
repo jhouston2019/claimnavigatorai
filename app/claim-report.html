@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Claim Analysis Report - Claim Command Pro</title>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #F7F9FC;
+      color: #1f2937;
+      padding: 2rem 1rem;
+      line-height: 1.6;
+    }
+    
+    .report-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 3rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .report-header {
+      text-align: center;
+      padding-bottom: 2rem;
+      border-bottom: 2px solid #e5e7eb;
+      margin-bottom: 3rem;
+    }
+    
+    .report-header h1 {
+      font-size: 2.5rem;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+    }
+    
+    .report-header .report-date {
+      color: #6b7280;
+      font-size: 0.95rem;
+    }
+    
+    .report-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+      border: none;
+    }
+    
+    .btn-primary {
+      background: #17BEBB;
+      color: #ffffff;
+    }
+    
+    .btn-primary:hover {
+      background: #13a09d;
+    }
+    
+    .btn-secondary {
+      background: transparent;
+      color: #4b5563;
+      border: 1px solid #d1d5db;
+    }
+    
+    .btn-secondary:hover {
+      background: #F7F9FC;
+    }
+    
+    .report-section {
+      margin-bottom: 3rem;
+    }
+    
+    .section-title {
+      font-size: 1.8rem;
+      color: #1f2937;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #17BEBB;
+    }
+    
+    .section-content {
+      color: #4b5563;
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+    
+    .info-block {
+      background: #F7F9FC;
+      border-left: 4px solid #17BEBB;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 4px;
+    }
+    
+    .info-block h3 {
+      color: #1f2937;
+      font-size: 1.2rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .info-block p {
+      margin: 0.5rem 0;
+    }
+    
+    .quote-block {
+      background: #FEF3C7;
+      border-left: 4px solid #F59E0B;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: #92400E;
+      border-radius: 4px;
+    }
+    
+    .warning-block {
+      background: #FEE2E2;
+      border-left: 4px solid #EF4444;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 4px;
+    }
+    
+    .warning-block h3 {
+      color: #991B1B;
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .success-block {
+      background: #D1FAE5;
+      border-left: 4px solid #10B981;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 4px;
+    }
+    
+    .success-block h3 {
+      color: #065F46;
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .checklist li {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: flex-start;
+    }
+    
+    .checklist li:before {
+      content: "☐";
+      color: #17BEBB;
+      font-size: 1.3rem;
+      margin-right: 0.75rem;
+      flex-shrink: 0;
+    }
+    
+    .estimate-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+    
+    .estimate-table th,
+    .estimate-table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .estimate-table th {
+      background: #F7F9FC;
+      font-weight: 600;
+      color: #1f2937;
+    }
+    
+    .estimate-table .gap-row {
+      background: #FEF3C7;
+      font-weight: 600;
+    }
+    
+    .action-steps {
+      counter-reset: step-counter;
+      list-style: none;
+      padding: 0;
+    }
+    
+    .action-steps li {
+      counter-increment: step-counter;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      background: #F7F9FC;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      position: relative;
+      padding-left: 4rem;
+    }
+    
+    .action-steps li:before {
+      content: counter(step-counter);
+      position: absolute;
+      left: 1.25rem;
+      top: 1.25rem;
+      background: #17BEBB;
+      color: #ffffff;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    
+    .share-section {
+      background: #E0F2FE;
+      border: 1px solid #BAE6FD;
+      border-radius: 8px;
+      padding: 2rem;
+      margin-top: 3rem;
+      text-align: center;
+    }
+    
+    .share-section h3 {
+      color: #075985;
+      margin-bottom: 1rem;
+    }
+    
+    .share-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+      .report-container {
+        padding: 1.5rem;
+      }
+      
+      .report-header h1 {
+        font-size: 1.8rem;
+      }
+      
+      .section-title {
+        font-size: 1.4rem;
+      }
+      
+      .report-actions {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+    }
+    
+    @media print {
+      body {
+        background: #ffffff;
+        padding: 0;
+      }
+      
+      .report-actions,
+      .share-section {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="report-container">
+    <div class="report-header">
+      <h1>Claim Analysis Report</h1>
+      <div class="report-date">Generated: <span id="reportDate"></span></div>
+      <div class="report-actions">
+        <button class="btn btn-primary" onclick="window.print()">Download / Print Report</button>
+        <button class="btn btn-secondary" onclick="shareReport()">Share Report</button>
+        <a href="/app/claim-command-center.html" class="btn btn-secondary">Access Premium Tools</a>
+      </div>
+    </div>
+    
+    <!-- Claim Summary -->
+    <div class="report-section">
+      <h2 class="section-title">Claim Summary</h2>
+      <div class="section-content">
+        <div class="info-block">
+          <h3>Claim Details</h3>
+          <p><strong>Claim Issue:</strong> <span id="claimIssue">Claim Denied</span></p>
+          <p><strong>Damage Type:</strong> <span id="damageType">Roof - Hail Damage</span></p>
+          <p><strong>Date of Loss:</strong> <span id="lossDate">March 15, 2025</span></p>
+          <p><strong>Current Status:</strong> <span id="claimStatus">Disputed - Denial Letter Received</span></p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Insurer Reasoning Breakdown -->
+    <div class="report-section">
+      <h2 class="section-title">Insurer Reasoning Breakdown</h2>
+      <div class="section-content">
+        <p>The insurance company's position is based on the following arguments extracted from your claim correspondence:</p>
+        
+        <div class="quote-block">
+          <strong>Key Insurer Statement:</strong><br>
+          "Damage observed is consistent with long-term deterioration rather than a sudden storm event. The granule loss and shingle condition indicate wear and tear over time, not hail impact."
+        </div>
+        
+        <div class="info-block">
+          <h3>What This Means</h3>
+          <p>
+            The insurer is disputing <strong>causation</strong>—they are not arguing that your roof is undamaged, 
+            but rather that the damage existed before the reported hail storm. This is a common dispute tactic 
+            that shifts the burden of proof to you to demonstrate the damage occurred during the covered event.
+          </p>
+          <p style="margin-top: 1rem;">
+            <strong>Critical Point:</strong> This argument can be countered with pre-loss condition documentation, 
+            weather event verification, and expert contractor statements on damage timing and causation.
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Claim Dispute Category -->
+    <div class="report-section">
+      <h2 class="section-title">Claim Dispute Category</h2>
+      <div class="section-content">
+        <div class="warning-block">
+          <h3>Dispute Type: Causation Dispute</h3>
+          <p>
+            The insurer is not disputing coverage or scope, but is arguing the damage was not caused by the 
+            covered peril (hail storm). This type of dispute requires:
+          </p>
+          <ul style="margin-top: 0.75rem; padding-left: 1.5rem;">
+            <li>Proof of pre-loss roof condition</li>
+            <li>Weather event verification and timing</li>
+            <li>Expert opinion on damage causation</li>
+            <li>Photographic evidence of hail impact patterns</li>
+          </ul>
+        </div>
+        
+        <p style="margin-top: 1.5rem;">
+          <strong>Resolution Strategy:</strong> Causation disputes are resolved by establishing a timeline 
+          and demonstrating that the damage characteristics are consistent with the covered event, not 
+          pre-existing wear and tear.
+        </p>
+      </div>
+    </div>
+    
+    <!-- Estimate / Scope Issues -->
+    <div class="report-section">
+      <h2 class="section-title">Estimate / Scope Issues</h2>
+      <div class="section-content">
+        <p>Based on the uploaded insurance estimate and contractor estimate, the following discrepancies were identified:</p>
+        
+        <table class="estimate-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Insurance Estimate</th>
+              <th>Contractor Estimate</th>
+              <th>Gap</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Roof Replacement (30 sq)</td>
+              <td>$8,500</td>
+              <td>$12,750</td>
+              <td style="color: #EF4444;">+$4,250</td>
+            </tr>
+            <tr>
+              <td>Underlayment</td>
+              <td>$1,200</td>
+              <td>$2,100</td>
+              <td style="color: #EF4444;">+$900</td>
+            </tr>
+            <tr>
+              <td>Ridge Vent Replacement</td>
+              <td>Not included</td>
+              <td>$850</td>
+              <td style="color: #EF4444;">+$850</td>
+            </tr>
+            <tr>
+              <td>Flashing Replacement</td>
+              <td>$450</td>
+              <td>$1,200</td>
+              <td style="color: #EF4444;">+$750</td>
+            </tr>
+            <tr>
+              <td>Gutter Replacement</td>
+              <td>Not included</td>
+              <td>$1,850</td>
+              <td style="color: #EF4444;">+$1,850</td>
+            </tr>
+            <tr class="gap-row">
+              <td colspan="3"><strong>Total Identified Gap</strong></td>
+              <td><strong>+$8,600</strong></td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div class="warning-block">
+          <h3>Missing Scope Items</h3>
+          <p>The insurance estimate does not include:</p>
+          <ul style="margin-top: 0.75rem; padding-left: 1.5rem;">
+            <li>Ridge vent replacement (required for proper ventilation)</li>
+            <li>Gutter damage from hail impact</li>
+            <li>Full flashing replacement (underestimated scope)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Policy / Coverage Signals -->
+    <div class="report-section">
+      <h2 class="section-title">Policy / Coverage Signals</h2>
+      <div class="section-content">
+        <div class="success-block">
+          <h3>Coverage Appears to Apply</h3>
+          <p>
+            Based on the policy language, hail damage to the roof is a covered peril under your policy. 
+            The policy does not contain exclusions that would prevent coverage for sudden hail damage.
+          </p>
+        </div>
+        
+        <div class="info-block">
+          <h3>Relevant Policy Provisions</h3>
+          <p><strong>Coverage A - Dwelling:</strong> Covers direct physical loss to the dwelling caused by a covered peril, including hail.</p>
+          <p><strong>Deductible:</strong> $2,500 (all perils)</p>
+          <p><strong>Replacement Cost Coverage:</strong> Yes - actual cash value paid initially, recoverable depreciation paid upon completion of repairs</p>
+        </div>
+        
+        <p style="margin-top: 1.5rem;">
+          <strong>Key Takeaway:</strong> The dispute is not about whether coverage exists, but about proving 
+          the damage was caused by the covered hail event rather than pre-existing wear and tear.
+        </p>
+      </div>
+    </div>
+    
+    <!-- Documentation Gaps -->
+    <div class="report-section">
+      <h2 class="section-title">Documentation Gaps</h2>
+      <div class="section-content">
+        <p>The following documentation is missing or incomplete and should be obtained to strengthen your claim:</p>
+        
+        <ul class="checklist">
+          <li>Pre-loss roof condition photos (if available from real estate listing, previous inspection, or personal records)</li>
+          <li>Weather verification report showing hail event date, location, and hail size</li>
+          <li>Contractor causation statement explaining how damage is consistent with hail impact, not wear and tear</li>
+          <li>Detailed photos of hail impact patterns on roof, gutters, and other exterior surfaces</li>
+          <li>Comparison photos showing undamaged areas vs. damaged areas</li>
+          <li>Written estimate with line-item breakdown including all missing scope items</li>
+          <li>Proof of Loss form (sworn statement of loss amount)</li>
+        </ul>
+        
+        <div class="info-block">
+          <h3>Priority Actions</h3>
+          <p>
+            <strong>1. Weather Verification:</strong> Obtain a certified weather report showing hail occurred 
+            at your property location on the reported date. This is critical for causation disputes.
+          </p>
+          <p>
+            <strong>2. Contractor Causation Letter:</strong> Request a written statement from your contractor 
+            explaining why the damage is consistent with hail impact and not wear and tear.
+          </p>
+          <p>
+            <strong>3. Complete Photo Documentation:</strong> Take comprehensive photos showing hail impact 
+            patterns, including close-ups of individual impacts and wide shots showing extent of damage.
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Suggested Next Claim Actions -->
+    <div class="report-section">
+      <h2 class="section-title">Suggested Next Claim Actions</h2>
+      <div class="section-content">
+        <p>Follow these steps in order to respond to the denial and strengthen your claim position:</p>
+        
+        <ol class="action-steps">
+          <li>
+            <strong>Obtain Weather Verification Report</strong><br>
+            Request a certified weather report from a weather data provider showing hail occurred at your 
+            property address on the date of loss. This establishes that the covered peril occurred.
+          </li>
+          <li>
+            <strong>Request Contractor Causation Statement</strong><br>
+            Ask your contractor to provide a written statement explaining how the damage patterns are 
+            consistent with hail impact and not pre-existing wear and tear. Include specific observations 
+            about impact patterns, granule loss location, and shingle condition.
+          </li>
+          <li>
+            <strong>Complete Photo Documentation</strong><br>
+            Take comprehensive photos of all damage, including close-ups of hail impacts, wide shots showing 
+            extent of damage, and comparison shots of undamaged vs. damaged areas. Include photos of gutters, 
+            siding, and other surfaces showing hail impact.
+          </li>
+          <li>
+            <strong>Prepare Formal Appeal Letter</strong><br>
+            Draft a formal appeal letter citing the weather verification, contractor statement, and photo 
+            evidence. Reference the policy language confirming coverage for hail damage. Request reconsideration 
+            of the denial.
+          </li>
+          <li>
+            <strong>Submit Complete Proof of Loss</strong><br>
+            Prepare and submit a sworn Proof of Loss form documenting the full scope and cost of damage 
+            based on the contractor estimate. Include all supporting documentation.
+          </li>
+          <li>
+            <strong>Set Response Deadline</strong><br>
+            In your appeal letter, request a response within 30 days. If no response is received, escalate 
+            to the state insurance department or consider appraisal/legal options.
+          </li>
+        </ol>
+        
+        <div class="success-block">
+          <h3>Timeline Expectations</h3>
+          <p>
+            With complete documentation, most causation disputes resolve within 30-60 days. If the insurer 
+            maintains the denial after receiving weather verification and contractor causation evidence, 
+            consider requesting appraisal or consulting with a public adjuster or attorney.
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Share Section -->
+    <div class="share-section">
+      <h3>Share This Report</h3>
+      <p style="color: #075985; margin-bottom: 1rem;">
+        Share this report with your contractor, public adjuster, or attorney to help them understand your claim position.
+      </p>
+      <div class="share-buttons">
+        <button class="btn btn-primary" onclick="shareWithContractor()">Share with Contractor</button>
+        <button class="btn btn-primary" onclick="shareWithAdjuster()">Share with Public Adjuster</button>
+        <button class="btn btn-primary" onclick="shareWithAttorney()">Share with Attorney</button>
+        <button class="btn btn-secondary" onclick="copyReportLink()">Copy Report Link</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Set report date
+    document.getElementById('reportDate').textContent = new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    // Load claim data from URL parameters or session storage
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('issue')) {
+      document.getElementById('claimIssue').textContent = formatClaimIssue(urlParams.get('issue'));
+    }
+    if (urlParams.get('type')) {
+      document.getElementById('damageType').textContent = formatDamageType(urlParams.get('type'));
+    }
+    
+    function formatClaimIssue(issue) {
+      const issueMap = {
+        'denied': 'Claim Denied',
+        'wear-tear': 'Wear and Tear Dispute',
+        'lowball': 'Estimate Too Low',
+        'delayed': 'Claim Delayed',
+        'missed-damage': 'Missed Damage',
+        'engineer-dispute': 'Engineer Report Dispute',
+        'other': 'Other Dispute'
+      };
+      return issueMap[issue] || 'Claim Dispute';
+    }
+    
+    function formatDamageType(type) {
+      const typeMap = {
+        'roof': 'Roof Damage',
+        'water': 'Water Damage',
+        'fire': 'Fire Damage',
+        'storm': 'Storm Damage',
+        'other': 'Other Property Damage'
+      };
+      return typeMap[type] || 'Property Damage';
+    }
+    
+    function shareReport() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'Claim Analysis Report',
+          text: 'View my insurance claim analysis report',
+          url: window.location.href
+        });
+      } else {
+        copyReportLink();
+      }
+    }
+    
+    function shareWithContractor() {
+      const subject = 'Insurance Claim Analysis Report';
+      const body = 'Please review this claim analysis report for my insurance claim. This report includes the insurer\'s position, documentation gaps, and next actions.\n\n' + window.location.href;
+      window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+    
+    function shareWithAdjuster() {
+      const subject = 'Claim Analysis Report for Review';
+      const body = 'I\'ve prepared a detailed claim analysis report. Please review the insurer reasoning breakdown and documentation requirements.\n\n' + window.location.href;
+      window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+    
+    function shareWithAttorney() {
+      const subject = 'Insurance Claim Analysis - Legal Review Requested';
+      const body = 'I\'ve prepared a claim analysis report for my disputed insurance claim. Please review the dispute category and insurer position.\n\n' + window.location.href;
+      window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+    
+    function copyReportLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('Report link copied to clipboard!');
+      }).catch(() => {
+        alert('Unable to copy link. Please copy the URL from your browser address bar.');
+      });
+    }
+  </script>
+</body>
+</html>
