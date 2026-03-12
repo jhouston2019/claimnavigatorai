@@ -14,8 +14,9 @@ export default function IssuesAdminPage() {
     slug: '',
     issue_name: '',
     short_description: '',
+    what_this_means: '',
     why_it_happens: '',
-    cost_impact: '',
+    financial_impact: '',
     detection_method: '',
     repair_example: '',
     seo_title: '',
@@ -111,8 +112,9 @@ export default function IssuesAdminPage() {
       slug: issue.slug,
       issue_name: issue.issue_name,
       short_description: issue.short_description,
+      what_this_means: issue.what_this_means || '',
       why_it_happens: issue.why_it_happens || '',
-      cost_impact: issue.cost_impact || '',
+      financial_impact: issue.financial_impact || '',
       detection_method: issue.detection_method || '',
       repair_example: issue.repair_example || '',
       seo_title: issue.seo_title,
@@ -128,8 +130,9 @@ export default function IssuesAdminPage() {
       slug: '',
       issue_name: '',
       short_description: '',
+      what_this_means: '',
       why_it_happens: '',
-      cost_impact: '',
+      financial_impact: '',
       detection_method: '',
       repair_example: '',
       seo_title: '',
@@ -300,6 +303,19 @@ export default function IssuesAdminPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
+                    What This Means
+                  </label>
+                  <textarea
+                    value={formData.what_this_means}
+                    onChange={(e) => setFormData({ ...formData, what_this_means: e.target.value })}
+                    rows={4}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    placeholder="Explain what this issue means for homeowners..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Why It Happens
                   </label>
                   <textarea
@@ -313,11 +329,11 @@ export default function IssuesAdminPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Cost Impact
+                    Financial Impact
                   </label>
                   <textarea
-                    value={formData.cost_impact}
-                    onChange={(e) => setFormData({ ...formData, cost_impact: e.target.value })}
+                    value={formData.financial_impact}
+                    onChange={(e) => setFormData({ ...formData, financial_impact: e.target.value })}
                     rows={3}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                     placeholder="Typical additional cost: $3,000 - $12,000..."

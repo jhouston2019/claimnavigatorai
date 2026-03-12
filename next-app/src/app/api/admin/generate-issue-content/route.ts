@@ -25,13 +25,14 @@ export async function POST(request: NextRequest) {
 
 Provide:
 1. Short description (1-2 sentences for preview)
-2. Why it happens (2-3 paragraphs explaining why adjusters miss this)
-3. Cost impact (explain financial impact with typical range)
-4. Detection method (how homeowners can spot this in their estimate)
-5. Repair example (typical cost range for this repair)
-6. SEO meta description (150-160 characters)
+2. What this means (2-3 paragraphs explaining the issue clearly)
+3. Why it happens (2-3 paragraphs explaining why adjusters miss this)
+4. Financial impact (explain financial impact with typical range like "$3,000 - $12,000")
+5. Detection method (how homeowners can spot this in their estimate)
+6. Repair example (typical cost range for this repair)
+7. SEO meta description (150-160 characters)
 
-Return as JSON with keys: short_description, why_it_happens, cost_impact, detection_method, repair_example, seo_description`
+Return as JSON with keys: short_description, what_this_means, why_it_happens, financial_impact, detection_method, repair_example, seo_description`
         }
       ],
       response_format: { type: 'json_object' },
@@ -40,7 +41,18 @@ Return as JSON with keys: short_description, why_it_happens, cost_impact, detect
 
     const content = JSON.parse(completion.choices[0].message.content || '{}')
 
-    return NextResponse.json(content)
+    // Ensure all fields are present
+    const response = {
+      short_description: content.short_description || '',
+      what_this_means: content.what_this_means || '',
+      why_it_happens: content.why_it_happens || '',
+      financial_impact: content.financial_impact || '',
+      detection_method: content.detection_method || '',
+      repair_example: content.repair_example || '',
+      seo_description: content.seo_description || '',
+    }
+
+    return NextResponse.json(response)
   } catch (error) {
     console.error('Content generation error:', error)
     return NextResponse.json(

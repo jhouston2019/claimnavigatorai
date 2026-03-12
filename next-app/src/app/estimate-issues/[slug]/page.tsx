@@ -9,12 +9,15 @@ interface EstimateIssue {
   slug: string
   issue_name: string
   short_description: string
+  what_this_means: string
   why_it_happens: string
-  cost_impact: string
+  financial_impact: string
   detection_method: string
   repair_example: string
   seo_title: string
   seo_description: string
+  created_at: string
+  updated_at: string
 }
 
 interface PageProps {
@@ -151,16 +154,18 @@ export default async function EstimateIssuePage({ params }: PageProps) {
           {/* Main Content */}
           <article className="space-y-8">
             {/* What This Issue Means */}
-            <div className="card">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                What This Issue Means
-              </h2>
-              <div className="prose prose-lg max-w-none">
-                <p className="text-gray-700 leading-relaxed">
-                  {issue.why_it_happens || 'This is a common issue in insurance estimates that can significantly impact your claim settlement.'}
-                </p>
+            {issue.what_this_means && (
+              <div className="card">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  What This Issue Means
+                </h2>
+                <div className="prose prose-lg max-w-none">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                    {issue.what_this_means}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Why Insurers Miss It */}
             {issue.why_it_happens && (
@@ -170,7 +175,7 @@ export default async function EstimateIssuePage({ params }: PageProps) {
                   Why Insurance Adjusters Miss This
                 </h2>
                 <div className="prose prose-lg max-w-none">
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                     {issue.why_it_happens}
                   </p>
                 </div>
@@ -178,20 +183,20 @@ export default async function EstimateIssuePage({ params }: PageProps) {
             )}
 
             {/* Financial Impact */}
-            {issue.cost_impact && (
+            {issue.financial_impact && (
               <div className="card bg-red-50 border-2 border-red-200">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <DollarSign className="w-6 h-6 text-red-600" />
-                  How Much This Can Affect Your Claim
+                  Financial Impact
                 </h2>
                 <div className="prose prose-lg max-w-none">
-                  <p className="text-gray-700 leading-relaxed mb-4">
-                    {issue.cost_impact}
+                  <p className="text-gray-700 leading-relaxed mb-4 whitespace-pre-line">
+                    {issue.financial_impact}
                   </p>
                   {issue.repair_example && (
                     <div className="bg-white rounded-lg p-4 border border-red-200">
-                      <p className="font-semibold text-gray-900 mb-2">Example Repair Cost:</p>
-                      <p className="text-gray-700">{issue.repair_example}</p>
+                      <p className="font-semibold text-gray-900 mb-2">Typical Additional Cost:</p>
+                      <p className="text-gray-700 text-2xl font-bold text-red-600">{issue.repair_example}</p>
                     </div>
                   )}
                 </div>
@@ -278,7 +283,7 @@ export default async function EstimateIssuePage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Structured Data */}
+      {/* Structured Data - Article Schema */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -297,6 +302,51 @@ export default async function EstimateIssuePage({ params }: PageProps) {
             },
             datePublished: issue.created_at,
             dateModified: issue.updated_at,
+          }),
+        }}
+      />
+
+      {/* Structured Data - FAQ Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: `What is ${issue.issue_name}?`,
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: issue.what_this_means || issue.short_description,
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Why do insurance adjusters miss this?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: issue.why_it_happens || 'Insurance adjusters often miss this issue during inspections due to time constraints and limited visibility.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'How much does this cost?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: issue.repair_example || issue.financial_impact || 'The cost varies depending on the extent of damage.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'How can I detect this issue?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: issue.detection_method || 'Review your insurance estimate carefully and compare it to contractor quotes.',
+                },
+              },
+            ],
           }),
         }}
       />

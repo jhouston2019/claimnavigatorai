@@ -85,11 +85,11 @@ export default async function EstimateIssuesIndexPage() {
                     <p className="text-gray-600 mb-3">
                       {issue.short_description}
                     </p>
-                    {issue.cost_impact && (
+                    {(issue.financial_impact || issue.repair_example) && (
                       <div className="flex items-center gap-2 text-sm">
                         <DollarSign className="w-4 h-4 text-green-600" />
                         <span className="text-gray-700 font-medium">
-                          Typical impact: {issue.cost_impact.split('\n')[0]}
+                          {issue.repair_example || issue.financial_impact?.split('\n')[0] || 'Typical impact varies'}
                         </span>
                       </div>
                     )}
