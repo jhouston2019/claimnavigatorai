@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { FileSearch, ArrowRight } from 'lucide-react'
+import ClaimGapGraphic from './ClaimGapGraphic'
 
 export default function HeroSection() {
   return (
@@ -56,6 +57,9 @@ export default function HeroSection() {
               $12M+ in gaps detected
             </span>
           </div>
+
+          {/* Claim Gap Graphic */}
+          <ClaimGapGraphic />
         </div>
       </div>
     </section>
