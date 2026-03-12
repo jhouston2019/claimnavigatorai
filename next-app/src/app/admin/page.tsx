@@ -163,12 +163,21 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Quick Links */}
-          <div className="grid md:grid-cols-4 gap-6 mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">SEO Content Management</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Link href="/admin/issues" className="card hover:shadow-xl transition-shadow">
               <BookOpen className="w-10 h-10 text-primary-600 mb-3" />
               <h3 className="text-lg font-bold mb-2">Estimate Issues</h3>
               <p className="text-gray-600 text-sm">
-                Manage programmatic SEO pages
+                Manage estimate issue SEO pages
+              </p>
+            </Link>
+
+            <Link href="/admin/denial-tactics" className="card hover:shadow-xl transition-shadow border-l-4 border-red-600">
+              <FileText className="w-10 h-10 text-red-600 mb-3" />
+              <h3 className="text-lg font-bold mb-2">Denial Tactics</h3>
+              <p className="text-gray-600 text-sm">
+                Manage denial tactic SEO pages
               </p>
             </Link>
 
@@ -187,12 +196,23 @@ export default function AdminDashboardPage() {
                 Manage authority content
               </p>
             </Link>
+          </div>
 
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Platform Management</h2>
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
             <Link href="/admin/analytics" className="card hover:shadow-xl transition-shadow">
               <TrendingUp className="w-10 h-10 text-purple-600 mb-3" />
               <h3 className="text-lg font-bold mb-2">Analytics</h3>
               <p className="text-gray-600 text-sm">
-                Detailed event tracking
+                Detailed event tracking and conversion metrics
+              </p>
+            </Link>
+
+            <Link href="/admin/intelligence" className="card hover:shadow-xl transition-shadow">
+              <TrendingUp className="w-10 h-10 text-blue-600 mb-3" />
+              <h3 className="text-lg font-bold mb-2">Intelligence Network</h3>
+              <p className="text-gray-600 text-sm">
+                View claim intelligence and industry insights
               </p>
             </Link>
           </div>

@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/pricing',
     '/login',
     '/estimate-issues',
+    '/denial-tactics',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
@@ -32,6 +33,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
+  // Dynamic denial tactic pages
+  const { data: tactics } = await supabase
+    .from('denial_tactics')
+    .select('slug, updated_at')
+    .eq('is_published', true)
+
+  const tacticPages = (tactics || []).map((tactic) => ({
+    url: `${baseUrl}/denial-tactics/${tactic.slug}`,
+    lastModified: new Date(tactic.updated_at),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }))
+
   // Dynamic SEO guide pages
   const { data: seoPages } = await supabase
     .from('seo_pages')
@@ -45,5 +59,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }))
 
-  return [...staticPages, ...issuePages, ...guidePages]
+  return [...staticPages, ...issuePages, ...tacticPages, ...guidePages]
 }

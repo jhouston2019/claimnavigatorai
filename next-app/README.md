@@ -68,7 +68,46 @@ Open [http://localhost:3000](http://localhost:3000)
 - View performance metrics
 - Track conversions per issue
 
-#### 3. Claim Intelligence Network 🆕
+#### 3. Denial Tactics SEO Engine 🆕
+**Routes**: `/denial-tactics/[slug]`, `/denial-tactics`
+
+**Purpose**: Second SEO cluster targeting insurance denial language searches
+
+**Features**:
+- Dynamic route for each denial tactic
+- Auto-generated content with OpenAI
+- SEO-optimized pages with structured data (Article + FAQ schema)
+- Related tactics internal linking
+- Strong CTAs to estimate scan
+- View and conversion tracking
+- Admin panel for management
+- Automatic sitemap generation
+
+**Example Pages**:
+- `/denial-tactics/wear-and-tear-insurance-denial`
+- `/denial-tactics/long-term-deterioration-insurance`
+- `/denial-tactics/maintenance-exclusion-insurance`
+- `/denial-tactics/pre-existing-damage-insurance`
+- 10 initial tactics (expandable to 50+)
+
+**Page Structure**:
+- H1: Tactic name
+- What this denial means
+- Why insurers use it
+- How it affects claims
+- How to challenge it
+- CTA to scan tool
+- Related tactics
+- Internal links to estimate issues
+
+**Admin Panel**: `/admin/denial-tactics`
+- Create/edit/delete tactics
+- AI auto-generate content
+- Seed initial 10 tactics
+- View performance metrics
+- Track conversions per tactic
+
+#### 4. Claim Intelligence Network
 **Routes**: `/dashboard/intelligence`, `/admin/intelligence`
 
 **Purpose**: Transform user scan data into industry intelligence
@@ -107,45 +146,56 @@ Open [http://localhost:3000](http://localhost:3000)
 - Example: "Roof claims in Texas are underpaid by an average of $12,400"
 - Based on thousands of anonymized claims
 
-#### 4. Free Policy Analysis
+#### 5. Free Policy Analysis
 **Route**: `/policy-analysis`
 
 ### PAID FEATURES (Command Center - $299)
 
-#### 5. Insurance Claim Underpayment Detector
+#### 6. Insurance Claim Underpayment Detector
 **Route**: `/underpayment-detector`
 
-#### 6. Insurance Estimate Analyzer
+#### 7. Insurance Estimate Analyzer
 **Route**: `/estimate-analyzer`
 
-#### 7. Documentation Packet Generator
+#### 8. Documentation Packet Generator
 **Route**: `/documentation-builder`
 
-#### 8. AI Claim Strategy Advisor
+#### 9. AI Claim Strategy Advisor
 **Route**: `/strategy-advisor`
 
-#### 9. User Dashboard
+#### 10. User Dashboard
 **Route**: `/dashboard`
 
 ### ADMIN FEATURES
 
-#### 10. Admin Dashboard
+#### 11. Admin Dashboard
 **Route**: `/admin`
 
 **Metrics**:
 - Estimate scan funnel
 - Issue page performance
+- Denial tactic performance
 - SEO traffic attribution
 - Conversion by source
 - Intelligence network stats
 
-#### 10. Estimate Issues Manager 🆕
+#### 12. Estimate Issues Manager
 **Route**: `/admin/issues`
 
 **Features**:
 - CRUD for estimate issues
 - AI content generation
 - Seed database
+- Performance tracking
+- View/conversion metrics
+
+#### 13. Denial Tactics Manager 🆕
+**Route**: `/admin/denial-tactics`
+
+**Features**:
+- CRUD for denial tactics
+- AI content generation
+- Seed initial 10 tactics
 - Performance tracking
 - View/conversion metrics
 
@@ -176,13 +226,29 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ## 🎯 SEO Strategy
 
-### Programmatic SEO Pages
+### Two Programmatic SEO Clusters
 
-**Target Keywords**:
+#### Cluster 1: Estimate Issues (50+ pages)
+**Target**: Pre-denial searches
+
+**Keywords**:
 - [Issue name] + "insurance estimate"
 - "missing [item] insurance claim"
 - "[item] excluded from estimate"
 - "insurance adjuster missed [item]"
+
+**Example**: `/estimate-issues/missing-roof-decking`
+
+#### Cluster 2: Denial Tactics (10+ pages) 🆕
+**Target**: Post-denial searches
+
+**Keywords**:
+- "[tactic name] insurance denial"
+- "what does [tactic name] mean insurance"
+- "how to challenge [tactic name]"
+- "insurance company says [tactic name]"
+
+**Example**: `/denial-tactics/wear-and-tear-insurance-denial`
 
 **Content Strategy**:
 - Educational, authoritative tone
@@ -200,13 +266,31 @@ Open [http://localhost:3000](http://localhost:3000)
 ### Conversion Funnel
 
 ```
-Google Search
+ACQUISITION FUNNEL:
+
+Google Search (Pre-Denial)
     ↓
-Issue Page (e.g., "missing roof decking")
+Estimate Issue Page (e.g., "missing roof decking")
     ↓
-Learn about problem
+Learn about missing scope
     ↓
 Click "Run Free Estimate Scan"
+    ↓
+Upload estimate
+    ↓
+See gap detected
+    ↓
+Upgrade to Command Center ($299)
+
+OR
+
+Google Search (Post-Denial)
+    ↓
+Denial Tactic Page (e.g., "wear and tear denial")
+    ↓
+Learn how to challenge denial
+    ↓
+Click "Check Your Estimate"
     ↓
 Upload estimate
     ↓
