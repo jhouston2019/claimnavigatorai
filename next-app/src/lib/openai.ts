@@ -65,6 +65,53 @@ Return as JSON with keys: carrierAmount (number), estimatedTrueScope (number), g
   return JSON.parse(completion.choices[0].message.content || '{}')
 }
 
+export async function detectUnderpayment(data: {
+  carrierText: string
+  contractorText?: string
+  policyText?: string
+  hasPhotos: boolean
+}) {
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4-turbo-preview',
+    messages: [
+      {
+        role: 'system',
+        content: `You are an insurance claim underpayment detection expert. Analyze all provided documents to calculate potential underpayment and identify documentation gaps.`
+      },
+      {
+        role: 'user',
+        content: `Analyze this insurance claim for potential underpayment:
+
+Carrier Estimate:
+${data.carrierText}
+
+${data.contractorText ? `Contractor Estimate:\n${data.contractorText}` : ''}
+
+${data.policyText ? `Policy Information:\n${data.policyText}` : ''}
+
+${data.hasPhotos ? 'Damage photos provided: Yes' : 'Damage photos provided: No'}
+
+Provide comprehensive analysis including:
+1. Carrier estimate amount
+2. Estimated true scope amount
+3. Underpayment range (low and high estimates)
+4. Confidence level (High/Medium/Low)
+5. Missing scope items
+6. Labor rate issues
+7. Documentation gaps
+8. Coverage issues
+9. Recommended actions (prioritized list)
+
+Return as JSON with keys: carrierEstimate (number), estimatedTrueScope (number), underpaymentRange (object with low and high), confidence (string), missingItems (array), laborRateIssues (array), documentationGaps (array), coverageIssues (array), recommendedActions (array)`
+      }
+    ],
+    response_format: { type: 'json_object' },
+    temperature: 0.3,
+  })
+
+  return JSON.parse(completion.choices[0].message.content || '{}')
+}
+
 export async function generateClaimStrategy(claimData: any) {
   const completion = await openai.chat.completions.create({
     model: 'gpt-4-turbo-preview',

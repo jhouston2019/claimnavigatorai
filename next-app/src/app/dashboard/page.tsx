@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-import { FileText, TrendingUp, AlertCircle, Calendar, LogOut } from 'lucide-react'
+import { FileText, TrendingUp, AlertCircle, Calendar, LogOut, Lightbulb, Search } from 'lucide-react'
 
 interface Claim {
   id: string
@@ -91,7 +91,14 @@ export default function DashboardPage() {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+            <div className="flex items-center gap-4">
+              <h1 className="text-2xl font-bold text-gray-900">Claim Command Pro</h1>
+              <nav className="hidden md:flex gap-4">
+                <Link href="/dashboard" className="text-primary-600 font-medium">Dashboard</Link>
+                <Link href="/claims" className="text-gray-600 hover:text-gray-900">Claims</Link>
+                <Link href="/tools" className="text-gray-600 hover:text-gray-900">Tools</Link>
+              </nav>
+            </div>
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
@@ -109,53 +116,67 @@ export default function DashboardPage() {
           <div className="card mb-8">
             <div className="flex justify-between items-start">
               <div>
-                <h2 className="text-xl font-bold mb-2">Account Status</h2>
+                <h2 className="text-xl font-bold mb-2">Welcome Back!</h2>
                 <p className="text-gray-600">{user?.email}</p>
               </div>
               {!profile?.is_paid && (
                 <Link href="/pricing" className="btn-primary">
-                  Upgrade to Pro
+                  Upgrade to Pro - $299
                 </Link>
               )}
               {profile?.is_paid && (
                 <span className="inline-flex items-center px-4 py-2 rounded-lg bg-green-100 text-green-800 font-semibold">
-                  Pro Member
+                  ✓ Pro Member
                 </span>
               )}
             </div>
           </div>
 
           {/* Quick Actions */}
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <Link href="/estimate-analyzer" className="card hover:shadow-xl transition-shadow">
-              <TrendingUp className="w-10 h-10 text-primary-600 mb-3" />
-              <h3 className="text-lg font-bold mb-2">Analyze Estimates</h3>
-              <p className="text-gray-600 text-sm">
-                Compare carrier and contractor estimates to identify gaps
-              </p>
-            </Link>
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-4">Claim Analysis Tools</h2>
+            <div className="grid md:grid-cols-4 gap-4">
+              <Link href="/underpayment-detector" className="card hover:shadow-xl transition-shadow text-center">
+                <Search className="w-10 h-10 text-red-600 mx-auto mb-3" />
+                <h3 className="font-bold mb-2">Underpayment Detector</h3>
+                <p className="text-gray-600 text-sm">
+                  Comprehensive analysis
+                </p>
+              </Link>
 
-            <Link href="/documentation-builder" className="card hover:shadow-xl transition-shadow">
-              <FileText className="w-10 h-10 text-primary-600 mb-3" />
-              <h3 className="text-lg font-bold mb-2">Build Documentation</h3>
-              <p className="text-gray-600 text-sm">
-                Create comprehensive claim documentation packets
-              </p>
-            </Link>
+              <Link href="/estimate-analyzer" className="card hover:shadow-xl transition-shadow text-center">
+                <TrendingUp className="w-10 h-10 text-primary-600 mx-auto mb-3" />
+                <h3 className="font-bold mb-2">Estimate Analyzer</h3>
+                <p className="text-gray-600 text-sm">
+                  Compare estimates
+                </p>
+              </Link>
 
-            <Link href="/strategy-advisor" className="card hover:shadow-xl transition-shadow">
-              <AlertCircle className="w-10 h-10 text-primary-600 mb-3" />
-              <h3 className="text-lg font-bold mb-2">Get Strategy Advice</h3>
-              <p className="text-gray-600 text-sm">
-                AI-powered recommendations for your claim
-              </p>
-            </Link>
+              <Link href="/documentation-builder" className="card hover:shadow-xl transition-shadow text-center">
+                <FileText className="w-10 h-10 text-blue-600 mx-auto mb-3" />
+                <h3 className="font-bold mb-2">Doc Builder</h3>
+                <p className="text-gray-600 text-sm">
+                  Generate packets
+                </p>
+              </Link>
+
+              <Link href="/strategy-advisor" className="card hover:shadow-xl transition-shadow text-center">
+                <Lightbulb className="w-10 h-10 text-purple-600 mx-auto mb-3" />
+                <h3 className="font-bold mb-2">Strategy Advisor</h3>
+                <p className="text-gray-600 text-sm">
+                  AI recommendations
+                </p>
+              </Link>
+            </div>
           </div>
 
           {/* Upcoming Deadlines */}
           {deadlines.length > 0 && (
             <div className="card mb-8">
-              <h2 className="text-2xl font-bold mb-4">Upcoming Deadlines</h2>
+              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                <Calendar className="w-6 h-6 text-primary-600" />
+                Upcoming Deadlines
+              </h2>
               <div className="space-y-3">
                 {deadlines.map((deadline) => {
                   const daysUntil = getDaysUntil(deadline.deadline_date)
@@ -165,7 +186,7 @@ export default function DashboardPage() {
                     <div
                       key={deadline.id}
                       className={`flex items-start gap-3 p-4 rounded-lg ${
-                        isUrgent ? 'bg-red-50 border border-red-200' : 'bg-gray-50'
+                        isUrgent ? 'bg-red-50 border-2 border-red-200' : 'bg-gray-50'
                       }`}
                     >
                       <Calendar className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
@@ -183,11 +204,16 @@ export default function DashboardPage() {
                               </p>
                             )}
                           </div>
-                          <span className={`text-sm font-semibold ${
-                            isUrgent ? 'text-red-600' : 'text-gray-600'
-                          }`}>
-                            {daysUntil > 0 ? `${daysUntil} days` : 'Today'}
-                          </span>
+                          <div className="text-right">
+                            <span className={`text-lg font-bold block ${
+                              isUrgent ? 'text-red-600' : 'text-gray-900'
+                            }`}>
+                              {daysUntil > 0 ? `${daysUntil} days` : 'Today'}
+                            </span>
+                            {isUrgent && (
+                              <span className="text-xs text-red-600 font-semibold">URGENT</span>
+                            )}
+                          </div>
                         </div>
                         <p className="text-sm text-gray-500 mt-1">
                           Due: {new Date(deadline.deadline_date).toLocaleDateString()}
@@ -204,8 +230,8 @@ export default function DashboardPage() {
           <div className="card">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold">Your Claims</h2>
-              <Link href="/claims/new" className="btn-secondary text-sm">
-                New Claim
+              <Link href="/underpayment-detector" className="btn-secondary text-sm">
+                + New Analysis
               </Link>
             </div>
 
@@ -213,8 +239,11 @@ export default function DashboardPage() {
               <div className="text-center py-12">
                 <FileText className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                 <p className="text-gray-600 mb-4">No claims yet</p>
-                <Link href="/estimate-analyzer" className="btn-primary">
-                  Start Your First Analysis
+                <p className="text-gray-500 text-sm mb-6">
+                  Start by analyzing your insurance estimate to detect potential underpayment
+                </p>
+                <Link href="/underpayment-detector" className="btn-primary">
+                  Start Underpayment Detection
                 </Link>
               </div>
             ) : (
@@ -231,7 +260,7 @@ export default function DashboardPage() {
                           {claim.claim_name}
                         </h3>
                         <p className="text-sm text-gray-600 mt-1">
-                          {claim.claim_type} • {claim.carrier_name}
+                          {claim.claim_type} {claim.carrier_name && `• ${claim.carrier_name}`}
                         </p>
                       </div>
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary-100 text-primary-800">

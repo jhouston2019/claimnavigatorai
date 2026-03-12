@@ -3,18 +3,15 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
-    // Get total users
     const { count: totalUsers } = await supabaseAdmin
       .from('profiles')
       .select('*', { count: 'exact', head: true })
 
-    // Get paid users
     const { count: paidUsers } = await supabaseAdmin
       .from('profiles')
       .select('*', { count: 'exact', head: true })
       .eq('is_paid', true)
 
-    // Get total revenue
     const { data: payments } = await supabaseAdmin
       .from('payments')
       .select('amount')
@@ -22,12 +19,18 @@ export async function GET(request: NextRequest) {
 
     const revenue = payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0
 
-    // Get total analyses
     const { count: totalAnalyses } = await supabaseAdmin
       .from('policy_analyses')
       .select('*', { count: 'exact', head: true })
 
-    // Calculate conversion rate
+    const { count: estimateAnalyses } = await supabaseAdmin
+      .from('estimate_analyses')
+      .select('*', { count: 'exact', head: true })
+
+    const { count: docPackets } = await supabaseAdmin
+      .from('documentation_packets')
+      .select('*', { count: 'exact', head: true })
+
     const conversionRate = totalUsers && paidUsers
       ? ((paidUsers / totalUsers) * 100).toFixed(1)
       : 0
@@ -37,6 +40,8 @@ export async function GET(request: NextRequest) {
       paidUsers,
       revenue,
       totalAnalyses,
+      estimateAnalyses,
+      docPackets,
       conversionRate,
     })
   } catch (error) {
