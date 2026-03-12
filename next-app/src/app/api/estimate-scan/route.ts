@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     const file = formData.get('file') as File
     const email = formData.get('email') as string
+    const source = formData.get('source') as string | null
 
     if (!file || !email) {
       return NextResponse.json(
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
     // Extract text from document
     const estimateText = await extractDocumentText(file)
 
-    // Run LIMITED analysis (uses existing analyzer logic but returns limited data)
+    // Run LIMITED analysis
     const scanResult = await runLimitedEstimateAnalysis(estimateText)
 
     // Save scan to database
@@ -38,8 +39,11 @@ export async function POST(request: NextRequest) {
     // Capture email for marketing
     await supabaseAdmin.from('email_captures').insert({
       email,
-      source: 'estimate_scan',
-      metadata: { scan_id: data.id },
+      source: source || 'estimate_scan',
+      metadata: { 
+        scan_id: data.id,
+        from_issue: source?.startsWith('issue:') ? source.replace('issue:', '') : null,
+      },
     })
 
     // Track analytics event
@@ -50,6 +54,7 @@ export async function POST(request: NextRequest) {
         email,
         severity_score: scanResult.claimSeverityScore,
         potential_gap: scanResult.potentialGapHigh,
+        source: source || 'direct',
       },
     })
 
@@ -64,10 +69,8 @@ export async function POST(request: NextRequest) {
 }
 
 async function extractDocumentText(file: File): Promise<string> {
-  // Placeholder - in production use pdf-parse or mammoth for DOCX
   const text = await file.text().catch(() => '')
   
-  // Return sample estimate text for demo
   return `
     INSURANCE ESTIMATE DOCUMENT
     

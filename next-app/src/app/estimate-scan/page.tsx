@@ -1,17 +1,39 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Upload, Loader2, FileText } from 'lucide-react'
 import { useDropzone } from 'react-dropzone'
 
 export default function EstimateScanPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const fromIssue = searchParams.get('from')
+  
   const [file, setFile] = useState<File | null>(null)
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    // Track that user came from issue page
+    if (fromIssue) {
+      trackIssueClick(fromIssue)
+    }
+  }, [fromIssue])
+
+  const trackIssueClick = async (issueSlug: string) => {
+    try {
+      await fetch('/api/track-issue-click', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ issueSlug }),
+      })
+    } catch (error) {
+      console.error('Failed to track click:', error)
+    }
+  }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
@@ -20,7 +42,7 @@ export default function EstimateScanPage() {
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
     },
     maxFiles: 1,
-    maxSize: 25 * 1024 * 1024, // 25MB
+    maxSize: 25 * 1024 * 1024,
     onDrop: (acceptedFiles) => {
       if (acceptedFiles.length > 0) {
         setFile(acceptedFiles[0])
@@ -50,8 +72,10 @@ export default function EstimateScanPage() {
       const formData = new FormData()
       formData.append('file', file)
       formData.append('email', email)
+      if (fromIssue) {
+        formData.append('source', `issue:${fromIssue}`)
+      }
 
-      // Simulate upload progress
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           if (prev >= 90) {
@@ -75,6 +99,16 @@ export default function EstimateScanPage() {
       }
 
       const data = await response.json()
+      
+      // Track conversion if from issue page
+      if (fromIssue) {
+        await fetch('/api/track-issue-conversion', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ issueSlug: fromIssue }),
+        })
+      }
+
       router.push(`/estimate-scan/results?id=${data.scanId}`)
     } catch (err) {
       setError('Failed to analyze estimate. Please try again.')
@@ -100,6 +134,15 @@ export default function EstimateScanPage() {
 
       <div className="section-container">
         <div className="max-w-4xl mx-auto">
+          {/* Coming from issue page? */}
+          {fromIssue && (
+            <div className="card mb-8 bg-blue-50 border-2 border-blue-300">
+              <p className="text-gray-900">
+                <strong>Good news!</strong> Our scan will check for this issue and many more in your estimate.
+              </p>
+            </div>
+          )}
+
           {/* Hero */}
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-primary-100 text-primary-800 px-4 py-2 rounded-full text-sm font-semibold mb-6">

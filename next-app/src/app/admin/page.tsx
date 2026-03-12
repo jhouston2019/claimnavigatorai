@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-import { Users, DollarSign, FileText, TrendingUp, Zap, Target } from 'lucide-react'
+import { Users, DollarSign, FileText, TrendingUp, Zap, Target, BookOpen } from 'lucide-react'
 
 export default function AdminDashboardPage() {
   const router = useRouter()
@@ -163,25 +163,36 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Quick Links */}
-          <div className="grid md:grid-cols-3 gap-6">
-            <Link href="/admin/case-studies" className="card hover:shadow-xl transition-shadow">
-              <h3 className="text-lg font-bold mb-2">Manage Case Studies</h3>
+          <div className="grid md:grid-cols-4 gap-6">
+            <Link href="/admin/issues" className="card hover:shadow-xl transition-shadow">
+              <BookOpen className="w-10 h-10 text-primary-600 mb-3" />
+              <h3 className="text-lg font-bold mb-2">Estimate Issues</h3>
               <p className="text-gray-600 text-sm">
-                Create and edit case studies for the landing page
+                Manage programmatic SEO pages
+              </p>
+            </Link>
+
+            <Link href="/admin/case-studies" className="card hover:shadow-xl transition-shadow">
+              <FileText className="w-10 h-10 text-blue-600 mb-3" />
+              <h3 className="text-lg font-bold mb-2">Case Studies</h3>
+              <p className="text-gray-600 text-sm">
+                Create success stories
               </p>
             </Link>
 
             <Link href="/admin/seo-pages" className="card hover:shadow-xl transition-shadow">
+              <FileText className="w-10 h-10 text-green-600 mb-3" />
               <h3 className="text-lg font-bold mb-2">SEO Pages</h3>
               <p className="text-gray-600 text-sm">
-                Manage authority content pages
+                Manage authority content
               </p>
             </Link>
 
             <Link href="/admin/analytics" className="card hover:shadow-xl transition-shadow">
-              <h3 className="text-lg font-bold mb-2">Detailed Analytics</h3>
+              <TrendingUp className="w-10 h-10 text-purple-600 mb-3" />
+              <h3 className="text-lg font-bold mb-2">Analytics</h3>
               <p className="text-gray-600 text-sm">
-                View event log and user behavior
+                Detailed event tracking
               </p>
             </Link>
           </div>
