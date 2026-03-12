@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import HeroSection from '@/components/landing/HeroSection'
-import ExampleReportCTA from '@/components/landing/ExampleReportCTA'
+import ReportPreview from '@/components/landing/ReportPreview'
 import ThreeStepProcess from '@/components/landing/ThreeStepProcess'
 import CarrierTacticsCards from '@/components/landing/CarrierTacticsCards'
 import DeadlineTimeline from '@/components/landing/DeadlineTimeline'
@@ -11,7 +11,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen">
       <HeroSection />
-      <ExampleReportCTA />
+      <ReportPreview />
       <ThreeStepProcess />
       <CarrierTacticsCards />
       <DeadlineTimeline />
