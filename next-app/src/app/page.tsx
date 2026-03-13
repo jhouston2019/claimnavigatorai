@@ -2,6 +2,7 @@ import Link from 'next/link'
 import HeroSection from '@/components/landing/HeroSection'
 import ReportPreview from '@/components/landing/ReportPreview'
 import ThreeStepProcess from '@/components/landing/ThreeStepProcess'
+import CommandCenterWalkthrough from '@/components/landing/CommandCenterWalkthrough'
 import CarrierTacticsCards from '@/components/landing/CarrierTacticsCards'
 import DeadlineTimeline from '@/components/landing/DeadlineTimeline'
 import CaseStudyOutcome from '@/components/landing/CaseStudyOutcome'
@@ -13,6 +14,7 @@ export default function HomePage() {
       <HeroSection />
       <ReportPreview />
       <ThreeStepProcess />
+      <CommandCenterWalkthrough />
       <CarrierTacticsCards />
       <DeadlineTimeline />
       <CaseStudyOutcome />
