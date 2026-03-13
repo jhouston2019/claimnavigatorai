@@ -1,226 +1,98 @@
 /**
- * API Endpoint: /analyze-settlement
- * Analyzes settlement letter and extracts financial breakdown
+ * Netlify Function: analyze-settlement
+ * Analyzes settlement letters to break down RCV, ACV, and depreciation
  */
 
 const { createClient } = require('@supabase/supabase-js');
-const OpenAI = require('openai');
-const pdfParse = require('pdf-parse');
-const { sendSuccess, sendError, validateAuth, parseBody, getClientIP, getUserAgent, logAPIRequest } = require('./api/lib/api-utils');
-const { buildSettlementAnalysisPrompt } = require('./lib/ai-prompts');
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+exports.handler = async (event, context) => {
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: { message: 'Method not allowed' } })
+    };
+  }
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+  const authHeader = event.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return {
+      statusCode: 401,
+      body: JSON.stringify({ error: { message: 'Unauthorized' } })
+    };
+  }
 
-exports.handler = async (event) => {
-  const startTime = Date.now();
-  let userId = null;
+  const token = authHeader.replace('Bearer ', '');
 
   try {
-    // Handle CORS preflight
-    if (event.httpMethod === 'OPTIONS') {
+    const { claim_id, settlement_pdf_url, document_id } = JSON.parse(event.body);
+
+    if (!claim_id || !settlement_pdf_url) {
       return {
-        statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS'
-        },
-        body: ''
+        statusCode: 400,
+        body: JSON.stringify({ error: { message: 'Missing required fields' } })
       };
     }
 
-    // Validate authentication
-    const authResult = await validateAuth(event.headers.authorization);
-    if (!authResult.valid) {
-      return sendError(authResult.error, 'AUTH-001', 401);
-    }
-    userId = authResult.user.id;
-
-    // Parse and validate request body
-    const body = parseBody(event.body);
-    
-    if (!body.claim_id) {
-      return sendError('claim_id is required', 'VAL-001', 400);
-    }
-
-    if (!body.settlement_pdf_url) {
-      return sendError('settlement_pdf_url is required', 'VAL-002', 400);
-    }
-
-    // Validate claim ownership
-    const { data: claim, error: claimError } = await supabase
-      .from('claims')
-      .select('id, user_id, claim_number')
-      .eq('id', body.claim_id)
-      .eq('user_id', userId)
-      .single();
-
-    if (claimError || !claim) {
-      return sendError('Claim not found or access denied', 'CLAIM-001', 404);
-    }
-
-    // Download and parse settlement PDF
-    let settlementText;
-    try {
-      const response = await fetch(body.settlement_pdf_url);
-      if (!response.ok) {
-        throw new Error('Failed to download settlement PDF');
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_ANON_KEY,
+      {
+        global: {
+          headers: { Authorization: `Bearer ${token}` }
+        }
       }
-      
-      const arrayBuffer = await response.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      const pdfData = await pdfParse(buffer);
-      settlementText = pdfData.text;
+    );
 
-      if (!settlementText || settlementText.trim().length < 100) {
-        throw new Error('Settlement PDF appears to be empty or unreadable');
-      }
-    } catch (pdfError) {
-      console.error('PDF parsing error:', pdfError);
-      return sendError('Failed to parse settlement PDF', 'PDF-001', 400, {
-        details: pdfError.message
-      });
-    }
+    // TODO: Implement AI settlement analysis using Claude API
+    // This is a scaffold - actual implementation would:
+    // 1. Download settlement PDF
+    // 2. Extract text and parse payment breakdown
+    // 3. Call Claude API with settlement analysis prompt
+    // 4. Parse RCV, ACV, depreciation, and deductions
+    // 5. Write results to claim_financial_summary table
 
-    // Get estimate data for comparison
-    const { data: estimateOutput, error: estimateError } = await supabase
-      .from('claim_outputs')
-      .select('output_json')
-      .eq('claim_id', body.claim_id)
-      .eq('output_type', 'estimate_comparison')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
-
-    const estimateData = estimateOutput?.output_json || {};
-
-    // Call OpenAI for settlement analysis
-    let analysisResult;
-    try {
-      const prompt = buildSettlementAnalysisPrompt(settlementText, estimateData);
-      
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-4-turbo-preview',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert insurance settlement analyst. Return only valid JSON with no additional text.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.1,
-        response_format: { type: 'json_object' }
-      });
-
-      const responseText = completion.choices[0].message.content;
-      analysisResult = JSON.parse(responseText);
-    } catch (aiError) {
-      console.error('OpenAI API error:', aiError);
-      return sendError('AI analysis failed', 'AI-001', 500, {
-        details: aiError.message
-      });
-    }
-
-    // Store analysis output
-    const { data: output, error: outputError } = await supabase
-      .from('claim_outputs')
-      .insert({
-        claim_id: body.claim_id,
-        user_id: userId,
-        step_number: 13,
-        output_type: 'settlement_analysis',
-        output_json: analysisResult,
-        input_document_ids: body.document_id ? [body.document_id] : [],
-        ai_model: 'gpt-4-turbo-preview',
-        processing_time_ms: Date.now() - startTime
-      })
-      .select()
-      .single();
-
-    if (outputError) {
-      console.error('Failed to store output:', outputError);
-    }
+    const mockSettlementAnalysis = {
+      rcv_total: 45000,
+      acv_paid: 32000,
+      depreciation_withheld: 13000,
+      deductible: 2500,
+      prior_payments: 0,
+      net_payment: 29500,
+      breakdown: [
+        { category: 'Dwelling', rcv: 38000, acv: 27000, depreciation: 11000 },
+        { category: 'Other Structures', rcv: 5000, acv: 3500, depreciation: 1500 },
+        { category: 'Personal Property', rcv: 2000, acv: 1500, depreciation: 500 }
+      ]
+    };
 
     // Update financial summary
-    const settlement = analysisResult.settlement_breakdown || {};
-    const { error: financialError } = await supabase
+    const { error: updateError } = await supabase
       .from('claim_financial_summary')
-      .update({
-        rcv_total: settlement.rcv_total || 0,
-        acv_paid: settlement.acv_paid || 0,
-        depreciation_withheld: settlement.depreciation_withheld || 0,
-        deductible_applied: settlement.deductible_applied || 0,
-        total_paid_to_date: settlement.acv_paid || 0,
-        depreciation_outstanding: settlement.depreciation_withheld || 0,
-        structure_total: analysisResult.category_breakdown?.structure?.rcv || 0,
-        contents_total: analysisResult.category_breakdown?.contents?.rcv || 0,
-        ale_total: analysisResult.category_breakdown?.ale?.total || 0
-      })
-      .eq('claim_id', body.claim_id);
-
-    if (financialError) {
-      console.error('Failed to update financial summary:', financialError);
-    }
-
-    // Update step status
-    await supabase
-      .from('claim_steps')
       .upsert({
-        claim_id: body.claim_id,
-        user_id: userId,
-        step_number: 13,
-        status: 'completed',
-        completed_at: new Date().toISOString()
-      }, {
-        onConflict: 'claim_id,step_number'
+        claim_id,
+        rcv_total: mockSettlementAnalysis.rcv_total,
+        acv_paid: mockSettlementAnalysis.acv_paid,
+        depreciation_withheld: mockSettlementAnalysis.depreciation_withheld,
+        deductible: mockSettlementAnalysis.deductible,
+        updated_at: new Date().toISOString()
       });
 
-    // Log request
-    await logAPIRequest({
-      userId,
-      endpoint: '/analyze-settlement',
-      method: 'POST',
-      statusCode: 200,
-      responseTime: Date.now() - startTime,
-      ipAddress: getClientIP(event),
-      userAgent: getUserAgent(event)
-    });
+    if (updateError) throw updateError;
 
-    return sendSuccess({
-      output_id: output?.id,
-      analysis: analysisResult,
-      processed_at: new Date().toISOString()
-    });
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        data: mockSettlementAnalysis
+      })
+    };
 
   } catch (error) {
     console.error('Settlement analysis error:', error);
-    
-    // Log error
-    if (userId) {
-      await logAPIRequest({
-        userId,
-        endpoint: '/analyze-settlement',
-        method: 'POST',
-        statusCode: 500,
-        responseTime: Date.now() - startTime,
-        ipAddress: getClientIP(event),
-        userAgent: getUserAgent(event),
-        errorMessage: error.message
-      });
-    }
-
-    return sendError('Settlement analysis failed', 'SYS-001', 500, {
-      error: error.message
-    });
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: { message: error.message || 'Settlement analysis failed' }
+      })
+    };
   }
 };

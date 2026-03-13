@@ -1,224 +1,133 @@
 /**
- * API Endpoint: /evaluate-escalation-status
- * Evaluates escalation requirements based on claim activity
- * Deterministic escalation logic
+ * Netlify Function: evaluate-escalation-status
+ * Evaluates claim status and recommends escalation level
  */
 
 const { createClient } = require('@supabase/supabase-js');
-const { sendSuccess, sendError, validateAuth, parseBody, getClientIP, getUserAgent, logAPIRequest } = require('./api/lib/api-utils');
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+exports.handler = async (event, context) => {
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: { message: 'Method not allowed' } })
+    };
+  }
 
-exports.handler = async (event) => {
-  const startTime = Date.now();
-  let userId = null;
+  const authHeader = event.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return {
+      statusCode: 401,
+      body: JSON.stringify({ error: { message: 'Unauthorized' } })
+    };
+  }
+
+  const token = authHeader.replace('Bearer ', '');
 
   try {
-    // Handle CORS preflight
-    if (event.httpMethod === 'OPTIONS') {
+    const { claim_id } = JSON.parse(event.body);
+
+    if (!claim_id) {
       return {
-        statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS'
-        },
-        body: ''
+        statusCode: 400,
+        body: JSON.stringify({ error: { message: 'Missing claim_id' } })
       };
     }
 
-    // Validate authentication
-    const authResult = await validateAuth(event.headers.authorization);
-    if (!authResult.valid) {
-      return sendError(authResult.error, 'AUTH-001', 401);
-    }
-    userId = authResult.user.id;
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_ANON_KEY,
+      {
+        global: {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      }
+    );
 
-    // Parse and validate request body
-    const body = parseBody(event.body);
-    
-    if (!body.claim_id) {
-      return sendError('claim_id is required', 'VAL-001', 400);
-    }
-
-    // Validate claim ownership
+    // Fetch claim data
     const { data: claim, error: claimError } = await supabase
       .from('claims')
-      .select('id, user_id, claim_number')
-      .eq('id', body.claim_id)
-      .eq('user_id', userId)
+      .select('*')
+      .eq('id', claim_id)
       .single();
 
-    if (claimError || !claim) {
-      return sendError('Claim not found or access denied', 'CLAIM-001', 404);
-    }
+    if (claimError) throw claimError;
 
-    console.log(`[Escalation] Evaluating escalation for claim ${claim.claim_number}`);
-
-    // =====================================================
-    // STEP 1: GET FINANCIAL SUMMARY
-    // =====================================================
-    const { data: financial } = await supabase
+    // Fetch financial summary
+    const { data: financial, error: finError } = await supabase
       .from('claim_financial_summary')
-      .select('underpayment_estimate')
-      .eq('claim_id', body.claim_id)
+      .select('*')
+      .eq('claim_id', claim_id)
       .single();
+
+    // Fetch communication history
+    const { data: communications, error: commError } = await supabase
+      .from('claim_communications')
+      .select('*')
+      .eq('claim_id', claim_id)
+      .order('created_at', { ascending: false });
+
+    // Calculate escalation factors
+    const dateOfLoss = new Date(claim.date_of_loss);
+    const now = new Date();
+    const daysSinceLoss = Math.floor((now - dateOfLoss) / (1000 * 60 * 60 * 24));
+    
+    const lastCommunication = communications?.[0];
+    const daysSinceLastResponse = lastCommunication 
+      ? Math.floor((now - new Date(lastCommunication.created_at)) / (1000 * 60 * 60 * 24))
+      : null;
 
     const underpaymentAmount = financial?.underpayment_estimate || 0;
-    const threshold = body.threshold || 5000.00;
 
-    // =====================================================
-    // STEP 2: CHECK SUPPLEMENT SUBMISSION DATE
-    // =====================================================
-    const { data: supplements } = await supabase
-      .from('claim_generated_documents')
-      .select('created_at')
-      .eq('claim_id', body.claim_id)
-      .eq('document_type', 'supplement_v2')
-      .order('created_at', { ascending: false })
-      .limit(1);
-
-    let daysSinceSupplement = null;
-    let supplementDate = null;
-
-    if (supplements && supplements.length > 0) {
-      supplementDate = new Date(supplements[0].created_at);
-      const now = new Date();
-      const diffTime = Math.abs(now - supplementDate);
-      daysSinceSupplement = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    }
-
-    // =====================================================
-    // STEP 3: CHECK LAST CARRIER RESPONSE
-    // =====================================================
-    const { data: journal } = await supabase
-      .from('claim_journal')
-      .select('event_date, event_type')
-      .eq('claim_id', body.claim_id)
-      .in('event_type', ['carrier_response', 'adjuster_call', 'settlement_received'])
-      .order('event_date', { ascending: false })
-      .limit(1);
-
-    let daysSinceLastResponse = null;
-    let lastResponseDate = null;
-
-    if (journal && journal.length > 0) {
-      lastResponseDate = new Date(journal[0].event_date);
-      const now = new Date();
-      const diffTime = Math.abs(now - lastResponseDate);
-      daysSinceLastResponse = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    }
-
-    // =====================================================
-    // STEP 4: DETERMINE ESCALATION LEVEL
-    // =====================================================
+    // Determine escalation level
     let escalationLevel = 0;
-    let recommendation = 'No escalation required';
-    let templateType = 'none';
+    let recommendation = '';
+    let templateType = null;
 
-    // Level 3: Appraisal clause trigger
-    if (underpaymentAmount > threshold && 
-        daysSinceSupplement !== null && 
-        daysSinceSupplement > 30 &&
-        daysSinceLastResponse !== null &&
-        daysSinceLastResponse > 15) {
-      escalationLevel = 3;
-      recommendation = 'Carrier has not responded to supplement for over 30 days. Invoke appraisal clause.';
-      templateType = 'appraisal_demand';
-    }
-    // Level 2: DOI complaint
-    else if (underpaymentAmount > threshold && 
-             daysSinceSupplement !== null && 
-             daysSinceSupplement > 20 &&
-             daysSinceLastResponse !== null &&
-             daysSinceLastResponse > 10) {
+    if (underpaymentAmount === 0 && daysSinceLoss < 60) {
+      escalationLevel = 0;
+      recommendation = 'Your claim is progressing normally. Continue with the documented steps.';
+    } else if (underpaymentAmount > 0 && underpaymentAmount < 5000 && daysSinceLastResponse < 14) {
+      escalationLevel = 1;
+      recommendation = 'Minor discrepancies identified. Submit a supplement request to the adjuster.';
+      templateType = 'supervisor';
+    } else if (underpaymentAmount >= 5000 && underpaymentAmount < 15000) {
       escalationLevel = 2;
-      recommendation = 'Carrier has delayed response beyond reasonable timeframe. File DOI complaint.';
+      recommendation = 'Significant underpayment detected. Request escalation to the adjuster\'s supervisor and submit a formal demand letter.';
+      templateType = 'supervisor';
+    } else if (underpaymentAmount >= 15000 || daysSinceLastResponse >= 30) {
+      escalationLevel = 3;
+      recommendation = 'Substantial underpayment or claim delay. Consider filing a Department of Insurance complaint and consulting with a public adjuster or attorney.';
       templateType = 'doi_complaint';
     }
-    // Level 1: Supervisor escalation
-    else if (underpaymentAmount > threshold && 
-             daysSinceSupplement !== null && 
-             daysSinceSupplement > 10) {
-      escalationLevel = 1;
-      recommendation = 'Supplement submitted over 10 days ago. Request supervisor review.';
-      templateType = 'supervisor';
+
+    // Check for appraisal trigger
+    if (underpaymentAmount > 10000 && daysSinceLastResponse >= 21) {
+      templateType = 'appraisal_demand';
+      recommendation += ' You may also invoke the appraisal clause in your policy to resolve the valuation dispute.';
     }
 
-    // =====================================================
-    // STEP 5: STORE ESCALATION STATUS
-    // =====================================================
-    const { data: escalationStatus, error: escalationError } = await supabase
-      .from('claim_escalation_status')
-      .upsert({
-        claim_id: body.claim_id,
-        user_id: userId,
-        escalation_level: escalationLevel,
-        underpayment_amount: underpaymentAmount,
-        underpayment_threshold: threshold,
-        days_since_supplement: daysSinceSupplement,
-        days_since_last_response: daysSinceLastResponse,
-        supplement_submitted_date: supplementDate ? supplementDate.toISOString().split('T')[0] : null,
-        last_carrier_response_date: lastResponseDate ? lastResponseDate.toISOString().split('T')[0] : null,
-        recommendation: recommendation,
-        template_type: templateType,
-        calculated_at: new Date().toISOString()
-      }, {
-        onConflict: 'claim_id'
-      })
-      .select()
-      .single();
-
-    if (escalationError) {
-      console.error('Failed to store escalation status:', escalationError);
-      return sendError('Failed to store escalation status', 'DB-001', 500);
-    }
-
-    // Log request
-    await logAPIRequest({
-      userId,
-      endpoint: '/evaluate-escalation-status',
-      method: 'POST',
-      statusCode: 200,
-      responseTime: Date.now() - startTime,
-      ipAddress: getClientIP(event),
-      userAgent: getUserAgent(event)
-    });
-
-    console.log(`[Escalation] Evaluation complete: Level ${escalationLevel}`);
-
-    return sendSuccess({
+    const result = {
       escalation_level: escalationLevel,
-      recommendation: recommendation,
+      recommendation,
       template_type: templateType,
       underpayment_amount: underpaymentAmount,
-      days_since_supplement: daysSinceSupplement,
+      days_since_loss: daysSinceLoss,
       days_since_last_response: daysSinceLastResponse,
-      processing_time_ms: Date.now() - startTime
-    });
+      days_since_supplement: null
+    };
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ data: result })
+    };
 
   } catch (error) {
-    console.error('[Escalation] Evaluation error:', error);
-    
-    // Log error
-    if (userId) {
-      await logAPIRequest({
-        userId,
-        endpoint: '/evaluate-escalation-status',
-        method: 'POST',
-        statusCode: 500,
-        responseTime: Date.now() - startTime,
-        ipAddress: getClientIP(event),
-        userAgent: getUserAgent(event),
-        errorMessage: error.message
-      });
-    }
-
-    return sendError('Escalation evaluation failed', 'SYS-001', 500, {
-      error: error.message
-    });
+    console.error('Escalation evaluation error:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: { message: error.message || 'Escalation evaluation failed' }
+      })
+    };
   }
 };

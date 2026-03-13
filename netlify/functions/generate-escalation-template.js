@@ -1,447 +1,209 @@
 /**
- * API Endpoint: /generate-escalation-template
- * Generates escalation templates (supervisor, DOI, appraisal)
- * Deterministic template generation based on claim data
+ * Netlify Function: generate-escalation-template
+ * Generates escalation templates (supervisor request, DOI complaint, appraisal demand)
  */
 
 const { createClient } = require('@supabase/supabase-js');
-const { sendSuccess, sendError, validateAuth, parseBody, getClientIP, getUserAgent, logAPIRequest } = require('./api/lib/api-utils');
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+exports.handler = async (event, context) => {
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: { message: 'Method not allowed' } })
+    };
+  }
 
-exports.handler = async (event) => {
-  const startTime = Date.now();
-  let userId = null;
+  const authHeader = event.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return {
+      statusCode: 401,
+      body: JSON.stringify({ error: { message: 'Unauthorized' } })
+    };
+  }
+
+  const token = authHeader.replace('Bearer ', '');
 
   try {
-    // Handle CORS preflight
-    if (event.httpMethod === 'OPTIONS') {
+    const { claim_id, template_type } = JSON.parse(event.body);
+
+    if (!claim_id || !template_type) {
       return {
-        statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS'
-        },
-        body: ''
+        statusCode: 400,
+        body: JSON.stringify({ error: { message: 'Missing required fields' } })
       };
     }
 
-    // Validate authentication
-    const authResult = await validateAuth(event.headers.authorization);
-    if (!authResult.valid) {
-      return sendError(authResult.error, 'AUTH-001', 401);
-    }
-    userId = authResult.user.id;
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_ANON_KEY,
+      {
+        global: {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      }
+    );
 
-    // Parse and validate request body
-    const body = parseBody(event.body);
-    
-    if (!body.claim_id) {
-      return sendError('claim_id is required', 'VAL-001', 400);
-    }
-
-    if (!body.template_type) {
-      return sendError('template_type is required', 'VAL-002', 400);
-    }
-
-    const validTemplates = ['supervisor', 'doi_complaint', 'appraisal_demand'];
-    if (!validTemplates.includes(body.template_type)) {
-      return sendError(`Invalid template_type. Must be one of: ${validTemplates.join(', ')}`, 'VAL-003', 400);
-    }
-
-    // Validate claim ownership
+    // Fetch claim data
     const { data: claim, error: claimError } = await supabase
       .from('claims')
       .select('*')
-      .eq('id', body.claim_id)
-      .eq('user_id', userId)
+      .eq('id', claim_id)
       .single();
 
-    if (claimError || !claim) {
-      return sendError('Claim not found or access denied', 'CLAIM-001', 404);
-    }
+    if (claimError) throw claimError;
 
-    console.log(`[Escalation Template] Generating ${body.template_type} for claim ${claim.claim_number}`);
-
-    // =====================================================
-    // FETCH REQUIRED DATA
-    // =====================================================
-    
-    // Get policy information
-    const { data: policy } = await supabase
-      .from('claim_policies')
-      .select('*')
-      .eq('claim_id', body.claim_id)
-      .single();
-
-    // Get financial summary
-    const { data: financial } = await supabase
+    // Fetch financial summary
+    const { data: financial, error: finError } = await supabase
       .from('claim_financial_summary')
       .select('*')
-      .eq('claim_id', body.claim_id)
+      .eq('claim_id', claim_id)
       .single();
 
-    // Get escalation status
-    const { data: escalation } = await supabase
-      .from('claim_escalation_status')
-      .select('*')
-      .eq('claim_id', body.claim_id)
-      .single();
+    let templateContent = '';
 
-    // Get supplement info
-    const { data: supplements } = await supabase
-      .from('claim_generated_documents')
-      .select('created_at')
-      .eq('claim_id', body.claim_id)
-      .eq('document_type', 'supplement_v2')
-      .order('created_at', { ascending: false })
-      .limit(1);
+    if (template_type === 'supervisor') {
+      templateContent = `
+[Date]
 
-    const supplementDate = supplements && supplements.length > 0 
-      ? new Date(supplements[0].created_at).toLocaleDateString()
-      : 'N/A';
+${claim.insurer_name}
+Attn: Claims Supervisor
+Re: Request for Supervisory Review - Claim ${claim.claim_number}
 
-    // =====================================================
-    // GENERATE TEMPLATE
-    // =====================================================
-    let template = '';
+Dear Supervisor:
 
-    switch (body.template_type) {
-      case 'supervisor':
-        template = generateSupervisorTemplate(claim, policy, financial, escalation, supplementDate);
-        break;
-      case 'doi_complaint':
-        template = generateDOITemplate(claim, policy, financial, escalation, supplementDate);
-        break;
-      case 'appraisal_demand':
-        template = generateAppraisalTemplate(claim, policy, financial, escalation, supplementDate);
-        break;
+I am writing to request supervisory review of my claim, which has been assigned to ${claim.adjuster_name || '[Adjuster Name]'}.
+
+Despite providing all requested documentation and cooperating fully with the claims process, I believe the settlement offer does not accurately reflect the full extent of covered damage.
+
+ISSUES REQUIRING REVIEW:
+
+1. Underpayment of approximately $${financial?.underpayment_estimate?.toLocaleString() || '0'}
+2. Missing line items in the estimate
+3. Undervalued materials and labor costs
+4. Unaddressed code upgrade requirements
+
+I have submitted supporting documentation including an independent contractor estimate, photographs, and building code citations. I request that a supervisor review this file and provide a written response addressing these concerns.
+
+I am available to discuss this matter at your convenience.
+
+Sincerely,
+
+[Policyholder Name]
+[Contact Information]
+      `.trim();
+
+    } else if (template_type === 'doi_complaint') {
+      templateContent = `
+[State] Department of Insurance
+Consumer Services Division
+[Address]
+
+Re: Complaint Against ${claim.insurer_name}
+    Claim Number: ${claim.claim_number}
+    Policy Number: [Policy Number]
+    Date of Loss: ${claim.date_of_loss}
+
+Dear Department of Insurance:
+
+I am filing a formal complaint against ${claim.insurer_name} for improper claims handling practices.
+
+COMPLAINT SUMMARY:
+
+The insurer has underpaid my claim by approximately $${financial?.underpayment_estimate?.toLocaleString() || '0'} and has failed to respond to my supplemental documentation requests.
+
+SPECIFIC VIOLATIONS:
+
+1. Failure to conduct a reasonable investigation
+2. Failure to provide a reasonable explanation for claim denial/underpayment
+3. Unreasonable delay in processing the claim
+4. Failure to respond to written communications
+
+TIMELINE:
+
+- Date of Loss: ${claim.date_of_loss}
+- Claim Reported: [Date]
+- Initial Payment: [Date and Amount]
+- Supplement Submitted: [Date]
+- Days Without Response: [Number]
+
+I have provided all requested documentation including contractor estimates, photographs, and building code citations. The insurer's estimate omits covered items and undervalues necessary repairs.
+
+REQUESTED ACTION:
+
+I request that the Department investigate this matter and require the insurer to:
+1. Conduct a proper reinspection
+2. Pay the full amount of covered damage
+3. Respond to my supplement request within a reasonable timeframe
+
+Attached please find copies of:
+- Insurance policy
+- Claim correspondence
+- Contractor estimates
+- Photographic evidence
+
+Thank you for your attention to this matter.
+
+Sincerely,
+
+[Policyholder Name]
+[Address]
+[Phone]
+[Email]
+      `.trim();
+
+    } else if (template_type === 'appraisal_demand') {
+      templateContent = `
+[Date]
+
+${claim.insurer_name}
+Attn: ${claim.adjuster_name || 'Claims Department'}
+Re: DEMAND FOR APPRAISAL - Claim ${claim.claim_number}
+
+Dear ${claim.adjuster_name || 'Sir or Madam'}:
+
+This letter constitutes a formal demand for appraisal pursuant to the appraisal provision in the insurance policy.
+
+The parties disagree on the amount of loss. Your estimate values the loss at $[Carrier Amount], while my independent contractor estimates the loss at $[Contractor Amount], a difference of $${financial?.underpayment_estimate?.toLocaleString() || '0'}.
+
+APPRAISAL DEMAND:
+
+Pursuant to the policy's appraisal clause, I hereby demand that this valuation dispute be resolved through the appraisal process. I have selected [Appraiser Name] as my appraiser.
+
+Please provide the name and contact information for your appraiser within 20 days of receipt of this letter, as required by the policy.
+
+If you fail to participate in the appraisal process, I will pursue all available legal remedies, including filing suit for breach of contract and bad faith.
+
+APPRAISAL CLAUSE REFERENCE:
+
+The policy states: "If you and we fail to agree on the amount of loss, either may demand an appraisal of the loss. In this event, each party will choose a competent appraiser within 20 days after receiving a written request from the other."
+
+Please confirm receipt of this demand and provide your appraiser's information within 20 days.
+
+Sincerely,
+
+[Policyholder Name]
+[Contact Information]
+
+My Appraiser:
+[Appraiser Name]
+[Contact Information]
+      `.trim();
     }
 
-    // =====================================================
-    // STORE TEMPLATE
-    // =====================================================
-    const { data: stored, error: storeError } = await supabase
-      .from('claim_generated_documents')
-      .insert({
-        claim_id: body.claim_id,
-        user_id: userId,
-        document_type: `escalation_${body.template_type}`,
-        document_content: template,
-        generated_at: new Date().toISOString()
-      })
-      .select()
-      .single();
-
-    if (storeError) {
-      console.error('Error storing template:', storeError);
-    }
-
-    // Log request
-    await logAPIRequest({
-      userId,
-      endpoint: '/generate-escalation-template',
-      method: 'POST',
+    return {
       statusCode: 200,
-      responseTime: Date.now() - startTime,
-      ipAddress: getClientIP(event),
-      userAgent: getUserAgent(event)
-    });
-
-    console.log(`[Escalation Template] Generation complete in ${Date.now() - startTime}ms`);
-
-    return sendSuccess({
-      template: template,
-      template_type: body.template_type,
-      stored: !!stored,
-      processing_time_ms: Date.now() - startTime
-    });
+      body: JSON.stringify({
+        data: templateContent
+      })
+    };
 
   } catch (error) {
-    console.error('[Escalation Template] Generation error:', error);
-    
-    // Log error
-    if (userId) {
-      await logAPIRequest({
-        userId,
-        endpoint: '/generate-escalation-template',
-        method: 'POST',
-        statusCode: 500,
-        responseTime: Date.now() - startTime,
-        ipAddress: getClientIP(event),
-        userAgent: getUserAgent(event),
-        errorMessage: error.message
-      });
-    }
-
-    return sendError('Escalation template generation failed', 'SYS-001', 500, {
-      error: error.message
-    });
+    console.error('Template generation error:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: { message: error.message || 'Template generation failed' }
+      })
+    };
   }
 };
-
-// =====================================================
-// TEMPLATE GENERATORS
-// =====================================================
-
-/**
- * Generate supervisor escalation letter
- */
-function generateSupervisorTemplate(claim, policy, financial, escalation, supplementDate) {
-  const today = new Date().toLocaleDateString();
-  const underpayment = financial?.underpayment_estimate || 0;
-  const daysSince = escalation?.days_since_supplement || 0;
-
-  return `
-<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
-  <div style="text-align: right; margin-bottom: 30px;">
-    <strong>${today}</strong>
-  </div>
-
-  <div style="margin-bottom: 30px;">
-    <strong>RE: Claim ${claim.claim_number} - Request for Supervisor Review</strong><br>
-    Policy: ${policy?.policy_number || 'N/A'}<br>
-    Insured: ${claim.policyholder_name || 'N/A'}<br>
-    Property: ${claim.property_address || 'N/A'}
-  </div>
-
-  <p>Dear Claims Supervisor,</p>
-
-  <p>I am writing to request immediate supervisor review of the above-referenced claim. A supplement was submitted on <strong>${supplementDate}</strong> (${daysSince} days ago) documenting an underpayment of <strong>$${underpayment.toLocaleString()}</strong>.</p>
-
-  <p><strong>Issue:</strong> The carrier estimate contains significant scope deficiencies and valuation errors that were documented in detail in the supplement submission. Despite the passage of ${daysSince} days, we have not received a response or revised payment.</p>
-
-  <p><strong>Requested Action:</strong></p>
-  <ul>
-    <li>Immediate supervisor review of the supplement documentation</li>
-    <li>Revised estimate addressing the documented discrepancies</li>
-    <li>Revised payment issued within 10 business days</li>
-  </ul>
-
-  <p><strong>Supporting Documentation:</strong> The supplement includes deterministic line-item reconciliation, code compliance analysis, and policy coverage crosswalk. All calculations are based on industry-standard pricing and documented building code requirements.</p>
-
-  <p>The underpayment amount of $${underpayment.toLocaleString()} represents the difference between the carrier estimate and the actual scope of work required to restore the property to pre-loss condition in compliance with applicable building codes and policy terms.</p>
-
-  <p>Please confirm receipt of this request and provide a timeline for supervisor review and revised payment.</p>
-
-  <p>Sincerely,<br>
-  ${claim.policyholder_name || '[Policyholder Name]'}</p>
-
-  <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; font-size: 12px; color: #666;">
-    <p><strong>Claim Reference:</strong> ${claim.claim_number}<br>
-    <strong>Supplement Submitted:</strong> ${supplementDate}<br>
-    <strong>Days Since Submission:</strong> ${daysSince}<br>
-    <strong>Documented Underpayment:</strong> $${underpayment.toLocaleString()}</p>
-  </div>
-</div>
-  `.trim();
-}
-
-/**
- * Generate DOI complaint template
- */
-function generateDOITemplate(claim, policy, financial, escalation, supplementDate) {
-  const today = new Date().toLocaleDateString();
-  const underpayment = financial?.underpayment_estimate || 0;
-  const daysSince = escalation?.days_since_supplement || 0;
-  const daysSinceResponse = escalation?.days_since_last_response || 0;
-
-  return `
-<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
-  <div style="text-align: center; margin-bottom: 30px;">
-    <h2>DEPARTMENT OF INSURANCE COMPLAINT</h2>
-  </div>
-
-  <div style="margin-bottom: 30px;">
-    <strong>Complaint Date:</strong> ${today}<br>
-    <strong>Claim Number:</strong> ${claim.claim_number}<br>
-    <strong>Policy Number:</strong> ${policy?.policy_number || 'N/A'}<br>
-    <strong>Insurance Carrier:</strong> ${policy?.carrier_name || 'N/A'}<br>
-    <strong>Insured:</strong> ${claim.policyholder_name || 'N/A'}<br>
-    <strong>Property Address:</strong> ${claim.property_address || 'N/A'}<br>
-    <strong>Loss Date:</strong> ${claim.loss_date ? new Date(claim.loss_date).toLocaleDateString() : 'N/A'}
-  </div>
-
-  <h3>NATURE OF COMPLAINT</h3>
-  <p>The insurance carrier has failed to respond to a documented supplement submission within a reasonable timeframe, in violation of state insurance regulations regarding prompt claim handling.</p>
-
-  <h3>TIMELINE OF EVENTS</h3>
-  <ul>
-    <li><strong>Loss Date:</strong> ${claim.loss_date ? new Date(claim.loss_date).toLocaleDateString() : 'N/A'}</li>
-    <li><strong>Initial Estimate Received:</strong> [Date]</li>
-    <li><strong>Supplement Submitted:</strong> ${supplementDate}</li>
-    <li><strong>Days Since Supplement:</strong> ${daysSince} days</li>
-    <li><strong>Days Since Last Carrier Response:</strong> ${daysSinceResponse} days</li>
-  </ul>
-
-  <h3>DOCUMENTED UNDERPAYMENT</h3>
-  <p>The supplement documented an underpayment of <strong>$${underpayment.toLocaleString()}</strong> based on deterministic line-item reconciliation and code compliance analysis. The carrier estimate contains the following deficiencies:</p>
-  <ul>
-    <li>Missing scope items required for proper restoration</li>
-    <li>Undervalued line items below industry-standard pricing</li>
-    <li>Failure to account for required building code upgrades</li>
-    <li>Improper application of depreciation schedules</li>
-  </ul>
-
-  <h3>VIOLATION OF INSURANCE REGULATIONS</h3>
-  <p>The carrier's failure to respond to the supplement within ${daysSince} days violates state insurance regulations requiring prompt investigation and payment of claims. Specifically:</p>
-  <ul>
-    <li>Unreasonable delay in claim processing</li>
-    <li>Failure to provide timely written response to supplement</li>
-    <li>Failure to conduct reasonable investigation of documented discrepancies</li>
-  </ul>
-
-  <h3>REQUESTED ACTION</h3>
-  <p>I request that the Department of Insurance:</p>
-  <ol>
-    <li>Investigate this complaint for violations of state insurance regulations</li>
-    <li>Compel the carrier to provide immediate written response to the supplement</li>
-    <li>Compel the carrier to issue revised payment for the documented underpayment</li>
-    <li>Take appropriate regulatory action against the carrier for unreasonable delay</li>
-  </ol>
-
-  <h3>SUPPORTING DOCUMENTATION</h3>
-  <p>Attached:</p>
-  <ul>
-    <li>Original carrier estimate</li>
-    <li>Contractor estimate</li>
-    <li>Supplement with line-item reconciliation</li>
-    <li>Code compliance documentation</li>
-    <li>Policy declarations page</li>
-    <li>All correspondence with carrier</li>
-  </ul>
-
-  <p>I declare under penalty of perjury that the information provided in this complaint is true and correct to the best of my knowledge.</p>
-
-  <div style="margin-top: 40px;">
-    <p>Respectfully submitted,</p>
-    <p><strong>${claim.policyholder_name || '[Policyholder Name]'}</strong><br>
-    ${claim.property_address || '[Property Address]'}<br>
-    [Phone Number]<br>
-    [Email Address]</p>
-  </div>
-
-  <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; font-size: 12px; color: #666;">
-    <p><strong>Complaint Reference:</strong> ${claim.claim_number}<br>
-    <strong>Date Filed:</strong> ${today}<br>
-    <strong>Underpayment Amount:</strong> $${underpayment.toLocaleString()}<br>
-    <strong>Days Without Response:</strong> ${daysSince}</p>
-  </div>
-</div>
-  `.trim();
-}
-
-/**
- * Generate appraisal demand template
- */
-function generateAppraisalTemplate(claim, policy, financial, escalation, supplementDate) {
-  const today = new Date().toLocaleDateString();
-  const underpayment = financial?.underpayment_estimate || 0;
-  const daysSince = escalation?.days_since_supplement || 0;
-
-  return `
-<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
-  <div style="text-align: right; margin-bottom: 30px;">
-    <strong>${today}</strong>
-  </div>
-
-  <div style="margin-bottom: 30px;">
-    <strong>SENT VIA CERTIFIED MAIL</strong>
-  </div>
-
-  <div style="margin-bottom: 30px;">
-    [Insurance Carrier Name]<br>
-    [Claims Department Address]<br>
-    [City, State ZIP]
-  </div>
-
-  <div style="margin-bottom: 30px;">
-    <strong>RE: DEMAND FOR APPRAISAL</strong><br>
-    Claim Number: ${claim.claim_number}<br>
-    Policy Number: ${policy?.policy_number || 'N/A'}<br>
-    Insured: ${claim.policyholder_name || 'N/A'}<br>
-    Property: ${claim.property_address || 'N/A'}<br>
-    Loss Date: ${claim.loss_date ? new Date(claim.loss_date).toLocaleDateString() : 'N/A'}
-  </div>
-
-  <p>Dear Claims Representative,</p>
-
-  <p>This letter constitutes formal demand to invoke the Appraisal Clause contained in the above-referenced insurance policy.</p>
-
-  <h3>BACKGROUND</h3>
-  <p>A supplement was submitted on <strong>${supplementDate}</strong> (${daysSince} days ago) documenting significant discrepancies between the carrier estimate and the actual scope of work required to restore the property. The supplement documented an underpayment of <strong>$${underpayment.toLocaleString()}</strong> based on deterministic line-item reconciliation.</p>
-
-  <p>Despite the passage of ${daysSince} days and multiple attempts to resolve this matter through the normal claims process, the carrier has failed to provide adequate response or revised payment.</p>
-
-  <h3>DISPUTED AMOUNT</h3>
-  <p>The parties disagree on the amount of loss. Specifically:</p>
-  <ul>
-    <li><strong>Carrier Estimate:</strong> [Carrier Amount]</li>
-    <li><strong>Documented Actual Loss:</strong> [Contractor Amount]</li>
-    <li><strong>Disputed Amount:</strong> $${underpayment.toLocaleString()}</li>
-  </ul>
-
-  <h3>INVOCATION OF APPRAISAL CLAUSE</h3>
-  <p>Pursuant to the Appraisal provision of the policy, I demand that this dispute be resolved through the appraisal process. The policy states:</p>
-
-  <blockquote style="margin: 20px; padding: 15px; background: #f5f5f5; border-left: 4px solid #333;">
-    "If you and we fail to agree on the amount of loss, either may demand an appraisal of the loss. In this event, each party will choose a competent and impartial appraiser within 20 days after receiving a written request from the other. The two appraisers will choose an umpire. If they cannot agree upon an umpire within 15 days, you or we may request that the choice be made by a judge of a court of record in the state where the property is located."
-  </blockquote>
-
-  <h3>APPOINTMENT OF APPRAISER</h3>
-  <p>I have appointed the following individual as my appraiser:</p>
-
-  <div style="margin: 20px; padding: 15px; background: #f9f9f9;">
-    <strong>[Appraiser Name]</strong><br>
-    [Company Name]<br>
-    [Address]<br>
-    [Phone]<br>
-    [Email]
-  </div>
-
-  <h3>REQUIRED ACTION</h3>
-  <p>Pursuant to the policy terms, you are required to:</p>
-  <ol>
-    <li>Appoint your competent and impartial appraiser within 20 days of receipt of this demand</li>
-    <li>Provide written notice of your appraiser's name and contact information</li>
-    <li>Instruct your appraiser to contact my appraiser to select an umpire</li>
-  </ol>
-
-  <h3>SCOPE OF APPRAISAL</h3>
-  <p>The appraisal will determine the amount of loss for the following disputed items:</p>
-  <ul>
-    <li>Missing scope items documented in the supplement</li>
-    <li>Undervalued line items with pricing discrepancies</li>
-    <li>Required building code upgrades</li>
-    <li>Proper application of depreciation schedules</li>
-    <li>Overhead and profit calculations</li>
-  </ul>
-
-  <p>All supporting documentation, including the original carrier estimate, contractor estimate, supplement, code compliance analysis, and policy coverage crosswalk, will be provided to the appraisers.</p>
-
-  <h3>RESERVATION OF RIGHTS</h3>
-  <p>This demand for appraisal is made without prejudice to any other rights or remedies available under the policy or applicable law, including but not limited to claims for bad faith, breach of contract, or violations of state insurance regulations.</p>
-
-  <p>Please confirm receipt of this demand and provide written notice of your appointed appraiser within 20 days.</p>
-
-  <p>Sincerely,</p>
-
-  <p><strong>${claim.policyholder_name || '[Policyholder Name]'}</strong><br>
-  ${claim.property_address || '[Property Address]'}<br>
-  [Phone Number]<br>
-  [Email Address]</p>
-
-  <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; font-size: 12px; color: #666;">
-    <p><strong>Claim Reference:</strong> ${claim.claim_number}<br>
-    <strong>Appraisal Demand Date:</strong> ${today}<br>
-    <strong>Disputed Amount:</strong> $${underpayment.toLocaleString()}<br>
-    <strong>Supplement Submitted:</strong> ${supplementDate}<br>
-    <strong>Days Without Resolution:</strong> ${daysSince}</p>
-  </div>
-</div>
-  `.trim();
-}
